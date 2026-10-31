@@ -95,3 +95,7 @@ silhouette; non-human heroes.
   garment; the dress's ladder from cloth to sign works on all four steps, the cone-sign reads. Weak: knitwear and coats
   (sleeves turn into boxes or ridged frills, a tight sweater reads as skin with muscles), MakeHuman's front slit with a
   ragged hem.
+- **Heads from 3D-cartoon references** ([experiments/heads-3d](../experiments/heads-3d/README.md),
+  [pictures](pictures/heads-3d/)): none beautiful, three recognisable by type (Gwen, Go Go, Marco). One template moved
+  weakly gives one face to all; hair as cap plus ribbons reads as a helmet; eye and skin joined with a dark hollow
+  under the eyes. Sent back with Pavel's notes on the anime heads (per-reference proportions, lines and curves, neck).
