@@ -1,7 +1,8 @@
 // Hair as designed volumes: a scalp mass over the skull up to a drawn hairline, and big locks swept along guide
 // curves — each a flattened, tapering section lying against the head — all merged into one surface, so a hairstyle
 // reads as a few big shapes with soft valleys between them, never as a helmet or as separate ribbons.
-// Every lock keeps its guide curve, so later it can hang on a chain of joints from the Head bone.
+// Every lock keeps its guide curve; in motion (motion.js) it hangs on a chain of points from the Head joint (`rig`:
+// 'head' rides the head, a shared object one chain for several items, as a braid's).
 
 const len = (x, y, z) => Math.hypot(x, y, z);
 export const smin = (a, b, k) => { if (k <= 0) return Math.min(a, b); const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; };
@@ -133,7 +134,7 @@ export function lock(o) {
     }
     return best;
   };
-  return { sdf, bb, color: o.color, k: o.k, o, id: lockId++, isLock: true };
+  return { sdf, bb, color: o.color, k: o.k, o, id: lockId++, isLock: true, rig: o.rig };
 }
 
 // ———— a big clump with smaller ones breaking off it ————
@@ -154,7 +155,9 @@ export function clump(o) {
       pts.push(p);
     }
     const wk = w0 * (k.w ?? 0.35);
-    return lock({ pts, w: [wk * 0.7, wk, wk * 0.85, wk * 0.6], flat: o.flat ?? 0.42, tip: k.tip ?? 0.55, sharp: 1.15, hook: (k.hook ?? 0.8) * k.side, color: o.color, lens: o.lens, vert: o.vert, up: o.up, n: 16 });
+    const kid = lock({ pts, w: [wk * 0.7, wk, wk * 0.85, wk * 0.6], flat: o.flat ?? 0.42, tip: k.tip ?? 0.55, sharp: 1.15, hook: (k.hook ?? 0.8) * k.side, color: o.color, lens: o.lens, vert: o.vert, up: o.up, n: 16 });
+    kid.parent = main;   // in motion it rides its clump's chain
+    return kid;
   })];
 }
 
@@ -199,13 +202,13 @@ export function ell(o) {   // an ellipsoid, optionally turned: axes u, v (w foll
   const v = [w[1] * u[2] - w[2] * u[1], w[2] * u[0] - w[0] * u[2], w[0] * u[1] - w[1] * u[0]];
   const m = Math.max(...r);
   return { sdf: (x, y, z) => { const px = x - c[0], py = y - c[1], pz = z - c[2]; return ellip(px * u[0] + py * u[1] + pz * u[2], px * v[0] + py * v[1] + pz * v[2], px * w[0] + py * w[1] + pz * w[2], ...r); },
-    bb: [c.map(q => q - m), c.map(q => q + m)], color: o.color, k: o.k };
+    bb: [c.map(q => q - m), c.map(q => q + m)], color: o.color, k: o.k, rig: o.rig };
 }
 export function torus(o) {   // a ring around axis a
   const c = o.c, a = o.a.map(q => q / len(...o.a)), R = o.R, r = o.r;
   return { sdf: (x, y, z) => { const px = x - c[0], py = y - c[1], pz = z - c[2], h = px * a[0] + py * a[1] + pz * a[2];
     const qx = px - h * a[0], qy = py - h * a[1], qz = pz - h * a[2], ql = len(qx, qy, qz); return Math.hypot(ql - R, h * (o.flat ?? 1)) - r; },
-    bb: [c.map(q => q - R - r), c.map(q => q + R + r)], color: o.color, k: o.k };
+    bb: [c.map(q => q - R - r), c.map(q => q + R + r)], color: o.color, k: o.k, rig: o.rig };
 }
 
 // ———— the scalp mass: the skull grown by a thickness, cut by a drawn hairline ————
@@ -294,21 +297,22 @@ export function buildHair(S, head) {
       else { m.uv[v * 2] = Math.atan2(x - crown[0], z - crown[2]) * 0.06; m.uv[v * 2 + 1] = 0.3; m.seed[v] = 0.5; }
     }
     m.ao = occl(m, inset);
-    out.push({ mesh: m, inner: !!locks.length, rough: part.rough, ink: part.ink, plain: !!part.fabric });
+    out.push({ mesh: m, inner: !!locks.length, rough: part.rough, ink: part.ink, plain: !!part.fabric, part, items, locks });
     if (!locks.length) continue;
     // the locks: one geometry for the part
     const ms = locks.map(L => { const q = lockMesh(L); q.L = L; return q; });
-    const nT = ms.reduce((a, q) => a + q.pos.length / 3, 0), G = { pos: new Float32Array(nT * 3), nor: new Float32Array(nT * 3), tan: new Float32Array(nT * 3), uv: new Float32Array(nT * 2), wd: new Float32Array(nT), seed: new Float32Array(nT), col: new Float32Array(nT * 3), idx: [] };
+    const nT = ms.reduce((a, q) => a + q.pos.length / 3, 0), G = { pos: new Float32Array(nT * 3), nor: new Float32Array(nT * 3), tan: new Float32Array(nT * 3), uv: new Float32Array(nT * 2), wd: new Float32Array(nT), seed: new Float32Array(nT), col: new Float32Array(nT * 3), idx: [], lockOf: new Uint16Array(nT) };
     let off = 0;
     for (const q of ms) {
       const c = q.L.color !== undefined ? hex(q.L.color) : base, n = q.pos.length / 3;
       G.pos.set(q.pos, off * 3); G.nor.set(q.nor, off * 3); G.tan.set(q.tan, off * 3); G.uv.set(q.uv, off * 2); G.wd.set(q.wd, off);
-      for (let v = 0; v < n; v++) { G.seed[off + v] = (q.L.id * 0.618) % 1; G.col.set(c, (off + v) * 3); }
+      const li = locks.indexOf(q.L);
+      for (let v = 0; v < n; v++) { G.seed[off + v] = (q.L.id * 0.618) % 1; G.col.set(c, (off + v) * 3); G.lockOf[off + v] = li; }
       for (const i of q.idx) G.idx.push(i + off);
       off += n;
     }
     G.ao = occl(G);
-    out.push({ mesh: G, lockLayer: true, rough: part.rough, ink: part.ink });
+    out.push({ mesh: G, lockLayer: true, rough: part.rough, ink: part.ink, part, items, locks });
   }
   return out;
 }

@@ -44,10 +44,11 @@ function fringe(o) {
     { w: [w * 0.7, w, w, w * 0.9], flat: o.flat ?? 0.42, tip: o.tip ?? 0.6, sharp: o.sharp ?? 1.5, color: o.color, k: o.k }));
 }
 // a braid: three locks crossing over and under each other along the braid's line, thinning to the end
+// (in motion the braid is one chain along its line, `rig`, the three strands and what hangs below following it)
 function braid(pts, o) {
-  const n = 60, G = [];
+  const n = 60, G = [], rig = { guide: o.to ? [...pts, o.to] : pts, dyn: o.dyn };
   for (let i = 0; i <= n; i++) { const u = i / n * (pts.length - 1), k = Math.min(Math.floor(u), pts.length - 2), t = u - k; G.push(pts[k].map((v, j) => v + (pts[k + 1][j] - v) * t)); }
-  return [0, 1, 2].map(k => {
+  const out = [0, 1, 2].map(k => {
     const P = G.map((g, i) => {
       const s = i / n, q = G[Math.min(i + 1, n)], r = G[Math.max(i - 1, 0)], T = q.map((v, j) => v - r[j]), tl = Math.hypot(...T);
       const side = [T[2], 0, -T[0]].map(v => v / (Math.hypot(T[2], T[0]) || 1));
@@ -55,8 +56,10 @@ function braid(pts, o) {
       const A = (o.w0 + (o.w1 - o.w0) * s) * 0.55, t = s * o.cross * 6.283 + k * 6.283 / 3;
       return g.map((v, j) => v + side[j] * A * Math.sin(t) + out[j] * A * 0.55 * Math.sin(2 * t));
     }).filter((_, i) => i % 2 === 0);
-    return lock({ pts: P, n: 90, w: [o.w0 * 0.42, o.w0 * 0.45, o.w1 * 0.42, o.w1 * 0.3], flat: 0.55, lens: 0.5, tip: 0.12, sharp: 1.3, sheet: 0.5, color: o.color });
+    return lock({ pts: P, n: 90, w: [o.w0 * 0.42, o.w0 * 0.45, o.w1 * 0.42, o.w1 * 0.3], flat: 0.55, lens: 0.5, tip: 0.12, sharp: 1.3, sheet: 0.5, color: o.color, rig });
   });
+  out.rig = rig;
+  return out;
 }
 // a bun: locks wound around a centre, spiralling in to the top of the bun
 function bun(c, ax, R, o = {}) {
@@ -69,7 +72,7 @@ function bun(c, ax, R, o = {}) {
       const s = i / 14, th = k * 2.1 + s * 6.283 * 1.15, rr = R * (1.0 - 0.75 * s), h = R * (-0.5 + 1.1 * Math.sin(s * 1.6));
       pts.push(c.map((v, j) => v + (U[j] * Math.cos(th) + V[j] * Math.sin(th)) * rr + a[j] * h));
     }
-    return lock({ pts, n: 60, about: c.map((v, j) => v - a[j] * R * 0.4), w: [R * 0.45, R * 0.55, R * 0.45, R * 0.3], flat: 0.55, lens: 0.5, tip: 0.35, sharp: 1.3, color: o.color, k: o.k });
+    return lock({ pts, n: 60, about: c.map((v, j) => v - a[j] * R * 0.4), w: [R * 0.45, R * 0.55, R * 0.45, R * 0.3], flat: 0.55, lens: 0.5, tip: 0.35, sharp: 1.3, color: o.color, k: o.k, rig: 'head' });
   });
 }
 // hair combed from the hairline to one place (a band, a bun, the crown): sleek locks lying on the skull
@@ -87,7 +90,7 @@ function sweep(o) {
     }
     if (o.end) pts.push(o.end);
     const w = o.w * (1 + 0.25 * (hash(i * 3.3 + (o.seed || 0)) * 2 - 1));
-    out.push(lock({ pts, w: [w * 0.75, w, w, w * 0.8], flat: o.flat ?? 0.22, lens: 0.5, root: 0.2, point: false, sheet: 1.2, color: o.color, k: o.k }));
+    out.push(lock({ pts, w: [w * 0.75, w, w, w * 0.8], flat: o.flat ?? 0.22, lens: 0.5, root: 0.2, point: false, sheet: 1.2, color: o.color, k: o.k, rig: 'head' }));   // combed tight: moves with the head
   }
   return out;
 }
@@ -97,7 +100,7 @@ function tail(o) {
   for (let i = 0; i < o.n; i++) {
     const f = (i + 0.5) / o.n * 2 - 1, h = hash(i * 7.7 + (o.seed || 0));
     const pts = o.path.map((p, k) => { const s = k / (o.path.length - 1); return [p[0] + f * o.spread * Math.sin(s * 2.4), p[1] + (k === o.path.length - 1 ? (h - 0.3) * o.lenJit : 0), p[2] + (h - 0.5) * 0.02 * s]; });
-    out.push(clump({ pts, w: o.w.map(v => v * (0.75 + 0.5 * hash(i * 2.9))), flat: 0.5, up: o.up, lens: 0.5, tip: 0.45, sharp: 1.3, hook: (h - 0.5) * 1.2, wave: o.wave && { ...o.wave, ph: i * 1.3 }, kids: i % 2 ? [{ side: f > 0 ? 1 : -1, at: 0.55, w: 0.4, len: 0.85 + 0.3 * h }] : [], color: o.color }));
+    out.push(clump({ pts, w: o.w.map(v => v * (0.75 + 0.5 * hash(i * 2.9))), flat: 0.5, up: o.up, lens: 0.5, tip: 0.45, sharp: 1.3, hook: (h - 0.5) * 1.2, wave: o.wave && { ...o.wave, ph: i * 1.3 }, kids: i % 2 ? [{ side: f > 0 ? 1 : -1, at: 0.55, w: 0.4, len: 0.85 + 0.3 * h }] : [], color: o.color, rig: o.rig, dyn: o.dyn }));
   }
   return out;
 }
@@ -109,6 +112,8 @@ const ringlet = (root, path, o) => L(root, path, { n: 80, flat: 0.75, lens: 0.3,
 const curls = (root, path, o) => L(root, path, { ...o, curly: { amp: o.amp ?? 0.22, f: o.f ?? 7, turn: o.turn ?? 3 }, lens: 0.1 });
 
 export const STYLES = {};
+// their names as the gallery shows them
+export const NAMES = { gwen: 'Гвен: каре с пробором', gogo: 'Гоу-Гоу: тёмное каре с прядью', jack: 'Джек: растрёпанные белые', marco: 'Марко: чёлка набок', ginger: 'рыжий мальчик: начёс', ariel: 'рыжая девушка: длинные', doll: 'девочка-кукла: фиолетовые', kbuns: 'K-pop: пучки', kbraid: 'K-pop: коса', kpony: 'K-pop: хвост', giulia: 'Джулия: кудри под шапкой', alva: 'Альва: шторка', nimona: 'Нимона: вихры', anime: 'аниме: чёлка и длинные' };
 
 // ==== gwen: a blonde bob, a deep side part, a long swept fringe over one eye, the other side short
 STYLES.gwen = { skin: 0xf1cdb4, parts: [{ color: 0xead08f, k: 0.007, items: [
@@ -157,11 +162,11 @@ STYLES.ginger = { skin: 0xf3c9a5, head: { male: 1 }, parts: [{ color: 0xc8632b, 
   scalpMass({ thick: 0.01, puff: 0.014, back: 0.006, ear: 0.02, behind: -0.035, nape: -0.06, k: 0.008 }),
   // the quiff: locks from the front hairline rising steeply, arcing over the top and back down to his left side
   ...[[-52, 0.006, 0.026], [-36, 0.012, 0.03], [-20, 0.02, 0.034], [-4, 0.026, 0.036], [12, 0.022, 0.034], [28, 0.014, 0.03], [42, 0.004, 0.026]].map(([a, dy, w], i) =>
-    L([a, 32], [[a + 2, 44, 0.024], [a + 8, 0.122 + dy, 0.108], [a + 30, 0.15 + dy, 0.086], [a + 66, 0.135 + dy * 0.6, 0.094], [a + 96 + i * 4, 0.08 - i * 0.004, 0.108]], { w: [w * 0.9, w * 1.2, w * 1.45, w * 1.45, w * 1.3, w * 0.8], flat: 0.36, tip: 0.35, lens: 0.4, hook: i % 2 ? 0.5 : -0.3, kids: i % 3 === 1 ? [{ side: 1, at: 0.65, w: 0.35, len: 1.1 }] : [] })),
+    L([a, 32], [[a + 2, 44, 0.024], [a + 8, 0.122 + dy, 0.108], [a + 30, 0.15 + dy, 0.086], [a + 66, 0.135 + dy * 0.6, 0.094], [a + 96 + i * 4, 0.08 - i * 0.004, 0.108]], { w: [w * 0.9, w * 1.2, w * 1.45, w * 1.45, w * 1.3, w * 0.8], flat: 0.36, tip: 0.35, lens: 0.4, hook: i % 2 ? 0.5 : -0.3, kids: i % 3 === 1 ? [{ side: 1, at: 0.65, w: 0.35, len: 1.1 }] : [], dyn: { lTip: 8000, gTip: 2500 } })),   // (set hard: it holds its shape in motion)
   // the quiff's body under its locks, so it is not hollow seen from behind
   ell({ c: [0.015, 0.122, 0.02], r: [0.08, 0.042, 0.07], u: [0.97, 0.24, 0], v: [-0.24, 0.97, 0] }),
   // a lock falling forward off the quiff's front onto the brow
-  L([-30, 36], [[-30, 50, 0.03], [-20, 0.14, 0.1], [-8, 0.1, 0.12], [-16, 0.06, 0.116]], { w: [0.016, 0.022, 0.022, 0.016, 0.01], flat: 0.5, tip: 0.45, hook: 0.6 }),
+  L([-30, 36], [[-30, 50, 0.03], [-20, 0.14, 0.1], [-8, 0.1, 0.12], [-16, 0.06, 0.116]], { w: [0.016, 0.022, 0.022, 0.016, 0.01], flat: 0.5, tip: 0.45, hook: 0.6, dyn: { lTip: 3000, gTip: 600 } }),
   fall({ n: 11, from: 84, to: 276, rootAz: 180, fan: 0.75, rootPh: 80, midY: 0.025, midR: 0.104, endY: -0.045, endR: 0.092, jit: 1, layer: 0.003, w: [0.032, 0.038, 0.032], flat: 0.45, tip: 0.22, sharp: 0.65 }),
 ] }] };
 
@@ -205,14 +210,14 @@ STYLES.kbuns = { skin: 0xf3cdb8, parts: [{ color: 0x1e2350, k: 0.008, items: [
 
 // ==== kbraid: hair swept back sleek from the forehead into one long braid
 const capR = { thick: 0.008, puff: 0.014, back: 0.01, front: 0.07, nape: -0.07, k: 0.006 };
-STYLES.kbraid = { skin: 0xf3cdb8, dist: 1.8, ty: -0.12, parts: [{ color: 0x6b50ba, k: 0.006, items: [
-  scalpMass(capR),
-  ...sweep({ from: -178, upto: 178, n: 22, el: hlEl(capR), to: [180, 52], end: [0, 0.085, -0.08], w: 0.028 }),
+STYLES.kbraid = { skin: 0xf3cdb8, dist: 1.8, ty: -0.12, parts: [{ color: 0x6b50ba, k: 0.006, items: (() => {
+  const sw = sweep({ from: -178, upto: 178, n: 22, el: hlEl(capR), to: [180, 52], end: [0, 0.085, -0.08], w: 0.028 });
   // the braid starts at the crown and lies down the back of the head, then hangs
-  ...braid([[0, 0.09, -0.07], [0, 0.04, -0.105], [0, -0.05, -0.118], [0, -0.16, -0.12], [0, -0.28, -0.115], [0, -0.38, -0.11]], { w0: 0.05, w1: 0.034, cross: 5.5 }),
-  ...tail({ n: 4, path: [[0, -0.37, -0.11], [0, -0.41, -0.112], [0, -0.46, -0.114], [0, -0.5, -0.112]], spread: 0.012, lenJit: 0.03, w: [0.012, 0.016, 0.012], up: [0, 0, -1] }),
-  torus({ c: [0, -0.375, -0.11], a: [0, 1, 0], R: 0.012, r: 0.006, color: 0xe2c060, k: 0.003 }),
-] }] };
+  const br = braid([[0, 0.09, -0.07], [0, 0.04, -0.105], [0, -0.05, -0.118], [0, -0.16, -0.12], [0, -0.28, -0.115], [0, -0.38, -0.11]], { w0: 0.05, w1: 0.034, cross: 5.5, to: [0, -0.52, -0.112], dyn: { heavy: 1 } });
+  return [scalpMass(capR), ...sw, ...br,
+    ...tail({ n: 4, path: [[0, -0.37, -0.11], [0, -0.41, -0.112], [0, -0.46, -0.114], [0, -0.5, -0.112]], spread: 0.012, lenJit: 0.03, w: [0.012, 0.016, 0.012], up: [0, 0, -1], rig: br.rig }),
+    torus({ c: [0, -0.375, -0.11], a: [0, 1, 0], R: 0.012, r: 0.006, color: 0xe2c060, k: 0.003, rig: br.rig })];
+})() }] };
 
 // ==== kpony: a long high ponytail, a side lock framing the face
 const capP = { thick: 0.008, puff: 0.01, back: 0.006, nape: -0.07, k: 0.009 };
@@ -222,7 +227,7 @@ STYLES.kpony = { skin: 0xf3cdb8, dist: 1.8, ty: -0.1, parts: [{ color: 0xb8304e,
   L([-28, 72], [[-34, 44, 0.014], [-52, 0.02, 0.106], [-56, -0.07, 0.104], [-50, -0.13, 0.106]], { w: [0.018, 0.026, 0.026, 0.02, 0.012], flat: 0.45, tip: 0.4, hook: 0.6, kids: [{ side: 1, at: 0.6, w: 0.4, len: 0.8 }] }),
   torus({ c: [0, 0.098, -0.07], a: [0, 0.55, -0.83], R: 0.017, r: 0.008, color: 0xe2c060, k: 0.003 }),
   // the tail: out of the band, arcing over and falling long, in several locks
-  ...tail({ n: 7, path: [[0, 0.098, -0.074], [0, 0.118, -0.11], [0, 0.085, -0.15], [0, -0.03, -0.17], [0, -0.18, -0.165], [0, -0.32, -0.15], [0, -0.44, -0.14]], spread: 0.03, lenJit: 0.08, w: [0.012, 0.02, 0.024, 0.022, 0.018, 0.012], up: [0, 0, 1], wave: { amp: 0.008, f: 1 } }),
+  ...tail({ n: 7, path: [[0, 0.098, -0.074], [0, 0.118, -0.11], [0, 0.085, -0.15], [0, -0.03, -0.17], [0, -0.18, -0.165], [0, -0.32, -0.15], [0, -0.44, -0.14]], spread: 0.03, lenJit: 0.08, w: [0.012, 0.02, 0.024, 0.022, 0.018, 0.012], up: [0, 0, 1], wave: { amp: 0.008, f: 1 }, dyn: { heavy: 1 } }),
 ] }] };
 
 // ==== giulia: big red curly clumps, a beanie pushed back on her head

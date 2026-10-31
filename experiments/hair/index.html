@@ -6,10 +6,15 @@
 </head><body>
 <script type="module">
 import * as THREE from 'three';
-import { STYLES } from './styles.js';
+import { STYLES, NAMES } from './styles.js';
 import { buildHair, headSDF, surfaceNets } from './hair.js';
+import { hairMaterial } from './shade.js';
 
 const qs = new URLSearchParams(location.search);
+// with no hairstyle asked for (or `?live`): the hairstyles on a body, in motion (live.js); otherwise one hairstyle still
+const LIVE = location.search === '' || qs.has('live');
+still: {
+if (LIVE) { await import('./live.js'); break still; }
 const W = +(qs.get('w') || 520), H = +(qs.get('h') || 620);
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H); renderer.setPixelRatio(1); document.body.appendChild(renderer.domElement);
@@ -48,65 +53,7 @@ const hm = surfaceNets(hd.sdf, [-0.2, -0.36, -0.15], [0.2, 0.16, 0.16], 0.0035);
 meshOf(hm, S.skin || 0xe9c2a6, { ink: 0.0009 });
 for (const e of hd.eyes) { const s = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), new THREE.MeshStandardMaterial({ color: 0x2a1c1e, roughness: 0.3 })); s.position.set(...e.c); s.scale.set(...e.r); group.add(s);
   const g = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), new THREE.MeshBasicMaterial({ color: 0xffffff })); g.position.set(e.c[0] + e.r[0] * 0.35, e.c[1] + e.r[1] * 0.4, e.c[2] + e.r[2] * 0.8); g.scale.setScalar(0.0022); group.add(g); }
-// ———— hair shading: strands along each lock, an anisotropic highlight band, darker roots and inner layers ————
-const HAIR_V = `
-attribute vec3 hairT; attribute vec2 hairUV; attribute float seed; attribute float ao; attribute vec3 color;
-varying vec3 vN; varying vec3 vT; varying vec3 vP; varying vec2 vUV; varying float vSeed; varying float vAO; varying vec3 vCol;
-void main() {
-  vec4 wp = modelMatrix * vec4(position, 1.0); vP = wp.xyz;
-  vN = normalize(mat3(modelMatrix) * normal); vT = normalize(mat3(modelMatrix) * hairT);
-  vUV = hairUV; vSeed = seed; vAO = ao; vCol = color;
-  gl_Position = projectionMatrix * viewMatrix * wp;
-}`;
-const HAIR_F = `
-uniform vec3 keyDir; uniform vec3 keyCol; uniform vec3 rimDir; uniform vec3 rimCol; uniform vec3 sky; uniform vec3 ground;
-uniform float inner; uniform float spec1; uniform float spec2; uniform float shift; uniform float strands;
-varying vec3 vN; varying vec3 vT; varying vec3 vP; varying vec2 vUV; varying float vSeed; varying float vAO; varying vec3 vCol;
-float h1(float x) { return fract(sin(x * 127.1) * 43758.5453); }
-float n1(float x) { float i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f); return mix(h1(i), h1(i + 1.0), f); }
-float kk(vec3 T, vec3 H, float e) { float t = dot(T, H); return pow(max(0.0, sqrt(max(0.0, 1.0 - t * t))), e); }
-void main() {
-  vec3 N = normalize(vN); if (!gl_FrontFacing) N = -N;
-  vec3 T = vT - N * dot(vT, N); T = length(T) > 1e-4 ? normalize(T) : vec3(0.0, -1.0, 0.0);
-  vec3 V = normalize(cameraPosition - vP);
-  float a = vUV.x, s = vUV.y;
-  // strands: fine lines across the lock, coarser bundles, both running along it
-  // each scale fades to its mean where it would be finer than a pixel
-  float fw = fwidth(a) + 1e-6;
-  float fine = mix(n1(a * 1400.0 + vSeed * 91.0 + s * 2.0), 0.5, clamp(fw * 1400.0 - 1.0, 0.0, 1.0));
-  float mid = mix(n1(a * 520.0 + vSeed * 37.0 + s * 1.2), 0.5, clamp(fw * 520.0 - 1.0, 0.0, 1.0));
-  float big = mix(n1(a * 160.0 + vSeed * 13.0), 0.5, clamp(fw * 160.0 - 1.0, 0.0, 1.0));
-  float str = mix(0.5, fine * 0.5 + mid * 0.35 + big * 0.15, strands * (inner < 0.99 ? 0.5 : 1.0));
-  vec3 alb = vCol * mix(0.5, 1.0, smoothstep(0.0, 0.4, s)) * (0.88 + 0.24 * str) * (0.9 + 0.2 * h1(vSeed * 71.0 + 3.0)) * mix(inner, 1.0, smoothstep(0.55, 0.95, vAO));
-  float ao = vAO;
-  vec3 irr = mix(ground, sky, 0.5 * N.y + 0.5) * mix(0.45, 1.0, ao);
-  float nl = dot(N, keyDir);
-  irr += keyCol * clamp((nl + 0.25) / 1.25, 0.0, 1.0) * mix(0.55, 1.0, ao);
-  irr += rimCol * clamp(dot(N, rimDir), 0.0, 1.0) * ao;
-  vec3 col = alb * irr / 3.14159;
-  // the highlight band: two lobes along the strands (Kajiya-Kay), the second tinted and broken by the strands
-  vec3 H = normalize(keyDir + V);
-  float sh = (str - 0.5) * 0.5;
-  float b1 = kk(normalize(T + N * (shift + sh)), H, 90.0);
-  float b2 = kk(normalize(T + N * (shift - 0.22 + sh)), H, 22.0) * smoothstep(0.35, 0.75, mid);
-  float lit = smoothstep(-0.05, 0.35, nl) * ao * ao;
-  vec3 tint = mix(vec3(1.0), vCol / max(max(vCol.r, vCol.g), max(vCol.b, 0.02)), 0.45);
-  col += keyCol * (b1 * spec1 * tint * (0.5 + 0.9 * fine) * 0.1 + b2 * spec2 * vCol * 0.5) * lit * inner;
-  vec3 Hr = normalize(rimDir + V);
-  col += rimCol * kk(normalize(T + N * (shift + sh)), Hr, 60.0) * spec1 * 0.05 * tint * clamp(dot(N, rimDir) + 0.3, 0.0, 1.0) * ao * inner;
-  gl_FragColor = vec4(col, 1.0);
-  #include <tonemapping_fragment>
-  #include <colorspace_fragment>
-}`;
-const L3 = (v, s) => new THREE.Vector3(...v).normalize();
-function hairMat(o) {
-  return new THREE.ShaderMaterial({ vertexShader: HAIR_V, fragmentShader: HAIR_F, side: THREE.DoubleSide, uniforms: {
-    keyDir: { value: L3([1.2, 2.2, 2.4]) }, keyCol: { value: new THREE.Color(0xffffff).multiplyScalar(2.1) },
-    rimDir: { value: L3([-1.6, 1.4, -2.0]) }, rimCol: { value: new THREE.Color(0xdfe8ff).multiplyScalar(1.1) },
-    sky: { value: new THREE.Color(0xfff6ea).multiplyScalar(1.25) }, ground: { value: new THREE.Color(0x6d6070).multiplyScalar(1.25) },
-    inner: { value: o.inner ? (S.innerDark ?? 0.8) : 1 }, spec1: { value: S.spec ?? 1 }, spec2: { value: S.spec2 ?? 0.6 },
-    shift: { value: S.shift ?? 0.12 }, strands: { value: qs.get('strands') === '0' ? 0 : 1 } } });
-}
+function hairMat(o) { return hairMaterial(THREE, S, o, qs.get('strands') === '0' ? 0 : 1); }
 function hairMesh(m, o) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(m.pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(m.nor, 3));
@@ -142,14 +89,14 @@ window.view = (v, dist = 1.15, ty = -0.03, pitch = 0.04) => {
 window.view(qs.get('v') || 'front', +(qs.get('d') || S.dist || 1.15), +(qs.get('ty') || S.ty || -0.03));
 // the gallery's viewer: the hairstyle turned by the camera, no motion
 if (qs.has('viewer')) {
-  const RU = { gwen: 'Гвен: каре с пробором', gogo: 'Гоу-Гоу: тёмное каре с прядью', jack: 'Джек: растрёпанные белые', marco: 'Марко: чёлка набок', ginger: 'рыжий мальчик: начёс', ariel: 'рыжая девушка: длинные', doll: 'девочка-кукла: фиолетовые', kbuns: 'K-pop: пучки', kbraid: 'K-pop: коса', kpony: 'K-pop: хвост', giulia: 'Джулия: кудри под шапкой', alva: 'Альва: шторка', nimona: 'Нимона: вихры', anime: 'аниме: чёлка и длинные' };
   renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   window.__vp = { kind: 'adapter', THREE, stage: renderer.domElement, adapter: {
-    chars: Object.keys(STYLES).map(id => ({ id, label: RU[id] || id })), current: name, noMotion: true, camera, renderer,
+    chars: Object.keys(STYLES).map(id => ({ id, label: NAMES[id] || id })), current: name, noMotion: true, camera, renderer,
     render: () => renderer.render(scene, camera), view0: { yaw: 0.6, pitch: 0.04, dist: S.dist || 1.15 }, target: new THREE.Vector3(0, S.ty || -0.03, 0),
     show(c) { const q = new URLSearchParams(location.search); q.set('s', c.id); location.search = q.toString(); },
   } };
   import('../../gallery/player.js');
 }
 window.__ready = true;
+}
 </script></body></html>
