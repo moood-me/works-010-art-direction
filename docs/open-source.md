@@ -37,3 +37,5 @@ Licences as found on 2026-10-31; check before use.
 **Pavel on VRoid Hub:** "они неплохие. немного бесит анимешность, стиль и современность. думаю где-то можно
 переодеть. но в целом — классно. думаю там можно многое найти." Their skeleton is VRM Humanoid; Kimodo's motion
 (SOMA) would need retargeting, not yet tried; each model's use is set by its author.
+Pavel: VRoid models could be used whole if they can be stylised by parts for a game (clothes separate, recoloured,
+stylisation removed); checking that is put off — "хочу больше наше хорошо довести".
