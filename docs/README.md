@@ -6,7 +6,8 @@
 3. [people.md](people.md) — bodies, simplification, style and motion: what we thought, tried and learned.
 4. [directions.md](directions.md) — where the work goes now: the approach, the directions, what we didn't do technically.
 5. [references.md](references.md) — the pictures Pavel sent, and what it takes to make such characters.
-6. [history/](history/) — what was done, why and how, session by session.
+6. [open-source.md](open-source.md) — what already exists: characters, picture-to-3D, auto-rigging, faces.
+7. [history/](history/) — what was done, why and how, session by session.
 
 Pictures are in [pictures/](pictures/): the hope scenes (Claude Design's originals and the engine 3 render of the
 title), references Pavel sent (third-party images, kept here only as references), and sheets from the experiments.
