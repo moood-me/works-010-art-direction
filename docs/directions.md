@@ -99,3 +99,8 @@ silhouette; non-human heroes.
   [pictures](pictures/heads-3d/)): none beautiful, three recognisable by type (Gwen, Go Go, Marco). One template moved
   weakly gives one face to all; hair as cap plus ribbons reads as a helmet; eye and skin joined with a dark hollow
   under the eyes. Sent back with Pavel's notes on the anime heads (per-reference proportions, lines and curves, neck).
+- **A and B combined** ([experiments/combined](../experiments/combined/README.md), [pictures](pictures/combined/)):
+  none beautiful, and uglier than the drawn-face heads — Anny's head laid onto a drawn form leaves lumps: a hollow bowl
+  around each eye, the lower face bulging like a muzzle, an undefined join to the neck; MakeHuman hair as helmets. The
+  eye itself close up became good. Of the head approaches, the drawn face on a head lofted from its own curves
+  (heads-anime) goes furthest.
