@@ -104,3 +104,7 @@ silhouette; non-human heroes.
   around each eye, the lower face bulging like a muzzle, an undefined join to the neck; MakeHuman hair as helmets. The
   eye itself close up became good. Of the head approaches, the drawn face on a head lofted from its own curves
   (heads-anime) goes furthest.
+
+**Decided with Pavel:** the dressed characters (B) are kept as the base "body plus clothes" and as a set of findings;
+their faces and MakeHuman hair are dropped. The head will come from the work on heads (a drawn face on a designed
+head, wrapped with Anny's mesh) and be joined to B's bodies and clothes later.
