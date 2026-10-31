@@ -137,3 +137,12 @@ best parts and converging the head paths into one — "пока рано".
 **Pavel on Anny's own space:** "так хорошие же тела! почему мы их не используем?" — Anny's native settings give real
 bodies; the cage (path 9) can be laid on top a little for artfulness; clearly better than the drawn bodies of path 7.
 Agreed: Anny first, our form on top.
+
+**Head paths fixed for now (Pavel will look at home).** What each head path brought that the others lack:
+- Г2 (face mesh on a drawn form): an overlay check against the picture in its angle, error in pixels; lids and lips
+  cut along Anny's mesh edges so they can move; the face form drawn straight under the mesh.
+- Г1 (anime heads): drawn features on the skin (eyes, brows, lips) and toon light with an outline — what makes the
+  faces cartoon and alive; noses and mouths from their own curves; a dome skull instead of an egg.
+- Г3 (wrap): the profile laid point by point along the drawing's line; folds found and eased; a long nose as its own
+  piece over the mesh.
+- Т5 (deformations): changing the form with the joints moving along.
