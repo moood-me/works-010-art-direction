@@ -146,3 +146,7 @@ Agreed: Anny first, our form on top.
 - Г3 (wrap): the profile laid point by point along the drawing's line; folds found and eased; a long nose as its own
   piece over the mesh.
 - Т5 (deformations): changing the form with the joints moving along.
+
+**Pavel at home, on the gallery:** О3 (cloth) — "более-менее классно. на самом деле классно"; Т5 — "примерно понятно",
+Т5-з (body as one shape) — "нравится, теперь понятно к чему она"; В1 (hair) — "все пластилиновые! улучшай"; Г3 —
+"неплохо". He asked for the 3D view to be large and comfortable, without its own scroll, and for the controls to stay.

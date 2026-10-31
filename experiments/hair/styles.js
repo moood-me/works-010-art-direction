@@ -1,11 +1,15 @@
-import { lock, ell, torus, scalpMass, scalp, CRANIUM } from './hair.js';
+import { lock, clump, ell, torus, scalpMass, scalp, CRANIUM } from './hair.js';
+const hash = x => { const v = Math.sin(x * 12.9898) * 43758.5453; return v - Math.floor(v); };
+// smaller locks breaking off a clump's end: one on alternate sides, a second on some, each its own length
+const autoKids = (i, seed = 0, o = {}) => [{ side: i % 2 ? 1 : -1, at: 0.45 + 0.15 * hash(i + seed), w: (o.kw ?? 0.34) + 0.12 * hash(i * 3.1 + seed), len: 0.9 + 0.3 * hash(i * 7.3 + seed), spread: 0.8 },
+  ...(hash(i * 5.7 + seed) > 0.5 ? [{ side: i % 2 ? -1 : 1, at: 0.6, w: (o.kw ?? 0.34) * 0.75, len: 0.8 + 0.25 * hash(i * 9.1 + seed), spread: 0.6 }] : [])];
 const D = Math.PI / 180;
 const add = (a, b, f = 1) => a.map((v, i) => v + b[i] * f);
 // a point beside the head at azimuth th, height y, distance r from the head's vertical axis
 // a lock by azimuths/heights/radii lists: [az, y, r] beside the head, the first point on the scalp at [az, elev]
 // path points: [az, elev] or [az, elev, lift] on the scalp (elevation in degrees, so always > 1), or [az, y, r] beside it
 const onScalp = q => Math.abs(q[1]) > 1;
-const L = (root, path, o = {}) => lock({ pts: [scalp(root[0] * D, root[1] * D, -0.006), ...path.map(q => onScalp(q) ? scalp(q[0] * D, q[1] * D, q[2] ?? o.lift ?? 0.012) : ring(...q))], ...o });
+const L = (root, path, o = {}) => clump({ pts: [scalp(root[0] * D, root[1] * D, -0.006), ...path.map(q => onScalp(q) ? scalp(q[0] * D, q[1] * D, q[2] ?? o.lift ?? 0.012) : ring(...q))], ...o });
 const ring = (th, y, r) => [CRANIUM.c[0] + Math.sin(th * D) * r, y, CRANIUM.c[2] + Math.cos(th * D) * r];
 
 // a fall of locks around the head: each from the scalp near the crown, over the skull, down to its end
@@ -23,7 +27,7 @@ function fall(o) {
     pts.push(ring(a + sw * 0.5, midY, (o.midR ?? 0.104) + lay));
     if (endY < midY - 0.03) pts.push(ring(a + sw * 0.8, (midY + endY) / 2, (o.lowR ?? o.midR ?? 0.104) + lay + (o.flare || 0) * 0.5));
     pts.push(ring(a + sw + (o.tipTurn || 0), endY, (o.endR ?? 0.1) + lay + (o.flare || 0) + (o.tipOut || 0)));
-    out.push(lock({ pts, w: o.w, flat: o.flat ?? 0.6, tip: o.tip ?? 0.3, sharp: o.sharp, color: o.color, vert: o.vert, twist: o.twist, k: o.k, wave: o.wave && { ...o.wave, ph: (o.wave.ph || 0) + i * (o.wave.step ?? 1.9) } }));
+    out.push(clump({ pts, kids: o.kids === false ? [] : autoKids(i, o.seed || 0, o), w: o.w, flat: o.flat ?? 0.6, tip: o.tip ?? 0.3, sharp: o.sharp, color: o.color, vert: o.vert, twist: o.twist, k: o.k, wave: o.wave && { ...o.wave, ph: (o.wave.ph || 0) + i * (o.wave.step ?? 1.9) } }));
   }
   return out;
 }
@@ -156,7 +160,7 @@ STYLES.giulia = { skin: 0xe9a782, dist: 1.4, parts: [{ color: 0xa8231b, k: 0.006
     return curls([a, 30], [[a, 0.035, 0.112], [a + 4, y * 0.5, 0.116], [a, y, 0.114]], { w: [0.014, 0.02, 0.02, 0.014], flat: 0.95, tip: 0.25, sharp: 0.6, f: 5.5, turn: 1, amp: 0.22, k: 0.004 }); }),
   curls([-6, 58], [[-14, 40, 0.03], [-26, 0.07, 0.11], [-40, 0.055, 0.12]], { w: [0.02, 0.028, 0.03, 0.02], flat: 0.95, tip: 0.3, f: 5, turn: 1, amp: 0.22 }),
   curls([-20, 50], [[-30, 30, 0.03], [-44, 0.04, 0.118], [-52, 0.0, 0.12]], { w: [0.018, 0.026, 0.026, 0.018], flat: 0.95, tip: 0.3, f: 5, turn: 1, amp: 0.22 }),
-] }, { color: 0x1d8ec4, k: 0.012, rough: 0.85, items: [
+] }, { color: 0x1d8ec4, k: 0.012, rough: 0.85, fabric: true, items: [
   ell({ c: [0.022, 0.056, -0.016], r: [0.102, 0.088, 0.104], u: [0.95, -0.31, 0], v: [0.31, 0.95, 0] }),
   torus({ c: [0.02, 0.04, -0.012], a: [-0.3, 0.95, 0.1], R: 0.1, r: 0.014, flat: 0.8 }),
 ], cuts: [{ sdf: (x, y, z) => (y - 0.04) + 0.3 * x - 0.1 * z, k: 0.004 }] }] };

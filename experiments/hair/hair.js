@@ -47,35 +47,51 @@ function catmull(pts, n) {
   return out;
 }
 const lerpArr = (a, s) => { if (typeof a === 'number') return a; const u = s * (a.length - 1), i = Math.min(Math.floor(u), a.length - 2), t = u - i; return a[i] + (a[i + 1] - a[i]) * t; };
-export function lock(o) {
-  const n = o.n || 24, c = catmull(o.pts, n), S = [];
+export function frames(o, n) {
+  const c = catmull(o.pts, n), S = [];
   if (o.wave) for (let i = 0; i <= n; i++) {   // a wave across the lock's fall: sideways, growing towards the tip
     const s = i / n, p = c[i], q = c[Math.min(i + 1, n)], r = c[Math.max(i - 1, 0)], T = [q[0] - r[0], q[1] - r[1], q[2] - r[2]];
-    const side = [T[2], 0, -T[0]], sl = Math.hypot(...side) || 1, amp = o.wave.amp * Math.min(1, s * 2) * Math.sin(s * o.wave.f * 6.283 + (o.wave.ph || 0));
+    const side = [p[2] - CRANIUM.c[2], 0, -(p[0] - CRANIUM.c[0])], sl = Math.hypot(...side) || 1, amp = o.wave.amp * Math.min(1, s * 2) * Math.sin(s * o.wave.f * 6.283 + (o.wave.ph || 0));
     c[i] = [p[0] + side[0] / sl * amp, p[1], p[2] + side[2] / sl * amp];
   }
   for (let i = 0; i <= n; i++) {
     const s = i / n, p = c[i], q = c[Math.min(i + 1, n)], r = c[Math.max(i - 1, 0)];
     let T = [q[0] - r[0], q[1] - r[1], q[2] - r[2]]; const tl = len(...T) || 1; T = T.map(v => v / tl);
     // the flat side lies against the head: thickness points away from the head's axis, unless a direction is given
-    let B = o.up ? o.up.slice() : [p[0] - CRANIUM.c[0], (p[1] - CRANIUM.c[1]) * (o.vert ?? 1), p[2] - CRANIUM.c[2]];
-    const bt = B[0] * T[0] + B[1] * T[1] + B[2] * T[2]; B = [B[0] - bt * T[0], B[1] - bt * T[1], B[2] - bt * T[2]];
+    // below the skull the outward side is horizontal; where it runs along the lock, the frame is carried on from above
+    const dy = p[1] - CRANIUM.c[1];
+    let B = o.up ? o.up.slice() : [p[0] - CRANIUM.c[0], dy * (o.vert ?? 1) * (dy < 0 ? 0.3 : 1), p[2] - CRANIUM.c[2]];
+    const B0l = len(...B) || 1, bt = B[0] * T[0] + B[1] * T[1] + B[2] * T[2]; B = [B[0] - bt * T[0], B[1] - bt * T[1], B[2] - bt * T[2]];
     const bl = len(...B) || 1; B = B.map(v => v / bl);
-    if (S.length && B[0] * S[S.length - 1].B[0] + B[1] * S[S.length - 1].B[1] + B[2] * S[S.length - 1].B[2] < 0) B = B.map(v => -v);
+    if (S.length) {
+      let P = S[S.length - 1].B; const pt = P[0] * T[0] + P[1] * T[1] + P[2] * T[2]; P = [P[0] - pt * T[0], P[1] - pt * T[1], P[2] - pt * T[2]];
+      const pl = len(...P) || 1; P = P.map(v => v / pl);
+      if (B[0] * P[0] + B[1] * P[1] + B[2] * P[2] < 0) B = B.map(v => -v);
+      const q = Math.min(1, (bl / B0l) ** 2) * (o.up ? 1 : 0.6);
+      B = B.map((v, j) => v * q + P[j] * (1 - q)); const l2 = len(...B) || 1; B = B.map(v => v / l2);
+    }
     if (o.twist) { const a = lerpArr(o.twist, s), N0 = [T[1] * B[2] - T[2] * B[1], T[2] * B[0] - T[0] * B[2], T[0] * B[1] - T[1] * B[0]]; B = B.map((v, j) => v * Math.cos(a) + N0[j] * Math.sin(a)); }
     const N = [T[1] * B[2] - T[2] * B[1], T[2] * B[0] - T[0] * B[2], T[0] * B[1] - T[1] * B[0]];
-    let w = lerpArr(o.w, s); const tip = o.tip ?? 0.35;
-    if (s > 1 - tip && o.point !== false) w *= Math.pow((1 - s) / tip, o.sharp ?? 0.7);
-    if (s < (o.root ?? 0) ) w *= 0.6 + 0.4 * s / o.root;
-    const th = Math.max(0.0012, o.t !== undefined ? lerpArr(o.t, s) * (w / Math.max(lerpArr(o.w, s), 1e-6)) : w * (o.flat ?? 0.42));
-    S.push({ p, T, B, N, w: Math.max(0.0012, w), t: th, lens: o.lens ?? 0.6 });
+    let w = lerpArr(o.w, s); const tip = Math.max(o.tip ?? 0.4, 0.3);
+    // the tip thins to a point: the strands of a clump gather and end at different lengths
+    if (s > 1 - tip && o.point !== false) w *= Math.pow((1 - s) / tip, Math.max(o.sharp ?? 1.1, 1.05));
+    if (s < (o.root ?? 0)) w *= 0.6 + 0.4 * s / o.root;
+    const th = o.t !== undefined ? lerpArr(o.t, s) * (w / Math.max(lerpArr(o.w, s), 1e-6)) : w * (o.flat ?? 0.42);
+    S.push({ s, p, T, B, N, w, t: th, lens: o.lens ?? 0.6 });
   }
+  return S;
+}
+let lockId = 0;
+export function lock(o) {
+  const S = frames(o, o.n || 24).map(e => ({ ...e, w: Math.max(0.0012, e.w), t: Math.max(0.0012, e.t) }));
+  const wmax = Math.max(...S.map(e => e.w));
   const bb = [[1e9, 1e9, 1e9], [-1e9, -1e9, -1e9]];
   for (const e of S) for (let j = 0; j < 3; j++) { bb[0][j] = Math.min(bb[0][j], e.p[j] - e.w); bb[1][j] = Math.max(bb[1][j], e.p[j] + e.w); }
   const curly = o.curly;
-  const sdf = (x, y, z) => {
+  // the distance, and (into `out`) where on the lock the nearest point is: along it, across it, its direction
+  const sdf = (x, y, z, out) => {
     const ox = Math.max(bb[0][0] - x, 0, x - bb[1][0]), oy = Math.max(bb[0][1] - y, 0, y - bb[1][1]), oz = Math.max(bb[0][2] - z, 0, z - bb[1][2]);
-    if (ox + oy + oz > 0.03) return ox + oy + oz;
+    if (!out && ox + oy + oz > 0.03) return ox + oy + oz;
     let best = 1e9;
     for (let i = 0; i < S.length - 1; i++) {
       const a = S[i], b = S[i + 1];
@@ -83,7 +99,7 @@ export function lock(o) {
       const L2 = bx * bx + by * by + bz * bz || 1e-9;
       const u = Math.max(0, Math.min(1, (qx * bx + qy * by + qz * bz) / L2));
       const rx = qx - bx * u, ry = qy - by * u, rz = qz - bz * u;
-      if (rx * rx + ry * ry + rz * rz > (Math.max(a.w, b.w) + Math.min(best, 0.02) + 0.004) ** 2) continue;
+      if (!out && rx * rx + ry * ry + rz * rz > (Math.max(a.w, b.w) + Math.min(best, 0.02) + 0.004) ** 2) continue;
       const w = a.w + (b.w - a.w) * u, t = a.t + (b.t - a.t) * u;
       const m = Math.min(w, t), iu = 1 - u;
       const B0 = a.B[0] * iu + b.B[0] * u, B1 = a.B[1] * iu + b.B[1] * u, B2 = a.B[2] * iu + b.B[2] * u;
@@ -96,11 +112,67 @@ export function lock(o) {
       if (a.lens) { const e = Math.abs(v1); v2 = v2 / Math.max(0.05, 1 - a.lens * e * e); }
       let d = (Math.hypot(v1, v2, v3) - 1) * m;
       if (curly) { const sAlong = (i + u) / (S.length - 1), ang = Math.atan2(v2, v1); d -= curly.amp * m * Math.sin(curly.f * sAlong * 6.283 + curly.turn * ang); }
-      if (d < best) best = d;
+      if (d < best) { best = d; if (out) { out.s = (i + u) / (S.length - 1); out.a = (rx * N0 + ry * N1 + rz * N2) / nl / w * wmax; out.T = [T0 / tl, T1 / tl, T2 / tl]; } }
     }
     return best;
   };
-  return { sdf, bb, color: o.color, k: o.k };
+  return { sdf, bb, color: o.color, k: o.k, o, id: lockId++, isLock: true };
+}
+
+// ———— a big clump with smaller ones breaking off it ————
+// Each kid is a thinner lock with its own guide: it starts inside the parent, leaves it at one edge and ends at its own
+// length, so the clump's end splits into a main point and a few smaller ones.
+export function clump(o) {
+  const main = lock(o);
+  if (!o.kids || !o.kids.length) return main;
+  const F = frames({ ...o, kids: undefined }, 40), at = s => F[Math.min(40, Math.round(s * 40))];
+  return [main, ...o.kids.map(k => {
+    const s0 = k.at ?? 0.55, e0 = at(s0), w0 = e0.w, pts = [];
+    for (const f of [0, 0.34, 0.67, 1]) {
+      const s = s0 + (1 - s0) * f, e = at(s), sp = (0.25 + (k.spread ?? 0.9) * f) * w0 * k.side, ou = (k.out ?? 0.002) * f;
+      let p = e.p.map((v, j) => v + e.N[j] * sp + e.B[j] * ou);
+      if (f === 1) { const L = (1 - s0) * 0.5 * ((k.len ?? 1) - 1) * len(...F[40].p.map((v, j) => v - F[0].p[j])); p = p.map((v, j) => v + e.T[j] * L + e.N[j] * (k.turn ?? 0) * k.side); }
+      pts.push(p);
+    }
+    const wk = w0 * (k.w ?? 0.35);
+    return lock({ pts, w: [wk * 0.7, wk, wk * 0.85, wk * 0.6], flat: o.flat ?? 0.42, tip: k.tip ?? 0.55, sharp: 1.15, color: o.color, lens: o.lens, vert: o.vert, up: o.up, n: 16 });
+  })];
+}
+
+// ———— a lock as its own surface: a lens section swept along the guide, thinning to a true point at the tip ————
+// Besides the shape it carries what the hair shading needs: the strand direction, where across the lock (strands
+// gather towards the tip) and along it (darker at the root) each point lies.
+export function lockMesh(L, M = 14) {
+  const o = L.o, S = frames(o, Math.max(48, (o.n || 24) * 2)), n = S.length;
+  const wmax = Math.max(...S.map(e => e.w)), curly = o.curly, lens = o.lens ?? 0.6;
+  const pos = [], tan = [], uv = [], wd = [], idx = [];
+  for (let i = 0; i < n; i++) {
+    const e = S[i], w = Math.max(e.w, 0.00015), t = Math.max(e.t, 0.0001);
+    for (let j = 0; j < M; j++) {
+      const ph = j / M * 2 * Math.PI, cx = Math.cos(ph), sy = Math.sin(ph);
+      // the section: a lens whose side edges are thin; the inner face (towards the head) flatter than the outer one
+      let y = Math.sign(sy) * Math.pow(Math.abs(sy), 0.7 + lens * 0.9) * t * (sy < 0 ? 0.55 : 1);
+      let x = cx * w;
+      if (curly) { const f = 1 + curly.amp * Math.min(w, t) / Math.max(Math.hypot(x, y), 1e-5) * Math.sin(curly.f * e.s * 6.283 + curly.turn * ph); x *= f; y *= f; }
+      pos.push(e.p[0] + e.N[0] * x + e.B[0] * y, e.p[1] + e.N[1] * x + e.B[1] * y, e.p[2] + e.N[2] * x + e.B[2] * y);
+      tan.push(...e.T); uv.push(cx * wmax, e.s); wd.push(Math.min(w, t * 1.5));
+    }
+  }
+  for (let i = 0; i < n - 1; i++) for (let j = 0; j < M; j++) {
+    const a = i * M + j, b = i * M + (j + 1) % M, c = a + M, d = b + M;
+    idx.push(a, c, b, b, c, d);
+  }
+  // close the root (it sits under the scalp mass anyway)
+  const r0 = pos.length / 3; pos.push(...S[0].p); tan.push(...S[0].T); uv.push(0, 0); wd.push(S[0].w);
+  for (let j = 0; j < M; j++) idx.push(r0, j, (j + 1) % M);
+  const P = new Float32Array(pos), nor = vertexNormals(P, idx);
+  // shade the lock as a sheet, not a tube: the outer face's normals lean out along the lock's outward side
+  for (let i = 0; i < n; i++) for (let j = 0; j < M; j++) {
+    const v = (i * M + j) * 3, B = S[i].B, sg = Math.sign(Math.sin(j / M * 2 * Math.PI)) * (o.sheet ?? 0.9);
+    const x = nor[v] + B[0] * sg, y = nor[v + 1] + B[1] * sg, z = nor[v + 2] + B[2] * sg, l = Math.hypot(x, y, z) || 1;
+    nor[v] = x / l; nor[v + 1] = y / l; nor[v + 2] = z / l;
+  }
+  return { pos: P, nor, tan: new Float32Array(tan), uv: new Float32Array(uv), wd: new Float32Array(wd), idx };
 }
 export function ell(o) {   // an ellipsoid, optionally turned: axes u, v (w follows)
   const c = o.c, r = o.r, u = o.u || [1, 0, 0], v0 = o.v || [0, 1, 0];
@@ -137,11 +209,12 @@ export function scalpMass(cap) {
 }
 
 // ———— a whole hairstyle: parts, each one surface ————
-export function buildHair(S) {
-  const out = [];
-  for (const part of S.parts) {
-    const items = part.items.flat();
-    const k = part.k ?? 0.012;
+// Each part is drawn twice: its merged volume, a little shrunk, is the inner layer (darker, it fills the gaps and is
+// what light falls into between clumps); over it every lock is its own swept surface with a true pointed tip.
+// Every point carries the strand direction, across/along coordinates, a per-lock seed and an occlusion term.
+export function buildHair(S, head) {
+  const parts = S.parts.map(part => {
+    const items = part.items.flat(), k = part.k ?? 0.012;
     const bmin = [1e9, 1e9, 1e9], bmax = [-1e9, -1e9, -1e9];
     for (const it of items) for (let j = 0; j < 3; j++) { bmin[j] = Math.min(bmin[j], it.bb[0][j]); bmax[j] = Math.max(bmax[j], it.bb[1][j]); }
     for (let j = 0; j < 3; j++) { bmin[j] -= 0.012; bmax[j] += 0.012; }
@@ -156,20 +229,76 @@ export function buildHair(S) {
       for (const cu of cuts) d = smax(d, -cu.sdf(x, y, z), cu.k ?? 0.004);
       return d;
     };
-    const m = surfaceNets(sdf, bmin, bmax, part.h || 0.0028);
-    // colour each point by its nearest item, so a streak or a band keeps its own colour
-    if (items.some(it => it.color !== undefined && it.color !== part.color)) {
-      const col = new Float32Array(m.pos.length), base = hex(part.color);
-      for (let v = 0; v < m.pos.length; v += 3) {
-        let best = 1e9, c = base;
-        for (const it of items) { const d = it.sdf(m.pos[v], m.pos[v + 1], m.pos[v + 2]); if (d < best) { best = d; c = it.color !== undefined ? hex(it.color) : base; } }
-        col[v] = c[0]; col[v + 1] = c[1]; col[v + 2] = c[2];
+    return { part, items, sdf, bmin, bmax, locks: items.filter(it => it.isLock && part.strands !== false) };
+  });
+  // everything that can shade a point: the hair's volumes and the head
+  const all = (x, y, z) => { let d = head ? head(x, y, z) : 1e9; for (const P of parts) d = Math.min(d, P.sdf(x, y, z)); return d; };
+  const occl = (m) => {
+    const ao = new Float32Array(m.pos.length / 3), H = [0.003, 0.008, 0.016, 0.03];
+    for (let v = 0; v < ao.length; v++) {
+      const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2], nx = m.nor[v * 3], ny = m.nor[v * 3 + 1], nz = m.nor[v * 3 + 2];
+      let o = 0; for (const h of H) o += Math.max(0, h - Math.max(0, all(x + nx * h, y + ny * h, z + nz * h))) / h;
+      ao[v] = Math.max(0, 1 - o / H.length * 1.25);
+    }
+    return ao;
+  };
+  const out = [];
+  for (const P of parts) {
+    const { part, items, locks } = P, base = hex(part.color), inset = part.inset ?? (locks.length ? 0.0025 : 0);
+    const m = surfaceNets((x, y, z) => P.sdf(x, y, z) + inset, P.bmin, P.bmax, part.h || 0.0028);
+    const nv = m.pos.length / 3;
+    m.tan = new Float32Array(nv * 3); m.uv = new Float32Array(nv * 2); m.seed = new Float32Array(nv); m.col = new Float32Array(nv * 3);
+    const crown = S.crown || [0, 0.13, -0.03], info = {};
+    for (let v = 0; v < nv; v++) {
+      const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2], nx = m.nor[v * 3], ny = m.nor[v * 3 + 1], nz = m.nor[v * 3 + 2];
+      // strand direction: from the locks around, weighted by nearness; far from any lock, down from the crown
+      let T = [x - crown[0], y - crown[1], z - crown[2]], tw = 0.02, best = 1e9, near = null;
+      const tl0 = len(...T) || 1; T = T.map(q => q / tl0 * tw);
+      for (const L of locks) {
+        const ox = Math.max(L.bb[0][0] - x, 0, x - L.bb[1][0]), oy = Math.max(L.bb[0][1] - y, 0, y - L.bb[1][1]), oz = Math.max(L.bb[0][2] - z, 0, z - L.bb[1][2]);
+        if (ox + oy + oz > 0.03) continue;
+        const d = L.sdf(x, y, z, info), wgt = 1 / (Math.max(d, 0) + 0.003) ** 2 * 1e-4;
+        T[0] += info.T[0] * wgt; T[1] += info.T[1] * wgt; T[2] += info.T[2] * wgt;
+        if (d < best) { best = d; near = { L, a: info.a, s: info.s }; }
       }
-      m.col = col;
-      out.push({ mesh: m, color: 0xffffff, rough: part.rough, ink: part.ink });
-    } else out.push({ mesh: m, color: part.color, rough: part.rough, ink: part.ink });
+      const tn = T[0] * nx + T[1] * ny + T[2] * nz; T = [T[0] - tn * nx, T[1] - tn * ny, T[2] - tn * nz];
+      const tl = len(...T) || 1; m.tan.set(T.map(q => q / tl), v * 3);
+      // nearest item's colour (a streak or a band keeps its own)
+      let c = base;
+      if (items.some(it => it.color !== undefined)) { let bd = 1e9; for (const it of items) { const d = it.sdf(x, y, z); if (d < bd) { bd = d; c = it.color !== undefined ? hex(it.color) : base; } } }
+      m.col.set(c, v * 3);
+      // the inner layer's strands run out from the crown: across them is the angle around it
+      m.uv[v * 2] = Math.atan2(x - crown[0], z - crown[2]) * 0.06; m.uv[v * 2 + 1] = near ? Math.min(near.s, 0.6) : 0.3; m.seed[v] = 0.5;
+    }
+    m.ao = occl(m);
+    out.push({ mesh: m, inner: !!locks.length, rough: part.rough, ink: part.ink, plain: !!part.fabric });
+    if (!locks.length) continue;
+    // the locks: one geometry for the part
+    const ms = locks.map(L => { const q = lockMesh(L); q.L = L; return q; });
+    const nT = ms.reduce((a, q) => a + q.pos.length / 3, 0), G = { pos: new Float32Array(nT * 3), nor: new Float32Array(nT * 3), tan: new Float32Array(nT * 3), uv: new Float32Array(nT * 2), wd: new Float32Array(nT), seed: new Float32Array(nT), col: new Float32Array(nT * 3), idx: [] };
+    let off = 0;
+    for (const q of ms) {
+      const c = q.L.color !== undefined ? hex(q.L.color) : base, n = q.pos.length / 3;
+      G.pos.set(q.pos, off * 3); G.nor.set(q.nor, off * 3); G.tan.set(q.tan, off * 3); G.uv.set(q.uv, off * 2); G.wd.set(q.wd, off);
+      for (let v = 0; v < n; v++) { G.seed[off + v] = (q.L.id * 0.618) % 1; G.col.set(c, (off + v) * 3); }
+      for (const i of q.idx) G.idx.push(i + off);
+      off += n;
+    }
+    G.ao = occl(G);
+    out.push({ mesh: G, lockLayer: true, rough: part.rough, ink: part.ink });
   }
   return out;
+}
+function vertexNormals(P, idx) {
+  const N = new Float32Array(P.length);
+  for (let t = 0; t < idx.length; t += 3) {
+    const a = idx[t] * 3, b = idx[t + 1] * 3, c = idx[t + 2] * 3;
+    const ux = P[b] - P[a], uy = P[b + 1] - P[a + 1], uz = P[b + 2] - P[a + 2], wx = P[c] - P[a], wy = P[c + 1] - P[a + 1], wz = P[c + 2] - P[a + 2];
+    const cx = uy * wz - uz * wy, cy = uz * wx - ux * wz, cz = ux * wy - uy * wx;
+    for (const v of [a, b, c]) { N[v] += cx; N[v + 1] += cy; N[v + 2] += cz; }
+  }
+  for (let v = 0; v < N.length; v += 3) { const l = Math.hypot(N[v], N[v + 1], N[v + 2]) || 1; N[v] /= l; N[v + 1] /= l; N[v + 2] /= l; }
+  return N;
 }
 const hex = c => [((c >> 16) & 255) / 255, ((c >> 8) & 255) / 255, (c & 255) / 255].map(v => Math.pow(v, 2.2));
 
