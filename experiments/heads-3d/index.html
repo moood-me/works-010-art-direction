@@ -20,28 +20,210 @@ function ell(c, r) { return (x, y, z) => { const px = (x - c[0]) / r[0], py = (y
 function cap(a, b, r) { return (x, y, z) => { const bx = b[0] - a[0], by = b[1] - a[1], bz = b[2] - a[2], px = x - a[0], py = y - a[1], pz = z - a[2]; const h = clamp((px * bx + py * by + pz * bz) / (bx * bx + by * by + bz * bz), 0, 1); return Math.hypot(px - bx * h, py - by * h, pz - bz * h) - r; }; }
 
 // ———— the head as one smooth form ————
+// a curve through points [y, v], smooth (Catmull-Rom), held flat beyond its ends
+function curveY(pts) {
+  const P = pts.slice().sort((a, b) => a[0] - b[0]);
+  return y => {
+    if (y <= P[0][0]) return P[0][1]; if (y >= P[P.length - 1][0]) return P[P.length - 1][1];
+    let i = 0; while (P[i + 1][0] < y) i++;
+    const p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(P.length - 1, i + 2)];
+    const t = (y - p1[0]) / (p2[0] - p1[0]), t2 = t * t, t3 = t2 * t;
+    const m1 = (p2[1] - p0[1]) / (p2[0] - p0[0] || 1) * (p2[0] - p1[0]), m2 = (p3[1] - p1[1]) / (p3[0] - p1[0] || 1) * (p2[0] - p1[0]);
+    return (2 * t3 - 3 * t2 + 1) * p1[1] + (t3 - 2 * t2 + t) * m1 + (-2 * t3 + 3 * t2) * p2[1] + (t3 - t2) * m2;
+  };
+}
+// a cone with round ends: a nose's bridge, a lip
+function cone(a, b, r1, r2) { return (x, y, z) => { const bx = b[0] - a[0], by = b[1] - a[1], bz = b[2] - a[2], px = x - a[0], py = y - a[1], pz = z - a[2]; const h = clamp((px * bx + py * by + pz * bz) / (bx * bx + by * by + bz * bz), 0, 1); return Math.hypot(px - bx * h, py - by * h, pz - bz * h) - lerp(r1, r2, h); }; }
+// the head lofted from two lines read off the picture: the outline seen from the front (half-width at each height)
+// and the profile (the front of the face at each height), with the back of the skull behind; then the nose, lips,
+// cheekbones and ears as their own forms on it
+function loft(H) {
+  const W = curveY(H.front), WB = curveY(H.frontB || H.front), ZF = curveY(H.prof), ZB = curveY(H.back), y0 = Math.min(...H.front.map(p => p[0])), y1 = Math.max(...H.front.map(p => p[0]));
+  const n = H.flat;
+  const f = (x, y, z) => {
+    const yy = clamp(y, y0, y1), w = Math.max(0.02, W(yy)), zf = ZF(yy), zb = ZB(yy), c = (zf + zb) / 2;
+    let d;
+    if (z >= c) { const df = Math.max(0.02, zf - c); const r = Math.pow(Math.pow(Math.abs(x) / w, n) + Math.pow((z - c) / df, n), 1 / n); d = (r - 1) * Math.min(w, df) * 0.9; }
+    else { const db = Math.max(0.02, c - zb), wb = lerp(w, Math.max(0.02, WB(yy)), sst(clamp((c - z) / db, 0, 1))); d = (Math.hypot(x / wb, (c - z) / db) - 1) * Math.min(wb, db) * 0.9; }
+    if (y > y1) d = Math.max(d, y - y1); if (y < y0) d = Math.max(d, y0 - y);
+    return d;
+  };
+  f.ZF = ZF; f.W = W; return f;
+}
+// the block-in, as a sculptor roughs a head out: the skull's egg; the face a mass whose sides are cut by planes —
+// the cheek falling to the jaw's angle, the jaw running to the chin, under the chin back to the throat — and whose
+// front is cut by the plane of the face below the brow; each edge softened by its own amount (a sharp face little,
+// a soft child's face a lot); the neck a column under it
+function block(H) {
+  const c = H.cs, S = H.S || {};
+  const crY = 0.12, skull = ell([0, crY, (c.fore + c.back) / 2], [c.skull, c.crown - crY, (c.fore - c.back) / 2]);
+  const top = 0.3, bot = c.chinY - 0.02, fz0 = -0.35;
+  const box = ell([0, (top + bot) / 2, (c.plane + fz0) / 2], [c.cheek * 1.04, (top - bot) / 2 + 0.06, (c.plane - fz0) / 2]);
+  // a side plane through two points of the front outline, outward; it shaves only below its upper point, fading in
+  // smoothly (a hard limit would leave a groove along it)
+  const side = (ax, ay, bx, by) => { let nx = -(by - ay), ny = bx - ax; const l = Math.hypot(nx, ny); nx /= l; ny /= l; if (nx < 0) { nx = -nx; ny = -ny; }
+    return (x, y, z) => (Math.abs(x) - ax) * nx + (y - ay) * ny - 0.6 * (1 - sst(clamp((ay + 0.1 - y) / 0.3, 0, 1))); };
+  // a front plane through two points of the profile, facing forward; it shaves only in front
+  const front = (ay, az, by, bz, below) => { let ny = bz - az, nz = -(by - ay); const l = Math.hypot(ny, nz); ny /= l; nz /= l; if (nz < 0) { ny = -ny; nz = -nz; }
+    return (x, y, z) => (y - ay) * ny + (z - az) * nz - 0.6 * (1 - sst(clamp((below + 0.6 - y) / 0.6, 0, 1))) - 0.6 * (1 - sst(clamp((z - 0.1) / 0.3, 0, 1))); };
+  const cheek = side(c.cheek, c.cheekY, c.jaw, c.jawY), jaw = side(c.jaw, c.jawY, c.chin, c.chinY);
+  const face = front(-0.12, c.eyeZ, c.chinY + 0.12, c.chinZ, -0.05);
+  const under = (() => { const ay = c.chinY, az = c.chinZ - 0.08, by = c.chinY + 0.3, bz = 0.25; let ny = -(bz - az), nz = by - ay; const l = Math.hypot(ny, nz); ny /= l; nz /= l; if (ny > 0) { ny = -ny; nz = -nz; }
+    return (x, y, z) => (y - ay) * ny + (z - az) * nz - 0.6 * (1 - sst(clamp((z - bz + 0.1) / 0.25, 0, 1))); })();
+  const neck = cap([0, c.chinY + 0.4, -0.22], [0, c.chinY - 0.9, -0.16], c.neck);
+  const kC = S.cbK ?? 0.12, kJ = S.jawK ?? 0.12, kF = S.faceK ?? 0.1, kU = S.chinK ?? 0.1;
+  const f = (x, y, z) => {
+    let d = box(x, y, z);
+    d = smax(d, cheek(x, y, z), kC); d = smax(d, jaw(x, y, z), kJ); d = smax(d, face(x, y, z), kF); d = smax(d, under(x, y, z), kU);
+    d = smin(skull(x, y, z), d, S.skullK ?? 0.28);
+    return smin(d, neck(x, y, z), 0.14);
+  };
+  f.ZF = curveY(H.prof); return f;
+}
+// sculpting as a sculptor does: the head's loft is cut by planes (forehead, the sides, the plane of the cheek under
+// the cheekbone, the jaw), each edge softened as much as it needs; then forms are added and carved — wedges, flattened
+// and stretched volumes, ridges, hollows — each join with its own softness
+function rotInv(p, r) { // a point into a shape's own frame; r is [rx, ry, rz] or a sequence [['y', a], ['x', b]] applied in order
+  let [x, y, z] = p;
+  if (Array.isArray(r[0])) { for (let i = r.length - 1; i >= 0; i--) { const [ax, a] = r[i], c = Math.cos(-a), s = Math.sin(-a); if (ax === 'x') [y, z] = [c * y - s * z, s * y + c * z]; else if (ax === 'y') [x, z] = [c * x + s * z, -s * x + c * z]; else [x, y] = [c * x - s * y, s * x + c * y]; } return [x, y, z]; }
+  if (r[2]) { const c = Math.cos(-r[2]), s = Math.sin(-r[2]); [x, y] = [c * x - s * y, s * x + c * y]; }
+  if (r[1]) { const c = Math.cos(-r[1]), s = Math.sin(-r[1]); [x, z] = [c * x + s * z, -s * x + c * z]; }
+  if (r[0]) { const c = Math.cos(-r[0]), s = Math.sin(-r[0]); [y, z] = [c * y - s * z, s * y + c * z]; }
+  return [x, y, z];
+}
+function shapeFn(sh) {
+  const [kind, c] = sh, rot = sh[3] || [0, 0, 0];
+  if (kind === 'ell') { const r = sh[2]; return (x, y, z) => { const [px, py, pz] = rotInv([x - c[0], y - c[1], z - c[2]], rot); const k0 = Math.hypot(px / r[0], py / r[1], pz / r[2]), k1 = Math.hypot(px / r[0] ** 2, py / r[1] ** 2, pz / r[2] ** 2); return k1 > 1e-9 ? k0 * (k0 - 1) / k1 : -Math.min(...r); }; }
+  if (kind === 'box') { const h = sh[2], rr = sh[4] || 0; return (x, y, z) => { const [px, py, pz] = rotInv([x - c[0], y - c[1], z - c[2]], rot); const qx = Math.abs(px) - h[0] + rr, qy = Math.abs(py) - h[1] + rr, qz = Math.abs(pz) - h[2] + rr; return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - rr; }; }
+  if (kind === 'cone') return cone(sh[1], sh[2], sh[3], sh[4]);
+  // a nose's wedge: its ridge the line from the root to the tip, its section a triangle opening back into the face,
+  // narrow at the root and wider at the base
+  if (kind === 'nose') { const a = sh[1], b = sh[2], [wT, wB, dT, dB] = sh.slice(3); const ax = new V3(b[0] - a[0], b[1] - a[1], b[2] - a[2]), L = ax.length(); ax.normalize(); const fw = new V3(0, 0, 1).addScaledVector(ax, -ax.z).normalize(), sd = new V3().crossVectors(ax, fw);
+    return (x, y, z) => { const px = x - a[0], py = y - a[1], pz = z - a[2]; const h = px * ax.x + py * ax.y + pz * ax.z, t = clamp(h / L, 0, 1), u = px * sd.x + py * sd.y + pz * sd.z, v = px * fw.x + py * fw.y + pz * fw.z;
+      const tn = lerp(wT, wB, t) / lerp(dT, dB, t); const sec = Math.max((Math.abs(u) + v * tn) / Math.hypot(1, tn), -v - 0.3); return Math.max(sec, -h, h - L); }; }
+  if (kind === 'plane') { const n = new V3(...sh[2]).normalize(); return (x, y, z) => (x - c[0]) * n.x + (y - c[1]) * n.y + (z - c[2]) * n.z; }
+  throw new Error('shape ' + kind);
+}
+const mirror = sh => { const m = JSON.parse(JSON.stringify(sh)); const f = v => v[0] === '@' ? ['@', -v[1], v[2], v[3]] : [-v[0], v[1], v[2]]; m[1] = f(m[1]); if (m[0] === 'cone') m[2] = f(m[2]); if (m[0] === 'plane' && m[2] !== 'n') m[2] = f(m[2]); if (m[3] && m[0] !== 'cone') m[3] = m[3][0] === 'n' ? ['n', -(m[3][1] || 0)] : Array.isArray(m[3][0]) ? m[3].map(([ax, a]) => [ax, ax === 'x' ? a : -a]) : [m[3][0], -m[3][1], -m[3][2]]; return m; };
 function headSDF(H, withSockets) {
-  const F = [];
-  const cr = ell([0, H.craniumY, -0.05], H.cranium);
-  const face = ell([0, H.faceY, H.faceZ], H.face);
-  const chin = ell([0, H.chinY, H.chinZ], H.chin);
-  const chL = ell([H.cheekX, H.cheekY, H.cheekZ], [H.cheekR, H.cheekR * 0.9, H.cheekR]), chR = ell([-H.cheekX, H.cheekY, H.cheekZ], [H.cheekR, H.cheekR * 0.9, H.cheekR]);
-  const noseTip = [0, H.noseY, H.noseZ], noseB = [0, H.noseY + H.noseLen, H.noseZ - H.noseLen * 0.55];
-  const nose = ell(noseTip, [H.noseW, H.noseS * 0.8, H.noseS]), bridge = cap(noseB, [0, H.noseY + 0.03, H.noseZ - H.noseS * 0.4], H.noseS * 0.42);
-  const earL = ell([0.93 * H.cranium[0], H.earY, -0.08], [0.1, H.earS, H.earS * 0.6]), earR = ell([-0.93 * H.cranium[0], H.earY, -0.08], [0.1, H.earS, H.earS * 0.6]);
-  const neck = cap([0, -0.5, -0.18], H.neckEnd, H.neckR);
+  const base = H.cs ? block(H) : loft(H);
+  // ops: ['cut', shape, k] keeps what is behind a plane (or inside a shape); ['add', shape, k]; ['carve', shape, k]; 'sym' mirrors to the other side
+  // a place given as ['@', x, y, d]: the surface sculpted so far, seen from the front at (x, y), then d along its normal;
+  // a shape with ['n', roll] turns its own z to that normal, so it lies on the skin. A cut shaves only inside its bound.
+  let cur = base;
+  const at = (x, y, d) => { const p = hit(cur, [x, y, 3], [0, 0, -1], 4.5, 0.008) || [x, y, 0.8]; const g = grad(cur, ...p); return { p: [p[0] + g[0] * d, p[1] + g[1] * d, p[2] + g[2] * d], n: g }; };
+  const resolve = sh => {
+    sh = JSON.parse(JSON.stringify(sh));
+    if (sh[0] === 'nose' && sh[2][0] === '@') sh[2] = at(sh[2][1], sh[2][2], sh[2][3]).p;
+    if (sh[1][0] === '@') { const a = at(sh[1][1], sh[1][2], sh[1][3]); sh[1] = a.p;
+      if (sh[0] === 'plane' && sh[2] === 'n') sh[2] = a.n;
+      if (sh[0] !== 'plane' && sh[3] && sh[3][0] === 'n') { const n = a.n, yaw = Math.atan2(n[0], n[2]), pitch = -Math.asin(clamp(n[1], -1, 1)); sh[3] = [['z', sh[3][1] || 0], ['x', pitch], ['y', yaw]]; } }
+    return sh; };
+  const one = (op, sh, k, bound) => { const f = shapeFn(resolve(sh)), B = bound ? shapeFn(bound) : null, prev = cur;
+    cur = op === 'add' ? (x, y, z) => smin(prev(x, y, z), f(x, y, z), k)
+      : op === 'carve' ? (x, y, z) => smax(prev(x, y, z), -f(x, y, z), k)
+      : B ? (x, y, z) => { const b = B(x, y, z), fade = b > 0 ? b * b / (b + 0.06) * 3 : 0; return smax(prev(x, y, z), f(x, y, z) - fade, k); } : (x, y, z) => smax(prev(x, y, z), f(x, y, z), k); };
+  for (const o of H.sculpt || []) { const [op, sh, k, sym, bound] = o; one(op, sh, k, bound); if (sym) one(op, mirror(sh), k, bound && mirror(bound)); }
+  const sculpted = cur;
+  const earL = ell([H.earX, H.earY, H.earZ], [0.08, H.earS, H.earS * 0.6]), earR = ell([-H.earX, H.earY, H.earZ], [0.08, H.earS, H.earS * 0.6]);
   const mounds = withSockets ? H.eyes.map(e => ell(e.c, [e.r * 0.9, e.r * 0.9, e.r * 0.9])) : [];
   return (x, y, z) => {
-    let d = smin(cr(x, y, z), face(x, y, z), H.kFace);
-    d = smin(d, chin(x, y, z), H.kChin);
-    d = smin(d, smin(chL(x, y, z), chR(x, y, z), 0.01), H.kCheek);
-    d = smin(d, smin(nose(x, y, z), bridge(x, y, z), 0.06), H.kNose);
-    if (H.earS > 0) d = smin(d, Math.min(earL(x, y, z), earR(x, y, z)), 0.07);
-    d = smin(d, neck(x, y, z), 0.22);
-    for (const m of mounds) d = smin(d, m(x, y, z), H.kMound ?? 0.17);
+    let d = sculpted(x, y, z);
+    if (H.earS > 0) d = smin(d, Math.min(earL(x, y, z), earR(x, y, z)), 0.06);
+    for (const m of mounds) d = smin(d, m(x, y, z), H.kMound ?? 0.12);
     return d;
   };
 }
+// ———————————— a surface out of a distance: naive surface nets, near the surface only ————————————
+function surfaceNets(sdf, bmin, bmax, h) {
+  const nx = Math.ceil((bmax[0] - bmin[0]) / h) + 1, ny = Math.ceil((bmax[1] - bmin[1]) / h) + 1, nz = Math.ceil((bmax[2] - bmin[2]) / h) + 1;
+  const F = new Float32Array(nx * ny * nz).fill(NaN);
+  const id = (i, j, k) => i + nx * (j + ny * k);
+  const C = 4, cnx = Math.ceil((nx - 1) / C), cny = Math.ceil((ny - 1) / C), cnz = Math.ceil((nz - 1) / C);
+  const thr = C * h * 1.9;
+  const CV = new Float32Array((cnx + 1) * (cny + 1) * (cnz + 1));
+  const cid = (i, j, k) => i + (cnx + 1) * (j + (cny + 1) * k);
+  for (let k = 0; k <= cnz; k++) for (let j = 0; j <= cny; j++) for (let i = 0; i <= cnx; i++) CV[cid(i, j, k)] = sdf(bmin[0] + i * C * h, bmin[1] + j * C * h, bmin[2] + k * C * h);
+  for (let ck = 0; ck < cnz; ck++) for (let cj = 0; cj < cny; cj++) for (let ci = 0; ci < cnx; ci++) {
+    let mn = 1e9, s = 0;
+    for (let c = 0; c < 8; c++) { const v = CV[cid(ci + (c & 1), cj + (c >> 1 & 1), ck + (c >> 2 & 1))]; mn = Math.min(mn, Math.abs(v)); s = v; }
+    const near = mn < thr;
+    for (let k = ck * C; k <= Math.min(ck * C + C, nz - 1); k++) for (let j = cj * C; j <= Math.min(cj * C + C, ny - 1); j++) for (let i = ci * C; i <= Math.min(ci * C + C, nx - 1); i++) {
+      const q = id(i, j, k); if (!Number.isNaN(F[q]) && !near) continue;
+      if (near) { if (Number.isNaN(F[q]) || Math.abs(F[q]) >= thr * 0.999) F[q] = sdf(bmin[0] + i * h, bmin[1] + j * h, bmin[2] + k * h); }
+      else F[q] = s > 0 ? thr : -thr;
+    }
+  }
+  for (let q = 0; q < F.length; q++) if (Number.isNaN(F[q])) F[q] = thr;
+  const VI = new Int32Array(nx * ny * nz).fill(-1), pos = [];
+  const E = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+  const d = new Float32Array(8);
+  for (let k = 0; k < nz - 1; k++) for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+    let m = 0;
+    for (let c = 0; c < 8; c++) { d[c] = F[id(i + (c & 1), j + (c >> 1 & 1), k + (c >> 2 & 1))]; if (d[c] < 0) m |= 1 << c; }
+    if (m === 0 || m === 255) continue;
+    let sx = 0, sy = 0, sz = 0, n = 0;
+    for (const [a, b] of E) {
+      if ((d[a] < 0) === (d[b] < 0)) continue;
+      const t = d[a] / (d[a] - d[b]);
+      sx += (a & 1) + ((b & 1) - (a & 1)) * t; sy += (a >> 1 & 1) + ((b >> 1 & 1) - (a >> 1 & 1)) * t; sz += (a >> 2 & 1) + ((b >> 2 & 1) - (a >> 2 & 1)) * t; n++;
+    }
+    VI[id(i, j, k)] = pos.length / 3;
+    pos.push(bmin[0] + (i + sx / n) * h, bmin[1] + (j + sy / n) * h, bmin[2] + (k + sz / n) * h);
+  }
+  const idx = [];
+  const quad = (a, b, c, e, flip) => { if (a < 0 || b < 0 || c < 0 || e < 0) return; if (flip) idx.push(a, c, b, a, e, c); else idx.push(a, b, c, a, c, e); };
+  for (let k = 1; k < nz - 1; k++) for (let j = 1; j < ny - 1; j++) for (let i = 1; i < nx - 1; i++) {
+    const v0 = F[id(i, j, k)], inside = v0 < 0;
+    if (inside !== (F[id(i + 1, j, k)] < 0)) quad(VI[id(i, j - 1, k - 1)], VI[id(i, j, k - 1)], VI[id(i, j, k)], VI[id(i, j - 1, k)], inside);
+    if (inside !== (F[id(i, j + 1, k)] < 0)) quad(VI[id(i - 1, j, k - 1)], VI[id(i - 1, j, k)], VI[id(i, j, k)], VI[id(i, j, k - 1)], inside);
+    if (inside !== (F[id(i, j, k + 1)] < 0)) quad(VI[id(i - 1, j - 1, k)], VI[id(i, j - 1, k)], VI[id(i, j, k)], VI[id(i - 1, j, k)], inside);
+  }
+  // normals from the distance itself, and the winding made to agree with them
+  const nor = new Float32Array(pos.length), e = h * 0.5;
+  for (let v = 0; v < pos.length; v += 3) {
+    const x = pos[v], y = pos[v + 1], z = pos[v + 2];
+    let gx = sdf(x + e, y, z) - sdf(x - e, y, z), gy = sdf(x, y + e, z) - sdf(x, y - e, z), gz = sdf(x, y, z + e) - sdf(x, y, z - e);
+    const l = Math.hypot(gx, gy, gz) || 1; nor[v] = gx / l; nor[v + 1] = gy / l; nor[v + 2] = gz / l;
+  }
+  for (let t = 0; t < idx.length; t += 3) {
+    const a = idx[t] * 3, b = idx[t + 1] * 3, c = idx[t + 2] * 3;
+    const ux = pos[b] - pos[a], uy = pos[b + 1] - pos[a + 1], uz = pos[b + 2] - pos[a + 2], wx = pos[c] - pos[a], wy = pos[c + 1] - pos[a + 1], wz = pos[c + 2] - pos[a + 2];
+    const cx = uy * wz - uz * wy, cy = uz * wx - ux * wz, cz = ux * wy - uy * wx;
+    if (cx * (nor[a] + nor[b] + nor[c]) + cy * (nor[a + 1] + nor[b + 1] + nor[c + 1]) + cz * (nor[a + 2] + nor[b + 2] + nor[c + 2]) < 0) { const s = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = s; }
+  }
+  return { pos: new Float32Array(pos), nor, idx };
+}
+
+// hair as big merged volumes: a shell over the scalp above the hairline, and the masses of the style (ellipsoids,
+// tapered tubes along a path), joined smoothly; windows carved where the face must show
+function hairVolume(H, lineY) {
+  const base = H.cs ? block(H) : loft(H), add = [], cut = [];
+  for (const p of H.hair3) {
+    if (p[0] === 'S') { const t = p[1]; add.push((x, y, z) => smax(base(x, y, z) - t, lineY(x, z) - y, 0.06)); }
+    else if (p[0] === 'E') add.push(ell(p[1], p[2]));
+    else if (p[0] === 'C') add.push(cone(p[1], p[2], p[3], p[4]));
+    else if (p[0] === 'T') { const P = p[1], R = p[2]; const segs = []; for (let i = 0; i < P.length - 1; i++) segs.push(cone(P[i], P[i + 1], R[i], R[i + 1])); add.push((x, y, z) => { let d = 1e9; for (const g of segs) d = smin(d, g(x, y, z), 0.04); return d; }); }
+    else if (p[0] === 'X') cut.push(ell(p[1], p[2]));
+    else if (p[0] === 'R') {
+      // a flat lock: wide across, thin away from the head, a chain of flattened ellipsoids along its path
+      const c = curve(p[1]), W = p[2], Tk = p[3], n = 28, parts = [];
+      for (let i = 0; i <= n; i++) { const t = i / n, q = c.getPoint(t), T = c.getTangent(t).normalize(); const N = new V3(q.x - C0[0], q.y - C0[1], q.z - C0[2]).normalize(); N.addScaledVector(T, -N.dot(T)).normalize(); const Bv = new V3().crossVectors(T, N);
+        const k = t * (W.length - 1), i0 = Math.min(W.length - 2, Math.floor(k)), f = k - i0; const w = lerp(W[i0], W[i0 + 1], f), th = lerp(Tk[i0], Tk[i0 + 1], f), len = c.getLength() / n * 2.2;
+        parts.push({ q, T, N, B: Bv, r: [Math.max(0.01, w), Math.max(0.01, th), Math.max(0.02, len)] }); }
+      add.push((x, y, z) => { let d = 1e9; for (const e of parts) { const dx = x - e.q.x, dy = y - e.q.y, dz = z - e.q.z; const u = (dx * e.B.x + dy * e.B.y + dz * e.B.z) / e.r[0], v = (dx * e.N.x + dy * e.N.y + dz * e.N.z) / e.r[1], w2 = (dx * e.T.x + dy * e.T.y + dz * e.T.z) / e.r[2]; const k0 = Math.hypot(u, v, w2), k1 = Math.hypot(u / e.r[0], v / e.r[1], w2 / e.r[2]); d = smin(d, k1 > 1e-9 ? k0 * (k0 - 1) / k1 : -0.01, 0.02); } return d; });
+    }
+  }
+  const f = (x, y, z) => { let d = 1e9; for (const g of add) d = smin(d, g(x, y, z), H.hairK); for (const c of cut) d = smax(d, -c(x, y, z), 0.04); return d; };
+  const B = H.hairBox || [[-1.7, -2.2, -1.8], [1.7, 1.9, 1.7]];
+  const m = surfaceNets(f, B[0], B[1], 0.028);
+  // two passes of smoothing over the mesh so the grid does not show
+  const pos = Array.from(m.pos), nb = Array.from({ length: pos.length / 3 }, () => new Set());
+  for (let t = 0; t < m.idx.length; t += 3) { const a = m.idx[t], b = m.idx[t + 1], c = m.idx[t + 2]; nb[a].add(b).add(c); nb[b].add(a).add(c); nb[c].add(a).add(b); }
+  for (const lam of [0.5, -0.52, 0.5, -0.52]) { const q = pos.slice(); for (let i = 0; i < nb.length; i++) { if (!nb[i].size) continue; let x = 0, y = 0, z = 0; for (const j of nb[i]) { x += q[j * 3]; y += q[j * 3 + 1]; z += q[j * 3 + 2]; } const k = nb[i].size; pos[i * 3] += lam * (x / k - q[i * 3]); pos[i * 3 + 1] += lam * (y / k - q[i * 3 + 1]); pos[i * 3 + 2] += lam * (z / k - q[i * 3 + 2]); } }
+  return { pos: new Float32Array(pos), idx: m.idx };
+}
+function smin2(a, b, k) { return (x, y, z) => smin(a(x, y, z), b(x, y, z), k); }
 // the first crossing along a ray coming from outside
 function hit(sdf, o, dir, tmax = 3.2, step = 0.012) {
   let t = 0, prev = sdf(o[0], o[1], o[2]);
@@ -104,16 +286,17 @@ function surfFront(sdf, x, y) { return hit(sdf, [x, y, 3], [0, 0, -1], 4.5, 0.00
 function onSkin(sdf, x, y, lift) { const p = surfFront(sdf, x, y); if (!p) return [x, y, 0.9]; const g = grad(sdf, ...p); return [p[0] + g[0] * lift, p[1] + g[1] * lift, p[2] + g[2] * lift]; }
 function defaults(o) {
   return Object.assign({
-    cranium: [1, 1, 1.05], craniumY: 0.1, face: [0.8, 0.75, 0.72], faceY: -0.38, faceZ: 0.12, kFace: 0.35,
-    chin: [0.3, 0.26, 0.3], chinY: -0.98, chinZ: 0.34, kChin: 0.3,
-    cheekR: 0.3, cheekX: 0.4, cheekY: -0.4, cheekZ: 0.36, kCheek: 0.3,
-    noseY: -0.42, noseZ: 0.86, noseS: 0.1, noseW: 0.09, noseLen: 0.32, kNose: 0.12,
-    earY: -0.2, earS: 0.2, neckR: 0.3, neckEnd: [0, -1.7, -0.25],
-    eyeX: 0.37, eyeY: -0.12, eyeR: 0.22, eyeSink: 0.52, eyeH: 0.62, eyeW: 1.05, eyeTilt: 0.0, lowerH: 0.5, iris: '#5a3a22', irisA: 0.68, pupilA: 0.32, gaze: [0, 0], lash: 0.022, wing: 0.0,
+    front: [[-1.8, 0.3], [-1.25, 0.28], [-1.1, 0.24], [-0.95, 0.4], [-0.6, 0.66], [-0.2, 0.8], [0.2, 0.88], [0.6, 0.85], [0.9, 0.62], [1.05, 0.3], [1.1, 0.05]],
+    prof: [[-1.8, 0.05], [-1.25, 0.12], [-1.1, 0.2], [-1.0, 0.62], [-0.8, 0.72], [-0.55, 0.8], [-0.2, 0.86], [0.2, 0.9], [0.6, 0.78], [0.9, 0.5], [1.05, 0.22], [1.1, 0.0]],
+    back: [[-1.8, -0.5], [-1.25, -0.45], [-1.0, -0.5], [-0.6, -0.75], [-0.1, -1.0], [0.4, -1.05], [0.8, -0.85], [1.05, -0.4], [1.1, -0.1]],
+    flat: 2.6, kCheek: 0.2, cheekbones: [],
+    earX: 0.86, earY: -0.2, earZ: -0.1, earS: 0.2,
+    eyeX: 0.36, eyeY: -0.12, eyeR: 0.22, eyeSink: 0.55, eyeH: 0.62, eyeW: 1.05, eyeTilt: 0.0, lowerH: 0.5, iris: '#5a3a22', irisA: 0.68, pupilA: 0.32, gaze: [0, 0], lash: 0.022, wing: 0.0,
     browY: 0.22, browLen: 0.34, browT: 0.035, browArch: 0.05, browIn: 0.0, browTilt: 0, browCol: null,
-    mouthY: -0.74, mouthW: 0.26, smile: 0.03, smirk: 0, open: 0, lip: '#c56c6a', lipT: 0.012,
-    skin: '#f0c4a4', blush: 0.35, hair: '#3a2a20', hairT: 0.09, hairline: { front: 0.5, side: -0.05, back: -0.55 }, hairVol: { top: 0.05, back: 0.04 },
-    locks: [], extras: [], body: 'girl', scale: 0.125, tilt: [0, 0, 0],
+    mouth: { y: -0.76, w: 0.15, up: 0.04, lo: 0.05, tint: 0.7 }, sculpt: [],
+    smile: 0.02, smirk: 0, open: 0, lip: '#c56c6a', lipT: 0.008, lipLine: '#7a3d3a',
+    skin: '#f0c4a4', blush: 0.35, hair: '#3a2a20', hairT: 0.09, hairline: { front: 0.5, side: -0.05, back: -0.55 }, hairVol: { top: 0.05, back: 0.04 }, hair3: null, hairK: 0.08,
+    locks: [], extras: [], body: 'girl', scale: 0.125, tilt: [0, 0, 0], view: [0, 0.04],
     top: '#7b8fa0', bottom: '#3c4250', shoes: '#2a2422', sleeve: 'long', legs: 'long',
   }, o);
 }
@@ -121,18 +304,26 @@ function buildHead(H, shape = {}) {
   H = defaults({ ...H });
   // the expression on top: blink, brows, smile
   const S = Object.assign({ blink: 0, browUp: 0, browAngry: 0, smile: 0, open: 0 }, shape);
+  H.mouthY = H.mouth.y; H.mouthW = H.mouth.w;
   // the eyes are set into the face first, then the sockets cut for them
   const sdf0 = headSDF({ ...H, eyes: [] }, false);
   H.eyes = [1, -1].map(sx => { const p = surfFront(sdf0, sx * H.eyeX, H.eyeY) || [sx * H.eyeX, H.eyeY, 0.8]; return { sx, r: H.eyeR, c: [p[0] - sx * H.eyeR * 0.08, p[1], p[2] - H.eyeR * H.eyeSink] }; });
   const sdf = headSDF(H, true);
   const out = new THREE.Group();
   // skin with blush and lips painted in the vertex colour
-  const skinM = radialMesh(sdf);
+  // the skin: a surface out of the distance itself (so no edge or hollow is lost to the direction it is seen from),
+  // lightly relaxed, with normals from the distance
+  const skinM = (() => { const m = surfaceNets(sdf, [-1.45, -2.1, -1.5], [1.45, 1.45, 1.5], H.grid || 0.022);
+    const pos = Array.from(m.pos), nb = Array.from({ length: pos.length / 3 }, () => new Set());
+    for (let t = 0; t < m.idx.length; t += 3) { const a = m.idx[t], b = m.idx[t + 1], c = m.idx[t + 2]; nb[a].add(b).add(c); nb[b].add(a).add(c); nb[c].add(a).add(b); }
+    for (const lam of [0.45, -0.47]) { const q = pos.slice(); for (let i = 0; i < nb.length; i++) { if (!nb[i].size) continue; let x = 0, y = 0, z = 0; for (const j of nb[i]) { x += q[j * 3]; y += q[j * 3 + 1]; z += q[j * 3 + 2]; } const k = nb[i].size; pos[i * 3] += lam * (x / k - q[i * 3]); pos[i * 3 + 1] += lam * (y / k - q[i * 3 + 1]); pos[i * 3 + 2] += lam * (z / k - q[i * 3 + 2]); } }
+    return { pos: new Float32Array(pos), idx: m.idx }; })();
   const sc = col(H.skin), bl = col('#ec8a84'), lc = col(H.lip), colors = [];
   for (let i = 0; i < skinM.pos.length; i += 3) {
     const x = skinM.pos[i], y = skinM.pos[i + 1], z = skinM.pos[i + 2];
     const c = sc.clone();
-    if (z > 0.2) { for (const sx of [1, -1]) { const d = Math.hypot(x - sx * (H.eyeX + 0.12), (y - (H.eyeY - H.eyeR - 0.33)) * 1.4); c.lerp(bl, H.blush * 0.5 * Math.exp(-(d * d) / 0.016)); } }
+    if (z > 0.2 && H.mouth.tint && Math.abs(x) < H.mouth.w * 0.95 && y < H.mouth.y + H.mouth.up && y > H.mouth.y - H.mouth.lo && (y > H.mouth.y ? (y - H.mouth.y) / H.mouth.up : (H.mouth.y - y) / H.mouth.lo) < Math.sqrt(Math.max(0, 1 - (x / (H.mouth.w * 0.95)) ** 2))) c.lerp(lc, H.mouth.tint);
+    if (z > 0.2) { if (H.blushAt) for (const sx of [1, -1]) { const [bx, by, br] = H.blushAt; const d = Math.hypot((x - sx * bx) / br[0], (y - by) / br[1]); c.lerp(bl, H.blush * 0.6 * Math.exp(-d * d)); } else for (const sx of [1, -1]) { const d = Math.hypot(x - sx * (H.eyeX + 0.12), (y - (H.eyeY - H.eyeR - 0.33)) * 1.4); c.lerp(bl, H.blush * 0.5 * Math.exp(-(d * d) / 0.016)); } }
     colors.push(c.r, c.g, c.b);
   }
   out.add(new THREE.Mesh(geo(skinM.pos, skinM.idx, colors), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62 })));
@@ -201,13 +392,13 @@ function buildHead(H, shape = {}) {
     out.add(new THREE.Mesh(geo(tpos, tidx), new THREE.MeshStandardMaterial({ color: '#f5efe8', roughness: 0.4, side: THREE.DoubleSide })));
   }
   const m = ribbon(mp, t => [H.lipT * (0.4 + 0.6 * Math.sin(Math.PI * t)), H.lipT * 0.5], { n: 30, m: 6, up: p => new V3(...grad(sdf, p.x, p.y, p.z)) });
-  out.add(new THREE.Mesh(geo(m.pos, m.idx), new THREE.MeshStandardMaterial({ color: open > 0.01 ? '#5a2a2a' : H.lip, roughness: 0.55 })));
+  out.add(new THREE.Mesh(geo(m.pos, m.idx), new THREE.MeshStandardMaterial({ color: open > 0.01 ? '#5a2a2a' : H.lipLine, roughness: 0.55 })));
   // the lower lip: a soft lens below the line
   if (H.lowerLip) { const lp = []; for (let i = 0; i <= 10; i++) { const t = i / 10, side = (t - 0.5) * 2; lp.push(onSkin(sdf, side * H.mouthW * 0.55, H.mouthY - 0.04 - (open > 0 ? open * 0.9 : 0) + smile * side * side * 0.5, 0.0)); } const l = ribbon(lp, t => [0.03 * Math.sin(Math.PI * t) ** 0.6, 0.014 * Math.sin(Math.PI * t) ** 0.6], { n: 24, m: 8, up: p => new V3(...grad(sdf, p.x, p.y, p.z)) }); out.add(new THREE.Mesh(geo(l.pos, l.idx), new THREE.MeshStandardMaterial({ color: H.lip, roughness: 0.5 }))); }
   // ——— hair: a cap that follows the skull and dives under the skin below the hairline, then locks ———
   const hl = H.hairline, A = ((hl.front + hl.back) / 2 + hl.side) / 2, Cc = A - hl.side, B = (hl.front - hl.back) / 2;
   const lineY = (x, z) => { const a = Math.atan2(x, z); let y = A + B * Math.cos(a) + Cc * Math.cos(2 * a); if (hl.part) y += hl.part.dip * Math.exp(-((x - hl.part.x) ** 2) / 0.01) * (z > 0 ? 1 : 0); if (hl.widow) y -= hl.widow * Math.exp(-(x * x) / 0.02) * (z > 0 ? 1 : 0); return y; };
-  const hairM = radialMesh(sdf, 100, 140, (p, d) => { const s = sst(clamp((p[1] - lineY(p[0], p[2])) / 0.22, 0, 1)); const vol = H.hairT * (0.45 + 0.55 * clamp(p[1] + 0.2, 0, 1)) + H.hairVol.top * clamp(p[1], 0, 1) + H.hairVol.back * clamp(-p[2], 0, 1) * clamp(p[1] + 0.6, 0, 1); return lerp(-0.03, vol, Math.pow(s, 0.6)); });
+  const hairM = H.hair3 ? hairVolume(H, lineY) : radialMesh(sdf, 100, 140, (p, d) => { const s = sst(clamp((p[1] - lineY(p[0], p[2])) / 0.22, 0, 1)); const vol = H.hairT * (0.45 + 0.55 * clamp(p[1] + 0.2, 0, 1)) + H.hairVol.top * clamp(p[1], 0, 1) + H.hairVol.back * clamp(-p[2], 0, 1) * clamp(p[1] + 0.6, 0, 1); return lerp(-0.03, vol, Math.pow(s, 0.6)); });
   const hairMat = new THREE.MeshStandardMaterial({ color: H.hair, roughness: 0.45, metalness: 0.0 });
   const hairG = new THREE.Group(); hairG.add(new THREE.Mesh(geo(hairM.pos, hairM.idx), hairMat));
   // a lock is pushed out of the skull wherever it would sink into it
@@ -220,6 +411,8 @@ function buildHead(H, shape = {}) {
     hairG.add(new THREE.Mesh(geo(r.pos, r.idx), L.color ? new THREE.MeshStandardMaterial({ color: L.color, roughness: 0.45 }) : hairMat));
   }
   for (const X of H.extras) hairG.add(X(H, sdf, hairMat, drape));
+  // marks painted on the skin (freckles): set onto the face where they fall
+  hairG.traverse(o => { if (o.userData.onSkin) { const p = surfFront(sdf, o.position.x, o.position.y); if (p) o.position.z = p[2] + 0.004; o.scale.set(1, 1, 0.3); } });
   out.add(hairG);
   return { group: out, H };
 }
@@ -300,9 +493,19 @@ async function buildBody(H, headGroup) {
   }
   // clothes, conditionally: colour zones, a little thickness
   const skinC = col(H.skin), colors = new Float32Array(BASE.N * 3);
-  const zc = z => { if (z === 'hand' || z === 'head') return H.gloves && z === 'hand' ? col(H.gloves) : skinC; if (z === 'top') return col(H.top); if (z === 'fore') return H.sleeve === 'long' ? col(H.top) : skinC; if (z === 'thigh') return col(H.bottom); if (z === 'legskin') return skinC; if (z === 'shin') return H.legs === 'long' ? col(H.bottom) : H.boots ? col(H.shoes) : skinC; if (z === 'foot') return col(H.shoes); return skinC; };
-  for (let i = 0; i < BASE.N; i++) { const c = zc(zone[i]); colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b; }
-  const tris = []; for (let k = 0; k < BASE.tris.length; k += 3) { const x = BASE.tris[k], y = BASE.tris[k + 1], z = BASE.tris[k + 2]; if (hw[x] > 0.35 && hw[y] > 0.35 && hw[z] > 0.35) continue; tris.push(x, y, z); }
+  const zc = z => { if (z === 'shin' && H.legs === 'wide') return col(H.bottom); if (z === 'hand' || z === 'head') return H.gloves && z === 'hand' ? col(H.gloves) : skinC; if (z === 'top') return col(H.top); if (z === 'fore') return H.sleeve === 'long' ? col(H.top) : skinC; if (z === 'thigh') return col(H.bottom); if (z === 'legskin') return skinC; if (z === 'shin') return H.legs === 'long' ? col(H.bottom) : H.boots ? col(H.shoes) : skinC; if (z === 'foot') return col(H.shoes); return skinC; };
+  const shY = J[JI.LeftArm].y, ankle = J[JI.LeftFoot].y;
+  for (let i = 0; i < BASE.N; i++) {
+    let z = zone[i]; const py = pos[i * 3 + 1];
+    if (H.sleeve === 'short' && z === 'top' && py < shY - 0.1 && Math.abs(pos[i * 3]) > 0.17) z = 'skinArm';
+    let c = z === 'skinArm' ? skinC : zc(z);
+    if (H.top === 'stripes' && (z === 'top' || (z === 'fore' && H.sleeve === 'long'))) c = col(H.stripes[Math.floor((py * 100) / 3.2) % 2 ? 0 : 1]);
+    colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b; zone[i] = z;
+  }
+  if (H.legs === 'wide') for (let i = 0; i < BASE.N; i++) { const z = zone[i]; if (z !== 'thigh' && z !== 'shin') continue; const s = pos[i * 3] > 0 ? 'Left' : 'Right';
+    const a = J[JI[s + 'Leg']], b = J[JI[s + 'Foot']], py = pos[i * 3 + 1], t = clamp((a.y - py) / (a.y - b.y), 0, 1), cx = lerp(a.x, b.x, t), cz = lerp(a.z, b.z, t);
+    const dx = pos[i * 3] - cx, dz = pos[i * 3 + 2] - cz, l = Math.hypot(dx, dz) || 1, push = 0.006 + 0.07 * t * t; pos[i * 3] += dx / l * push; pos[i * 3 + 2] += dz / l * push; }
+  const tris = []; for (let k = 0; k < BASE.tris.length; k += 3) { const x = BASE.tris[k], y = BASE.tris[k + 1], z = BASE.tris[k + 2]; if (hw[x] > 0.3 && hw[y] > 0.3 && hw[z] > 0.3) continue; tris.push(x, y, z); }
   const g = geo(pos, tris, colors);
   const n = g.attributes.normal; for (let i = 0; i < BASE.N; i++) { const z = zone[i]; const off = (z === 'top' || z === 'thigh' || (z === 'fore' && H.sleeve === 'long') || (z === 'shin' && (H.legs === 'long' || H.boots)) || z === 'foot') ? 0.006 : 0; pos[i * 3] += n.getX(i) * off; pos[i * 3 + 1] += n.getY(i) * off; pos[i * 3 + 2] += n.getZ(i) * off; }
   g.attributes.position.needsUpdate = true; g.computeVertexNormals();
@@ -314,6 +517,10 @@ async function buildBody(H, headGroup) {
   const rot = new THREE.Quaternion().setFromRotationMatrix(M[JI.Head]); headGroup.quaternion.copy(rot);
   const fig = new THREE.Group(); fig.add(body, headGroup);
   let top = 0; for (let i = 1; i < pos.length; i += 3) top = Math.max(top, pos[i]);
+  // rolled cuffs of wide jeans: a thick ring at each ankle
+  if (H.legs === 'wide') for (const sd of ['Left', 'Right']) { const a = J[JI[sd + 'Foot']].clone().applyMatrix4(M[JI[sd + 'Foot']]);
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.03, 12, 32), new THREE.MeshStandardMaterial({ color: new THREE.Color(H.bottom).multiplyScalar(1.12), roughness: 0.9 }));
+    cuff.rotation.x = Math.PI / 2; cuff.position.set(a.x, a.y + 0.11, a.z); cuff.scale.set(1, 1, 1.6); fig.add(cuff); }
   fig.userData = { O, s, top: Math.max(top, O.y + 1.3 * s) };
   return fig;
 }
@@ -330,7 +537,10 @@ const rim = new THREE.DirectionalLight('#d8e6ff', 1.4); rim.position.set(2.6, 2.
 const fill = new THREE.DirectionalLight('#ffe8d2', 0.55); fill.position.set(2.4, 0.8, 2.4); scene.add(fill);
 const ground = new THREE.Mesh(new THREE.CircleGeometry(30, 64), new THREE.MeshStandardMaterial({ color: '#c9c1b5', roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
 let current = null;
+let lastKey = '';
 window.__show = async (name, mode, yaw = 0.0, shape = {}, pitch = 0.04) => {
+  const key = name + JSON.stringify(shape);
+  if (key === lastKey && current) return place(current, current.userData.H, mode, yaw, pitch);
   if (current) scene.remove(current);
   const spec = defaults({ ...CH[name] });
   const P = await person(spec.body), M = poseMats(P.J, spec);
@@ -339,12 +549,25 @@ window.__show = async (name, mode, yaw = 0.0, shape = {}, pitch = 0.04) => {
   const rot = new THREE.Quaternion().setFromRotationMatrix(M[JI.Head]);
   const nl = n1.clone().sub(O0).applyQuaternion(rot.clone().invert()).multiplyScalar(1 / spec.scale);
   spec.neckEnd = [nl.x, nl.y - 0.1, nl.z];
+  // Anny's neck at the Neck1 joint, in head units: the head's own neck ends exactly in it
+  { const v = new V3(), a = new V3(), t = new V3(), inv = rot.clone().invert(); let w = 0, zf = -9, zb = 9;
+    for (let i = 0; i < BASE.N; i++) { let nw = 0; for (let k = 0; k < 4; k++) { const j = BASE.joint[i * 4 + k]; if (j === JI.Neck1 || j === JI.Neck2) nw += BASE.weight[i * 4 + k] / 255; } if (nw < 0.5) continue;
+      v.fromArray(P.at, i * 3); a.set(0, 0, 0); let ws = 0; for (let k = 0; k < 4; k++) { const wt = BASE.weight[i * 4 + k] / 255; if (!wt) continue; a.addScaledVector(t.copy(v).applyMatrix4(M[BASE.joint[i * 4 + k]]), wt); ws += wt; } a.multiplyScalar(1 / ws);
+      if (Math.abs(a.y - n1.y) > 0.012) continue; const l = a.clone().sub(O0).applyQuaternion(inv).multiplyScalar(1 / spec.scale); w = Math.max(w, Math.abs(l.x)); zf = Math.max(zf, l.z); zb = Math.min(zb, l.z); }
+    window.__neck = { w, zf, zb, nl: [nl.x, nl.y, nl.z] }; const yb = nl.y, g = 1.04;
+    const keep = (pts, v) => [...pts.filter(p => p[0] > yb + 0.3), [yb + 0.12, v], [yb, v]];
+    spec.frontB = keep(spec.frontB || spec.front, w * g); spec.front = keep(spec.front, w * g); spec.prof = keep(spec.prof, nl.z + w * 1.25 * g); spec.back = keep(spec.back, nl.z - w * 0.65 * g); }
   const { group, H } = buildHead(spec, shape);
   group.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = false; } });
   const fig = await buildBody(H, group);
   fig.traverse(o => { if (o.isMesh) o.castShadow = true; });
   scene.add(fig); current = fig;
+  fig.userData.H = H; lastKey = key;
+  return place(fig, H, mode, yaw, pitch);
+};
+function place(fig, H, mode, yaw, pitch) {
   const { O, s, top } = fig.userData;
+  if (mode === 'ref') { yaw = H.view[0]; pitch = H.view[1]; mode = 'head'; }
   if (mode === 'head') {
     const tgt = O.clone().add(new V3(0, -0.2 * s, 0)); const d = 9.6 * s;
     camera.position.set(tgt.x + Math.sin(yaw) * d, tgt.y + Math.sin(pitch) * d, tgt.z + Math.cos(yaw) * d); camera.lookAt(tgt);
@@ -353,8 +576,8 @@ window.__show = async (name, mode, yaw = 0.0, shape = {}, pitch = 0.04) => {
   }
   renderer.render(scene, camera);
   return true;
-};
-await import('./chars.js?' + Date.now()).then(m => m.default(CH, { L, braid, bun, band, helmet, stripe }));
-window.__ready = true;
+}
+await import('./chars.js?' + Date.now()).then(m => m.default(CH, { L, braid, bun, band, helmet, stripe, THREE }));
+window.__dbg = { headSDF, CH, hit, defaults }; window.__ready = true;
 </script>
 </body></html>
