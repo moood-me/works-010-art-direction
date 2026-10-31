@@ -1,0 +1,271 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Одежда из ткани</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Golos+Text:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #0d0e11; --ink: #e9e3d7; --muted: #8e8a83; --line: #2a2c31; --on: #e9e3d7; --onInk: #15161a; --accent: #c9a46a;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); margin: 0; }
+body { font-family: var(--sans); }
+main { max-width: 1180px; margin: 0 auto; padding-block: 36px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; }
+header { display: grid; gap: 8px; }
+h1 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(38px, 6.5vw, 64px); line-height: 1; margin: 0; }
+header p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 70ch; }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 3px; overflow: hidden; background: #cfc8bd; touch-action: none; cursor: grab; }
+.stage:active { cursor: grabbing; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.msg { position: absolute; inset: 0; display: grid; place-items: center; color: #4a4640; font-family: var(--serif); font-style: italic; font-size: 24px; pointer-events: none; }
+.bar { position: absolute; left: 0; bottom: 0; height: 3px; background: #6d5b44; width: 0; transition: width .2s; }
+.hint { position: absolute; left: 14px; bottom: 10px; font-size: 12px; color: rgba(40,36,32,0.6); pointer-events: none; }
+.controls { display: grid; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.row .label { color: var(--muted); font-size: 13px; width: 96px; flex: none; }
+button { font: inherit; font-size: 14px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+button:hover { border-color: #45474e; }
+button[aria-pressed="true"] { background: var(--on); color: var(--onInk); border-color: var(--on); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input[type=range] { flex: 1; min-width: 160px; accent-color: var(--accent); }
+.fabrics { display: grid; gap: 8px; }
+.notes { display: grid; gap: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 76ch; padding-top: 8px; border-top: 1px solid var(--line); }
+.notes p { margin: 0; }
+.notes b { color: var(--ink); font-weight: 500; }
+[hidden] { display: none !important; }
+@media (max-width: 560px) { .row .label { width: 100%; } }
+</style>
+
+<main>
+  <header>
+    <h1>Одежда из ткани</h1>
+    <p>Каждая вещь — кусок ткани со своими свойствами: вес, растяжение, жёсткость на изгиб, трение. Она лежит на теле, не проходит сквозь него и сквозь то, что надето под ней, мнётся, качается, ветер её треплет. Движения — Kimodo. Сначала движение просчитывается (полоска внизу), потом играет по кругу.</p>
+  </header>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="msg" id="msg">загружается…</div><div class="bar" id="bar"></div><div class="hint">тяните, чтобы повернуть · колесо — ближе</div></div>
+  <div class="controls">
+    <div class="row" role="group" aria-label="Кто" id="who"><span class="label">Кто</span></div>
+    <div class="row" role="group" aria-label="Наряд" id="outfits"><span class="label">Наряд</span></div>
+    <div class="fabrics" id="fabrics"></div>
+    <div class="row" role="group" aria-label="Движение" id="motions"><span class="label">Движение</span></div>
+    <div class="row" role="group" aria-label="Ветер" id="winds"><span class="label">Ветер</span></div>
+    <div class="row"><span class="label">Время</span><button id="play" aria-pressed="true">Играет</button><input id="scrub" type="range" min="0" max="0" value="0" aria-label="Кадр"></div>
+  </div>
+  <section class="notes">
+    <p><b>Как это сделано.</b> Ткань — сетка точек (XPBD, 16 малых шагов на кадр). Рёбра держат растяжение и легче уступают сжатию — поэтому ткань складывается, а не сжимается; петли между треугольниками держат изгиб, как жёсткость ткани (длина изгиба: шифон ~1 см, деним ~3 см, твид ~4 см); воздух давит на каждый треугольник, как он стоит к потоку. Тело и вещи под низом — твёрдые: ткань держится на свою толщину снаружи, с трением. Держат вещь на теле пояс или горловина (прижаты к коже, как резинка) — остальное висит, а дальше, чем она длинна, ткань от них уйти не может. Кисть для ткани — варежка: пальцы слишком тонки, ткань проскальзывала бы между ними.</p>
+    <p><b>Вещи.</b> Платье, футболка, свитер, брюки, шорты — из MakeHuman (CC0), сетки в четыре раза мельче. Юбка — трубка ткани от пояса, обходит бёдра и ноги и расширяется к подолу. Блузка, кардиган, куртка и купальник сшиты здесь же по телу: участок кожи, отодвинутый на свободу облегания, со сглаженными впадинами и ровными краями подола, ворота, манжет и полочек. Шарф — плоская полоса ткани, наброшенная на шею. Длинный рукав держится и у манжеты (застёгнутая манжета обхватывает запястье).</p>
+  </section>
+</main>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { person, skinInto, parseGarment, fitted, normalsOf } from './people.js';
+import { GARMENTS, FABRICS, nearestOn } from './wardrobe.js';
+
+const stage = document.getElementById('stage'), cv = document.getElementById('cv'), msg = document.getElementById('msg'), bar = document.getElementById('bar');
+const cache = {};
+const bytes = name => (cache[name] ??= import('../data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer));
+const META = await (await fetch('../data/meta.json')).json();
+const SHOTS = location.search.includes('shots');   // (pictures: shot.js draws only the frames it asks for)
+
+// ———— who, what they wear, how they move ————
+const PEOPLE = { woman: { ru: 'Женщина', skin: '#e9bb9c' }, man: { ru: 'Мужчина', skin: '#d8a585' }, child: { ru: 'Ребёнок', skin: '#f0c5a5' } };
+const OUTFITS = [
+  { id: 'w-dress', ru: 'платье и шарф', who: 'woman', hair: ['braid', '#3a271f'], shoes: ['flats', '#2b211d'], wear: [['dress', 'chiffon', '#9a4a52'], ['scarf', 'silk', '#d9b77a']] },
+  { id: 'w-blouse', ru: 'блузка и юбка', who: 'woman', hair: ['bob', '#4a3226'], shoes: ['flats', '#2b211d'], wear: [['skirt', 'suiting', '#3a3f4f'], ['blouse', 'silk', '#e8e0d0']] },
+  { id: 'w-cardigan', ru: 'кардиган и платье', who: 'woman', hair: ['bun', '#5a3a28'], shoes: ['flats', '#3a2c25'], wear: [['dress', 'poplin', '#6b7f8c'], ['cardigan', 'woolknit', '#b8865a']] },
+  { id: 'w-tee', ru: 'футболка и шорты', who: 'woman', hair: ['shoulder', '#3a271f'], shoes: ['flats', '#e8e4dc'], wear: [['shorts', 'denim', '#4b6280'], ['tshirt', 'jersey', '#e8e4dc']] },
+  { id: 'w-swim', ru: 'купальник', who: 'woman', hair: ['bun', '#3a271f'], shoes: null, wear: [['swimsuit', 'lycra', '#1f6f8b']] },
+  { id: 'w-jacket', ru: 'куртка и брюки', who: 'woman', hair: ['long', '#2f211b'], shoes: ['boots', '#2e231c'], wear: [['pants', 'suiting', '#2f3036'], ['tshirt', 'jersey', '#d9d2c4'], ['jacket', 'denim', '#5a7aa0']] },
+  { id: 'm-jeans', ru: 'футболка и джинсы', who: 'man', hair: ['short', '#3b2b22'], shoes: ['boots', '#2e231c'], wear: [['pants', 'denim', '#3e5578'], ['tshirt', 'heavyjersey', '#7a8a5a']] },
+  { id: 'm-sweater', ru: 'свитер и брюки', who: 'man', hair: ['short', '#3b2b22'], shoes: ['boots', '#2e231c'], wear: [['pants', 'suiting', '#3d4048'], ['sweater', 'woolknit', '#8c6a4a']] },
+  { id: 'm-jacket', ru: 'куртка, шарф, брюки', who: 'man', hair: ['short', '#2a201a'], shoes: ['boots', '#2e231c'], wear: [['pants', 'twill', '#4a4a40'], ['tshirt', 'jersey', '#cfc6b4'], ['jacket', 'tweed', '#6a5a48'], ['scarf', 'woolknit', '#8a2a2a']] },
+  { id: 'm-shorts', ru: 'шорты для плавания', who: 'man', hair: ['short', '#3b2b22'], shoes: null, wear: [['shorts', 'nylon', '#d0623a']] },
+  { id: 'c-tee', ru: 'футболка и шорты', who: 'child', hair: ['fringe', '#6b4a32'], shoes: ['flats', '#3a2c25'], wear: [['shorts', 'twill', '#4b5a6e'], ['tshirt', 'jersey', '#d1b36a']] },
+  { id: 'c-sweater', ru: 'свитер и брюки', who: 'child', hair: ['fringe', '#4a3226'], shoes: ['boots', '#2e231c'], wear: [['pants', 'denim', '#3e5578'], ['sweater', 'fleece', '#c7584a']] },
+  { id: 'c-skirt', ru: 'юбка и футболка', who: 'child', hair: ['bob', '#4a3226'], shoes: ['flats', '#2b211d'], wear: [['skirt', 'chiffon', '#c47a96'], ['tshirt', 'jersey', '#f0ead8']] },
+  { id: 'c-swim', ru: 'купальник', who: 'child', hair: ['fringe', '#6b4a32'], shoes: null, wear: [['swimsuit', 'lycra', '#e0563a']] },
+];
+const MOTIONS = [
+  { id: 'idle', ru: 'стоит', file: 'idle', cyclic: true, frames: 170 },
+  { id: 'walk', ru: 'идёт', file: 'walk', cyclic: true, frames: 200 },
+  { id: 'run', ru: 'бежит', file: 'run', cyclic: true, frames: 170 },
+  { id: 'jump', ru: 'прыгает', file: 'jump', frames: 140 },
+  { id: 'dance', ru: 'танцует', file: 'dance', cyclic: true, frames: 170 },
+  { id: 'sit', ru: 'садится на пол', file: 'sit', frames: 175 },
+  { id: 'lie', ru: 'ложится', file: 'lie', frames: 230 },
+  { id: 'roll', ru: 'кувырок', file: 'roll', frames: 180 },
+  { id: 'rollover', ru: 'ложится и перекатывается', file: 'rollover', frames: 335 },
+];
+const WINDS = [{ id: 0, ru: 'нет' }, { id: 3, ru: 'лёгкий' }, { id: 8, ru: 'сильный' }];
+const state = { outfit: OUTFITS[0], motion: MOTIONS[1], wind: 0, fabrics: {} };
+
+// ———— the studio ————
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#cfc8bd');
+const camera = new THREE.PerspectiveCamera(30, 16 / 10, 0.05, 60);
+scene.add(new THREE.HemisphereLight('#fff4e6', '#5b544c', 1.0));
+const key = new THREE.DirectionalLight('#fff0dc', 2.2); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -1.6, right: 1.6, top: 1.6, bottom: -1.6, near: 0.5, far: 12 }); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.015;
+scene.add(key, key.target);
+const rim = new THREE.DirectionalLight('#cfe0ff', 1.2); scene.add(rim, rim.target);
+const fill = new THREE.DirectionalLight('#ffe6cc', 0.4); scene.add(fill, fill.target);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: '#c9c1b5', roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+// a faint grid on the floor, so going along it reads
+const grid = new THREE.GridHelper(400, 400, '#b5ac9f', '#bdb4a7'); grid.position.y = 0.0005; scene.add(grid);
+
+// the fabric's look: its colour, sheen and roughness; the inside darker
+function clothMaterial(color, F) {
+  const m = new THREE.MeshPhysicalMaterial({ color, roughness: F.rough, sheen: F.sheen, sheenRoughness: 0.6, sheenColor: new THREE.Color(color).lerp(new THREE.Color('#ffffff'), 0.35), side: THREE.DoubleSide,
+    transparent: !!F.opacity, opacity: F.opacity ?? 1 });
+  m.onBeforeCompile = s => { s.fragmentShader = s.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\nif (!gl_FrontFacing) diffuseColor.rgb *= 0.55;'); };
+  return m;
+}
+const group = new THREE.Group(); scene.add(group);
+let current = null;   // {body, meshes, frames: [], garments}
+
+function meshOf(pos, tris, mat) {
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(new THREE.BufferAttribute(tris, 1)); g.computeVertexNormals();
+  const m = new THREE.Mesh(g, mat); m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; return m;
+}
+// things carried by the skin (shoes, hair): each point as the nearest skin
+function carried(body, pos, tris, color, rough) {
+  const near = nearestOn(body.rest, pos), n = pos.length / 3, J = new Uint8Array(n * 4), W = new Uint8Array(n * 4);
+  for (let i = 0; i < n; i++) for (let k = 0; k < 4; k++) { J[i * 4 + k] = body.joint[near[i] * 4 + k]; W[i * 4 + k] = body.weight[near[i] * 4 + k]; }
+  const mesh = meshOf(Float32Array.from(pos), tris, new THREE.MeshStandardMaterial({ color, roughness: rough, side: THREE.DoubleSide }));
+  return { mesh, rest: Float32Array.from(pos), J, W };
+}
+
+// ———— baking: the worker runs the frames, they are kept and played ————
+const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+let baking = null, jobs = 0;
+async function bake() {
+  const O = state.outfit, Mo = state.motion, body = await person(THREE, bytes, META, O.who);
+  const wear = O.wear.map(([g, f, c]) => ({ g, fabric: state.fabrics[O.id + g] || f, color: c }));
+  for (const it of current?.meshes || []) { group.remove(it.mesh); it.mesh.geometry.dispose(); }
+  const meshes = [];
+  const bodyMesh = meshOf(Float32Array.from(body.rest), body.tris, new THREE.MeshStandardMaterial({ color: PEOPLE[O.who].skin, roughness: 0.62 }));
+  meshes.push({ mesh: bodyMesh, body: true });
+  for (const thing of [O.shoes, O.hair].filter(Boolean)) {
+    const G = parseGarment(await bytes(thing[0])), c = carried(body, fitted(G, body.rest), G.tris, thing[1], thing === O.hair ? 0.55 : 0.6);
+    meshes.push(c);
+  }
+  for (const it of meshes) group.add(it.mesh);
+  const run = current = { body, meshes, frames: [], wear, total: Mo.frames, garments: null };
+  msg.textContent = 'кроится…'; msg.hidden = false; bar.style.width = '0';
+  return new Promise(resolve => {
+    baking = { run, resolve, id: ++jobs };
+    worker.postMessage({ id: jobs, who: O.who, wear: wear.map(({ g, fabric }) => ({ g, fabric })), motion: Mo.file, cyclic: !!Mo.cyclic, frames: Mo.frames, wind: state.wind ? { speed: state.wind, dir: 0.4 } : null });
+  });
+}
+worker.onmessage = e => {
+  const d = e.data, B = baking; if (!B || d.id !== B.id) return; const run = B.run;
+  if (d.type === 'cut') {
+    run.garments = d.garments.map(g => {
+      const w = run.wear.find(x => x.g === g.name), F = FABRICS[g.fabric];
+      const mesh = meshOf(new Float32Array(g.n * 3), g.tris, clothMaterial(w.color, F)); group.add(mesh);
+      const it = { mesh, garment: g.name }; run.meshes.push(it); return it;
+    });
+    // the skin under close clothing is drawn sunk a few millimetres: between the cloth's points (a centimetre or more
+    // apart) the skin's own finer bulges would show through where the cloth sits tight (only drawn so; the cloth meets
+    // the real body)
+    const B = run.body, all = d.garments.flatMap(g => Array.from(g.rest)), near = nearestOn(Float32Array.from(all), B.rest);
+    run.sink = Float32Array.from(near, (j, i) => { const dd = Math.hypot(all[j * 3] - B.rest[i * 3], all[j * 3 + 1] - B.rest[i * 3 + 1], all[j * 3 + 2] - B.rest[i * 3 + 2]); return 0.004 * (1 - Math.min(1, Math.max(0, (dd - 0.012) / 0.015))); });
+    msg.hidden = true;
+  } else if (d.type === 'frame') {
+    run.frames.push({ E: d.E, pos: d.pos });
+    bar.style.width = (100 * run.frames.length / run.total).toFixed(1) + '%';
+    scrub.max = String(run.frames.length - 1);
+    if (!SHOTS && (!playing || run.frames.length < run.total)) show(run.frames.length - 1);
+  } else if (d.type === 'done') { bar.style.width = '0'; baking = null; B.resolve(); }
+};
+
+// ———— a frame on screen ————
+let shown = -1, sunkN = new Float32Array(0);
+function show(f) {
+  const run = current; if (!run || !run.frames[f]) return;
+  shown = f; scrub.value = String(f);
+  const F = run.frames[f], E = F.E.map(a => Array.from(a));
+  if (sunkN.length !== run.body.N * 3) sunkN = new Float32Array(run.body.N * 3);
+  for (const it of run.meshes) {
+    const g = it.mesh.geometry, pa = g.attributes.position;
+    if (it.body) {
+      skinInto(run.body.rest, run.body.nrm, run.body.joint, run.body.weight, 255, E, pa.array, sunkN);
+      if (run.sink) for (let i = 0; i < run.body.N; i++) { const s = run.sink[i]; if (s) { pa.array[i * 3] -= sunkN[i * 3] * s; pa.array[i * 3 + 1] -= sunkN[i * 3 + 1] * s; pa.array[i * 3 + 2] -= sunkN[i * 3 + 2] * s; } }
+    }
+    else if (it.rest) skinInto(it.rest, null, it.J, it.W, 255, E, pa.array, null);
+    else if (it.garment) pa.array.set(F.pos[run.garments.indexOf(it)]);
+    pa.needsUpdate = true; g.computeVertexNormals(); g.computeBoundingSphere();
+  }
+  // the camera follows the pelvis (smoothly)
+  const hip = run.body.J[run.body.names.indexOf('Hips')], e = E[run.body.names.indexOf('Hips')];
+  const hx = e[0] * hip.x + e[4] * hip.y + e[8] * hip.z + e[12], hy = e[1] * hip.x + e[5] * hip.y + e[9] * hip.z + e[13], hz = e[2] * hip.x + e[6] * hip.y + e[10] * hip.z + e[14];
+  follow.set(hx, Math.max(0.35, hy * 0.85 + run.body.height * 0.12), hz);
+}
+const follow = new THREE.Vector3(0, 0.9, 0);
+const cam = { yaw: 0.6, pitch: 0.1, dist: 4.2, target: new THREE.Vector3(0, 0.9, 0), snap: false };
+function place() {
+  if (cam.snap) cam.target.copy(follow); else cam.target.lerp(follow, 0.15);
+  const cp = Math.cos(cam.pitch);
+  camera.position.set(cam.target.x + Math.sin(cam.yaw) * cp * cam.dist, cam.target.y + Math.sin(cam.pitch) * cam.dist, cam.target.z + Math.cos(cam.yaw) * cp * cam.dist);
+  camera.lookAt(cam.target);
+  key.position.copy(cam.target).add(new THREE.Vector3(-2.2, 3.6, 2.6)); key.target.position.copy(cam.target);
+  rim.position.copy(cam.target).add(new THREE.Vector3(2.4, 2.2, -2.8)); rim.target.position.copy(cam.target);
+  fill.position.copy(cam.target).add(new THREE.Vector3(2.5, 1.0, 2.0)); fill.target.position.copy(cam.target);
+}
+let drag = null;
+stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if (!drag) return; cam.yaw -= (e.clientX - drag.x) * 0.008; cam.pitch = Math.min(1.2, Math.max(-0.2, cam.pitch + (e.clientY - drag.y) * 0.005)); drag = { x: e.clientX, y: e.clientY }; });
+stage.addEventListener('pointerup', () => drag = null); stage.addEventListener('pointercancel', () => drag = null);
+stage.addEventListener('wheel', e => { e.preventDefault(); cam.dist = Math.min(10, Math.max(0.8, cam.dist * Math.exp(e.deltaY * 0.001))); }, { passive: false });
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage); resize();
+
+// ———— controls ————
+const scrub = document.getElementById('scrub'), playB = document.getElementById('play');
+let playing = true, clock = 0;
+playB.addEventListener('click', () => { playing = !playing; playB.setAttribute('aria-pressed', String(playing)); playB.textContent = playing ? 'Играет' : 'Пауза'; });
+scrub.addEventListener('input', () => { playing = false; playB.setAttribute('aria-pressed', 'false'); playB.textContent = 'Пауза'; show(+scrub.value); });
+function buttons(el, items, isOn, pick) {
+  el.querySelectorAll('button').forEach(b => b.remove());
+  for (const it of items) { const b = document.createElement('button'); b.textContent = it.ru; b.setAttribute('aria-pressed', String(isOn(it))); b.addEventListener('click', () => { pick(it); }); el.append(b); }
+}
+function render() {
+  buttons(document.getElementById('who'), Object.entries(PEOPLE).map(([id, p]) => ({ id, ru: p.ru })), p => p.id === state.outfit.who, p => { state.outfit = OUTFITS.find(o => o.who === p.id); render(); bake(); });
+  buttons(document.getElementById('outfits'), OUTFITS.filter(o => o.who === state.outfit.who), o => o === state.outfit, o => { state.outfit = o; render(); bake(); });
+  buttons(document.getElementById('motions'), MOTIONS, m => m.id === state.motion.id, m => { state.motion = m; render(); bake(); });
+  buttons(document.getElementById('winds'), WINDS, w => w.id === state.wind, w => { state.wind = w.id; render(); bake(); });
+  const fe = document.getElementById('fabrics'); fe.innerHTML = '';
+  for (const [g, f0] of state.outfit.wear) {
+    const row = document.createElement('div'); row.className = 'row'; row.setAttribute('role', 'group');
+    const l = document.createElement('span'); l.className = 'label'; l.textContent = GARMENTS[g].ru; row.append(l); fe.append(row);
+    const cur = state.fabrics[state.outfit.id + g] || f0;
+    buttons(row, GARMENTS[g].fabrics.map(id => ({ id, ru: FABRICS[id].ru })), it => it.id === cur, it => { state.fabrics[state.outfit.id + g] = it.id; render(); bake(); });
+  }
+}
+render();
+
+// ———— running ————
+(function loop(now) {
+  if (SHOTS) return;
+  requestAnimationFrame(loop);
+  const run = current;
+  if (run && playing && run.frames.length >= run.total) { clock += 1; const f = Math.floor(clock / 2) % run.frames.length; if (f !== shown) show(f); }
+  place(); renderer.render(scene, camera);
+})();
+if (!SHOTS) bake();
+
+// for the pictures (shot.js): bake one, show a frame from a side
+window.__cloth = {
+  OUTFITS, MOTIONS, state, cam,
+  async bake(o) { state.outfit = o.wear ? { id: 'x', ru: '', who: o.who, hair: o.hair || null, shoes: o.shoes || null, wear: o.wear } : OUTFITS.find(x => x.id === o.outfit); state.motion = { ...MOTIONS.find(x => x.id === o.motion), ...(o.upto ? { frames: o.upto } : {}) }; state.wind = o.wind || 0; Object.assign(state.fabrics, o.fabrics || {}); playing = false; render(); await bake(); return current.frames.length; },
+  view(f, v) { msg.hidden = true; show(f); Object.assign(cam, v); cam.snap = true; place(); renderer.render(scene, camera); cam.snap = false; },
+};
+</script>

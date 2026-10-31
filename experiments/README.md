@@ -15,3 +15,7 @@ Each folder is a page that opens in a browser (serve the folder, e.g. `python3 -
   gesture, caricature, the silhouette as one form, the sign. Test tools: `one.js` and `rr.js` render states to
   pictures with Playwright (they expect the page on port 8768), `err.js` measures the neutral design against Anny,
   `sheet.py` tiles pictures. The `window.__stage`, `__R`, `__K` hooks in the page exist for these tools.
+- **[cloth/](cloth/)** — clothes as cloth of their own fabric (XPBD) on Anny's bodies through Kimodo motions: walking,
+  running, jumping, dancing, sitting on the floor, lying down, a forward roll, rolling over, with wind; dress, skirt,
+  T-shirt, sweater, trousers, shorts, blouse, cardigan, jacket, swimsuit, scarf in sixteen fabrics, on a woman, a man and
+  a child. The page computes a motion, then plays it; `shot.js` makes pictures.
