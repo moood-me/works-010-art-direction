@@ -126,3 +126,10 @@ head, wrapped with Anny's mesh) and be joined to B's bodies and clothes later.
   sit): cloth physics with the designed form as rest shape is the first that looks like a dress moving — bell and
   A-line keep their silhouette, the knee pushes the cloth softly; sitting still breaks (the skirt sinks under the
   thighs — it needs collision with the top of the legs and the floor, and a weaker pull to the form when sitting).
+
+**Decided with Pavel (later):** clothes go onto the good bodies (A's designed forms, cage silhouettes, moderate
+stylisation); dresses in motion keep going with cloth physics ("Чудесно"); the wrapped heads are to be made
+beautiful by looking and trying, bugs first; the 3D-heads agent may change its tool to one face mesh moved by
+landmarks and curves, independently, and must not come back with a mediocre result; a dedicated hair tool is started
+(big locks along guide curves merged into a hairstyle with its own silhouette). Assembling a whole character from the
+best parts and converging the head paths into one — "пока рано".
