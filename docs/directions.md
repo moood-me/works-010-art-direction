@@ -90,3 +90,8 @@ silhouette; non-human heroes.
   button, straight, upturned, ball, long wedge; line, pout, smirk, crooked grin, lips) — four heads close to their
   picture at its angle. Still: hair approximate (panels and helmets), features painted by front projection, the
   angular teen boys came out round and babyish.
+- **Clothes with their own form** ([experiments/clothes](../experiments/clothes/README.md),
+  [pictures](pictures/clothes/)): dresses are the best — six of eight silhouettes clean and readable as a designed
+  garment; the dress's ladder from cloth to sign works on all four steps, the cone-sign reads. Weak: knitwear and coats
+  (sleeves turn into boxes or ridged frills, a tight sweater reads as skin with muscles), MakeHuman's front slit with a
+  ragged hem.
