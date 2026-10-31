@@ -108,6 +108,9 @@ and heavy; the head–neck seam remains; heads are blind mannequins. Still none 
 
 ## Two directions now
 
+More in [directions.md](directions.md).
+
+
 1. **The designed form is primary.** We went from the real body and removed things — a blurred real person, not a
    cartoon character. The beauty of a Disney or Pixar body comes from an invented form with a clear rhythm. So: per
    style, contours as deliberate curves; Anny only gives proportions, joints and the mesh, and is pulled onto the form.
