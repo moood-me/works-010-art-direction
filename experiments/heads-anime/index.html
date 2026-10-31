@@ -151,36 +151,36 @@ C.boy7 = { who: 'child', skin: '#f6d6be', hs: 1.12, ref: { yaw: -0.55, pitch: 0.
     masses: [[0.44, -0.66, 0.55, 0.26, 0.25]] } },
   face: { eye: { x: 0.4, y: -0.4, w: 0.3, h: 0.3, tilt: 0, iris: ['#2a4f7a', '#6aa0c8'], lash: '#3a2a24', lashW: 0.045, wing: 0.04, lower: 0.2, glints: 1, round: true }, brow: { x0: 0.16, x1: 0.6, y0: -0.08, y1: -0.06, arch: 0.05, peak: 0.5, w0: 0.03, w1: 0.012, color: '#a8904a' }, mouth: { type: 'drawn', y: -0.8, w: 0.1, sag: 0.006, upper: 0.012, lower: 0.02, open: 0.022, lip: '#d88a7a', line: '#8a4a3a', lineW: 0.012 }, blush: 0.25 },
   hair: [['cap', { front: 0.2 }], ['bowl', { n: 26 }], ['sideSweep', {}]] };
-C.mask = { who: 'woman', skin: '#f1c6bd', hs: 1.08, ref: { yaw: -0.62, pitch: 0.12 }, outfit: [['oversized', '#5b4b3c'], ['pants', '#3b3550'], ['boots', '#2b2530']], hairColor: '#4a3b38', gloves: '#4a4560',
-  head: { ears: { x: 0.94, y: -0.34, z: -0.1, s: 1 }, neckR: 0.36, face: { n: 2.2,
-    W: [[0.4, 0.94], [-0.3, 0.92], [-0.6, 0.84], [-0.84, 0.62], [-1.0, 0.36], [-1.08, 0.18]],
-    P: [[0.4, 0.8], [0.0, 0.9], [-0.32, 0.86], [-0.6, 0.94], [-0.8, 0.9], [-1.0, 0.8], [-1.08, 0.66]],
+C.mask = { who: 'woman', skin: '#f1c6bd', hs: 0.98, ref: { yaw: -0.62, pitch: 0.12 }, outfit: [['oversized', '#5b4b3c'], ['pants', '#3b3550'], ['boots', '#2b2530']], hairColor: '#4a3b38', gloves: '#4a4560',
+  head: { ears: { x: 0.94, y: -0.34, z: -0.1, s: 1 }, neckR: 0.32, neckK: 0.12, face: { n: 2.2, jawRise: 0.3,
+    W: [[0.4, 0.92], [-0.3, 0.9], [-0.6, 0.8], [-0.9, 0.58], [-1.12, 0.32], [-1.28, 0.12]],
+    P: [[0.4, 0.8], [0.0, 0.9], [-0.32, 0.86], [-0.66, 0.94], [-0.9, 0.9], [-1.1, 0.84], [-1.28, 0.7]],
     nose: { ridge: [[-0.34, 0.88], [-0.48, 0.955], [-0.6, 1.025], [-0.63, 1.04]], under: [[-0.655, 0.99], [-0.675, 0.92]], w: [0.022, 0.03, 0.07], k: 0.05 } } },
   face: { eye: { x: 0.43, y: -0.3, w: 0.44, h: 0.2, tilt: -0.14, iris: ['#7a2b1c', '#c2603a'], lash: '#1d1418', lashW: 0.075, wing: 0.3, lower: 0.25, glints: 1, sharp: true, look: 0.45 }, brow: { x0: 0.12, x1: 0.74, y0: -0.13, y1: 0.02, arch: 0.08, peak: 0.55, w0: 0.075, w1: 0.018, color: '#2a1d1b' }, mouth: { type: 'none' }, mask: { color: '#c9c9d3', dark: '#74738a', top: -0.46 }, blush: 0 },
   extras: [['earDevice', { color: '#b5b6c5', dark: '#5a5b70' }]],
   hair: [['mass', { n: 18, scale: 1.12, front: 0.4, bang: 0.35, bangEl: 0.5, len: 0.3, flick: 0.12, side: 0.1, r: 0.22, tufts: [[0.5, 0.75, 0.25, -0.45, 0.25, 0.26]] }], ['topBun', { color2: '#3aa0d8' }], ['bangsSide', { n: 3 }]] };
-C.hood = { who: 'woman', skin: '#ecbcc4', hs: 1.06, ref: { yaw: -0.95, pitch: 0.06 }, outfit: [['oversized', '#6b5aa8'], ['pants', '#3d3256'], ['boots', '#2b2530']], hairColor: '#1e1a26', gloves: '#5e5a72',
-  head: { ears: { x: 0.9, y: -0.36, z: -0.1, s: 1.05 }, neckR: 0.32, face: { n: 2.3,
-    W: [[0.4, 0.84], [-0.3, 0.8], [-0.6, 0.7], [-0.86, 0.46], [-1.05, 0.2], [-1.13, 0.09]],
-    P: [[0.4, 0.8], [0.0, 0.88], [-0.25, 0.86], [-0.64, 0.9], [-0.78, 0.9], [-0.9, 0.84], [-1.04, 0.8], [-1.13, 0.68]],
-    nose: { ridge: [[-0.2, 0.88], [-0.36, 0.97], [-0.5, 1.06], [-0.6, 1.14]], under: [[-0.62, 1.1], [-0.645, 1.02], [-0.665, 0.92]], w: [0.018, 0.022, 0.06], k: 0.05, round: 0.015 } } },
-  face: { eye: { x: 0.4, y: -0.3, w: 0.38, h: 0.17, tilt: -0.1, iris: ['#2b2236', '#5a4a6a'], lash: '#160f16', lashW: 0.07, wing: 0.22, lower: 0.2, glints: 1, sharp: true, look: 0.55, crease: true }, brow: { x0: 0.13, x1: 0.7, y0: -0.1, y1: -0.0, arch: 0.05, peak: 0.6, w0: 0.065, w1: 0.014, color: '#1e1a26' }, mouth: { type: 'drawn', y: -0.8, w: 0.11, sag: 0.004, cL: 0.0, cR: 0.022, lineW: 0.013, line: '#7a3a46', dimple: true, lowerLine: 0.3 }, blush: 0.15 },
+C.hood = { who: 'woman', skin: '#ecbcc4', hs: 0.96, ref: { yaw: -0.95, pitch: 0.06 }, outfit: [['oversized', '#6b5aa8'], ['pants', '#3d3256'], ['boots', '#2b2530']], hairColor: '#1e1a26', gloves: '#5e5a72',
+  head: { ears: { x: 0.9, y: -0.36, z: -0.1, s: 1.05 }, neckR: 0.3, neckK: 0.12, face: { n: 2.3, jawRise: 0.3,
+    W: [[0.4, 0.82], [-0.3, 0.78], [-0.6, 0.66], [-0.9, 0.48], [-1.15, 0.24], [-1.32, 0.08]],
+    P: [[0.4, 0.8], [0.0, 0.9], [-0.25, 0.86], [-0.7, 0.9], [-0.84, 0.9], [-0.98, 0.84], [-1.18, 0.86], [-1.32, 0.76]],
+    nose: { ridge: [[-0.12, 0.89], [-0.3, 0.96], [-0.5, 1.07], [-0.66, 1.18], [-0.69, 1.19]], under: [[-0.71, 1.13], [-0.72, 1.02], [-0.73, 0.93]], w: [0.016, 0.022, 0.058], k: 0.07, round: 0.008 } } },
+  face: { eye: { x: 0.4, y: -0.3, w: 0.38, h: 0.17, tilt: -0.1, iris: ['#2b2236', '#5a4a6a'], lash: '#160f16', lashW: 0.07, wing: 0.22, lower: 0.2, glints: 1, sharp: true, look: 0.55, crease: true }, brow: { x0: 0.13, x1: 0.7, y0: -0.1, y1: -0.0, arch: 0.05, peak: 0.6, w0: 0.065, w1: 0.014, color: '#1e1a26' }, mouth: { type: 'drawn', y: -0.9, w: 0.11, sag: 0.004, cL: 0.0, cR: 0.022, lineW: 0.013, line: '#7a3a46', dimple: true, lowerLine: 0.3 }, blush: 0.15 },
   extras: [['hood', { color: '#a6b4ea', inner: '#6d77b5' }]], hair: [['cap', { front: 0.3 }], ['sides', { n: 2, len: 2.0, w: 0.22, z: 0.3 }], ['bangsSide', { n: 5 }]] };
-C.blond = { who: 'man', skin: '#eab6a6', hs: 1.0, ref: { yaw: -1.3, pitch: 0.05 }, outfit: [['polo', '#c4466e'], ['pants', '#4a3a5c'], ['boots', '#3b2c2c']], hairColor: '#fbe0a4', hairInk: '#7a4a2a',
-  head: { ears: { x: 0.92, y: -0.36, z: -0.18, s: 1.12 }, neckR: 0.5, face: { n: 2.6,
-    W: [[0.4, 0.86], [-0.3, 0.84], [-0.62, 0.82], [-0.86, 0.74], [-1.04, 0.42], [-1.12, 0.3]],
-    P: [[0.4, 0.78], [-0.08, 0.92], [-0.3, 0.84], [-0.66, 0.92], [-0.8, 0.92], [-0.92, 0.88], [-1.06, 0.88], [-1.12, 0.76]],
-    nose: { ridge: [[-0.17, 0.9], [-0.3, 0.985], [-0.4, 1.03], [-0.52, 1.08], [-0.6, 1.14]], under: [[-0.64, 1.1], [-0.665, 1.02], [-0.685, 0.94]], w: [0.03, 0.04, 0.08], k: 0.06, round: 0.025 } } },
-  face: { eye: { x: 0.38, y: -0.31, w: 0.3, h: 0.14, tilt: -0.04, iris: ['#1d3b6a', '#3d78b8'], lash: '#2a1714', lashW: 0.05, wing: 0.04, lower: 0.15, glints: 1, sharp: true, look: 0.55 }, brow: { x0: 0.12, x1: 0.72, y0: -0.1, y1: -0.05, arch: 0.025, peak: 0.4, w0: 0.095, w1: 0.04, color: '#3a1e1a' }, mouth: { type: 'drawn', y: -0.84, w: 0.13, sag: 0.0, cL: 0.0, cR: 0.018, lineW: 0.016, line: '#7a3a36', lowerLine: 0.3 }, blush: 0 },
-  hair: [['mass', { n: 22, scale: 1.17, front: 0.25, bang: 0.85, bangEl: 0.35, len: 0.5, flick: 0.28, spread: 0.2, side: 0.2, r: 0.27, tufts: [[0.25, 1.15, 0.35, 0.05, 0.3, 0.26], [-0.35, 1.05, 0.35, 0.0, 0.3, 0.25], [2.6, 0.7, 0.45, 0.05, -0.1, 0.24]] }]] };
-C.tails = { who: 'man', skin: '#e9b8a8', hs: 1.04, ref: { yaw: -1.35, pitch: 0.05 }, outfit: [['tshirt', '#e46a2c'], ['pants', '#56423a'], ['boots', '#3b2c2c']], hairColor: '#5a2a24', hairInk: '#1d0c0a',
-  head: { ears: { x: 0.95, y: -0.36, z: -0.18, s: 1.1 }, neckR: 0.56, face: { n: 2.2,
-    W: [[0.4, 0.88], [-0.3, 0.88], [-0.6, 0.86], [-0.84, 0.7], [-1.0, 0.42], [-1.1, 0.2]],
-    P: [[0.4, 0.78], [-0.08, 0.88], [-0.32, 0.84], [-0.64, 0.9], [-0.78, 0.9], [-0.92, 0.86], [-1.04, 0.82], [-1.1, 0.7]],
-    nose: { ridge: [[-0.27, 0.86], [-0.38, 0.9], [-0.46, 0.96], [-0.51, 1.04], [-0.52, 1.11]], under: [[-0.56, 1.07], [-0.6, 1.0], [-0.625, 0.93]], w: [0.022, 0.03, 0.07], k: 0.05, round: 0.015 },
-    masses: [[0.55, -0.72, 0.44, 0.3, 0.25]] } },
-  face: { eye: { x: 0.4, y: -0.33, w: 0.32, h: 0.16, tilt: -0.08, iris: ['#2a1612', '#5a3428'], lash: '#1d0f0c', lashW: 0.055, wing: 0.06, lower: 0.12, glints: 1, sharp: true, look: 0.5 }, brow: { x0: 0.12, x1: 0.72, y0: -0.13, y1: -0.02, arch: 0.05, peak: 0.55, w0: 0.095, w1: 0.03, color: '#2a1210' }, mouth: { type: 'drawn', y: -0.82, w: 0.11, sag: 0.004, cL: -0.004, cR: 0.026, lineW: 0.015, line: '#7a3a36', dimple: true }, blush: 0 },
-  hair: [['mass', { n: 18, scale: 1.12, front: 0.5, bang: -0.25, bangEl: 0.55, len: 0.35, flick: 0.1, side: 0.05, r: 0.22 }], ['twoTails', {}], ['bangsSide', { n: 2 }]] };
+C.blond = { who: 'man', skin: '#eab6a6', hs: 0.9, ref: { yaw: -1.3, pitch: 0.05 }, outfit: [['polo', '#c4466e'], ['pants', '#4a3a5c'], ['boots', '#3b2c2c']], hairColor: '#fbe0a4', hairInk: '#7a4a2a',
+  head: { ears: { x: 0.92, y: -0.36, z: -0.18, s: 1.12 }, neckR: 0.4, neckK: 0.1, face: { n: 3.0, jawRise: 0.18,
+    W: [[0.4, 0.86], [-0.3, 0.84], [-0.62, 0.84], [-0.95, 0.8], [-1.16, 0.62], [-1.32, 0.4], [-1.4, 0.3]],
+    P: [[0.4, 0.76], [-0.08, 0.94], [-0.3, 0.84], [-0.7, 0.92], [-0.95, 0.94], [-1.08, 0.88], [-1.25, 0.9], [-1.4, 0.8]],
+    nose: { ridge: [[-0.16, 0.9], [-0.32, 0.99], [-0.48, 1.06], [-0.62, 1.14], [-0.66, 1.16]], under: [[-0.69, 1.11], [-0.71, 1.02], [-0.73, 0.94]], w: [0.026, 0.035, 0.075], k: 0.07, round: 0.012 } } },
+  face: { eye: { x: 0.38, y: -0.31, w: 0.3, h: 0.14, tilt: -0.04, iris: ['#1d3b6a', '#3d78b8'], lash: '#2a1714', lashW: 0.05, wing: 0.04, lower: 0.15, glints: 1, sharp: true, look: 0.55 }, brow: { x0: 0.12, x1: 0.72, y0: -0.1, y1: -0.05, arch: 0.025, peak: 0.4, w0: 0.095, w1: 0.04, color: '#3a1e1a' }, mouth: { type: 'drawn', y: -0.95, w: 0.13, sag: 0.0, cL: 0.0, cR: 0.018, lineW: 0.016, line: '#7a3a36', lowerLine: 0.3 }, blush: 0 },
+  hair: [['mass', { n: 14, scale: 1.1, front: 0.3, back: 0.25, bang: 0.55, bangEl: 0.55, len: 0.25, flick: 0.2, spread: 0.15, side: 0.1, r: 0.26, tufts: [[0.0, 1.3, 0.6, 0.15, -0.55, 0.32], [0.6, 1.2, 0.55, 0.1, -0.5, 0.3], [-0.6, 1.15, 0.5, 0.05, -0.5, 0.28], [2.8, 1.0, 0.55, 0.2, -0.3, 0.26], [0.9, 0.7, 0.45, -0.45, 0.25, 0.24], [0.4, 0.75, 0.5, -0.5, 0.3, 0.24]] }]] };
+C.tails = { who: 'man', skin: '#e9b8a8', hs: 0.92, ref: { yaw: -1.35, pitch: 0.05 }, outfit: [['tshirt', '#e46a2c'], ['pants', '#56423a'], ['boots', '#3b2c2c']], hairColor: '#5a2a24', hairInk: '#1d0c0a',
+  head: { ears: { x: 0.95, y: -0.36, z: -0.18, s: 1.1 }, neckR: 0.44, neckK: 0.1, face: { n: 2.6, jawRise: 0.2,
+    W: [[0.4, 0.88], [-0.3, 0.88], [-0.62, 0.9], [-0.95, 0.86], [-1.14, 0.66], [-1.3, 0.4], [-1.36, 0.22]],
+    P: [[0.4, 0.76], [-0.08, 0.9], [-0.32, 0.84], [-0.7, 0.9], [-0.92, 0.9], [-1.06, 0.84], [-1.22, 0.84], [-1.36, 0.7]],
+    nose: { ridge: [[-0.26, 0.86], [-0.38, 0.88], [-0.48, 0.95], [-0.56, 1.08], [-0.6, 1.21]], under: [[-0.63, 1.13], [-0.655, 1.01], [-0.675, 0.92]], w: [0.02, 0.028, 0.07], k: 0.06, round: 0.006, r: 0.002 },
+    masses: [[0.62, -1.0, 0.3, 0.32, 0.3]] } },
+  face: { eye: { x: 0.4, y: -0.33, w: 0.32, h: 0.16, tilt: -0.08, iris: ['#2a1612', '#5a3428'], lash: '#1d0f0c', lashW: 0.055, wing: 0.06, lower: 0.12, glints: 1, sharp: true, look: 0.5 }, brow: { x0: 0.12, x1: 0.72, y0: -0.13, y1: -0.02, arch: 0.05, peak: 0.55, w0: 0.095, w1: 0.03, color: '#2a1210' }, mouth: { type: 'drawn', y: -0.9, w: 0.11, sag: 0.004, cL: -0.004, cR: 0.026, lineW: 0.015, line: '#7a3a36', dimple: true }, blush: 0 },
+  hair: [['cap', { front: 0.55, back: -0.5 }], ['sweptBack', { n: 12, w: 0.3 }], ['twoTails', {}]] };
 C.old = { who: 'oldman', skin: '#f2c49f', hs: 1.12, ref: { yaw: 0.55, pitch: 0.05 }, outfit: [['tshirt', '#7aa36e'], ['pants', '#d8d8d2'], ['boots', '#b49a6a']], hairColor: '#d08a4a', hairInk: '#6a3a1a',
   head: { cw: 1.04, ears: { x: 1.0, y: -0.32, z: -0.08, s: 1.15 }, neckR: 0.6, face: { n: 2.0,
     W: [[0.4, 0.96], [-0.3, 1.0], [-0.62, 1.06], [-0.88, 1.0], [-1.06, 0.72], [-1.16, 0.4]],
@@ -190,12 +190,12 @@ C.old = { who: 'oldman', skin: '#f2c49f', hs: 1.12, ref: { yaw: 0.55, pitch: 0.0
   face: { eye: { x: 0.4, y: -0.26, w: 0.3, h: 0.14, iris: ['#3a2a1a', '#5a4030'], lash: '#2a1a12', lashW: 0.045, lower: 0, glints: 0, smiley: true }, brow: { x0: 0.14, x1: 0.68, y0: -0.08, y1: -0.07, arch: 0.1, peak: 0.45, w0: 0.08, w1: 0.05, color: '#b0682e' }, marks: [{ mirror: true, pts: [[0.32, -0.62], [0.42, -0.78], [0.4, -0.95]], w: 0.014, color: '#a0602e', alpha: 0.55 }, { mirror: true, pts: [[0.55, -0.32], [0.62, -0.3], [0.66, -0.26]], w: 0.01, color: '#8a5030', alpha: 0.5 }], mouth: { y: -0.9, w: 0.46, type: 'grin', crooked: 0.12 }, blush: 0.8 },
   extras: [['hood', { color: '#f4f2ee', inner: '#c9c6c0', wide: 1.15 }]], hair: [['cap', { front: 0.1, back: -0.2 }], ['fringeTufts', {}]] };
 C.semi = { who: 'man', skin: '#efd2d4', hs: 1.0, ref: { yaw: -1.3, pitch: 0.02 }, outfit: [['sweater', '#7a6aa8'], ['pants', '#3a3446'], ['boots', '#2b2530']], hairColor: '#2a1f2c', extras: [['turtleneck', { color: '#55506e' }]],
-  head: { ears: { x: 0.9, y: -0.34, z: -0.16, s: 1.05 }, neckR: 0.36, face: { n: 2.5,
-    W: [[0.4, 0.82], [-0.28, 0.8], [-0.55, 0.64], [-0.86, 0.6], [-1.14, 0.28], [-1.27, 0.12]],
-    P: [[0.4, 0.82], [-0.1, 0.92], [-0.28, 0.86], [-0.84, 0.86], [-0.92, 0.87], [-1.0, 0.88], [-1.12, 0.84], [-1.27, 0.7]],
-    nose: { ridge: [[-0.17, 0.9], [-0.38, 1.06], [-0.6, 1.24], [-0.78, 1.4], [-0.82, 1.42]], under: [[-0.855, 1.36], [-0.86, 1.2], [-0.84, 1.04], [-0.82, 0.94]], w: [0.024, 0.03, 0.08], k: 0.06, round: 0.015, wings: [-0.79, 1.0, 0.085, 0.045, 0.075] },
-    lips: [[-0.93, 0.87, 0.09, 0.018, 0.035], [-0.99, 0.875, 0.1, 0.03, 0.045]] } },
-  face: { eye: { x: 0.36, y: -0.32, w: 0.33, h: 0.3, tilt: 0.02, iris: ['#6a6ad8', '#b8b8ff'], lash: '#2a1f2c', lashW: 0.035, wing: 0.02, lower: 0.5, glints: 0, ringed: true, bags: '#8a5a6e', crease: true }, brow: { x0: 0.13, x1: 0.66, y0: -0.03, y1: -0.05, arch: 0.035, peak: 0.35, w0: 0.045, w1: 0.012, color: '#2a1f2c' }, mouth: { type: 'drawn', y: -0.955, w: 0.15, sag: 0.0, corners: -0.012, upper: 0.012, bow: 0.007, lower: 0.032, lip: '#c98e98', line: '#6a3a4a', lineW: 0.012 }, marks: [{ mirror: true, pts: [[0.5, -0.5], [0.46, -0.66], [0.38, -0.8]], w: 0.008, color: '#9a6a7a', alpha: 0.6 }, { mirror: true, pts: [[0.16, -0.5], [0.3, -0.56], [0.48, -0.5]], w: 0.008, color: '#8a5a6e', alpha: 0.5 }], blush: 0.1 },
+  head: { ears: { x: 0.9, y: -0.34, z: -0.16, s: 1.05 }, neckR: 0.3, neckK: 0.1, face: { n: 2.5, jawRise: 0.3,
+    W: [[0.4, 0.8], [-0.28, 0.78], [-0.55, 0.64], [-0.9, 0.58], [-1.18, 0.3], [-1.4, 0.1]],
+    P: [[0.4, 0.7], [0.04, 0.92], [-0.28, 0.86], [-0.9, 0.86], [-1.0, 0.88], [-1.08, 0.88], [-1.22, 0.78], [-1.4, 0.6]],
+    nose: { ridge: [[0.03, 0.91], [-0.14, 0.96], [-0.36, 1.11], [-0.58, 1.29], [-0.76, 1.44], [-0.9, 1.52]], under: [[-0.87, 1.42], [-0.83, 1.24], [-0.8, 1.08], [-0.83, 0.94]], w: [0.03, 0.03, 0.07], k: 0.1, round: 0.004, r: 0.001, wings: [-0.81, 1.0, 0.085, 0.045, 0.075] },
+    lips: [[-1.0, 0.88, 0.09, 0.018, 0.035], [-1.06, 0.885, 0.1, 0.03, 0.045]] } },
+  face: { eye: { x: 0.36, y: -0.32, w: 0.33, h: 0.3, tilt: 0.02, iris: ['#6a6ad8', '#b8b8ff'], lash: '#2a1f2c', lashW: 0.035, wing: 0.02, lower: 0.5, glints: 0, ringed: true, bags: '#8a5a6e', crease: true }, brow: { x0: 0.13, x1: 0.66, y0: -0.03, y1: -0.05, arch: 0.035, peak: 0.35, w0: 0.045, w1: 0.012, color: '#2a1f2c' }, mouth: { type: 'drawn', y: -1.025, w: 0.15, sag: 0.0, corners: -0.012, upper: 0.012, bow: 0.007, lower: 0.032, lip: '#c98e98', line: '#6a3a4a', lineW: 0.012 }, marks: [{ mirror: true, pts: [[0.5, -0.5], [0.46, -0.66], [0.38, -0.8]], w: 0.008, color: '#9a6a7a', alpha: 0.6 }, { mirror: true, pts: [[0.16, -0.5], [0.3, -0.56], [0.48, -0.5]], w: 0.008, color: '#8a5a6e', alpha: 0.5 }], blush: 0.1 },
   hair: [['mass', { n: 22, scale: 1.14, front: 0.3, bang: 0.75, bangEl: 0.5, len: 0.9, flick: 0.35, spread: 0.45, side: 0.35, r: 0.2 }]] };
 
 // ———— the head's surface: the face lofted from its own outline (front) and profile (side) ————
@@ -209,12 +209,15 @@ function keysAt(ks, y) {   // piecewise-smooth through [y, v] keys, y descending
 function headSDF(H) {
   const F = H.face, n = F.n || 2.3, yTop = 0.4, yChin = F.W[F.W.length - 1][0], NS = F.nose && F.nose.ridge ? noseSDF(F.nose) : null;
   return (x, y, z) => {
+    // the cranium is a dome: it ends above the cheekbones at the front and lower at the back (the occiput);
+    // below that line the face is only what its own outline and profile make — not a ball
     let d = sdEll(x, y - 0.02, z + 0.04, H.cw, H.ch, H.cd);
+    d = smax(d, -(y - (H.skullCut ?? -0.32)) - 0.55 * Math.max(0, -z - 0.1), 0.16);
     // the face: at each height a section as wide as the outline and reaching forward to the profile
     const yy = clamp(y, yChin, yTop), w = Math.max(0.04, keysAt(F.W, yy)), f = keysAt(F.P, yy), back = f - Math.max(1.2, w * 1.6), c = (f + back) / 2, h = (f - back) / 2;
     const q = Math.pow(Math.pow(Math.abs(x) / w, n) + Math.pow(Math.abs(z - c) / h, n), 1 / n);
     let fd = (q - 1) * Math.min(w, h * 0.6);
-    const chinF = keysAt(F.P, yChin), under = yChin + 0.42 * Math.max(0, chinF - 0.1 - z);
+    const chinF = keysAt(F.P, yChin), under = yChin + (F.jawRise ?? 0.42) * Math.max(0, chinF - 0.1 - z);
     fd = smax(fd, Math.max(y - yTop, under - y), 0.08);
     d = smin(d, fd, 0.18);
     const N0 = F.nose;
@@ -224,7 +227,7 @@ function headSDF(H) {
       if (N0.wings) d = smin(d, sdEll(x, y - N0.wings[0], z - N0.wings[1], N0.wings[2], N0.wings[3], N0.wings[4]), 0.06); }
     for (const L of F.lips || []) d = smin(d, sdEll(x, y - L[0], z - L[1], L[2], L[3], L[4]), 0.04);
     for (const M of F.masses || []) for (const s of M[5] === 'mid' ? [0] : [-1, 1]) d = smin(d, sdEll(x - s * M[0], y - M[1], z - M[2], M[3], M[3] * (M[6] || 1), M[3] * (M[7] || 0.8)), M[4]);
-    const NB = H.neckBase; d = smin(d, sdCapsule(x, y, z, [0, yChin + 0.5, -0.18], [NB[0], NB[1], NB[2]], [H.neckR, NB[3]]), 0.28);
+    const NB = H.neckBase; d = smin(d, sdCapsule(x, y, z, [0, yChin + 0.5, -0.18], [NB[0], NB[1], NB[2]], [H.neckR, NB[3]]), H.neckK ?? 0.28);
     const e = H.ears; for (const s of [-1, 1]) d = smin(d, sdEll(x - s * e.x, y - e.y, z - e.z, 0.1 * e.s, 0.27 * e.s * (e.h || 1), 0.19 * e.s), 0.06);
     return d;
   };
@@ -422,7 +425,7 @@ function extraSDF(kind, o, H) {
       const ell = (Math.hypot(x / (0.92 * W), (y + 0.42) / 1.18) - 1) * 0.92, open = smax(ell, -(z - 0.05), 0.1);
       return smax(d, -open, 0.12); }; }
   if (kind === 'hat') return (x, y, z) => { const crown = sdEll(x, y - 1.05, z + 0.05, 1.32, 0.78, 1.28), band = Math.max(Math.abs(y - 0.55) - 0.16, Math.hypot(x / 1.12, (z + 0.04) / 1.14) - 1); return smin(crown, band - 0.03, 0.12); };
-  if (kind === 'turtleneck') return (x, y, z) => { const NB = H.neckBase; const c = sdCapsule(x, y, z, [0, -1.45, -0.2], [NB[0], NB[1] - 0.3, NB[2]], [H.neckR + 0.16, NB[3] + 0.16]); return smax(c, y + 1.38, 0.05); };
+  if (kind === 'turtleneck') return (x, y, z) => { const NB = H.neckBase; const c = sdCapsule(x, y, z, [0, -1.45, -0.2], [NB[0], NB[1] - 0.3, NB[2]], [H.neckR + 0.16, NB[3] + 0.16]); return smax(c, y + 1.75, 0.05); };
   if (kind === 'earDevice') return (x, y, z) => Math.max(sdCapsule(x, y, z, [-1.0, -0.28, -0.05], [-1.16, -0.28, -0.05], 0.26), 0) ;
 }
 
@@ -435,11 +438,11 @@ C.alva = { who: 'woman', skin: '#f2c9b6', hs: 1.0, ref: { yaw: 0.6, pitch: 0.3 }
   face: { eye: { x: 0.4, y: -0.34, w: 0.32, h: 0.17, tilt: 0.02, iris: ['#3a2418', '#7a5038'], lash: '#2a1a14', lashW: 0.045, wing: 0.08, lower: 0.2, glints: 1, crease: true, irisScale: 0.75 }, brow: { x0: 0.12, x1: 0.66, y0: -0.1, y1: -0.07, arch: 0.05, peak: 0.55, w0: 0.035, w1: 0.01, color: '#6a4a24' }, mouth: { type: 'drawn', y: -0.88, w: 0.13, sag: 0.0, corners: 0.01, upper: 0.012, lower: 0.022, lip: '#c8706a', line: '#7a3a36', lineW: 0.012 }, blush: 0.3 },
   hair: [['cap', { front: 0.55 }], ['centerPart', { n: 8, w: 0.44 }], ['back', { n: 11, len: 3.2, w: 0.5, wave: 0.15, lift: 0.18 }]] };
 C.jesper = { who: 'man', skin: '#f0c4a8', hs: 0.98, ref: { yaw: -0.3, pitch: 0.05 }, ref2: { yaw: -0.12, pitch: 0.12 }, outfit: [['oversized', '#7a8496'], ['pants', '#3a3f4e'], ['boots', '#2e231c']], hairColor: '#d9b45a', hairInk: '#6a4a1a',
-  head: { ears: { x: 0.95, y: -0.38, z: -0.06, s: 1.35 }, neckR: 0.3, face: { n: 2.3,
-    W: [[0.4, 0.84], [-0.3, 0.8], [-0.6, 0.68], [-0.9, 0.52], [-1.15, 0.28], [-1.26, 0.13]],
-    P: [[0.4, 0.8], [0.0, 0.9], [-0.28, 0.85], [-0.82, 0.9], [-0.94, 0.9], [-1.06, 0.86], [-1.18, 0.82], [-1.26, 0.72]],
+  head: { ears: { x: 0.95, y: -0.38, z: -0.06, s: 1.35 }, neckR: 0.28, neckK: 0.12, face: { n: 2.3, jawRise: 0.3,
+    W: [[0.4, 0.82], [-0.3, 0.78], [-0.6, 0.66], [-0.95, 0.5], [-1.2, 0.26], [-1.32, 0.12]],
+    P: [[0.4, 0.8], [0.0, 0.9], [-0.28, 0.85], [-0.86, 0.9], [-0.98, 0.88], [-1.1, 0.8], [-1.22, 0.76], [-1.32, 0.66]],
     nose: { ridge: [[-0.22, 0.88], [-0.4, 1.05], [-0.56, 1.24], [-0.64, 1.36]], under: [[-0.71, 1.32], [-0.76, 1.12], [-0.8, 0.94]], w: [0.03, 0.05, 0.08], k: 0.05, round: 0.03, ball: [0, -0.665, 1.33, 0.075], bk: 0.04 } } },
-  face: { eye: { x: 0.42, y: -0.3, w: 0.34, h: 0.36, tilt: -0.02, iris: ['#2a1e14', '#5a3e28'], lash: '#2a1a14', lashW: 0.035, wing: 0.0, lower: 0.15, glints: 1, round: true, irisScale: 0.45 }, brow: { x0: 0.13, x1: 0.7, y0: 0.02, y1: 0.06, arch: 0.07, peak: 0.4, w0: 0.075, w1: 0.03, color: '#7a5226' }, mouth: { type: 'drawn', y: -0.96, w: 0.12, sag: -0.004, corners: -0.012, open: 0.024, lower: 0.018, lip: '#c8706a', line: '#6a2a26', lineW: 0.012 }, blush: 0.15, noseTint: '#e98a74' },
+  face: { eye: { x: 0.42, y: -0.3, w: 0.34, h: 0.36, tilt: -0.02, iris: ['#2a1e14', '#5a3e28'], lash: '#2a1a14', lashW: 0.035, wing: 0.0, lower: 0.15, glints: 1, round: true, irisScale: 0.45 }, brow: { x0: 0.13, x1: 0.7, y0: 0.02, y1: 0.06, arch: 0.07, peak: 0.4, w0: 0.075, w1: 0.03, color: '#7a5226' }, mouth: { type: 'drawn', y: -1.0, w: 0.12, sag: -0.004, corners: -0.012, open: 0.024, lower: 0.018, lip: '#c8706a', line: '#6a2a26', lineW: 0.012 }, blush: 0.15, noseTint: '#e98a74' },
   extras: [['hat', { color: '#252a44' }], ['turtleneck', { color: '#3a3a44' }]],
   hair: [['mass', { n: 12, scale: 1.08, front: -0.2, bang: 0.2, bangEl: 0.05, len: 0.3, flick: 0.12, spread: 0.1, side: 0.12, r: 0.16 }]] };
 const qsC = qs.get('c') || 'anime', CH = C[qsC], H = { ...BASEHEAD, ...CH.head, ears: { ...BASEHEAD.ears, ...(CH.head.ears || {}) } };
@@ -518,7 +521,7 @@ const headM = D[JI.Head].clone().multiply(new M4().makeTranslation(O.x, O.y, O.z
 { let cx = 0, cy = 0, cz = 0, n = 0; for (let i = 0; i < N; i++) { const w = headW[i] + neckW[i]; if (w > 0.4 && w < 0.7) { cx += at[i * 3]; cy += at[i * 3 + 1]; cz += at[i * 3 + 2]; n++; } } cx /= n; cy /= n; cz /= n;
   let r = 0, m = 0; for (let i = 0; i < N; i++) { const w = headW[i] + neckW[i]; if (w > 0.4 && w < 0.7 && Math.abs(at[i * 3 + 1] - cy) < 0.02) { r += Math.hypot(at[i * 3] - cx, at[i * 3 + 2] - cz); m++; } } r /= m;
   H.neckBase = [(cx - O.x) / R, (cy - 0.07 - O.y) / R, (cz - O.z) / R, r * 1.14 / R]; }
-const hsdf = headSDF(H), hm = surfaceNets(hsdf, [-1.5, -3.4, -1.5], [1.5, 1.4, 1.8], 0.028);
+window.__H = H; const hsdf = window.__hsdf = headSDF(H), hm = surfaceNets(hsdf, [-1.5, -3.4, -1.5], [1.5, 1.4, 1.8], 0.028);
 // shading normals: the face shades as one smooth form, as drawn faces do; the nose keeps its own
 const nrm = Float32Array.from(hm.nor), uv = new Float32Array(hm.pos.length / 3 * 2);
 for (let v = 0; v < hm.pos.length / 3; v++) {
@@ -526,7 +529,7 @@ for (let v = 0; v < hm.pos.length / 3; v++) {
   const ex = x / 1.0, ey = (y + 0.3) / 1.35, ez = (z + 0.05) / 1.05; let sx = ex / 1.0, sy = ey / 1.35, sz = ez / 1.05; const l = Math.hypot(sx, sy, sz) || 1;
   const Nn = H.face.nose, nr = Nn.ridge ? [0, Nn.ridge[0][0], Nn.ridge[0][1]] : Nn.root, nt = Nn.ridge ? [0, ...Nn.ridge[Nn.ridge.length - 1]] : Nn.tip, nose = Math.hypot(x, y - (nr[1] + nt[1]) / 2, z - (nr[2] + nt[2]) / 2) - (Nn.ball ? Nn.ball[3] : 0) - 0.05;
   const face = clamp((z - 0.1) * 2, 0, 1) * clamp((y + 1.3) * 2, 0, 1) * clamp(1 - Math.abs(x) * 0.8, 0, 1) * clamp(nose * 3 - 0.6, 0, 1);
-  for (let c = 0; c < 3; c++) nrm[v * 3 + c] = lerp(hm.nor[v * 3 + c], [sx, sy, sz][c] / l, 0.55 * face);
+  for (let c = 0; c < 3; c++) nrm[v * 3 + c] = hm.nor[v * 3 + c];
   const L2 = Math.hypot(nrm[v * 3], nrm[v * 3 + 1], nrm[v * 3 + 2]); for (let c = 0; c < 3; c++) nrm[v * 3 + c] /= L2;
   const front = hm.nor[v * 3 + 2] > -0.05 && z > -0.2 && y > -1.6;
   uv[v * 2] = front ? 0.5 + x / (2 * SU) : 0.0005; uv[v * 2 + 1] = front ? 0.5 + (y - SY0) / (2 * SU) : 0.9995;

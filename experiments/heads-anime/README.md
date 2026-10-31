@@ -18,3 +18,10 @@ straight or humped bridge, sharp or soft tip, underside back to the lip, width g
 their own parting line, upper lip with a bow, lower lip, gaps; tapered brows with their own arch; lid creases and
 extra lines; Anny's neck removed with her head and the designed neck measured to meet her cut ring, the jaw's
 underside sloping into the throat. Added Alva and Jesper from "Klaus". Sheets `sheetF*.png`.
+
+**Fourth version, after Pavel said his notes were barely executed:** two faults had hidden most edits — the skull was a
+whole ball reaching down to the chin, so every face stayed round, and the shading bent the face's light towards an egg.
+Now the skull is a dome ending above the cheekbones, the fake shading is gone, each face sets its jaw underside, neck
+width and jaw-to-neck softness. Rebuilt: cel boys as adults with square jaws, the semi-real man's nose as one arc from
+the brow, longer faces for the hooded woman, masked girl, Jesper. Six heads not yet rebuilt. `cmpG*.png`: drawing,
+previous, new.
