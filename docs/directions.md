@@ -60,3 +60,8 @@ silhouette; non-human heroes.
   and gives the clearest new range of forms; face by points reads but twenty points are too few for strong changes;
   subdivision is harmless and brings little, remeshing is not the path. The tools change shapes cleanly but don't
   supply taste — the presets are rough guesses.
+- **Expressive faces and bends** ([experiments/toon](../experiments/toon/README.md), [pictures](pictures/toon/)): about
+  5 of 11 appealing (imp, grin cat, jester, rabbit, TV robot) — each holds one shape language, a big head with the face
+  filling it, and one strong feature. The drawn face carries the character while its features are big; one arc per
+  limb makes the rubber-hose look. Weak: torsos as lumpy tubes without designed sides, legs tapering too little, small
+  faces on stick bodies.
