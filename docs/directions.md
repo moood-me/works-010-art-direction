@@ -71,3 +71,6 @@ silhouette; non-human heroes.
   as two dark dots set low and wide. Limits: glossy plastic without colour zones or outline; hard heroes (stone,
   robot) need separate pieces, not one smooth form; short arms hide behind the head, so motion must be exaggerated
   and spread; held things need their own orientation.
+  Second version: about 17 of 24 alive and charming. Expressiveness comes from a face of two or three graphic signs
+  that change shape (lid, brow, mouth) together with the tilt of the whole figure; pose and feeling must agree; held
+  things need their own orientation. Pavel: "развей их, делай ещё и стильнее" — one direction among the others.

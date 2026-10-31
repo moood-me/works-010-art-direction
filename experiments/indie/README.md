@@ -9,3 +9,9 @@ A constructor of heroes from simple forms on a skeleton of SOMA joints (without 
   rotations of the same joints, the pelvis lowers so feet stay on the floor;
 - 18 original heroes. Kimodo motion was not tried on them.
 Pictures: [docs/pictures/indie](../../docs/pictures/indie/).
+
+**Second version:** a "colour and outline" look (three-tone fill, a dark line around each big form) beside the clay
+one; faces redrawn per feeling — calm, glad, surprised, angry, sad, sleepy, winking — with blush and brows; poses with
+a line of action, each with its own feeling, plus "dozing"; held things on their own joint in the hand, kept upright;
+robot and stone guard as separate hard blocks; six new heroes (candle, raven courier, snail knight, cactus wanderer,
+little octopus, little witch) — 24 in all.
