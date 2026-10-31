@@ -33,8 +33,15 @@
   .tabs { display: flex; gap: 6px; margin: 4px 0 14px; }
   .tabs button { font: inherit; font-size: 14px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
   .tabs button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .v3d { width: 100%; height: min(78vh, 760px); border: 1px solid var(--line); border-radius: 8px; background: #d8d2c8; display: block; }
-  .v3dnote { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+  .d3.on { position: fixed; top: 0; right: 0; bottom: 0; left: 290px; z-index: 9; background: #d8d2c8; display: flex; flex-direction: column; }
+  .d3bar { display: flex; gap: 12px; align-items: center; padding: 8px 14px; background: var(--bg); border-bottom: 1px solid var(--line); font-size: 14px; }
+  .d3bar b { color: var(--accent); }
+  .d3bar .note { color: var(--muted); font-size: 13px; flex: 1; min-width: 0; }
+  .d3bar button { font: inherit; font-size: 14px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; white-space: nowrap; }
+  .d3box { position: relative; flex: 1; min-height: 0; }
+  .v3d { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #d8d2c8; }
+  .v3dwait { position: absolute; inset: 0; display: grid; place-items: center; background: #d8d2c8; color: #4a4640; font: italic 20px Georgia, serif; text-align: center; padding: 20px; }
+  @media (max-width: 760px) { .d3.on { left: 0; } }
   .what { color: var(--muted); margin: 0 0 6px; max-width: 900px; }
   .verdict { margin: 0 0 16px; max-width: 900px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
@@ -199,7 +206,7 @@ const VIEW3D = {
   'О1': [E + 'clothes/index.html?viewer', 'одежда движется с кожей (без физики ткани): юбки при шаге и сидя прорезаются ногами'],
   'О2': [E + 'dressed/index.html?viewer', 'одежда и волосы движутся с кожей'],
   'Г1': [E + 'heads-anime/index.html?viewer', 'смена героя перезагружает вид'],
-  'Г3': [E + 'heads-wrap/index.html?viewer', 'голова — часть сетки Anny; смена героя перезагружает вид'],
+  'Г3': [E + 'heads-wrap/index.html?viewer&c=red', 'голова — часть сетки Anny; смена героя перезагружает вид'],
   'Т1': [E + 'form/index.html?viewer', '8 стилей на одном теле'],
   'Т6': [E + 'form-tools/index.html?viewer', 'стиль × каркас × лицо'],
   'Т7': [E + 'designed-form/index.html?viewer', 'Дисней, Пиксар, аниме'],
@@ -219,8 +226,21 @@ function show(id) {
     tab = VIEW3D[it.id] ? t : 'pics';
     view.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === tab)));
     grid.style.display = tab === 'pics' ? '' : 'none';
-    d3.innerHTML = tab === '3d' ? `<iframe class="v3d" src="${VIEW3D[it.id][0]}" title="3D: ${it.name}"></iframe><p class="v3dnote">${VIEW3D[it.id][1]}. Мышь: вращать, колесо: ближе и дальше, правая кнопка или Shift: сдвинуть. Первый показ собирается до минуты.</p>` : '';
+    clearInterval(d3.timer); d3.classList.toggle('on', tab === '3d');
+    d3.innerHTML = tab === '3d' ? `<div class="d3bar"><b>${it.id}</b><span>${it.name}</span><span class="note">${VIEW3D[it.id][1]}</span><button class="back">← Картинки</button></div><div class="d3box"><iframe class="v3d" src="${VIEW3D[it.id][0]}" title="3D: ${it.name}"></iframe><div class="v3dwait">собирается… первый показ — до минуты</div></div>` : '';
+    if (tab !== '3d') return;
+    d3.querySelector('.back').onclick = () => setTab('pics');
+    const fr = d3.querySelector('iframe'), wait = d3.querySelector('.v3dwait'), t0 = Date.now(), errs = [];
+    fr.onload = () => { try { fr.contentWindow.addEventListener('error', e => errs.push(e.message)); fr.contentWindow.addEventListener('unhandledrejection', e => errs.push(String(e.reason))); } catch (e) {} };
+    d3.timer = setInterval(() => {
+      let ready = false; try { ready = !!fr.contentDocument.getElementById('vpPanel'); } catch (e) {}
+      if (ready) { wait.remove(); clearInterval(d3.timer); return; }
+      const sec = Math.round((Date.now() - t0) / 1000);
+      wait.textContent = errs.length ? 'не загрузилось: ' + errs[0] : sec > 180 ? 'не загрузилось за три минуты' : `собирается… ${sec} с (первый показ — до минуты)`;
+      if (errs.length || sec > 180) clearInterval(d3.timer);
+    }, 500);
   };
+  addEventListener('keydown', e => { if (e.key === 'Escape' && tab === '3d' && !lb.classList.contains('on')) setTab('pics'); });
   view.querySelectorAll('.tabs button').forEach(b => b.onclick = () => setTab(b.dataset.t));
   setTab(tab);
   it.pics.forEach(([src, cap], k) => {

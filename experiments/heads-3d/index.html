@@ -444,7 +444,7 @@ window.CH = CH;
 const sc = document.createElement('script');
 
 // ———— the body: Anny from moood, posed, her own head hidden; the cartoon head set on the Head joint ————
-const META = await (await fetch('data/meta.json')).json();
+const META = await (await fetch('../data/meta.json')).json();
 const JN = META.joints, JI = Object.fromEntries(JN.map((n, i) => [n, i]));
 const PARENT = JN.map(n => {
   if (n === 'Hips') return -1;
@@ -458,7 +458,7 @@ const PARENT = JN.map(n => {
   return JI.Hips;
 });
 const reader = (buf, at = 0) => (Kind, n) => { const a = new Kind(buf.slice(at, at + n * Kind.BYTES_PER_ELEMENT)); at += n * Kind.BYTES_PER_ELEMENT; return a; };
-const bytes = name => import('./data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer);
+const bytes = name => import('../data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer);
 const baseBuf = await bytes('base');
 const BASE = (() => { const take = reader(baseBuf), [N, T] = take(Uint32Array, 2), tris = take(Uint16Array, T * 3), joint = take(Uint8Array, N * 4), weight = take(Uint8Array, N * 4); return { N, tris, joint, weight }; })();
 const people = {};

@@ -77,8 +77,8 @@ const clamp = (x, a, b) => x < a ? a : x > b ? b : x, lerp = (a, b, t) => a + (b
 const reader = (buf, at = 0) => (Kind, n) => { const a = new Kind(buf.slice(at, at + n * Kind.BYTES_PER_ELEMENT)); at += n * Kind.BYTES_PER_ELEMENT; return a; };
 const parseBase = buf => { const take = reader(buf), [N, T] = take(Uint32Array, 2); return { N, tris: take(Uint16Array, T * 3), joint: take(Uint8Array, N * 4), weight: take(Uint8Array, N * 4) }; };
 const cache = {};
-const bytes = name => (cache[name] ??= import('./data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer));
-const META = await (await fetch('data/meta.json')).json();
+const bytes = name => (cache[name] ??= import('../data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer));
+const META = await (await fetch('../data/meta.json')).json();
 const JN = META.joints, JI = Object.fromEntries(JN.map((n, i) => [n, i]));
 const PARENT = JN.map(n => {
   if (n === 'Hips') return -1;

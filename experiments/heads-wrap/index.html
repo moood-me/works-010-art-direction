@@ -16,7 +16,7 @@ const parseBase = buf => { const take = reader(buf), [N, T] = take(Uint32Array, 
 const parsePerson = (buf, bs) => { const take = reader(buf), m = v => v / 10000; return { at: Float32Array.from(take(Int16Array, bs.N * 3), m), plain: Float32Array.from(take(Int16Array, bs.face.length * 3), m), inverse: take(Float32Array, 77 * 12) }; };
 const parseGarment = buf => { const take = reader(buf), [V, T, H, S] = take(Uint32Array, 4); return { V, refs: take(Uint16Array, V * 3), bary: take(Float32Array, V * 3), offset: Float32Array.from(take(Int16Array, V * 3), v => v / 10000), measure: take(Uint16Array, 6), span: take(Float32Array, 3), joint: take(Uint8Array, V * 4), weight: take(Uint8Array, V * 4), loose: take(Uint8Array, V), hangs: take(Uint16Array, V), far: take(Uint16Array, V), beneath: take(Uint16Array, V), tris: take(Uint16Array, T * 3) }; };
 function fitted(g, pos) { const s = [0, 1, 2].map(k => Math.abs(pos[g.measure[k * 2] * 3 + k] - pos[g.measure[k * 2 + 1] * 3 + k]) / g.span[k]); const out = new Float32Array(g.V * 3); for (let i = 0; i < g.V; i++) for (let c = 0; c < 3; c++) { let v = g.offset[i * 3 + c] * s[c]; for (let k = 0; k < 3; k++) v += g.bary[i * 3 + k] * pos[g.refs[i * 3 + k] * 3 + c]; out[i * 3 + c] = v; } return out; }
-const load = name => import('./data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer);
+const load = name => import('../data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer);
 function parentName(n) {
   const fixed = { Hips: null, Spine1: 'Hips', Spine2: 'Spine1', Chest: 'Spine2', Neck1: 'Chest', Neck2: 'Neck1', Head: 'Neck2', HeadEnd: 'Head', Jaw: 'Head', LeftEye: 'Head', RightEye: 'Head' };
   if (n in fixed) return fixed[n];
@@ -505,7 +505,7 @@ const at = Float32Array.from(P.at);
 const nc = J[JI.Neck2];
 for (let i = 0; i < N; i++) { const w = Math.min(1, neckW[i] + headW[i]) * (CH.neckSlim ?? 0.78) + (1 - Math.min(1, neckW[i] + headW[i])); at[i * 3] = nc.x + (at[i * 3] - nc.x) * w; at[i * 3 + 2] = nc.z + (at[i * 3 + 2] - nc.z) * w; }
 // pose: arms down, a slight bend, a head turn
-const POSE = { LeftArm: [0, 0, -0.55], RightArm: [0, 0, 0.55], LeftForeArm: [0, -0.2, 0], RightForeArm: [0, 0.2, 0], Head: CH.headTurn || [0, 0, 0], ...(CH.pose || {}) };
+const POSE = qs.has('viewer') ? {} : { LeftArm: [0, 0, -0.55], RightArm: [0, 0, 0.55], LeftForeArm: [0, -0.2, 0], RightForeArm: [0, 0.2, 0], Head: CH.headTurn || [0, 0, 0], ...(CH.pose || {}) };
 const D = J.map(() => new M4());
 for (let j = 0; j < 77; j++) {
   const r = POSE[JN[j]], p = J[j];
@@ -776,6 +776,7 @@ if (CH.turtleneck) { const neck = []; const top = J[JI.Head].y - 0.01, bot = J[J
   const g0 = new THREE.BufferGeometry(); g0.setAttribute('position', new THREE.BufferAttribute(posed, 3)); g0.setIndex(keep); g0.computeVertexNormals(); const nn = g0.attributes.normal.array, p2 = Float32Array.from(posed); for (const i of neck) for (let c = 0; c < 3; c++) p2[i * 3 + c] += nn[i * 3 + c] * 0.012;
   addMesh(p2, tri, CH.turtleneck, { double: true, normals: smoothN(p2, keep, 12) }); }
 
+const headFrom = scene.children.length;   // what is added from here on goes with the Head joint
 // ———— the head's things, on the Head joint: eyeballs, the inside of the mouth, hair ————
 const headM = D[JI.Head].clone().multiply(new M4().makeTranslation(O.x, O.y, O.z)).multiply(new M4().makeScale(R, R, R));
 const toWorld = (pos, M) => { const out = new Float32Array(pos.length), e = M.elements; for (let i = 0; i < pos.length; i += 3) { const x = pos[i], y = pos[i + 1], z = pos[i + 2]; out[i] = e[0] * x + e[4] * y + e[8] * z + e[12]; out[i + 1] = e[1] * x + e[5] * y + e[9] * z + e[13]; out[i + 2] = e[2] * x + e[6] * y + e[10] * z + e[14]; } return out; };
@@ -809,5 +810,14 @@ else if (view === 'eye') { target = new V3(E.x, E.y, 0.5).applyMatrix4(headM); d
 camera.position.set(target.x + Math.sin(yaw) * dist * Math.cos(pitch), target.y + (view === 'full' ? 0.15 : Math.sin(pitch) * dist), target.z + Math.cos(yaw) * dist * Math.cos(pitch)); camera.lookAt(target);
 key.position.set(target.x - 1.4, target.y + 1.8, target.z + 2.4); key.target.position.copy(target); scene.add(key.target);
 renderer.render(scene, camera);
+// the gallery's viewer: the body at rest, what moves with the Head joint, the characters of this page
+if (qs.has('viewer')) {
+  scene.children.forEach((o, i) => { if (!o.isMesh || o === floor) { o.userData.move = false; return; } if (o.geometry.attributes.position.count === N) o.userData.body = true; else if (i >= headFrom) o.userData.rigid = JI.Head; });
+  let top = 0; for (let i = 1; i < posed.length; i += 3) top = Math.max(top, posed[i]);
+  const NAMES_RU = { anime: 'аниме-девушка', red: 'рыжая девушка', mask: 'девушка в маске', hood: 'женщина в капюшоне', blond: 'блондин', tails: 'мальчик с хвостиками', boy7: 'мальчик с каре', old: 'старик', semi: 'парень с длинным носом', alva: 'Альва', jesper: 'Джеспер' };
+  window.__vp = { kind: 'one', THREE, JN, PARENT, J, restBody: posed, BASE: { N, joint: bs.joint, weight: bs.weight }, scene, camera, renderer, target: new V3(0, top * 0.53, 0),
+    chars: ['red', 'old', 'semi', 'hood'].map(id => ({ id, label: NAMES_RU[id] || id })), current: qsC };
+  import('../../gallery/player.js');
+}
 window.__ready = true;
 </script>
