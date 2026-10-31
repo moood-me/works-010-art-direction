@@ -79,3 +79,10 @@ but determined"; not saved, it came only inline.) "Imagine it is a person drawn 
 - spring bones for tufts, tail, cape;
 - a human-scheme skeleton with short legs and big feet, feet pinned to the floor after retargeting;
 - flat colour zones from the palette and an outline — without them such a character in 3D looks like a plastic toy.
+
+## Picked for heads: Klaus and Luca
+
+`klaus-alva-angry.png`, `klaus-alva-classroom.png`, `klaus-alva-jesper.png`, `klaus-jesper-sled.png` — Alva and Jesper
+from "Klaus": 2D drawn as volume, lit like 3D; long faces, sharp noses, hair as a few big shapes, heavy lids.
+`luca-giulia.png` — Giulia from Pixar's "Luca": a "fiery triangle" led by a sharp nose, curly red hair in big clumps,
+round eyes, freckles. Pavel sent these as characters to make.
