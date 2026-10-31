@@ -68,3 +68,14 @@ Aliveness is layers, each made its own way, all at once:
 - **drawn features that move with the face** — brows and mouth line as graphics on the skin that change shape too;
 - **breath** always, and **cloth** by physics like hair; body motion from Kimodo.
 Natural because nothing repeats in a visible cycle and hair and cloth answer any motion by physics, not keyframes.
+
+## A turnaround sheet of a cartoon hero
+
+(A sheet Pavel showed — "Jam", a creature superhero, front / three-quarter / back with a palette and a note "anxious
+but determined"; not saved, it came only inline.) "Imagine it is a person drawn in this style — to have this in 3D."
+- a build from simple forms (a head a third of the height with tufts, a small body, thin legs, huge boots);
+- fitting forms to the sheet's three views at once, or a picture-to-3D model as a base;
+- a graphic face: huge eyes in a mask, a wide grin, expression carrying the character;
+- spring bones for tufts, tail, cape;
+- a human-scheme skeleton with short legs and big feet, feet pinned to the floor after retargeting;
+- flat colour zones from the palette and an outline — without them such a character in 3D looks like a plastic toy.
