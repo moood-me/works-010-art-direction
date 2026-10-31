@@ -65,3 +65,9 @@ silhouette; non-human heroes.
   filling it, and one strong feature. The drawn face carries the character while its features are big; one arc per
   limb makes the rubber-hose look. Weak: torsos as lumpy tubes without designed sides, legs tapering too little, small
   faces on stick bodies.
+- **Indie heroes** ([experiments/indie](../experiments/indie/README.md), [pictures](pictures/indie/)): about 12 of 18
+  pleasant as toy characters — the first result nice to look at. Beauty holds on the silhouette and one main thing, not
+  anatomy; a head of half the height and tiny legs make a hero cute almost without effort; two or three colours; eyes
+  as two dark dots set low and wide. Limits: glossy plastic without colour zones or outline; hard heroes (stone,
+  robot) need separate pieces, not one smooth form; short arms hide behind the head, so motion must be exaggerated
+  and spread; held things need their own orientation.

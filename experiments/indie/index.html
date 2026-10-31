@@ -1,0 +1,692 @@
+<meta charset="utf-8">
+<title>Инди-герои</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Golos+Text:wght@400;500&display=swap">
+<style>
+/* Layout: one studio frame, the controls under it, a few notes below */
+:root {
+  --bg: #0d0e11;
+  --ink: #e9e3d7;
+  --muted: #8e8a83;
+  --line: #2a2c31;
+  --on: #e9e3d7;
+  --onInk: #15161a;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--sans); }
+main { max-width: 1280px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
+header { display: grid; gap: 8px; }
+h1 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(38px, 6.5vw, 66px); line-height: 1; margin: 0; }
+header p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 70ch; }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 3px; overflow: hidden; background: #d9d2c6; touch-action: none; cursor: grab; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.stage .msg { position: absolute; inset: 0; display: grid; place-items: center; color: #4a4640; font-family: var(--serif); font-style: italic; font-size: 24px; pointer-events: none; }
+.tags { position: absolute; inset: 0; pointer-events: none; }
+.tags span { position: absolute; transform: translateX(-50%); font-size: 12px; color: rgba(40,36,32,0.7); white-space: nowrap; }
+.controls { display: grid; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.row .label { color: var(--muted); font-size: 13px; width: 86px; flex: none; }
+button { font: inherit; font-size: 14px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 15px; cursor: pointer; }
+button:hover { border-color: #45474e; }
+button[aria-pressed="true"] { background: var(--on); color: var(--onInk); border-color: var(--on); }
+button:focus-visible { outline: 2px solid #c9a46a; outline-offset: 2px; }
+.notes { display: grid; gap: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 76ch; padding-top: 8px; border-top: 1px solid var(--line); }
+.notes p { margin: 0; }
+.notes b { color: var(--ink); font-weight: 500; }
+@media (max-width: 520px) { .row .label { width: 100%; } }
+</style>
+
+<main>
+  <header>
+    <h1>Инди-герои</h1>
+    <p>Герои собраны не из человеческого тела, а из простых форм — шаров, капель, цилиндров, брусков — с плавными стыками. Внутри у каждого скелет с именами суставов SOMA, как у Kimodo: руки и ноги короткие, но гнутся те же суставы.</p>
+  </header>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="tags" id="tags"></div><div class="msg" id="msg">собираются…</div></div>
+  <div class="controls">
+    <div class="row" role="group" aria-label="Показ"><span class="label">Показ</span>
+      <button data-mode="all" data-row="0" aria-pressed="true">Первые шесть</button><button data-mode="all" data-row="1">Вторые</button><button data-mode="all" data-row="2">Третьи</button><button data-mode="one">Один в позах</button>
+      <select id="hero" style="font:inherit;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px"></select>
+    </div>
+    <div class="row" role="group" aria-label="Поза"><span class="label">Поза</span>
+      <button data-pose="stand" aria-pressed="true">Стоит</button><button data-pose="walk">Шаг</button><button data-pose="wave">Машет</button><button data-pose="jump">Прыжок</button><button data-pose="act">Действие</button><button data-pose="sit">Присел</button>
+    </div>
+    <div class="row" role="group" aria-label="Вид"><span class="label">Вид</span>
+      <button data-view="soft" aria-pressed="true">Мягкий</button><button data-view="sil">Силуэт</button><button data-view="bones">Скелет</button>
+    </div>
+  </div>
+  <section class="notes">
+    <p><b>Конструктор.</b> Каждая форма привязана к кости. Формы одной группы сливаются плавно (тело), отдельные группы — маска, шлем, рога, шляпа, оружие — лежат поверх и движутся со своей костью.</p>
+    <p><b>Скелет.</b> Те же суставы, что у SOMA (таз, три позвонка, шея, голова, ключицы, плечи, локти, кисти, бёдра, колени, стопы), без пальцев. Движение Kimodo — это повороты суставов, а повороты не зависят от длины костей; высоту таза надо масштабировать по длине ног. Позы здесь заданы вручную.</p>
+  </section>
+</main>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const lerp = (a, b, t) => a + (b - a) * t, clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const smooth = t => t * t * (3 - 2 * t);
+function smin(a, b, k) { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; }
+function smax(a, b, k) { return -smin(-a, -b, k); }
+function ellipsoid(cx, cy, cz, rx, ry, rz) {
+  return (x, y, z) => {
+    const px = (x - cx) / rx, py = (y - cy) / ry, pz = (z - cz) / rz;
+    const k0 = Math.sqrt(px * px + py * py + pz * pz);
+    const qx = px / rx, qy = py / ry, qz = pz / rz, k1 = Math.sqrt(qx * qx + qy * qy + qz * qz);
+    return k1 < 1e-9 ? -Math.min(rx, ry, rz) : k0 * (k0 - 1) / k1;
+  };
+}
+// an ellipsoid along its own axes: u (with ru), v (rv), w = u × v (rw)
+function oell(c, u, v, ru, rv, rw) {
+  const n = a => { const l = Math.hypot(a[0], a[1], a[2]); return [a[0] / l, a[1] / l, a[2] / l]; };
+  u = n(u); v = n(v);
+  const d = u[0] * v[0] + u[1] * v[1] + u[2] * v[2]; v = n([v[0] - u[0] * d, v[1] - u[1] * d, v[2] - u[2] * d]);
+  const w = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const e = ellipsoid(0, 0, 0, ru, rv, rw);
+  return (x, y, z) => { const px = x - c[0], py = y - c[1], pz = z - c[2]; return e(px * u[0] + py * u[1] + pz * u[2], px * v[0] + py * v[1] + pz * v[2], px * w[0] + py * w[1] + pz * w[2]); };
+}
+function cone(a, b, r1, r2) {
+  const bax = b[0] - a[0], bay = b[1] - a[1], baz = b[2] - a[2];
+  const l2 = bax * bax + bay * bay + baz * baz, rr = r1 - r2, a2 = l2 - rr * rr, il2 = 1 / l2;
+  return (x, y, z) => {
+    const pax = x - a[0], pay = y - a[1], paz = z - a[2];
+    const yy = pax * bax + pay * bay + paz * baz, zz = yy - l2;
+    const xx = pax * l2 - bax * yy, xy = pay * l2 - bay * yy, xz = paz * l2 - baz * yy;
+    const x2 = xx * xx + xy * xy + xz * xz, y2 = yy * yy * l2, z2 = zz * zz * l2;
+    const k = Math.sign(rr) * rr * rr * x2;
+    if (Math.sign(zz) * a2 * z2 > k) return Math.sqrt(x2 + z2) * il2 - r2;
+    if (Math.sign(yy) * a2 * y2 < k) return Math.sqrt(x2 + y2) * il2 - r1;
+    return (Math.sqrt(x2 * a2 * il2) + yy * rr) * il2 - r1;
+  };
+}
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+const mix = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+
+function surfaceNets(sdf, bmin, bmax, h) {
+  const nx = Math.ceil((bmax[0] - bmin[0]) / h) + 1, ny = Math.ceil((bmax[1] - bmin[1]) / h) + 1, nz = Math.ceil((bmax[2] - bmin[2]) / h) + 1;
+  const F = new Float32Array(nx * ny * nz).fill(NaN);
+  const id = (i, j, k) => i + nx * (j + ny * k);
+  const C = 4, cnx = Math.ceil((nx - 1) / C), cny = Math.ceil((ny - 1) / C), cnz = Math.ceil((nz - 1) / C);
+  const thr = C * h * 1.9;
+  const CV = new Float32Array((cnx + 1) * (cny + 1) * (cnz + 1));
+  const cid = (i, j, k) => i + (cnx + 1) * (j + (cny + 1) * k);
+  for (let k = 0; k <= cnz; k++) for (let j = 0; j <= cny; j++) for (let i = 0; i <= cnx; i++) CV[cid(i, j, k)] = sdf(bmin[0] + i * C * h, bmin[1] + j * C * h, bmin[2] + k * C * h);
+  for (let ck = 0; ck < cnz; ck++) for (let cj = 0; cj < cny; cj++) for (let ci = 0; ci < cnx; ci++) {
+    let mn = 1e9, s = 0;
+    for (let c = 0; c < 8; c++) { const v = CV[cid(ci + (c & 1), cj + (c >> 1 & 1), ck + (c >> 2 & 1))]; mn = Math.min(mn, Math.abs(v)); s = v; }
+    const near = mn < thr;
+    for (let k = ck * C; k <= Math.min(ck * C + C, nz - 1); k++) for (let j = cj * C; j <= Math.min(cj * C + C, ny - 1); j++) for (let i = ci * C; i <= Math.min(ci * C + C, nx - 1); i++) {
+      const q = id(i, j, k); if (!Number.isNaN(F[q]) && !near) continue;
+      if (near) { if (Number.isNaN(F[q]) || Math.abs(F[q]) >= thr * 0.999) F[q] = sdf(bmin[0] + i * h, bmin[1] + j * h, bmin[2] + k * h); }
+      else F[q] = s > 0 ? thr : -thr;
+    }
+  }
+  for (let q = 0; q < F.length; q++) if (Number.isNaN(F[q])) F[q] = thr;
+  const VI = new Int32Array(nx * ny * nz).fill(-1), pos = [];
+  const E = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+  const d = new Float32Array(8);
+  for (let k = 0; k < nz - 1; k++) for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+    let m = 0;
+    for (let c = 0; c < 8; c++) { d[c] = F[id(i + (c & 1), j + (c >> 1 & 1), k + (c >> 2 & 1))]; if (d[c] < 0) m |= 1 << c; }
+    if (m === 0 || m === 255) continue;
+    let sx = 0, sy = 0, sz = 0, n = 0;
+    for (const [a, b] of E) {
+      if ((d[a] < 0) === (d[b] < 0)) continue;
+      const t = d[a] / (d[a] - d[b]);
+      sx += (a & 1) + ((b & 1) - (a & 1)) * t; sy += (a >> 1 & 1) + ((b >> 1 & 1) - (a >> 1 & 1)) * t; sz += (a >> 2 & 1) + ((b >> 2 & 1) - (a >> 2 & 1)) * t; n++;
+    }
+    VI[id(i, j, k)] = pos.length / 3;
+    pos.push(bmin[0] + (i + sx / n) * h, bmin[1] + (j + sy / n) * h, bmin[2] + (k + sz / n) * h);
+  }
+  const idx = [];
+  const quad = (a, b, c, e, flip) => { if (a < 0 || b < 0 || c < 0 || e < 0) return; if (flip) idx.push(a, c, b, a, e, c); else idx.push(a, b, c, a, c, e); };
+  for (let k = 1; k < nz - 1; k++) for (let j = 1; j < ny - 1; j++) for (let i = 1; i < nx - 1; i++) {
+    const v0 = F[id(i, j, k)], inside = v0 < 0;
+    if (inside !== (F[id(i + 1, j, k)] < 0)) quad(VI[id(i, j - 1, k - 1)], VI[id(i, j, k - 1)], VI[id(i, j, k)], VI[id(i, j - 1, k)], inside);
+    if (inside !== (F[id(i, j + 1, k)] < 0)) quad(VI[id(i - 1, j, k - 1)], VI[id(i - 1, j, k)], VI[id(i, j, k)], VI[id(i, j, k - 1)], inside);
+    if (inside !== (F[id(i, j, k + 1)] < 0)) quad(VI[id(i - 1, j - 1, k)], VI[id(i, j - 1, k)], VI[id(i, j, k)], VI[id(i - 1, j, k)], inside);
+  }
+  // normals from the distance itself, and the winding made to agree with them
+  const nor = new Float32Array(pos.length), e = h * 0.5;
+  for (let v = 0; v < pos.length; v += 3) {
+    const x = pos[v], y = pos[v + 1], z = pos[v + 2];
+    let gx = sdf(x + e, y, z) - sdf(x - e, y, z), gy = sdf(x, y + e, z) - sdf(x, y - e, z), gz = sdf(x, y, z + e) - sdf(x, y, z - e);
+    const l = Math.hypot(gx, gy, gz) || 1; nor[v] = gx / l; nor[v + 1] = gy / l; nor[v + 2] = gz / l;
+  }
+  for (let t = 0; t < idx.length; t += 3) {
+    const a = idx[t] * 3, b = idx[t + 1] * 3, c = idx[t + 2] * 3;
+    const ux = pos[b] - pos[a], uy = pos[b + 1] - pos[a + 1], uz = pos[b + 2] - pos[a + 2], wx = pos[c] - pos[a], wy = pos[c + 1] - pos[a + 1], wz = pos[c + 2] - pos[a + 2];
+    const cx = uy * wz - uz * wy, cy = uz * wx - ux * wz, cz = ux * wy - uy * wx;
+    if (cx * (nor[a] + nor[b] + nor[c]) + cy * (nor[a + 1] + nor[b + 1] + nor[c + 1]) + cz * (nor[a + 2] + nor[b + 2] + nor[c + 2]) < 0) { const s = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = s; }
+  }
+  return { pos: new Float32Array(pos), nor, idx };
+}
+
+
+// ———————————— more simple forms ————————————
+const sph = (c, r) => (x, y, z) => Math.hypot(x - c[0], y - c[1], z - c[2]) - r;
+const ell = (c, r) => ellipsoid(c[0], c[1], c[2], r[0], r[1], r[2]);
+// a box with rounded edges, turned by yaw (about y) and roll (about z)
+function rbox(c, h, r, yaw = 0, roll = 0, pitch = 0) {
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cr = Math.cos(roll), sr = Math.sin(roll), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  return (x, y, z) => {
+    let px = x - c[0], py = y - c[1], pz = z - c[2];
+    let t = cy * px - sy * pz; pz = sy * px + cy * pz; px = t;
+    t = cr * px + sr * py; py = -sr * px + cr * py; px = t;
+    t = cp * py + sp * pz; pz = -sp * py + cp * pz; py = t;
+    const qx = Math.abs(px) - h[0] + r, qy = Math.abs(py) - h[1] + r, qz = Math.abs(pz) - h[2] + r;
+    return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - r;
+  };
+}
+// a ring around an axis ('x', 'y' or 'z')
+function torus(c, R, r, ax = 'y') {
+  return (x, y, z) => {
+    const p = [x - c[0], y - c[1], z - c[2]], a = { x: 0, y: 1, z: 2 }[ax];
+    const h = p[a], q = Math.hypot(p[(a + 1) % 3], p[(a + 2) % 3]) - R;
+    return Math.hypot(q, h) - r;
+  };
+}
+const inter = (f, g, k) => (x, y, z) => smax(f(x, y, z), g(x, y, z), k);
+const cut = (f, g, k) => (x, y, z) => smax(f(x, y, z), -g(x, y, z), k);
+// a cone standing on its base (a hat, a horn's stub); tip above
+const capsule = (a, b, r) => cone(a, b, r, r);
+// a curved horn: a chain of round cones along a quadratic curve
+function horn(a, ctrl, tip, r0, r1, n = 6) {
+  const pts = []; for (let i = 0; i <= n; i++) { const t = i / n; pts.push([0, 1, 2].map(k => (1 - t) * (1 - t) * a[k] + 2 * (1 - t) * t * ctrl[k] + t * t * tip[k])); }
+  const segs = []; for (let i = 0; i < n; i++) segs.push(cone(pts[i], pts[i + 1], lerp(r0, r1, i / n), lerp(r0, r1, (i + 1) / n)));
+  return (x, y, z) => { let d = 1e9; for (const s of segs) d = Math.min(d, s(x, y, z)); return d; };
+}
+
+// ———————————— the skeleton: SOMA's joints without the fingers ————————————
+const PARENT = {
+  Hips: null, Spine1: 'Hips', Spine2: 'Spine1', Chest: 'Spine2', Neck1: 'Chest', Neck2: 'Neck1', Head: 'Neck2', HeadEnd: 'Head', Jaw: 'Head', LeftEye: 'Head', RightEye: 'Head',
+  LeftShoulder: 'Chest', LeftArm: 'LeftShoulder', LeftForeArm: 'LeftArm', LeftHand: 'LeftForeArm',
+  RightShoulder: 'Chest', RightArm: 'RightShoulder', RightForeArm: 'RightArm', RightHand: 'RightForeArm',
+  LeftLeg: 'Hips', LeftShin: 'LeftLeg', LeftFoot: 'LeftShin', LeftToeBase: 'LeftFoot', LeftToeEnd: 'LeftToeBase',
+  RightLeg: 'Hips', RightShin: 'RightLeg', RightFoot: 'RightShin', RightToeBase: 'RightFoot', RightToeEnd: 'RightToeBase',
+};
+// a rig from a few measures: where the hips are, how long the legs, the body, the neck, the arms; the head's size
+function rig(o) {
+  const { hip, hipW = 0.07, spine = 0.2, neck = 0.02, headR = 0.2, headUp = 0, shW = 0.12, arm = 0.22, armA = 0.5, ankle = 0.035, foot = 0.07, shDrop = 0 } = o;
+  const J = {}, chest = hip + spine;
+  J.Hips = [0, hip, 0]; J.Spine1 = [0, hip + spine * 0.33, 0]; J.Spine2 = [0, hip + spine * 0.66, 0]; J.Chest = [0, chest, 0];
+  J.Neck1 = [0, chest + neck * 0.3, 0]; J.Neck2 = [0, chest + neck * 0.65, 0]; J.Head = [0, chest + neck, 0];
+  const hc = [0, chest + neck + headR * (0.9 + headUp), 0];
+  J.HeadEnd = [0, hc[1] + headR, 0]; J.Jaw = [0, hc[1] - headR * 0.5, headR * 0.5];
+  J.LeftEye = [headR * 0.35, hc[1], headR * 0.85]; J.RightEye = [-headR * 0.35, hc[1], headR * 0.85];
+  for (const [s, k] of [['Left', 1], ['Right', -1]]) {
+    const shY = chest - 0.01 - shDrop;
+    J[s + 'Shoulder'] = [k * shW * 0.35, shY, 0]; J[s + 'Arm'] = [k * shW, shY, 0];
+    const d = [k * Math.sin(armA), -Math.cos(armA), 0];
+    J[s + 'ForeArm'] = add(J[s + 'Arm'], mul(d, arm * 0.5)); J[s + 'Hand'] = add(J[s + 'Arm'], mul(d, arm));
+    J[s + 'Leg'] = [k * hipW, hip, 0]; J[s + 'Shin'] = [k * hipW, lerp(hip, ankle, 0.5), 0.005]; J[s + 'Foot'] = [k * hipW, ankle, 0];
+    J[s + 'ToeBase'] = [k * hipW, ankle * 0.35, foot * 0.6]; J[s + 'ToeEnd'] = [k * hipW, ankle * 0.3, foot];
+  }
+  J.hc = hc; J.headR = headR; J.armA = armA;
+  return J;
+}
+
+// ———————————— the heroes ————————————
+// a part: [group, bone or [bone, bone] (the second takes over past its joint), distance, colour, op]
+// group 'body' melts together; every other group is its own piece on top
+const HEROES = [];
+const hero = (id, name, J, k, parts, extra = {}) => HEROES.push({ id, name, J, k, parts: parts(J), ...extra });
+const L = 'Left', R = 'Right';
+const both = f => [...f(L, 1), ...f(R, -1)];
+// two dark eyes set on a head's surface, looking a little apart
+function dotEyes(J, col = '#17151a', size = [0.03, 0.045], gap = 0.36, lift = 0.05, group = 'eyes', depth = 0.92) {
+  const r = J.headR, c = J.hc;
+  return [-1, 1].map(k => {
+    const dir = [k * gap, lift, 1], l = Math.hypot(...dir), n = mul(dir, 1 / l);
+    const p = add(c, mul(n, r * depth));
+    return [group, 'Head', oell(p, n, [0, 1, 0], 0.012, size[1] * r / 0.2, size[0] * r / 0.2), col];
+  });
+}
+
+// 1 — a pilgrim moth: a white mask with two antlers, a dark cloak, thin legs
+hero('moth', 'Мотылёк-паломник', rig({ hip: 0.2, spine: 0.16, neck: 0.0, headR: 0.15, headUp: 0.15, shW: 0.07, arm: 0.12, armA: 0.25, foot: 0.04, ankle: 0.02, hipW: 0.035 }), 0.04, J => [
+  ['body', 'Spine1', cone([0, 0.08, 0], [0, J.Chest[1] + 0.02, 0], 0.13, 0.06), '#2c2a36'],
+  ['body', 'Chest', sph([0, J.Chest[1] - 0.01, 0], 0.075), '#2c2a36'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.024, 0.018), '#2c2a36'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.005, 0.015]), [0.022, 0.016, 0.03]), '#2c2a36'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.02, 0.016), '#2c2a36']]),
+  ['mask', 'Head', ell(J.hc, [0.12, 0.15, 0.12]), '#efeae0'],
+  ['mask', 'Head', horn(add(J.hc, [0.06, 0.12, 0]), add(J.hc, [0.11, 0.22, 0]), add(J.hc, [0.07, 0.33, -0.02]), 0.022, 0.006), '#efeae0'],
+  ['mask', 'Head', horn(add(J.hc, [-0.06, 0.12, 0]), add(J.hc, [-0.11, 0.22, 0]), add(J.hc, [-0.07, 0.33, -0.02]), 0.022, 0.006), '#efeae0'],
+  ...dotEyes(J, '#141218', [0.045, 0.07], 0.42, -0.05, 'eyes', 0.86),
+]);
+
+// 2 — a kettle knight: a bucket helm with a plume, a round body, a little sword
+hero('knight', 'Рыцарь-чайник', rig({ hip: 0.2, spine: 0.17, neck: 0.0, headR: 0.15, headUp: 0.05, shW: 0.12, arm: 0.15, armA: 0.45, hipW: 0.06, foot: 0.07, ankle: 0.035 }), 0.03, J => [
+  ['body', 'Spine1', ell([0, J.Spine1[1] + 0.02, 0], [0.14, 0.13, 0.12]), '#4b6fa8'],
+  ['body', 'Hips', ell([0, J.Hips[1] - 0.02, 0], [0.11, 0.07, 0.1]), '#3b3a48'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.04, 0.035), '#3b3a48'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.01, 0.025]), [0.045, 0.03, 0.06]), '#5a4637'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.035, 0.03), '#4b6fa8'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.038), '#5a4637'],
+    ['pads', s + 'Arm', ell(add(J[s + 'Arm'], [k * 0.01, 0.025, 0]), [0.055, 0.04, 0.055]), '#c9cdd6']]),
+  ['helm', 'Head', cone(add(J.hc, [0, -0.13, 0]), add(J.hc, [0, 0.13, 0]), 0.14, 0.125), '#c9cdd6'],
+  ['helm', 'Head', torus(add(J.hc, [0, -0.11, 0]), 0.14, 0.015, 'y'), '#c9cdd6'],
+  ['slit', 'Head', rbox(add(J.hc, [0, 0.02, 0.13]), [0.09, 0.012, 0.03], 0.006), '#141218'],
+  ['slit', 'Head', rbox(add(J.hc, [0, -0.03, 0.135]), [0.012, 0.045, 0.03], 0.006), '#141218'],
+  ['plume', 'Head', horn(add(J.hc, [0, 0.12, 0]), add(J.hc, [0, 0.25, -0.02]), add(J.hc, [0, 0.2, -0.2]), 0.035, 0.012), '#c8413b'],
+  ['sword', 'RightHand', cone(add(J.RightHand, [0, -0.02, 0.02]), add(J.RightHand, [-0.05, 0.25, 0.08]), 0.016, 0.006), '#dfe3ea'],
+  ['sword', 'RightHand', rbox(add(J.RightHand, [-0.004, 0.0, 0.02]), [0.05, 0.012, 0.014], 0.006, 0, 0.2), '#7a5a3b'],
+]);
+
+// 3 — a ghost: one drop, no legs, little arms, a wide grin
+hero('ghost', 'Призрак', rig({ hip: 0.3, spine: 0.15, neck: 0.0, headR: 0.2, headUp: -0.3, shW: 0.15, arm: 0.12, armA: 0.9, hipW: 0.05, ankle: 0.15, foot: 0.04 }), 0.06, J => [
+  ['body', 'Spine2', sph(J.hc, 0.2), '#eef0f5'],
+  ['body', 'Spine1', cone([0, 0.06, -0.02], J.Spine1, 0.06, 0.19), '#eef0f5'],
+  ['body', 'Hips', horn([0, 0.1, -0.02], [0.05, 0.03, -0.06], [0.12, 0.02, -0.12], 0.06, 0.012), '#eef0f5'],
+  ...both((s, k) => [['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.045, 0.03), '#eef0f5']]),
+  ...dotEyes(J, '#1b1a24', [0.05, 0.075], 0.38, 0.12, 'eyes', 0.95),
+  ['eyes', 'Head', ell(add(J.hc, [0, -0.06, 0.185]), [0.06, 0.022, 0.02]), '#1b1a24'],
+], { float: 0.06 });
+
+// 4 — a little robot: a box head with a screen face, an antenna, a barrel body
+hero('robot', 'Робот-почтальон', rig({ hip: 0.22, spine: 0.16, neck: 0.03, headR: 0.15, headUp: 0, shW: 0.13, arm: 0.17, armA: 0.35, hipW: 0.06, foot: 0.07, ankle: 0.04 }), 0.012, J => [
+  ['body', 'Spine1', rbox([0, J.Spine1[1] + 0.03, 0], [0.11, 0.1, 0.09], 0.04), '#e0a33a'],
+  ['body', 'Hips', rbox([0, J.Hips[1] - 0.01, 0], [0.09, 0.04, 0.08], 0.03), '#3e4450'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], capsule(J[s + 'Leg'], J[s + 'Foot'], 0.025), '#3e4450'], ['body', s + 'Foot', rbox(add(J[s + 'Foot'], [0, -0.015, 0.02]), [0.04, 0.025, 0.06], 0.02), '#e0a33a'],
+    ['body', [s + 'Arm', s + 'ForeArm'], capsule(J[s + 'Arm'], J[s + 'Hand'], 0.022), '#3e4450'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.035), '#e0a33a']]),
+  ['head', 'Head', rbox(J.hc, [0.16, 0.12, 0.12], 0.05), '#e0a33a'],
+  ['screen', 'Head', rbox(add(J.hc, [0, 0, 0.1]), [0.12, 0.085, 0.03], 0.035), '#1f2a33'],
+  ['eyesG', 'Head', capsule(add(J.hc, [0.05, 0.0, 0.13]), add(J.hc, [0.05, 0.03, 0.13]), 0.016), '#8ff0d6'],
+  ['eyesG', 'Head', capsule(add(J.hc, [-0.05, 0.0, 0.13]), add(J.hc, [-0.05, 0.03, 0.13]), 0.016), '#8ff0d6'],
+  ['ant', 'Head', capsule(add(J.hc, [0.06, 0.1, 0]), add(J.hc, [0.09, 0.24, -0.02]), 0.007), '#3e4450'],
+  ['antB', 'Head', sph(add(J.hc, [0.09, 0.25, -0.02]), 0.025), '#d8453c'],
+  ['bag', 'Spine1', rbox([0.0, J.Spine1[1] + 0.02, -0.12], [0.09, 0.08, 0.04], 0.025), '#7a5a3b'],
+]);
+
+// 5 — a fox kid: a big round head, pointed ears, a scarf, a bushy tail
+hero('fox', 'Лисёнок', rig({ hip: 0.2, spine: 0.15, neck: 0.02, headR: 0.18, headUp: 0, shW: 0.08, arm: 0.15, armA: 0.35, hipW: 0.05, foot: 0.06, ankle: 0.03 }), 0.03, J => [
+  ['body', 'Head', ell(J.hc, [0.19, 0.16, 0.16]), '#e47d3a'],
+  ['body', 'Head', ell(add(J.hc, [0, -0.05, 0.1]), [0.11, 0.07, 0.08]), '#f5e7d6'],
+  ['body', 'Head', cone(add(J.hc, [0, -0.04, 0.12]), add(J.hc, [0, -0.04, 0.22]), 0.05, 0.015), '#f5e7d6'],
+  ['nose', 'Head', sph(add(J.hc, [0, -0.035, 0.235]), 0.018), '#1b1a1f'],
+  ...[1, -1].map(k => ['body', 'Head', cone(add(J.hc, [k * 0.1, 0.1, -0.01]), add(J.hc, [k * 0.17, 0.27, -0.02]), 0.06, 0.008), '#e47d3a']),
+  ['body', 'Spine1', ell([0, J.Spine1[1] + 0.02, 0], [0.085, 0.1, 0.075]), '#5d7f6a'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.032, 0.026), '#3d3a43'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.008, 0.02]), [0.032, 0.024, 0.048]), '#1d1b20'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.025, 0.022), '#5d7f6a'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.027), '#e47d3a']]),
+  ['scarf', 'Chest', torus(add(J.Chest, [0, 0.0, 0]), 0.075, 0.03, 'y'), '#e9c64a'],
+  ['scarf', 'Chest', cone(add(J.Chest, [0.04, -0.01, -0.07]), add(J.Chest, [0.09, -0.1, -0.13]), 0.028, 0.022), '#e9c64a'],
+  ['tail', 'Hips', horn(add(J.Hips, [0, 0, -0.06]), add(J.Hips, [0.02, 0.0, -0.22]), add(J.Hips, [0.1, 0.16, -0.26]), 0.045, 0.06, 5), '#e47d3a'],
+  ['tail', 'Hips', sph(add(J.Hips, [0.1, 0.17, -0.26]), 0.05), '#f5e7d6'],
+  ...dotEyes(J, '#1b1a1f', [0.026, 0.036], 0.42, 0.05, 'eyes', 0.92),
+]);
+
+// 6 — a mushroom child: a broad spotted cap, a stubby body
+hero('shroom', 'Грибок', rig({ hip: 0.14, spine: 0.13, neck: 0.0, headR: 0.15, headUp: -0.1, shW: 0.08, arm: 0.12, armA: 0.4, hipW: 0.045, foot: 0.05, ankle: 0.025 }), 0.035, J => [
+  ['body', 'Head', ell(add(J.hc, [0, -0.02, 0]), [0.13, 0.15, 0.12]), '#f2e3c9'],
+  ['body', 'Spine1', ell([0, J.Spine1[1] + 0.01, 0], [0.09, 0.09, 0.08]), '#6a8fb0'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.03, 0.027), '#f2e3c9'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.005, 0.015]), [0.03, 0.022, 0.04]), '#5a3f30'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.022, 0.02), '#f2e3c9']]),
+  ['cap', 'Head', inter(ell(add(J.hc, [0, 0.09, -0.01]), [0.26, 0.17, 0.24]), (x, y, z) => J.hc[1] + 0.03 - y, 0.03), '#c9433c'],
+  ...[[0.1, 0.18, 0.1], [-0.12, 0.16, 0.07], [0.0, 0.25, -0.02], [0.17, 0.12, -0.05], [-0.06, 0.18, 0.15], [-0.18, 0.1, -0.06]].map(p => ['spots', 'Head', sph(add(J.hc, p), 0.04), '#f5efe3']),
+  ...dotEyes(J, '#1b1a1f', [0.03, 0.045], 0.36, -0.15, 'eyes', 0.92),
+]);
+
+// 7 — a frog wanderer: a wide head, eyes on top, a leaf umbrella
+hero('frog', 'Лягушонок со листом', rig({ hip: 0.18, spine: 0.13, neck: 0.0, headR: 0.15, headUp: -0.2, shW: 0.1, arm: 0.15, armA: 0.4, hipW: 0.06, foot: 0.08, ankle: 0.03 }), 0.04, J => [
+  ['body', 'Head', ell(J.hc, [0.2, 0.12, 0.15]), '#7fb04e'],
+  ['body', 'Spine1', ell([0, J.Spine1[1], 0.0], [0.13, 0.12, 0.11]), '#7fb04e'],
+  ['body', 'Spine1', ell([0, J.Spine1[1] - 0.01, 0.05], [0.09, 0.09, 0.07]), '#e8e2b0'],
+  ...[1, -1].map(k => ['body', 'Head', sph(add(J.hc, [k * 0.1, 0.1, 0.04]), 0.065), '#7fb04e']),
+  ...[1, -1].map(k => ['eyeW', 'Head', sph(add(J.hc, [k * 0.105, 0.11, 0.075]), 0.04), '#f7f4ea']),
+  ...[1, -1].map(k => ['eyes', 'Head', ell(add(J.hc, [k * 0.105, 0.11, 0.113]), [0.018, 0.026, 0.008]), '#141218']),
+  ['mouth', 'Head', torus(add(J.hc, [0, -0.02, 0.0]), 0.17, 0.006, 'y'), '#3b5a2a'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.035, 0.025), '#7fb04e'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [k * 0.01, -0.01, 0.03]), [0.045, 0.015, 0.06]), '#7fb04e'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.024, 0.02), '#7fb04e'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.028), '#7fb04e']]),
+  ['stem', 'RightHand', capsule(J.RightHand, add(J.RightHand, [0.03, 0.42, 0.0]), 0.009), '#4e6b2e'],
+  ['leaf', 'RightHand', inter(ell(add(J.RightHand, [0.03, 0.43, 0]), [0.24, 0.07, 0.22]), (x, y, z) => J.RightHand[1] + 0.4 - y, 0.02), '#4f8a3a'],
+]);
+
+// 8 — an old wizard: a tall bent hat, a beard drop, a long robe, a staff
+hero('wizard', 'Старый маг', rig({ hip: 0.28, spine: 0.2, neck: 0.0, headR: 0.12, headUp: 0, shW: 0.1, arm: 0.2, armA: 0.35, hipW: 0.05, foot: 0.06, ankle: 0.03 }), 0.04, J => [
+  ['body', 'Spine1', cone([0, 0.03, -0.01], [0, J.Chest[1], 0], 0.16, 0.08), '#5a4b8a'],
+  ['body', 'Head', ell(J.hc, [0.11, 0.12, 0.11]), '#e9c6a6'],
+  ['beard', 'Head', cone(add(J.hc, [0, -0.02, 0.07]), add(J.hc, [0, -0.25, 0.1]), 0.085, 0.02), '#ecebe6'],
+  ['beard', 'Head', ell(add(J.hc, [0, 0.0, 0.095]), [0.09, 0.03, 0.03]), '#ecebe6'],
+  ['nose', 'Head', ell(add(J.hc, [0, -0.0, 0.12]), [0.03, 0.035, 0.035]), '#dda98a'],
+  ['hat', 'Head', torus(add(J.hc, [0, 0.07, 0]), 0.15, 0.018, 'y'), '#3e3266'],
+  ['hat', 'Head', horn(add(J.hc, [0, 0.06, 0]), add(J.hc, [0, 0.32, -0.02]), add(J.hc, [-0.12, 0.42, -0.08]), 0.12, 0.012, 8), '#3e3266'],
+  ...dotEyes(J, '#141218', [0.02, 0.022], 0.34, 0.12, 'eyes', 0.95),
+  ...both((s, k) => [['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.035, 0.045), '#5a4b8a'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.025), '#e9c6a6'],
+    ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.01, 0.04]), [0.03, 0.02, 0.05]), '#3a2b24']]),
+  ['staff', 'LeftHand', capsule(add(J.LeftHand, [0, -0.25, 0]), add(J.LeftHand, [0.0, 0.42, 0]), 0.012), '#7a5a3b'],
+  ['orb', 'LeftHand', sph(add(J.LeftHand, [0, 0.46, 0]), 0.045), '#9fe6ff'],
+]);
+
+// 9 — a climber girl: a big bun of hair, a long scarf, a backpack
+hero('climber', 'Девочка с шарфом', rig({ hip: 0.24, spine: 0.17, neck: 0.03, headR: 0.15, headUp: 0, shW: 0.08, arm: 0.2, armA: 0.25, hipW: 0.045, foot: 0.06, ankle: 0.03 }), 0.025, J => [
+  ['body', 'Head', ell(J.hc, [0.14, 0.15, 0.135]), '#f0c9a8'],
+  ['hair', 'Head', inter(ell(add(J.hc, [0, 0.025, -0.01]), [0.155, 0.155, 0.15]), (x, y, z) => -(y - J.hc[1] - 0.45 * (z - J.hc[2]) - 0.035 + 0.04 * Math.abs(x - J.hc[0]) / 0.1), 0.02), '#a13a3a'],
+  ['hair', 'Head', sph(add(J.hc, [0, 0.15, -0.06]), 0.075), '#a13a3a'],
+  ['body', 'Spine1', cone([0, J.Hips[1] - 0.02, 0], J.Chest, 0.075, 0.065), '#3e5f8a'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.03, 0.022), '#45403a'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.005, 0.02]), [0.03, 0.025, 0.05]), '#6a4430'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.024, 0.02), '#3e5f8a'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.022), '#f0c9a8']]),
+  ['scarf', 'Chest', torus(add(J.Chest, [0, 0.015, 0]), 0.06, 0.028, 'y'), '#d9a43a'],
+  ['scarf', 'Chest', horn(add(J.Chest, [-0.03, 0.0, -0.06]), add(J.Chest, [-0.06, -0.06, -0.12]), add(J.Chest, [-0.05, -0.2, -0.1]), 0.026, 0.02), '#d9a43a'],
+  ['pack', 'Spine2', rbox([0, J.Spine2[1], -0.09], [0.07, 0.08, 0.04], 0.03), '#6b7d4e'],
+  ...dotEyes(J, '#2b1d18', [0.022, 0.032], 0.36, -0.05, 'eyes', 0.95),
+]);
+
+// 10 — a rabbit courier: very long ears, a round body, a satchel
+hero('rabbit', 'Кролик-гонец', rig({ hip: 0.18, spine: 0.15, neck: 0.02, headR: 0.15, headUp: -0.05, shW: 0.08, arm: 0.13, armA: 0.35, hipW: 0.05, foot: 0.08, ankle: 0.03 }), 0.035, J => [
+  ['body', 'Head', ell(J.hc, [0.14, 0.13, 0.13]), '#f1efe9'],
+  ...[1, -1].map(k => ['body', 'Head', horn(add(J.hc, [k * 0.05, 0.09, -0.01]), add(J.hc, [k * 0.08, 0.26, -0.02]), add(J.hc, [k * (k > 0 ? 0.2 : 0.07), k > 0 ? 0.3 : 0.38, -0.04]), 0.04, 0.035, 6), '#f1efe9']),
+  ...[1, -1].map(k => ['inner', 'Head', horn(add(J.hc, [k * 0.055, 0.13, 0.02]), add(J.hc, [k * 0.08, 0.26, 0.012]), add(J.hc, [k * (k > 0 ? 0.19 : 0.07), k > 0 ? 0.29 : 0.37, -0.008]), 0.018, 0.014, 6), '#e8a6b0']),
+  ['body', 'Spine1', ell([0, J.Spine1[1] + 0.01, 0], [0.1, 0.11, 0.09]), '#f1efe9'],
+  ['vest', 'Spine1', inter(ell([0, J.Spine1[1] + 0.025, 0], [0.105, 0.1, 0.095]), (x, y, z) => -(y - J.Hips[1] - 0.04), 0.01), '#4a6da0'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.035, 0.025), '#f1efe9'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.01, 0.035]), [0.035, 0.022, 0.07]), '#f1efe9'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.022, 0.02), '#f1efe9']]),
+  ['bag', 'Spine1', rbox([0.11, J.Hips[1] + 0.02, 0.0], [0.03, 0.06, 0.07], 0.02), '#9a6a3e'],
+  ['bag', 'Chest', capsule(add(J.Chest, [-0.06, 0.02, 0.06]), [0.1, J.Hips[1] + 0.06, 0.07], 0.009), '#9a6a3e'],
+  ['nose', 'Head', sph(add(J.hc, [0, -0.03, 0.13]), 0.014), '#e48b9a'],
+  ...dotEyes(J, '#1b1a1f', [0.022, 0.035], 0.4, 0.02, 'eyes', 0.95),
+]);
+
+// 11 — a bird-masked doctor: a long beak, a wide-brimmed hat, a long coat
+hero('beak', 'Доктор-птица', rig({ hip: 0.3, spine: 0.2, neck: 0.02, headR: 0.12, headUp: 0, shW: 0.1, arm: 0.24, armA: 0.25, hipW: 0.05, foot: 0.07, ankle: 0.03 }), 0.03, J => [
+  ['body', 'Spine1', cone([0, 0.05, -0.01], [0, J.Chest[1], 0], 0.14, 0.085), '#2f3a35'],
+  ...both((s, k) => [['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.035, 0.04), '#2f3a35'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.026), '#1e1d22'],
+    ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.01, 0.04]), [0.03, 0.022, 0.055]), '#1e1d22']]),
+  ['mask', 'Head', ell(J.hc, [0.11, 0.12, 0.11]), '#d8cdb4'],
+  ['mask', 'Head', horn(add(J.hc, [0, -0.01, 0.08]), add(J.hc, [0, -0.04, 0.2]), add(J.hc, [0, -0.12, 0.3]), 0.055, 0.008, 7), '#d8cdb4'],
+  ...[1, -1].map(k => ['lens', 'Head', torus(add(J.hc, [k * 0.045, 0.025, 0.098]), 0.025, 0.007, 'z'), '#7a5a3b']),
+  ...[1, -1].map(k => ['eyes', 'Head', ell(add(J.hc, [k * 0.045, 0.025, 0.1]), [0.022, 0.022, 0.006]), '#d9483b']),
+  ['hat', 'Head', (x, y, z) => { const dx = x - J.hc[0], dz = z - J.hc[2], yy = y - (J.hc[1] + 0.085); return Math.max(Math.hypot(dx, dz) - 0.22, Math.abs(yy) - 0.008); }, '#1e1d22'],
+  ['hat', 'Head', capsule(add(J.hc, [0, 0.085, 0]), add(J.hc, [0, 0.19, -0.01]), 0.09), '#1e1d22'],
+]);
+
+// 12 — a meat cube: one rounded block with stubby limbs and a big grin
+hero('cube', 'Кубик', rig({ hip: 0.12, spine: 0.1, neck: 0.0, headR: 0.1, headUp: -0.6, shW: 0.12, arm: 0.1, armA: 0.6, hipW: 0.06, foot: 0.05, ankle: 0.025 }), 0.02, J => [
+  ['body', 'Spine1', rbox([0, J.Spine1[1] + 0.03, 0], [0.13, 0.13, 0.11], 0.05), '#d64b3f'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], capsule(J[s + 'Leg'], J[s + 'Foot'], 0.028), '#d64b3f'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.005, 0.015]), [0.03, 0.02, 0.04]), '#d64b3f'],
+    ['body', [s + 'Arm', s + 'ForeArm'], capsule(J[s + 'Arm'], J[s + 'Hand'], 0.025), '#d64b3f']]),
+  ...[1, -1].map(k => ['eyeW', 'Spine1', ell([k * 0.05, J.Spine1[1] + 0.07, 0.105], [0.035, 0.04, 0.012]), '#f7f4ea']),
+  ...[1, -1].map(k => ['eyes', 'Spine1', ell([k * 0.045, J.Spine1[1] + 0.065, 0.115], [0.016, 0.022, 0.006]), '#141218']),
+  ['mouth', 'Spine1', inter(ell([0, J.Spine1[1] - 0.005, 0.11], [0.07, 0.04, 0.012]), (x, y, z) => y - (J.Spine1[1] - 0.003), 0.004), '#3a1418'],
+]);
+
+// 13 — a bullet-shaped hero: an egg body under a cap, a tiny cape
+hero('egg', 'Яйцо в кепке', rig({ hip: 0.12, spine: 0.15, neck: 0.0, headR: 0.12, headUp: -0.5, shW: 0.1, arm: 0.11, armA: 0.6, hipW: 0.05, foot: 0.05, ankle: 0.025 }), 0.02, J => [
+  ['body', 'Spine1', ell([0, J.Spine1[1] + 0.07, 0], [0.12, 0.17, 0.11]), '#e9d9b0'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], capsule(J[s + 'Leg'], J[s + 'Foot'], 0.02), '#2f2c33'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.005, 0.015]), [0.03, 0.02, 0.045]), '#2f2c33'],
+    ['body', [s + 'Arm', s + 'ForeArm'], capsule(J[s + 'Arm'], J[s + 'Hand'], 0.018), '#2f2c33'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.026), '#f7f4ea']]),
+  ['cap', 'Spine2', inter(sph([0, J.Spine1[1] + 0.16, -0.0], 0.115), (x, y, z) => J.Spine1[1] + 0.17 - y, 0.01), '#3c79c4'],
+  ['cap', 'Spine2', ell([0, J.Spine1[1] + 0.175, 0.1], [0.08, 0.01, 0.06]), '#3c79c4'],
+  ...[1, -1].map(k => ['eyes', 'Spine2', ell([k * 0.042, J.Spine1[1] + 0.11, 0.117], [0.016, 0.03, 0.008]), '#141218']),
+  ['cape', 'Chest', inter(cone([0, J.Spine1[1] + 0.12, -0.08], [0, J.Spine1[1] - 0.06, -0.13], 0.09, 0.13), (x, y, z) => -(-z - 0.08 - 0.25 * (J.Spine1[1] + 0.12 - y)), 0.01), '#c43c3c'],
+]);
+
+// 14 — a bear in a sweater: round ears, a muzzle, a striped jumper
+hero('bear', 'Медвежонок', rig({ hip: 0.2, spine: 0.17, neck: 0.0, headR: 0.17, headUp: -0.1, shW: 0.11, arm: 0.17, armA: 0.4, hipW: 0.06, foot: 0.07, ankle: 0.03 }), 0.035, J => [
+  ['body', 'Head', ell(J.hc, [0.17, 0.155, 0.15]), '#8a5a3a'],
+  ...[1, -1].map(k => ['body', 'Head', sph(add(J.hc, [k * 0.12, 0.12, -0.02]), 0.055), '#8a5a3a']),
+  ...[1, -1].map(k => ['inner', 'Head', sph(add(J.hc, [k * 0.12, 0.12, 0.012]), 0.03), '#d9b08a']),
+  ['body', 'Head', ell(add(J.hc, [0, -0.05, 0.12]), [0.075, 0.055, 0.055]), '#d9b08a'],
+  ['nose', 'Head', ell(add(J.hc, [0, -0.025, 0.175]), [0.025, 0.017, 0.015]), '#1b1a1f'],
+  ['body', 'Spine1', ell([0, J.Spine1[1] + 0.03, 0], [0.13, 0.13, 0.11]), '#b94a4a'],
+  ...[0, 1, 2].map(i => ['stripe', 'Spine1', inter(ell([0, J.Spine1[1] + 0.03, 0], [0.133, 0.133, 0.113]), (x, y, z) => Math.abs(y - (J.Spine1[1] - 0.04 + i * 0.06)) - 0.012, 0.004), '#efe3c8']),
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.05, 0.04), '#8a5a3a'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.008, 0.02]), [0.045, 0.03, 0.06]), '#8a5a3a'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.04, 0.036), '#b94a4a'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.038), '#8a5a3a']]),
+  ...dotEyes(J, '#1b1a1f', [0.022, 0.03], 0.36, 0.08, 'eyes', 0.95),
+]);
+
+// 15 — an imp: a triangle body, horns, a pointed tail, a pitchfork
+hero('imp', 'Чертёнок', rig({ hip: 0.2, spine: 0.16, neck: 0.01, headR: 0.14, headUp: 0, shW: 0.12, arm: 0.17, armA: 0.45, hipW: 0.045, foot: 0.07, ankle: 0.03 }), 0.02, J => [
+  ['body', 'Head', cone(add(J.hc, [0, 0.07, 0]), add(J.hc, [0, -0.12, 0.03]), 0.14, 0.03), '#9b3a58'],
+  ...[1, -1].map(k => ['horns', 'Head', horn(add(J.hc, [k * 0.09, 0.1, 0]), add(J.hc, [k * 0.2, 0.14, 0]), add(J.hc, [k * 0.2, 0.27, -0.02]), 0.03, 0.004), '#f0e6d0']),
+  ['body', 'Spine1', cone([0, J.Hips[1] - 0.01, 0], add(J.Chest, [0, 0.0, 0]), 0.04, 0.11), '#9b3a58'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.022, 0.014), '#2b2028'], ['body', s + 'Foot', cone(J[s + 'Foot'], add(J[s + 'Foot'], [k * 0.01, -0.01, 0.08]), 0.02, 0.006), '#2b2028'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.022, 0.014), '#9b3a58']]),
+  ['tail', 'Hips', horn(add(J.Hips, [0, 0, -0.03]), add(J.Hips, [0.0, -0.14, -0.2]), add(J.Hips, [-0.12, 0.08, -0.22]), 0.014, 0.008, 8), '#9b3a58'],
+  ['tail', 'Hips', cone(add(J.Hips, [-0.12, 0.08, -0.22]), add(J.Hips, [-0.15, 0.14, -0.22]), 0.03, 0.002), '#9b3a58'],
+  ['fork', 'RightHand', capsule(add(J.RightHand, [0, -0.22, 0]), add(J.RightHand, [0, 0.3, 0]), 0.01), '#3a3036'],
+  ...[-0.04, 0, 0.04].map(dx => ['fork', 'RightHand', cone(add(J.RightHand, [dx, 0.29, 0]), add(J.RightHand, [dx * 1.2, 0.38, 0]), 0.009, 0.002), '#3a3036']),
+  ['fork', 'RightHand', capsule(add(J.RightHand, [-0.045, 0.29, 0]), add(J.RightHand, [0.045, 0.29, 0]), 0.009), '#3a3036'],
+  ...[1, -1].map(k => ['eyeW', 'Head', ell(add(J.hc, [k * 0.05, 0.02, 0.11]), [0.032, 0.02, 0.012]), '#f4dd57']),
+  ...[1, -1].map(k => ['eyes', 'Head', ell(add(J.hc, [k * 0.05, 0.02, 0.12]), [0.007, 0.018, 0.005]), '#141218']),
+  ['mouth', 'Head', horn(add(J.hc, [-0.05, -0.045, 0.098]), add(J.hc, [0, -0.07, 0.11]), add(J.hc, [0.055, -0.04, 0.095]), 0.006, 0.004, 5), '#2b1018'],
+]);
+
+// 16 — a moon-head sleepwalker: a crescent for a head, a nightgown, a nightcap
+hero('moon', 'Лунатик', rig({ hip: 0.26, spine: 0.18, neck: 0.02, headR: 0.17, headUp: 0, shW: 0.08, arm: 0.2, armA: 0.2, hipW: 0.04, foot: 0.06, ankle: 0.03 }), 0.03, J => [
+  ['body', 'Head', cut(ell(J.hc, [0.17, 0.17, 0.09]), ell(add(J.hc, [0.11, 0.05, 0]), [0.15, 0.15, 0.12]), 0.02), '#f1df8e'],
+  ['body', 'Spine1', cone([0, 0.07, 0], J.Chest, 0.12, 0.065), '#c7d3e8'],
+  ...both((s, k) => [['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.028, 0.03), '#c7d3e8'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.02), '#f1df8e'],
+    ['body', [s + 'Leg', s + 'Shin'], capsule(J[s + 'Shin'], J[s + 'Foot'], 0.016), '#f1df8e'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.008, 0.02]), [0.025, 0.018, 0.045]), '#f1df8e']]),
+  ['cap', 'Head', horn(add(J.hc, [0, 0.12, -0.06]), add(J.hc, [-0.05, 0.25, -0.12]), add(J.hc, [-0.2, 0.22, -0.16]), 0.07, 0.015, 7), '#3e5ba0'],
+  ['pom', 'Head', sph(add(J.hc, [-0.21, 0.21, -0.16]), 0.028), '#f5efe3'],
+  ['eyes', 'Head', horn(add(J.hc, [-0.1, 0.02, 0.075]), add(J.hc, [-0.08, 0.0, 0.088]), add(J.hc, [-0.06, 0.02, 0.078]), 0.007, 0.007, 4), '#3a3020'],
+  ['eyes', 'Head', sph(add(J.hc, [-0.1, -0.06, 0.085]), 0.012), '#e79a88'],
+]);
+
+// 17 — a stone golem: blocks stacked, a mossy top, small glowing eyes
+hero('golem', 'Каменный страж', rig({ hip: 0.3, spine: 0.22, neck: 0.0, headR: 0.12, headUp: -0.3, shW: 0.22, arm: 0.3, armA: 0.2, hipW: 0.09, foot: 0.1, ankle: 0.05 }), 0.015, J => [
+  ['body', 'Spine1', rbox([0, J.Spine1[1] + 0.05, 0], [0.2, 0.15, 0.14], 0.05, 0, 0.05), '#8f8a80'],
+  ['body', 'Hips', rbox([0, J.Hips[1] - 0.02, 0], [0.13, 0.06, 0.1], 0.04), '#7b766d'],
+  ['body', 'Head', rbox(add(J.hc, [0, 0.02, 0.02]), [0.1, 0.09, 0.09], 0.035), '#8f8a80'],
+  ['moss', 'Spine1', inter(rbox([0, J.Spine1[1] + 0.05, 0], [0.205, 0.155, 0.145], 0.05, 0, 0.05), (x, y, z) => J.Spine1[1] + 0.16 - y + 0.02 * Math.sin(x * 40), 0.01), '#5f8a4a'],
+  ...both((s, k) => [['body', s + 'Arm', rbox(lerp3(J[s + 'Arm'], J[s + 'ForeArm'], 0.5), [0.06, 0.08, 0.06], 0.03), '#7b766d'], ['body', s + 'ForeArm', rbox(lerp3(J[s + 'ForeArm'], J[s + 'Hand'], 0.6), [0.07, 0.09, 0.07], 0.03), '#8f8a80'],
+    ['body', s + 'Leg', rbox(lerp3(J[s + 'Leg'], J[s + 'Foot'], 0.5), [0.06, 0.12, 0.065], 0.03), '#7b766d'], ['body', s + 'Foot', rbox(add(J[s + 'Foot'], [0, -0.02, 0.03]), [0.065, 0.035, 0.08], 0.025), '#6d685f']]),
+  ...[1, -1].map(k => ['glow', 'Head', ell(add(J.hc, [k * 0.04, 0.02, 0.11]), [0.016, 0.012, 0.008]), '#7ff0e0']),
+]);
+
+// 18 — a cat girl knight-errant: a hooded cloak with ears, a lantern
+hero('hood', 'Странница в капюшоне', rig({ hip: 0.24, spine: 0.17, neck: 0.02, headR: 0.15, headUp: 0, shW: 0.09, arm: 0.2, armA: 0.25, hipW: 0.045, foot: 0.06, ankle: 0.03 }), 0.03, J => [
+  ['body', 'Head', ell(J.hc, [0.13, 0.14, 0.125]), '#f2d4b8'],
+  ['hood', 'Head', cut(ell(add(J.hc, [0, 0.015, -0.02]), [0.165, 0.17, 0.165]), ell(add(J.hc, [0, -0.02, 0.14]), [0.12, 0.13, 0.12]), 0.02), '#2f4f5a'],
+  ...[1, -1].map(k => ['hood', 'Head', cone(add(J.hc, [k * 0.09, 0.12, -0.02]), add(J.hc, [k * 0.14, 0.24, -0.03]), 0.05, 0.006), '#2f4f5a']),
+  ['cloak', 'Chest', inter(cone(add(J.Chest, [0, 0.03, -0.01]), [0, 0.07, -0.03], 0.09, 0.17), (x, y, z) => -Math.max(-(z - 0.02), Math.abs(x) - 0.035), 0.01), '#2f4f5a'],
+  ['body', 'Spine1', cone([0, J.Hips[1] - 0.02, 0], J.Chest, 0.07, 0.06), '#d8c9a6'],
+  ...both((s, k) => [['body', [s + 'Leg', s + 'Shin'], cone(J[s + 'Leg'], J[s + 'Foot'], 0.028, 0.022), '#3b3530'], ['body', s + 'Foot', ell(add(J[s + 'Foot'], [0, -0.006, 0.02]), [0.03, 0.025, 0.05]), '#5a3e2b'],
+    ['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.024, 0.02), '#d8c9a6'], ['body', s + 'Hand', sph(J[s + 'Hand'], 0.022), '#f2d4b8']]),
+  ['lamp', 'LeftHand', capsule(J.LeftHand, add(J.LeftHand, [0, -0.06, 0]), 0.004), '#3a3036'],
+  ['lampG', 'LeftHand', rbox(add(J.LeftHand, [0, -0.11, 0]), [0.03, 0.045, 0.03], 0.012), '#ffd27a'],
+  ...dotEyes(J, '#2b1d18', [0.02, 0.036], 0.36, -0.08, 'eyes', 0.95),
+]);
+function lerp3(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
+
+// ———————————— building a hero: one mesh per group, skinned to its bones ————————————
+const BONES = Object.keys(PARENT);
+const BI = Object.fromEntries(BONES.map((b, i) => [b, i]));
+const GLOW = new Set(['orb', 'eyesG', 'glow', 'lampG']);
+function buildHero(H) {
+  const groups = {};
+  for (const p of H.parts) (groups[p[0]] ??= []).push(p);
+  const out = [];
+  for (const [g, parts] of Object.entries(groups)) {
+    const k = g === 'body' ? H.k : 0.008;
+    const sdf = (x, y, z) => { let d = 1e9; for (const p of parts) { const v = p[2](x, y, z); d = d === 1e9 ? v : (p[4] === 'sub' ? smax(d, -v, k) : smin(d, v, k)); } return d; };
+    // where the group is: a coarse look first, then the fine grid only around it
+    const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9], st = 0.025;
+    for (let x = -0.7; x <= 0.7; x += st) for (let y = -0.05; y <= 1.35; y += st) for (let z = -0.6; z <= 0.6; z += st) {
+      if (sdf(x, y, z) < st) { lo[0] = Math.min(lo[0], x); lo[1] = Math.min(lo[1], y); lo[2] = Math.min(lo[2], z); hi[0] = Math.max(hi[0], x); hi[1] = Math.max(hi[1], y); hi[2] = Math.max(hi[2], z); }
+    }
+    if (lo[0] > hi[0]) continue;
+    const m = surfaceNets(sdf, lo.map(v => v - 2 * st), hi.map(v => v + 2 * st), g === 'body' ? 0.0065 : 0.0045);
+    const nv = m.pos.length / 3;
+    if (!nv) continue;
+    const si = new Uint16Array(nv * 4), sw = new Float32Array(nv * 4), col = new Float32Array(nv * 3);
+    const cols = parts.map(p => new THREE.Color(p[3]));
+    const acc = new Float32Array(BONES.length);
+    for (let v = 0; v < nv; v++) {
+      const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2];
+      const ds = parts.map(p => p[2](x, y, z)); let dmin = Math.min(...ds), best = ds.indexOf(dmin);
+      acc.fill(0);
+      parts.forEach((p, i) => {
+        const w = Math.exp(-Math.max(ds[i] - dmin, 0) / 0.012);
+        if (Array.isArray(p[1])) {
+          const [b0, b1] = p[1], a = H.J[b0], j = H.J[b1], e = H.J[b1.replace('Shin', 'Foot').replace('ForeArm', 'Hand')];
+          const L = Math.hypot(...sub(e, a)), t = ((x - a[0]) * (e[0] - a[0]) + (y - a[1]) * (e[1] - a[1]) + (z - a[2]) * (e[2] - a[2])) / (L * L);
+          const tj = Math.hypot(...sub(j, a)) / L, f = smooth(clamp((t - tj) / 0.24 + 0.5, 0, 1));
+          acc[BI[b0]] += w * (1 - f); acc[BI[b1]] += w * f;
+        } else acc[BI[p[1]]] += w;
+      });
+      const order = [...acc.keys()].sort((a, b) => acc[b] - acc[a]).slice(0, 4);
+      let s = 0; for (const b of order) s += acc[b];
+      order.forEach((b, i) => { si[v * 4 + i] = b; sw[v * 4 + i] = acc[b] / s; });
+      // colour: the nearest form's, softened over a few millimetres where forms of two colours meet
+      const c = new THREE.Color(0, 0, 0); let ws = 0;
+      parts.forEach((p, i) => { const w = Math.exp(-Math.max(ds[i] - dmin, 0) / 0.002); c.r += cols[i].r * w; c.g += cols[i].g * w; c.b += cols[i].b * w; ws += w; });
+      col[v * 3] = c.r / ws; col[v * 3 + 1] = c.g / ws; col[v * 3 + 2] = c.b / ws;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(m.pos, 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(m.nor, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    geo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4));
+    geo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+    geo.setIndex(nv > 65535 ? new THREE.Uint32BufferAttribute(m.idx, 1) : new THREE.Uint16BufferAttribute(m.idx, 1));
+    out.push({ g, geo, glow: GLOW.has(g) });
+  }
+  return out;
+}
+
+// ———————————— the scene ————————————
+const stage = document.getElementById('stage'), cv = document.getElementById('cv'), msg = document.getElementById('msg'), tagsEl = document.getElementById('tags');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#d9d2c6');
+const camera = new THREE.PerspectiveCamera(22, 16 / 9, 0.1, 80);
+scene.add(new THREE.HemisphereLight('#fff6ea', '#6b6258', 1.15));
+const key = new THREE.DirectionalLight('#fff0dc', 2.0); key.position.set(-3, 5, 4); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 20 }); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 3;
+scene.add(key);
+const rim = new THREE.DirectionalLight('#d8e6ff', 1.0); rim.position.set(3, 3, -4); scene.add(rim);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: '#d2cabd', roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const MAT = {
+  soft: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62 }),
+  glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
+  sil: new THREE.MeshBasicMaterial({ color: '#1f1d22' }),
+  ghost: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, transparent: true, opacity: 0.22, depthWrite: false }),
+};
+
+// one placed hero: its own bones, the shared meshes
+function instance(H, built) {
+  const bones = {}, root = new THREE.Group();
+  for (const b of BONES) { bones[b] = new THREE.Bone(); bones[b].name = b; }
+  for (const b of BONES) {
+    const p = PARENT[b], pos = H.J[b], pp = p ? H.J[p] : [0, 0, 0];
+    bones[b].position.set(pos[0] - pp[0], pos[1] - pp[1], pos[2] - pp[2]);
+    if (p) bones[p].add(bones[b]); else root.add(bones[b]);
+  }
+  const skel = new THREE.Skeleton(BONES.map(b => bones[b]));
+  root.updateMatrixWorld(true); skel.calculateInverses();
+  const meshes = built.map(({ geo, glow }) => { const m = new THREE.SkinnedMesh(geo, glow ? MAT.glow : MAT.soft); m.castShadow = !glow; m.frustumCulled = false; m.bind(skel); root.add(m); m.userData.glow = glow; return m; });
+  const lines = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: '#c8413b', depthTest: false }));
+  lines.renderOrder = 10; lines.frustumCulled = false; lines.visible = false; scene.add(lines);
+  const dots = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: '#c8413b', size: 6, sizeAttenuation: false, depthTest: false }));
+  dots.renderOrder = 11; dots.frustumCulled = false; dots.visible = false; scene.add(dots);
+  return { H, root, bones, meshes, lines, dots };
+}
+
+// ———————————— poses: rotations of SOMA's joints (degrees, in the joint's own rest frame) ————————————
+// arms in the rest pose hang at their own angle; a pose lifts or swings them from there
+const POSES = {
+  stand: H => ({ Spine1: [0, 4, 0], Head: [4, -6, 4], Neck1: [0, 0, 0], LeftArm: [0, 0, -4], RightArm: [0, 0, 6], LeftForeArm: [-10, 0, 0], RightForeArm: [-10, 0, 0], RightLeg: [0, -8, 0], LeftLeg: [0, 4, -2], RightShin: [6, 0, 0], RightFoot: [0, -6, 0] }),
+  walk: H => ({ Hips: [0, 8, 0], Spine1: [4, -6, 0], Head: [0, -4, 0], LeftLeg: [-32, 0, 0], LeftShin: [12, 0, 0], LeftFoot: [14, 0, 0], RightLeg: [28, 0, 0], RightShin: [40, 0, 0], RightFoot: [-10, 0, 0], LeftArm: [34, 0, 0], RightArm: [-34, 0, 0], LeftForeArm: [-20, 0, 0], RightForeArm: [-30, 0, 0], _drop: 0.06 }),
+  // short arms under a big head: a raised arm hides behind the head, so the wave goes out to the side and the forearm up
+  wave: H => ({ Spine1: [0, 0, 6], Head: [0, -10, -10], RightArm: [0, 0, -(100 - deg(H.armA))], RightForeArm: [0, 0, -75], LeftArm: [0, 0, 4], LeftForeArm: [-20, 0, 0], LeftLeg: [0, 0, -3], RightLeg: [0, 0, 3] }),
+  jump: H => ({ Spine1: [-10, 0, 0], Head: [-12, 0, 0], LeftLeg: [-70, 0, -10], LeftShin: [110, 0, 0], RightLeg: [-40, 0, 10], RightShin: [70, 0, 0], LeftArm: [0, 0, 105 - deg(H.armA)], RightArm: [0, 0, -(105 - deg(H.armA))], LeftForeArm: [0, 0, 35], RightForeArm: [0, 0, -35], _lift: 0.6 }),
+  act: H => ({ Hips: [0, -20, 0], Spine1: [8, 25, 0], Head: [6, -20, 0], RightArm: [-110, 0, -10], RightForeArm: [-40, 0, 0], LeftArm: [30, 0, 20], LeftForeArm: [-50, 0, 0], LeftLeg: [-30, 0, -6], LeftShin: [30, 0, 0], RightLeg: [22, 0, 6], RightShin: [20, 0, 0], _drop: 0.12 }),
+  sit: H => ({ Spine1: [20, 0, 0], Head: [-10, 0, 0], LeftLeg: [-95, 0, -8], LeftShin: [100, 0, 0], RightLeg: [-95, 0, 8], RightShin: [100, 0, 0], LeftArm: [-40, 0, -10], RightArm: [-40, 0, 10], LeftForeArm: [-40, 0, 0], RightForeArm: [-40, 0, 0], _sit: 1 }),
+};
+const deg = r => r * 180 / Math.PI;
+const _q = new THREE.Quaternion(), _e = new THREE.Euler();
+function applyPose(I, name) {
+  const H = I.H, J = H.J, P = POSES[name](J);
+  for (const b of BONES) I.bones[b].quaternion.identity();
+  for (const [b, r] of Object.entries(P)) { if (b[0] === '_') continue; I.bones[b].quaternion.setFromEuler(_e.set(r[0] * Math.PI / 180, r[1] * Math.PI / 180, r[2] * Math.PI / 180, 'YXZ')); }
+  // the hips go down by what the legs lose in height, so the feet stay on the ground (the lifted pose leaves it)
+  const legLen = J.Hips[1];
+  I.bones.Hips.position.set(0, J.Hips[1], 0);
+  I.root.updateMatrixWorld(true);
+  let low = 1e9; const v = new THREE.Vector3();
+  for (const m of I.meshes) {
+    if (m.userData.glow) continue;
+    const pos = m.geometry.attributes.position;
+    for (let i = 0; i < pos.count; i += 7) { v.fromBufferAttribute(pos, i); m.applyBoneTransform(i, v); v.applyMatrix4(m.matrixWorld); if (v.y < low) low = v.y; }
+  }
+  const lift = (P._lift || 0) * legLen * 0.5 + (H.float || 0);
+  I.bones.Hips.position.y += -(low - I.root.position.y) + lift;
+  I.root.updateMatrixWorld(true);
+}
+
+// ———————————— showing ————————————
+const state = { mode: 'all', row: 0, pose: 'stand', view: 'soft', hero: 'moth' };
+let built = {}, placed = [];
+function clear() { for (const I of placed) { scene.remove(I.root); scene.remove(I.lines); scene.remove(I.dots); } placed = []; tagsEl.innerHTML = ''; }
+function layout() {
+  clear();
+  if (state.mode === 'all') {
+    HEROES.slice(state.row * 6, state.row * 6 + 6).forEach((H, c) => {
+      const I = instance(H, built[H.id]);
+      I.root.position.set((c - 2.5) * 0.62, 0, 0); I.root.rotation.y = 0.32 - 0.1 * c;
+      scene.add(I.root); placed.push(I); applyPose(I, state.pose); I.tag = H.name;
+    });
+    camera.position.set(0, 1.05, 5.2); camera.lookAt(0, 0.4, 0); camera.fov = 24;
+  } else {
+    const H = HEROES.find(h => h.id === state.hero), names = ['stand', 'walk', 'wave', 'jump', 'act', 'sit'];
+    names.forEach((p, i) => {
+      const I = instance(H, built[H.id]); I.root.position.set((i - 2.5) * 0.58, 0, 0); I.root.rotation.y = i % 2 ? -0.5 : 0.35;
+      scene.add(I.root); placed.push(I); applyPose(I, p); I.tag = p;
+    });
+    camera.position.set(0, 1.0, 4.6); camera.lookAt(0, 0.38, 0); camera.fov = 26;
+  }
+  camera.updateProjectionMatrix();
+  for (const I of placed) { const s = document.createElement('span'); s.textContent = { stand: 'стоит', walk: 'шаг', wave: 'машет', jump: 'прыжок', act: 'действие', sit: 'присел' }[I.tag] || I.tag; tagsEl.appendChild(s); I.tagEl = s; }
+  view();
+}
+function view() {
+  draw();
+  for (const I of placed) {
+    for (const m of I.meshes) m.material = state.view === 'sil' ? MAT.sil : state.view === 'bones' ? MAT.ghost : m.userData.glow ? MAT.glow : MAT.soft;
+    I.lines.visible = I.dots.visible = state.view === 'bones';
+    if (state.view === 'bones') {
+      const p = [], d = [], v = new THREE.Vector3(), w = new THREE.Vector3();
+      for (const b of BONES) { I.bones[b].getWorldPosition(v); d.push(v.x, v.y, v.z); const pb = PARENT[b]; if (pb) { I.bones[pb].getWorldPosition(w); p.push(w.x, w.y, w.z, v.x, v.y, v.z); } }
+      I.lines.geometry.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); I.dots.geometry.setAttribute('position', new THREE.Float32BufferAttribute(d, 3));
+    }
+  }
+}
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); draw(); }
+const v3 = new THREE.Vector3();
+// drawn when something changes, not every frame: nothing here moves by itself
+let queued = false;
+function draw() { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; render(); }); }
+function render() {
+  for (const I of placed) I.root.updateMatrixWorld(true);
+  renderer.render(scene, camera);
+  for (const I of placed) if (I.tagEl) { v3.set(0, -0.06, 0).applyMatrix4(I.root.matrixWorld).project(camera); I.tagEl.style.left = ((v3.x + 1) / 2 * 100) + '%'; I.tagEl.style.top = Math.min(95, (1 - v3.y) / 2 * 100 + 1) + '%'; }
+}
+// dragging turns the whole line-up
+let drag = null;
+stage.addEventListener('pointerdown', e => { drag = { x: e.clientX }; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if (!drag) return; const dx = (e.clientX - drag.x) * 0.01; drag.x = e.clientX; for (const I of placed) I.root.rotation.y += dx; draw(); });
+stage.addEventListener('pointerup', () => drag = null);
+
+const sel = document.getElementById('hero');
+for (const H of HEROES) { const o = document.createElement('option'); o.value = H.id; o.textContent = H.name; sel.appendChild(o); }
+sel.addEventListener('change', () => { state.hero = sel.value; state.mode = 'one'; document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.mode === 'one'))); layout(); });
+function press(attr, v) { document.querySelectorAll(`[data-${attr}]`).forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === v))); }
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { state.mode = b.dataset.mode; if (b.dataset.row) state.row = +b.dataset.row; document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); layout(); }));
+document.querySelectorAll('[data-pose]').forEach(b => b.addEventListener('click', () => { state.pose = b.dataset.pose; press('pose', state.pose); if (state.mode === 'all') layout(); }));
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { state.view = b.dataset.view; press('view', state.view); view(); }));
+
+window.addEventListener('resize', resize);
+setTimeout(() => {
+  const t0 = performance.now(); for (const H of HEROES) { built[H.id] = buildHero(H); console.log(H.id, Math.round(performance.now() - t0)); }
+  msg.remove(); resize(); layout();
+  window.__ih = { state, layout, view, camera, render, placed: () => placed };
+}, 30);
+</script>
