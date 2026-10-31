@@ -34,6 +34,21 @@ const PARENT = JN.map(n => { const p = parentName(n); return p == null ? -1 : JI
 const sdSphere = (x, y, z, r) => Math.hypot(x, y, z) - r;
 function sdEll(x, y, z, a, b, c) { const k0 = Math.hypot(x / a, y / b, z / c), k1 = Math.hypot(x / (a * a), y / (b * b), z / (c * c)); return k1 < 1e-9 ? -Math.min(a, b, c) : k0 * (k0 - 1) / k1; }
 function sdCapsule(x, y, z, a, b, r) { const px = x - a[0], py = y - a[1], pz = z - a[2], bx = b[0] - a[0], by = b[1] - a[1], bz = b[2] - a[2]; const h = clamp((px * bx + py * by + pz * bz) / (bx * bx + by * by + bz * bz), 0, 1); return Math.hypot(px - bx * h, py - by * h, pz - bz * h) - (typeof r === 'number' ? r : lerp(r[0], r[1], h)); }
+function catmull(pts, n = 8) { const out = []; for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)]; for (let k = 0; k < n; k++) { const t = k / n, t2 = t * t, t3 = t2 * t; out.push([0, 1].map(c => 0.5 * (2 * p1[c] + (-p0[c] + p2[c]) * t + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * t2 + (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * t3))); } } out.push(pts[pts.length - 1]); return out; }
+function sdPoly2(py, pz, V) { let d = (py - V[0][0]) ** 2 + (pz - V[0][1]) ** 2, s = 1; for (let i = 0, j = V.length - 1; i < V.length; j = i, i++) { const ey = V[j][0] - V[i][0], ez = V[j][1] - V[i][1], wy = py - V[i][0], wz = pz - V[i][1], h = clamp((wy * ey + wz * ez) / (ey * ey + ez * ez), 0, 1); d = Math.min(d, (wy - ey * h) ** 2 + (wz - ez * h) ** 2); const c1 = pz >= V[i][1], c2 = pz < V[j][1], c3 = ey * wz > ez * wy; if ((c1 && c2 && c3) || (!c1 && !c2 && !c3)) s = -s; } return s * Math.sqrt(d); }
+function noseSDF(N) {
+  // ridge: root → bridge → tip (sharp), then under: tip → nostril base; closed inside the face
+  const ridge = catmull(N.ridge, 8), under = catmull([N.ridge[N.ridge.length - 1], ...N.under], 6).slice(1);
+  const base = N.under[N.under.length - 1], root = N.ridge[0];
+  const V = [...ridge, ...under, [base[0], base[1] - 0.25], [root[0], root[1] - 0.25]];
+  const y0 = root[0], y1 = N.ridge[N.ridge.length - 1][0], y2 = base[0];
+  let ylo = 1e9, yhi = -1e9, zlo = 1e9, zhi = -1e9; for (const [a, b] of V) { ylo = Math.min(ylo, a); yhi = Math.max(yhi, a); zlo = Math.min(zlo, b); zhi = Math.max(zhi, b); }
+  const wmax = Math.max(...N.w), M = 0.12;
+  return (x, y, z) => { const ox = Math.abs(x) - wmax, oy = Math.max(ylo - y, y - yhi), oz = Math.max(zlo - z, z - zhi);
+    if (ox > M || oy > M || oz > M) return Math.max(ox, oy, oz);   // far from the nose: the distance to its box is enough
+    const d2 = sdPoly2(y, z, V); const t = clamp((y0 - y) / (y0 - y2), 0, 1); const w = keysAt([[y0, N.w[0]], [y1, N.w[1]], [y2, N.w[2]]], y);
+    const dx = Math.abs(x) - w * (1 - 0.35 * clamp(-d2 / 0.06, 0, 1) * 0); return smax(d2, dx, N.round ?? 0.02) - (N.r ?? 0.004); };
+}
 function udTriangle(px, py, pz, a, b, c) {
   const v = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]], dot = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2], cross = (p, q) => [p[1] * q[2] - p[2] * q[1], p[2] * q[0] - p[0] * q[2], p[0] * q[1] - p[1] * q[0]];
   const P = [px, py, pz], ba = v(b, a), pa = v(P, a), cb = v(c, b), pb = v(P, b), ac = v(a, c), pc = v(P, c), nor = cross(ba, ac);
@@ -117,54 +132,54 @@ C.anime = { who: 'girl', skin: '#f9e3d8', hs: 1.18, ref: { yaw: 1.42, pitch: 0.0
   head: { ears: { x: 0.9, y: -0.38, z: -0.22, s: 1.05 }, neckR: 0.32, face: { n: 2.4,
     W: [[0.4, 0.88], [-0.25, 0.84], [-0.45, 0.76], [-0.68, 0.54], [-0.86, 0.28], [-0.97, 0.1]],
     P: [[0.4, 0.8], [0.0, 0.88], [-0.3, 0.86], [-0.45, 0.86], [-0.62, 0.86], [-0.72, 0.85], [-0.84, 0.78], [-0.97, 0.6]],
-    nose: { root: [0, -0.4, 0.85], tip: [0, -0.58, 0.97], base: [0, -0.63, 0.87], r: 0.012, k: 0.05 } } },
-  face: { eye: { x: 0.4, y: -0.38, w: 0.38, h: 0.44, tilt: 0.04, iris: ['#1d4f7a', '#3fb4d8'], lash: '#3a2a2a', lashW: 0.07, wing: 0.2, lower: 0.35, glints: 3 }, brow: { y: 0.04, len: 0.3, w: 0.02, a: 0.04, color: '#7d8f9c' }, mouth: { y: -0.74, w: 0.07, type: 'small' }, blush: 0.5 },
+    nose: { ridge: [[-0.4, 0.855], [-0.5, 0.905], [-0.575, 0.975]], under: [[-0.6, 0.93], [-0.625, 0.875]], w: [0.008, 0.012, 0.03], k: 0.035 } } },
+  face: { eye: { x: 0.4, y: -0.38, w: 0.38, h: 0.44, tilt: 0.04, iris: ['#1d4f7a', '#3fb4d8'], lash: '#3a2a2a', lashW: 0.07, wing: 0.2, lower: 0.35, glints: 3 }, brow: { x0: 0.16, x1: 0.62, y0: -0.02, y1: 0.02, arch: 0.04, peak: 0.45, w0: 0.022, w1: 0.008, color: '#7d8f9c' }, mouth: { type: 'drawn', y: -0.745, w: 0.07, sag: 0.006, lineW: 0.012, line: '#a0625a' }, marks: [{ pts: [[0.035, -0.56], [0.045, -0.585], [0.03, -0.6]], w: 0.008, color: '#c99a90', alpha: 0.7 }], blush: 0.5 },
   hair: [['cap', { front: 0.32 }], ['bangsBlunt', { n: 13, y: -0.18, spread: 1.15, w: 0.17 }], ['sides', { n: 3, len: 2.4, w: 0.2, z: -0.35 }], ['back', { n: 11, len: 3.6, w: 0.32 }], ['strays', { n: 4 }]] };
 C.red = { who: 'woman', skin: '#fbe2d2', hs: 1.12, ref: { yaw: -0.22, pitch: 0.18 }, outfit: [['dress', '#d8cde6']], hairColor: '#d8352a', hairInk: '#6a1a14',
   head: { ears: { x: 0.92, y: -0.34, z: -0.1, s: 0.95 }, neckR: 0.3, face: { n: 2.3,
     W: [[0.4, 0.92], [-0.28, 0.9], [-0.5, 0.76], [-0.74, 0.46], [-0.92, 0.18], [-1.0, 0.07]],
     P: [[0.4, 0.82], [0.0, 0.9], [-0.36, 0.88], [-0.6, 0.93], [-0.7, 0.95], [-0.8, 0.9], [-0.92, 0.82], [-1.0, 0.68]],
-    nose: { root: [0, -0.42, 0.88], tip: [0, -0.56, 0.97], base: [0, -0.6, 0.9], r: 0.014, k: 0.05, ball: [0, -0.56, 0.95, 0.032] },
+    nose: { ridge: [[-0.42, 0.875], [-0.5, 0.91], [-0.545, 0.95], [-0.56, 0.978]], under: [[-0.585, 0.95], [-0.605, 0.9]], w: [0.01, 0.022, 0.042], k: 0.035, round: 0.025 },
     lips: [[-0.665, 0.92, 0.075, 0.022, 0.04], [-0.72, 0.915, 0.07, 0.03, 0.045]] } },
-  face: { eye: { x: 0.43, y: -0.34, w: 0.42, h: 0.44, tilt: 0.06, iris: ['#1e6b52', '#5ec29a'], lash: '#3a1a14', lashW: 0.065, wing: 0.12, lower: 0.3, glints: 2, lashes: 3, round: true }, brow: { y: 0.04, len: 0.3, w: 0.025, a: 0.14, color: '#a8382a' }, mouth: { y: -0.69, w: 0.13, type: 'pout', lip: '#e0624f', open: true }, blush: 0.55 },
+  face: { eye: { x: 0.43, y: -0.34, w: 0.42, h: 0.44, tilt: 0.06, iris: ['#1e6b52', '#5ec29a'], lash: '#3a1a14', lashW: 0.065, wing: 0.12, lower: 0.3, glints: 2, lashes: 3, round: true, crease: true }, brow: { x0: 0.18, x1: 0.68, y0: -0.04, y1: -0.02, arch: 0.1, peak: 0.6, w0: 0.03, w1: 0.008, color: '#a8382a' }, mouth: { type: 'drawn', y: -0.69, w: 0.12, sag: 0.003, upper: 0.028, bow: 0.012, lower: 0.042, open: 0.016, corners: -0.004, lip: '#e45a44', line: '#7a2a22', lineW: 0.011 }, blush: 0.55 },
   hair: [['cap', { front: 0.36, part: 0.35 }], ['sidePart', {}], ['back', { n: 15, len: 5.2, w: 0.46, wave: 0.35, lift: 0.22 }]] };
 C.boy7 = { who: 'child', skin: '#f6d6be', hs: 1.12, ref: { yaw: -0.55, pitch: 0.02 }, outfit: [['sweater', '#a6533a'], ['shorts', '#2c2c34'], ['boots', '#c8b38a']], hairColor: '#e2d38a', hairInk: '#6a5a2a',
   head: { ears: { x: 0.94, y: -0.36, z: -0.08, s: 0.9 }, neckR: 0.34, face: { n: 2.1,
     W: [[0.4, 0.9], [-0.3, 0.9], [-0.6, 0.84], [-0.82, 0.62], [-0.97, 0.32], [-1.03, 0.14]],
     P: [[0.4, 0.8], [0.0, 0.88], [-0.4, 0.86], [-0.62, 0.92], [-0.76, 0.92], [-0.9, 0.86], [-1.0, 0.74], [-1.03, 0.62]],
-    nose: { root: [0, -0.44, 0.87], tip: [0, -0.6, 0.96], base: [0, -0.64, 0.9], r: 0.022, k: 0.06, ball: [0, -0.59, 0.94, 0.045] },
+    nose: { ridge: [[-0.44, 0.87], [-0.53, 0.915], [-0.59, 0.965]], under: [[-0.63, 0.945], [-0.645, 0.895]], w: [0.018, 0.04, 0.06], k: 0.05, round: 0.035 },
     masses: [[0.44, -0.66, 0.55, 0.26, 0.25]] } },
-  face: { eye: { x: 0.4, y: -0.4, w: 0.3, h: 0.3, tilt: 0, iris: ['#2a4f7a', '#6aa0c8'], lash: '#3a2a24', lashW: 0.045, wing: 0.04, lower: 0.2, glints: 1, round: true }, brow: { y: -0.08, len: 0.24, w: 0.025, a: 0.0, color: '#b8a060' }, mouth: { y: -0.8, w: 0.12, type: 'smallOpen' }, blush: 0.25 },
+  face: { eye: { x: 0.4, y: -0.4, w: 0.3, h: 0.3, tilt: 0, iris: ['#2a4f7a', '#6aa0c8'], lash: '#3a2a24', lashW: 0.045, wing: 0.04, lower: 0.2, glints: 1, round: true }, brow: { x0: 0.16, x1: 0.6, y0: -0.08, y1: -0.06, arch: 0.05, peak: 0.5, w0: 0.03, w1: 0.012, color: '#a8904a' }, mouth: { type: 'drawn', y: -0.8, w: 0.1, sag: 0.006, upper: 0.012, lower: 0.02, open: 0.022, lip: '#d88a7a', line: '#8a4a3a', lineW: 0.012 }, blush: 0.25 },
   hair: [['cap', { front: 0.2 }], ['bowl', { n: 26 }], ['sideSweep', {}]] };
 C.mask = { who: 'woman', skin: '#f1c6bd', hs: 1.08, ref: { yaw: -0.62, pitch: 0.12 }, outfit: [['oversized', '#5b4b3c'], ['pants', '#3b3550'], ['boots', '#2b2530']], hairColor: '#4a3b38', gloves: '#4a4560',
   head: { ears: { x: 0.94, y: -0.34, z: -0.1, s: 1 }, neckR: 0.36, face: { n: 2.2,
     W: [[0.4, 0.94], [-0.3, 0.92], [-0.6, 0.84], [-0.84, 0.62], [-1.0, 0.36], [-1.08, 0.18]],
     P: [[0.4, 0.8], [0.0, 0.9], [-0.32, 0.86], [-0.6, 0.94], [-0.8, 0.9], [-1.0, 0.8], [-1.08, 0.66]],
-    nose: { root: [0, -0.36, 0.88], tip: [0, -0.62, 1.03], base: [0, -0.67, 0.92], r: 0.028, k: 0.07 } } },
-  face: { eye: { x: 0.43, y: -0.3, w: 0.44, h: 0.2, tilt: -0.14, iris: ['#7a2b1c', '#c2603a'], lash: '#1d1418', lashW: 0.075, wing: 0.3, lower: 0.25, glints: 1, sharp: true, look: 0.45 }, brow: { y: -0.06, len: 0.4, w: 0.07, a: -0.3, color: '#2a1d1b', arch: 0.7 }, mouth: { type: 'none' }, mask: { color: '#c9c9d3', dark: '#74738a', top: -0.46 }, blush: 0 },
+    nose: { ridge: [[-0.34, 0.88], [-0.48, 0.955], [-0.6, 1.025], [-0.63, 1.04]], under: [[-0.655, 0.99], [-0.675, 0.92]], w: [0.022, 0.03, 0.07], k: 0.05 } } },
+  face: { eye: { x: 0.43, y: -0.3, w: 0.44, h: 0.2, tilt: -0.14, iris: ['#7a2b1c', '#c2603a'], lash: '#1d1418', lashW: 0.075, wing: 0.3, lower: 0.25, glints: 1, sharp: true, look: 0.45 }, brow: { x0: 0.12, x1: 0.74, y0: -0.13, y1: 0.02, arch: 0.08, peak: 0.55, w0: 0.075, w1: 0.018, color: '#2a1d1b' }, mouth: { type: 'none' }, mask: { color: '#c9c9d3', dark: '#74738a', top: -0.46 }, blush: 0 },
   extras: [['earDevice', { color: '#b5b6c5', dark: '#5a5b70' }]],
   hair: [['mass', { n: 18, scale: 1.12, front: 0.4, bang: 0.35, bangEl: 0.5, len: 0.3, flick: 0.12, side: 0.1, r: 0.22, tufts: [[0.5, 0.75, 0.25, -0.45, 0.25, 0.26]] }], ['topBun', { color2: '#3aa0d8' }], ['bangsSide', { n: 3 }]] };
 C.hood = { who: 'woman', skin: '#ecbcc4', hs: 1.06, ref: { yaw: -0.95, pitch: 0.06 }, outfit: [['oversized', '#6b5aa8'], ['pants', '#3d3256'], ['boots', '#2b2530']], hairColor: '#1e1a26', gloves: '#5e5a72',
   head: { ears: { x: 0.9, y: -0.36, z: -0.1, s: 1.05 }, neckR: 0.32, face: { n: 2.3,
     W: [[0.4, 0.84], [-0.3, 0.8], [-0.6, 0.7], [-0.86, 0.46], [-1.05, 0.2], [-1.13, 0.09]],
     P: [[0.4, 0.8], [0.0, 0.88], [-0.25, 0.86], [-0.64, 0.9], [-0.78, 0.9], [-0.9, 0.84], [-1.04, 0.8], [-1.13, 0.68]],
-    nose: { root: [0, -0.22, 0.88], tip: [0, -0.6, 1.13], base: [0, -0.67, 0.92], r: 0.024, k: 0.07 } } },
-  face: { eye: { x: 0.4, y: -0.3, w: 0.38, h: 0.17, tilt: -0.1, iris: ['#2b2236', '#5a4a6a'], lash: '#160f16', lashW: 0.07, wing: 0.22, lower: 0.2, glints: 1, sharp: true, look: 0.55 }, brow: { y: -0.05, len: 0.34, w: 0.05, a: -0.25, color: '#1e1a26' }, mouth: { y: -0.8, w: 0.12, type: 'smirk' }, blush: 0.15 },
+    nose: { ridge: [[-0.2, 0.88], [-0.36, 0.97], [-0.5, 1.06], [-0.6, 1.14]], under: [[-0.62, 1.1], [-0.645, 1.02], [-0.665, 0.92]], w: [0.018, 0.022, 0.06], k: 0.05, round: 0.015 } } },
+  face: { eye: { x: 0.4, y: -0.3, w: 0.38, h: 0.17, tilt: -0.1, iris: ['#2b2236', '#5a4a6a'], lash: '#160f16', lashW: 0.07, wing: 0.22, lower: 0.2, glints: 1, sharp: true, look: 0.55, crease: true }, brow: { x0: 0.13, x1: 0.7, y0: -0.1, y1: -0.0, arch: 0.05, peak: 0.6, w0: 0.065, w1: 0.014, color: '#1e1a26' }, mouth: { type: 'drawn', y: -0.8, w: 0.11, sag: 0.004, cL: 0.0, cR: 0.022, lineW: 0.013, line: '#7a3a46', dimple: true, lowerLine: 0.3 }, blush: 0.15 },
   extras: [['hood', { color: '#a6b4ea', inner: '#6d77b5' }]], hair: [['cap', { front: 0.3 }], ['sides', { n: 2, len: 2.0, w: 0.22, z: 0.3 }], ['bangsSide', { n: 5 }]] };
 C.blond = { who: 'man', skin: '#eab6a6', hs: 1.0, ref: { yaw: -1.3, pitch: 0.05 }, outfit: [['polo', '#c4466e'], ['pants', '#4a3a5c'], ['boots', '#3b2c2c']], hairColor: '#fbe0a4', hairInk: '#7a4a2a',
   head: { ears: { x: 0.92, y: -0.36, z: -0.18, s: 1.12 }, neckR: 0.5, face: { n: 2.6,
     W: [[0.4, 0.86], [-0.3, 0.84], [-0.62, 0.82], [-0.86, 0.74], [-1.04, 0.42], [-1.12, 0.3]],
     P: [[0.4, 0.78], [-0.08, 0.92], [-0.3, 0.84], [-0.66, 0.92], [-0.8, 0.92], [-0.92, 0.88], [-1.06, 0.88], [-1.12, 0.76]],
-    nose: { root: [0, -0.2, 0.9], tip: [0, -0.6, 1.13], base: [0, -0.68, 0.94], r: 0.034, k: 0.08, ball: [0, -0.59, 1.1, 0.05] } } },
-  face: { eye: { x: 0.38, y: -0.31, w: 0.3, h: 0.14, tilt: -0.04, iris: ['#1d3b6a', '#3d78b8'], lash: '#2a1714', lashW: 0.05, wing: 0.04, lower: 0.15, glints: 1, sharp: true, look: 0.55 }, brow: { y: -0.08, len: 0.38, w: 0.08, a: -0.1, color: '#3a1e1a' }, mouth: { y: -0.84, w: 0.14, type: 'smirk' }, blush: 0 },
+    nose: { ridge: [[-0.17, 0.9], [-0.3, 0.985], [-0.4, 1.03], [-0.52, 1.08], [-0.6, 1.14]], under: [[-0.64, 1.1], [-0.665, 1.02], [-0.685, 0.94]], w: [0.03, 0.04, 0.08], k: 0.06, round: 0.025 } } },
+  face: { eye: { x: 0.38, y: -0.31, w: 0.3, h: 0.14, tilt: -0.04, iris: ['#1d3b6a', '#3d78b8'], lash: '#2a1714', lashW: 0.05, wing: 0.04, lower: 0.15, glints: 1, sharp: true, look: 0.55 }, brow: { x0: 0.12, x1: 0.72, y0: -0.1, y1: -0.05, arch: 0.025, peak: 0.4, w0: 0.095, w1: 0.04, color: '#3a1e1a' }, mouth: { type: 'drawn', y: -0.84, w: 0.13, sag: 0.0, cL: 0.0, cR: 0.018, lineW: 0.016, line: '#7a3a36', lowerLine: 0.3 }, blush: 0 },
   hair: [['mass', { n: 22, scale: 1.17, front: 0.25, bang: 0.85, bangEl: 0.35, len: 0.5, flick: 0.28, spread: 0.2, side: 0.2, r: 0.27, tufts: [[0.25, 1.15, 0.35, 0.05, 0.3, 0.26], [-0.35, 1.05, 0.35, 0.0, 0.3, 0.25], [2.6, 0.7, 0.45, 0.05, -0.1, 0.24]] }]] };
 C.tails = { who: 'man', skin: '#e9b8a8', hs: 1.04, ref: { yaw: -1.35, pitch: 0.05 }, outfit: [['tshirt', '#e46a2c'], ['pants', '#56423a'], ['boots', '#3b2c2c']], hairColor: '#5a2a24', hairInk: '#1d0c0a',
   head: { ears: { x: 0.95, y: -0.36, z: -0.18, s: 1.1 }, neckR: 0.56, face: { n: 2.2,
     W: [[0.4, 0.88], [-0.3, 0.88], [-0.6, 0.86], [-0.84, 0.7], [-1.0, 0.42], [-1.1, 0.2]],
     P: [[0.4, 0.78], [-0.08, 0.88], [-0.32, 0.84], [-0.64, 0.9], [-0.78, 0.9], [-0.92, 0.86], [-1.04, 0.82], [-1.1, 0.7]],
-    nose: { root: [0, -0.3, 0.86], tip: [0, -0.55, 1.09], base: [0, -0.63, 0.93], r: 0.03, k: 0.07, ball: [0, -0.54, 1.06, 0.045] },
+    nose: { ridge: [[-0.27, 0.86], [-0.38, 0.9], [-0.46, 0.96], [-0.51, 1.04], [-0.52, 1.11]], under: [[-0.56, 1.07], [-0.6, 1.0], [-0.625, 0.93]], w: [0.022, 0.03, 0.07], k: 0.05, round: 0.015 },
     masses: [[0.55, -0.72, 0.44, 0.3, 0.25]] } },
-  face: { eye: { x: 0.4, y: -0.33, w: 0.32, h: 0.16, tilt: -0.08, iris: ['#2a1612', '#5a3428'], lash: '#1d0f0c', lashW: 0.055, wing: 0.06, lower: 0.12, glints: 1, sharp: true, look: 0.5 }, brow: { y: -0.08, len: 0.38, w: 0.085, a: -0.12, color: '#2a1210' }, mouth: { y: -0.82, w: 0.12, type: 'smirk' }, blush: 0 },
+  face: { eye: { x: 0.4, y: -0.33, w: 0.32, h: 0.16, tilt: -0.08, iris: ['#2a1612', '#5a3428'], lash: '#1d0f0c', lashW: 0.055, wing: 0.06, lower: 0.12, glints: 1, sharp: true, look: 0.5 }, brow: { x0: 0.12, x1: 0.72, y0: -0.13, y1: -0.02, arch: 0.05, peak: 0.55, w0: 0.095, w1: 0.03, color: '#2a1210' }, mouth: { type: 'drawn', y: -0.82, w: 0.11, sag: 0.004, cL: -0.004, cR: 0.026, lineW: 0.015, line: '#7a3a36', dimple: true }, blush: 0 },
   hair: [['mass', { n: 18, scale: 1.12, front: 0.5, bang: -0.25, bangEl: 0.55, len: 0.35, flick: 0.1, side: 0.05, r: 0.22 }], ['twoTails', {}], ['bangsSide', { n: 2 }]] };
 C.old = { who: 'oldman', skin: '#f2c49f', hs: 1.12, ref: { yaw: 0.55, pitch: 0.05 }, outfit: [['tshirt', '#7aa36e'], ['pants', '#d8d8d2'], ['boots', '#b49a6a']], hairColor: '#d08a4a', hairInk: '#6a3a1a',
   head: { cw: 1.04, ears: { x: 1.0, y: -0.32, z: -0.08, s: 1.15 }, neckR: 0.6, face: { n: 2.0,
@@ -172,15 +187,15 @@ C.old = { who: 'oldman', skin: '#f2c49f', hs: 1.12, ref: { yaw: 0.55, pitch: 0.0
     P: [[0.4, 0.78], [-0.1, 0.9], [-0.3, 0.86], [-0.72, 0.96], [-0.9, 0.94], [-1.06, 0.86], [-1.16, 0.7]],
     nose: { root: [0, -0.24, 0.9], tip: [0, -0.46, 1.06], r: [0.06, 0.1], k: 0.08, ball: [0, -0.56, 1.14, 0.29], bk: 0.08 },
     masses: [[0.56, -0.56, 0.62, 0.33, 0.22], [0.6, -0.98, 0.42, 0.42, 0.3]] } },
-  face: { eye: { x: 0.4, y: -0.26, w: 0.3, h: 0.14, iris: ['#3a2a1a', '#5a4030'], lash: '#2a1a12', lashW: 0.045, lower: 0, glints: 0, smiley: true }, brow: { y: -0.04, len: 0.32, w: 0.07, a: 0.22, color: '#b8723a' }, mouth: { y: -0.9, w: 0.46, type: 'grin', crooked: 0.12 }, blush: 0.8 },
+  face: { eye: { x: 0.4, y: -0.26, w: 0.3, h: 0.14, iris: ['#3a2a1a', '#5a4030'], lash: '#2a1a12', lashW: 0.045, lower: 0, glints: 0, smiley: true }, brow: { x0: 0.14, x1: 0.68, y0: -0.08, y1: -0.07, arch: 0.1, peak: 0.45, w0: 0.08, w1: 0.05, color: '#b0682e' }, marks: [{ mirror: true, pts: [[0.32, -0.62], [0.42, -0.78], [0.4, -0.95]], w: 0.014, color: '#a0602e', alpha: 0.55 }, { mirror: true, pts: [[0.55, -0.32], [0.62, -0.3], [0.66, -0.26]], w: 0.01, color: '#8a5030', alpha: 0.5 }], mouth: { y: -0.9, w: 0.46, type: 'grin', crooked: 0.12 }, blush: 0.8 },
   extras: [['hood', { color: '#f4f2ee', inner: '#c9c6c0', wide: 1.15 }]], hair: [['cap', { front: 0.1, back: -0.2 }], ['fringeTufts', {}]] };
-C.semi = { who: 'man', skin: '#efd2d4', hs: 1.0, ref: { yaw: -1.3, pitch: 0.02 }, outfit: [['sweater', '#7a6aa8'], ['pants', '#3a3446'], ['boots', '#2b2530']], hairColor: '#2a1f2c', turtleneck: '#55506e',
+C.semi = { who: 'man', skin: '#efd2d4', hs: 1.0, ref: { yaw: -1.3, pitch: 0.02 }, outfit: [['sweater', '#7a6aa8'], ['pants', '#3a3446'], ['boots', '#2b2530']], hairColor: '#2a1f2c', extras: [['turtleneck', { color: '#55506e' }]],
   head: { ears: { x: 0.9, y: -0.34, z: -0.16, s: 1.05 }, neckR: 0.36, face: { n: 2.5,
     W: [[0.4, 0.82], [-0.28, 0.8], [-0.55, 0.64], [-0.86, 0.6], [-1.14, 0.28], [-1.27, 0.12]],
     P: [[0.4, 0.82], [-0.1, 0.92], [-0.28, 0.86], [-0.84, 0.86], [-0.92, 0.87], [-1.0, 0.88], [-1.12, 0.84], [-1.27, 0.7]],
-    nose: { root: [0, -0.2, 0.9], tip: [0, -0.8, 1.42], base: [0, -0.82, 0.94], r: 0.03, k: 0.08, wings: [-0.79, 1.0, 0.09, 0.045, 0.08] },
+    nose: { ridge: [[-0.17, 0.9], [-0.38, 1.06], [-0.6, 1.24], [-0.78, 1.4], [-0.82, 1.42]], under: [[-0.855, 1.36], [-0.86, 1.2], [-0.84, 1.04], [-0.82, 0.94]], w: [0.024, 0.03, 0.08], k: 0.06, round: 0.015, wings: [-0.79, 1.0, 0.085, 0.045, 0.075] },
     lips: [[-0.93, 0.87, 0.09, 0.018, 0.035], [-0.99, 0.875, 0.1, 0.03, 0.045]] } },
-  face: { eye: { x: 0.36, y: -0.32, w: 0.33, h: 0.3, tilt: 0.02, iris: ['#6a6ad8', '#b8b8ff'], lash: '#2a1f2c', lashW: 0.035, wing: 0.02, lower: 0.5, glints: 0, ringed: true, bags: '#8a5a6e' }, brow: { y: -0.04, len: 0.32, w: 0.04, a: 0.06, color: '#2a1f2c' }, mouth: { y: -0.96, w: 0.16, type: 'lips', lip: '#c48a92' }, blush: 0.1 },
+  face: { eye: { x: 0.36, y: -0.32, w: 0.33, h: 0.3, tilt: 0.02, iris: ['#6a6ad8', '#b8b8ff'], lash: '#2a1f2c', lashW: 0.035, wing: 0.02, lower: 0.5, glints: 0, ringed: true, bags: '#8a5a6e', crease: true }, brow: { x0: 0.13, x1: 0.66, y0: -0.03, y1: -0.05, arch: 0.035, peak: 0.35, w0: 0.045, w1: 0.012, color: '#2a1f2c' }, mouth: { type: 'drawn', y: -0.955, w: 0.15, sag: 0.0, corners: -0.012, upper: 0.012, bow: 0.007, lower: 0.032, lip: '#c98e98', line: '#6a3a4a', lineW: 0.012 }, marks: [{ mirror: true, pts: [[0.5, -0.5], [0.46, -0.66], [0.38, -0.8]], w: 0.008, color: '#9a6a7a', alpha: 0.6 }, { mirror: true, pts: [[0.16, -0.5], [0.3, -0.56], [0.48, -0.5]], w: 0.008, color: '#8a5a6e', alpha: 0.5 }], blush: 0.1 },
   hair: [['mass', { n: 22, scale: 1.14, front: 0.3, bang: 0.75, bangEl: 0.5, len: 0.9, flick: 0.35, spread: 0.45, side: 0.35, r: 0.2 }]] };
 
 // ———— the head's surface: the face lofted from its own outline (front) and profile (side) ————
@@ -192,22 +207,24 @@ function keysAt(ks, y) {   // piecewise-smooth through [y, v] keys, y descending
   const t2 = t * t, t3 = t2 * t; return (2 * t3 - 3 * t2 + 1) * v1 + (t3 - 2 * t2 + t) * m1 + (-2 * t3 + 3 * t2) * v2 + (t3 - t2) * m2;
 }
 function headSDF(H) {
-  const F = H.face, n = F.n || 2.3, yTop = 0.4, yChin = F.W[F.W.length - 1][0];
+  const F = H.face, n = F.n || 2.3, yTop = 0.4, yChin = F.W[F.W.length - 1][0], NS = F.nose && F.nose.ridge ? noseSDF(F.nose) : null;
   return (x, y, z) => {
     let d = sdEll(x, y - 0.02, z + 0.04, H.cw, H.ch, H.cd);
     // the face: at each height a section as wide as the outline and reaching forward to the profile
     const yy = clamp(y, yChin, yTop), w = Math.max(0.04, keysAt(F.W, yy)), f = keysAt(F.P, yy), back = f - Math.max(1.2, w * 1.6), c = (f + back) / 2, h = (f - back) / 2;
     const q = Math.pow(Math.pow(Math.abs(x) / w, n) + Math.pow(Math.abs(z - c) / h, n), 1 / n);
     let fd = (q - 1) * Math.min(w, h * 0.6);
-    fd = smax(fd, Math.max(y - yTop, yChin - y), 0.06);
+    const chinF = keysAt(F.P, yChin), under = yChin + 0.42 * Math.max(0, chinF - 0.1 - z);
+    fd = smax(fd, Math.max(y - yTop, under - y), 0.08);
     d = smin(d, fd, 0.18);
     const N0 = F.nose;
-    if (N0) { d = smin(d, N0.base ? udTriangle(x, y, z, N0.root, N0.tip, N0.base) - N0.r : sdCapsule(x, y, z, N0.root, N0.tip, N0.r), N0.k ?? 0.06);
+    if (NS) { d = smin(d, NS(x, y, z), N0.k ?? 0.04); if (N0.wings) d = smin(d, sdEll(x, y - N0.wings[0], z - N0.wings[1], N0.wings[2], N0.wings[3], N0.wings[4]), 0.05); }
+    else if (N0) { d = smin(d, N0.base ? udTriangle(x, y, z, N0.root, N0.tip, N0.base) - N0.r : sdCapsule(x, y, z, N0.root, N0.tip, N0.r), N0.k ?? 0.06);
       if (N0.ball) d = smin(d, sdSphere(x - N0.ball[0], y - N0.ball[1], z - N0.ball[2], N0.ball[3]), N0.bk ?? 0.05);
       if (N0.wings) d = smin(d, sdEll(x, y - N0.wings[0], z - N0.wings[1], N0.wings[2], N0.wings[3], N0.wings[4]), 0.06); }
     for (const L of F.lips || []) d = smin(d, sdEll(x, y - L[0], z - L[1], L[2], L[3], L[4]), 0.04);
     for (const M of F.masses || []) for (const s of M[5] === 'mid' ? [0] : [-1, 1]) d = smin(d, sdEll(x - s * M[0], y - M[1], z - M[2], M[3], M[3] * (M[6] || 1), M[3] * (M[7] || 0.8)), M[4]);
-    d = smin(d, sdCapsule(x, y, z, [0, yChin + 0.45, -0.25], [0, -2.6, -0.3], H.neckR), 0.2);
+    const NB = H.neckBase; d = smin(d, sdCapsule(x, y, z, [0, yChin + 0.5, -0.18], [NB[0], NB[1], NB[2]], [H.neckR, NB[3]]), 0.28);
     const e = H.ears; for (const s of [-1, 1]) d = smin(d, sdEll(x - s * e.x, y - e.y, z - e.z, 0.1 * e.s, 0.27 * e.s * (e.h || 1), 0.19 * e.s), 0.06);
     return d;
   };
@@ -222,9 +239,11 @@ function faceCanvas(F, skin, expr) {
   const E = F.eye, sm = expr === 'smile', bl = expr === 'blink';
   if (F.blush) for (const s of [-1, 1]) { const gr = g.createRadialGradient(FX(s * 0.52), FY(-0.56), 0, FX(s * 0.52), FY(-0.56), 0.24 * KS); gr.addColorStop(0, `rgba(240,120,120,${0.45 * F.blush})`); gr.addColorStop(1, 'rgba(240,120,120,0)'); g.fillStyle = gr; g.fillRect(0, 0, FW, FW); }
   if (E.bags) for (const s of [-1, 1]) { const gr = g.createRadialGradient(FX(s * E.x), FY(E.y - 0.12), 0, FX(s * E.x), FY(E.y - 0.12), 0.3 * KS); gr.addColorStop(0, E.bags + 'aa'); gr.addColorStop(1, E.bags + '00'); g.fillStyle = gr; g.fillRect(0, 0, FW, FW); }
+  if (F.noseTint) { const gr = g.createRadialGradient(FX(0), FY(-0.64), 0, FX(0), FY(-0.64), 0.16 * KS); gr.addColorStop(0, F.noseTint); gr.addColorStop(1, F.noseTint + '00'); g.fillStyle = gr; g.fillRect(0, 0, FW, FW); }
   if (F.mask) drawMask(g, F.mask);
   for (const s of [-1, 1]) drawEye(g, E, s, bl || (sm && E.smiley !== false && E.h > 0.3 ? false : false), sm);
   for (const s of [-1, 1]) drawBrow(g, F.brow, s, expr);
+  drawMarks(g, F.marks);
   if (!F.mask) drawMouth(g, F.mouth, expr);
   if (F.nose === 'dot') { g.fillStyle = 'rgba(190,110,100,0.55)'; g.beginPath(); g.ellipse(FX(0.03), FY(-0.47), 0.025 * KS, 0.012 * KS, 0, 0, 7); g.fill(); }
   return cv;
@@ -250,7 +269,7 @@ function drawEye(g, E, s, closed, happy) {
   else { g.moveTo(-w * 0.5, 0); g.bezierCurveTo(-w * 0.35, -lidTop * 1.15, w * 0.35, -lidTop * 1.2, w * 0.52, -lidTop * 0.25); g.bezierCurveTo(w * 0.45, lidBot * 0.9, -w * 0.35, lidBot * 1.05, -w * 0.5, 0); }
   g.closePath(); g.fillStyle = '#fbfbff'; g.fill(); g.save(); g.clip();
   // the iris: tall, dark at the top, light below
-  const ix = look * s, iw = w * (E.ringed ? 0.24 : 0.33), ih = h * (E.ringed ? 0.42 : 0.62);
+  const ix = look * s, iw = w * (E.ringed ? 0.24 : 0.33) * (E.irisScale || 1), ih = h * (E.ringed ? 0.42 : 0.62) * (E.irisScale || 1);
   const gr = g.createLinearGradient(0, -ih, 0, ih); gr.addColorStop(0, E.iris[0]); gr.addColorStop(1, E.iris[1]);
   g.fillStyle = gr; g.beginPath(); g.ellipse(ix, h * 0.05, iw, ih, 0, 0, 7); g.fill();
   if (E.ringed) { g.strokeStyle = '#ffffff'; g.lineWidth = iw * 0.28; g.beginPath(); g.ellipse(ix, h * 0.05, iw * 0.62, ih * 0.62, 0, 0, 7); g.stroke(); g.fillStyle = '#1a1220'; g.beginPath(); g.ellipse(ix, h * 0.05, iw * 0.28, ih * 0.28, 0, 0, 7); g.fill(); }
@@ -263,11 +282,39 @@ function drawEye(g, E, s, closed, happy) {
   else { g.moveTo(-w * 0.53, h * 0.02); g.bezierCurveTo(-w * 0.35, -lidTop * 1.2, w * 0.35, -lidTop * 1.25, w * 0.53, -lidTop * 0.28); g.lineTo(w * (0.56 + E.wing), -lidTop * (0.4 + E.wing * 1.6)); g.bezierCurveTo(w * 0.3, -lidTop * 1.25 - lw * 1.3, -w * 0.35, -lidTop * 1.2 - lw * 0.9, -w * 0.56, -h * 0.02); }
   g.closePath(); g.fill();
   if (E.lashes) for (let k = 0; k < E.lashes; k++) { g.strokeStyle = E.lash; g.lineWidth = lw * 0.35; g.lineCap = 'round'; const t = 0.55 + k * 0.15; g.beginPath(); g.moveTo(w * (t - 0.3), -lidTop * (1.0 - k * 0.2)); g.lineTo(w * (t - 0.2), -lidTop * (1.45 - k * 0.15)); g.stroke(); }
+  if (E.crease) { g.strokeStyle = E.lash; g.globalAlpha = 0.55; g.lineWidth = lw * 0.25; g.beginPath(); g.moveTo(-w * 0.2, -lidTop * 1.45); g.quadraticCurveTo(w * 0.2, -lidTop * 1.75, w * 0.52, -lidTop * 1.0); g.stroke(); g.globalAlpha = 1; }
   if (E.lower) { g.strokeStyle = E.lash; g.globalAlpha = 0.6; g.lineWidth = lw * 0.35; g.beginPath(); g.moveTo(w * 0.05, lidBot * 0.95); g.quadraticCurveTo(w * 0.35, lidBot * 0.85, w * (0.25 + 0.3 * E.lower), lidBot * 0.6); g.stroke(); g.globalAlpha = 1; }
   if (E.ringed) { g.strokeStyle = E.lash; g.lineWidth = lw * 0.6; g.beginPath(); g.moveTo(-w * 0.48, h * 0.1); g.bezierCurveTo(-w * 0.3, lidBot * 1.2, w * 0.3, lidBot * 1.2, w * 0.5, -h * 0.02); g.stroke(); }
   g.restore();
 }
+function drawBrow2(g, B, s, expr) {
+  // a brow: thick at its head (inner end), tapering to its tail, along an arc with its peak where the drawing has it
+  const up = expr === 'browsUp' ? 0.08 : expr === 'browsDown' ? -0.05 : 0, tilt = expr === 'browsDown' ? -0.08 : expr === 'browsUp' ? 0.04 : 0, n = 24, top = [], bot = [];
+  for (let k = 0; k <= n; k++) { const t = k / n, x = lerp(B.x0, B.x1, t), arc = B.arch * Math.sin(Math.PI * Math.min(1, t / (2 * (B.peak ?? 0.5)) )) * (t < (B.peak ?? 0.5) ? 1 : 1 - 0.5 * ((t - (B.peak ?? 0.5)) / (1 - (B.peak ?? 0.5))) ** 2);
+    const y = lerp(B.y0, B.y1, t) + arc + up + tilt * (1 - t), w = lerp(B.w0, B.w1, t ** 0.8) * (t > 0.9 ? (1 - t) * 10 : 1) + 0.002; top.push([s * x, y + w * 0.5]); bot.push([s * x, y - w * 0.5]); }
+  g.fillStyle = B.color; g.beginPath(); top.forEach(([x, y], i) => i ? g.lineTo(FX(x), FY(y)) : g.moveTo(FX(x), FY(y))); for (let k = bot.length - 1; k >= 0; k--) g.lineTo(FX(bot[k][0]), FY(bot[k][1])); g.closePath(); g.fill();
+}
+function drawMouth2(g, M, expr) {
+  // a mouth from its own lines: the parting line with its sag and corners, the upper lip with its bow, the lower lip
+  const sm = expr === 'smile' ? 0.025 : 0, w = M.w / 2, P = (x, y) => [FX(x), FY(M.y + y)];
+  const cL = (M.cL ?? M.corners ?? 0) + sm, cR = (M.cR ?? M.corners ?? 0) + sm, sag = M.sag ?? 0.004;
+  const line = t => { const x = lerp(-w, w, t); return [x, lerp(cL, cR, t) - sag * Math.sin(Math.PI * t) - sm * 0.6 * Math.sin(Math.PI * t)]; };
+  const path = (f, n = 20) => { const pts = []; for (let k = 0; k <= n; k++) pts.push(f(k / n)); return pts; };
+  const fillBetween = (A, B, color) => { g.fillStyle = color; g.beginPath(); A.forEach(([x, y], i) => { const [X, Y] = P(x, y); i ? g.lineTo(X, Y) : g.moveTo(X, Y); }); for (let k = B.length - 1; k >= 0; k--) { const [X, Y] = P(...B[k]); g.lineTo(X, Y); } g.closePath(); g.fill(); };
+  const L = path(line);
+  if (M.open || sm) fillBetween(L, path(t => { const [x, y] = line(t); return [x * 0.9, y - (M.open || 0) * Math.sin(Math.PI * t) - sm * 0.5 * Math.sin(Math.PI * t)]; }), '#6a2a28');
+  if (M.upper) fillBetween(path(t => { const [x, y] = line(t), b = (M.bow ?? 0) * Math.exp(-(((t - 0.5) / 0.09) ** 2)); return [x, y + M.upper * Math.sin(Math.PI * t) ** 0.6 - b + (M.open ? 0.004 : 0)]; }), L, M.lip);
+  if (M.lower) { const lo = path(t => { const [x, y] = line(t); return [x * 0.92, y - (M.open || 0) * Math.sin(Math.PI * t) - M.lower * Math.sin(Math.PI * t) ** 0.7]; }), lt = path(t => { const [x, y] = line(t); return [x * 0.9, y - (M.open || 0) * Math.sin(Math.PI * t)]; }); fillBetween(lt, lo, M.lip); }
+  g.strokeStyle = M.line || '#7a3a36'; g.lineCap = 'round'; g.lineJoin = 'round';
+  for (let k = 0; k < L.length - 1; k++) { const t = k / (L.length - 1); g.lineWidth = (M.lineW ?? 0.014) * KS * (0.35 + 0.65 * Math.sin(Math.PI * (t * 0.9 + 0.05))); g.beginPath(); g.moveTo(...P(...L[k])); g.lineTo(...P(...L[k + 1])); g.stroke(); }
+  if (M.lowerLine) { g.lineWidth = 0.01 * KS; g.globalAlpha = 0.5; g.beginPath(); const y = -(M.lower || 0) - 0.035; g.moveTo(...P(-w * M.lowerLine, y)); g.quadraticCurveTo(...P(0, y - 0.008), ...P(w * M.lowerLine, y)); g.stroke(); g.globalAlpha = 1; }
+  if (M.dimple) { g.lineWidth = 0.009 * KS; g.beginPath(); const [x, y] = line(1); g.moveTo(...P(x + 0.005, y + 0.02)); g.quadraticCurveTo(...P(x + 0.025, y), ...P(x + 0.008, y - 0.022)); g.stroke(); }
+}
+function drawMarks(g, marks) {
+  for (const m of marks || []) for (const s of m.mirror ? [-1, 1] : [1]) { g.strokeStyle = m.color; g.globalAlpha = m.alpha ?? 0.6; g.lineWidth = (m.w || 0.01) * KS; g.lineCap = 'round'; g.beginPath(); const pts = m.pts; g.moveTo(FX(s * pts[0][0]), FY(pts[0][1])); if (pts.length === 3) g.quadraticCurveTo(FX(s * pts[1][0]), FY(pts[1][1]), FX(s * pts[2][0]), FY(pts[2][1])); else for (const p of pts.slice(1)) g.lineTo(FX(s * p[0]), FY(p[1])); g.stroke(); g.globalAlpha = 1; }
+}
 function drawBrow(g, B, s, expr) {
+  if (B.x0 != null) return drawBrow2(g, B, s, expr);
   const up = expr === 'browsUp' ? 0.1 : expr === 'browsDown' ? -0.05 : 0, a = (B.a || 0) + (expr === 'browsDown' ? -0.3 : expr === 'browsUp' ? 0.15 : 0);
   g.save(); g.translate(FX(s * (0.12 + B.len / 2 + 0.05)), FY(B.y + up)); g.scale(s, 1); g.rotate(a);
   const L = B.len * KS, W = B.w * KS; g.fillStyle = B.color; g.beginPath();
@@ -275,6 +322,7 @@ function drawBrow(g, B, s, expr) {
 }
 function drawMouth(g, M, expr) {
   if (M.type === 'none') return;
+  if (M.type === 'drawn') return drawMouth2(g, M, expr);
   const cx = FX(0), cy = FY(M.y), w = M.w * KS; g.lineCap = 'round';
   const smile = expr === 'smile';
   if (M.type === 'grin' || smile) {
@@ -325,6 +373,8 @@ function hairParts(H, list, C0) {
     if (kind === 'back') for (let k = 0; k < o.n; k++) { const t = k / (o.n - 1) * 2 - 1, az = Math.PI + t * 1.25, wave = o.wave || 0; const base = S(az, -0.5, 1.06); lock([S(az * 0.6 + Math.PI * 0.4, 0.95), S(az, 0.3, 1.12 + (o.lift || 0)), base.clone().multiplyScalar(1 + (o.lift || 0)), new V3(base.x * 1.15 + wave * Math.sin(k * 1.7), -o.len * 0.6, -1.25 + 0.2 * Math.cos(t)), new V3(base.x * 1.05, -o.len, -1.35 + 0.25 * Math.cos(t))], o.w, { lift: 0.05 }); }
     if (kind === 'sidePart') { for (let k = 0; k < 9; k++) { const t = k / 8, az = lerp(-0.35, -1.45, t); lock([S(0.38, 1.1), S(lerp(0.15, -0.6, t), lerp(1.05, 0.95, t), 1.3), S(az, lerp(0.62, 0.42, t), 1.32), S(az - 0.25, -0.3, 1.24), new V3(-1.25 - 0.2 * t, -2.6 - t, 0.1 - t * 0.7)], 0.38, { lift: 0.12 }); }
       for (let k = 0; k < 6; k++) { const t = k / 5, az = lerp(0.9, 1.6, t); lock([S(0.38, 1.1), S(lerp(0.7, 1.1, t), 0.85, 1.24), S(az, 0.25, 1.2), new V3(1.2 + 0.15 * t, -2.4 - t * 0.8, 0.1 - t * 0.6)], 0.36, { lift: 0.12 }); } }
+    if (kind === 'centerPart') for (const sd of [-1, 1]) for (let k = 0; k < (o.n || 7); k++) { const t = k / ((o.n || 7) - 1), az = sd * lerp(0.95, 2.0, t);
+      lock([S(sd * 0.05, 1.3, 1.0), S(sd * lerp(0.5, 1.1, t), lerp(0.95, 0.75, t), 1.18), S(az, lerp(0.4, 0.1, t), 1.2), S(az * 1.03, -0.45, 1.14), new V3(sd * (1.05 + 0.2 * t), -2.4 - 0.4 * t, 0.0 - 0.9 * t), new V3(sd * (1.3 + 0.3 * t), -3.1 - 0.3 * t, -0.1 - 1.0 * t)], o.w || 0.42, { lift: 0.08, tipPow: 1.3 }); }
     if (kind === 'sideSweep') for (let k = 0; k < 6; k++) { const t = k / 5; lock([S(-0.45, 1.15), S(lerp(-0.2, 0.3, t), 0.85, 1.3), S(lerp(0.3, 0.85, t), lerp(0.25, 0.1, t), 1.32), S(lerp(0.5, 1.0, t), lerp(-0.45, -0.3, t), 1.22)], 0.36, { lift: 0.14, tipPow: 1.2 }); }
     if (kind === 'spiky') for (let k = 0; k < o.n; k++) { const az = (k / o.n) * Math.PI * 2, el = 0.2 + 0.9 * ((k * 0.618) % 1); const root = S(az, el, 1.0), dir = root.clone().normalize(); const tip = root.clone().addScaledVector(dir, o.len * (0.6 + 0.6 * ((k * 0.37) % 1))).add(new V3(0, -0.15, -0.25)); lock([root, root.clone().lerp(tip, 0.5).addScaledVector(dir, 0.1), tip], o.w, { lift: 0.0, tipPow: 1.0 }); }
     if (kind === 'mass') {
@@ -371,10 +421,27 @@ function extraSDF(kind, o, H) {
       let d = Math.abs(s0) - 0.075;
       const ell = (Math.hypot(x / (0.92 * W), (y + 0.42) / 1.18) - 1) * 0.92, open = smax(ell, -(z - 0.05), 0.1);
       return smax(d, -open, 0.12); }; }
+  if (kind === 'hat') return (x, y, z) => { const crown = sdEll(x, y - 1.05, z + 0.05, 1.32, 0.78, 1.28), band = Math.max(Math.abs(y - 0.55) - 0.16, Math.hypot(x / 1.12, (z + 0.04) / 1.14) - 1); return smin(crown, band - 0.03, 0.12); };
+  if (kind === 'turtleneck') return (x, y, z) => { const NB = H.neckBase; const c = sdCapsule(x, y, z, [0, -1.45, -0.2], [NB[0], NB[1] - 0.3, NB[2]], [H.neckR + 0.16, NB[3] + 0.16]); return smax(c, y + 1.38, 0.05); };
   if (kind === 'earDevice') return (x, y, z) => Math.max(sdCapsule(x, y, z, [-1.0, -0.28, -0.05], [-1.16, -0.28, -0.05], 0.26), 0) ;
 }
 
 // ———— the body: Anny, posed by her own skeleton ————
+C.alva = { who: 'woman', skin: '#f2c9b6', hs: 1.0, ref: { yaw: 0.6, pitch: 0.3 }, ref2: { yaw: 0.05, pitch: 0.05 }, outfit: [['dress', '#2c3240'], ['flats', '#2b211d']], hairColor: '#8a6a3a', hairInk: '#3a2a14',
+  head: { ears: { x: 0.9, y: -0.36, z: -0.12, s: 0.95 }, neckR: 0.32, face: { n: 2.3,
+    W: [[0.4, 0.84], [-0.3, 0.82], [-0.6, 0.7], [-0.9, 0.48], [-1.15, 0.2], [-1.26, 0.07]],
+    P: [[0.4, 0.8], [0.0, 0.9], [-0.3, 0.86], [-0.76, 0.92], [-0.86, 0.92], [-0.96, 0.88], [-1.12, 0.82], [-1.26, 0.68]],
+    nose: { ridge: [[-0.25, 0.88], [-0.45, 0.98], [-0.62, 1.07], [-0.7, 1.1]], under: [[-0.73, 1.05], [-0.77, 0.93]], w: [0.018, 0.03, 0.058], k: 0.05, round: 0.025 } } },
+  face: { eye: { x: 0.4, y: -0.34, w: 0.32, h: 0.17, tilt: 0.02, iris: ['#3a2418', '#7a5038'], lash: '#2a1a14', lashW: 0.045, wing: 0.08, lower: 0.2, glints: 1, crease: true, irisScale: 0.75 }, brow: { x0: 0.12, x1: 0.66, y0: -0.1, y1: -0.07, arch: 0.05, peak: 0.55, w0: 0.035, w1: 0.01, color: '#6a4a24' }, mouth: { type: 'drawn', y: -0.88, w: 0.13, sag: 0.0, corners: 0.01, upper: 0.012, lower: 0.022, lip: '#c8706a', line: '#7a3a36', lineW: 0.012 }, blush: 0.3 },
+  hair: [['cap', { front: 0.55 }], ['centerPart', { n: 8, w: 0.44 }], ['back', { n: 11, len: 3.2, w: 0.5, wave: 0.15, lift: 0.18 }]] };
+C.jesper = { who: 'man', skin: '#f0c4a8', hs: 0.98, ref: { yaw: -0.3, pitch: 0.05 }, ref2: { yaw: -0.12, pitch: 0.12 }, outfit: [['oversized', '#7a8496'], ['pants', '#3a3f4e'], ['boots', '#2e231c']], hairColor: '#d9b45a', hairInk: '#6a4a1a',
+  head: { ears: { x: 0.95, y: -0.38, z: -0.06, s: 1.35 }, neckR: 0.3, face: { n: 2.3,
+    W: [[0.4, 0.84], [-0.3, 0.8], [-0.6, 0.68], [-0.9, 0.52], [-1.15, 0.28], [-1.26, 0.13]],
+    P: [[0.4, 0.8], [0.0, 0.9], [-0.28, 0.85], [-0.82, 0.9], [-0.94, 0.9], [-1.06, 0.86], [-1.18, 0.82], [-1.26, 0.72]],
+    nose: { ridge: [[-0.22, 0.88], [-0.4, 1.05], [-0.56, 1.24], [-0.64, 1.36]], under: [[-0.71, 1.32], [-0.76, 1.12], [-0.8, 0.94]], w: [0.03, 0.05, 0.08], k: 0.05, round: 0.03, ball: [0, -0.665, 1.33, 0.075], bk: 0.04 } } },
+  face: { eye: { x: 0.42, y: -0.3, w: 0.34, h: 0.36, tilt: -0.02, iris: ['#2a1e14', '#5a3e28'], lash: '#2a1a14', lashW: 0.035, wing: 0.0, lower: 0.15, glints: 1, round: true, irisScale: 0.45 }, brow: { x0: 0.13, x1: 0.7, y0: 0.02, y1: 0.06, arch: 0.07, peak: 0.4, w0: 0.075, w1: 0.03, color: '#7a5226' }, mouth: { type: 'drawn', y: -0.96, w: 0.12, sag: -0.004, corners: -0.012, open: 0.024, lower: 0.018, lip: '#c8706a', line: '#6a2a26', lineW: 0.012 }, blush: 0.15, noseTint: '#e98a74' },
+  extras: [['hat', { color: '#252a44' }], ['turtleneck', { color: '#3a3a44' }]],
+  hair: [['mass', { n: 12, scale: 1.08, front: -0.2, bang: 0.2, bangEl: 0.05, len: 0.3, flick: 0.12, spread: 0.1, side: 0.12, r: 0.16 }]] };
 const qsC = qs.get('c') || 'anime', CH = C[qsC], H = { ...BASEHEAD, ...CH.head, ears: { ...BASEHEAD.ears, ...(CH.head.ears || {}) } };
 const view = qs.get('view') || 'tq', expr = qs.get('expr') || '';
 const [bsBuf, pBuf, ...gBufs] = await Promise.all([load('base'), load(CH.who), ...CH.outfit.map(([g]) => load(g))]);
@@ -384,9 +451,6 @@ const wOf = (joint, weight, i, re) => { let w = 0; for (let k = 0; k < 4; k++) i
 const headW = Float32Array.from({ length: N }, (_, i) => wOf(bs.joint, bs.weight, i, /^(Head|HeadEnd|Jaw|LeftEye|RightEye)$/));
 const neckW = Float32Array.from({ length: N }, (_, i) => wOf(bs.joint, bs.weight, i, /^(Neck1|Neck2)$/));
 const at = Float32Array.from(P.at);
-// a slimmer neck: drawn necks are thin
-const nc = J[JI.Neck2];
-for (let i = 0; i < N; i++) { const w = Math.min(1, neckW[i] + headW[i]) * (CH.neckSlim ?? 0.78) + (1 - Math.min(1, neckW[i] + headW[i])); at[i * 3] = nc.x + (at[i * 3] - nc.x) * w; at[i * 3 + 2] = nc.z + (at[i * 3 + 2] - nc.z) * w; }
 // pose: arms down, a slight bend, a head turn
 const POSE = { LeftArm: [0, 0, -0.55], RightArm: [0, 0, 0.55], LeftForeArm: [0, -0.2, 0], RightForeArm: [0, 0.2, 0], Head: CH.headTurn || [0, 0, 0], ...(CH.pose || {}) };
 const D = J.map(() => new M4());
@@ -426,7 +490,8 @@ function addMesh(pos, idx, color, o = {}) {
 }
 
 // the body without its head; gloves as a colour on the hands
-const keep = []; for (let t = 0; t < bs.tris.length; t += 3) { const a = bs.tris[t], b = bs.tris[t + 1], c = bs.tris[t + 2]; if (Math.min(headW[a], headW[b], headW[c]) > 0.3) continue; keep.push(a, b, c); }
+const hn = Float32Array.from(headW, (w, i) => w + neckW[i]);
+const keep = []; for (let t = 0; t < bs.tris.length; t += 3) { const a = bs.tris[t], b = bs.tris[t + 1], c = bs.tris[t + 2]; if (Math.min(hn[a], hn[b], hn[c]) > 0.55) continue; keep.push(a, b, c); }
 const atDressed = Float32Array.from(at), covered = new Uint8Array(N);
 CH.outfit.forEach(([g], i) => { const G = parseGarment(gBufs[i]); if (/^(bob|braid|bun|fringe|short)$/.test(g)) return; for (let v = 0; v < G.V; v++) for (let k = 0; k < 3; k++) covered[G.refs[v * 3 + k]] = 1; });
 { const g0 = new THREE.BufferGeometry(); g0.setAttribute('position', new THREE.BufferAttribute(at, 3)); g0.setIndex(Array.from(bs.tris)); g0.computeVertexNormals(); const nn = g0.attributes.normal.array;
@@ -450,13 +515,16 @@ if (CH.turtleneck) { const neck = []; const top = J[JI.Head].y - 0.01, bot = J[J
 const R = 0.088 * (CH.hs || 1.1) * (J[JI.HeadEnd].y - J[JI.Head].y) / 0.151;
 const O = J[JI.Head].clone().add(new V3(0, 0.62 * R, -0.03 * R));
 const headM = D[JI.Head].clone().multiply(new M4().makeTranslation(O.x, O.y, O.z)).multiply(new M4().makeScale(R, R, R));
-const hsdf = headSDF(H), hm = surfaceNets(hsdf, [-1.5, -2.6, -1.5], [1.5, 1.4, 1.8], 0.028);
+{ let cx = 0, cy = 0, cz = 0, n = 0; for (let i = 0; i < N; i++) { const w = headW[i] + neckW[i]; if (w > 0.4 && w < 0.7) { cx += at[i * 3]; cy += at[i * 3 + 1]; cz += at[i * 3 + 2]; n++; } } cx /= n; cy /= n; cz /= n;
+  let r = 0, m = 0; for (let i = 0; i < N; i++) { const w = headW[i] + neckW[i]; if (w > 0.4 && w < 0.7 && Math.abs(at[i * 3 + 1] - cy) < 0.02) { r += Math.hypot(at[i * 3] - cx, at[i * 3 + 2] - cz); m++; } } r /= m;
+  H.neckBase = [(cx - O.x) / R, (cy - 0.07 - O.y) / R, (cz - O.z) / R, r * 1.14 / R]; }
+const hsdf = headSDF(H), hm = surfaceNets(hsdf, [-1.5, -3.4, -1.5], [1.5, 1.4, 1.8], 0.028);
 // shading normals: the face shades as one smooth form, as drawn faces do; the nose keeps its own
 const nrm = Float32Array.from(hm.nor), uv = new Float32Array(hm.pos.length / 3 * 2);
 for (let v = 0; v < hm.pos.length / 3; v++) {
   const x = hm.pos[v * 3], y = hm.pos[v * 3 + 1], z = hm.pos[v * 3 + 2];
   const ex = x / 1.0, ey = (y + 0.3) / 1.35, ez = (z + 0.05) / 1.05; let sx = ex / 1.0, sy = ey / 1.35, sz = ez / 1.05; const l = Math.hypot(sx, sy, sz) || 1;
-  const Nn = H.face.nose, nose = Math.hypot(x, y - (Nn.root[1] + Nn.tip[1]) / 2, z - (Nn.root[2] + Nn.tip[2]) / 2) - (Nn.ball ? Nn.ball[3] : 0);
+  const Nn = H.face.nose, nr = Nn.ridge ? [0, Nn.ridge[0][0], Nn.ridge[0][1]] : Nn.root, nt = Nn.ridge ? [0, ...Nn.ridge[Nn.ridge.length - 1]] : Nn.tip, nose = Math.hypot(x, y - (nr[1] + nt[1]) / 2, z - (nr[2] + nt[2]) / 2) - (Nn.ball ? Nn.ball[3] : 0) - 0.05;
   const face = clamp((z - 0.1) * 2, 0, 1) * clamp((y + 1.3) * 2, 0, 1) * clamp(1 - Math.abs(x) * 0.8, 0, 1) * clamp(nose * 3 - 0.6, 0, 1);
   for (let c = 0; c < 3; c++) nrm[v * 3 + c] = lerp(hm.nor[v * 3 + c], [sx, sy, sz][c] / l, 0.55 * face);
   const L2 = Math.hypot(nrm[v * 3], nrm[v * 3 + 1], nrm[v * 3 + 2]); for (let c = 0; c < 3; c++) nrm[v * 3 + c] /= L2;
@@ -476,7 +544,7 @@ for (const part of hairParts(H, CH.hair, CH)) {
 for (const [kind, o] of CH.extras || []) { const sd = extraSDF(kind, o, H); const m = surfaceNets(sd, [-2.4, -3.2, -2.2], [2.4, 2.2, 2.2], 0.04); addMesh(toWorld(m.pos, headM), m.idx, o.color, { normals: rotN(m.nor, headM), double: true, ink: 0.0018 }); }
 
 // ———— camera ————
-const hc = new V3(0, -0.35, 0).applyMatrix4(headM), yaw = view === 'ref' ? CH.ref.yaw : { front: 0, tq: 0.62, side: 1.45, sideR: -1.45, full: 0.42, back: 3.0 }[view] ?? 0.6, pitch = view === 'ref' ? CH.ref.pitch : 0.02;
+const hc = new V3(0, -0.35, 0).applyMatrix4(headM), yaw = view === 'ref2' ? CH.ref2.yaw : view === 'ref' ? CH.ref.yaw : { front: 0, tq: 0.62, side: 1.45, sideR: -1.45, full: 0.42, back: 3.0 }[view] ?? 0.6, pitch = view === 'ref2' ? CH.ref2.pitch : view === 'ref' ? CH.ref.pitch : 0.02;
 let target, dist;
 if (view === 'full') { let top = 0; for (let i = 1; i < posed.length; i += 3) top = Math.max(top, posed[i]); target = new V3(0, top * 0.53, 0); dist = top * 2.5; }
 else { target = hc.clone(); dist = R * 14; }

@@ -12,3 +12,9 @@ lofted from its own two curves read off its picture — a front outline (forehea
 side profile (forehead, brow, under-eye, philtrum, lips, chin); noses as wedges (bridge root, tip, underside); lips and
 cheeks or jowls per character; eyes, brows and mouths drawn per picture; a camera at each picture's angle. Sheets
 `sheetE*.png`.
+
+**Third version, after Pavel's note on lines and curves and the neck:** noses as drawn side curves (root, concave,
+straight or humped bridge, sharp or soft tip, underside back to the lip, width growing to the nostrils); mouths from
+their own parting line, upper lip with a bow, lower lip, gaps; tapered brows with their own arch; lid creases and
+extra lines; Anny's neck removed with her head and the designed neck measured to meet her cut ring, the jaw's
+underside sloping into the throat. Added Alva and Jesper from "Klaus". Sheets `sheetF*.png`.
