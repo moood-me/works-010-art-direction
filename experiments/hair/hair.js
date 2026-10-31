@@ -54,30 +54,47 @@ export function frames(o, n) {
     const side = [p[2] - CRANIUM.c[2], 0, -(p[0] - CRANIUM.c[0])], sl = Math.hypot(...side) || 1, amp = o.wave.amp * Math.min(1, s * 2) * Math.sin(s * o.wave.f * 6.283 + (o.wave.ph || 0));
     c[i] = [p[0] + side[0] / sl * amp, p[1], p[2] + side[2] / sl * amp];
   }
+  if (o.coil) {   // a ringlet: the lock winds around its guide, the winding growing from the root
+    const g = c.map(p => p.slice()); let U = null;
+    for (let i = 0; i <= n; i++) {
+      const s = i / n, q = g[Math.min(i + 1, n)], r = g[Math.max(i - 1, 0)];
+      let T = [q[0] - r[0], q[1] - r[1], q[2] - r[2]]; const tl = len(...T) || 1; T = T.map(v => v / tl);
+      if (!U) U = Math.abs(T[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
+      const ut = U[0] * T[0] + U[1] * T[1] + U[2] * T[2]; U = [U[0] - ut * T[0], U[1] - ut * T[1], U[2] - ut * T[2]]; const ul = len(...U) || 1; U = U.map(v => v / ul);
+      const V = [T[1] * U[2] - T[2] * U[1], T[2] * U[0] - T[0] * U[2], T[0] * U[1] - T[1] * U[0]];
+      const R = lerpArr(o.coil.R, s) * Math.min(1, s / (o.coil.start ?? 0.15)), a = s * o.coil.turns * 6.283 + (o.coil.ph || 0);
+      c[i] = [0, 1, 2].map(j => g[i][j] + (U[j] * Math.cos(a) + V[j] * Math.sin(a)) * R);
+    }
+  }
   for (let i = 0; i <= n; i++) {
     const s = i / n, p = c[i], q = c[Math.min(i + 1, n)], r = c[Math.max(i - 1, 0)];
     let T = [q[0] - r[0], q[1] - r[1], q[2] - r[2]]; const tl = len(...T) || 1; T = T.map(v => v / tl);
     // the flat side lies against the head: thickness points away from the head's axis, unless a direction is given
     // below the skull the outward side is horizontal; where it runs along the lock, the frame is carried on from above
     const dy = p[1] - CRANIUM.c[1];
-    let B = o.up ? o.up.slice() : [p[0] - CRANIUM.c[0], dy * (o.vert ?? 1) * (dy < 0 ? 0.3 : 1), p[2] - CRANIUM.c[2]];
+    let B = o.up ? o.up.slice() : o.about ? [p[0] - o.about[0], p[1] - o.about[1], p[2] - o.about[2]] : [p[0] - CRANIUM.c[0], dy * (o.vert ?? 1) * (dy < 0 ? 0.3 : 1), p[2] - CRANIUM.c[2]];
     const B0l = len(...B) || 1, bt = B[0] * T[0] + B[1] * T[1] + B[2] * T[2]; B = [B[0] - bt * T[0], B[1] - bt * T[1], B[2] - bt * T[2]];
     const bl = len(...B) || 1; B = B.map(v => v / bl);
     if (S.length) {
       let P = S[S.length - 1].B; const pt = P[0] * T[0] + P[1] * T[1] + P[2] * T[2]; P = [P[0] - pt * T[0], P[1] - pt * T[1], P[2] - pt * T[2]];
       const pl = len(...P) || 1; P = P.map(v => v / pl);
       if (B[0] * P[0] + B[1] * P[1] + B[2] * P[2] < 0) B = B.map(v => -v);
-      const q = Math.min(1, (bl / B0l) ** 2) * (o.up ? 1 : 0.6);
+      const q = Math.min(1, (bl / B0l) ** 2) * (o.up || o.about ? 1 : 0.6);
       B = B.map((v, j) => v * q + P[j] * (1 - q)); const l2 = len(...B) || 1; B = B.map(v => v / l2);
     }
     if (o.twist) { const a = lerpArr(o.twist, s), N0 = [T[1] * B[2] - T[2] * B[1], T[2] * B[0] - T[0] * B[2], T[0] * B[1] - T[1] * B[0]]; B = B.map((v, j) => v * Math.cos(a) + N0[j] * Math.sin(a)); }
     const N = [T[1] * B[2] - T[2] * B[1], T[2] * B[0] - T[0] * B[2], T[0] * B[1] - T[1] * B[0]];
-    let w = lerpArr(o.w, s); const tip = Math.max(o.tip ?? 0.4, 0.3);
+    let w = lerpArr(o.w, s); const tip = Math.max(o.tip ?? 0.4, 0.35);
     // the tip thins to a point: the strands of a clump gather and end at different lengths
-    if (s > 1 - tip && o.point !== false) w *= Math.pow((1 - s) / tip, Math.max(o.sharp ?? 1.1, 1.05));
+    if (s > 1 - tip && o.point !== false) { const u = (1 - s) / tip; w *= Math.pow(1 - (1 - u) * (1 - u), Math.max(o.sharp ?? 1.3, 1.25) * 1.2); }   // eased in, so the taper starts without a corner
     if (s < (o.root ?? 0)) w *= 0.6 + 0.4 * s / o.root;
     const th = o.t !== undefined ? lerpArr(o.t, s) * (w / Math.max(lerpArr(o.w, s), 1e-6)) : w * (o.flat ?? 0.42);
     S.push({ s, p, T, B, N, w, t: th, lens: o.lens ?? 0.6 });
+  }
+  // a hooked tip: the end bends sideways, so one edge runs on and the other curves in to the point
+  if (o.hook) {
+    const tip = Math.max(o.tip ?? 0.4, 0.35), w0 = Math.max(...S.map(e => e.w));
+    for (const e of S) if (e.s > 1 - tip) { const f = ((e.s - (1 - tip)) / tip) ** 2 * o.hook * w0; e.p = e.p.map((v, j) => v + e.N[j] * f); }
   }
   return S;
 }
@@ -99,7 +116,7 @@ export function lock(o) {
       const L2 = bx * bx + by * by + bz * bz || 1e-9;
       const u = Math.max(0, Math.min(1, (qx * bx + qy * by + qz * bz) / L2));
       const rx = qx - bx * u, ry = qy - by * u, rz = qz - bz * u;
-      if (!out && rx * rx + ry * ry + rz * rz > (Math.max(a.w, b.w) + Math.min(best, 0.02) + 0.004) ** 2) continue;
+      if (rx * rx + ry * ry + rz * rz > (Math.max(a.w, b.w) + Math.min(best, 0.02) + 0.004) ** 2) continue;
       const w = a.w + (b.w - a.w) * u, t = a.t + (b.t - a.t) * u;
       const m = Math.min(w, t), iu = 1 - u;
       const B0 = a.B[0] * iu + b.B[0] * u, B1 = a.B[1] * iu + b.B[1] * u, B2 = a.B[2] * iu + b.B[2] * u;
@@ -128,14 +145,16 @@ export function clump(o) {
   const F = frames({ ...o, kids: undefined }, 40), at = s => F[Math.min(40, Math.round(s * 40))];
   return [main, ...o.kids.map(k => {
     const s0 = k.at ?? 0.55, e0 = at(s0), w0 = e0.w, pts = [];
+    const kl = k.len ?? 1;   // its length against the rest of the parent: shorter ends sooner along it, longer runs on past its end
     for (const f of [0, 0.34, 0.67, 1]) {
-      const s = s0 + (1 - s0) * f, e = at(s), sp = (0.25 + (k.spread ?? 0.9) * f) * w0 * k.side, ou = (k.out ?? 0.002) * f;
+      const s = s0 + (1 - s0) * f * Math.min(1, kl), e = at(s), sp = (0.25 + (k.spread ?? 0.9) * f) * w0 * k.side, ou = (k.out ?? 0.002) * f;
       let p = e.p.map((v, j) => v + e.N[j] * sp + e.B[j] * ou);
-      if (f === 1) { const L = (1 - s0) * 0.5 * ((k.len ?? 1) - 1) * len(...F[40].p.map((v, j) => v - F[0].p[j])); p = p.map((v, j) => v + e.T[j] * L + e.N[j] * (k.turn ?? 0) * k.side); }
+      if (f === 1 && kl > 1) { const L = (1 - s0) * 0.5 * (kl - 1) * len(...F[40].p.map((v, j) => v - F[0].p[j])); p = p.map((v, j) => v + e.T[j] * L); }
+      if (f === 1) p = p.map((v, j) => v + e.N[j] * (k.turn ?? 0) * k.side);
       pts.push(p);
     }
     const wk = w0 * (k.w ?? 0.35);
-    return lock({ pts, w: [wk * 0.7, wk, wk * 0.85, wk * 0.6], flat: o.flat ?? 0.42, tip: k.tip ?? 0.55, sharp: 1.15, color: o.color, lens: o.lens, vert: o.vert, up: o.up, n: 16 });
+    return lock({ pts, w: [wk * 0.7, wk, wk * 0.85, wk * 0.6], flat: o.flat ?? 0.42, tip: k.tip ?? 0.55, sharp: 1.15, hook: (k.hook ?? 0.8) * k.side, color: o.color, lens: o.lens, vert: o.vert, up: o.up, n: 16 });
   })];
 }
 
@@ -143,7 +162,7 @@ export function clump(o) {
 // Besides the shape it carries what the hair shading needs: the strand direction, where across the lock (strands
 // gather towards the tip) and along it (darker at the root) each point lies.
 export function lockMesh(L, M = 14) {
-  const o = L.o, S = frames(o, Math.max(48, (o.n || 24) * 2)), n = S.length;
+  const o = L.o, S = frames(o, Math.max(48, (o.n || 24) * 2, o.coil ? Math.round(o.coil.turns * 18) : 0)), n = S.length;
   const wmax = Math.max(...S.map(e => e.w)), curly = o.curly, lens = o.lens ?? 0.6;
   const pos = [], tan = [], uv = [], wd = [], idx = [];
   for (let i = 0; i < n; i++) {
@@ -190,7 +209,7 @@ export function torus(o) {   // a ring around axis a
 }
 
 // ———— the scalp mass: the skull grown by a thickness, cut by a drawn hairline ————
-function hairline(cap, x, y, z) {
+export function hairline(cap, x, y, z) {
   const th = Math.abs(Math.atan2(x - CRANIUM.c[0], z - CRANIUM.c[2]));
   const K = [[0, cap.front ?? 0.066], [1.0, cap.temple ?? 0.034], [1.45, cap.ear ?? 0.022], [1.95, cap.behind ?? -0.045], [Math.PI, cap.nape ?? -0.075]];
   let h = K[4][1];
@@ -198,11 +217,12 @@ function hairline(cap, x, y, z) {
   if (cap.shave && Math.sign(x) === cap.shave.side) h = Math.max(h, cap.shave.y);
   return h;
 }
-export function scalpMass(cap) {
+export function scalpMass(cap, under = 0) {
   const c = CRANIUM.c, r = CRANIUM.r;
-  return { sdf: (x, y, z) => {
+  return { isCap: true, cap, under: u => scalpMass(cap, u), sdf: (x, y, z) => {
     const dx = x - c[0], dy = y - c[1], dz = z - c[2], dl = len(dx, dy, dz) || 1;
-    const t = cap.thick + (cap.puff || 0) * Math.max(0, dy / dl) + (cap.back || 0) * Math.max(0, -dz / dl) + (cap.sides || 0) * Math.abs(dx / dl);
+    // `under`: when locks lie over it, the mass sinks below them, keeping a layer on the skull thicker than the inner layer's inset
+    const t = Math.max(under > 0 ? 0.0075 : 0, cap.thick + (cap.puff || 0) * Math.max(0, dy / dl) + (cap.back || 0) * Math.max(0, -dz / dl) + (cap.sides || 0) * Math.abs(dx / dl) - under);
     const d = ellip(dx, dy - (cap.lift || 0), dz, r[0] + t, r[1] + t, r[2] + t);
     return smax(d, hairline(cap, x, y, z) - y, cap.edge ?? 0.008);
   }, bb: [[-0.14, -0.2, -0.15], [0.14, 0.16, 0.14]], color: cap.color, k: cap.k };
@@ -214,7 +234,8 @@ export function scalpMass(cap) {
 // Every point carries the strand direction, across/along coordinates, a per-lock seed and an occlusion term.
 export function buildHair(S, head) {
   const parts = S.parts.map(part => {
-    const items = part.items.flat(), k = part.k ?? 0.012;
+    const flat = part.items.flat(Infinity), hasLocks = flat.some(it => it.isLock) && part.strands !== false;
+    const items = flat.map(it => it.isCap && hasLocks ? { ...it.under(part.under ?? 0.012), k: it.k } : it), k = part.k ?? 0.012;
     const bmin = [1e9, 1e9, 1e9], bmax = [-1e9, -1e9, -1e9];
     for (const it of items) for (let j = 0; j < 3; j++) { bmin[j] = Math.min(bmin[j], it.bb[0][j]); bmax[j] = Math.max(bmax[j], it.bb[1][j]); }
     for (let j = 0; j < 3; j++) { bmin[j] -= 0.012; bmax[j] += 0.012; }
@@ -233,19 +254,19 @@ export function buildHair(S, head) {
   });
   // everything that can shade a point: the hair's volumes and the head
   const all = (x, y, z) => { let d = head ? head(x, y, z) : 1e9; for (const P of parts) d = Math.min(d, P.sdf(x, y, z)); return d; };
-  const occl = (m) => {
-    const ao = new Float32Array(m.pos.length / 3), H = [0.003, 0.008, 0.016, 0.03];
+  const occl = (m, off = 0) => {
+    const ao = new Float32Array(m.pos.length / 3), H = [0.004, 0.012, 0.028];
     for (let v = 0; v < ao.length; v++) {
       const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2], nx = m.nor[v * 3], ny = m.nor[v * 3 + 1], nz = m.nor[v * 3 + 2];
-      let o = 0; for (const h of H) o += Math.max(0, h - Math.max(0, all(x + nx * h, y + ny * h, z + nz * h))) / h;
+      let o = 0; for (const h of H) o += Math.max(0, h - Math.max(0, all(x + nx * (h + off), y + ny * (h + off), z + nz * (h + off)))) / h;
       ao[v] = Math.max(0, 1 - o / H.length * 1.25);
     }
     return ao;
   };
   const out = [];
   for (const P of parts) {
-    const { part, items, locks } = P, base = hex(part.color), inset = part.inset ?? (locks.length ? 0.0025 : 0);
-    const m = surfaceNets((x, y, z) => P.sdf(x, y, z) + inset, P.bmin, P.bmax, part.h || 0.0028);
+    const { part, items, locks } = P, base = hex(part.color), inset = part.inset ?? (locks.length ? Math.max(0.0025, 0.3 * Math.max(part.k ?? 0.012, ...items.map(it => it.k ?? 0))) : 0);   // deeper than the merge's swell
+    const m = surfaceNets((x, y, z) => P.sdf(x, y, z) + inset, P.bmin, P.bmax, part.h || (locks.length ? 0.0034 : 0.0028));   // under locks it is only the inner layer: a little coarser
     const nv = m.pos.length / 3;
     m.tan = new Float32Array(nv * 3); m.uv = new Float32Array(nv * 2); m.seed = new Float32Array(nv); m.col = new Float32Array(nv * 3);
     const crown = S.crown || [0, 0.13, -0.03], info = {};
@@ -257,7 +278,8 @@ export function buildHair(S, head) {
       for (const L of locks) {
         const ox = Math.max(L.bb[0][0] - x, 0, x - L.bb[1][0]), oy = Math.max(L.bb[0][1] - y, 0, y - L.bb[1][1]), oz = Math.max(L.bb[0][2] - z, 0, z - L.bb[1][2]);
         if (ox + oy + oz > 0.03) continue;
-        const d = L.sdf(x, y, z, info), wgt = 1 / (Math.max(d, 0) + 0.003) ** 2 * 1e-4;
+        const d = L.sdf(x, y, z, info); if (d > 0.03) continue;
+        const wgt = 1 / (Math.max(d, 0) + 0.003) ** 2 * 1e-4;
         T[0] += info.T[0] * wgt; T[1] += info.T[1] * wgt; T[2] += info.T[2] * wgt;
         if (d < best) { best = d; near = { L, a: info.a, s: info.s }; }
       }
@@ -267,10 +289,11 @@ export function buildHair(S, head) {
       let c = base;
       if (items.some(it => it.color !== undefined)) { let bd = 1e9; for (const it of items) { const d = it.sdf(x, y, z); if (d < bd) { bd = d; c = it.color !== undefined ? hex(it.color) : base; } } }
       m.col.set(c, v * 3);
-      // the inner layer's strands run out from the crown: across them is the angle around it
-      m.uv[v * 2] = Math.atan2(x - crown[0], z - crown[2]) * 0.06; m.uv[v * 2 + 1] = near ? Math.min(near.s, 0.6) : 0.3; m.seed[v] = 0.5;
+      // the inner layer takes its strands from the lock it lies under; away from locks they run out from the crown
+      if (near && best < 0.012) { m.uv[v * 2] = near.a; m.uv[v * 2 + 1] = near.s; m.seed[v] = (near.L.id * 0.618) % 1; }
+      else { m.uv[v * 2] = Math.atan2(x - crown[0], z - crown[2]) * 0.06; m.uv[v * 2 + 1] = 0.3; m.seed[v] = 0.5; }
     }
-    m.ao = occl(m);
+    m.ao = occl(m, inset);
     out.push({ mesh: m, inner: !!locks.length, rough: part.rough, ink: part.ink, plain: !!part.fabric });
     if (!locks.length) continue;
     // the locks: one geometry for the part
