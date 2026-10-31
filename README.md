@@ -1,0 +1,11 @@
+# works-010-art-direction
+
+Art direction for moood games — form, character, style.
+
+moood's engine 3 can draw beautiful scenes (works-009-hope ports Claude Design's scenes almost one to one), yet the
+games made on it so far look assembled rather than designed. This repository is where we work out how to make them
+beautiful: scenes first, then people.
+
+- [docs/](docs/README.md) — the problem, thoughts on scenes, thoughts on people, history.
+- [experiments/](experiments/README.md) — pages we built to try ideas: a mid-shot dialogue in 2D, a code-sculpted
+  body with cloth, Anny's bodies from moood, and the page of body styles and simplification.

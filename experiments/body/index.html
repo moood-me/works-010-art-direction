@@ -1,0 +1,767 @@
+<title>Тело в платье</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Golos+Text:wght@400;500&display=swap">
+<style>
+/* Layout: one studio frame, the controls under it in two quiet rows, a few notes below */
+:root {
+  --bg: #0d0e11;
+  --ink: #e9e3d7;
+  --muted: #8e8a83;
+  --line: #2a2c31;
+  --on: #e9e3d7;
+  --onInk: #15161a;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--sans); }
+main { max-width: 1180px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
+header { display: grid; gap: 8px; }
+h1 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(38px, 6.5vw, 66px); line-height: 1; margin: 0; }
+header p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 64ch; }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 10; max-width: 100%; border-radius: 3px; overflow: hidden; background: #cfc8bd; touch-action: none; cursor: grab; }
+.stage:active { cursor: grabbing; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.stage .msg { position: absolute; inset: 0; display: grid; place-items: center; color: #4a4640; font-family: var(--serif); font-style: italic; font-size: 24px; pointer-events: none; }
+.hint { position: absolute; left: 14px; bottom: 10px; font-size: 12px; color: rgba(40,36,32,0.55); pointer-events: none; }
+.controls { display: grid; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 8px; }
+.row .label { color: var(--muted); font-size: 13px; width: 86px; flex: none; }
+button { font: inherit; font-size: 14px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 15px; cursor: pointer; }
+button:hover { border-color: #45474e; }
+button[aria-pressed="true"] { background: var(--on); color: var(--onInk); border-color: var(--on); }
+button:focus-visible { outline: 2px solid #c9a46a; outline-offset: 2px; }
+.notes { display: grid; gap: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 72ch; padding-top: 8px; border-top: 1px solid var(--line); }
+.notes p { margin: 0; }
+.notes b { color: var(--ink); font-weight: 500; }
+@media (max-width: 520px) { .row .label { width: 100%; } }
+</style>
+
+<main>
+  <header>
+    <h1>Тело в платье</h1>
+    <p>Одно подробное тело. Формы вылеплены кодом и плавно перетекают друг в друга, кожа гнётся за костями. Юбка — настоящая ткань, коса — цепочка с инерцией. Вращайте мышью или пальцем, колесо приближает.</p>
+  </header>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="msg" id="msg">лепится…</div><div class="hint">тяните, чтобы повернуть</div></div>
+  <div class="controls">
+    <div class="row" role="group" aria-label="Движение"><span class="label">Движение</span>
+      <button data-m="idle">Стоит</button><button data-m="walk" aria-pressed="true">Идёт</button><button data-m="sit">Садится</button><button data-m="wave">Машет</button><button data-m="spin">Кружится</button>
+    </div>
+    <div class="row" role="group" aria-label="Вид"><span class="label">Вид</span>
+      <button data-v="soft" aria-pressed="true">Мягкий</button><button data-v="toon">Рисованный</button><button data-v="sil">Силуэт</button>
+      <span style="width:14px"></span>
+      <button id="wind" aria-pressed="false">Ветер</button><button id="bones" aria-pressed="false">Скелет</button>
+    </div>
+  </div>
+  <section class="notes">
+    <p><b>Пропорции.</b> Рост 1,68 м, семь с половиной голов. Плечи 36 см, талия на уровне нижних рёбер, кисть опущенной руки достаёт до середины бедра, колено ровно на середине между бедром и стопой.</p>
+    <p><b>Скелет.</b> 19 костей: таз, поясница, грудь, шея, голова, ключицы, плечи, предплечья, кисти, бёдра, голени, стопы. У Kimodo их 77, вместе с пальцами и позвонками: такое тело примет его движение, если добавить кости.</p>
+    <p><b>Одежда и волосы.</b> Юбка — 640 точек ткани с гравитацией и инерцией, она обтекает бёдра и голени и провисает между коленями. Коса — 14 звеньев, она отстаёт от головы и ложится на спину. Ветер дует порывами.</p>
+  </section>
+</main>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const stage = document.getElementById('stage'), cv = document.getElementById('cv'), msg = document.getElementById('msg');
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = t => t * t * (3 - 2 * t);
+const sm5 = t => t * t * t * (t * (t * 6 - 15) + 10);
+
+// ———————————— signed distances ————————————
+function smin(a, b, k) { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; }
+function smax(a, b, k) { return -smin(-a, -b, k); }
+function ellipsoid(cx, cy, cz, rx, ry, rz) {
+  return (x, y, z) => {
+    const px = (x - cx) / rx, py = (y - cy) / ry, pz = (z - cz) / rz;
+    const k0 = Math.sqrt(px * px + py * py + pz * pz);
+    const qx = px / rx, qy = py / ry, qz = pz / rz, k1 = Math.sqrt(qx * qx + qy * qy + qz * qz);
+    return k1 < 1e-9 ? -Math.min(rx, ry, rz) : k0 * (k0 - 1) / k1;
+  };
+}
+// an ellipsoid along its own axes: u (with ru), v (rv), w = u × v (rw)
+function oell(c, u, v, ru, rv, rw) {
+  const n = a => { const l = Math.hypot(a[0], a[1], a[2]); return [a[0] / l, a[1] / l, a[2] / l]; };
+  u = n(u); v = n(v);
+  const d = u[0] * v[0] + u[1] * v[1] + u[2] * v[2]; v = n([v[0] - u[0] * d, v[1] - u[1] * d, v[2] - u[2] * d]);
+  const w = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const e = ellipsoid(0, 0, 0, ru, rv, rw);
+  return (x, y, z) => { const px = x - c[0], py = y - c[1], pz = z - c[2]; return e(px * u[0] + py * u[1] + pz * u[2], px * v[0] + py * v[1] + pz * v[2], px * w[0] + py * w[1] + pz * w[2]); };
+}
+function cone(a, b, r1, r2) {
+  const bax = b[0] - a[0], bay = b[1] - a[1], baz = b[2] - a[2];
+  const l2 = bax * bax + bay * bay + baz * baz, rr = r1 - r2, a2 = l2 - rr * rr, il2 = 1 / l2;
+  return (x, y, z) => {
+    const pax = x - a[0], pay = y - a[1], paz = z - a[2];
+    const yy = pax * bax + pay * bay + paz * baz, zz = yy - l2;
+    const xx = pax * l2 - bax * yy, xy = pay * l2 - bay * yy, xz = paz * l2 - baz * yy;
+    const x2 = xx * xx + xy * xy + xz * xz, y2 = yy * yy * l2, z2 = zz * zz * l2;
+    const k = Math.sign(rr) * rr * rr * x2;
+    if (Math.sign(zz) * a2 * z2 > k) return Math.sqrt(x2 + z2) * il2 - r2;
+    if (Math.sign(yy) * a2 * y2 < k) return Math.sqrt(x2 + y2) * il2 - r1;
+    return (Math.sqrt(x2 * a2 * il2) + yy * rr) * il2 - r1;
+  };
+}
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+const mix = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+
+// ———————————— the skeleton (A pose, facing +z, her left is +x) ————————————
+const J = {
+  hips: [0, 0.93, 0], spine: [0, 1.04, -0.005], chest: [0, 1.20, -0.012], neck: [0, 1.39, -0.018], head: [0, 1.49, -0.005],
+};
+for (const [s, x] of [['L', 1], ['R', -1]]) {
+  J['clav' + s] = [0.03 * x, 1.385, -0.012];
+  J['arm' + s] = [0.172 * x, 1.372, -0.02];
+  J['fore' + s] = [0.297 * x, 1.098, -0.04];
+  J['hand' + s] = [0.405 * x, 0.88, -0.022];
+  J['thigh' + s] = [0.085 * x, 0.865, 0.0];
+  J['shin' + s] = [0.09 * x, 0.47, 0.012];
+  J['foot' + s] = [0.092 * x, 0.078, -0.03];
+}
+const PARENT = { hips: null, spine: 'hips', chest: 'spine', neck: 'chest', head: 'neck', clavL: 'chest', clavR: 'chest', armL: 'clavL', armR: 'clavR', foreL: 'armL', foreR: 'armR', handL: 'foreL', handR: 'foreR', thighL: 'hips', thighR: 'hips', shinL: 'thighL', shinR: 'thighR', footL: 'shinL', footR: 'shinR' };
+const BONES = Object.keys(PARENT);
+
+// ———————————— the shapes, each on its bone, in groups that melt together ————————————
+const PARTS = [];
+const P = (bone, group, f) => PARTS.push({ bone, group, f });
+P('hips', 'torso', ellipsoid(0, 0.895, -0.006, 0.158, 0.1, 0.104));
+P('hips', 'torso', ellipsoid(0.118, 0.865, 0.0, 0.066, 0.092, 0.078));
+P('hips', 'torso', ellipsoid(-0.118, 0.865, 0.0, 0.066, 0.092, 0.078));
+P('hips', 'torso', ellipsoid(0.07, 0.86, -0.052, 0.082, 0.088, 0.072));
+P('hips', 'torso', ellipsoid(-0.07, 0.86, -0.052, 0.082, 0.088, 0.072));
+P('spine', 'torso', ellipsoid(0, 1.04, 0.0, 0.108, 0.11, 0.082));
+P('chest', 'torso', ellipsoid(0, 1.21, -0.01, 0.12, 0.145, 0.09));
+P('chest', 'torso', ellipsoid(0.056, 1.228, 0.048, 0.056, 0.052, 0.046));
+P('chest', 'torso', ellipsoid(-0.056, 1.228, 0.048, 0.056, 0.052, 0.046));
+P('clavL', 'torso', cone([0.035, 1.386, -0.014], [0.166, 1.368, -0.022], 0.044, 0.04));
+P('clavR', 'torso', cone([-0.035, 1.386, -0.014], [-0.166, 1.368, -0.022], 0.044, 0.04));
+P('neck', 'torso', cone([0, 1.36, -0.018], [0, 1.5, -0.004], 0.05, 0.042));
+P('head', 'head', ellipsoid(0, 1.585, -0.012, 0.074, 0.095, 0.091));
+P('head', 'head', ellipsoid(0, 1.533, 0.018, 0.058, 0.073, 0.068));
+P('head', 'head', ellipsoid(0, 1.49, 0.04, 0.036, 0.03, 0.036));
+P('head', 'head', cone([0, 1.566, 0.074], [0, 1.536, 0.09], 0.0062, 0.0085));
+P('head', 'head', ellipsoid(0.073, 1.56, -0.012, 0.009, 0.022, 0.014));
+P('head', 'head', ellipsoid(-0.073, 1.56, -0.012, 0.009, 0.022, 0.014));
+for (const [s, x] of [['L', 1], ['R', -1]]) {
+  const sh = J['arm' + s], el = J['fore' + s], wr = J['hand' + s];
+  const ad = sub(el, sh), fd = sub(wr, el);
+  P('arm' + s, 'arm' + s, cone(sh, el, 0.043, 0.03));
+  P('arm' + s, 'arm' + s, oell(add(sh, mul(ad, 0.12)), ad, [x, 0, 0], 0.075, 0.046, 0.045));
+  P('arm' + s, 'arm' + s, oell(add(sh, mul(ad, 0.55)), ad, [x, 0, 0], 0.08, 0.034, 0.036));
+  P('fore' + s, 'arm' + s, cone(el, wr, 0.03, 0.02));
+  P('fore' + s, 'arm' + s, oell(add(el, mul(fd, 0.28)), fd, [x, 0, 0], 0.075, 0.033, 0.03));
+  const hd = mul(fd, 1 / Math.hypot(...fd));
+  P('hand' + s, 'arm' + s, oell(add(wr, mul(hd, 0.045)), hd, [0, 0, 1], 0.05, 0.036, 0.015));
+  P('hand' + s, 'arm' + s, oell(add(wr, mul(hd, 0.112)), hd, [0, 0, 1], 0.05, 0.032, 0.012));
+  P('hand' + s, 'arm' + s, cone(add(add(wr, mul(hd, 0.03)), [0, 0, 0.026]), add(add(wr, mul(hd, 0.085)), [0, 0, 0.04]), 0.012, 0.009));
+  const hp = J['thigh' + s], kn = J['shin' + s], an = J['foot' + s];
+  P('thigh' + s, 'leg' + s, cone(hp, kn, 0.08, 0.045));
+  P('thigh' + s, 'leg' + s, ellipsoid(0.1 * x, 0.735, -0.004, 0.068, 0.15, 0.074));
+  P('thigh' + s, 'leg' + s, ellipsoid(0.072 * x, 0.66, 0.006, 0.05, 0.12, 0.06));
+  P('shin' + s, 'leg' + s, ellipsoid(0.09 * x, 0.47, 0.03, 0.032, 0.036, 0.03));
+  P('shin' + s, 'leg' + s, cone(kn, an, 0.044, 0.025));
+  P('shin' + s, 'leg' + s, ellipsoid(0.093 * x, 0.335, -0.03, 0.041, 0.095, 0.046));
+  P('foot' + s, 'leg' + s, ellipsoid(0.092 * x, 0.045, -0.052, 0.03, 0.036, 0.034));
+  P('foot' + s, 'leg' + s, oell([0.094 * x, 0.035, 0.045], [0.04 * x, -0.12, 1], [x, 0, 0], 0.112, 0.037, 0.03));
+}
+const GROUPS = ['torso', 'head', 'armL', 'armR', 'legL', 'legR'];
+const GK = { torso: 0.07, head: 0.03, armL: 0.03, armR: 0.03, legL: 0.03, legR: 0.03 };
+const groupParts = {}; for (const g of GROUPS) groupParts[g] = PARTS.filter(p => p.group === g);
+function groupD(g, x, y, z) { let d = 1e9; for (const p of groupParts[g]) d = d === 1e9 ? p.f(x, y, z) : smin(d, p.f(x, y, z), GK[g]); return d; }
+function bodyD(x, y, z) {
+  const th = smin(groupD('torso', x, y, z), groupD('head', x, y, z), 0.035);
+  return Math.min(smin(th, groupD('armL', x, y, z), 0.035), smin(th, groupD('armR', x, y, z), 0.035), smin(th, groupD('legL', x, y, z), 0.05), smin(th, groupD('legR', x, y, z), 0.05));
+}
+
+// ———————————— a surface out of a distance: naive surface nets, near the surface only ————————————
+function surfaceNets(sdf, bmin, bmax, h) {
+  const nx = Math.ceil((bmax[0] - bmin[0]) / h) + 1, ny = Math.ceil((bmax[1] - bmin[1]) / h) + 1, nz = Math.ceil((bmax[2] - bmin[2]) / h) + 1;
+  const F = new Float32Array(nx * ny * nz).fill(NaN);
+  const id = (i, j, k) => i + nx * (j + ny * k);
+  const C = 4, cnx = Math.ceil((nx - 1) / C), cny = Math.ceil((ny - 1) / C), cnz = Math.ceil((nz - 1) / C);
+  const thr = C * h * 1.9;
+  const CV = new Float32Array((cnx + 1) * (cny + 1) * (cnz + 1));
+  const cid = (i, j, k) => i + (cnx + 1) * (j + (cny + 1) * k);
+  for (let k = 0; k <= cnz; k++) for (let j = 0; j <= cny; j++) for (let i = 0; i <= cnx; i++) CV[cid(i, j, k)] = sdf(bmin[0] + i * C * h, bmin[1] + j * C * h, bmin[2] + k * C * h);
+  for (let ck = 0; ck < cnz; ck++) for (let cj = 0; cj < cny; cj++) for (let ci = 0; ci < cnx; ci++) {
+    let mn = 1e9, s = 0;
+    for (let c = 0; c < 8; c++) { const v = CV[cid(ci + (c & 1), cj + (c >> 1 & 1), ck + (c >> 2 & 1))]; mn = Math.min(mn, Math.abs(v)); s = v; }
+    const near = mn < thr;
+    for (let k = ck * C; k <= Math.min(ck * C + C, nz - 1); k++) for (let j = cj * C; j <= Math.min(cj * C + C, ny - 1); j++) for (let i = ci * C; i <= Math.min(ci * C + C, nx - 1); i++) {
+      const q = id(i, j, k); if (!Number.isNaN(F[q]) && !near) continue;
+      if (near) { if (Number.isNaN(F[q]) || Math.abs(F[q]) >= thr * 0.999) F[q] = sdf(bmin[0] + i * h, bmin[1] + j * h, bmin[2] + k * h); }
+      else F[q] = s > 0 ? thr : -thr;
+    }
+  }
+  for (let q = 0; q < F.length; q++) if (Number.isNaN(F[q])) F[q] = thr;
+  const VI = new Int32Array(nx * ny * nz).fill(-1), pos = [];
+  const E = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+  const d = new Float32Array(8);
+  for (let k = 0; k < nz - 1; k++) for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+    let m = 0;
+    for (let c = 0; c < 8; c++) { d[c] = F[id(i + (c & 1), j + (c >> 1 & 1), k + (c >> 2 & 1))]; if (d[c] < 0) m |= 1 << c; }
+    if (m === 0 || m === 255) continue;
+    let sx = 0, sy = 0, sz = 0, n = 0;
+    for (const [a, b] of E) {
+      if ((d[a] < 0) === (d[b] < 0)) continue;
+      const t = d[a] / (d[a] - d[b]);
+      sx += (a & 1) + ((b & 1) - (a & 1)) * t; sy += (a >> 1 & 1) + ((b >> 1 & 1) - (a >> 1 & 1)) * t; sz += (a >> 2 & 1) + ((b >> 2 & 1) - (a >> 2 & 1)) * t; n++;
+    }
+    VI[id(i, j, k)] = pos.length / 3;
+    pos.push(bmin[0] + (i + sx / n) * h, bmin[1] + (j + sy / n) * h, bmin[2] + (k + sz / n) * h);
+  }
+  const idx = [];
+  const quad = (a, b, c, e, flip) => { if (a < 0 || b < 0 || c < 0 || e < 0) return; if (flip) idx.push(a, c, b, a, e, c); else idx.push(a, b, c, a, c, e); };
+  for (let k = 1; k < nz - 1; k++) for (let j = 1; j < ny - 1; j++) for (let i = 1; i < nx - 1; i++) {
+    const v0 = F[id(i, j, k)], inside = v0 < 0;
+    if (inside !== (F[id(i + 1, j, k)] < 0)) quad(VI[id(i, j - 1, k - 1)], VI[id(i, j, k - 1)], VI[id(i, j, k)], VI[id(i, j - 1, k)], inside);
+    if (inside !== (F[id(i, j + 1, k)] < 0)) quad(VI[id(i - 1, j, k - 1)], VI[id(i - 1, j, k)], VI[id(i, j, k)], VI[id(i, j, k - 1)], inside);
+    if (inside !== (F[id(i, j, k + 1)] < 0)) quad(VI[id(i - 1, j - 1, k)], VI[id(i, j - 1, k)], VI[id(i, j, k)], VI[id(i - 1, j, k)], inside);
+  }
+  // normals from the distance itself, and the winding made to agree with them
+  const nor = new Float32Array(pos.length), e = h * 0.5;
+  for (let v = 0; v < pos.length; v += 3) {
+    const x = pos[v], y = pos[v + 1], z = pos[v + 2];
+    let gx = sdf(x + e, y, z) - sdf(x - e, y, z), gy = sdf(x, y + e, z) - sdf(x, y - e, z), gz = sdf(x, y, z + e) - sdf(x, y, z - e);
+    const l = Math.hypot(gx, gy, gz) || 1; nor[v] = gx / l; nor[v + 1] = gy / l; nor[v + 2] = gz / l;
+  }
+  for (let t = 0; t < idx.length; t += 3) {
+    const a = idx[t] * 3, b = idx[t + 1] * 3, c = idx[t + 2] * 3;
+    const ux = pos[b] - pos[a], uy = pos[b + 1] - pos[a + 1], uz = pos[b + 2] - pos[a + 2], wx = pos[c] - pos[a], wy = pos[c + 1] - pos[a + 1], wz = pos[c + 2] - pos[a + 2];
+    const cx = uy * wz - uz * wy, cy = uz * wx - ux * wz, cz = ux * wy - uy * wx;
+    if (cx * (nor[a] + nor[b] + nor[c]) + cy * (nor[a + 1] + nor[b + 1] + nor[c + 1]) + cz * (nor[a + 2] + nor[b + 2] + nor[c + 2]) < 0) { const s = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = s; }
+  }
+  return { pos: new Float32Array(pos), nor, idx };
+}
+
+// ———————————— the scene ————————————
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#cfc8bd');
+scene.fog = new THREE.Fog('#cfc8bd', 7, 16);
+const camera = new THREE.PerspectiveCamera(32, 16 / 10, 0.05, 50);
+const hemi = new THREE.HemisphereLight('#fff4e6', '#5b544c', 1.05); scene.add(hemi);
+const key = new THREE.DirectionalLight('#fff0dc', 2.1); key.position.set(-2.2, 3.6, 2.6); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.camera.left = -2.5; key.shadow.camera.right = 2.5; key.shadow.camera.top = 2.5; key.shadow.camera.bottom = -2.5; key.shadow.camera.near = 0.5; key.shadow.camera.far = 12; key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 4;
+scene.add(key); scene.add(key.target);
+const rim = new THREE.DirectionalLight('#cfe0ff', 1.3); rim.position.set(2.4, 2.2, -2.8); scene.add(rim);
+const fill = new THREE.DirectionalLight('#ffe6cc', 0.35); fill.position.set(2.5, 1.0, 2.0); scene.add(fill);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(30, 64), new THREE.MeshStandardMaterial({ color: '#c9c1b5', roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+const COL = { skin: new THREE.Color('#ebbd9f'), blush: new THREE.Color('#e79a88'), dress: new THREE.Color('#4d6a78'), slip: new THREE.Color('#3b5361'), shoe: new THREE.Color('#2b211d'), trim: new THREE.Color('#ece3d2'), hair: new THREE.Color('#3a271f') };
+
+// ———————————— build the body ————————————
+function build() {
+  const m = surfaceNets(bodyD, [-0.5, -0.01, -0.17], [0.5, 1.7, 0.21], 0.0068);
+  const nv = m.pos.length / 3;
+  const skinIndex = new Uint16Array(nv * 4), skinWeight = new Float32Array(nv * 4), color = new Float32Array(nv * 3);
+  const SIG = { hips: 0.03, spine: 0.035, chest: 0.03, neck: 0.012, head: 0.01, clavL: 0.016, clavR: 0.016 };
+  const bonePartsList = BONES.map(b => PARTS.filter(p => p.bone === b));
+  const dd = new Float32Array(BONES.length), ww = new Float32Array(BONES.length);
+  const c = new THREE.Color();
+  for (let v = 0; v < nv; v++) {
+    const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2];
+    let dmin = 1e9;
+    for (let b = 0; b < BONES.length; b++) { let d = 1e9; for (const p of bonePartsList[b]) d = Math.min(d, p.f(x, y, z)); dd[b] = d; if (d < dmin) dmin = d; }
+    let best = [];
+    for (let b = 0; b < BONES.length; b++) { const s = SIG[BONES[b]] || 0.011; ww[b] = Math.exp(-Math.max(dd[b] - dmin, 0) / s); best.push(b); }
+    best.sort((a, b) => ww[b] - ww[a]); best = best.slice(0, 4);
+    let sum = 0; for (const b of best) sum += ww[b];
+    best.forEach((b, i) => { skinIndex[v * 4 + i] = b; skinWeight[v * 4 + i] = ww[b] / sum; });
+    // what she wears, by where the point is
+    const top = BONES[best[0]];
+    c.copy(COL.skin);
+    const neckline = 1.405 - 0.075 * clamp(z / 0.06, 0, 1) - 0.02 * clamp(Math.abs(x) / 0.12, 0, 1);
+    const edge = (v, w) => smooth(clamp(v / w + 0.5, 0, 1));
+    if (['hips', 'spine', 'chest', 'clavL', 'clavR', 'neck'].includes(top)) c.lerp(COL.dress, edge(neckline - y, 0.006));
+    if (top.startsWith('arm')) { const s = top.endsWith('L') ? 'L' : 'R', a = J['arm' + s], e = J['fore' + s]; const t = ((x - a[0]) * (e[0] - a[0]) + (y - a[1]) * (e[1] - a[1]) + (z - a[2]) * (e[2] - a[2])) / ((e[0] - a[0]) ** 2 + (e[1] - a[1]) ** 2 + (e[2] - a[2]) ** 2); c.lerp(COL.trim, edge(0.36 - t, 0.025)); c.lerp(COL.dress, edge(0.325 - t, 0.025)); }
+    if (top.startsWith('thigh') && y > 0.8) c.copy(COL.slip);
+    if (top === 'hips' && y < 0.98) c.copy(COL.slip);
+    if (top.startsWith('foot') || (top.startsWith('shin') && y < 0.07)) { if (y < 0.085 && !(z > 0.0 && y > 0.06 && Math.abs(Math.abs(x) - 0.094) < 0.03 && z < 0.08)) c.copy(COL.shoe); }
+    if (top === 'head') {
+      for (const sx of [0.044, -0.044]) { const r = Math.hypot(x - sx, y - 1.538, (z - 0.06) * 0.6); if (r < 0.026) c.lerp(COL.blush, 0.35 * (1 - r / 0.026)); }
+      if (Math.abs(x) < 0.011 && Math.abs(y - 1.508) < 0.004 && z > 0.06) c.lerp(new THREE.Color('#b5675a'), 0.6);
+    }
+    color[v * 3] = c.r; color[v * 3 + 1] = c.g; color[v * 3 + 2] = c.b;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(m.pos, 3));
+  g.setAttribute('normal', new THREE.BufferAttribute(m.nor, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(color, 3));
+  g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinIndex, 4));
+  g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinWeight, 4));
+  g.setIndex(nv > 65535 ? new THREE.Uint32BufferAttribute(m.idx, 1) : new THREE.Uint16BufferAttribute(m.idx, 1));
+  return g;
+}
+// the hair: a cap pulled back from a parting, a knot at the nape (in the head's own frame)
+function hairD(x, y, z) {
+  const cy = 0.095, cz = -0.007;
+  let d = ellipsoid(0, cy + 0.006, cz - 0.008, 0.089, 0.11, 0.108)(x, y, z);
+  d = smin(d, ellipsoid(0, cy - 0.01, cz - 0.03, 0.084, 0.085, 0.09)(x, y, z), 0.03);
+  const yr = y - cy, zr = z - cz;
+  d = smax(d, -(0.86 * yr - 0.5 * zr + 0.004 - 0.25 * x * x * 8), 0.012);
+  d = smin(d, ellipsoid(0, 0.035, -0.092, 0.034, 0.03, 0.028)(x, y, z), 0.02);
+  d = smax(d, -cone([0, 0.19, 0.06], [0, 0.205, -0.03], 0.0035, 0.003)(x, y, z), 0.004);
+  return d;
+}
+function surfaceZ(x, y) { let z = 0.25; for (let i = 0; i < 80; i++) { const d = bodyD(x, y, z); if (d < 0.0004) break; z -= Math.max(d, 0.0008); } return z; }
+
+const parts = {};
+let mesh, skeleton, bones = {}, hairMesh, eyes = [], braid, skirt, root = new THREE.Group(), boneLines;
+scene.add(root);
+const mats = {};
+
+function materials() {
+  const gradient = new THREE.DataTexture(new Uint8Array([70, 70, 70, 255, 160, 160, 160, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat);
+  gradient.minFilter = gradient.magFilter = THREE.NearestFilter; gradient.needsUpdate = true;
+  const outline = (w) => {
+    const m = new THREE.MeshBasicMaterial({ color: '#2a211d', side: THREE.BackSide });
+    m.onBeforeCompile = s => { s.vertexShader = s.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_SKINNING\n#else\ntransformed += normal * ' + w.toFixed(4) + ';\n#endif').replace('#include <skinning_vertex>', '#include <skinning_vertex>\n#ifdef USE_SKINNING\ntransformed += normalize(objectNormal) * ' + w.toFixed(4) + ';\n#endif'); };
+    return m;
+  };
+  mats.soft = {
+    body: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0 }),
+    hair: new THREE.MeshStandardMaterial({ color: COL.hair, roughness: 0.42 }),
+    skirt: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, side: THREE.DoubleSide }),
+    eye: new THREE.MeshStandardMaterial({ color: '#241814', roughness: 0.18 }),
+    brow: new THREE.MeshStandardMaterial({ color: '#3a271f', roughness: 0.8 }),
+  };
+  mats.toon = {
+    body: new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: gradient }),
+    hair: new THREE.MeshToonMaterial({ color: COL.hair, gradientMap: gradient }),
+    skirt: new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: gradient, side: THREE.DoubleSide }),
+    eye: new THREE.MeshBasicMaterial({ color: '#1e1512' }),
+    brow: new THREE.MeshBasicMaterial({ color: '#2a1c16' }),
+    outline: outline(0.0035),
+  };
+  const dark = new THREE.MeshBasicMaterial({ color: '#1d1e22' }), darkD = new THREE.MeshBasicMaterial({ color: '#1d1e22', side: THREE.DoubleSide });
+  mats.sil = { body: dark, hair: dark, skirt: darkD, eye: dark, brow: dark };
+}
+
+function setup() {
+  materials();
+  // bones
+  for (const b of BONES) { const bone = new THREE.Bone(); bone.name = b; bones[b] = bone; }
+  for (const b of BONES) {
+    const p = PARENT[b], bone = bones[b];
+    if (p) { bones[p].add(bone); bone.position.set(J[b][0] - J[p][0], J[b][1] - J[p][1], J[b][2] - J[p][2]); }
+    else { root.add(bone); bone.position.set(...J[b]); }
+  }
+  root.updateMatrixWorld(true);
+  skeleton = new THREE.Skeleton(BONES.map(b => bones[b]));
+  const geo = build();
+  mesh = new THREE.SkinnedMesh(geo, mats.soft.body); mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
+  root.add(mesh); mesh.bind(skeleton);
+  parts.outline = new THREE.SkinnedMesh(geo, mats.toon.outline); parts.outline.frustumCulled = false; parts.outline.visible = false;
+  root.add(parts.outline); parts.outline.bind(skeleton, mesh.bindMatrix);
+  // hair
+  const hm = surfaceNets(hairD, [-0.11, -0.03, -0.14], [0.11, 0.22, 0.12], 0.0042);
+  const hg = new THREE.BufferGeometry(); hg.setAttribute('position', new THREE.BufferAttribute(hm.pos, 3)); hg.setAttribute('normal', new THREE.BufferAttribute(hm.nor, 3)); hg.setIndex(hm.idx);
+  hairMesh = new THREE.Mesh(hg, mats.soft.hair); hairMesh.castShadow = true; bones.head.add(hairMesh);
+  parts.hairOutline = new THREE.Mesh(hg, mats.toon.outline); parts.hairOutline.visible = false; bones.head.add(parts.hairOutline);
+  // the face: eyes, brows, lips set on the face as it was sculpted
+  const H = J.head;
+  for (const sx of [0.031, -0.031]) {
+    const y = 1.567, z = surfaceZ(sx, y) - 0.003;
+    const e = new THREE.Mesh(new THREE.SphereGeometry(0.0085, 20, 14), mats.soft.eye); e.scale.set(1, 1.15, 0.55);
+    e.position.set(sx, y - H[1], z - H[2]); bones.head.add(e); eyes.push(e);
+    const pts = []; for (let i = 0; i <= 6; i++) { const u = i / 6, bx = sx + (u - 0.5) * 0.03 * Math.sign(sx) * -1 * -1, by = 1.585 + Math.sin(u * Math.PI) * 0.004 - (Math.sign(sx) * (bx - sx) < 0 ? 0 : 0.0015); pts.push(new THREE.Vector3(bx - H[0], by - H[1], surfaceZ(bx, by) - H[2] + 0.0008)); }
+    const brow = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.0016, 6), mats.soft.brow); bones.head.add(brow); eyes.push(brow);
+  }
+  const lp = []; for (let i = 0; i <= 6; i++) { const u = i / 6, x = (u - 0.5) * 0.024, y = 1.508 + Math.cos((u - 0.5) * Math.PI) * 0.0012; lp.push(new THREE.Vector3(x, y - H[1], surfaceZ(x, y) - H[2] + 0.0005)); }
+  const lips = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(lp), 10, 0.0013, 5), new THREE.MeshStandardMaterial({ color: '#9a5248', roughness: 0.6 })); bones.head.add(lips); parts.lips = lips;
+  // braid, skirt, stool, bones overlay
+  braid = makeBraid(); skirt = makeSkirt(); makeStool(); makeBoneLines();
+}
+
+// ———————————— the braid: a chain that lags and settles ————————————
+function makeBraid() {
+  const N = 15, seg = 0.032, anchorL = new THREE.Vector3(0, 0.012, -0.098);
+  const p = [], q = [];
+  const a0 = anchorL.clone(); bones.head.localToWorld(a0);
+  for (let i = 0; i < N; i++) { const v = a0.clone().add(new THREE.Vector3(0, -seg * i, -0.01 * i)); p.push(v); q.push(v.clone()); }
+  const geo = new THREE.SphereGeometry(1, 14, 10);
+  const inst = new THREE.InstancedMesh(geo, mats.soft.hair, (N - 1) * 2 + 2); inst.castShadow = true; inst.frustumCulled = false; scene.add(inst);
+  const out = new THREE.InstancedMesh(geo, mats.toon.outline, (N - 1) * 2 + 2); out.instanceMatrix = inst.instanceMatrix; out.visible = false; out.frustumCulled = false; scene.add(out);
+  const tie = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.012, 14), new THREE.MeshStandardMaterial({ color: '#9b3b2f', roughness: 0.6 })); tie.castShadow = true; scene.add(tie);
+  return { N, seg, anchorL, p, q, inst, out, tie };
+}
+const tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpS = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), tv = new THREE.Vector3(), tv2 = new THREE.Vector3();
+const colliders = [];
+function pushOutEllipsoid(v, m, inv, r) {
+  tv.copy(v).applyMatrix4(inv);
+  const k = Math.hypot(tv.x / r[0], tv.y / r[1], tv.z / r[2]);
+  if (k < 1) { tv.multiplyScalar(1 / Math.max(k, 1e-4)); v.copy(tv.applyMatrix4(m)); return true; }
+  return false;
+}
+function pushOutCapsule(v, a, b, r, prev) {
+  tv.subVectors(b, a); const l2 = tv.lengthSq(); tv2.subVectors(v, a);
+  const t = clamp(tv2.dot(tv) / l2, 0, 1); const cx = a.x + tv.x * t, cy = a.y + tv.y * t, cz = a.z + tv.z * t;
+  let dx = v.x - cx, dy = v.y - cy, dz = v.z - cz; const d = Math.hypot(dx, dy, dz);
+  if (d >= r) return;
+  if (prev) {
+    // out on the side it was on a moment ago, never through to the other side
+    tv2.subVectors(prev, a); const tp = clamp(tv2.dot(tv) / l2, 0, 1);
+    const px = prev.x - (a.x + tv.x * tp), py = prev.y - (a.y + tv.y * tp), pz = prev.z - (a.z + tv.z * tp), pl = Math.hypot(px, py, pz);
+    if (pl > 1e-4 && px * dx + py * dy + pz * dz < 0.3 * pl * d) { dx = px; dy = py; dz = pz; }
+  }
+  const l = Math.hypot(dx, dy, dz) || 1e-5; v.set(cx + dx / l * r, cy + dy / l * r, cz + dz / l * r);
+}
+function stepBraid(dt, wind) {
+  const B = braid, g = -9.8;
+  const a = B.anchorL.clone(); bones.head.localToWorld(a);
+  B.p[0].copy(a); B.q[0].copy(a);
+  for (let i = 1; i < B.N; i++) {
+    const p = B.p[i], q = B.q[i];
+    const vx = (p.x - q.x) * 0.982, vy = (p.y - q.y) * 0.982, vz = (p.z - q.z) * 0.982;
+    q.copy(p);
+    p.x += vx + wind.x * 0.25 * dt * dt * (i / B.N); p.y += vy + g * dt * dt; p.z += vz + wind.z * 0.25 * dt * dt * (i / B.N);
+  }
+  const head = colliders.head, chest = colliders.chest, spine = colliders.spine;
+  for (let it = 0; it < 8; it++) {
+    for (let i = 1; i < B.N; i++) {
+      const p0 = B.p[i - 1], p1 = B.p[i]; tv.subVectors(p1, p0); const l = tv.length() || 1e-6;
+      const k = (l - B.seg) / l; if (i === 1) p1.addScaledVector(tv, -k); else { p0.addScaledVector(tv, k * 0.5); p1.addScaledVector(tv, -k * 0.5); }
+      if (i >= 2) { const pa = B.p[i - 2]; tv.subVectors(p1, pa); const l2 = tv.length(); const mn = B.seg * 1.82; if (l2 < mn) { const kk = (l2 - mn) / Math.max(l2, 1e-6) * 0.5; if (i > 2) pa.addScaledVector(tv, kk * 0.5); p1.addScaledVector(tv, -kk); } }
+    }
+    for (let i = 2; i < B.N; i++) {
+      const v = B.p[i];
+      pushOutEllipsoid(v, head.m, head.inv, [0.088, 0.112, 0.106]);
+      pushOutEllipsoid(v, chest.m, chest.inv, [0.14, 0.17, 0.112]);
+      pushOutEllipsoid(v, spine.m, spine.inv, [0.125, 0.13, 0.1]);
+      pushOutCapsule(v, colliders.neckA, colliders.neckB, 0.058);
+    }
+  }
+}
+function drawBraid() {
+  const B = braid; let n = 0;
+  const side = new THREE.Vector3();
+  for (let i = 0; i < B.N - 1; i++) {
+    const a = B.p[i], b = B.p[i + 1];
+    tv.subVectors(b, a); const len = tv.length(); tv.normalize();
+    side.crossVectors(tv, new THREE.Vector3(0, 0, 1)); if (side.lengthSq() < 1e-4) side.set(1, 0, 0); side.normalize();
+    const r = lerp(0.019, 0.012, i / (B.N - 1));
+    for (const s of [-1, 1]) {
+      const along = (i + (s > 0 ? 0.5 : 0)) % 2 ? 1 : -1;
+      tv2.copy(a).lerp(b, s > 0 ? 0.62 : 0.2).addScaledVector(side, r * 0.33 * along);
+      tmpQ.setFromUnitVectors(up, tv);
+      const tw = new THREE.Quaternion().setFromAxisAngle(tv, 0); tmpQ.multiply(tw);
+      const tilt = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.42 * along); tmpQ.multiply(tilt);
+      tmpS.set(r * 0.95, len * 0.62, r * 0.82);
+      tmpM.compose(tv2, tmpQ, tmpS); B.inst.setMatrixAt(n++, tmpM);
+    }
+  }
+  const e = B.p[B.N - 1], pe = B.p[B.N - 2]; tv.subVectors(e, pe).normalize();
+  tmpQ.setFromUnitVectors(up, tv);
+  tmpM.compose(e.clone().addScaledVector(tv, 0.026), tmpQ, tmpS.set(0.013, 0.03, 0.011)); B.inst.setMatrixAt(n++, tmpM);
+  tmpM.compose(e.clone().addScaledVector(tv, 0.05), tmpQ, tmpS.set(0.009, 0.022, 0.008)); B.inst.setMatrixAt(n++, tmpM);
+  B.inst.count = n; B.out.count = n; B.inst.instanceMatrix.needsUpdate = true;
+  B.tie.position.copy(e).addScaledVector(tv, 0.004); B.tie.quaternion.copy(tmpQ);
+}
+
+// ———————————— the skirt: cloth hanging from the waist ————————————
+function makeSkirt() {
+  const R = 16, N = 40, L = 0.6, topY = 0.1;
+  const local = [], p = [], q = [], rest = [];
+  for (let i = 0; i < R; i++) for (let j = 0; j < N; j++) {
+    const u = i / (R - 1), a = j / N * Math.PI * 2;
+    const rx = lerp(0.124, 0.3, Math.pow(u, 0.85)), rz = lerp(0.098, 0.29, Math.pow(u, 0.85));
+    local.push(new THREE.Vector3(Math.sin(a) * rx, topY - L * u, Math.cos(a) * rz - 0.006));
+  }
+  for (const v of local) { const w = v.clone(); bones.hips.localToWorld(w); p.push(w); q.push(w.clone()); }
+  const id = (i, j) => i * N + ((j % N) + N) % N;
+  const cons = [];
+  const C = (a, b, s) => cons.push([a, b, p[a].distanceTo(p[b]), s]);
+  for (let i = 0; i < R; i++) for (let j = 0; j < N; j++) {
+    C(id(i, j), id(i, j + 1), 1);
+    if (i < R - 1) { C(id(i, j), id(i + 1, j), 1); C(id(i, j), id(i + 1, j + 1), 0.6); C(id(i, j + 1), id(i + 1, j), 0.6); }
+    if (i < R - 2) C(id(i, j), id(i + 2, j), 0.25);
+    C(id(i, j), id(i, j + 2), 0.2);
+  }
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(R * N * 3), col = new Float32Array(R * N * 3), idx = [];
+  for (let i = 0; i < R - 1; i++) for (let j = 0; j < N; j++) { const a = id(i, j), b = id(i, j + 1), c = id(i + 1, j + 1), d = id(i + 1, j); idx.push(a, d, c, a, c, b); }
+  for (let i = 0; i < R; i++) for (let j = 0; j < N; j++) { const k = id(i, j) * 3, c = i >= R - 2 ? COL.trim : i === 0 ? COL.dress : COL.dress; col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b; }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setIndex(idx);
+  const m = new THREE.Mesh(geo, mats.soft.skirt); m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; scene.add(m);
+  const len = p.map((v, k) => { let L = 0; for (let i = 1; i <= Math.floor(k / N); i++) L += p[i * N + k % N].distanceTo(p[(i - 1) * N + k % N]); return L * 1.03; });
+  return { R, N, local, p, q, cons, len, geo, mesh: m, nrm: Array.from({ length: R * N }, () => new THREE.Vector3()) };
+}
+function stepSkirt(dt, wind, t) {
+  const S = skirt, g = -9.8;
+  bones.hips.updateMatrixWorld();
+  for (let j = 0; j < S.N; j++) { S.p[j].copy(S.local[j]).applyMatrix4(bones.hips.matrixWorld); S.q[j].copy(S.p[j]); }
+  const pos = S.geo.attributes.position.array;
+  for (let i = 1; i < S.R; i++) for (let j = 0; j < S.N; j++) {
+    const k = i * S.N + j, p = S.p[k], q = S.q[k], n = S.nrm[k];
+    const vx = (p.x - q.x), vy = (p.y - q.y), vz = (p.z - q.z);
+    // air: the wind pushes on the cloth as it faces it, gusting here and there
+    const gust = 0.65 + 0.35 * Math.sin(t * 2.3 + j * 0.7 + i * 0.4) * Math.sin(t * 0.9 + j * 0.3);
+    const rx = wind.x * gust - vx / dt, rz = wind.z * gust - vz / dt, ry = -vy / dt;
+    const fn = (rx * n.x + ry * n.y + rz * n.z) * 0.9;
+    const ax = fn * n.x + wind.x * gust * 0.08, ay = fn * n.y + g, az = fn * n.z + wind.z * gust * 0.08;
+    q.copy(p);
+    p.x += vx * 0.985 + ax * dt * dt; p.y += vy * 0.985 + ay * dt * dt; p.z += vz * 0.985 + az * dt * dt;
+  }
+  const legs = colliders.legs, hips = colliders.hips, stool = colliders.stool;
+  for (let it = 0; it < 10; it++) {
+    for (const [a, b, rl, s] of S.cons) {
+      // cloth holds against stretching, and gives way when pushed together: it folds
+      const pa = S.p[a], pb = S.p[b]; tv.subVectors(pb, pa); const l = tv.length() || 1e-6; const k = (l - rl) / l * 0.5 * (l < rl ? s * 0.12 : s);
+      if (a < S.N) pb.addScaledVector(tv, -k * 2); else if (b < S.N) pa.addScaledVector(tv, k * 2); else { pa.addScaledVector(tv, k); pb.addScaledVector(tv, -k); }
+    }
+    for (let k = S.N; k < S.p.length; k++) {
+      const v = S.p[k];
+      pushOutEllipsoid(v, hips.m, hips.inv, [0.178, 0.14, 0.138]);
+      for (const [a, b, r] of legs) pushOutCapsule(v, a, b, r, S.q[k]);
+      if (stool.on) { const dx = v.x - stool.c.x, dz = v.z - stool.c.z; if (dx * dx + dz * dz < stool.r * stool.r && v.y < stool.top + 0.012 && v.y > stool.top - 0.08) v.y = stool.top + 0.012; }
+      if (v.y < 0.004) v.y = 0.004;
+    }
+  }
+  for (let k = S.N; k < S.p.length; k++) {
+    const top = S.p[k % S.N], v = S.p[k]; tv.subVectors(v, top); const l = tv.length(), mx = S.len[k];
+    if (l > mx) v.copy(top).addScaledVector(tv, mx / l);
+  }
+  for (let k = 0; k < S.p.length; k++) { pos[k * 3] = S.p[k].x; pos[k * 3 + 1] = S.p[k].y; pos[k * 3 + 2] = S.p[k].z; }
+  S.geo.attributes.position.needsUpdate = true; S.geo.computeVertexNormals();
+  const nn = S.geo.attributes.normal.array; for (let k = 0; k < S.p.length; k++) S.nrm[k].set(nn[k * 3], nn[k * 3 + 1], nn[k * 3 + 2]);
+}
+
+let stool;
+function makeStool() {
+  stool = new THREE.Group();
+  const wood = new THREE.MeshStandardMaterial({ color: '#8a6a4e', roughness: 0.7 });
+  const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.035, 40), wood); seat.position.y = 0.4; seat.castShadow = seat.receiveShadow = true; stool.add(seat);
+  for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2 + 0.3; const l = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.017, 0.4, 10), wood); l.position.set(Math.sin(a) * 0.13, 0.2, Math.cos(a) * 0.13); l.rotation.set(Math.cos(a) * 0.12, 0, -Math.sin(a) * 0.12); l.castShadow = true; stool.add(l); }
+  stool.position.set(0, 0, -0.36); stool.visible = false; root.add(stool);
+}
+function makeBoneLines() {
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(BONES.length * 6), 3));
+  boneLines = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true }));
+  boneLines.renderOrder = 10; boneLines.frustumCulled = false; scene.add(boneLines);
+  const dots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.011, 10, 8), new THREE.MeshBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true }), BONES.length);
+  dots.renderOrder = 11; dots.frustumCulled = false; scene.add(dots); boneLines.userData.dots = dots;
+  boneLines.visible = dots.visible = false;
+}
+
+// ———————————— motions (simple, to show the joints; not Kimodo) ————————————
+const A_IN = 0.36;  // arms from the sculpting pose down to the sides
+const base = () => {
+  const o = { _y: 0, _x: 0, _z: 0, _yaw: 0 };
+  for (const b of BONES) o[b] = [0, 0, 0];
+  o.armL[2] = -A_IN; o.armR[2] = A_IN; o.foreL[0] = -0.1; o.foreR[0] = -0.1;
+  return o;
+};
+function breathe(o, t) {
+  const b = Math.sin(t * Math.PI * 2 / 4.4);
+  o.chest[0] -= 0.012 * b; o.spine[0] += 0.006 * b; o.clavL[2] += 0.012 * b; o.clavR[2] -= 0.012 * b; o.neck[0] += 0.008 * b;
+}
+const M = {
+  idle(t) {
+    const o = base(); breathe(o, t);
+    const w = Math.sin(t * Math.PI * 2 / 9);
+    o._x = 0.018 * w; o.hips[2] = 0.035 * w; o.spine[2] = -0.02 * w; o.chest[2] = -0.015 * w;
+    o.thighL[2] = -0.035 * w; o.thighR[2] = -0.035 * w;
+    o.shinL[0] = 0.08 * (0.5 - 0.5 * w); o.thighL[0] -= 0.04 * (0.5 - 0.5 * w); o.footL[0] -= 0.04 * (0.5 - 0.5 * w);
+    o.shinR[0] = 0.08 * (0.5 + 0.5 * w); o.thighR[0] -= 0.04 * (0.5 + 0.5 * w); o.footR[0] -= 0.04 * (0.5 + 0.5 * w);
+    o._y = -0.004 * Math.abs(w);
+    const look = sm5(clamp((Math.sin(t * 0.45) + 1) / 2, 0, 1));
+    o.head[1] = lerp(-0.35, 0.3, look) ; o.neck[1] = o.head[1] * 0.3; o.head[0] = 0.06 * Math.sin(t * 0.37);
+    o.head[2] = 0.05 * Math.sin(t * 0.29);
+    return o;
+  },
+  walk(t) {
+    const o = base(), f = 0.92, s = t * Math.PI * 2 * f;
+    const sw = (ph) => {
+      const sn = Math.sin(s + ph), cs = Math.cos(s + ph);
+      return { th: -0.4 * sn + 0.02, kn: 0.08 + 0.85 * Math.pow(Math.max(0, cs), 1.6) + 0.14 * Math.pow(Math.max(0, Math.sin(s + ph - 2.0)), 2), ft: 0.32 * Math.pow(Math.max(0, -sn), 2) * (cs > 0 ? 1 : 0.3) - 0.18 * Math.max(0, cs) * Math.max(0, sn) };
+    };
+    const L = sw(0), R = sw(Math.PI);
+    o.thighL[0] = L.th; o.shinL[0] = L.kn; o.footL[0] = L.ft - 0.05;
+    o.thighR[0] = R.th; o.shinR[0] = R.kn; o.footR[0] = R.ft - 0.05;
+    o.hips[1] = -0.13 * Math.sin(s); o.spine[1] = 0.05 * Math.sin(s); o.chest[1] = 0.12 * Math.sin(s); o.head[1] = -0.04 * Math.sin(s);
+    o.hips[2] = 0.05 * Math.cos(s); o.chest[2] = -0.03 * Math.cos(s); o.thighL[2] = -0.04 * Math.cos(s); o.thighR[2] = -0.04 * Math.cos(s);
+    o._x = -0.012 * Math.cos(s); o._y = 0.016 * Math.cos(2 * s) - 0.012;
+    o.armL[0] = 0.34 * Math.sin(s); o.armR[0] = -0.34 * Math.sin(s);
+    o.foreL[0] = -0.2 - 0.25 * Math.max(0, -Math.sin(s)); o.foreR[0] = -0.2 - 0.25 * Math.max(0, Math.sin(s));
+    o.spine[0] = 0.03; o.head[0] = -0.03; breathe(o, t);
+    o._walk = 1.22;
+    return o;
+  },
+  sit(t) {
+    const o = base(), T = 7.2, u = t % T;
+    let p = u < 0.4 ? 0 : u < 2.0 ? sm5((u - 0.4) / 1.6) : u < 4.8 ? 1 : u < 6.4 ? 1 - sm5((u - 4.8) / 1.6) : 0;
+    const bend = Math.sin(Math.PI * clamp(u < 3 ? (u - 0.4) / 1.6 : (u - 4.8) / 1.6, 0, 1));
+    o.thighL[0] = o.thighR[0] = -1.52 * p; o.shinL[0] = o.shinR[0] = 1.5 * p; o.footL[0] = o.footR[0] = 0.02 * p;
+    o.thighL[2] = 0.03 * p; o.thighR[2] = -0.03 * p;
+    o._y = -0.375 * p; o._z = -0.36 * p;
+    o.spine[0] = 0.32 * bend + 0.04 * p; o.chest[0] = 0.12 * bend; o.head[0] = -0.2 * bend;
+    o.armL[0] = -0.32 * p - 0.25 * bend; o.armR[0] = -0.32 * p - 0.25 * bend; o.foreL[0] = -0.1 - 0.95 * p; o.foreR[0] = -0.1 - 0.95 * p;
+    o.armL[2] = -A_IN - 0.06 * p; o.armR[2] = A_IN + 0.06 * p; o.foreL[2] = -0.25 * p; o.foreR[2] = 0.25 * p; o.handL[0] = 0.35 * p; o.handR[0] = 0.35 * p;
+    if (p > 0.5) breathe(o, t); o.head[1] = 0.25 * Math.sin(t * 0.6) * p;
+    o._stool = 1;
+    return o;
+  },
+  wave(t) {
+    const o = base(); breathe(o, t);
+    const T = 4.6, u = t % T, e = u < 0.7 ? sm5(u / 0.7) : u < 3.4 ? 1 : u < 4.2 ? 1 - sm5((u - 3.4) / 0.8) : 0;
+    o.clavR[2] = 0.12 * e; o.armR[2] = A_IN - (2.15 + A_IN) * e; o.armR[0] = -0.25 * e;
+    o.foreR[2] = -0.5 * e + 0.38 * Math.sin(u * Math.PI * 2 * 1.6) * e * clamp((u - 0.6) * 3, 0, 1); o.foreR[0] = -0.1 - 0.35 * e;
+    o.handR[2] = 0.15 * Math.sin(u * Math.PI * 2 * 1.6 - 0.8) * e;
+    o.head[2] = 0.08 * e; o.head[1] = -0.18 * e; o.chest[2] = 0.04 * e; o.hips[2] = -0.03 * e;
+    return o;
+  },
+  spin(t) {
+    const o = base(); breathe(o, t);
+    const T = 5.2, u = t % T, d = 1.7, p = clamp(u / d, 0, 1);
+    o._yaw = Math.PI * 4 * (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+    const e = Math.sin(Math.PI * p);
+    o.armL[2] = -A_IN + 0.7 * e; o.armR[2] = A_IN - 0.7 * e; o.foreL[0] = -0.1 - 0.3 * e; o.foreR[0] = -0.1 - 0.3 * e;
+    o.head[0] = -0.1 * e; o.spine[0] = -0.05 * e;
+    o.footL[0] = 0.25 * e; o.footR[0] = 0.25 * e; o._y = 0.03 * e; o.shinL[0] = 0.05 * e;
+    return o;
+  },
+};
+
+// ———————————— playing them ————————————
+const state = { m: 'walk', prev: null, t0: 0, tp0: 0, blend: 1, wind: false, view: 'soft', yaw: 0, pos: new THREE.Vector3(), clock: 0 };
+const qa = new THREE.Quaternion(), qb = new THREE.Quaternion(), ea = new THREE.Euler();
+function applyPose(time) {
+  const cur = M[state.m](time - state.t0);
+  let o = cur;
+  const w = state.prev ? sm5(clamp((time - state.t0) / 0.7, 0, 1)) : 1;
+  const prev = state.prev && w < 1 ? M[state.prev](time - state.tp0) : null;
+  for (const b of BONES) {
+    qa.setFromEuler(ea.set(cur[b][0], cur[b][1], cur[b][2], 'YXZ'));
+    if (prev) { qb.setFromEuler(ea.set(prev[b][0], prev[b][1], prev[b][2], 'YXZ')); qb.slerp(qa, w); bones[b].quaternion.copy(qb); }
+    else bones[b].quaternion.copy(qa);
+  }
+  const mixv = k => prev ? lerp(prev[k] || 0, cur[k] || 0, w) : (cur[k] || 0);
+  bones.hips.position.set(J.hips[0] + mixv('_x'), J.hips[1] + mixv('_y'), J.hips[2] + mixv('_z'));
+  root.rotation.y = state.yaw + (cur._yaw || 0);
+  const st = prev ? lerp(prev._stool || 0, cur._stool || 0, w) : (cur._stool || 0);
+  stool.visible = st > 0.02; stool.scale.setScalar(Math.max(st, 0.001));
+  return { walk: (cur._walk || 0) * w + (prev && prev._walk || 0) * (1 - w) };
+}
+
+// ———————————— camera ————————————
+const cam = { yaw: 0.55, pitch: 0.1, dist: 4.4, target: new THREE.Vector3(0, 0.9, 0) };
+function placeCamera() {
+  const c = cam, cp = Math.cos(c.pitch);
+  camera.position.set(c.target.x + Math.sin(c.yaw) * cp * c.dist, c.target.y + Math.sin(c.pitch) * c.dist, c.target.z + Math.cos(c.yaw) * cp * c.dist);
+  camera.lookAt(c.target);
+}
+let drag = null;
+stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if (!drag) return; cam.yaw -= (e.clientX - drag.x) * 0.008; cam.pitch = clamp(cam.pitch + (e.clientY - drag.y) * 0.005, -0.25, 1.1); drag = { x: e.clientX, y: e.clientY }; });
+stage.addEventListener('pointerup', () => drag = null); stage.addEventListener('pointercancel', () => drag = null);
+stage.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam.dist * Math.exp(e.deltaY * 0.001), 1.2, 9); }, { passive: false });
+
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage);
+
+// ———————————— controls ————————————
+document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.m === state.m) return;
+  state.prev = state.m; state.tp0 = state.t0; state.m = b.dataset.m; state.t0 = state.clock;
+  document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+}));
+function setView(v) {
+  state.view = v; const S = mats[v];
+  mesh.material = S.body; hairMesh.material = S.hair; skirt.mesh.material = S.skirt; braid.inst.material = S.hair;
+  for (const e of eyes) e.material = e.geometry.type === 'SphereGeometry' ? S.eye : S.brow;
+  parts.lips.visible = v !== 'sil';
+  const ol = v === 'toon'; parts.outline.visible = ol; parts.hairOutline.visible = ol; braid.out.visible = ol;
+  scene.background.set(v === 'sil' ? '#d8d2c8' : '#cfc8bd');
+  document.querySelectorAll('[data-v]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === v)));
+}
+document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+const windBtn = document.getElementById('wind'), bonesBtn = document.getElementById('bones');
+windBtn.addEventListener('click', () => { state.wind = !state.wind; windBtn.setAttribute('aria-pressed', String(state.wind)); });
+bonesBtn.addEventListener('click', () => { const on = !boneLines.visible; boneLines.visible = boneLines.userData.dots.visible = on; bonesBtn.setAttribute('aria-pressed', String(on)); });
+
+// ———————————— each frame ————————————
+function updateColliders() {
+  root.updateMatrixWorld(true);
+  const E = (bone, off) => { const m = new THREE.Matrix4().copy(bones[bone].matrixWorld).multiply(new THREE.Matrix4().makeTranslation(off[0], off[1], off[2])); return { m, inv: m.clone().invert() }; };
+  colliders.head = E('head', [0, 0.095, -0.01]);
+  colliders.chest = E('chest', [0, 0.01, -0.008]);
+  colliders.spine = E('spine', [0, 0.0, 0.004]);
+  colliders.hips = E('hips', [0, -0.035, -0.012]);
+  const W = b => new THREE.Vector3().setFromMatrixPosition(bones[b].matrixWorld);
+  colliders.neckA = W('neck'); colliders.neckB = W('head');
+  const toe = s => new THREE.Vector3(0.002 * (s === 'L' ? 1 : -1), -0.03, 0.15).applyMatrix4(bones['foot' + s].matrixWorld);
+  colliders.legs = [];
+  for (const s of ['L', 'R']) {
+    colliders.legs.push([W('thigh' + s), W('shin' + s), 0.088], [mixVec(W('thigh' + s), W('shin' + s), 0.35), W('shin' + s), 0.078], [W('shin' + s), W('foot' + s), 0.052], [W('foot' + s), toe(s), 0.04]);
+    const tip = new THREE.Vector3(0, -0.15, 0).applyMatrix4(bones['hand' + s].matrixWorld);
+    colliders.legs.push([W('fore' + s), W('hand' + s), 0.034], [W('hand' + s), tip, 0.03]);
+  }
+  colliders.stool = { on: stool.visible && stool.scale.x > 0.5, c: new THREE.Vector3().setFromMatrixPosition(stool.matrixWorld), r: 0.2, top: 0.418 };
+}
+const mixVec = (a, b, t) => a.clone().lerp(b, t);
+function updateBoneLines() {
+  if (!boneLines.visible) return;
+  const arr = boneLines.geometry.attributes.position.array, dots = boneLines.userData.dots; let n = 0;
+  BONES.forEach((b, i) => {
+    const p = new THREE.Vector3().setFromMatrixPosition(bones[b].matrixWorld);
+    const par = PARENT[b] ? new THREE.Vector3().setFromMatrixPosition(bones[PARENT[b]].matrixWorld) : p;
+    arr.set([par.x, par.y, par.z, p.x, p.y, p.z], n); n += 6;
+    tmpM.makeTranslation(p.x, p.y, p.z); dots.setMatrixAt(i, tmpM);
+  });
+  boneLines.geometry.attributes.position.needsUpdate = true; dots.instanceMatrix.needsUpdate = true;
+}
+let blinkNext = 2, blinkT = -1;
+let last = performance.now(), acc = 0;
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, 0.05); last = now;
+  update(dt);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+function update(dt) {
+  state.clock += dt;
+  const info = applyPose(state.clock);
+  if (info.walk > 0) { const v = info.walk * dt, turn = 0.62 * dt * (info.walk / 1.22); state.yaw += turn; state.pos.x += Math.sin(state.yaw) * v; state.pos.z += Math.cos(state.yaw) * v; }
+  root.position.copy(state.pos);
+  cam.target.lerp(new THREE.Vector3(state.pos.x, 0.88, state.pos.z), 1 - Math.exp(-dt * 1.5));
+  placeCamera();
+  key.position.set(state.pos.x - 2.2, 3.6, state.pos.z + 2.6); key.target.position.set(state.pos.x, 0.8, state.pos.z);
+  // blink
+  if (state.clock > blinkNext) { blinkT = state.clock; blinkNext = state.clock + 2.2 + Math.random() * 3.5; }
+  const bk = blinkT >= 0 && state.clock - blinkT < 0.16 ? Math.sin(Math.PI * (state.clock - blinkT) / 0.16) : 0;
+  for (let i = 0; i < eyes.length; i += 2) eyes[i].scale.y = 1.15 * (1 - 0.88 * bk);
+  updateColliders();
+  const tw = state.clock;
+  const wind = state.wind ? new THREE.Vector3(2.6 + 1.4 * Math.sin(tw * 0.7) * Math.sin(tw * 1.9), 0, -1.2 + 0.8 * Math.sin(tw * 0.43)) : new THREE.Vector3();
+  acc += dt; const h = 1 / 180; let steps = 0;
+  while (acc >= h && steps < 9) { stepSkirt(h, wind, tw); stepBraid(h, wind); acc -= h; steps++; }
+  if (steps === 9) acc = 0;
+  drawBraid(); updateBoneLines();
+}
+
+try {
+  if (!renderer.getContext()) throw new Error('webgl');
+  await new Promise(r => setTimeout(r, 30));
+  setup(); setView('soft'); resize();
+  // settle the cloth before the first frame
+  applyPose(0); updateColliders();
+  for (let i = 0; i < 240; i++) { stepSkirt(1 / 180, new THREE.Vector3(), 0); stepBraid(1 / 180, new THREE.Vector3()); }
+  msg.remove();
+  window.__body = { state, M, cam, advance(sec) { for (let i = 0; i < sec * 60; i++) update(1 / 60); renderer.render(scene, camera); } };
+  requestAnimationFrame(t => { last = t; frame(t); });
+} catch (e) {
+  msg.textContent = 'Этому браузеру не хватает WebGL, чтобы показать тело.';
+  console.error(e);
+}
+</script>

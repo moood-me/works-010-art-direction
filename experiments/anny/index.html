@@ -1,0 +1,197 @@
+<title>Anny в moood</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Golos+Text:wght@400;500&display=swap">
+<style>
+/* Layout: one studio frame, the choices under it in quiet rows */
+:root {
+  --bg: #0d0e11; --ink: #e9e3d7; --muted: #8e8a83; --line: #2a2c31; --on: #e9e3d7; --onInk: #15161a;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--sans); }
+main { max-width: 1180px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
+header { display: grid; gap: 8px; }
+h1 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(38px, 6.5vw, 66px); line-height: 1; margin: 0; }
+header p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 66ch; }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 10; max-width: 100%; border-radius: 3px; overflow: hidden; background: #cfc8bd; touch-action: none; cursor: grab; }
+.stage:active { cursor: grabbing; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.stage .msg { position: absolute; inset: 0; display: grid; place-items: center; color: #4a4640; font-family: var(--serif); font-style: italic; font-size: 24px; pointer-events: none; }
+.hint { position: absolute; left: 14px; bottom: 10px; font-size: 12px; color: rgba(40,36,32,0.55); pointer-events: none; }
+.controls { display: grid; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.row .label { color: var(--muted); font-size: 13px; width: 86px; flex: none; }
+button { font: inherit; font-size: 14px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 15px; cursor: pointer; }
+button:hover { border-color: #45474e; }
+button[aria-pressed="true"] { background: var(--on); color: var(--onInk); border-color: var(--on); }
+button:focus-visible { outline: 2px solid #c9a46a; outline-offset: 2px; }
+.notes { display: grid; gap: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 72ch; padding-top: 8px; border-top: 1px solid var(--line); }
+.notes p { margin: 0; }
+.notes b { color: var(--ink); font-weight: 500; }
+@media (max-width: 520px) { .row .label { width: 100%; } }
+[hidden] { display: none !important; }
+</style>
+
+<main>
+  <header>
+    <h1>Anny в moood</h1>
+    <p>Те самые тела, что лежат в движке: <code>engines/1/bodies/</code>, прочитаны так же, как их читает движок. Поза — та, в которой они хранятся, без движения. Вращайте мышью или пальцем, колесо приближает.</p>
+  </header>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="msg" id="msg">загружается…</div><div class="hint">тяните, чтобы повернуть</div></div>
+  <div class="controls">
+    <div class="row" role="group" aria-label="Кто"><span class="label">Кто</span>
+      <button data-who="woman" aria-pressed="true">Женщина</button><button data-who="man">Мужчина</button><button data-who="girl">Девочка</button><button data-who="boy">Подросток</button><button data-who="child">Ребёнок</button><button data-who="oldwoman">Старушка</button><button data-who="oldman">Старик</button>
+    </div>
+    <div class="row" role="group" aria-label="Вид"><span class="label">Вид</span>
+      <button data-v="soft" aria-pressed="true">Мягкий</button><button data-v="toon">Рисованный</button><button data-v="sil">Силуэт</button>
+      <span style="width:14px"></span>
+      <button id="clothes" aria-pressed="true">Одежда</button><button id="joints" aria-pressed="false">Суставы</button>
+    </div>
+  </div>
+  <section class="notes">
+    <p><b>Что это.</b> NAVER Anny: тело-основа из MakeHuman (CC0), скелет SOMA на 77 суставов — тот же, на котором Kimodo делает движение. Одежда и волосы — ассеты сообщества MakeHuman (CC0), как они лежат в moood.</p>
+    <p><b>Без одежды</b> видна анатомия: тело гладкое, как у манекена, без половых признаков.</p>
+  </section>
+</main>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const stage = document.getElementById('stage'), cv = document.getElementById('cv'), msg = document.getElementById('msg');
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
+
+// ———— reading the engine's files, as figure.js reads them ————
+const reader = (buf, at = 0) => (Kind, n) => { const a = new Kind(buf.slice(at, at + n * Kind.BYTES_PER_ELEMENT)); at += n * Kind.BYTES_PER_ELEMENT; return a; };
+const parseBase = buf => {
+  const take = reader(buf), [N, T] = take(Uint32Array, 2), tris = take(Uint16Array, T * 3), joint = take(Uint8Array, N * 4), weight = take(Uint8Array, N * 4);
+  const [F] = take(Uint32Array, 1), face = take(Uint16Array, F);
+  return { N, tris, joint, weight, face };
+};
+const parsePerson = (buf, bs) => { const take = reader(buf), m = v => v / 10000; return { at: Float32Array.from(take(Int16Array, bs.N * 3), m), plain: Float32Array.from(take(Int16Array, bs.face.length * 3), m), inverse: take(Float32Array, 77 * 12) }; };
+const parseGarment = buf => {
+  const take = reader(buf), [V, T, H, S] = take(Uint32Array, 4);
+  return { V, refs: take(Uint16Array, V * 3), bary: take(Float32Array, V * 3), offset: Float32Array.from(take(Int16Array, V * 3), v => v / 10000), measure: take(Uint16Array, 6), span: take(Float32Array, 3),
+    joint: take(Uint8Array, V * 4), weight: take(Uint8Array, V * 4), loose: take(Uint8Array, V), hangs: take(Uint16Array, V), far: take(Uint16Array, V), beneath: take(Uint16Array, V), tris: take(Uint16Array, T * 3) };
+};
+function fitted(g, pos) {
+  const s = [0, 1, 2].map(k => Math.abs(pos[g.measure[k * 2] * 3 + k] - pos[g.measure[k * 2 + 1] * 3 + k]) / g.span[k]);
+  const out = new Float32Array(g.V * 3);
+  for (let i = 0; i < g.V; i++) for (let c = 0; c < 3; c++) {
+    let v = g.offset[i * 3 + c] * s[c];
+    for (let k = 0; k < 3; k++) v += g.bary[i * 3 + k] * pos[g.refs[i * 3 + k] * 3 + c];
+    out[i * 3 + c] = v;
+  }
+  return out;
+}
+const cache = {};
+// the same bytes as engines/1/bodies/<name>.bin, carried as base64 in a module each
+const load = name => (cache[name] ??= import('./data/' + name.replace(/\.bin$/, '') + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer));
+
+// ———— who wears what ————
+const OUTFIT = {
+  woman: [['dress', '#4f6b7a'], ['flats', '#2b211d'], ['braid', '#3a271f']],
+  man: [['sweater', '#7a6a56'], ['pants', '#3d4048'], ['boots', '#2e231c'], ['short', '#3b2b22']],
+  girl: [['tshirt', '#c98f6a'], ['skirt', '#3e5560'], ['flats', '#2b211d'], ['bob', '#4a3226']],
+  boy: [['polo', '#3f5a4c'], ['shorts', '#5b5348'], ['boots', '#2e231c'], ['fringe', '#3b2a21']],
+  child: [['tshirt', '#d1b36a'], ['shorts', '#4b5a6e'], ['flats', '#3a2c25'], ['fringe', '#6b4a32']],
+  oldwoman: [['oversized', '#8a5048'], ['skirt', '#4b4a42'], ['flats', '#2b211d'], ['bun', '#c9c3bb']],
+  oldman: [['sweater', '#4a4c43'], ['pants', '#3c3a36'], ['boots', '#2e231c'], ['short', '#bdb7ae']],
+};
+const SKIN = { woman: '#e9bb9c', man: '#d8a585', girl: '#efc2a3', boy: '#ddb091', child: '#f0c5a5', oldwoman: '#e1b59c', oldman: '#cf9f84' };
+
+// ———— the studio ————
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#cfc8bd');
+const camera = new THREE.PerspectiveCamera(30, 16 / 10, 0.05, 50);
+scene.add(new THREE.HemisphereLight('#fff4e6', '#5b544c', 1.05));
+const key = new THREE.DirectionalLight('#fff0dc', 2.1); key.position.set(-2.2, 3.6, 2.6); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -1.5, right: 1.5, top: 2.2, bottom: -0.5, near: 0.5, far: 10 }); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+scene.add(key);
+const rim = new THREE.DirectionalLight('#cfe0ff', 1.3); rim.position.set(2.4, 2.2, -2.8); scene.add(rim);
+const fill = new THREE.DirectionalLight('#ffe6cc', 0.35); fill.position.set(2.5, 1.0, 2.0); scene.add(fill);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(30, 64), new THREE.MeshStandardMaterial({ color: '#c9c1b5', roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const gradient = new THREE.DataTexture(new Uint8Array([70, 70, 70, 255, 160, 160, 160, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat);
+gradient.minFilter = gradient.magFilter = THREE.NearestFilter; gradient.needsUpdate = true;
+const outlineMat = new THREE.MeshBasicMaterial({ color: '#2a211d', side: THREE.BackSide });
+outlineMat.onBeforeCompile = s => { s.vertexShader = s.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += normal * 0.0035;'); };
+const silMat = new THREE.MeshBasicMaterial({ color: '#1d1e22', side: THREE.DoubleSide });
+
+const group = new THREE.Group(); scene.add(group);
+let view = 'soft', clothesOn = true, jointsOn = false, who = 'woman';
+const made = [];   // {mesh, color, double}
+let jointDots;
+
+function materialFor(color, double) {
+  const side = double ? THREE.DoubleSide : THREE.FrontSide;
+  if (view === 'toon') return new THREE.MeshToonMaterial({ color, gradientMap: gradient, side });
+  if (view === 'sil') return silMat;
+  return new THREE.MeshStandardMaterial({ color, roughness: 0.7, side });
+}
+function addMesh(pos, tris, color, double, isBody) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(new THREE.BufferAttribute(tris, 1)); g.computeVertexNormals();
+  const m = new THREE.Mesh(g, materialFor(color, double)); m.castShadow = true; m.receiveShadow = true;
+  const o = new THREE.Mesh(g, outlineMat); o.visible = view === 'toon' && !double;
+  group.add(m, o); made.push({ mesh: m, outline: o, color, double, isBody });
+}
+function restyle() {
+  for (const it of made) { it.mesh.material = materialFor(it.color, it.double); it.outline.visible = view === 'toon' && !it.double; it.mesh.visible = it.isBody || clothesOn; if (!it.isBody) it.outline.visible = it.outline.visible && clothesOn; }
+  scene.background.set(view === 'sil' ? '#d8d2c8' : '#cfc8bd');
+}
+async function show(name) {
+  msg.textContent = 'загружается…'; msg.hidden = false;
+  const [bsBuf, pBuf, ...gBufs] = await Promise.all([load('base.bin'), load(name + '.bin'), ...OUTFIT[name].map(([g]) => load(g + '.bin'))]);
+  if (name !== who) return;
+  const bs = cache.__bs ??= parseBase(bsBuf), P = parsePerson(pBuf, bs);
+  for (const it of made) { group.remove(it.mesh, it.outline); it.mesh.geometry.dispose(); }
+  made.length = 0;
+  addMesh(P.at, bs.tris, SKIN[name], false, true);
+  OUTFIT[name].forEach(([g, col], i) => { const G = parseGarment(gBufs[i]); addMesh(fitted(G, P.at), G.tris, col, true, false); });
+  // the joints: each inverse bind's inverse (3×4, row by row)
+  if (jointDots) { group.remove(jointDots); }
+  jointDots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.009, 10, 8), new THREE.MeshBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true }), 77);
+  jointDots.renderOrder = 10;
+  const m = new THREE.Matrix4();
+  for (let j = 0; j < 77; j++) {
+    const a = P.inverse.subarray(j * 12, j * 12 + 12);
+    m.set(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], 0, 0, 0, 1).invert();
+    const p = new THREE.Vector3().setFromMatrixPosition(m);
+    jointDots.setMatrixAt(j, new THREE.Matrix4().makeTranslation(p.x, p.y, p.z));
+  }
+  jointDots.visible = jointsOn; group.add(jointDots);
+  let top = 0; for (let i = 1; i < P.at.length; i += 3) top = Math.max(top, P.at[i]);
+  cam.target.set(0, top * 0.53, 0); cam.dist = top * 2.75;
+  restyle(); msg.hidden = true;
+}
+
+// ———— camera ————
+const cam = { yaw: 0.45, pitch: 0.08, dist: 4.4, target: new THREE.Vector3(0, 0.9, 0) };
+function place() { const cp = Math.cos(cam.pitch); camera.position.set(cam.target.x + Math.sin(cam.yaw) * cp * cam.dist, cam.target.y + Math.sin(cam.pitch) * cam.dist, cam.target.z + Math.cos(cam.yaw) * cp * cam.dist); camera.lookAt(cam.target); }
+let drag = null;
+stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if (!drag) return; cam.yaw -= (e.clientX - drag.x) * 0.008; cam.pitch = clamp(cam.pitch + (e.clientY - drag.y) * 0.005, -0.3, 1.1); drag = { x: e.clientX, y: e.clientY }; });
+stage.addEventListener('pointerup', () => drag = null); stage.addEventListener('pointercancel', () => drag = null);
+stage.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam.dist * Math.exp(e.deltaY * 0.001), 0.6, 9); }, { passive: false });
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage);
+
+document.querySelectorAll('[data-who]').forEach(b => b.addEventListener('click', () => {
+  who = b.dataset.who; document.querySelectorAll('[data-who]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  show(who).catch(err => { msg.textContent = 'Не удалось прочитать тело.'; console.error(err); });
+}));
+document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => { view = b.dataset.v; document.querySelectorAll('[data-v]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); restyle(); }));
+const cb = document.getElementById('clothes'), jb = document.getElementById('joints');
+cb.addEventListener('click', () => { clothesOn = !clothesOn; cb.setAttribute('aria-pressed', String(clothesOn)); restyle(); });
+jb.addEventListener('click', () => { jointsOn = !jointsOn; jb.setAttribute('aria-pressed', String(jointsOn)); if (jointDots) jointDots.visible = jointsOn; });
+
+resize();
+show(who).then(() => { window.__anny = { cam }; }).catch(err => { msg.textContent = 'Не удалось прочитать тело.'; console.error(err); });
+(function loop() { place(); renderer.render(scene, camera); requestAnimationFrame(loop); })();
+</script>

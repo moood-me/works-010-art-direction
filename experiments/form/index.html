@@ -1,0 +1,951 @@
+<title>Конструкция тела</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Golos+Text:wght@400;500&display=swap">
+<style>
+/* Layout: a wide studio of figures in a row; under it the archetypes, then the shape axes as sliders */
+:root {
+  --bg: #0d0e11; --ink: #e9e3d7; --muted: #8e8a83; --line: #2a2c31; --on: #e9e3d7; --onInk: #15161a; --track: #3a3c42;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--sans); }
+main { max-width: 1280px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; }
+header { display: grid; gap: 8px; }
+h1 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(38px, 6.5vw, 66px); line-height: 1; margin: 0; }
+header p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 70ch; }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 8; max-width: 100%; border-radius: 3px; overflow: hidden; background: #cfc8bd; touch-action: none; cursor: grab; }
+.stage:active { cursor: grabbing; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.stage .msg { position: absolute; inset: 0; display: grid; place-items: center; color: #4a4640; font-family: var(--serif); font-style: italic; font-size: 24px; pointer-events: none; }
+.stage .tag { position: absolute; transform: translateX(-50%); font-size: 12px; letter-spacing: 0.03em; color: rgba(40,36,32,0.78); pointer-events: none; white-space: nowrap; }
+.controls { display: grid; gap: 10px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.row .label { color: var(--muted); font-size: 13px; width: 86px; flex: none; }
+button { font: inherit; font-size: 13.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; cursor: pointer; }
+button:hover { border-color: #45474e; }
+button[aria-pressed="true"] { background: var(--on); color: var(--onInk); border-color: var(--on); }
+button:focus-visible, input:focus-visible { outline: 2px solid #c9a46a; outline-offset: 2px; }
+.sliders { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px 26px; padding-top: 4px; }
+.sl { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); min-width: 0; }
+.sl .l { text-align: right; } .sl .r { text-align: left; }
+.sl input { width: 100%; min-width: 120px; accent-color: #e9e3d7; }
+.sl.one { grid-template-columns: 96px 1fr; } .sl.one .l { text-align: left; }
+.grp { display: grid; gap: 6px; } .gt { font-family: var(--serif); font-style: italic; font-size: 19px; color: var(--ink); }
+.notes { display: grid; gap: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 76ch; padding-top: 8px; border-top: 1px solid var(--line); }
+.notes p { margin: 0; }
+.notes b { color: var(--ink); font-weight: 500; }
+@media (max-width: 560px) { .row .label { width: 100%; } .stage { aspect-ratio: 4 / 3; } }
+[hidden] { display: none !important; }
+</style>
+
+<main>
+  <header>
+    <h1>Конструкция тела</h1>
+    <p>Тело Anny из moood, перестроенное только геометрией: свет и материал у всех одинаковые. Чем сильнее упрощение, тем больше тело становится знаком и тем больше у него свободы: круг, квадрат, треугольник, вертикаль или горизонталь, мягкость или твёрдость, где тяжесть. Вращайте мышью или пальцем, колесо приближает.</p>
+  </header>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="msg" id="msg">лепится…</div></div>
+  <div class="controls">
+    <div class="row" role="group" aria-label="Показ"><span class="label">Показ</span>
+      <button data-mode="arch" aria-pressed="true">Все характеры</button><button data-mode="genre">Все жанры</button><button data-mode="deg">Степени упрощения</button><button data-mode="age">Все возрасты</button><button data-mode="one">Один крупно</button>
+    </div>
+    <div id="mixers"></div>
+    <div class="row" role="group" aria-label="Тело"><span class="label">Тело</span>
+      <button data-who="woman">Женщина</button><button data-who="man">Мужчина</button><button data-who="girl">Девочка</button><button data-who="boy">Подросток</button><button data-who="child">Ребёнок</button><button data-who="oldwoman">Старушка</button><button data-who="oldman">Старик</button>
+    </div>
+    <div class="grp"><div class="gt">Упрощение и язык форм</div><div class="sliders"><label class="sl one"><span class="l">Упрощение</span><input type="range" id="k-deg" min="0" max="1" step="0.01"></label><label class="sl one"><span class="l">Круг</span><input type="range" id="k-circle" min="0" max="1" step="0.01"></label><label class="sl one"><span class="l">Квадрат</span><input type="range" id="k-square" min="0" max="1" step="0.01"></label><label class="sl one"><span class="l">Треугольник</span><input type="range" id="k-tri" min="0" max="1" step="0.01"></label></div></div><div class="grp"><div class="gt">Пропорции</div><div class="sliders"><label class="sl"><span class="l">голова меньше</span><input type="range" id="k-head" min="0.8" max="2.8" step="0.01"><span class="r">больше</span></label><label class="sl"><span class="l">ноги короче</span><input type="range" id="k-legs" min="0.55" max="1.4" step="0.01"><span class="r">длиннее</span></label><label class="sl"><span class="l">шея короче</span><input type="range" id="k-neck" min="0.35" max="2" step="0.01"><span class="r">длиннее</span></label><label class="sl"><span class="l">вытянуто вверх</span><input type="range" id="k-vert" min="-1" max="1" step="0.01"><span class="r">вширь</span></label></div></div><div class="grp"><div class="gt">Массы</div><div class="sliders"><label class="sl"><span class="l">торс уже</span><input type="range" id="k-torso" min="0.7" max="2" step="0.01"><span class="r">массивнее</span></label><label class="sl"><span class="l">бёдра шире плеч</span><input type="range" id="k-vshape" min="-1" max="1" step="0.01"><span class="r">плечи шире бёдер</span></label><label class="sl"><span class="l">талия тоньше</span><input type="range" id="k-waist" min="0.5" max="1.5" step="0.01"><span class="r">шире</span></label><label class="sl"><span class="l">тяжесть внизу</span><input type="range" id="k-weight" min="-1" max="1" step="0.01"><span class="r">вверху</span></label><label class="sl"><span class="l">живот втянут</span><input type="range" id="k-belly" min="-0.4" max="1" step="0.01"><span class="r">вперёд</span></label><label class="sl"><span class="l">грудь плоская</span><input type="range" id="k-bust" min="-0.4" max="1" step="0.01"><span class="r">больше</span></label><label class="sl"><span class="l">ягодицы плоские</span><input type="range" id="k-glutes" min="-0.4" max="1" step="0.01"><span class="r">больше</span></label></div></div><div class="grp"><div class="gt">Руки и ноги</div><div class="sliders"><label class="sl"><span class="l">тоньше</span><input type="range" id="k-limbs" min="0.5" max="1.7" step="0.01"><span class="r">толще</span></label><label class="sl"><span class="l">ровные</span><input type="range" id="k-taper" min="-0.5" max="1" step="0.01"><span class="r">сужаются к концам</span></label><label class="sl"><span class="l">кисти и стопы меньше</span><input type="range" id="k-ext" min="0.55" max="1.7" step="0.01"><span class="r">больше</span></label><label class="sl"><span class="l">суставы видны</span><input type="range" id="k-joints" min="0" max="1" step="0.01"><span class="r">спрятаны</span></label></div></div><div class="grp"><div class="gt">Голова</div><div class="sliders"><label class="sl"><span class="l">череп меньше</span><input type="range" id="k-cranium" min="-1" max="1" step="0.01"><span class="r">больше</span></label><label class="sl"><span class="l">подбородок острый</span><input type="range" id="k-jaw" min="-1" max="1" step="0.01"><span class="r">челюсть квадратная</span></label><label class="sl"><span class="l">щёки</span><input type="range" id="k-cheeks" min="-0.5" max="1" step="0.01"><span class="r">пухлые</span></label><label class="sl"><span class="l">лицо короче</span><input type="range" id="k-faceLen" min="-1" max="1" step="0.01"><span class="r">длиннее</span></label><label class="sl"><span class="l">нос меньше</span><input type="range" id="k-nose" min="-1" max="1.5" step="0.01"><span class="r">больше</span></label></div></div>
+<div class="grp"><div class="gt">Кисти</div><div class="sliders"><label class="sl"><span class="l">пальцы тонкие</span><input type="range" id="k-chubby" min="-0.4" max="1.2" step="0.01"><span class="r">пухлые</span></label><label class="sl"><span class="l">пальцы раздельно</span><input type="range" id="k-mitten" min="0" max="1" step="0.01"><span class="r">варежка</span></label></div></div>
+<div class="grp"><div class="gt">Силуэт одной формой</div><div class="row" id="envs" role="group" aria-label="Силуэт"></div><div class="sliders"><label class="sl one"><span class="l">Сила силуэта</span><input type="range" id="k-envAmt" min="0" max="1" step="0.01"></label><label class="sl"><span class="l">ноги несут себя</span><input type="range" id="k-mass" min="0" max="1" step="0.01"><span class="r">масса на ножках</span></label><label class="sl"><span class="l">руки и ноги как в жизни</span><input type="range" id="k-tube" min="0" max="1" step="0.01"><span class="r">шланги</span></label></div></div>
+<div class="grp"><div class="gt">Знак</div><div class="row" id="signs" role="group" aria-label="Знак"></div><div class="sliders"><label class="sl one"><span class="l">Знак</span><input type="range" id="k-sign" min="0" max="1" step="0.01"></label><label class="sl"><span class="l">голова на шее</span><input type="range" id="k-gap" min="0" max="1" step="0.01"><span class="r">отдельно</span></label></div></div>
+<div class="grp"><div class="gt">Жест и карикатура</div><div class="sliders"><label class="sl"><span class="l">как в жизни</span><input type="range" id="k-caric" min="-0.5" max="1.5" step="0.01"><span class="r">карикатура</span></label><label class="sl"><span class="l">сжато</span><input type="range" id="k-stretch" min="-1" max="1" step="0.01"><span class="r">вытянуто</span></label><label class="sl"><span class="l">линия прямая</span><input type="range" id="k-lineS" min="-1" max="1" step="0.01"><span class="r">S в профиль</span></label><label class="sl"><span class="l">C влево</span><input type="range" id="k-lineC" min="-1" max="1" step="0.01"><span class="r">C вправо</span></label></div></div><div class="grp"><div class="gt">Поверхность и характер</div><div class="sliders"><label class="sl"><span class="l">анатомия сглажена</span><input type="range" id="k-anatomy" min="-1" max="1" step="0.01"><span class="r">преувеличена</span></label><label class="sl"><span class="l">контуры изогнуты</span><input type="range" id="k-hard" min="-1" max="1" step="0.01"><span class="r">прямые</span></label><label class="sl"><span class="l">массы раздельно</span><input type="range" id="k-blend" min="0.4" max="3" step="0.01"><span class="r">сливаются</span></label><label class="sl"><span class="l">гордая осанка</span><input type="range" id="k-posture" min="-1" max="1" step="0.01"><span class="r">сутулая</span></label></div></div></div>
+  </div>
+  <section class="notes">
+    <p><b>Как это сделано.</b> Тело разбито по костям на торс, шею, голову, плечи, предплечья, кисти, бёдра, голени и стопы. У каждой части снят её настоящий профиль: сечения вдоль кости, спереди, сзади и с боков. Упрощение переводит реальную форму в спроектированную. Язык форм решает, какой она будет: круг — полные, скруглённые сечения; квадрат — прямые бока, мало сужений; треугольник — острые сечения, сильное сужение к концам, торс расширяется к плечам. Вертикаль удлиняет ноги и шею и сужает тело, горизонталь — наоборот. Твёрдость выпрямляет контуры в прямые грани, мягкость сглаживает их.</p>
+    <p><b>Скелет настоящий.</b> Длины костей меняются вместе с телом, суставы остаются суставами: поза собрана из тех же 77 суставов, на которых Kimodo делает движение.</p>
+  </section>
+</main>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const stage = document.getElementById('stage'), cv = document.getElementById('cv'), msg = document.getElementById('msg');
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x, lerp = (a, b, t) => a + (b - a) * t, sst = t => t * t * (3 - 2 * t);
+
+// ———— the engine's files, read as figure.js reads them ————
+const reader = (buf, at = 0) => (Kind, n) => { const a = new Kind(buf.slice(at, at + n * Kind.BYTES_PER_ELEMENT)); at += n * Kind.BYTES_PER_ELEMENT; return a; };
+const parseBase = buf => { const take = reader(buf), [N, T] = take(Uint32Array, 2); return { N, tris: take(Uint16Array, T * 3), joint: take(Uint8Array, N * 4), weight: take(Uint8Array, N * 4) }; };
+const cache = {};
+const bytes = name => (cache[name] ??= import('./data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer));
+const META = await (await fetch('data/meta.json')).json();
+const JN = META.joints, JI = Object.fromEntries(JN.map((n, i) => [n, i]));
+const PARENT = JN.map(n => {
+  if (n === 'Hips') return -1;
+  const chain = { Spine1: 'Hips', Spine2: 'Spine1', Chest: 'Spine2', Neck1: 'Chest', Neck2: 'Neck1', Head: 'Neck2', HeadEnd: 'Head', Jaw: 'Head', LeftEye: 'Head', RightEye: 'Head' };
+  if (chain[n]) return JI[chain[n]];
+  const s = n.startsWith('Left') ? 'Left' : 'Right', r = n.slice(s.length);
+  const limb = { Shoulder: 'Chest', Arm: s + 'Shoulder', ForeArm: s + 'Arm', Hand: s + 'ForeArm', Leg: 'Hips', Shin: s + 'Leg', Foot: s + 'Shin', ToeBase: s + 'Foot', ToeEnd: s + 'ToeBase' };
+  if (limb[r]) return JI[limb[r]];
+  const m = r.match(/^Hand(Thumb|Index|Middle|Ring|Pinky)(\d|End)$/);
+  if (m) { if (m[2] === '1') return JI[s + 'Hand']; const k = m[2] === 'End' ? (m[1] === 'Thumb' ? 3 : 4) : +m[2] - 1; return JI[s + 'Hand' + m[1] + k]; }
+  return JI.Hips;
+});
+
+// ———— the parts of the body, each along its bone ————
+const SEGS = [
+  { id: 'torso', kind: 'torso', a: 'Hips', b: 'Neck1', parent: null, members: ['Hips', 'Spine1', 'Spine2', 'Chest'] },
+  { id: 'neck', kind: 'neck', a: 'Neck1', b: 'Head', parent: 'torso', members: ['Neck1', 'Neck2'] },
+  { id: 'head', kind: 'head', a: 'Head', b: 'HeadEnd', parent: 'neck', members: ['Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'] },
+];
+for (const s of ['Left', 'Right']) {
+  SEGS.push({ id: 'clav' + s, kind: 'clav', a: s + 'Shoulder', b: s + 'Arm', parent: 'torso', members: [s + 'Shoulder'] });
+  SEGS.push({ id: 'arm' + s, kind: 'arm', a: s + 'Arm', b: s + 'ForeArm', parent: 'clav' + s, members: [s + 'Arm'] });
+  SEGS.push({ id: 'fore' + s, kind: 'fore', a: s + 'ForeArm', b: s + 'Hand', parent: 'arm' + s, members: [s + 'ForeArm'] });
+  SEGS.push({ id: 'hand' + s, kind: 'hand', a: s + 'Hand', b: s + 'HandMiddleEnd', parent: 'fore' + s, members: JN.filter(n => n.startsWith(s + 'Hand')) });
+  SEGS.push({ id: 'thigh' + s, kind: 'thigh', a: s + 'Leg', b: s + 'Shin', parent: 'torso', members: [s + 'Leg'] });
+  SEGS.push({ id: 'shin' + s, kind: 'shin', a: s + 'Shin', b: s + 'Foot', parent: 'thigh' + s, members: [s + 'Shin'] });
+  SEGS.push({ id: 'foot' + s, kind: 'foot', a: s + 'Foot', b: s + 'ToeEnd', parent: 'shin' + s, members: [s + 'Foot', s + 'ToeBase', s + 'ToeEnd'] });
+}
+const SI = Object.fromEntries(SEGS.map((s, i) => [s.id, i]));
+const JSEG = new Int32Array(77).fill(0); SEGS.forEach((s, i) => s.members.forEach(m => JSEG[JI[m]] = i));
+const TB = 24;   // sections along each bone
+
+// ———— reading a body: its joints, each point's part and place along it, each part's sections ————
+const V3 = THREE.Vector3;
+let BASE, NB;
+function neighbours(n, tris) { const sets = Array.from({ length: n }, () => new Set()); for (let t = 0; t < tris.length; t += 3) { const a = tris[t], b = tris[t + 1], c = tris[t + 2]; sets[a].add(b).add(c); sets[b].add(a).add(c); sets[c].add(a).add(b); } return sets.map(s => Int32Array.from(s)); }
+function taubin(pos, amount, iters, mu = -0.53) {
+  const p = Float32Array.from(pos), tmp = new Float32Array(p.length);
+  for (let it = 0; it < iters; it++) for (const lam of [0.5, mu]) {
+    for (let i = 0; i < NB.length; i++) {
+      const w = amount(i, it), ns = NB[i];
+      if (w <= 0 || ns.length === 0) { tmp[i * 3] = p[i * 3]; tmp[i * 3 + 1] = p[i * 3 + 1]; tmp[i * 3 + 2] = p[i * 3 + 2]; continue; }
+      let x = 0, y = 0, z = 0; for (const j of ns) { x += p[j * 3]; y += p[j * 3 + 1]; z += p[j * 3 + 2]; }
+      const k = lam * Math.min(w, 1) / ns.length;
+      tmp[i * 3] = p[i * 3] + (x - p[i * 3] * ns.length) * k; tmp[i * 3 + 1] = p[i * 3 + 1] + (y - p[i * 3 + 1] * ns.length) * k; tmp[i * 3 + 2] = p[i * 3 + 2] + (z - p[i * 3 + 2] * ns.length) * k;
+    }
+    p.set(tmp);
+  }
+  return p;
+}
+function frameOf(a, b, kind) {
+  const e = b.clone().sub(a), L = e.length(); e.normalize();
+  const ref = Math.abs(e.z) > 0.7 ? new V3(0, 1, 0) : new V3(0, 0, 1);
+  const w = ref.clone().addScaledVector(e, -ref.dot(e)).normalize(), u = new V3().crossVectors(e, w).normalize();
+  return { a, e, u, w, L };
+}
+async function analyse(who) {
+  return cache['a:' + who] ??= (async () => {
+    const [bb, pb] = await Promise.all([bytes('base'), bytes(who)]);
+    if (!BASE) { BASE = parseBase(bb); NB = neighbours(BASE.N, BASE.tris); }
+    const N = BASE.N, take = reader(pb), at = Float32Array.from(take(Int16Array, N * 3), v => v / 10000);
+    const F = (pb.byteLength - N * 6 - 77 * 48) / 6; take(Int16Array, F * 3); const inv = take(Float32Array, 77 * 12);
+    const J = [];
+    for (let j = 0; j < 77; j++) { const a = inv.subarray(j * 12, j * 12 + 12); J.push(new V3().setFromMatrixPosition(new THREE.Matrix4().set(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], 0, 0, 0, 1).invert())); }
+    const fr = SEGS.map(s => frameOf(J[JI[s.a]], J[JI[s.b]], s.kind));
+    // each point's two strongest parts (by its skin's weights, sharpened)
+    const seg = new Int32Array(N * 2), sw = new Float32Array(N * 2), loc = new Float32Array(N * 6);
+    const acc = new Float32Array(SEGS.length);
+    for (let i = 0; i < N; i++) {
+      acc.fill(0);
+      for (let k = 0; k < 4; k++) { const w = BASE.weight[i * 4 + k] / 255; if (w) acc[JSEG[BASE.joint[i * 4 + k]]] += w; }
+      let s1 = -1, s2 = -1;
+      for (let s = 0; s < acc.length; s++) { if (s1 < 0 || acc[s] > acc[s1]) { s2 = s1; s1 = s; } else if (s2 < 0 || acc[s] > acc[s2]) s2 = s; }
+      let w1 = acc[s1] ** 1.6, w2 = s2 >= 0 ? acc[s2] ** 1.6 : 0; const t = w1 + w2 || 1; w1 /= t; w2 /= t;
+      seg[i * 2] = s1; seg[i * 2 + 1] = s2 < 0 ? s1 : s2; sw[i * 2] = w1; sw[i * 2 + 1] = w2;
+    }
+    return { at, J, fr, seg, sw };
+  })();
+}
+// a point in a part's frame: along (t, as a share of the bone), across (x, z)
+function local(f, x, y, z) { const dx = x - f.a.x, dy = y - f.a.y, dz = z - f.a.z; const along = dx * f.e.x + dy * f.e.y + dz * f.e.z; const rx = dx - f.e.x * along, ry = dy - f.e.y * along, rz = dz - f.e.z * along; return [along / f.L, rx * f.u.x + ry * f.u.y + rz * f.u.z, rx * f.w.x + ry * f.w.y + rz * f.w.z]; }
+// the sections of each part: four radii (to its +x, +z, −x, −z) along it, from the points that are surely its own
+function profiles(A, pos) {
+  return SEGS.map((s, si) => {
+    const f = A.fr[si], ts = [], pts = [];
+    for (let i = 0; i < BASE.N; i++) { if (A.seg[i * 2] !== si || A.sw[i * 2] < 0.85) continue; const l = local(f, pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]); ts.push(l[0]); pts.push(l); }
+    if (ts.length < 40) for (let i = 0; i < BASE.N; i++) { if (A.seg[i * 2] !== si || A.sw[i * 2] < 0.4) continue; const l = local(f, pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]); ts.push(l[0]); pts.push(l); }
+    window.__segCount = window.__segCount || {}; window.__segCount[SEGS[si].id] = ts.length;
+    ts.sort((a, b) => a - b);
+    const lo = ts[Math.floor(ts.length * 0.03)], hi = ts[Math.floor(ts.length * 0.97)];
+    const bins = Array.from({ length: TB }, () => [[], [], [], [], [], [], [], []]);
+    for (const [t, x, z] of pts) {
+      const b = Math.round((t - lo) / (hi - lo) * (TB - 1)); if (b < 0 || b >= TB) continue;
+      const ph = Math.atan2(z, x), r = Math.hypot(x, z);
+      const q = ((Math.round(ph / (Math.PI / 4)) % 8) + 8) % 8;
+      bins[b][q].push(r);
+    }
+    const R = [0, 1, 2, 3, 4, 5, 6, 7].map(q => Float32Array.from(bins, b => { const v = b[q].sort((a, c) => a - c); return v.length ? v[Math.floor(v.length * 0.7)] : NaN; }));
+    for (const r of R) { for (let i = 0; i < TB; i++) if (Number.isNaN(r[i])) { let j = 1; while (j < TB) { if (i - j >= 0 && !Number.isNaN(r[i - j])) { r[i] = r[i - j]; break; } if (i + j < TB && !Number.isNaN(r[i + j])) { r[i] = r[i + j]; break; } j++; } if (Number.isNaN(r[i])) r[i] = 0.03; } }
+    return { lo, hi, R };
+  });
+}
+
+// ———— the construction of a body, read off Anny: masses and the sweeps between them ————
+// A mass: an uneven superellipsoid (a radius each way along each of its axes); a sweep: along a bone, four contours
+// (outward, forward, inward, back), five points each.
+function fitMass(pos, idx, c, ax) {
+  const R = [0, 0, 0, 0, 0, 0], v = [[], [], [], [], [], []];
+  for (const i of idx) {
+    const dx = pos[i * 3] - c.x, dy = pos[i * 3 + 1] - c.y, dz = pos[i * 3 + 2] - c.z;
+    for (let k = 0; k < 3; k++) { const l = dx * ax[k].x + dy * ax[k].y + dz * ax[k].z; v[k * 2 + (l >= 0 ? 0 : 1)].push(Math.abs(l)); }
+  }
+  for (let k = 0; k < 6; k++) { const s = v[k].sort((a, b) => a - b); R[k] = s.length ? s[Math.floor(s.length * 0.93)] : 0.02; }
+  return { c: c.clone(), ax, R };
+}
+function centerOf(pos, idx) { const c = new V3(); for (const i of idx) c.add(new V3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2])); return c.multiplyScalar(1 / Math.max(idx.length, 1)); }
+const WORLD = [new V3(1, 0, 0), new V3(0, 1, 0), new V3(0, 0, 1)];
+function construct(A) {
+  if (A.con) return A.con;
+  const pos = A.at, N = BASE.N, J = A.J;
+  const dom = new Int32Array(N); for (let i = 0; i < N; i++) { let b = 0; for (let k = 1; k < 4; k++) if (BASE.weight[i * 4 + k] > BASE.weight[i * 4 + b]) b = k; dom[i] = BASE.joint[i * 4 + b]; }
+  const pick = test => { const o = []; for (let i = 0; i < N; i++) if (test(JN[dom[i]], i)) o.push(i); return o; };
+  const P3 = i => new V3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
+  const masses = {}, chains = {};
+  // ——— the head, from Anny's landmarks: eyes, the bridge of the nose, its tip, the chin
+  const eL = J[JI.LeftEye], eR = J[JI.RightEye], eyeY = (eL.y + eR.y) / 2, eyeZ = (eL.z + eR.z) / 2, headX = J[JI.Head].x, headZ = J[JI.Head].z;
+  const H = pick(n => /^(Head|HeadEnd|Jaw|LeftEye|RightEye)$/.test(n));
+  const midline = H.filter(i => Math.abs(pos[i * 3] - headX) < 0.009);
+  const best = (list, score) => { let b = list[0], s = -Infinity; for (const i of list) { const v = score(i); if (v > s) { s = v; b = i; } } return P3(b); };
+  const tip = best(midline.filter(i => pos[i * 3 + 1] < eyeY - 0.012 && pos[i * 3 + 1] > eyeY - 0.07), i => pos[i * 3 + 2]);
+  const nasion = best(midline.filter(i => Math.abs(pos[i * 3 + 1] - (eyeY + 0.004)) < 0.008), i => pos[i * 3 + 2]);
+  const chin = best(midline.filter(i => pos[i * 3 + 2] > headZ + 0.01 && pos[i * 3 + 1] > eyeY - 0.17), i => -pos[i * 3 + 1] + 0.3 * pos[i * 3 + 2]);
+  const mouthY = lerp(tip.y, chin.y, 0.38);
+  const lat = i => Math.abs(pos[i * 3] - headX);
+  const cran = H.filter(i => pos[i * 3 + 1] > eyeY - 0.01 && lat(i) < 0.075);
+  const face = H.filter(i => pos[i * 3 + 1] < eyeY + 0.012 && pos[i * 3 + 1] > mouthY && pos[i * 3 + 2] > eyeZ - 0.03 && lat(i) < 0.062);
+  const jaw = H.filter(i => pos[i * 3 + 1] <= mouthY + 0.004 && pos[i * 3 + 2] > headZ - 0.025 && lat(i) < 0.068);
+  const fit = (idx, ax = WORLD, seg = SI.head) => ({ ...fitMass(pos, idx, centerOf(pos, idx), ax), seg });
+  masses.headAll = fit(cran.concat(face, jaw));
+  masses.cranium = fit(cran);
+  masses.face = fit(face);
+  masses.jaw = fit(jaw);
+  masses.chin = fit(H.filter(i => P3(i).distanceTo(chin) < 0.018));
+  masses.brow = fit(H.filter(i => pos[i * 3 + 1] > eyeY + 0.008 && pos[i * 3 + 1] < eyeY + 0.03 && pos[i * 3 + 2] > nasion.z - 0.022 && lat(i) < 0.055));
+  for (const [nm, sx] of [['L', 1], ['R', -1]]) {
+    masses['cheek' + nm] = fit(H.filter(i => { const dx = (pos[i * 3] - headX) * sx; return dx > 0.032 && dx < 0.066 && pos[i * 3 + 1] > tip.y - 0.008 && pos[i * 3 + 1] < eyeY - 0.012 && pos[i * 3 + 2] > eyeZ - 0.035; }));
+    masses['ear' + nm] = fit(H.filter(i => { const dx = (pos[i * 3] - headX) * sx; return dx > 0.066 && pos[i * 3 + 1] > eyeY - 0.055 && pos[i * 3 + 1] < eyeY + 0.018 && pos[i * 3 + 2] < eyeZ - 0.035; }));
+  }
+  const hh = masses.cranium.R[2] + (eyeY - chin.y);
+  chains.nose = { pts: [nasion.clone().add(new V3(0, -0.004, -0.004)), lerp3(nasion, tip, 0.55).add(new V3(0, 0, -0.002)), tip.clone().add(new V3(0, 0.002, -0.006))], r: [0.0062, 0.0068, 0.0092].map(v => v * hh / 0.23), seg: SI.head };
+  // ——— hands: the palm, and five fingers along their joints, each as thick as Anny's
+  const radiusAround = (j, k) => { const a = J[j], b = J[k], idx = pick(n => n === JN[j]), ab = b.clone().sub(a), l2 = ab.lengthSq(), d = []; for (const i of idx) { const p = P3(i).sub(a), t = clamp(p.dot(ab) / l2, 0, 1); d.push(p.sub(ab.clone().multiplyScalar(t)).length()); } d.sort((x, y) => x - y); return d.length ? d[Math.floor(d.length * 0.6)] : 0.008; };
+  for (const s of ['Left', 'Right']) {
+    const f = A.fr[SI['hand' + s]];
+    masses['palm' + s] = fit(pick(n => n === s + 'Hand' || /Hand(Index|Middle|Ring|Pinky)1$/.test(n) && n.startsWith(s) || n === s + 'HandThumb1'), [f.u, f.e, f.w], SI['hand' + s]);
+    for (const fg of ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']) {
+      const names = fg === 'Thumb' ? [2, 3, 'End'] : [2, 3, 4, 'End'];
+      const js = names.map(k => JI[s + 'Hand' + fg + k]);
+      const r = js.slice(0, -1).map((j, i) => radiusAround(j, js[i + 1]));
+      r.push(r[r.length - 1] * 0.88);
+      chains[fg.toLowerCase() + s] = { joints: js, r, seg: SI['hand' + s] };
+    }
+    // the foot: heel and arch, and the toes' block
+    const ff = A.fr[SI['foot' + s]];
+    masses['heel' + s] = fit(pick(n => n === s + 'Foot'), [ff.u, ff.e, ff.w], SI['foot' + s]);
+    masses['toes' + s] = fit(pick(n => n === s + 'ToeBase' || n === s + 'ToeEnd'), [ff.u, ff.e, ff.w], SI['foot' + s]);
+  }
+  // ——— the sweeps: torso, neck, arms, legs, feet — eight contours round each bone, seven measured points along it
+  const prof = A.prof ??= profiles(A, pos);
+  const at = (r, u) => { const x = clamp(u, 0, 1) * (TB - 1); let s2 = 0, w2 = 0; for (let j = 0; j < TB; j++) { const w = Math.exp(-(((j - x) / 1.1) ** 2)); s2 += r[j] * w; w2 += w; } return s2 / w2; };
+  const sweeps = {};
+  for (const id of ['torso', 'neck', 'clavLeft', 'clavRight', 'armLeft', 'foreLeft', 'thighLeft', 'shinLeft', 'footLeft', 'armRight', 'foreRight', 'thighRight', 'shinRight', 'footRight']) {
+    const p = prof[SI[id]], us = id === 'neck' ? [0, 0.25, 0.5, 0.75, 1] : [0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1];
+    sweeps[id] = { seg: SI[id], lo: p.lo, hi: p.hi, C: p.R.map(r => ({ keys: us.map(u => [u, at(r, u)]) })) };
+  }
+  return (A.con = { masses, chains, sweeps });
+}
+const lerp3 = (a, b, t) => a.clone().lerp(b, t);
+// a contour's radius at u (0..1 along it): through its keys, or a straight base with one designed swell
+function contourR(ct, u, straight) {
+  const K = ct.keys, n = K.length; let i = 0; while (i < n - 2 && u > K[i + 1][0]) i++;
+  const t = clamp((u - K[i][0]) / (K[i + 1][0] - K[i][0]), 0, 1);
+  const p0 = K[Math.max(0, i - 1)][1], p1 = K[i][1], p2 = K[i + 1][1], p3 = K[Math.min(n - 1, i + 2)][1];
+  const cat = 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
+  return Math.max(lerp(cat, lerp(p1, p2, t), straight), 0.003);
+}
+
+// ———— a style decides over the construction ————
+function styled(A, P, J2, placeIn) {
+  const { masses, chains, sweeps } = construct(A);
+  const c = P.circle, q = P.square, tri = P.tri, hd = Math.max(0, P.hard), soft = Math.max(0, -P.hard);
+  const nMass = clamp(2 + 1.8 * q + 0.4 * hd - 0.15 * c, 1.8, 4.5), nLimb = clamp(2 + 1.4 * q + 0.3 * hd - 0.5 * tri, 1.6, 4);
+  const fade = 1 - 0.45 * P.deg;   // the small forms of the face recede as the body simplifies
+  const M = {};
+  const HEAD = new Set(['headAll', 'cranium', 'face', 'jaw', 'chin', 'brow', 'cheekL', 'cheekR', 'earL', 'earR']);
+  for (const [id, m] of Object.entries(masses)) {
+    const R = m.R.slice(); let n = nMass;
+    if (HEAD.has(id)) {
+      for (let k = 0; k < 6; k++) R[k] *= P.head;
+      n = clamp(2 + 0.6 * q, 2, 2.8);
+      if (id === 'cranium' || id === 'headAll') { R[0] *= 1 + 0.22 * P.cranium; R[1] *= 1 + 0.22 * P.cranium; R[2] *= 1 + 0.3 * P.cranium; R[5] *= 1 + 0.15 * P.cranium; }
+      if (id === 'headAll') { R[3] *= 0.9 * (1 + 0.2 * P.faceLen); R[4] *= 0.95; }
+      if (id === 'face' || id === 'jaw') { R[2] *= 1 + 0.25 * P.faceLen; R[3] *= 1 + 0.25 * P.faceLen; }
+      if (id === 'jaw') { R[0] *= 1 + 0.35 * P.jaw; R[1] *= 1 + 0.35 * P.jaw; n = clamp(2 + 1.3 * Math.max(0, P.jaw) + 0.6 * q, 1.8, 3.6); }
+      if (id === 'chin') { for (let k = 0; k < 6; k++) R[k] *= (1 - 0.25 * Math.min(0, P.jaw)) * fade; }
+      if (id.startsWith('cheek')) for (let k = 0; k < 6; k++) R[k] *= (0.9 + 0.5 * P.cheeks);
+      if (id === 'brow' || id.startsWith('ear')) for (let k = 0; k < 6; k++) R[k] *= fade;
+    }
+    if (/^(palm|heel|toes)/.test(id)) { for (let k = 0; k < 6; k++) R[k] *= P.ext; n = clamp(2 + 0.8 * q, 1.8, 3); if (id.startsWith('toes')) { R[3] *= 1 - 0.3 * tri; R[4] *= 1 + 0.25 * P.chubby; } }
+    M[id] = { c: placeIn(m.seg, m.c), ax: m.ax, R, n };
+  }
+  const CH = {};
+  for (const [id, ch] of Object.entries(chains)) {
+    const pts = ch.pts ? ch.pts.map(p => placeIn(ch.seg, p)) : ch.joints.map(j => J2[j].clone());
+    const k = id === 'nose' ? P.head * (1 + 0.35 * P.nose) * lerp(1, 0.75, P.deg) : P.ext * (1 + 0.45 * P.chubby);
+    CH[id] = { pts, r: ch.r.map(v => v * k) };
+  }
+  const S = {};
+  const armR0 = sweeps.armLeft.C.reduce((a, c) => a + c.keys[0][1], 0) / 8;
+  const shoulderRoom = Math.abs(J2[JI.LeftArm].x - J2[JI.RightArm].x) / 2 - 0.7 * armR0 * proportions(P, 'arm').wid;
+  const shapeAmt = clamp(0.9 * q + 0.55 * c + 0.6 * tri + 0.45 * hd, 0, 1);
+  for (const [id, s] of Object.entries(sweeps)) {
+    const seg = SEGS[s.seg], a = J2[JI[seg.a]], b = J2[JI[seg.b]];
+    const kind = id.replace(/(Left|Right)$/, ''), pr = proportions(P, kind);
+    let C;
+    if (kind === 'torso') {
+      C = s.C.map((ct, k8) => ({ keys: ct.keys.map(([u, r]) => {
+        const t = lerp(s.lo, s.hi, u), latW = [1, 0.5, 0, 0.5, 1, 0.5, 0, 0.5][k8];
+        const sc = torsoScale(P, t) * (1 + 0.14 * P.vert);
+        let v = r * P.torso * lerp(Math.sqrt(torsoScale(P, t)), sc, latW);
+        if (k8 === 2 || k8 === 1 || k8 === 3) v *= 1 + (k8 === 2 ? 1 : 0.5) * (P.belly * 0.5 * Math.exp(-(((t - 0.3) / 0.16) ** 2)) + P.bust * 0.35 * Math.exp(-(((t - 0.66) / 0.1) ** 2)));
+        if (k8 === 6 || k8 === 5 || k8 === 7) v *= 1 + (k8 === 6 ? 1 : 0.5) * P.glutes * 0.4 * Math.exp(-(((t + 0.02) / 0.12) ** 2));
+        v *= 1 + 0.08 * c * Math.sin(Math.PI * u);
+        if (latW === 1 && u >= 0.5) v = Math.min(v, Math.max(r * 0.9, shoulderRoom * lerp(1.25, 1, sst((u - 0.5) / 0.3))));
+        return [u, lerp(v, r * Math.sqrt(P.torso), sst(clamp((t - 0.8) / 0.22, 0, 1)))];
+      }) }));
+    } else {
+      // a limb's contour: the straight line from its first point to its last, and what swells off that line
+      const chainPos = { arm: [0, 0.5], fore: [0.5, 1], thigh: [0, 0.5], shin: [0.5, 1] }[kind];
+      const tf = L => lerp(1 + 0.3 * tri + 0.22 * P.taper, 1 - 0.38 * tri - 0.35 * P.taper, L);
+      const amp = clamp(1 + 0.9 * P.anatomy + 0.3 * c, 0, 2.6) * (1 - P.tube);
+      const mean8 = s.C.reduce((acc, ct) => acc + ct.keys.reduce((x, k) => x + k[1], 0) / ct.keys.length, 0) / 8;
+      C = s.C.map((ct, k8) => {
+        const K = ct.keys, f0 = K[0][1], f1 = K[K.length - 1][1];
+        let n0 = f0 * pr.wid, n1 = f1 * pr.wid;
+        if (chainPos) { n0 *= tf(chainPos[0]); n1 *= tf(chainPos[1]); }
+        if (kind === 'thigh' || kind === 'shin') { n0 *= 1 - 0.45 * P.mass; n1 *= 1 - 0.45 * P.mass; }
+        if (kind === 'foot') { n1 *= (1 - 0.3 * tri) * (1 + 0.25 * P.chubby); }
+        const mm = mean8 * pr.wid, flat = clamp(0.6 * q + P.tube, 0, 1); n0 = lerp(n0, mm, flat); n1 = lerp(n1, mm, flat);
+        // the plain sides (the shin's front, the forearm's back) go straight when hard
+        const plain = (kind === 'shin' && k8 === 2) || (kind === 'fore' && k8 === 6) ? 1 - 0.7 * hd : 1;
+        return { keys: K.map(([u, r]) => {
+          const swell = (r - lerp(f0, f1, u)) * pr.wid;
+          return [u, Math.max(0.003, lerp(n0, n1, u) + swell * amp * plain * (1 + 0.12 * c * Math.sin(Math.PI * u)) + (chainPos ? 0 : 0))];
+        }) };
+      });
+    }
+    S[id] = { a: a.clone(), b: b.clone(), lo: s.lo, hi: s.hi, C, n: kind === 'neck' ? clamp(nLimb, 1.8, 2.6) : kind === 'torso' ? clamp(nMass, 1.8, 3.6) : nLimb, straight: hd, shape: kind === 'foot' ? shapeAmt * 0.5 : shapeAmt };
+  }
+  // melting adds volume where forms overlap: in a neutral body barely, as a style asks for it, more
+  const k = 0.016 * P.blend * (1 + 0.6 * soft + 0.3 * c - 0.4 * hd);
+  const mit = clamp(P.mitten, 0, 1), hide = Math.max(0, P.joints - 0.3) / 0.7;
+  return { M, CH, S, k: { neck: k * 0.8, head: 0.07, arm: k, leg: k * 1.2 * (1 + 2.5 * P.mass), joint: 0.006 + 0.045 * Math.max(hide, P.tube), hand: 0.008 + 0.02 * Math.max(hide, P.tube), finger: 0.004 + 0.035 * mit } };
+}
+
+// ———— the designed surface as one distance: the masses, sweeps and chains melted together ————
+function surface(D) {
+  const mass = m => {
+    const cx = m.c.x, cy = m.c.y, cz = m.c.z, a = m.ax, R = m.R, n = m.n, inv = 1 / n;
+    return (x, y, z) => {
+      const dx = x - cx, dy = y - cy, dz = z - cz;
+      const lx = dx * a[0].x + dy * a[0].y + dz * a[0].z, ly = dx * a[1].x + dy * a[1].y + dz * a[1].z, lz = dx * a[2].x + dy * a[2].y + dz * a[2].z;
+      const qx = Math.abs(lx) / (lx >= 0 ? R[0] : R[1]), qy = Math.abs(ly) / (ly >= 0 ? R[2] : R[3]), qz = Math.abs(lz) / (lz >= 0 ? R[4] : R[5]);
+      const f = Math.pow(qx ** n + qy ** n + qz ** n, inv), L = Math.sqrt(lx * lx + ly * ly + lz * lz);
+      return f < 1e-6 ? -0.05 : L - L / f;
+    };
+  };
+  const chain = ch => {
+    const segs = []; for (let i = 0; i < ch.pts.length - 1; i++) segs.push(cone([ch.pts[i].x, ch.pts[i].y, ch.pts[i].z], [ch.pts[i + 1].x, ch.pts[i + 1].y, ch.pts[i + 1].z], ch.r[i], ch.r[i + 1]));
+    return (x, y, z) => { let d = segs[0](x, y, z); for (let i = 1; i < segs.length; i++) d = smin(d, segs[i](x, y, z), 0.004); return d; };
+  };
+  const sweep = s => {
+    const f = frameOf(s.a, s.b), ax = s.a.x, ay = s.a.y, az = s.a.z, e = f.e, u = f.u, w = f.w, L = f.L, n = s.n, inv = 1 / n, C = s.C, sh = s.shape, st = s.straight;
+    const R8 = new Float64Array(8);
+    return (x, y, z) => {
+      const dx = x - ax, dy = y - ay, dz = z - az;
+      const tt = (dx * e.x + dy * e.y + dz * e.z) / L, t = clamp(tt, s.lo, s.hi);
+      const vx = dx - e.x * t * L, vy = dy - e.y * t * L, vz = dz - e.z * t * L;
+      const ru = vx * u.x + vy * u.y + vz * u.z, rw = vx * w.x + vy * w.y + vz * w.z, rho = Math.sqrt(ru * ru + rw * rw) || 1e-6;
+      const uu = clamp((t - s.lo) / (s.hi - s.lo), 0, 1), ph = Math.atan2(rw, ru);
+      const xk = ((ph / (Math.PI / 4)) % 8 + 8) % 8, k0 = Math.floor(xk), tk = xk - k0;
+      const g = j => contourR(C[(k0 + j + 8) % 8], uu, st);
+      const p0 = g(-1), p1 = g(0), p2 = g(1), p3 = g(2);
+      let r = 0.5 * ((2 * p1) + (-p0 + p2) * tk + (2 * p0 - 5 * p1 + 4 * p2 - p3) * tk * tk + (-p0 + 3 * p1 - 3 * p2 + p3) * tk * tk * tk);
+      if (sh > 0.001) {
+        const A = contourR(C[ru >= 0 ? 0 : 4], uu, st), B = contourR(C[rw >= 0 ? 2 : 6], uu, st);
+        const cu = Math.abs(ru) / rho, su = Math.abs(rw) / rho;
+        r = lerp(r, 1 / Math.pow((cu / A) ** n + (su / B) ** n, inv), sh);
+      }
+      return Math.sqrt(vx * vx + vy * vy + vz * vz) - Math.max(r, 0.002);
+    };
+  };
+  const m = Object.fromEntries(Object.entries(D.M).map(([k, v]) => [k, mass(v)]));
+  const s = Object.fromEntries(Object.entries(D.S).map(([k, v]) => [k, sweep(v)]));
+  const ch = Object.fromEntries(Object.entries(D.CH).map(([k, v]) => [k, chain(v)]));
+  const K = D.k;
+  // far from a hand or the head, their small parts are not asked (a bound stands in)
+  const near = (c, r) => (x, y, z) => Math.hypot(x - c.x, y - c.y, z - c.z) - r;
+  const handB = { Left: near(D.M.palmLeft.c, 0.2 * Math.max(1, D.M.palmLeft.R[2] / 0.05)), Right: near(D.M.palmRight.c, 0.2 * Math.max(1, D.M.palmRight.R[2] / 0.05)) };
+  const headB = near(D.M.headAll.c, 0.32 * Math.max(1, D.M.headAll.R[2] / 0.1));
+  const hand = (x, y, z, sd) => {
+    const b = handB[sd](x, y, z); if (b > 0.02) return b;
+    let fingers = ch['index' + sd](x, y, z);
+    for (const f of ['middle', 'ring', 'pinky']) fingers = smin(fingers, ch[f + sd](x, y, z), K.finger);
+    return smin(smin(m['palm' + sd](x, y, z), fingers, 0.012), ch['thumb' + sd](x, y, z), 0.01);
+  };
+  const foot = (x, y, z, sd) => s['foot' + sd](x, y, z);
+  const arm = (x, y, z, sd) => smin(smin(s['arm' + sd](x, y, z), s['fore' + sd](x, y, z), K.joint), hand(x, y, z, sd), K.hand);
+  const leg = (x, y, z, sd) => smin(smin(s['thigh' + sd](x, y, z), s['shin' + sd](x, y, z), K.joint), foot(x, y, z, sd), K.hand * 1.4);
+  const head = (x, y, z) => {
+    const b = headB(x, y, z); if (b > 0.02) return b;
+    let h = smin(m.headAll(x, y, z), m.cranium(x, y, z), 0.08);
+    h = smin(h, m.face(x, y, z), 0.05);
+    h = smin(h, m.jaw(x, y, z), 0.045);
+    h = smin(h, m.chin(x, y, z), 0.02);
+    h = smin(h, Math.min(m.cheekL(x, y, z), m.cheekR(x, y, z)), 0.04);
+    h = smin(h, m.brow(x, y, z), 0.025);
+    h = smin(h, ch.nose(x, y, z), 0.012);
+    return smin(h, Math.min(m.earL(x, y, z), m.earR(x, y, z)), 0.01);
+  };
+  const trunk = (x, y, z) => smin(smin(smin(s.torso(x, y, z), Math.min(s.clavLeft(x, y, z), s.clavRight(x, y, z)), K.neck * 1.4 + 0.01), s.neck(x, y, z), K.neck), head(x, y, z), 0.012);
+  const all = (x, y, z) => { const t = trunk(x, y, z); return Math.min(smin(t, arm(x, y, z, 'Left'), K.arm), smin(t, arm(x, y, z, 'Right'), K.arm), smin(t, leg(x, y, z, 'Left'), K.leg), smin(t, leg(x, y, z, 'Right'), K.leg)); };
+  all.part = {
+    armLeft: (x, y, z) => smin(trunk(x, y, z), arm(x, y, z, 'Left'), K.arm), armRight: (x, y, z) => smin(trunk(x, y, z), arm(x, y, z, 'Right'), K.arm),
+    legLeft: (x, y, z) => smin(trunk(x, y, z), leg(x, y, z, 'Left'), K.leg), legRight: (x, y, z) => smin(trunk(x, y, z), leg(x, y, z, 'Right'), K.leg),
+  };
+  return all;
+}
+function smin(a, b, k) { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; }
+
+// ———— the style's lengths and widths per part ————
+function proportions(P, kind) {
+  const v = -P.vert;
+  const len = { clav: torsoScale(P, 0.9), torso: 1 + 0.05 * v, neck: 1 + 0.4 * v, head: 1, arm: 1 + 0.06 * v, fore: 1 + 0.06 * v, hand: 1, thigh: 1 + 0.15 * v, shin: 1 + 0.15 * v, foot: 1 }[kind];
+  const wid = 1 - 0.14 * v, top = P.weight;
+  const wk = { clav: Math.sqrt(P.torso) * (1 + 0.13 * top), torso: 1, neck: 1 - 0.1 * v, head: 1, arm: 1 + 0.13 * top, fore: 1 + 0.1 * top, hand: 1, thigh: 1 - 0.16 * top, shin: 1 - 0.13 * top, foot: 1 }[kind];
+  let L = len, Wd = wid * wk;
+  if (kind === 'head') { L = P.head; Wd = P.head; }
+  if (kind === 'neck') { L *= P.neck; Wd *= Math.sqrt(P.limbs); }
+  if (kind === 'thigh' || kind === 'shin') L *= P.legs * (1 - 0.12 * P.mass);
+  if (['arm', 'fore', 'thigh', 'shin'].includes(kind)) Wd *= P.limbs;
+  if (kind === 'hand' || kind === 'foot') { L *= P.ext; Wd *= P.ext; }
+  if (kind === 'torso') Wd *= P.torso;
+  return { len: L, wid: Wd };
+}
+// the torso's width along it, from the style's pelvis, waist and ribcage
+const ENVS = ['', 'pear', 'bean', 'triangle', 'inverted', 'rectangle', 'hourglass', 'egg'];
+const ENVNAME = { pear: 'груша', bean: 'фасолина', triangle: 'треугольник', inverted: 'перевёрнутый треугольник', rectangle: 'прямоугольник', hourglass: 'песочные часы', egg: 'яйцо' };
+function envelope(type, t) {
+  const u = clamp(t / 0.85, 0, 1);
+  switch (type) {
+    case 'pear': return lerp(1.38, 0.72, sst(u));
+    case 'bean': return 0.78 + 0.5 * Math.sin(Math.PI * clamp((t + 0.1) / 1.0, 0, 1));
+    case 'triangle': return lerp(1.55, 0.55, u);
+    case 'inverted': return lerp(0.68, 1.45, u);
+    case 'rectangle': return 1;
+    case 'hourglass': return 1.22 - 0.52 * Math.exp(-(((t - 0.38) / 0.16) ** 2));
+    case 'egg': return 0.8 + 0.42 * Math.sin(Math.PI * clamp((t + 0.15) / 1.1, 0, 1));
+  }
+  return 1;
+}
+function torsoScale(P, t) {
+  const b = torsoScale0(P, t);
+  return P.envType && P.envAmt > 0 ? lerp(b, envelope(P.envType, t), P.envAmt) : b;
+}
+function torsoScale0(P, t) {
+  const pel = (1 - 0.28 * P.tri) * (1 - 0.25 * P.weight) * (1 - 0.25 * P.vshape), rib = (1 + 0.32 * P.tri) * (1 + 0.25 * P.weight) * (1 + 0.3 * P.vshape), wst = P.waist;
+  const lat = t < 0.38 ? lerp(pel, wst, sst(clamp(t / 0.38, 0, 1))) : lerp(wst, rib, sst(clamp((t - 0.38) / 0.37, 0, 1)));
+  return lat;
+}
+
+// ———— build a figure: Anny moved onto the new bones, then drawn onto the designed surface as far as the simplifying goes ————
+async function averageBody(height) {
+  const all = await Promise.all(['woman', 'man', 'girl', 'boy', 'child', 'oldwoman', 'oldman'].map(analyse));
+  const N = BASE.N, avg = new Float32Array(N * 3);
+  for (const B of all) { let top = 0; for (let i = 1; i < N * 3; i += 3) top = Math.max(top, B.at[i]); const k = height / top; for (let i = 0; i < N * 3; i++) avg[i] += B.at[i] * k / all.length; }
+  return avg;
+}
+const FEMALE = new Set(['woman', 'girl', 'oldwoman']);
+async function build(who, P) {
+  // the character's traits by the body's sex: no bust on a man, a softer waist
+  if (!FEMALE.has(who)) P = { ...P, bust: Math.min(0, P.bust), glutes: P.glutes * 0.4, waist: lerp(1, P.waist, P.waist < 1 ? 0.45 : 1) };
+  else P = { ...P, vshape: P.vshape > 0 ? P.vshape * 0.35 : P.vshape };
+  const A0 = await analyse(who), N = BASE.N;
+  let A = A0;
+  if (Math.abs(P.caric) > 0.01) {
+    let top = 0; for (let i = 1; i < N * 3; i += 3) top = Math.max(top, A0.at[i]);
+    const avg = await averageBody(top), at = Float32Array.from(A0.at, (v, i) => v + P.caric * (v - avg[i]));
+    A = { ...A0, at, prof: undefined, con: undefined, handMask: A0.handMask };
+  }
+  const PR = SEGS.map(s => proportions(P, s.kind));
+  const newA = [];
+  const UP = new V3(0, 1, 0);
+  const placeIn = (s, p) => { const f = A.fr[s], [t, x, z] = local(f, p.x, p.y, p.z), pr = PR[s], tw = SEGS[s].kind === 'torso' ? torsoScale(P, t) : 1; const along = SEGS[s].kind === 'neck' ? newA[s].clone().addScaledVector(f.e, t * f.L).addScaledVector(UP, t * f.L * (pr.len - 1)) : newA[s].clone().addScaledVector(f.e, t * f.L * pr.len); return along.addScaledVector(f.u, x * pr.wid * tw).addScaledVector(f.w, z * pr.wid * (SEGS[s].kind === 'torso' ? Math.sqrt(tw) : 1)); };
+  SEGS.forEach((s, i) => { newA[i] = s.parent ? placeIn(SI[s.parent], A.J[JI[s.a]]) : A.J[JI[s.a]].clone(); });
+  const J2 = A.J.map((p, j) => { const s = JSEG[j]; return JN[j] === SEGS[s].a ? newA[s].clone() : placeIn(s, p); });
+  // the real body on the new bones
+  const real = new Float32Array(N * 3), acc = new V3(), tmp = new V3();
+  for (let i = 0; i < N; i++) {
+    acc.set(0, 0, 0);
+    for (let h = 0; h < 2; h++) { const s = A.seg[i * 2 + h], w = A.sw[i * 2 + h]; if (w < 1e-4) continue; tmp.copy(placeIn(s, new V3(A.at[i * 3], A.at[i * 3 + 1], A.at[i * 3 + 2]))); acc.addScaledVector(tmp, w); }
+    acc.toArray(real, i * 3);
+  }
+  if (P.deg <= 0.001 && P.sign <= 0.01 && Math.abs(P.anatomy) < 0.01) { gesture(real, J2, P); return pose(real, J2, P.posture); }
+  // the designed surface, and each point carried onto it — then let the points spread evenly over it, and onto it again
+  const hand = A.handMask ??= Float32Array.from({ length: N }, (_, i) => { let w = 0; for (let k = 0; k < 4; k++) if (/Hand|Foot|Toe|Head|Jaw|Eye/.test(JN[BASE.joint[i * 4 + k]])) w += BASE.weight[i * 4 + k] / 255; return w; });
+  // the style as a deformation of the real body: two constructions on the same bones, the neutral and the styled;
+  // each point moves by the difference between where the two carry it, so the construction's own errors cancel
+  const headW0 = A.headW ??= Float32Array.from({ length: N }, (_, i) => { let w = 0; for (let k = 0; k < 4; k++) if (/^(Head|HeadEnd|Jaw|LeftEye|RightEye)$/.test(JN[BASE.joint[i * 4 + k]])) w += BASE.weight[i * 4 + k] / 255; return w; });
+  const owner = A.owner ??= Array.from({ length: N }, (_, i) => { const k = SEGS[A.seg[i * 2]].id; return /^(arm|fore|hand)Left/.test(k) ? 'armLeft' : /^(arm|fore|hand)Right/.test(k) ? 'armRight' : /^(thigh|shin|foot)Left/.test(k) ? 'legLeft' : /^(thigh|shin|foot)Right/.test(k) ? 'legRight' : ''; });
+  const D = styled(A, P, J2, placeIn), F = surface(D); F.owner = owner;
+  const Dn = styled(A, neutralShape(P), J2, placeIn), Fn = surface(Dn); Fn.owner = owner;
+  // simplifying: the real body loses its small forms (a low-pass of its own surface), never swapped for the construction
+  // (hands and feet lose theirs fastest: toes and knuckles go before the knee does)
+  window.__real = real;
+  const fingers = A.fingers ??= Float32Array.from({ length: N }, (_, i) => { let w = 0; for (let k = 0; k < 4; k++) if (/Hand(Thumb|Index|Middle|Ring|Pinky)/.test(JN[BASE.joint[i * 4 + k]])) w += BASE.weight[i * 4 + k] / 255; return w; });
+  const simple = P.deg > 0.01 ? evenSmooth(real, i => (window.__R ?? 0.06) * P.deg * (1 - 0.75 * fingers[i]) * (1 - headW0[i])) : real;
+  if (window.__stage === 'simple') { const o = pose(Float32Array.from(window.__simp ? window.__simp(real) : simple), J2, P.posture); return o; }
+  const ps = settle(Float32Array.from(simple), F, hand), pn = settle(Float32Array.from(simple), Fn, hand);
+  let delta = Float32Array.from(ps, (v, i) => v - pn[i]);
+  delta = smoothField(delta, 6);
+  const realSm = taubin(real, () => 1, 8), keep = (1 - P.deg) ** 2;
+  const headW = A.headW ??= Float32Array.from({ length: N }, (_, i) => { let w = 0; for (let k = 0; k < 4; k++) if (/^(Head|HeadEnd|Jaw|LeftEye|RightEye)$/.test(JN[BASE.joint[i * 4 + k]])) w += BASE.weight[i * 4 + k] / 255; return w; });
+  // the head: Anny's own, shaped by smooth warps — never rebuilt from pieces
+  const styledHead = headStyle(real, A, P, placeIn, headW);
+  const blendW = A.headBlend ??= (() => { let w = Float32Array.from(headW, v => sst(clamp(v * 1.4, 0, 1))); const t = new Float32Array(w.length); for (let it = 0; it < 14; it++) { for (let i = 0; i < w.length; i++) { const ns = NB[i]; if (!ns.length) { t[i] = w[i]; continue; } let sum = 0; for (const j of ns) sum += w[j]; t[i] = 0.5 * w[i] + 0.5 * sum / ns.length; } w.set(t); } return w; })();
+  // the more simplified, the more the body is the designed form itself: Anny's own mid-size forms (a sagging breast,
+  // the folds of a belly) give way to the designed masses; the fingers stay hers
+  const own = 0;
+  let out = Float32Array.from(simple, (v, i) => { const j = (i / 3) | 0, w = blendW[j]; return lerp(lerp(v + delta[i] + (real[i] - realSm[i]) * keep, ps[i], own * (1 - fingers[j])), styledHead[i], w); });
+  if (window.__stage === 'pre') return pose(Float32Array.from(out), J2, P.posture);
+  out = repair(out, F, real);
+  if (window.__stage === 'rep') return pose(Float32Array.from(out), J2, P.posture);
+  // the sign: parts become plain figures — a ball, a triangle, sticks
+  let dress = null;
+  if (P.sign > 0.01) { const sg = settle(Float32Array.from(out), signSurface(D, J2, P), hand); out = Float32Array.from(out, (v, i) => lerp(v, sg[i], P.sign)); dress = signSurface.dress && { ...signSurface.dress, k: P.sign }; }
+  const relaxed = out;
+  if (Math.abs(P.anatomy) > 0.01) {
+    // the small forms the body has now: drawn out, or smoothed further — never Anny's own, already gone, pressed back in
+    const sm = taubin(relaxed, () => 1, 6);
+    for (let i = 0; i < N * 3; i++) relaxed[i] += P.anatomy * (relaxed[i] - sm[i]) * (P.anatomy > 0 ? 1.6 : 1);
+  }
+  if (window.__stage === 'anat') return pose(Float32Array.from(relaxed), J2, P.posture);
+  gesture(relaxed, J2, P);
+  const posed = pose(relaxed, J2, P.posture);
+  posed.dress = dress;
+  return posed;
+}
+
+function neutralShape(P) {
+  return { ...P, circle: 0, square: 0, tri: 0, hard: 0, anatomy: 0, belly: 0, bust: 0, glutes: 0, envAmt: 0, mass: 0, tube: 0, taper: 0, joints: 0.3, blend: 1, chubby: 0, mitten: 0 };
+}
+// the head as a sculptor reshapes one: from the eyes up the vault grows, below the mouth the jaw widens or narrows,
+// the face lengthens, the cheeks fill, the nose scales about its bridge; the small forms soften as the body simplifies
+function headStyle(real, A, P, placeIn, headW) {
+  const N = BASE.N, J = A.J, hs = SI.head, out = Float32Array.from(real);
+  const eye = placeIn(hs, J[JI.LeftEye].clone().lerp(J[JI.RightEye], 0.5)), top = placeIn(hs, J[JI.HeadEnd]), base = placeIn(hs, J[JI.Head]);
+  const hh = Math.max(0.05, top.y - base.y), eyeGap = placeIn(hs, J[JI.LeftEye]).distanceTo(placeIn(hs, J[JI.RightEye]));
+  const mouthY = eye.y - 0.42 * hh, chinY = eye.y - 0.75 * hh;
+  const nasion = new V3(eye.x, eye.y + 0.02 * hh, eye.z + 0.25 * eyeGap);
+  const cheek = [1, -1].map(sx => new V3(eye.x + sx * 0.75 * eyeGap, eye.y - 0.2 * hh, eye.z + 0.05 * eyeGap));
+  const ctr = new V3(eye.x, eye.y - 0.05 * hh, eye.z - 0.45 * hh);
+  for (let i = 0; i < N; i++) {
+    if (headW[i] < 0.001 && !(A.headBlend && A.headBlend[i] > 0.001)) continue;
+    let x = real[i * 3], y = real[i * 3 + 1], z = real[i * 3 + 2];
+    // the vault
+    const up = sst(clamp((y - eye.y) / (0.35 * hh) + 0.4, 0, 1)), sc = 1 + 0.24 * P.cranium * up;
+    x = eye.x + (x - eye.x) * sc; y = eye.y + (y - eye.y) * sc; z = ctr.z + (z - ctr.z) * (1 + 0.24 * P.cranium * up * (z < ctr.z + 0.3 * hh ? 1 : 0.4));
+    // the length of the face, below the eyes
+    if (y < eye.y) y = eye.y + (y - eye.y) * (1 + 0.25 * P.faceLen);
+    // the jaw: wider and squarer, or narrow to a point
+    const low = sst(clamp((mouthY - y) / (0.25 * hh), 0, 1));
+    x = eye.x + (x - eye.x) * (1 + 0.32 * P.jaw * low);
+    if (P.jaw < 0) { const c = sst(clamp((mouthY - y) / (0.3 * hh), 0, 1)); x = eye.x + (x - eye.x) * (1 + 0.25 * P.jaw * c); y += P.jaw * 0.04 * hh * c; }
+    // the cheeks fill out from within
+    for (const c of cheek) { const d2 = ((x - c.x) ** 2 + (y - c.y) ** 2 + (z - c.z) ** 2) / (0.6 * eyeGap) ** 2; if (d2 < 4) { const g = Math.exp(-d2) * P.cheeks * 0.22 * eyeGap; const dx = x - ctr.x, dy = y - ctr.y, dz = z - ctr.z, l = Math.hypot(dx, dy, dz) || 1; x += dx / l * g; y += dy / l * g; z += dz / l * g; } }
+    // the nose, about its bridge
+    const nd = Math.hypot(x - nasion.x, (y - nasion.y) * 0.8, z - nasion.z);
+    const nk = Math.exp(-((nd / (0.45 * eyeGap)) ** 2)) * (z > eye.z ? 1 : 0);
+    const ns = 1 + nk * ((1 + 0.35 * P.nose) * lerp(1, 0.75, P.deg) - 1);
+    x = nasion.x + (x - nasion.x) * ns; y = nasion.y + (y - nasion.y) * ns; z = nasion.z + (z - nasion.z) * ns;
+    out[i * 3] = x; out[i * 3 + 1] = y; out[i * 3 + 2] = z;
+  }
+  // the small forms soften (the ears, the sockets, the lips) as far as the body simplifies
+  const it = Math.round(14 * P.deg);
+  return it ? taubin(out, i => headW[i] > 0.05 ? 0.9 : 0, it) : out;
+}
+
+// carry points onto a surface (F: its distance), then spread them along it and carry them on again
+// which surface each point belongs to: its part's, if the surface has parts
+function surfaceOf(F, i) { const own = F.part && F.owner ? F.part[F.owner[i]] : null; return own || F; }
+function project(arr, F0, its, only) {
+  const e = 0.0015;
+  for (let i = 0; i < arr.length; i += 3) {
+    if (only && !only[i / 3]) continue;
+    const F = only === true ? F0 : surfaceOf(F0, i / 3);
+    let x = arr[i], y = arr[i + 1], z = arr[i + 2];
+    for (let it = 0; it < its; it++) {
+      const d = F(x, y, z); if (Math.abs(d) < 0.0004) break;
+      const gx = (F(x + e, y, z) - d) / e, gy = (F(x, y + e, z) - d) / e, gz = (F(x, y, z + e) - d) / e, g2 = gx * gx + gy * gy + gz * gz;
+      if (g2 < 1e-8) break;
+      // a step no longer than two centimetres: a far point walks to the surface, it does not jump past it
+      let k = d / g2; const step = Math.abs(k) * Math.sqrt(g2); if (step > 0.02) k *= 0.02 / step;
+      x -= gx * k; y -= gy * k; z -= gz * k;
+    }
+    arr[i] = x; arr[i + 1] = y; arr[i + 2] = z;
+  }
+  return arr;
+}
+function vertexNormals(arr) {
+  const n = new Float32Array(arr.length), T = BASE.tris;
+  for (let t = 0; t < T.length; t += 3) {
+    const a = T[t] * 3, b = T[t + 1] * 3, c = T[t + 2] * 3;
+    const ux = arr[b] - arr[a], uy = arr[b + 1] - arr[a + 1], uz = arr[b + 2] - arr[a + 2], vx = arr[c] - arr[a], vy = arr[c + 1] - arr[a + 1], vz = arr[c + 2] - arr[a + 2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    for (const k of [a, b, c]) { n[k] += nx; n[k + 1] += ny; n[k + 2] += nz; }
+  }
+  for (let i = 0; i < n.length; i += 3) { const l = Math.hypot(n[i], n[i + 1], n[i + 2]) || 1; n[i] /= l; n[i + 1] /= l; n[i + 2] /= l; }
+  return n;
+}
+// onto the surface along each point's own normal only: points keep their spacing, nothing slides into a heap
+function normalProject(arr, F0, its) {
+  const nrm = vertexNormals(arr), e = 0.0015;
+  for (let i = 0; i < arr.length; i += 3) {
+    const F = surfaceOf(F0, i / 3);
+    const nx = nrm[i], ny = nrm[i + 1], nz = nrm[i + 2]; if (!nx && !ny && !nz) continue;
+    let x = arr[i], y = arr[i + 1], z = arr[i + 2];
+    for (let it = 0; it < its; it++) {
+      const d = F(x, y, z); if (Math.abs(d) < 0.0003) break;
+      let dn = (F(x + nx * e, y + ny * e, z + nz * e) - d) / e;
+      if (Math.abs(dn) < 0.25) dn = dn < 0 ? -0.25 : 0.25;
+      const step = clamp(-d / dn, -0.015, 0.015);
+      x += nx * step; y += ny * step; z += nz * step;
+    }
+    arr[i] = x; arr[i + 1] = y; arr[i + 2] = z;
+  }
+  return arr;
+}
+// where the points want to go, as one smooth field over the body; then each settles along its normal
+function settle(arr, F, hand) {
+  const from = Float32Array.from(arr);
+  project(arr, F, 12);
+  let disp = Float32Array.from(arr, (v, i) => v - from[i]);
+  disp = smoothField(disp, 20);
+  for (let i = 0; i < arr.length; i++) arr[i] = from[i] + disp[i];
+  normalProject(arr, F, 8);
+  arr = taubin(arr, i => 0.3 + 0.4 * hand[i], 1);
+  normalProject(arr, F, 4);
+  return repair(arr, F, from);
+}
+// where a point was carried too far for its normal to know the way, or a triangle turned over: straighten it there
+function repair(arr, F, from) {
+  const T = BASE.tris, N = arr.length / 3;
+  for (let round = 0; round < 4; round++) {
+    const bad = new Uint8Array(N), n0 = vertexNormals(from);
+    for (let t = 0; t < T.length; t += 3) {
+      const a = T[t] * 3, b = T[t + 1] * 3, c = T[t + 2] * 3;
+      const ux = arr[b] - arr[a], uy = arr[b + 1] - arr[a + 1], uz = arr[b + 2] - arr[a + 2], vx = arr[c] - arr[a], vy = arr[c + 1] - arr[a + 1], vz = arr[c + 2] - arr[a + 2];
+      const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      // turned over against the body it came from, or stretched past four times its side
+      const turned = nx * n0[a] + ny * n0[a + 1] + nz * n0[a + 2] < 0;
+      const l0 = Math.hypot(from[b] - from[a], from[b + 1] - from[a + 1], from[b + 2] - from[a + 2]) + 1e-6, l1 = Math.hypot(ux, uy, uz);
+      if (turned || l1 > 4 * l0 + 0.01) { bad[T[t]] = bad[T[t + 1]] = bad[T[t + 2]] = 1; }
+    }
+    for (let i = 0; i < N; i++) if (!bad[i] && Math.abs(surfaceOf(F, i)(arr[i * 3], arr[i * 3 + 1], arr[i * 3 + 2])) > 0.006) bad[i] = 1;
+    let count = 0; for (let i = 0; i < N; i++) count += bad[i];
+    if (!count) break;
+    // the bad ones and their neighbours relax among the good ones, then go to the nearest surface
+    const grow = Uint8Array.from(bad); for (let i = 0; i < N; i++) if (bad[i]) for (const j of NB[i]) grow[j] = 1;
+    arr = taubin(arr, i => grow[i] ? 1 : 0, 4);
+    const sub = []; for (let i = 0; i < N; i++) if (grow[i]) sub.push(i);
+    const tmp = new Float32Array(3);
+    for (const i of sub) { tmp[0] = arr[i * 3]; tmp[1] = arr[i * 3 + 1]; tmp[2] = arr[i * 3 + 2]; project(tmp, surfaceOf(F, i), 10, true); arr[i * 3] = tmp[0]; arr[i * 3 + 1] = tmp[1]; arr[i * 3 + 2] = tmp[2]; }
+  }
+  return arr;
+}
+// losing the small forms: a smoothing of the same reach in centimetres everywhere — Anny's mesh is twenty times finer
+// at a nipple, a navel or a toe than on the back, so smoothing step by step over the mesh would leave exactly those.
+// A plain smoothing also makes every limb thinner: what it took away is measured along the normal and smoothed again
+// over a wider reach, so the even loss (a limb's girth) comes back and a nipple or a navel doesn't
+function evenSmooth(pos, reach) {
+  const N = NB.length, h = new Float32Array(N), need = [];
+  for (let i = 0; i < N; i++) { const ns = NB[i]; if (!ns.length) continue; let s = 0; for (const j of ns) s += Math.hypot(pos[j * 3] - pos[i * 3], pos[j * 3 + 1] - pos[i * 3 + 1], pos[j * 3 + 2] - pos[i * 3 + 2]); h[i] = Math.max(s / ns.length, 5e-4); const r = reach(i); if (r > 0) need.push(r * r / (0.5 * h[i] * h[i])); }
+  need.sort((x, y) => x - y);
+  const k = Math.min(window.__K ?? 600, Math.ceil(need[Math.floor(need.length * 0.98)] || 1));
+  const w = Float32Array.from(h, (hi, i) => { const r = reach(i); return r > 0 ? Math.min(1, r * r / (k * 0.5 * hi * hi)) : 0; });
+  const S = taubin(pos, i => w[i], k, 0), n = vertexNormals(S);
+  let d = new Float32Array(N), t = new Float32Array(N);
+  for (let i = 0; i < N; i++) d[i] = (pos[i * 3] - S[i * 3]) * n[i * 3] + (pos[i * 3 + 1] - S[i * 3 + 1]) * n[i * 3 + 1] + (pos[i * 3 + 2] - S[i * 3 + 2]) * n[i * 3 + 2];
+  for (let it = 0; it < 2 * k; it++) {
+    for (let i = 0; i < N; i++) { const ns = NB[i]; if (!ns.length || !w[i]) { t[i] = d[i]; continue; } let sum = 0; for (const j of ns) sum += d[j]; t[i] = d[i] + 0.5 * Math.min(1, 2 * w[i]) * (sum / ns.length - d[i]); }
+    [d, t] = [t, d];
+  }
+  for (let i = 0; i < N; i++) for (let c = 0; c < 3; c++) S[i * 3 + c] += d[i] * n[i * 3 + c];
+  return S;
+}
+function smoothField(f, iters) {
+  let a = Float32Array.from(f), b = new Float32Array(f.length);
+  for (let it = 0; it < iters; it++) {
+    for (let i = 0; i < NB.length; i++) { const ns = NB[i]; if (!ns.length) { b[i * 3] = a[i * 3]; b[i * 3 + 1] = a[i * 3 + 1]; b[i * 3 + 2] = a[i * 3 + 2]; continue; } let x = 0, y = 0, z = 0; for (const j of ns) { x += a[j * 3]; y += a[j * 3 + 1]; z += a[j * 3 + 2]; } const k = 0.5 / ns.length; b[i * 3] = a[i * 3] * 0.5 + x * k; b[i * 3 + 1] = a[i * 3 + 1] * 0.5 + y * k; b[i * 3 + 2] = a[i * 3 + 2] * 0.5 + z * k; }
+    [a, b] = [b, a];
+  }
+  return a;
+}
+// the sign: a ball for the head, one plain figure for the body, sticks for the limbs
+function rcone(a, b, r1, r2) { return cone([a.x, a.y, a.z], [b.x, b.y, b.z], r1, r2); }
+function signSurface(D, J2, P) {
+  const H = D.M.headAll, hr = (H.R[0] + H.R[1] + H.R[2] + H.R[3] + H.R[4] + H.R[5]) / 6 * 1.08;
+  const height = J2[JI.HeadEnd].y - Math.min(J2[JI.LeftToeEnd].y, J2[JI.RightToeEnd].y);
+  const lift = P.gap * 0.06 * height;
+  const hc = new V3(J2[JI.Head].x, (H.c.y + J2[JI.Head].y) / 2 + 0.25 * hr + lift, J2[JI.Head].z);
+  // the body's figure: from the shoulders down to the hips — a dress-triangle down to the knees
+  const knee = (J2[JI.LeftShin].y + J2[JI.RightShin].y) / 2;
+  const sh = new V3(0, J2[JI.LeftArm].y + 0.02, J2[JI.Hips].z), hp = new V3(0, P.signType === 'triangle' ? knee + 0.02 * height : J2[JI.Hips].y - 0.05 * height, J2[JI.Hips].z);
+  const w = Math.abs(J2[JI.LeftArm].x - J2[JI.RightArm].x) / 2;
+  const kinds = { triangle: [0.3, 1.7], inverted: [1.05, 0.45], rectangle: [0.8, 0.8], trapezoid: [0.95, 0.7], oval: [0.75, 0.75] };
+  let [rt, rb] = (kinds[P.signType] || kinds.rectangle).map(k => k * w);
+  if (P.signType === 'triangle') { signSurface.dress = { top: sh.y, bottom: hp.y, rt, rb, x: 0, z: sh.z, flat: 0.62 }; [rt, rb] = kinds.trapezoid.map(k => k * w * 0.85); hp.y = J2[JI.Hips].y - 0.05 * height; }
+  else signSurface.dress = null;
+  const ball = (c, r) => (x, y, z) => Math.hypot(x - c.x, y - c.y, z - c.z) - r;
+  const flat = 0.55;
+  const torso = P.signType === 'oval'
+    ? (x, y, z) => { const c = sh.clone().lerp(hp, 0.5), ry = (sh.y - hp.y) / 2 + 0.02, k0 = Math.hypot((x - c.x) / rt, (y - c.y) / ry, (z - c.z) / (rt * flat)); return (k0 - 1) * Math.min(rt * flat, ry); }
+    : (() => { const f = rcone(hp, sh, rb, rt); return (x, y, z) => f(x, y, sh.z + (z - sh.z) / flat) * flat; })();
+  const lr = 0.035 * height * Math.sqrt(P.limbs);
+  const stick = (a, b, r) => rcone(J2[JI[a]], J2[JI[b]], r, r);
+  const parts = [ball(hc, hr), torso, stick('LeftArm', 'LeftHand', lr * 0.85), stick('RightArm', 'RightHand', lr * 0.85),
+    stick('LeftLeg', 'LeftFoot', lr), stick('RightLeg', 'RightFoot', lr), ball(J2[JI.LeftHandMiddle2], lr * 1.15), ball(J2[JI.RightHandMiddle2], lr * 1.15),
+    stick('LeftFoot', 'LeftToeEnd', lr * 0.9), stick('RightFoot', 'RightToeEnd', lr * 0.9),
+    rcone(J2[JI.Neck1], hc, lerp(0.035 * height, 0.003, P.gap), lerp(0.03 * height, 0.003, P.gap))];
+  return (x, y, z) => { let d = parts[0](x, y, z); for (let i = 1; i < parts.length; i++) d = smin(d, parts[i](x, y, z), 0.012); return d; };
+}
+function cone(a, b, r1, r2) {
+  const bax = b[0] - a[0], bay = b[1] - a[1], baz = b[2] - a[2];
+  const l2 = bax * bax + bay * bay + baz * baz, rr = r1 - r2, a2 = l2 - rr * rr, il2 = 1 / l2;
+  return (x, y, z) => {
+    const pax = x - a[0], pay = y - a[1], paz = z - a[2];
+    const yy = pax * bax + pay * bay + paz * baz, zz = yy - l2;
+    const xx = pax * l2 - bax * yy, xy = pay * l2 - bay * yy, xz = paz * l2 - baz * yy;
+    const x2 = xx * xx + xy * xy + xz * xz, y2 = yy * yy * l2, z2 = zz * zz * l2;
+    const k = Math.sign(rr) * rr * rr * x2;
+    if (Math.sign(zz) * a2 * z2 > k) return Math.sqrt(x2 + z2) * il2 - r2;
+    if (Math.sign(yy) * a2 * y2 < k) return Math.sqrt(x2 + y2) * il2 - r1;
+    return (Math.sqrt(x2 * a2 * il2) + yy * rr) * il2 - r1;
+  };
+}
+
+// the pose: arms down, the weight on one leg — the same joints turned
+function gesture(pos, J, P) {
+  if (Math.abs(P.stretch) < 0.01 && Math.abs(P.lineS) < 0.01 && Math.abs(P.lineC) < 0.01) return;
+  let top = 0; for (let i = 1; i < pos.length; i += 3) top = Math.max(top, pos[i]);
+  const sy = Math.exp(0.35 * P.stretch), sxz = 1 / Math.sqrt(sy);
+  const f = (x, y, z) => {
+    const u = clamp(y / top, 0, 1);
+    // the line of action: an S in profile (the hips forward, the chest back), a C seen from the front
+    const dz = P.lineS * 0.06 * top * Math.sin(2 * Math.PI * u) , dx = P.lineC * 0.07 * top * (Math.sin(Math.PI * u) - 0) ;
+    return [(x + dx) * sxz, y * sy, (z + dz) * sxz];
+  };
+  for (let i = 0; i < pos.length; i += 3) { const r = f(pos[i], pos[i + 1], pos[i + 2]); pos[i] = r[0]; pos[i + 1] = r[1]; pos[i + 2] = r[2]; }
+  for (const j of J) { const r = f(j.x, j.y, j.z); j.set(r[0], r[1], r[2]); }
+}
+function pose(pos, J, posture = 0) {
+  const R = Array.from({ length: 77 }, () => new THREE.Quaternion()), q = (ax, a) => new THREE.Quaternion().setFromAxisAngle(new V3(...ax).normalize(), a);
+  for (const [s, x] of [['Left', 1], ['Right', -1]]) {
+    const d = J[JI[s + 'ForeArm']].clone().sub(J[JI[s + 'Arm']]).normalize();
+    R[JI[s + 'Arm']] = new THREE.Quaternion().setFromUnitVectors(d, new V3(0.2 * x, -1, -0.03).normalize());
+    R[JI[s + 'ForeArm']] = q([1, 0, 0], -0.18); R[JI[s + 'Hand']] = q([0, 1, 0], 0.25 * x);
+    for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (const k of [1, 2, 3]) R[JI[s + 'Hand' + f + k]] = q([0, 0, 1], -0.2 * x * (k === 1 ? 0.6 : 1));
+  }
+  R[JI.Hips] = q([0, 0, 1], 0.03); R[JI.LeftLeg] = q([0, 0, 1], -0.04); R[JI.RightLeg] = q([0, 0, 1], -0.02).multiply(q([1, 0, 0], -0.05)); R[JI.RightShin] = q([1, 0, 0], 0.09);
+  R[JI.Chest] = q([0, 0, 1], -0.035); R[JI.Head] = q([0, 1, 0], 0.12).multiply(q([0, 0, 1], 0.04));
+  // posture: proud (the chest out, the back arched) or stooped (the back rounded, the head pushed forward)
+  if (posture > 0) { R[JI.Spine2] = q([1, 0, 0], 0.16 * posture); R[JI.Chest].premultiply(q([1, 0, 0], 0.2 * posture)); R[JI.Neck1] = q([1, 0, 0], 0.18 * posture); R[JI.Head].premultiply(q([1, 0, 0], -0.4 * posture)); }
+  else if (posture < 0) { const p = -posture; R[JI.Spine1] = q([1, 0, 0], -0.12 * p); R[JI.Chest].premultiply(q([1, 0, 0], -0.12 * p)); R[JI.Head].premultiply(q([1, 0, 0], 0.08 * p)); }
+  const M = [];
+  for (let j = 0; j < 77; j++) { const p = J[j]; const l = new THREE.Matrix4().makeTranslation(p.x, p.y, p.z).multiply(new THREE.Matrix4().makeRotationFromQuaternion(R[j])).multiply(new THREE.Matrix4().makeTranslation(-p.x, -p.y, -p.z)); M.push(PARENT[j] < 0 ? l : M[PARENT[j]].clone().multiply(l)); }
+  const out = new Float32Array(pos.length), v = new V3(), a = new V3(), t = new V3();
+  for (let i = 0; i < pos.length / 3; i++) {
+    v.fromArray(pos, i * 3); a.set(0, 0, 0); let ws = 0;
+    for (let k = 0; k < 4; k++) { const w = BASE.weight[i * 4 + k] / 255; if (!w) continue; a.addScaledVector(t.copy(v).applyMatrix4(M[BASE.joint[i * 4 + k]]), w); ws += w; }
+    if (ws > 1e-4) a.multiplyScalar(1 / ws); else a.copy(v);
+    a.toArray(out, i * 3);
+  }
+  return out;
+}
+
+// ———— archetypes: a role, its shape language, its type of figure ————
+const T = (name, o) => ({ name, deg: 0.75, circle: 0, square: 0, tri: 0, vert: 0, hard: 0, weight: 0, head: 1, neck: 1, legs: 1, limbs: 1, torso: 1, waist: 1, ext: 1, vshape: 0, belly: 0, bust: 0, glutes: 0, taper: 0, joints: 0.3, anatomy: 0, posture: 0, blend: 1, caric: 0, stretch: 0, lineS: 0, lineC: 0, cranium: 0, jaw: 0, cheeks: 0, faceLen: 0, envAmt: 0, mass: 0, tube: 0, sign: 0, gap: 0, envType: '', signType: 'rectangle', nose: 0, chubby: 0, mitten: 0, ...o });
+const ARCH = {
+  princess: T('Принцесса', { envType: 'hourglass', envAmt: 0.3, jaw: -0.4, faceLen: 0.1, circle: 0.4, tri: 0.15, vert: -0.6, hard: -0.6, head: 1.3, neck: 1.5, legs: 1.12, limbs: 0.72, torso: 0.85, waist: 0.6, ext: 0.65, vshape: -0.2, bust: 0.2, taper: 0.6, joints: 0.8, anatomy: -0.6, posture: -0.4, blend: 1.4 }),
+  wardrobe: T('Злодей-шкаф', { envType: 'bean', envAmt: 0.7, mass: 0.7, jaw: 0.3, faceLen: 0.4, lineS: -0.4, circle: 0.45, square: 0.25, vert: -0.3, hard: 0.2, weight: 0.6, head: 1.05, neck: 0.4, legs: 1.1, limbs: 0.5, torso: 1.7, waist: 1.35, ext: 0.7, vshape: 0.3, belly: 0.6, taper: 0.7, joints: 0.9, anatomy: -0.6, posture: 0.45, blend: 2.6 }),
+  baby: T('Малыш-начальник', { cranium: 0.9, cheeks: 0.9, jaw: -0.2, faceLen: -0.5, envType: 'egg', envAmt: 0.5, circle: 0.95, vert: 0.3, hard: -0.8, head: 2.6, neck: 0.35, legs: 0.6, limbs: 1.45, torso: 1.15, waist: 1.35, ext: 0.9, belly: 0.7, joints: 1, anatomy: -1, blend: 2 }),
+  tomboy: T('Сорванец', { cheeks: 0.4, jaw: 0.2, circle: 0.4, square: 0.4, vert: 0.1, hard: 0.1, head: 1.7, neck: 0.8, legs: 0.85, limbs: 1.05, waist: 1.1, ext: 1.2, joints: 0.6, anatomy: -0.4 }),
+  hero: T('Герой', { envType: 'inverted', envAmt: 0.45, jaw: 0.9, faceLen: 0.2, square: 0.35, tri: 0.5, vert: -0.4, hard: 0.4, weight: 0.5, head: 0.9, neck: 1.1, legs: 1.15, limbs: 1.15, torso: 1.2, waist: 0.8, ext: 1.1, vshape: 0.8, bust: 0.3, taper: 0.3, joints: 0.1, anatomy: 0.8, posture: -0.7 }),
+  teen: T('Девчонка', { cranium: 0.5, cheeks: 0.5, faceLen: -0.3, jaw: -0.3, circle: 0.6, tri: 0.1, vert: 0.05, hard: -0.4, head: 2.0, neck: 0.85, legs: 0.85, limbs: 0.72, torso: 0.85, waist: 0.9, ext: 0.8, taper: 0.4, joints: 0.8, anatomy: -0.8, blend: 1.4 }),
+  teacher: T('Учительница', { envType: 'pear', envAmt: 0.55, cheeks: 0.3, circle: 0.7, square: 0.2, vert: 0.4, hard: -0.3, weight: -0.8, head: 1.2, neck: 0.8, legs: 0.8, limbs: 1.1, torso: 1.1, waist: 1.25, ext: 0.85, vshape: -0.5, belly: 0.3, bust: 0.4, glutes: 0.4, joints: 0.7, anatomy: -0.6, posture: 0.2, blend: 1.6 }),
+  elf: T('Эльф', { jaw: -0.6, faceLen: 0.3, lineS: 0.6, lineC: 0.4, caric: 0.3, tri: 0.5, circle: 0.1, vert: -0.7, hard: 0.3, head: 1.3, neck: 1.2, legs: 1.25, limbs: 0.65, torso: 0.8, waist: 0.75, ext: 1.2, vshape: 0.2, taper: 0.8, joints: 0.4, anatomy: -0.2, posture: -0.3 }),
+  care: T('Заботливая', { envType: 'pear', envAmt: 0.35, cheeks: 0.6, jaw: -0.1, circle: 0.9, square: 0.1, vert: 0.35, hard: -0.8, weight: -0.55, head: 1.1, limbs: 1.15, torso: 1.1, waist: 1.25, vshape: -0.4, belly: 0.3, bust: 0.4, glutes: 0.3, joints: 0.8, anatomy: -0.8, blend: 1.8 }),
+  sage: T('Мудрец', { faceLen: 0.5, jaw: -0.2, caric: 0.6, circle: 0.35, square: 0.35, tri: 0.1, vert: -0.55, head: 1.15, neck: 1.1, legs: 1.05, limbs: 0.8, torso: 0.9, taper: 0.3, joints: 0.3, anatomy: 0.3, posture: 0.7 }),
+};
+const GENRE = {
+  pixar: T('Pixar', { chubby: 0.5, mitten: 0.15, nose: -0.2,  circle: 0.6, hard: -0.4, head: 1.35, neck: 0.8, legs: 0.9, limbs: 1.15, torso: 1.05, waist: 1.05, ext: 1.15, taper: 0.1, joints: 0.7, anatomy: -0.6, blend: 1.6 }),
+  disney: T('Дисней', { chubby: -0.2, nose: -0.3,  circle: 0.35, tri: 0.2, hard: -0.5, head: 1.15, neck: 1.2, legs: 1.08, limbs: 0.85, waist: 0.75, ext: 0.8, taper: 0.5, joints: 0.6, anatomy: -0.4, blend: 1.3 }),
+  anime: T('Аниме', { chubby: -0.3, nose: -0.6,  tri: 0.2, vert: -0.4, hard: 0.1, head: 1.15, neck: 1.15, legs: 1.2, limbs: 0.8, torso: 0.85, waist: 0.8, ext: 0.75, taper: 0.4, joints: 0.4, anatomy: -0.5 }),
+  burton: T('Бёртон', { chubby: -0.4, nose: 0.4,  stretch: 0.4, lineS: 0.3, tri: 0.8, vert: -0.8, hard: 0.6, head: 1.6, neck: 1.3, legs: 1.25, limbs: 0.55, torso: 0.75, waist: 0.6, ext: 1.2, taper: 0.6, joints: 0.2, anatomy: -0.3, posture: 0.4 }),
+  clay: T('Пластилин', { chubby: 0.9, mitten: 0.7, nose: 0.5,  stretch: -0.4, circle: 0.8, square: 0.2, vert: 0.6, hard: -0.5, head: 1.25, neck: 0.4, legs: 0.7, limbs: 1.4, torso: 1.15, waist: 1.2, ext: 1.35, joints: 1, anatomy: -1, blend: 2.2 }),
+  soviet: T('Советская', { chubby: 0.6, mitten: 0.5, nose: 0.3,  circle: 0.6, square: 0.2, vert: 0.3, hard: -0.3, head: 1.45, neck: 0.6, legs: 0.8, limbs: 1.2, waist: 1.1, ext: 1.1, joints: 0.9, anatomy: -0.9, blend: 1.8 }),
+  comic: T('Комикс', { square: 0.3, tri: 0.5, vert: -0.5, hard: 0.4, head: 0.85, neck: 1.1, legs: 1.2, limbs: 1.2, torso: 1.15, waist: 0.75, vshape: 0.9, anatomy: 1, joints: 0.1, posture: -0.6 }),
+  hose: T('Резиновые шланги', { chubby: 1, mitten: 1, nose: 0.6,  tube: 1, joints: 1, circle: 0.8, hard: -0.6, head: 1.55, neck: 0.5, legs: 0.95, limbs: 0.8, ext: 1.55, envType: 'bean', envAmt: 0.65, anatomy: -1, blend: 1.6 }),
+  stick: T('Масса на ножках', { chubby: 0.4, mitten: 0.5, nose: 0.6,  mass: 1, envType: 'bean', envAmt: 0.9, circle: 0.6, head: 1.1, neck: 0.5, limbs: 0.7, ext: 0.8, joints: 0.9, anatomy: -0.9, blend: 1.5 }),
+  chibi: T('Чиби', { chubby: 0.8, mitten: 0.8, nose: -0.6,  circle: 0.7, head: 2.4, neck: 0.5, legs: 0.62, limbs: 1.1, torso: 0.9, tube: 0.5, ext: 0.9, cheeks: 0.6, cranium: 0.5, joints: 1, anatomy: -1, blend: 1.6 }),
+  picto: T('Пиктограмма', { sign: 1, gap: 0.7, signType: 'rectangle', deg: 1, anatomy: -1 }),
+  upa: T('Графика UPA', { square: 0.6, tri: 0.4, hard: 1, head: 1.2, legs: 0.95, limbs: 0.8, taper: 0.3, joints: 0.5, anatomy: -1, blend: 0.6 }),
+};
+const NEUTRAL = T('', {});
+
+const AGES = ['woman', 'man', 'girl', 'boy', 'child', 'oldwoman', 'oldman'];
+const AGENAME = { woman: 'Женщина', man: 'Мужчина', girl: 'Девочка', boy: 'Подросток', child: 'Ребёнок', oldwoman: 'Старушка', oldman: 'Старик' };
+const RANGE = {};
+function mixed(gw, cw, over) {
+  const P = { ...NEUTRAL };
+  for (const k of KEYS) {
+    let v = NEUTRAL[k];
+    for (const [id, w] of Object.entries(gw)) v += w * (GENRE[id][k] - NEUTRAL[k]);
+    for (const [id, w] of Object.entries(cw)) v += w * (ARCH[id][k] - NEUTRAL[k]);
+    v += over[k] || 0;
+    P[k] = RANGE[k] ? clamp(v, RANGE[k][0], RANGE[k][1]) : v;
+  }
+  let dg = 0.75; for (const [id, w] of Object.entries(gw)) if (GENRE[id].deg && GENRE[id].deg !== 0.75) dg += w * (GENRE[id].deg - 0.75);
+  P.deg = clamp(dg + (over.deg || 0), 0, 1);
+  // the choices that do not blend: the one of the strongest style that makes one
+  const pickOf = key => { let best = '', bw = 0; for (const [tab, ws] of [[GENRE, gw], [ARCH, cw]]) for (const [id, w] of Object.entries(ws)) { const v = tab[id][key]; if (v && w > bw && (key !== 'signType' || tab[id].sign > 0)) { best = v; bw = w; } } return best; };
+  P.envType = over.envType ?? pickOf('envType'); P.signType = over.signType ?? (pickOf('signType') || 'rectangle');
+  return P;
+}
+const KEYS = ['deg', 'circle', 'square', 'tri', 'vert', 'hard', 'weight', 'head', 'neck', 'legs', 'limbs', 'torso', 'waist', 'ext', 'vshape', 'belly', 'bust', 'glutes', 'taper', 'joints', 'anatomy', 'posture', 'blend', 'caric', 'stretch', 'lineS', 'lineC', 'cranium', 'jaw', 'cheeks', 'faceLen', 'envAmt', 'mass', 'tube', 'sign', 'gap', 'nose', 'chubby', 'mitten'];
+
+// ———— the studio ————
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#cfc8bd');
+const camera = new THREE.PerspectiveCamera(24, 2, 0.05, 80);
+scene.add(new THREE.HemisphereLight('#fff4e6', '#5b544c', 1.0));
+const key = new THREE.DirectionalLight('#fff0dc', 2.2); key.position.set(-2.6, 4.4, 3.6); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -5, right: 5, top: 3, bottom: -1, near: 0.5, far: 16 }); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+scene.add(key);
+const rim = new THREE.DirectionalLight('#d6e4ff', 1.3); rim.position.set(2.6, 2.4, -3.2); scene.add(rim);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(40, 64), new THREE.MeshStandardMaterial({ color: '#c9c1b5', roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+const group = new THREE.Group(); scene.add(ground, group);
+const CLAY = new THREE.MeshStandardMaterial({ color: '#d9b79c', roughness: 0.68 });
+function meshOf(pos, x) {
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(new THREE.BufferAttribute(BASE.tris, 1)); g.computeVertexNormals();
+  const m = new THREE.Mesh(g, CLAY); m.castShadow = m.receiveShadow = true;
+  let minY = Infinity; for (let i = 1; i < pos.length; i += 3) minY = Math.min(minY, pos[i]);
+  const G = new THREE.Group(); G.add(m);
+  const d = pos.dress;
+  if (d && d.k > 0.3) {
+    // the dress as a sign: a cone from the shoulders, flared to the knees, the hem slightly rounded
+    const pts = [], n = 24, s = clamp((d.k - 0.3) / 0.7, 0, 1);
+    for (let i = 0; i <= n; i++) { const u = i / n; pts.push(new THREE.Vector2(lerp(d.rt, d.rb, u) * lerp(0.6, 1, s) + 0.004, lerp(d.top, d.bottom, u))); }
+    pts.push(new THREE.Vector2(d.rb * lerp(0.6, 1, s) * 0.92, d.bottom - 0.008), new THREE.Vector2(0.001, d.bottom - 0.01));
+    const dg = new THREE.LatheGeometry(pts.reverse(), 64); dg.scale(1, 1, d.flat); dg.translate(d.x, 0, d.z);
+    const dm = new THREE.Mesh(dg, CLAY); dm.castShadow = dm.receiveShadow = true; G.add(dm);
+  }
+  G.position.set(x, -minY, 0); return G;
+}
+
+// ———— what is shown ————
+const state = { mode: 'arch', who: 'woman', gw: { disney: 0.7 }, cw: { princess: 0.8 }, over: {} };
+state.P = null;
+let token = 0; const tags = [];
+async function refresh() {
+  const my = ++token; msg.hidden = false; msg.textContent = 'лепится…';
+  await new Promise(r => setTimeout(r, 16));
+  const items = [];
+  state.P = mixed(state.gw, state.cw, state.over);
+  if (state.mode === 'arch') for (const k of Object.keys(ARCH)) items.push({ who: state.who, P: mixed(state.gw, { [k]: 1 }, state.over), tag: ARCH[k].name });
+  else if (state.mode === 'genre') for (const k of Object.keys(GENRE)) items.push({ who: state.who, P: mixed({ [k]: 1 }, state.cw, state.over), tag: GENRE[k].name });
+  else if (state.mode === 'deg') for (const d of [0, 0.25, 0.5, 0.75, 1]) items.push({ who: state.who, P: { ...state.P, deg: d }, tag: d === 0 ? 'как есть' : d === 1 ? 'знак' : Math.round(d * 100) + '%' });
+  else if (state.mode === 'age') for (const w of AGES) items.push({ who: w, P: state.P, tag: AGENAME[w] });
+  else items.push({ who: state.who, P: state.P, tag: '' });
+  const meshes = [];
+  let maxH = 0;
+  for (const it of items) { const pos = await build(it.who, it.P); if (my !== token) return; meshes.push(pos); maxH = Math.max(maxH, META.people[it.who].height); await new Promise(r => setTimeout(r, 0)); }
+  group.clear(); tags.forEach(t => t.remove()); tags.length = 0;
+  const gap = items.length > 1 ? maxH * 0.48 + 0.14 : 0;
+  meshes.forEach((pos, k) => { const x = (k - (meshes.length - 1) / 2) * gap; group.add(meshOf(pos, x)); if (items[k].tag) { const t = document.createElement('div'); t.className = 'tag'; t.textContent = items[k].tag; t.dataset.x = x; stage.appendChild(t); tags.push(t); } });
+  const span = gap * meshes.length;
+  cam.target.set(0, maxH * 0.55, 0); cam.dist = Math.max(maxH * 2.9, span * 2.0);
+  msg.hidden = true;
+}
+
+// ———— camera ————
+const cam = { yaw: 0.0, pitch: 0.05, dist: 6, target: new V3(0, 0.85, 0) };
+function place() { const cp = Math.cos(cam.pitch); camera.position.set(cam.target.x + Math.sin(cam.yaw) * cp * cam.dist, cam.target.y + Math.sin(cam.pitch) * cam.dist, cam.target.z + Math.cos(cam.yaw) * cp * cam.dist); camera.lookAt(cam.target); }
+let drag = null;
+stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener('pointermove', e => { if (!drag) return; cam.yaw -= (e.clientX - drag.x) * 0.006; cam.pitch = clamp(cam.pitch + (e.clientY - drag.y) * 0.004, -0.25, 1.0); drag = { x: e.clientX, y: e.clientY }; });
+stage.addEventListener('pointerup', () => drag = null); stage.addEventListener('pointercancel', () => drag = null);
+stage.addEventListener('wheel', e => { e.preventDefault(); cam.dist = clamp(cam.dist * Math.exp(e.deltaY * 0.001), 0.6, 20); }, { passive: false });
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage);
+
+// ———— controls ————
+for (const k of KEYS) { const el = document.getElementById('k-' + k); RANGE[k] = [+el.min, +el.max]; }
+const envRow = document.getElementById('envs'), signRow = document.getElementById('signs');
+envRow.innerHTML = '<button data-env="">своя форма</button>' + ENVS.slice(1).map(e => '<button data-env="' + e + '">' + ENVNAME[e] + '</button>').join('');
+const SIGNS = { triangle: 'треугольник', inverted: 'перевёрнутый треугольник', rectangle: 'прямоугольник', trapezoid: 'трапеция', oval: 'овал' };
+signRow.innerHTML = Object.entries(SIGNS).map(([k, n]) => '<button data-sign="' + k + '">' + n + '</button>').join('');
+envRow.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { state.over.envType = b.dataset.env; if (b.dataset.env && mixed(state.gw, state.cw, state.over).envAmt < 0.3) state.over.envAmt = (state.over.envAmt || 0) + 0.6; mark(); refresh(); }));
+signRow.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { state.over.signType = b.dataset.sign; if (mixed(state.gw, state.cw, state.over).sign < 0.3) state.over.sign = (state.over.sign || 0) + 1; mark(); refresh(); }));
+const mixers = document.getElementById('mixers');
+for (const [title, table, key] of [['Жанр', GENRE, 'gw'], ['Характер', ARCH, 'cw']]) {
+  const g = document.createElement('div'); g.className = 'grp';
+  g.innerHTML = '<div class="gt">' + title + '</div><div class="sliders">' + Object.entries(table).map(([id, t]) => '<label class="sl one"><span class="l">' + t.name + '</span><input type="range" min="0" max="1" step="0.01" data-mix="' + key + ':' + id + '"></label>').join('') + '</div>';
+  mixers.appendChild(g);
+}
+function mark() {
+  document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)));
+  document.querySelectorAll('[data-who]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.who === state.who)));
+  document.querySelectorAll('[data-mix]').forEach(el => { const [k, id] = el.dataset.mix.split(':'); el.value = state[k][id] || 0; });
+  const P = mixed(state.gw, state.cw, state.over);
+  for (const k of KEYS) document.getElementById('k-' + k).value = P[k];
+  document.querySelectorAll('[data-env]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.env === P.envType)));
+  document.querySelectorAll('[data-sign]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sign === P.signType && P.sign > 0)));
+}
+let rt = 0; const later = () => { clearTimeout(rt); rt = setTimeout(refresh, 140); };
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => { state.mode = b.dataset.mode; mark(); refresh(); }));
+document.querySelectorAll('[data-who]').forEach(b => b.addEventListener('click', () => { state.who = b.dataset.who; if (state.mode === 'age') state.mode = 'arch'; mark(); refresh(); }));
+document.querySelectorAll('[data-mix]').forEach(el => el.addEventListener('input', () => { const [k, id] = el.dataset.mix.split(':'); state[k][id] = +el.value; mark(); later(); }));
+for (const k of KEYS) document.getElementById('k-' + k).addEventListener('input', e => {
+  // a fine axis: its own nudge over what the genre and the character make
+  const base = mixed(state.gw, state.cw, { ...state.over, [k]: 0 });
+  state.over[k] = +e.target.value - (k === 'deg' ? 0.75 : base[k]); later();
+});
+
+resize(); mark();
+await refresh();
+window.__sh = { cam, state, refresh, mark, dbg: { analyse, evenSmooth, taubin, vertexNormals, get NB() { return NB; }, get BASE() { return BASE; } } };
+window.__prof = async (who, id) => { const A = await analyse(who); const c = construct(A); const sw = c.sweeps[id]; const f = A.fr[SI[id]]; return { lo: sw.lo, hi: sw.hi, L: f.L, e: [f.e.x, f.e.y, f.e.z].map(v => +v.toFixed(2)), u: [f.u.x, f.u.y, f.u.z].map(v => +v.toFixed(2)), C: sw.C.map(ct => ct.keys.map(k => +(k[1] * 1000).toFixed(0))) }; };
+window.__err = async (who) => {
+  const N0 = mixed({}, {}, { deg: -0.75 }), N1 = mixed({}, {}, { deg: 0.25 });
+  const r = await build(who, N0), d = await build(who, N1), A = await analyse(who);
+  const acc = {}, cnt = {}, mx = {};
+  for (let i = 0; i < BASE.N; i++) { const k = SEGS[A.seg[i * 2]].id.replace(/(Left|Right)$/, ''); const e = Math.hypot(r[i*3]-d[i*3], r[i*3+1]-d[i*3+1], r[i*3+2]-d[i*3+2]); acc[k] = (acc[k] || 0) + e; cnt[k] = (cnt[k] || 0) + 1; mx[k] = Math.max(mx[k] || 0, e); }
+  const worst = []; for (let i = 0; i < BASE.N; i++) { const k = SEGS[A.seg[i * 2]].id; if (k !== 'torso' && k !== 'neck') continue; const e = Math.hypot(r[i*3]-d[i*3], r[i*3+1]-d[i*3+1], r[i*3+2]-d[i*3+2]); worst.push([e, k, r[i*3], r[i*3+1], r[i*3+2], d[i*3]-r[i*3], d[i*3+1]-r[i*3+1], d[i*3+2]-r[i*3+2]]); }
+  worst.sort((a, b) => b[0] - a[0]);
+  const hist = {}; for (const w of worst) { if (w[0] < 0.015) break; const key = w[1] + ' y' + w[3].toFixed(1) + (Math.abs(w[2]) > 0.1 ? ' side' : ' mid') + (w[4] > 0.02 ? ' front' : w[4] < -0.04 ? ' back' : ''); hist[key] = (hist[key] || 0) + 1; }
+  return { parts: Object.fromEntries(Object.keys(acc).map(k => [k, [+(acc[k] / cnt[k] * 1000).toFixed(1), +(mx[k] * 1000).toFixed(0)]])), where: hist, top: worst.slice(0, 6).map(w => w.map(v => typeof v === 'number' ? +v.toFixed(3) : v)) };
+};
+const v3 = new V3();
+(function loop() {
+  place(); renderer.render(scene, camera);
+  for (const t of tags) { v3.set(+t.dataset.x, -0.05, 0.3).project(camera); t.style.left = ((v3.x + 1) / 2 * 100) + '%'; t.style.top = Math.min(94, (1 - v3.y) / 2 * 100) + '%'; }
+  requestAnimationFrame(loop);
+})();
+</script>
