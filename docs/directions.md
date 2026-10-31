@@ -113,3 +113,7 @@ head, wrapped with Anny's mesh) and be joined to B's bodies and clothes later.
   bow breaks (a human 90° bend with a half-height head puts the face on the floor) — big heads need head and spine
   bends damped and limbs amplified; a ghost needs its own motion; feet slide; real motion lacks cartoon clarity
   (strong poses, holds).
+
+**Pavel on the expressive faces and rubber-hose characters:** "супер охуенно и супер ценно… я люблю тут всех
+персонажей… практически готовый вариант персонажей; если Kimodo может ими управлять, это отлично подойдёт для некоторых
+игр."
