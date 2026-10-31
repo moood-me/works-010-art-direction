@@ -272,14 +272,15 @@ function faceParts(f, expr) {
     const e = expr === 'wink' && side > 0 ? 'happy' : expr;
     if (e === 'happy') out.push([G, bone, arc(F, [[-w, -h * 0.25], [0, h * 0.9], [w, -h * 0.25]], th), col]);
     else if (e === 'surprised') out.push([G, bone, dot(F, 1.15, 1.2), col]);
-    else if (e === 'angry') out.push([G, bone, inter(dot(F), lid(F, side, 0.55, 0.25), 0.002 * s), col]);
-    else if (e === 'sad') out.push([G, bone, inter(dot(F), lid(F, side, -0.45, 0.35), 0.002 * s), col]);
+    else if (e === 'angry') out.push([G, bone, inter(dot(F), lid(F, side, -0.55, 0.25), 0.002 * s), col]);
+    else if (e === 'sad') out.push([G, bone, inter(dot(F), lid(F, side, 0.45, 0.35), 0.002 * s), col]);
     else if (e === 'sleepy') out.push([G, bone, inter(dot(F, 1.05, 1), lid(F, side, 0, -0.1), 0.002 * s), col]);
     else out.push([G, bone, dot(F), col]);
     // brows, when the feeling needs them
     const bc = f.brow || col, by = h * 1.45 + 0.01 * s;
-    if (e === 'angry') out.push([G, bone, capsule(F.at(-side * w * 1.1, by + h * 0.25), F.at(side * w * 0.9, by - h * 0.25), th * 0.55), bc]);
-    if (e === 'sad') out.push([G, bone, capsule(F.at(-side * w * 1.1, by - h * 0.2), F.at(side * w * 0.9, by + h * 0.25), th * 0.55), bc]);
+    // (the inner end of a brow is the one toward the nose: down for anger, up for sorrow)
+    if (e === 'angry') out.push([G, bone, capsule(F.at(-side * w * 1.1, by - h * 0.25), F.at(side * w * 0.9, by + h * 0.25), th * 0.55), bc]);
+    if (e === 'sad') out.push([G, bone, capsule(F.at(-side * w * 1.1, by + h * 0.25), F.at(side * w * 0.9, by - h * 0.2), th * 0.55), bc]);
     if (e === 'surprised') out.push([G, bone, arc(F, [[-w, by + h * 0.25], [0, by + h * 0.6], [w, by + h * 0.25]], th * 0.5), bc]);
     // cheeks
     if (f.blush && ['neutral', 'happy', 'wink'].includes(e)) out.push(['faceBlush', bone, dot(frame(side * gap * 1.25, lift - (h / r) * 1.6), 1.3, 0.55), f.blush]);
@@ -330,7 +331,7 @@ hero('ghost', 'Призрак', rig({ hip: 0.3, spine: 0.15, neck: 0.0, headR: 0
   ['body', 'Spine1', cone([0, 0.06, -0.02], J.Spine1, 0.06, 0.19), '#eef0f5'],
   ['body', 'Hips', horn([0, 0.1, -0.02], [0.05, 0.03, -0.06], [0.12, 0.02, -0.12], 0.06, 0.012), '#eef0f5'],
   ...both((s, k) => [['body', [s + 'Arm', s + 'ForeArm'], cone(J[s + 'Arm'], J[s + 'Hand'], 0.045, 0.03), '#eef0f5']]),
-  ...dotEyes(J, '#1b1a24', [0.05, 0.075], 0.38, 0.12, 'eyes', 0.95, { mouth: true, mouthW: 0.11, mouthY: 0.45 }),
+  ...dotEyes(J, '#1b1a24', [0.05, 0.075], 0.38, 0.12, 'eyes', 0.95, { mouth: true, mouthW: 0.11, mouthY: 0.45, bone: 'Spine2' }),
 ], { float: 0.06 });
 
 // 4 — a little robot: a box head with a screen face, an antenna, a barrel body
@@ -782,8 +783,91 @@ function applyPose(I, name) {
   I.root.updateMatrixWorld(true);
 }
 
+// ———————————— Kimodo's motions on these bones ————————————
+// A motion gives each SOMA joint's turn every frame against SOMA's own rest (D: how the joint has turned from where
+// it stood at rest, in the person's space) and the pelvis's place. On a hero each joint turns the same way; where the
+// hero's rest differs from SOMA's (arms hang at their own angle, a hand points along the arm) a fixed turn C first
+// brings the hero's bone to SOMA's rest direction. The pelvis goes as high and as far as the hero's legs make it;
+// the feet are put back on the floor; arms are kept out of a big head and out of a round body.
+const MOTION = {};
+const LIMB = /Shoulder|Arm|Hand|Leg|Shin|Foot/;
+const CHAIN = { LeftShoulder: 'LeftArm', LeftArm: 'LeftForeArm', LeftForeArm: 'LeftHand', LeftHand: 'LeftHandMiddle1', RightShoulder: 'RightArm', RightArm: 'RightForeArm', RightForeArm: 'RightHand', RightHand: 'RightHandMiddle1',
+  LeftLeg: 'LeftShin', LeftShin: 'LeftFoot', LeftFoot: 'LeftToeBase', RightLeg: 'RightShin', RightShin: 'RightFoot', RightFoot: 'RightToeBase' };
+const OUR_CHILD = { LeftHand: null, RightHand: null };
+function restTurns(H, M) {
+  return H._C ??= Object.fromEntries(Object.entries(CHAIN).map(([b, c]) => {
+    const oc = OUR_CHILD[b] === null ? null : c;
+    const ours = oc ? new THREE.Vector3(...sub(H.J[oc], H.J[b])) : new THREE.Vector3(...sub(H.J[b], H.J[PARENT[b]]));
+    const soma = new THREE.Vector3(...sub(M.rest[c], M.rest[b]));
+    return [b, new THREE.Quaternion().setFromUnitVectors(ours.normalize(), soma.normalize())];
+  }));
+}
+const _w = {}, _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion(), _va = new THREE.Vector3(), _vb = new THREE.Vector3(), _vc = new THREE.Vector3();
+function poseFromMotion(I, M, f) {
+  const H = I.H, J = H.J, C = restTurns(H, M), W = {};
+  // pushed further: each joint's turn against its parent, grown by ex (the hips' own turn kept as it is)
+  const ex = H.ex ?? state.ex ?? 1, Dx = {};
+  for (const b of BONES) {
+    const p = PARENT[b], pw = p ? W[p] : new THREE.Quaternion();
+    let w;
+    if (M.D[b]) {
+      const o = f * 4, d = M.D[b], D = new THREE.Quaternion(d[o], d[o + 1], d[o + 2], d[o + 3]);
+      if (p && Dx[p] && ex !== 1 && LIMB.test(b)) {
+        const dp = M.D[p], Dp = new THREE.Quaternion(dp[o], dp[o + 1], dp[o + 2], dp[o + 3]), l = Dp.invert().multiply(D);
+        if (l.w < 0) l.set(-l.x, -l.y, -l.z, -l.w);
+        const a = 2 * Math.acos(Math.min(1, l.w)), s = Math.sin(a / 2);
+        if (s > 1e-5) l.setFromAxisAngle(new THREE.Vector3(l.x / s, l.y / s, l.z / s), a * ex);
+        Dx[b] = Dx[p].clone().multiply(l);
+      } else Dx[b] = D;
+      w = Dx[b].clone(); if (C[b]) w.multiply(C[b]);
+    }
+    else w = pw.clone();
+    W[b] = w;
+  }
+  // arms out of the body: the upper arm keeps a little to its side
+  for (const [s, k] of [['Left', 1], ['Right', -1]]) {
+    const side = _vb.set(k, 0, 0).applyQuaternion(W.Chest);
+    const d = new THREE.Vector3(...sub(J[s + 'ForeArm'], J[s + 'Arm'])).normalize().applyQuaternion(W[s + 'Arm']);
+    const out = d.dot(side), need = H.armOut ?? 0.18;
+    if (out < need) { const ax = new THREE.Vector3().crossVectors(d, side).normalize(), fix = new THREE.Quaternion().setFromAxisAngle(ax, Math.asin(need) - Math.asin(Math.max(-1, out))); for (const b of [s + 'Arm', s + 'ForeArm', s + 'Hand']) W[b].premultiply(fix); }
+  }
+  const setLocal = () => { for (const b of BONES) { const p = PARENT[b]; I.bones[b].quaternion.copy(p ? W[p].clone().invert().multiply(W[b]) : W[b]); } I.root.updateMatrixWorld(true); };
+  setLocal();
+  // and out of a big head: where a hand or an elbow would go into it, the whole arm swings outward about the chest's
+  // forward line until it clears (a hand raised to wave ends up beside the head, not inside it)
+  const head = new THREE.Vector3(), hp = new THREE.Vector3(), fwd = new THREE.Vector3(), headIn = new THREE.Matrix4();
+  for (const [s, k] of [['Left', 1], ['Right', -1]]) {
+    for (let it = 0; it < 14; it++) {
+      I.bones.Head.updateWorldMatrix(true, false);
+      head.set(...sub(J.hc, J.Head)).applyMatrix4(I.bones.Head.matrixWorld);
+      let inside = false;
+      for (const b of [s + 'Hand', s + 'ForeArm']) { I.bones[b].getWorldPosition(hp); if (hp.distanceTo(head) < J.headR * (H.headRoom ?? 1.4) + 0.03) inside = true; }
+      if (!inside) break;
+      fwd.set(0, 0, 1).applyQuaternion(W.Chest);
+      const fix = new THREE.Quaternion().setFromAxisAngle(fwd, k * -0.14);
+      for (const b of [s + 'Arm', s + 'ForeArm', s + 'Hand']) W[b].premultiply(fix);
+      setLocal();
+    }
+  }
+  const kr = J.Hips[1] / M.hipY;
+  I.bones.Hips.position.set(0, M.hips[f * 3 + 1] * kr, 0);
+  I.root.updateMatrixWorld(true);
+  for (const s of ['LeftProp', 'RightProp']) { I.bones[s].parent.getWorldQuaternion(_qa); I.root.getWorldQuaternion(_qb); I.bones[s].quaternion.copy(_qa.invert().multiply(_qb)); }
+  I.root.updateMatrixWorld(true);
+  // the feet: as high above the floor as SOMA's are now, on the hero's scale
+  let low = 1e9; const v = new THREE.Vector3();
+  for (const m of I.meshes) {
+    if (m.userData.glow || /staff|stem|leaf|fork|broom|bristle|lamp|orb|sword|spoon|letter|seal/.test(m.userData.g)) continue;
+    const pos = m.geometry.attributes.position;
+    for (let i = 0; i < pos.count; i += 9) { v.fromBufferAttribute(pos, i); m.applyBoneTransform(i, v); v.applyMatrix4(m.matrixWorld); if (v.y < low) low = v.y; }
+  }
+  I.bones.Hips.position.y += M.foot[f] * kr - (low - I.root.position.y) + (H.float || 0);
+  I.root.updateMatrixWorld(true);
+}
+async function loadMotion(name) { return MOTION[name] ??= fetch('motions/' + name + '.json').then(r => r.json()); }
+
 // ———————————— showing ————————————
-const state = { mode: 'all', row: 0, pose: 'stand', expr: null, view: 'style', hero: 'fox' };
+const state = { mode: 'all', row: 0, pose: 'stand', expr: null, view: 'style', hero: 'fox', ex: 1 };
 let built = {}, placed = [];
 function clear() { for (const I of placed) { scene.remove(I.root); scene.remove(I.lines); scene.remove(I.dots); } placed = []; tagsEl.innerHTML = ''; }
 function put(H, pose, expr, x, yaw, tag) {
@@ -801,6 +885,10 @@ function layout() {
     const ps = ['wave', 'walk', 'jump', 'act', 'stand', 'doze', 'sit'];
     HEROES.slice(state.row * 6, state.row * 6 + 6).forEach((H, c) => { const p = ps[(c * 3 + state.row * 2) % ps.length]; put(H, p, null, (c - 2.5) * 0.62, 0.45 - 0.17 * c, H.name); });
     camera.position.set(0, 1.05, 5.2); camera.lookAt(0, 0.42, 0); camera.fov = 24;
+  } else if (state.mode === 'motion') {
+    const cast = state.cast.map(id => HEROES.find(h => h.id === id)), M = state.M, f = Math.min(state.frame, M.n - 1);
+    cast.forEach((H, c) => { const I = instance(H, built[H.id].get(state.face || 'neutral')); I.root.position.set((c - (cast.length - 1) / 2) * 0.62, 0, 0); I.root.rotation.y = state.yaw ?? 0.5; scene.add(I.root); placed.push(I); poseFromMotion(I, M, f); I.tag = H.name; });
+    camera.position.set(0, 1.0, 5.4); camera.lookAt(0, 0.4, 0); camera.fov = 24;
   } else if (state.mode === 'faces') {
     const H = HEROES.find(h => h.id === state.hero), y = H.J.hc[1];
     EXPR.forEach((e, i) => put(H, 'stand', e, (i - 3) * 0.5, 0.15 - 0.05 * i, EXPR_RU[e]));
@@ -858,6 +946,6 @@ window.addEventListener('resize', resize);
 setTimeout(() => {
   for (const H of HEROES) built[H.id] = buildHero(H);
   msg.remove(); resize(); layout();
-  window.__ih = { state, layout, view, camera, render, placed: () => placed };
+  window.__ih = { state, layout, view, camera, render, placed: () => placed, loadMotion, poseFromMotion, setFrame(f) { state.frame = f; for (const I of placed) poseFromMotion(I, state.M, Math.min(f, state.M.n - 1)); view(); } };
 }, 30);
 </script>

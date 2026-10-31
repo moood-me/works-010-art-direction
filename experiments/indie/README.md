@@ -15,3 +15,9 @@ one; faces redrawn per feeling — calm, glad, surprised, angry, sad, sleepy, wi
 a line of action, each with its own feeling, plus "dozing"; held things on their own joint in the hand, kept upright;
 robot and stone guard as separate hard blocks; six new heroes (candle, raven courier, snail knight, cactus wanderer,
 little octopus, little witch) — 24 in all.
+
+**Kimodo motions:** ten motions made in the studio (walk, wave, happy jump, sit hugging knees, run, idle, dance, bow,
+sneak, angry stomp); `conv.py` turns the studio's per-joint world rotations into rotations relative to SOMA's rest
+pose (`motions/*.json`); `poseFromMotion` retargets them — each joint turned as SOMA's, bones first re-aimed where the
+hero's rest differs, pelvis raised by leg length, feet set on the floor, arms kept off the body and pushed out of the
+big head; limbs amplified ×1.3; the face follows the motion. GIFs in `docs/pictures/indie/motion`.

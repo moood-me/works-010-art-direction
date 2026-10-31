@@ -108,3 +108,8 @@ silhouette; non-human heroes.
 **Decided with Pavel:** the dressed characters (B) are kept as the base "body plus clothes" and as a set of findings;
 their faces and MakeHuman hair are dropped. The head will come from the work on heads (a drawn face on a designed
 head, wrapped with Anny's mesh) and be joined to B's bodies and clothes later.
+- **Kimodo on indie heroes** ([pictures](pictures/indie/motion/)): most motions sit — walk, run, jump, dance, sit,
+  stomp, idle: real weight and shift, cute on short heroes. Wave works only with the arm pushed out of the head; the
+  bow breaks (a human 90° bend with a half-height head puts the face on the floor) — big heads need head and spine
+  bends damped and limbs amplified; a ghost needs its own motion; feet slide; real motion lacks cartoon clarity
+  (strong poses, holds).
