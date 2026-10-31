@@ -18,13 +18,18 @@
   aside a { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 14px; }
   aside a:hover { background: var(--card); }
   aside a.on { background: var(--card); box-shadow: inset 3px 0 0 var(--accent); }
-  aside a .n { color: var(--accent); font-weight: 700; min-width: 18px; }
+  aside a .n { color: var(--accent); font-weight: 700; min-width: 26px; }
   aside a .dot { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; flex: none; background: currentColor; }
   main { flex: 1; min-width: 0; padding: 24px 28px 64px; max-width: 1300px; }
   h2 { font-size: 24px; margin: 0 0 6px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
   .id { color: var(--accent); font-weight: 700; }
   .st { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; }
   .good { color: var(--good); } .mid { color: var(--mid); } .bad { color: var(--bad); }
+  .rel { margin: 0 0 6px; font-size: 13px; padding: 6px 10px; border-left: 3px solid var(--accent); background: var(--card); max-width: 900px; }
+  .ov h3 { margin: 26px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .ov .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .ov figure img { height: 150px; }
+  .ov figcaption .s { display: block; font-size: 12px; margin-top: 2px; }
   .what { color: var(--muted); margin: 0 0 6px; max-width: 900px; }
   .verdict { margin: 0 0 16px; max-width: 900px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
@@ -51,89 +56,97 @@
 </style>
 </head>
 <body>
-<aside id="side"><h1>Art direction</h1><p class="sub">Финал каждого пути. Номер — путь, буква — картинка: «3б».</p></aside>
+<aside id="side"><h1><a href="#" style="padding:0">Art direction</a></h1><p class="sub">Код пути — буква группы и номер (Т5 — тело, путь 5). Картинка — через дефис: «Т5-б».</p></aside>
 <main><select id="menuSel" aria-label="Путь"></select><div id="view"></div></main>
 <div id="lb" role="dialog" aria-modal="true"><div class="imgbox"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div>
 <button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
 <script>
 const P = '../docs/pictures/';
 const groups = [
-  { title: 'Готовые жанры', items: [
-    { id: 1, name: 'Инди-герои', st: 'good', stt: 'нравится',
-      what: 'Конструктор из простых форм на суставах SOMA: шары, капли, цилиндры, вещи как часть силуэта, нечеловеческие герои. Цвет и контур, лица с чувствами, позы с линией действия.',
-      verdict: 'Павел: «о классссс! :3», «развей их, делай ещё и стильнее». Движения Kimodo садятся на большинство.',
-      pics: [['indie/v2-party.png', '24 героя, у каждого своя поза и чувство'], ['indie/v2-faces.png', '7 выражений на 4 героях'], ['indie/v2-poses.png', 'позы'], ['indie/motion/gif-walk.gif', 'Kimodo: шаг'], ['indie/motion/gif-dance.gif', 'Kimodo: танец'], ['indie/motion/gif-stomp.gif', 'Kimodo: топает']] },
-    { id: 2, name: 'Выразительные лица и руки-шланги', st: 'good', stt: 'нравится',
-      what: 'Свои персонажи на скелете SOMA: лицо — рисунок на голове, руки и ноги гнутся дугой, язык форм на пределе. Вторая версия: нарисованные туловища и сужающиеся ноги.',
-      verdict: 'Павел: «супер охуенно и супер ценно… я люблю тут всех персонажей». Вторая версия «стала лучше, отлично», первая сохранена.',
-      pics: [['toon/v2-liked-five.png', 'пятеро любимых: слева v1, справа v2'], ['toon/v2-weaker-six.png', 'слабые шестеро: v1 и v2'], ['toon/expr.png', '9 выражений на 4 головах'], ['toon/cast.png', 'v1: все 11']] },
-  ]},
-  { title: 'Части персонажа', items: [
-    { id: 3, name: 'Одежда со своей формой', st: 'good', stt: 'нравится',
-      what: 'Вещь читается вокруг оси и рисуется заново: силуэт, жёсткость, откуда висит, складки как рисунок. Упрощение вместе с телом: ткань → форма со складками → гладкая форма → знак. В движении — физика ткани с нарисованной формой покоя.',
-      verdict: 'Павел: «одежда и силуэты, фигура и всё это упрощение — вообще потрясающе»; физика в движении — «чудесно». Тела под одеждой уродливы — одежду переносят на хорошие тела.',
-      pics: [['clothes/dresses.png', '8 силуэтов одного платья'], ['clothes/ladder.png', 'лестница упрощения трёх вещей'], ['clothes/sE-kids.png', 'принцесса, малышка, бабушка, учительница'], ['clothes/motion/sM-bell.png', 'в движении: 3 способа, внизу физика'], ['clothes/motion/gif-phys-bell-walk.gif', 'шаг с физикой ткани']] },
-    { id: 4, name: 'Головы по аниме и рисованным референсам', st: 'mid', stt: 'более-менее',
-      what: 'Своя голова: лицо из кривых своего рисунка (овал спереди, профиль сбоку), носы и рты своими линиями, черты нарисованы на коже, мультяшный свет с контуром.',
-      verdict: 'Павел: «в целом можно считать более-менее норм». Волосы — главное уродство.',
-      pics: [['heads-anime/final1.png', 'аниме-девушка, рыжая девушка, Альва, женщина в капюшоне'], ['heads-anime/final2.png', 'девушка в маске, блондин, мальчик с хвостиками, Джеспер'], ['heads-anime/final3.png', 'мальчик с каре, старик, парень с длинным носом']] },
-    { id: 5, name: 'Обтяжка головы сеткой Anny', st: 'mid', stt: 'более-менее, в работе',
-      what: 'Придуманная голова обтянута анимационной сеткой головы Anny: вид сохранён, шея без шва, веки и рот двигаются самой сеткой.',
-      verdict: 'Павел: «вроде более-менее»; сделать лица красивыми, убрать явные ляпы (пятна, торчащие зубы).',
-      pics: [['heads-wrap/sheetW3.png', 'рыжая девушка, старик: придуманная → обтянутая, моргание, рот, улыбка'], ['heads-wrap/sheetW4.png', 'парень с длинным носом, женщина в капюшоне']] },
-    { id: 6, name: 'Головы по 3D-мультяшным референсам', st: 'bad', stt: 'не получилось, новый инструмент в работе',
-      what: 'Лепка объёмами (слитые формы и плоскости). Агент сам признал, что этим инструментом точные лица без багов не получить; сейчас пробует сетку лица, двигаемую по точкам и кривым.',
-      verdict: 'Павел: «баги на каждом лице… сделать ТОЧНО каждую ФОРМУ ЛИЦА».',
-      pics: [['heads-3d/v3/sheet-marco-gwen-gogo-jack-ariel-boy3d.png', 'Марко, Гвен, Гоу-Гоу, Джек, рыжая девушка, рыжий мальчик'], ['heads-3d/v3/sheet-giulia-ambrosius-nimona-doll-claire.png', 'Джулия, Амброзий, Нимона, кукла, Клэр']] },
-  ]},
-  { title: 'Тела, формы и инструменты', items: [
-    { id: 7, name: 'Нарисованная форма тела (А)', st: 'mid', stt: 'основа для тел',
-      what: 'Каждый стиль рисует свои контуры тела кривыми, тело Anny натягивается на эту форму. Чисто, без бугров.',
-      verdict: 'Тела Диснея и аниме ниже шеи чистые; ритма в контурах пока мало.',
-      pics: [['designed-form/sA-final.png', 'Дисней, Пиксар, аниме: спереди и сбоку'], ['designed-form/sA-final-close.png', 'торс и ноги крупно']] },
-    { id: 8, name: 'Одетые персонажи с лицами (Б)', st: 'mid', stt: 'основа «тело + одежда»',
-      what: 'Генератор 72 персонажей: одежда MakeHuman на стилизованном теле, глаза, брови, рот. Дал находки о красоте.',
-      verdict: 'Павел: тела и одежда хорошо, лица плохо. Решено: брать как основу «тело + одежда», голову — из работ по головам.',
-      pics: [['dressed/best-of-72.png', 'лучшие 12 из 72'], ['dressed/lid-open-vs-heavy.png', 'открытое и тяжёлое веко']] },
-    { id: 9, name: 'Каркас-клетка и другие инструменты', st: 'good', stt: 'служат остальным',
-      what: 'Каркас: решётка вокруг тела, двигаешь её — весь силуэт меняется одним движением (груша, клин, песочные часы, яйцо, колонна, фасолина, масса на ножках, тростинка). Плюс сглаживание в сантиметрах, лицо по опорным точкам, сабдив.',
-      verdict: 'Каркас — самая чистая новинка: силуэты без бугров и швов, скелет остаётся годным. Инструменты дают формы, но не вкус: пресеты — мои грубые догадки.',
-      pics: [['tools/cage.png', 'каркас: одно тело Диснея, без каркаса и 7 силуэтов'], ['tools/breadth.png', 'разброс: стиль × каркас × лицо'], ['tools/styles.png', '8 стилей с новым сглаживанием'], ['tools/face.png', 'лицо по опорным точкам: исходное и 8 вариантов'], ['tools/close.png', 'торс крупно: со сабдивом и без']] },
-    { id: 10, name: 'Anny своими ползунками и поправками', st: 'mid', stt: 'первый шаг',
-      what: 'Сама Anny, запущенная из исходников: её ползунки (пол, возраст, вес, мышцы, пропорции…) до предела и дальше, ~1250 поправок от художников, голова другого возраста на взрослом теле. Перенесено на сетку moood.',
-      verdict: 'Не хуже ручных деформаций, а другое: пропорции, сделанные людьми, держатся до двойного предела; голова ребёнка на взрослом теле сразу даёт кукольные пропорции. Поверхность всегда реалистичная, мультяшного лица не даёт — поэтому Anny первым шагом, наша форма поверх. Issue: moood-me/moood#4.',
-      pics: [['anny-space/heads-of-other-age.png', 'головы другого возраста на взрослых телах'], ['anny-space/bodies-on-moood-mesh.png', 'принцесса, герой, эльф, груша, квадрат, фасолина…'], ['anny-space/men-and-burton.png', 'мужчины и Бёртон'], ['anny-space/heads-close.png', 'головы крупно'], ['anny-space/sliders-1.png', 'ползунки: пропорции и возраст до предела'], ['anny-space/sliders-2.png', 'ползунки до предела, 2'], ['anny-space/sliders-3.png', 'ползунки до предела, 3'], ['anny-space/sliders-4.png', 'отдельные поправки до предела'], ['anny-space/targets-combined.png', 'сочетания поправок'], ['anny-space/targets-combined-2.png', 'сочетания поправок, 2'], ['anny-space/head-swap-anny-mesh.png', 'пересадка головы на сетке Anny'], ['anny-space/head-swap-anny-mesh-2.png', 'пересадка головы, 2']] },
-    { id: 11, name: 'Жанры тела (страница стилей)', st: 'mid', stt: 'пройденный этап',
+  { title: 'Т — Тело', items: [
+    { id: 'Т1', rel: 'Часть страницы «Стили тела на Anny» (вместе с Т2–Т5): одна страница, разные ползунки.', name: 'Тело: жанры', st: 'mid', stt: 'пройденный этап',
       what: 'Один и тот же человек в разных жанрах мультипликации — ползунками пропорций, масс, языка форм.',
       verdict: 'Тела стали разными по жанру, но ни одного красивого — отсюда пошли остальные пути.',
       pics: [['form/eight-styles-even-smoothing.png', '8 жанров на одном теле, последняя версия'], ['form-early/h-g1.png', 'все жанры рядом'], ['form-early/q-v-disney.png', 'Дисней'], ['form-early/q-v-pixar.png', 'Pixar'], ['form-early/q-v-anime.png', 'аниме'], ['form-early/q-v-burton.png', 'Бёртон'], ['form-early/q-v-clay.png', 'пластилин'], ['form-early/q-v-soviet.png', 'советская мультипликация'], ['form-early/q-v-comic.png', 'комикс'], ['form-early/q-v-chibi.png', 'чиби'], ['form-early/q-hose.png', 'резиновые шланги (1930-е)'], ['form-early/q-stick.png', 'масса на ножках']] },
-    { id: 14, name: 'Характеры и архетипы', st: 'mid', stt: 'пройденный этап',
+    { id: 'Т2', rel: 'Часть страницы «Стили тела на Anny» (Т1–Т5). Характер сочетается с жанром Т1.', name: 'Тело: характеры', st: 'mid', stt: 'пройденный этап',
       what: 'Характер как набор осей формы: принцесса, злодей-шкаф, малыш-начальник, герой и другие; сочетаются с жанром.',
       verdict: 'Павел тогда отметил: близко к красоте была принцесса.',
       pics: [['form-early/h-arch.png', 'все характеры рядом'], ['form-early/h-arch2.png', 'все характеры, вторая версия'], ['form-early/q-princess.png', 'принцесса'], ['form-early/q-hero.png', 'герой'], ['form-early/h-hero.png', 'герой крупно'], ['form-early/q-n-wardrobe.png', 'злодей-шкаф'], ['form-early/q-n-baby.png', 'малыш-начальник'], ['form-early/q-baby.png', 'малыш-начальник, ранний'], ['form-early/h-old.png', 'старики']] },
-    { id: 15, name: 'Знак и пиктограмма', st: 'good', stt: 'чисто',
-      what: 'Тело переходит в знак, как на табличках: голова-шар (можно отделить), торс фигурой, руки и ноги палочками; платье-треугольник — отдельная форма.',
-      verdict: 'Пиктограммы мужчины и женщины — одни из самых чистых результатов страницы стилей.',
-      pics: [['form-early/q-picto.png', 'пиктограмма'], ['form-early/q-picto2.png', 'пиктограмма, с платьем-треугольником']] },
-    { id: 16, name: 'Деформации линиями и формами', st: 'mid', stt: 'в работе: делаем сильно',
-      what: 'Изгиб всей фигуры одной S- или C-линией, сжатие и растяжение, прямые против кривых контуров, руки и ноги дугой, силуэт трапецией, треугольником и другими формами.',
-      verdict: 'Павел: «покажи мне это, чтобы работало! и ещё трапеции, всякое — сделай!» Сейчас линии сделаны слабо; новая работа делает их сильными.',
-      pics: [['form/lines-gesture.png', 'обычное; S-линия +; S-линия −; C-линия + (сбоку) / C-линия − (сбоку); вытянуть; сжать; прямые контуры'], ['form-early/q-x0.png', 'карикатура: без усиления'], ['form-early/q-x1.png', 'карикатура: слабо'], ['form-early/q-x2.png', 'карикатура: средне'], ['form-early/q-x3.png', 'карикатура: сильно']] },
-    { id: 17, name: 'Степени упрощения', st: 'mid', stt: 'пройденный этап',
+    { id: 'Т3', rel: 'Часть страницы «Стили тела на Anny» (Т1–Т5): ползунок «упрощение».', name: 'Тело: степени упрощения', st: 'mid', stt: 'пройденный этап',
       what: 'Одно тело от подробного до знака.',
       verdict: '',
       pics: [['form-early/h-d1.png', 'степени упрощения'], ['form-early/h-d2.png', 'степени упрощения, вторая версия'], ['form-early/h-c1.png', 'сравнение 1'], ['form-early/h-c2.png', 'сравнение 2'], ['form-early/h-one-w.png', 'женщина крупно'], ['form-early/h-one-p.png', 'Pixar крупно'], ['form-early/h-one-h.png', 'герой крупно']] },
-    { id: 18, name: 'Волосы', st: 'mid', stt: 'половина читается',
-      what: 'Свой инструмент: причёска из нескольких частей, внутри части всё слито в одну поверхность; пряди-объёмы по направляющим кривым с острыми или мягкими кончиками; чёлка, коса, кудри, пучки. Пряди можно потом повесить на кости.',
-      verdict: 'Чисто читаются 7 из 14: Гвен, Гоу-Гоу, Марко, кукла, пучки и коса K-pop, аниме-девушка. Слабые: Джек (рога), рыжий мальчик, хвост, Джулия, Нимона, Альва, Ариэль.',
-      pics: [['hair/sheet-short.png', 'короткие: Гвен, Гоу-Гоу, Джек, Марко, рыжий мальчик'], ['hair/sheet-tied-curly.png', 'собранные и кудри: пучки, коса, хвост, Джулия, Нимона'], ['hair/sheet-long.png', 'длинные: кукла, Альва, аниме-девушка, Ариэль']] },
-    { id: 12, name: 'Соединение А и Б', st: 'bad', stt: 'тупик',
+    { id: 'Т4', rel: 'Часть страницы «Стили тела на Anny» (Т1–Т5): ползунок «знак».', name: 'Тело: знак, пиктограмма', st: 'good', stt: 'чисто',
+      what: 'Тело переходит в знак, как на табличках: голова-шар (можно отделить), торс фигурой, руки и ноги палочками; платье-треугольник — отдельная форма.',
+      verdict: 'Пиктограммы мужчины и женщины — одни из самых чистых результатов страницы стилей.',
+      pics: [['form-early/q-picto.png', 'пиктограмма'], ['form-early/q-picto2.png', 'пиктограмма, с платьем-треугольником']] },
+    { id: 'Т5', rel: 'Часть страницы «Стили тела на Anny» (Т1–Т5): ползунки линий, сжатия, контуров. Сейчас переделывается отдельно, сильнее.', name: 'Тело: деформации линиями и формами', st: 'mid', stt: 'в работе: делаем сильно',
+      what: 'Изгиб всей фигуры одной S- или C-линией, сжатие и растяжение, прямые против кривых контуров, руки и ноги дугой, силуэт трапецией, треугольником и другими формами.',
+      verdict: 'Павел: «покажи мне это, чтобы работало! и ещё трапеции, всякое — сделай!» Сейчас линии сделаны слабо; новая работа делает их сильными.',
+      pics: [['form/lines-gesture.png', 'обычное; S-линия +; S-линия −; C-линия + (сбоку) / C-линия − (сбоку); вытянуть; сжать; прямые контуры'], ['form-early/q-x0.png', 'карикатура: без усиления'], ['form-early/q-x1.png', 'карикатура: слабо'], ['form-early/q-x2.png', 'карикатура: средне'], ['form-early/q-x3.png', 'карикатура: сильно']] },
+    { id: 'Т6', rel: 'Страница инструментов (вместе с Т9), работает поверх тел Т1–Т5; по решению — поверх Т8.', name: 'Тело: каркас-клетка', st: 'good', stt: 'служат остальным',
+      what: 'Решётка вокруг тела: двигаешь её — весь силуэт меняется одним движением (груша, клин, песочные часы, яйцо, колонна, фасолина, масса на ножках, тростинка). Скелет остаётся годным.',
+      verdict: 'Самая чистая новинка: силуэты без бугров и швов. Павел: можно чуть-чуть накладывать поверх тел Anny для художественности.',
+      pics: [['tools/cage.png', 'одно тело Диснея: без каркаса и 7 силуэтов'], ['tools/breadth.png', 'разброс: стиль × каркас × лицо']] },
+    { id: 'Т7', rel: 'Направление А: ответ на «почему тела Т1 некрасивые». Тела отсюда используются в Г4 и О1.', name: 'Тело: нарисованная форма (А)', st: 'mid', stt: 'основа для тел',
+      what: 'Каждый стиль рисует свои контуры тела кривыми, тело Anny натягивается на эту форму. Чисто, без бугров.',
+      verdict: 'Тела Диснея и аниме ниже шеи чистые; ритма в контурах пока мало.',
+      pics: [['designed-form/sA-final.png', 'Дисней, Пиксар, аниме: спереди и сбоку'], ['designed-form/sA-final-close.png', 'торс и ноги крупно']] },
+    { id: 'Т8', rel: 'Отдельный путь: сама Anny. Решено: основа тела — Т8, поверх чуть-чуть Т6.', name: 'Тело: Anny своими настройками', st: 'mid', stt: 'первый шаг',
+      what: 'Сама Anny, запущенная из исходников: её ползунки (пол, возраст, вес, мышцы, пропорции…) до предела и дальше, ~1250 поправок от художников, голова другого возраста на взрослом теле. Перенесено на сетку moood.',
+      verdict: 'Не хуже ручных деформаций, а другое: пропорции, сделанные людьми, держатся до двойного предела; голова ребёнка на взрослом теле сразу даёт кукольные пропорции. Поверхность всегда реалистичная, мультяшного лица не даёт — поэтому Anny первым шагом, наша форма поверх. Issue: moood-me/moood#4.',
+      pics: [['anny-space/heads-of-other-age.png', 'головы другого возраста на взрослых телах'], ['anny-space/bodies-on-moood-mesh.png', 'принцесса, герой, эльф, груша, квадрат, фасолина…'], ['anny-space/men-and-burton.png', 'мужчины и Бёртон'], ['anny-space/heads-close.png', 'головы крупно'], ['anny-space/sliders-1.png', 'ползунки: пропорции и возраст до предела'], ['anny-space/sliders-2.png', 'ползунки до предела, 2'], ['anny-space/sliders-3.png', 'ползунки до предела, 3'], ['anny-space/sliders-4.png', 'отдельные поправки до предела'], ['anny-space/targets-combined.png', 'сочетания поправок'], ['anny-space/targets-combined-2.png', 'сочетания поправок, 2'], ['anny-space/head-swap-anny-mesh.png', 'пересадка головы на сетке Anny'], ['anny-space/head-swap-anny-mesh-2.png', 'пересадка головы, 2']] },
+    { id: 'Т9', rel: 'Страница инструментов (вместе с Т6).', name: 'Инструменты: сглаживание, лицо по точкам', st: 'good', stt: 'служат остальным',
+      what: 'Сглаживание в сантиметрах (убирает мелкие формы, не худея), лицо по опорным точкам, сабдив.',
+      verdict: 'Служат остальным путям; формы дают, вкус — нет.',
+      pics: [['tools/styles.png', '8 стилей со сглаживанием в сантиметрах'], ['tools/face.png', 'лицо по опорным точкам: исходное и 8 вариантов'], ['tools/close.png', 'торс крупно: со сабдивом и без']] },
+  ]},
+  { title: 'Г — Голова', items: [
+    { id: 'Г1', rel: 'Отдельный путь голов. Его головы берёт Г3.', name: 'Голова: по аниме и рисованным', st: 'mid', stt: 'более-менее',
+      what: 'Своя голова: лицо из кривых своего рисунка (овал спереди, профиль сбоку), носы и рты своими линиями, черты нарисованы на коже, мультяшный свет с контуром.',
+      verdict: 'Павел: «в целом можно считать более-менее норм». Волосы — главное уродство.',
+      pics: [['heads-anime/final1.png', 'аниме-девушка, рыжая девушка, Альва, женщина в капюшоне'], ['heads-anime/final2.png', 'девушка в маске, блондин, мальчик с хвостиками, Джеспер'], ['heads-anime/final3.png', 'мальчик с каре, старик, парень с длинным носом']] },
+    { id: 'Г2', rel: 'Отдельный путь голов, свой способ (лепка объёмами, сейчас — сетка лица по точкам).', name: 'Голова: по 3D-мультяшным', st: 'bad', stt: 'не получилось, новый инструмент в работе',
+      what: 'Лепка объёмами (слитые формы и плоскости). Агент сам признал, что этим инструментом точные лица без багов не получить; сейчас пробует сетку лица, двигаемую по точкам и кривым.',
+      verdict: 'Павел: «баги на каждом лице… сделать ТОЧНО каждую ФОРМУ ЛИЦА».',
+      pics: [['heads-3d/v3/sheet-marco-gwen-gogo-jack-ariel-boy3d.png', 'Марко, Гвен, Гоу-Гоу, Джек, рыжая девушка, рыжий мальчик'], ['heads-3d/v3/sheet-giulia-ambrosius-nimona-doll-claire.png', 'Джулия, Амброзий, Нимона, кукла, Клэр']] },
+    { id: 'Г3', rel: 'Г1 + сетка головы Anny: голова Г1, обтянутая живой сеткой.', name: 'Голова: обтяжка сеткой Anny', st: 'mid', stt: 'более-менее, в работе',
+      what: 'Придуманная голова обтянута анимационной сеткой головы Anny: вид сохранён, шея без шва, веки и рот двигаются самой сеткой.',
+      verdict: 'Павел: «вроде более-менее»; сделать лица красивыми, убрать явные ляпы (пятна, торчащие зубы).',
+      pics: [['heads-wrap/sheetW3.png', 'рыжая девушка, старик: придуманная → обтянутая, моргание, рот, улыбка'], ['heads-wrap/sheetW4.png', 'парень с длинным носом, женщина в капюшоне']] },
+    { id: 'Г4', rel: 'Т7 + О2: голова Anny, натянутая на нарисованную форму. Тупик, вместо него — Г3.', name: 'Голова: Anny на форме лучами (А+Б)', st: 'bad', stt: 'тупик',
       what: 'Голова Anny натянута на нарисованную форму лучами — дала бугры.',
       verdict: 'Павел согласился: некрасиво. Вместо этого — правильная обтяжка (путь 5).',
       pics: [['combined/C-heads.png', '8 голов крупно']] },
   ]},
-  { title: 'Откуда начали', items: [
-    { id: 13, name: 'Hope (Claude Design)', st: 'good', stt: 'образец',
+  { title: 'В — Волосы', items: [
+    { id: 'В1', rel: 'Отдельный путь. Причёски на пустых головах.', name: 'Волосы: пряди по кривым', st: 'mid', stt: 'половина читается',
+      what: 'Свой инструмент: причёска из нескольких частей, внутри части всё слито в одну поверхность; пряди-объёмы по направляющим кривым с острыми или мягкими кончиками; чёлка, коса, кудри, пучки. Пряди можно потом повесить на кости.',
+      verdict: 'Чисто читаются 7 из 14: Гвен, Гоу-Гоу, Марко, кукла, пучки и коса K-pop, аниме-девушка. Слабые: Джек (рога), рыжий мальчик, хвост, Джулия, Нимона, Альва, Ариэль.',
+      pics: [['hair/sheet-short.png', 'короткие: Гвен, Гоу-Гоу, Джек, Марко, рыжий мальчик'], ['hair/sheet-tied-curly.png', 'собранные и кудри: пучки, коса, хвост, Джулия, Нимона'], ['hair/sheet-long.png', 'длинные: кукла, Альва, аниме-девушка, Ариэль']] },
+  ]},
+  { title: 'О — Одежда', items: [
+    { id: 'О1', rel: 'Вырос из О2: та же одежда MakeHuman, но перерисованная своей формой. Тела под ней — из О2; переносится на Т7 и каркас Т6.', name: 'Одежда: своя форма и упрощение', st: 'good', stt: 'нравится',
+      what: 'Вещь читается вокруг оси и рисуется заново: силуэт, жёсткость, откуда висит, складки как рисунок. Упрощение вместе с телом: ткань → форма со складками → гладкая форма → знак. В движении — физика ткани с нарисованной формой покоя.',
+      verdict: 'Павел: «одежда и силуэты, фигура и всё это упрощение — вообще потрясающе»; физика в движении — «чудесно». Тела под одеждой уродливы — одежду переносят на хорошие тела.',
+      pics: [['clothes/dresses.png', '8 силуэтов одного платья'], ['clothes/ladder.png', 'лестница упрощения трёх вещей'], ['clothes/sE-kids.png', 'принцесса, малышка, бабушка, учительница'], ['clothes/motion/sM-bell.png', 'в движении: 3 способа, внизу физика'], ['clothes/motion/gif-phys-bell-walk.gif', 'шаг с физикой ткани']] },
+    { id: 'О2', rel: 'Направление Б. Основа «тело + одежда» для О1; лица отсюда не берём.', name: 'Одежда MakeHuman на теле, с лицами (Б)', st: 'mid', stt: 'основа «тело + одежда»',
+      what: 'Генератор 72 персонажей: одежда MakeHuman на стилизованном теле, глаза, брови, рот. Дал находки о красоте.',
+      verdict: 'Павел: тела и одежда хорошо, лица плохо. Решено: брать как основу «тело + одежда», голову — из работ по головам.',
+      pics: [['dressed/best-of-72.png', 'лучшие 12 из 72'], ['dressed/lid-open-vs-heavy.png', 'открытое и тяжёлое веко']] },
+  ]},
+  { title: 'П — Готовые персонажи', items: [
+    { id: 'П1', rel: 'Отдельный путь, свой конструктор из простых форм (не Anny). Движения Kimodo.', name: 'Персонажи: инди-герои', st: 'good', stt: 'нравится',
+      what: 'Конструктор из простых форм на суставах SOMA: шары, капли, цилиндры, вещи как часть силуэта, нечеловеческие герои. Цвет и контур, лица с чувствами, позы с линией действия.',
+      verdict: 'Павел: «о классссс! :3», «развей их, делай ещё и стильнее». Движения Kimodo садятся на большинство.',
+      pics: [['indie/v2-party.png', '24 героя, у каждого своя поза и чувство'], ['indie/v2-faces.png', '7 выражений на 4 героях'], ['indie/v2-poses.png', 'позы'], ['indie/motion/gif-walk.gif', 'Kimodo: шаг'], ['indie/motion/gif-dance.gif', 'Kimodo: танец'], ['indie/motion/gif-stomp.gif', 'Kimodo: топает']] },
+    { id: 'П2', rel: 'Отдельный путь, свои персонажи на скелете SOMA (не Anny). v1 и v2 рядом.', name: 'Персонажи: выразительные, руки-шланги', st: 'good', stt: 'нравится',
+      what: 'Свои персонажи на скелете SOMA: лицо — рисунок на голове, руки и ноги гнутся дугой, язык форм на пределе. Вторая версия: нарисованные туловища и сужающиеся ноги.',
+      verdict: 'Павел: «супер охуенно и супер ценно… я люблю тут всех персонажей». Вторая версия «стала лучше, отлично», первая сохранена.',
+      pics: [['toon/v2-liked-five.png', 'пятеро любимых: слева v1, справа v2'], ['toon/v2-weaker-six.png', 'слабые шестеро: v1 и v2'], ['toon/expr.png', '9 выражений на 4 головах'], ['toon/cast.png', 'v1: все 11']] },
+  ]},
+  { title: 'И — Истоки', items: [
+    { id: 'И1', rel: 'С чего всё началось: сцены, которые хочется.', name: 'Истоки: Hope (Claude Design)', st: 'good', stt: 'образец',
       what: 'Сцены, которые хочется — и которые движок 3 повторяет почти один в один (works-009-hope).',
       verdict: '', pics: [['hope/forest.webp', 'лес'], ['hope/lake.webp', 'озеро'], ['hope/title.webp', 'титул'], ['hope/title-engine-3.webp', 'титул на движке 3']] },
   ]},
@@ -151,31 +164,48 @@ for (const g of groups) {
     const o = document.createElement('option'); o.value = it.id; o.textContent = it.id + '. ' + it.name; og.appendChild(o);
   }
 }
-sel.onchange = () => { location.hash = '#' + sel.value; };
+const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Обзор всех путей'; sel.prepend(o0);
+sel.onchange = () => { location.hash = sel.value ? '#' + sel.value : '#'; };
 let cur = null, idx = 0;
+function overview() {
+  cur = null; side.querySelectorAll('a').forEach(a => a.classList.remove('on')); sel.value = '';
+  view.innerHTML = '<div class="ov"><h2>Обзор всех путей</h2><p class="what">Каждая карточка — путь. Код: буква группы и номер (Т5). Картинки внутри — через дефис (Т5-б). Цвет — статус: зелёный нравится, жёлтый более-менее, красный тупик.</p></div>';
+  const ov = view.firstChild;
+  for (const g of groups) {
+    const h = document.createElement('h3'); h.textContent = g.title; ov.appendChild(h);
+    const grid = document.createElement('div'); grid.className = 'grid'; ov.appendChild(grid);
+    for (const it of g.items) {
+      const f = document.createElement('figure');
+      f.innerHTML = `<img loading="lazy" src="${P + it.pics[0][0]}" alt=""><figcaption><b>${it.id}</b>${it.name}<span class="s ${it.st}">● ${it.stt}</span></figcaption>`;
+      f.onclick = () => { location.hash = '#' + it.id; }; grid.appendChild(f);
+    }
+  }
+  window.scrollTo(0, 0);
+}
 function show(id) {
+  if (!id) return overview();
   const it = all.find(x => x.id == id) || all[0]; cur = it; sel.value = it.id;
   side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id == it.id));
   view.innerHTML = `<h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
-    <p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}<div class="grid"></div>`;
+    <p class="rel">${it.rel || ''}</p><p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}<div class="grid"></div>`;
   const grid = view.querySelector('.grid');
   it.pics.forEach(([src, cap], k) => {
     const f = document.createElement('figure');
-    f.innerHTML = `<img loading="lazy" src="${P + src}" alt="${cap}"><figcaption><b>${it.id}${letters[k]}</b>${cap}</figcaption>`;
+    f.innerHTML = `<img loading="lazy" src="${P + src}" alt="${cap}"><figcaption><b>${it.id}-${letters[k]}</b>${cap}</figcaption>`;
     f.onclick = () => openLb(k); grid.appendChild(f);
   });
   window.scrollTo(0, 0);
 }
 const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
-function openLb(k) { idx = (k + cur.pics.length) % cur.pics.length; const [src, cap] = cur.pics[idx]; lbImg.src = P + src; lbCap.innerHTML = `<b>${cur.id}${letters[idx]}</b>${cap}`; lb.classList.add('on'); }
+function openLb(k) { idx = (k + cur.pics.length) % cur.pics.length; const [src, cap] = cur.pics[idx]; lbImg.src = P + src; lbCap.innerHTML = `<b>${cur.id}-${letters[idx]}</b>${cap}`; lb.classList.add('on'); }
 function closeLb() { lb.classList.remove('on'); lbImg.removeAttribute('src'); }
 document.getElementById('lbPrev').onclick = e => { e.stopPropagation(); openLb(idx - 1); };
 document.getElementById('lbNext').onclick = e => { e.stopPropagation(); openLb(idx + 1); };
 document.getElementById('lbClose').onclick = closeLb;
 lb.onclick = e => { if (e.target === lb || e.target.classList.contains('imgbox')) closeLb(); };
 addEventListener('keydown', e => { if (!lb.classList.contains('on')) return; if (e.key === 'Escape') closeLb(); if (e.key === 'ArrowLeft') openLb(idx - 1); if (e.key === 'ArrowRight') openLb(idx + 1); });
-addEventListener('hashchange', () => show(location.hash.slice(1)));
-show(location.hash.slice(1) || all[0].id);
+addEventListener('hashchange', () => show(decodeURIComponent(location.hash.slice(1))));
+show(decodeURIComponent(location.hash.slice(1)));
 </script>
 </body>
 </html>
