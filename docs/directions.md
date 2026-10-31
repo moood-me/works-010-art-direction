@@ -74,3 +74,10 @@ silhouette; non-human heroes.
   Second version: about 17 of 24 alive and charming. Expressiveness comes from a face of two or three graphic signs
   that change shape (lid, brow, mouth) together with the tilt of the whole figure; pose and feeling must agree; held
   things need their own orientation. Pavel: "развей их, делай ещё и стильнее" — one direction among the others.
+- **Dressed, with a face** ([experiments/dressed](../experiments/dressed/README.md), [pictures](pictures/dressed/)):
+  of 72 generated characters about 12 pleasant, 4–5 close to beautiful, none beautiful in the film sense. What beauty
+  seemed to depend on: hair that frames the face (bob, shoulder length); an open upper lid; a soft drawn face with a
+  small nose; moderate stylisation and girl or child proportions; two or three clear colour blocks with hair
+  contrasting skin and clothes; a mouth contrasting the skin; big eyes only with a round, childlike face. Holding it
+  back now: realistic crease-heavy garments bunching on stylised bodies, the dead A-pose, ragged hair edges, faces
+  still long below the eyes, thin long necks.
