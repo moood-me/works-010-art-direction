@@ -117,3 +117,4 @@ head, wrapped with Anny's mesh) and be joined to B's bodies and clothes later.
 **Pavel on the expressive faces and rubber-hose characters:** "супер охуенно и супер ценно… я люблю тут всех
 персонажей… практически готовый вариант персонажей; если Kimodo может ими управлять, это отлично подойдёт для некоторых
 игр."
+  Pavel on the second versions of the expressive characters: "новая стала лучше, да, отлично" (first versions kept).
