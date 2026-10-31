@@ -30,6 +30,11 @@
   .ov .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   .ov figure img { height: 150px; }
   .ov figcaption .s { display: block; font-size: 12px; margin-top: 2px; }
+  .tabs { display: flex; gap: 6px; margin: 4px 0 14px; }
+  .tabs button { font: inherit; font-size: 14px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .v3d { width: 100%; height: min(78vh, 760px); border: 1px solid var(--line); border-radius: 8px; background: #d8d2c8; display: block; }
+  .v3dnote { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
   .what { color: var(--muted); margin: 0 0 6px; max-width: 900px; }
   .verdict { margin: 0 0 16px; max-width: 900px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
@@ -182,13 +187,38 @@ function overview() {
   }
   window.scrollTo(0, 0);
 }
+// the 3D view of a path: its page in viewer mode, on this page — the characters turn, and move in Kimodo's motions
+const E = '../experiments/';
+const VIEW3D = {
+  'П1': [E + 'indie/index.html?viewer', 'герои на своих скелетах; движения Kimodo с переносом на короткие ноги и большую голову'],
+  'П2': [E + 'toon/index.html?viewer', 'v1 и v2 каждого персонажа; персонаж перестраивается по суставам каждый кадр'],
+  'О1': [E + 'clothes/index.html?viewer', 'одежда движется с кожей (без физики ткани): юбки при шаге и сидя прорезаются ногами'],
+  'О2': [E + 'dressed/index.html?viewer', 'одежда и волосы движутся с кожей'],
+  'Г1': [E + 'heads-anime/index.html?viewer', 'смена героя перезагружает вид'],
+  'Г3': [E + 'heads-wrap/index.html?viewer', 'голова — часть сетки Anny; смена героя перезагружает вид'],
+  'Т1': [E + 'form/index.html?viewer', '8 стилей на одном теле'],
+  'Т6': [E + 'form-tools/index.html?viewer', 'стиль × каркас × лицо'],
+  'Т7': [E + 'designed-form/index.html?viewer', 'Дисней, Пиксар, аниме'],
+  'Т8': [E + 'anny-space/view.html?viewer', 'тела самой Anny на сетке moood; смена тела перезагружает вид'],
+  'Т9': [E + 'form-tools/index.html?viewer', 'стиль × каркас × лицо'],
+  'В1': [E + 'hair/index.html?viewer', 'только вращение, без движений'],
+};
+let tab = 'pics';
 function show(id) {
   if (!id) return overview();
   const it = all.find(x => x.id == id) || all[0]; cur = it; sel.value = it.id;
   side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id == it.id));
   view.innerHTML = `<h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
-    <p class="rel">${it.rel || ''}</p><p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}<div class="grid"></div>`;
-  const grid = view.querySelector('.grid');
+    <p class="rel">${it.rel || ''}</p><p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}${VIEW3D[it.id] ? `<div class="tabs"><button data-t="pics">Картинки</button><button data-t="3d">3D: вращать и двигать</button></div>` : ''}<div class="grid"></div><div class="d3"></div>`;
+  const grid = view.querySelector('.grid'), d3 = view.querySelector('.d3');
+  const setTab = t => {
+    tab = VIEW3D[it.id] ? t : 'pics';
+    view.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === tab)));
+    grid.style.display = tab === 'pics' ? '' : 'none';
+    d3.innerHTML = tab === '3d' ? `<iframe class="v3d" src="${VIEW3D[it.id][0]}" title="3D: ${it.name}"></iframe><p class="v3dnote">${VIEW3D[it.id][1]}. Мышь: вращать, колесо: ближе и дальше, правая кнопка или Shift: сдвинуть. Первый показ собирается до минуты.</p>` : '';
+  };
+  view.querySelectorAll('.tabs button').forEach(b => b.onclick = () => setTab(b.dataset.t));
+  setTab(tab);
   it.pics.forEach(([src, cap], k) => {
     const f = document.createElement('figure');
     f.innerHTML = `<img loading="lazy" src="${P + src}" alt="${cap}"><figcaption><b>${it.id}-${letters[k]}</b>${cap}</figcaption>`;

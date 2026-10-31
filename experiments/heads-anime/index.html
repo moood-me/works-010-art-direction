@@ -456,7 +456,7 @@ const headW = Float32Array.from({ length: N }, (_, i) => wOf(bs.joint, bs.weight
 const neckW = Float32Array.from({ length: N }, (_, i) => wOf(bs.joint, bs.weight, i, /^(Neck1|Neck2)$/));
 const at = Float32Array.from(P.at);
 // pose: arms down, a slight bend, a head turn
-const POSE = { LeftArm: [0, 0, -0.55], RightArm: [0, 0, 0.55], LeftForeArm: [0, -0.2, 0], RightForeArm: [0, 0.2, 0], Head: CH.headTurn || [0, 0, 0], ...(CH.pose || {}) };
+const POSE = qs.has('viewer') ? {} : { LeftArm: [0, 0, -0.55], RightArm: [0, 0, 0.55], LeftForeArm: [0, -0.2, 0], RightForeArm: [0, 0.2, 0], Head: CH.headTurn || [0, 0, 0], ...(CH.pose || {}) };
 const D = J.map(() => new M4());
 for (let j = 0; j < 77; j++) {
   const r = POSE[JN[j]], p = J[j];
@@ -515,6 +515,7 @@ if (CH.turtleneck) { const neck = []; const top = J[JI.Head].y - 0.01, bot = J[J
   const g0 = new THREE.BufferGeometry(); g0.setAttribute('position', new THREE.BufferAttribute(posed, 3)); g0.setIndex(keep); g0.computeVertexNormals(); const nn = g0.attributes.normal.array, p2 = Float32Array.from(posed); for (const i of neck) for (let c = 0; c < 3; c++) p2[i * 3 + c] += nn[i * 3 + c] * 0.012;
   addMesh(p2, tri, CH.turtleneck, { double: true, normals: smoothN(p2, keep, 12) }); }
 
+const headFrom = scene.children.length;   // what is added from here on goes with the Head joint
 // ———— the head, on the Head joint ————
 const R = 0.088 * (CH.hs || 1.1) * (J[JI.HeadEnd].y - J[JI.Head].y) / 0.151;
 const O = J[JI.Head].clone().add(new V3(0, 0.62 * R, -0.03 * R));
@@ -558,5 +559,14 @@ else { target = hc.clone(); dist = R * 14; }
 camera.position.set(target.x + Math.sin(yaw) * dist * Math.cos(pitch), target.y + (view === 'full' ? 0.15 : Math.sin(pitch) * dist), target.z + Math.cos(yaw) * dist * Math.cos(pitch)); camera.lookAt(target);
 key.position.set(target.x - 1.4, target.y + 1.8, target.z + 2.4); key.target.position.copy(target); scene.add(key.target);
 renderer.render(scene, camera);
+// the gallery's viewer: the body at rest, what moves with the Head joint, the characters of this page
+if (qs.has('viewer')) {
+  scene.children.forEach((o, i) => { if (!o.isMesh || o === floor) { o.userData.move = false; return; } if (o.geometry.attributes.position.count === N) o.userData.body = true; else if (i >= headFrom) o.userData.rigid = JI.Head; });
+  let top = 0; for (let i = 1; i < posed.length; i += 3) top = Math.max(top, posed[i]);
+  const NAMES_RU = { anime: 'аниме-девушка', red: 'рыжая девушка', mask: 'девушка в маске', hood: 'женщина в капюшоне', blond: 'блондин', tails: 'мальчик с хвостиками', boy7: 'мальчик с каре', old: 'старик', semi: 'парень с длинным носом', alva: 'Альва', jesper: 'Джеспер' };
+  window.__vp = { kind: 'one', THREE, JN, PARENT, J, restBody: posed, BASE: { N, joint: bs.joint, weight: bs.weight }, scene, camera, renderer, target: new V3(0, top * 0.53, 0),
+    chars: Object.keys(C).map(id => ({ id, label: NAMES_RU[id] || id })), current: qsC };
+  import('../../gallery/player.js');
+}
 window.__ready = true;
 </script>

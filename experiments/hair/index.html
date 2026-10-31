@@ -62,5 +62,16 @@ window.view = (v, dist = 1.15, ty = -0.03, pitch = 0.04) => {
   camera.lookAt(0, ty, 0); renderer.render(scene, camera);
 };
 window.view(qs.get('v') || 'front', +(qs.get('d') || S.dist || 1.15), +(qs.get('ty') || S.ty || -0.03));
+// the gallery's viewer: the hairstyle turned by the camera, no motion
+if (qs.has('viewer')) {
+  const RU = { gwen: 'Гвен: каре с пробором', gogo: 'Гоу-Гоу: тёмное каре с прядью', jack: 'Джек: растрёпанные белые', marco: 'Марко: чёлка набок', ginger: 'рыжий мальчик: начёс', ariel: 'рыжая девушка: длинные', doll: 'девочка-кукла: фиолетовые', kbuns: 'K-pop: пучки', kbraid: 'K-pop: коса', kpony: 'K-pop: хвост', giulia: 'Джулия: кудри под шапкой', alva: 'Альва: шторка', nimona: 'Нимона: вихры', anime: 'аниме: чёлка и длинные' };
+  renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  window.__vp = { kind: 'adapter', THREE, stage: renderer.domElement, adapter: {
+    chars: Object.keys(STYLES).map(id => ({ id, label: RU[id] || id })), current: name, noMotion: true, camera, renderer,
+    render: () => renderer.render(scene, camera), view0: { yaw: 0.6, pitch: 0.04, dist: S.dist || 1.15 }, target: new THREE.Vector3(0, S.ty || -0.03, 0),
+    show(c) { const q = new URLSearchParams(location.search); q.set('s', c.id); location.search = q.toString(); },
+  } };
+  import('../../gallery/player.js');
+}
 window.__ready = true;
 </script></body></html>

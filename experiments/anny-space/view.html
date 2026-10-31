@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anny's own space — viewer</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#cfc8bd}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+</head><body>
+<script type="module">
+// Anny's own forms carried onto moood's mesh (out/d-*.bin: moood's vertex order), shown one at a time for the gallery's
+// viewer. moood's skin weights fit them as they are; the joints are moood woman's, each moved as its own skin moved.
+import * as THREE from 'three';
+const V3 = THREE.Vector3, qs = new URLSearchParams(location.search);
+const reader = (buf, at = 0) => (Kind, n) => { const a = new Kind(buf.slice(at, at + n * Kind.BYTES_PER_ELEMENT)); at += n * Kind.BYTES_PER_ELEMENT; return a; };
+const parseBase = buf => { const take = reader(buf), [N, T] = take(Uint32Array, 2), tris = take(Uint16Array, T * 3), joint = take(Uint8Array, N * 4), weight = take(Uint8Array, N * 4); const [F] = take(Uint32Array, 1), face = take(Uint16Array, F); return { N, tris, joint, weight, face }; };
+const parsePerson = (buf, bs) => { const take = reader(buf), m = v => v / 10000; return { at: Float32Array.from(take(Int16Array, bs.N * 3), m), plain: Float32Array.from(take(Int16Array, bs.face.length * 3), m), inverse: take(Float32Array, 77 * 12) }; };
+const load = name => import('../data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer);
+const META = await (await fetch('../data/meta.json')).json(), JN = META.joints, JI = Object.fromEntries(JN.map((n, i) => [n, i]));
+function parentName(n) {
+  const fixed = { Hips: null, Spine1: 'Hips', Spine2: 'Spine1', Chest: 'Spine2', Neck1: 'Chest', Neck2: 'Neck1', Head: 'Neck2', HeadEnd: 'Head', Jaw: 'Head', LeftEye: 'Head', RightEye: 'Head' };
+  if (n in fixed) return fixed[n];
+  const [, s, r] = n.match(/^(Left|Right)(.*)$/);
+  const chain = { Shoulder: 'Chest', Arm: s + 'Shoulder', ForeArm: s + 'Arm', Hand: s + 'ForeArm', Leg: 'Hips', Shin: s + 'Leg', Foot: s + 'Shin', ToeBase: s + 'Foot', ToeEnd: s + 'ToeBase' };
+  if (r in chain) return chain[r];
+  const f = r.match(/^Hand(Thumb|Index|Middle|Ring|Pinky)(\d|End)$/);
+  if (f[2] === '1') return s + 'Hand';
+  if (f[2] === 'End') return s + 'Hand' + f[1] + (f[1] === 'Thumb' ? 3 : 4);
+  return s + 'Hand' + f[1] + (+f[2] - 1);
+}
+const PARENT = JN.map(n => { const p = parentName(n); return p == null ? -1 : JI[p]; });
+
+const RU = { 'd-W': 'женщина moood', 'd-C-princess': 'принцесса', 'd-C-hero': 'герой', 'd-C-elf': 'эльф', 'd-C-andro': 'андрогин', 'd-C-pear': 'груша',
+  'd-C-square': 'квадрат', 'd-C-old': 'старая', 'd-C-bean': 'фасолина', 'd-C-burton': 'Бёртон', 'd-C-chibi': 'чиби',
+  'd-T-W-child12': 'женщина + голова ребёнка', 'd-T-W-tod13': 'женщина + голова малыша', 'd-T-W-H2-25': 'женщина + своя голова ×2.5',
+  'd-T-princ-tod125': 'принцесса + голова малыша', 'd-T-teen-tod14': 'девушка + голова малыша', 'd-T-girl-baby12': 'девочка + голова младенца',
+  'd-T-kid-baby14': 'ребёнок + голова младенца', 'd-T-chibi-baby17': 'чиби + голова младенца', 'd-T-burton-tod16': 'Бёртон + голова малыша',
+  'd-T-hero-child09': 'герой + голова ребёнка', 'd-T-man-tod13': 'мужчина + голова малыша', 'd-T-man-stocky-baby15': 'коренастый + голова младенца', 'd-T-old-H2': 'старая + своя голова' };
+const id = qs.get('c') || 'd-T-princ-tod125';
+const [bsBuf, pBuf] = await Promise.all([load('base'), load('woman')]);
+const bs = parseBase(bsBuf), P = parsePerson(pBuf, bs), N = bs.N;
+const J0 = []; { const m = new THREE.Matrix4(); for (let j = 0; j < 77; j++) { const a = P.inverse.subarray(j * 12, j * 12 + 12); m.set(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], 0, 0, 0, 1).invert(); J0.push(new V3().setFromMatrixPosition(m)); } }
+const pos = new Float32Array(await (await fetch('out/' + id + '.bin')).arrayBuffer());
+// each joint moves as the skin that hangs on it moved
+const J = J0.map((p, j) => { let x = 0, y = 0, z = 0, w = 0; for (let i = 0; i < N; i++) for (let k = 0; k < 4; k++) if (bs.joint[i * 4 + k] === j) { const a = bs.weight[i * 4 + k] / 255; x += a * (pos[i * 3] - P.at[i * 3]); y += a * (pos[i * 3 + 1] - P.at[i * 3 + 1]); z += a * (pos[i * 3 + 2] - P.at[i * 3 + 2]); w += a; } return w > 1e-6 ? p.clone().add(new V3(x / w, y / w, z / w)) : p.clone(); });
+for (let j = 0; j < 77; j++) if (J[j].equals(J0[j]) && PARENT[j] >= 0) J[j].add(J[PARENT[j]].clone().sub(J0[PARENT[j]]));
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#cfc8bd');
+scene.add(new THREE.HemisphereLight('#fff4e6', '#5b544c', 1.05));
+const key = new THREE.DirectionalLight('#fff0dc', 2.1); key.position.set(-2.2, 3.6, 2.6); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -2, right: 2, top: 2.5, bottom: -0.5, near: 0.5, far: 12 }); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; scene.add(key);
+const rim = new THREE.DirectionalLight('#cfe0ff', 1.3); rim.position.set(2.4, 2.2, -2.8); scene.add(rim);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: '#c9c1b5', roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const camera = new THREE.PerspectiveCamera(22, innerWidth / innerHeight, 0.05, 60);
+let minY = Infinity, top = -Infinity; for (let i = 1; i < pos.length; i += 3) { minY = Math.min(minY, pos[i]); top = Math.max(top, pos[i]); }
+for (let i = 1; i < pos.length; i += 3) pos[i] -= minY; J.forEach(p => p.y -= minY); top -= minY;
+const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(new THREE.BufferAttribute(bs.tris, 1)); g.computeVertexNormals();
+const body = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: '#d9b49a', roughness: 0.65 })); body.castShadow = body.receiveShadow = true; body.userData.body = true; scene.add(body);
+ground.userData.move = false;
+camera.position.set(1.2, top * 0.55, top * 3.2); camera.lookAt(0, top * 0.5, 0); renderer.render(scene, camera);
+window.__vp = { kind: 'one', THREE, JN, PARENT, J, restBody: Float32Array.from(pos), BASE: { N, joint: bs.joint, weight: bs.weight }, scene, camera, renderer, target: new V3(0, top * 0.5, 0),
+  chars: Object.keys(RU).map(k => ({ id: k, label: RU[k] })), current: id };
+import('../../gallery/player.js');
+</script></body></html>

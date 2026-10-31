@@ -947,5 +947,20 @@ setTimeout(() => {
   for (const H of HEROES) built[H.id] = buildHero(H);
   msg.remove(); resize(); layout();
   window.__ih = { state, layout, view, camera, render, placed: () => placed, loadMotion, poseFromMotion, setFrame(f) { state.frame = f; for (const I of placed) poseFromMotion(I, state.M, Math.min(f, state.M.n - 1)); view(); } };
+  // the gallery's viewer: one hero, turned by the camera, in Kimodo's motions; the face follows the motion
+  if (new URLSearchParams(location.search).has('viewer')) {
+    const FACE = { walk: 'happy', run: 'happy', dance: 'happy', bow: 'happy', wave: 'wink', jump: 'surprised', sit: 'sad', stomp: 'angry', sneak: 'neutral', idle: 'neutral' };
+    let I = null, H = null, face = 'neutral';
+    const inst = () => { clear(); I = instance(H, built[H.id].get(face)); I.root.position.set(0, 0, 0); I.root.rotation.y = 0; I.tag = ''; scene.add(I.root); placed.push(I); view(); };
+    state.ex = 1.3;
+    window.__vp = { kind: 'adapter', THREE, stage, adapter: {
+      chars: HEROES.map(h => ({ id: h.id, label: h.name })), camera, render, resize, view0: { yaw: 0.35, pitch: 0.12, dist: 3.4 }, target: new THREE.Vector3(0, 0.42, 0),
+      show(c) { H = HEROES.find(h => h.id === c.id); inst(); applyPose(I, 'stand'); },
+      motionChanged(id) { face = FACE[id] || 'neutral'; if (H) inst(); },
+      frame(M, f) { poseFromMotion(I, M, f); },
+      rest() { applyPose(I, 'stand'); },
+    } };
+    import('../../gallery/player.js');
+  }
 }, 30);
 </script>

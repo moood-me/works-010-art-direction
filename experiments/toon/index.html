@@ -394,7 +394,7 @@ function add(group, geo, color, o = {}) {
 
 // ———— building a character on the posed skeleton ————
 function build(C, poseName, exprName) {
-  const pose = POSES[poseName || C.pose || 'stand'];
+  const pose = typeof poseName === 'object' ? poseName : POSES[poseName || C.pose || 'stand'];
   const { P, W, S } = skeleton(C, pose);
   const J = n => P[JI[n]], root = new THREE.Group();
   const col = C.colors;
@@ -747,6 +747,7 @@ Object.assign(key.shadow.camera, { left: -3, right: 3, top: 3, bottom: -1, near:
 const rim = new THREE.DirectionalLight(0xbfd8ff, 0.9); rim.position.set(-2, 2, -2.5); scene.add(rim);
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.18 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
+if (!qs.has('viewer')) {
 const view = qs.get('view') || 'full', yaw = +(qs.get('yaw') ?? 0.35), expr = qs.get('expr') || '';
 let names = (qs.get('c') || 'host').split(','); if (names[0] === 'all') names = Object.keys(CAST);
 const exprs = expr.split(',');
@@ -765,6 +766,40 @@ else if (view === 'head') { const b = built[0]; target = b.userData.hc.clone().a
 else { target = center; const fitH = size.y / 2 / Math.tan(THREE.MathUtils.degToRad(13)), fitW = size.x / 2 / Math.tan(THREE.MathUtils.degToRad(13)) / camera.aspect; dist = Math.max(fitH, fitW) * 1.12 + size.z; }
 camera.position.set(target.x + Math.sin(yaw) * dist, target.y + dist * 0.06, target.z + Math.cos(yaw) * dist); camera.lookAt(target);
 renderer.render(scene, camera);
+}
+// the gallery's viewer: one character at a time, rebuilt on the skeleton every frame of a motion
+if (qs.has('viewer')) {
+  const RU = { host: 'хозяин гостиницы', jester: 'шут', imp: 'бесёнок', cat: 'кот с ухмылкой', noodle: 'продавец лапши', pumpkin: 'тыква', ghost: 'привидение', tv: 'робот-телевизор', rabbit: 'кролик в цилиндре', witch: 'ведьма', bull: 'вышибала' };
+  const chars = [];
+  for (const id of Object.keys(CAST)) { if (CAST2[id]) chars.push({ id: id + '@2', label: (RU[id] || id) + ' — v2' }); chars.push({ id, label: (RU[id] || id) + (CAST2[id] ? ' — v1' : '') }); }
+  const faces = new Map(), drawFace0 = drawFace;
+  drawFace = F => { const k = JSON.stringify(F); let t = faces.get(k); if (!t) faces.set(k, t = drawFace0(F)); return t; };   // the face drawn once, not every frame
+  let C = null, root = null, k = 1;
+  const memo = {};
+  const put = pose => {
+    if (root) { scene.remove(root); root.traverse(o => { if (o.isMesh) { o.geometry.dispose(); if (o.material !== INK) o.material.dispose(); } }); }
+    root = build(C, pose, ''); scene.add(root);
+  };
+  const rest = () => JD[C.base].map(a => new V3(...a));
+  const ui = { chars, camera, renderer, render: () => renderer.render(scene, camera), view0: { yaw: 0.35, pitch: 0.1, dist: 4.2 }, target: new V3(0, 0.75, 0),
+    show(c) {
+      const [id, v] = c.id.split('@'); C = v === '2' ? v2(CAST[id], CAST2[id]) : CAST[id]; for (const key in memo) delete memo[key];
+      put('stand');
+      const box = new THREE.Box3().setFromObject(root), ctr = box.getCenter(new V3()); ui.target.copy(ctr);
+      window.__player?.cam?.target.copy(ctr);
+      k = skeleton(C, {}).P[JI.Hips].y;
+    },
+    frame(M, f) {
+      const W = turns(THREE, M, f, NAMES, PARENT, rest(), memo), abs = {};
+      NAMES.forEach((n, j) => { if (M.D[n]) abs[n] = () => W[j].clone(); });
+      put({ abs, hover: M.foot[f] * k / M.hipY });
+    },
+    rest() { put('stand'); },
+  };
+  const { turns } = await import('../../gallery/player-core.js');
+  window.__vp = { kind: 'adapter', THREE, stage: renderer.domElement, adapter: ui };
+  import('../../gallery/player.js');
+}
 window.__ready = true;
 </script>
 </body></html>
