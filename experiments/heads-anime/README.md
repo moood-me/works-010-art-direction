@@ -25,3 +25,9 @@ Now the skull is a dome ending above the cheekbones, the fake shading is gone, e
 width and jaw-to-neck softness. Rebuilt: cel boys as adults with square jaws, the semi-real man's nose as one arc from
 the brow, longer faces for the hooded woman, masked girl, Jesper. Six heads not yet rebuilt. `cmpG*.png`: drawing,
 previous, new.
+
+**Fifth version, after Pavel said some places got worse and asked for all angles:** every change judged by eye from
+four angles beside the drawing and the previous version; what made things worse reverted (the skull cut above the
+cheekbones, now behind `&skull=1`; the hooded woman's V-chin; new hairstyles). Kept: the blond boy and the ponytail
+boy with narrower faces and defined chins, the semi-real man's nose as one arc to a thin tip. `cmpH*.png`: before and
+after rows, each from the drawing's angle, front, three-quarter and side.
