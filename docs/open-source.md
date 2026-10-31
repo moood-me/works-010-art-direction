@@ -33,3 +33,7 @@ Licences as found on 2026-10-31; check before use.
 - ARKit's 52 face shapes — the common standard for brows, lids, mouth.
 - [Inochi2D](https://github.com/Inochi2D/inochi2d) — open (BSD) 2D puppet animation, a Live2D alternative; being
   rewritten.
+
+**Pavel on VRoid Hub:** "они неплохие. немного бесит анимешность, стиль и современность. думаю где-то можно
+переодеть. но в целом — классно. думаю там можно многое найти." Their skeleton is VRM Humanoid; Kimodo's motion
+(SOMA) would need retargeting, not yet tried; each model's use is set by its author.
