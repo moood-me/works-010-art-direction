@@ -55,3 +55,8 @@ silhouette; non-human heroes.
   age on an adult body gives doll-like cartoon proportions with a whole head. The surface stays realistic and there is
   no cute face — so Anny goes first (proportions, childlikeness by her own means), our designed form, simplification
   and face on top.
+- **Deformation tools** ([experiments/form-tools](../experiments/form-tools/README.md), [pictures](pictures/tools/)):
+  smoothing in centimetres cleans small forms without thinning limbs; the cage changes the whole silhouette smoothly
+  and gives the clearest new range of forms; face by points reads but twenty points are too few for strong changes;
+  subdivision is harmless and brings little, remeshing is not the path. The tools change shapes cleanly but don't
+  supply taste — the presets are rough guesses.
