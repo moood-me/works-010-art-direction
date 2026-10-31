@@ -81,3 +81,8 @@ silhouette; non-human heroes.
   contrasting skin and clothes; a mouth contrasting the skin; big eyes only with a round, childlike face. Holding it
   back now: realistic crease-heavy garments bunching on stylised bodies, the dead A-pose, ragged hair edges, faces
   still long below the eyes, thin long necks.
+- **Heads from anime and drawn references** ([experiments/heads-anime](../experiments/heads-anime/README.md),
+  [pictures](pictures/heads-anime/)): 3 of 9 fair, TV-cartoon level; a drawn face on a designed head reads better than
+  modelled eyeballs. What stops them: the profile — a drawn face on a smooth egg has no nose–lip–chin line in side view;
+  hair as ribbons reads as plastic panels, as a mass as a helmet — missing the rhythm of a few big designed clumps;
+  brows hidden under bangs; no edge loops around eyes and mouth.
