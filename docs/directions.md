@@ -122,3 +122,7 @@ head, wrapped with Anny's mesh) and be joined to B's bodies and clothes later.
   [pictures](pictures/heads-wrap/)): technically works — the designed look held, no lumps, no seam at the neck, blink
   and an opening jaw as real mesh. Attractiveness no better than the designed heads, in places worse (faint shading
   marks where Anny's features were; the mouth opens as a ragged "o" — lips need their own rim laid on drawn curves).
+  On other people: dresses and long garments hold on other bodies; knitwear and coats don't. In motion (walk, jump,
+  sit): cloth physics with the designed form as rest shape is the first that looks like a dress moving — bell and
+  A-line keep their silhouette, the knee pushes the cloth softly; sitting still breaks (the skirt sinks under the
+  thighs — it needs collision with the top of the legs and the floor, and a weaker pull to the form when sitting).

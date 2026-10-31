@@ -469,6 +469,8 @@ async function averageBody(height) {
 }
 const FEMALE = new Set(['woman', 'girl', 'oldwoman']);
 async function build(who, P) {
+  const restKey = who + JSON.stringify(P), kept = RESTS.get(restKey);
+  if (kept) { const posed = posePick(kept.relaxed, kept.J2, P); posed.dress = kept.dress; return posed; }
   // the character's traits by the body's sex: no bust on a man, a softer waist
   if (!FEMALE.has(who)) P = { ...P, bust: Math.min(0, P.bust), glutes: P.glutes * 0.4, waist: lerp(1, P.waist, P.waist < 1 ? 0.45 : 1) };
   else P = { ...P, vshape: P.vshape > 0 ? P.vshape * 0.35 : P.vshape };
@@ -492,7 +494,7 @@ async function build(who, P) {
     for (let h = 0; h < 2; h++) { const s = A.seg[i * 2 + h], w = A.sw[i * 2 + h]; if (w < 1e-4) continue; tmp.copy(placeIn(s, new V3(A.at[i * 3], A.at[i * 3 + 1], A.at[i * 3 + 2]))); acc.addScaledVector(tmp, w); }
     acc.toArray(real, i * 3);
   }
-  if (P.deg <= 0.001 && P.sign <= 0.01 && Math.abs(P.anatomy) < 0.01) { gesture(real, J2, P); return pose(real, J2, P.posture); }
+  if (P.deg <= 0.001 && P.sign <= 0.01 && Math.abs(P.anatomy) < 0.01) { gesture(real, J2, P); RESTS.set(restKey, { relaxed: Float32Array.from(real), J2, dress: null }); return posePick(real, J2, P); }
   // the designed surface, and each point carried onto it — then let the points spread evenly over it, and onto it again
   const hand = A.handMask ??= Float32Array.from({ length: N }, (_, i) => { let w = 0; for (let k = 0; k < 4; k++) if (/Hand|Foot|Toe|Head|Jaw|Eye/.test(JN[BASE.joint[i * 4 + k]])) w += BASE.weight[i * 4 + k] / 255; return w; });
   // the style as a deformation of the real body: two constructions on the same bones, the neutral and the styled;
@@ -533,7 +535,8 @@ async function build(who, P) {
   }
   if (window.__stage === 'anat') return pose(Float32Array.from(relaxed), J2, P.posture);
   gesture(relaxed, J2, P);
-  const posed = pose(relaxed, J2, P.posture);
+  RESTS.set(restKey, { relaxed: Float32Array.from(relaxed), J2, dress });
+  const posed = posePick(relaxed, J2, P);
   posed.dress = dress;
   return posed;
 }
@@ -781,6 +784,42 @@ function pose(pos, J, posture = 0) {
   out.J = J.map((p, j) => p.clone().applyMatrix4(M[j]));
   return out;
 }
+
+// ———— a made motion on the styled body ————
+// the studio's body data: per frame each joint's turn (from its rest) and its place; the styled body keeps its own
+// bones and takes the turns — each bone first turned from its own rest direction to the motion's
+const MOTIONS = {};
+async function motionData(name) {
+  return MOTIONS[name] ??= (async () => {
+    const d = (await import('./mot/' + name + '.js')).default, b64 = s => { const u = Uint8Array.from(atob(s), c => c.charCodeAt(0)); return new Int16Array(u.buffer); };
+    const q = Float32Array.from(b64(d.q), v => v / 32767), p = Float32Array.from(b64(d.p), v => v / 1000), idx = JN.map(n => d.names.indexOf(n));
+    return { n: d.n, q, p, idx, J: d.names.length };
+  })();
+}
+function motionPose(pos, J, mo) {
+  const { d, f } = mo, at = (j, fr) => d.idx[j], Q = (j, fr) => { const k = (fr * d.J + d.idx[j]) * 4; return new THREE.Quaternion(d.q[k], d.q[k + 1], d.q[k + 2], d.q[k + 3]); }, Pm = (j, fr) => { const k = (fr * d.J + d.idx[j]) * 3; return new V3(d.p[k], d.p[k + 1], d.p[k + 2]); };
+  const kids = JN.map(() => []); PARENT.forEach((pa, j) => { if (pa >= 0) kids[pa].push(j); });
+  const G = [], P = [];
+  const sc = J[JI.Hips].y / Pm(JI.Hips, 0).y, r0 = Pm(JI.Hips, f);
+  for (let j = 0; j < 77; j++) {
+    let C = new THREE.Quaternion();
+    if (kids[j].length === 1) { const c = kids[j][0], m0 = Pm(c, 0).sub(Pm(j, 0)).applyQuaternion(Q(j, 0).invert()).normalize(), ours = J[c].clone().sub(J[j]).normalize(); if (m0.lengthSq() > 0.5 && ours.lengthSq() > 0.5) C.setFromUnitVectors(ours, m0); }
+    G[j] = Q(j, f).multiply(C);
+    P[j] = PARENT[j] < 0 ? new V3(0, r0.y * sc, 0) : P[PARENT[j]].clone().add(J[j].clone().sub(J[PARENT[j]]).applyQuaternion(G[PARENT[j]]));
+  }
+  const M = G.map((g, j) => new THREE.Matrix4().makeTranslation(P[j].x, P[j].y, P[j].z).multiply(new THREE.Matrix4().makeRotationFromQuaternion(g)).multiply(new THREE.Matrix4().makeTranslation(-J[j].x, -J[j].y, -J[j].z)));
+  const out = new Float32Array(pos.length), v = new V3(), a = new V3(), t = new V3();
+  for (let i = 0; i < pos.length / 3; i++) {
+    v.fromArray(pos, i * 3); a.set(0, 0, 0); let ws = 0;
+    for (let k = 0; k < 4; k++) { const w = BASE.weight[i * 4 + k] / 255; if (!w) continue; a.addScaledVector(t.copy(v).applyMatrix4(M[BASE.joint[i * 4 + k]]), w); ws += w; }
+    if (ws > 1e-4) a.multiplyScalar(1 / ws); else a.copy(v);
+    a.toArray(out, i * 3);
+  }
+  out.J = P;
+  return out;
+}
+const posePick = (pos, J, P) => { if (!window.__mo) return pose(pos, J, P.posture); const out = motionPose(pos, J, window.__mo); out.natural = pose(pos, J, P.posture); return out; };
+const RESTS = new Map();
 
 // ———— archetypes: a role, its shape language, its type of figure ————
 const T = (name, o) => ({ name, deg: 0.75, circle: 0, square: 0, tri: 0, vert: 0, hard: 0, weight: 0, head: 1, neck: 1, legs: 1, limbs: 1, torso: 1, waist: 1, ext: 1, vshape: 0, belly: 0, bust: 0, glutes: 0, taper: 0, joints: 0.3, anatomy: 0, posture: 0, blend: 1, caric: 0, stretch: 0, lineS: 0, lineC: 0, cranium: 0, jaw: 0, cheeks: 0, faceLen: 0, envAmt: 0, mass: 0, tube: 0, sign: 0, gap: 0, envType: '', signType: 'rectangle', nose: 0, chubby: 0, mitten: 0, ...o });
@@ -1272,7 +1311,52 @@ async function dress(G, pos, who, look) {
       for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) { const L = hash.get((cx+a) + ',' + (cy+b) + ',' + (cz+c)); if (L) for (const i of L) { const d = (pos0[i*3]-x)**2 + (pos0[i*3+1]-y)**2 + (pos0[i*3+2]-z)**2; if (d < bd) { bd = d; best = i; } } }
       if (best < 0) continue; const h = (x-pos0[best*3])*bn0[best*3] + (y-pos0[best*3+1])*bn0[best*3+1] + (z-pos0[best*3+2])*bn0[best*3+2];
       if (h < gap) for (let q = 0; q < 3; q++) P[v*3+q] += bn0[best*3+q] * (gap - h); } return P; };
-  for (const [name, color, design] of look.wear) { const g = await garment(name), isHair = /long|bob|bun|braid|short|fringe|shoulder/.test(name), drawn = !isHair && design && (look.cloth ?? 0.4) > 0.001, sg = drawn ? subdivided(g, 2) : g; let P = soften(g, fit(g, rest, pos0, grow, 1), isHair ? look.hairSoft ?? 25 : look.clothSoft ?? 4); if (drawn) P = subPositions(sg, P); G.add(solid(outside(tailor(name, sg, P, pos0, A, design, look.cloth ?? 0.4), isHair ? 0.004 : 0.005), sg.tris, mat(color, { roughness: /long|bob|bun|braid|short|fringe|shoulder/.test(name) ? 0.5 : 0.8 }), true)); }
+  // the drawn form in the standing pose, and each of its points bound to its skin triangle there
+  const designedRest = (name, g, sg, design, natural) => { const key = name + JSON.stringify(design) + look.cloth; window.__designRest ??= {}; return window.__designRest[key] ??= (() => {
+      const gr = growth(rest, natural); let P = soften(g, fit(g, rest, natural, gr, 1), look.clothSoft ?? 4); P = subPositions(sg, P); natural.J = natural.J || null;
+      const R = tailor(name, sg, P, natural, A, design, look.cloth ?? 0.4);
+      const off = new Float32Array(sg.V * 3);
+      for (let i = 0; i < sg.V; i++) { const a = sg.refs[i * 3], b = sg.refs[i * 3 + 1], c = sg.refs[i * 3 + 2], F = triFrame(natural, a, b, c); let bx = 0, by = 0, bz = 0; for (let m = 0; m < 3; m++) { const r = sg.refs[i * 3 + m], w = sg.bary[i * 3 + m]; bx += w * natural[r * 3]; by += w * natural[r * 3 + 1]; bz += w * natural[r * 3 + 2]; } const d = new V3(R[i * 3] - bx, R[i * 3 + 1] - by, R[i * 3 + 2] - bz); off[i * 3] = d.dot(F.e); off[i * 3 + 1] = d.dot(F.n); off[i * 3 + 2] = d.dot(F.t); }
+      return { R, off };
+    })(); };
+  const ride = (sg, D, body) => { const X = new Float32Array(sg.V * 3); for (let i = 0; i < sg.V; i++) { const a = sg.refs[i * 3], b = sg.refs[i * 3 + 1], c = sg.refs[i * 3 + 2], F = triFrame(body, a, b, c); for (let q = 0; q < 3; q++) { let v = 0; for (let m = 0; m < 3; m++) v += sg.bary[i * 3 + m] * body[sg.refs[i * 3 + m] * 3 + q]; X[i * 3 + q] = v + F.e.getComponent(q) * D.off[i * 3] + F.n.getComponent(q) * D.off[i * 3 + 1] + F.t.getComponent(q) * D.off[i * 3 + 2]; } } return X; };
+  // the designed form simply carried by the skin it rides — what a skinned garment does
+  const rideDesigned = (name, g, sg, design, look, rest, pos0, natural, A) => ride(sg, designedRest(name, g, sg, design, natural), pos0);
+  const pelvisFrame = J => { const o = J[JI.Hips], x = J[JI.RightLeg].clone().sub(J[JI.LeftLeg]).normalize(), y0 = J[JI.Spine1].clone().sub(o), y = y0.addScaledVector(x, -y0.dot(x)).normalize(), z = new V3().crossVectors(x, y); return { o, m: new THREE.Matrix3().set(x.x, y.x, z.x, x.y, y.y, z.y, x.z, y.z, z.z) }; };
+  const physGarment = (name, g, sg, design, look, rest, pos0, natural, A) => {
+    const D = designedRest(name, g, sg, design, natural), N = sg.V, key = name;
+    window.__physState ??= {}; let S = window.__physState[key];
+    const anchor = ride(sg, D, pos0);
+    const hipY = natural.J[JI.Hips].y, w = Float32Array.from({ length: N }, (_, i) => sst(clamp((hipY + 0.04 - D.R[i * 3 + 1]) / 0.2, 0, 1))), wt = Float32Array.from({ length: N }, (_, i) => sst(clamp((hipY - D.R[i * 3 + 1]) / 0.3, 0, 1)));
+    // the drawn shape carried rigidly by the pelvis: what the cloth wants to be
+    const F0 = pelvisFrame(natural.J), F1 = pelvisFrame(pos0.J), rot = F1.m.clone().multiply(F0.m.clone().transpose());
+    const target = new Float32Array(N * 3), tv = new V3(); for (let i = 0; i < N; i++) { tv.set(D.R[i * 3] - F0.o.x, D.R[i * 3 + 1] - F0.o.y, D.R[i * 3 + 2] - F0.o.z).applyMatrix3(rot).add(F1.o); target[i * 3] = lerp(anchor[i * 3], tv.x, wt[i]); target[i * 3 + 1] = lerp(anchor[i * 3 + 1], tv.y, wt[i]); target[i * 3 + 2] = lerp(anchor[i * 3 + 2], tv.z, wt[i]); }
+    // the legs as capsules
+    const leg = []; for (const sd of ['Left', 'Right']) for (const [a, b, r] of [[sd + 'Leg', sd + 'Shin', 0.075], [sd + 'Shin', sd + 'Foot', 0.05]]) leg.push([pos0.J[JI[a]], pos0.J[JI[b]], r * (design.legR ?? 1)]);
+    if (!S || window.__physReset) {
+      const x = Float32Array.from(anchor, (v, k) => lerp(v, target[k], w[(k / 3) | 0]));
+      const E = []; for (let t = 0; t < sg.tris.length; t += 3) for (const [a, b] of [[sg.tris[t], sg.tris[t + 1]], [sg.tris[t + 1], sg.tris[t + 2]], [sg.tris[t + 2], sg.tris[t]]]) if (a < b) E.push(a, b, Math.hypot(D.R[a * 3] - D.R[b * 3], D.R[a * 3 + 1] - D.R[b * 3 + 1], D.R[a * 3 + 2] - D.R[b * 3 + 2]));
+      S = window.__physState[key] = { x, prev: Float32Array.from(x), E: Float32Array.from(E) }; window.__physReset = false;
+    }
+    const ground = Math.min(pos0.J[JI.LeftToeEnd].y, pos0.J[JI.RightToeEnd].y) - 0.01;
+    const { x, prev, E } = S, sub = 6, dt = 1 / 30 / sub, gk = 9.8 * dt * dt, shape = design.hold ?? 0.06, damp = 0.985;
+    for (let st = 0; st < sub; st++) {
+      for (let i = 0; i < N; i++) { if (w[i] < 0.02) continue; for (let q = 0; q < 3; q++) { const k = i * 3 + q, v = (x[k] - prev[k]) * damp; prev[k] = x[k]; x[k] += v + (q === 1 ? -gk : 0); x[k] += (target[k] - x[k]) * shape * w[i]; } }
+      for (let it = 0; it < 4; it++) {
+        for (let e = 0; e < E.length; e += 3) { const a = E[e], b = E[e + 1], L = E[e + 2], dx = x[b * 3] - x[a * 3], dy = x[b * 3 + 1] - x[a * 3 + 1], dz = x[b * 3 + 2] - x[a * 3 + 2], l = Math.hypot(dx, dy, dz) || 1e-9; if (l < L) continue; const wa = w[a], wb = w[b], ws = wa + wb; if (ws < 1e-4) continue; const c = (l - L) / l / ws; x[a * 3] += dx * c * wa; x[a * 3 + 1] += dy * c * wa; x[a * 3 + 2] += dz * c * wa; x[b * 3] -= dx * c * wb; x[b * 3 + 1] -= dy * c * wb; x[b * 3 + 2] -= dz * c * wb; }
+        for (let i = 0; i < N; i++) { const wi = w[i]; for (let q = 0; q < 3; q++) x[i * 3 + q] = lerp(anchor[i * 3 + q], x[i * 3 + q], wi);
+          for (const [A0, B0, r] of leg) { const px = x[i * 3], py = x[i * 3 + 1], pz = x[i * 3 + 2], ab = B0.clone().sub(A0), t = clamp(((px - A0.x) * ab.x + (py - A0.y) * ab.y + (pz - A0.z) * ab.z) / ab.lengthSq(), 0, 1), cx = A0.x + ab.x * t, cy = A0.y + ab.y * t, cz = A0.z + ab.z * t, dx = px - cx, dy = py - cy, dz = pz - cz, d = Math.hypot(dx, dy, dz); if (d < r + 0.012 && d > 1e-6) { const k = (r + 0.012 - d) / d; x[i * 3] += dx * k; x[i * 3 + 1] += dy * k; x[i * 3 + 2] += dz * k; } }
+          if (x[i * 3 + 1] < ground) x[i * 3 + 1] = ground; }
+      }
+    }
+    return Float32Array.from(x);
+  };
+  for (const [name, color, design] of look.wear) { const g = await garment(name), isHair = /long|bob|bun|braid|short|fringe|shoulder/.test(name), drawn = !isHair && design && (look.cloth ?? 0.4) > 0.001, sg = drawn ? subdivided(g, 2) : g;
+    // in motion the drawn form is the cloth's rest shape: it rides the body where it is fitted, and below the hips it
+    // is cloth — it keeps its drawn shape as it can (pulled toward that shape carried by the pelvis), swings with
+    // its weight and is pushed by the legs
+    if (window.__phys && drawn && pos.natural && /dress|skirt|robe|tunic/.test(name)) { G.add(solid(physGarment(name, g, sg, design, look, rest, pos0, pos.natural, A), sg.tris, mat(color, { roughness: 0.8 }), true)); continue; }
+    if (window.__ride && drawn && pos.natural) { G.add(solid(rideDesigned(name, g, sg, design, look, rest, pos0, pos.natural, A), sg.tris, mat(color, { roughness: 0.8 }), true)); continue; } let P = soften(g, fit(g, rest, pos0, grow, 1), isHair ? look.hairSoft ?? 25 : look.clothSoft ?? 4); if (drawn) P = subPositions(sg, P); G.add(solid(outside(tailor(name, sg, P, pos0, A, design, look.cloth ?? 0.4), isHair ? 0.004 : 0.005), sg.tris, mat(color, { roughness: /long|bob|bun|braid|short|fringe|shoulder/.test(name) ? 0.5 : 0.8 }), true)); }
   const bodyG = G.children[0].geometry; G.add(eyesOf(A, pos, { ...look.eye, skin, body: bodyG, browMat: mat(look.hair, { roughness: 0.6 }) })); bodyG.attributes.position.needsUpdate = true; bodyG.computeVertexNormals();
 }
 
@@ -1350,6 +1434,7 @@ for (const k of KEYS) document.getElementById('k-' + k).addEventListener('input'
 
 resize(); mark();
 await refresh();
+window.__setMotion = async (name, f) => { window.__mo = name ? { d: await motionData(name), f } : null; };
 window.__JI = JI; window.__sh = { LOOKS, cam, state, refresh, mark, dbg: { analyse, evenSmooth, taubin, vertexNormals, get NB() { return NB; }, get BASE() { return BASE; } } };
 window.__prof = async (who, id) => { const A = await analyse(who); const c = construct(A); const sw = c.sweeps[id]; const f = A.fr[SI[id]]; return { lo: sw.lo, hi: sw.hi, L: f.L, e: [f.e.x, f.e.y, f.e.z].map(v => +v.toFixed(2)), u: [f.u.x, f.u.y, f.u.z].map(v => +v.toFixed(2)), C: sw.C.map(ct => ct.keys.map(k => +(k[1] * 1000).toFixed(0))) }; };
 window.__err = async (who) => {
