@@ -1,0 +1,1 @@
+[{"id": "a-disney", "label": "Дисней", "state": {"gw": {"disney": 1}, "cw": {"princess": 0.6}}}, {"id": "a-pixar", "label": "Пиксар", "state": {"gw": {"pixar": 1}, "cw": {"care": 0.7}}}, {"id": "a-anime", "label": "Аниме", "state": {"gw": {"anime": 1}, "cw": {"teen": 0.6}}}]

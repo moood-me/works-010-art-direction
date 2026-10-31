@@ -77,8 +77,8 @@ const clamp = (x, a, b) => x < a ? a : x > b ? b : x, lerp = (a, b, t) => a + (b
 const reader = (buf, at = 0) => (Kind, n) => { const a = new Kind(buf.slice(at, at + n * Kind.BYTES_PER_ELEMENT)); at += n * Kind.BYTES_PER_ELEMENT; return a; };
 const parseBase = buf => { const take = reader(buf), [N, T] = take(Uint32Array, 2); return { N, tris: take(Uint16Array, T * 3), joint: take(Uint8Array, N * 4), weight: take(Uint8Array, N * 4) }; };
 const cache = {};
-const bytes = name => (cache[name] ??= import('./data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer));
-const META = await (await fetch('data/meta.json')).json();
+const bytes = name => (cache[name] ??= import('../data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer));
+const META = await (await fetch('../data/meta.json')).json();
 const JN = META.joints, JI = Object.fromEntries(JN.map((n, i) => [n, i]));
 const PARENT = JN.map(n => {
   if (n === 'Hips') return -1;
@@ -760,6 +760,8 @@ function gesture(pos, J, P) {
   for (const j of J) { const r = f(j.x, j.y, j.z); j.set(r[0], r[1], r[2]); }
 }
 function pose(pos, J, posture = 0) {
+  // the viewer asks for the body at rest, to move it itself
+  if (window.__restPose) { const o = Float32Array.from(pos); o.J = J.map(p => p.clone()); if (pos.length === BASE.N * 3) window.__restJ = o.J; return o; }
   const R = Array.from({ length: 77 }, () => new THREE.Quaternion()), q = (ax, a) => new THREE.Quaternion().setFromAxisAngle(new V3(...ax).normalize(), a);
   for (const [s, x] of [['Left', 1], ['Right', -1]]) {
     const d = J[JI[s + 'ForeArm']].clone().sub(J[JI[s + 'Arm']]).normalize();
@@ -1436,6 +1438,8 @@ resize(); mark();
 await refresh();
 window.__setMotion = async (name, f) => { window.__mo = name ? { d: await motionData(name), f } : null; };
 window.__JI = JI; window.__sh = { LOOKS, cam, state, refresh, mark, dbg: { analyse, evenSmooth, taubin, vertexNormals, get NB() { return NB; }, get BASE() { return BASE; } } };
+window.__vp = { kind: 'anny', THREE, JN, PARENT, get BASE() { return BASE; }, cam, state, refresh, group, stage, LOOKS: typeof LOOKS === 'undefined' ? null : LOOKS };
+if (new URLSearchParams(location.search).has('viewer')) import('../../gallery/player.js');
 window.__prof = async (who, id) => { const A = await analyse(who); const c = construct(A); const sw = c.sweeps[id]; const f = A.fr[SI[id]]; return { lo: sw.lo, hi: sw.hi, L: f.L, e: [f.e.x, f.e.y, f.e.z].map(v => +v.toFixed(2)), u: [f.u.x, f.u.y, f.u.z].map(v => +v.toFixed(2)), C: sw.C.map(ct => ct.keys.map(k => +(k[1] * 1000).toFixed(0))) }; };
 window.__err = async (who) => {
   const N0 = mixed({}, {}, { deg: -0.75 }), N1 = mixed({}, {}, { deg: 0.25 });

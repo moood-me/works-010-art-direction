@@ -133,3 +133,7 @@ beautiful by looking and trying, bugs first; the 3D-heads agent may change its t
 landmarks and curves, independently, and must not come back with a mediocre result; a dedicated hair tool is started
 (big locks along guide curves merged into a hairstyle with its own silhouette). Assembling a whole character from the
 best parts and converging the head paths into one — "пока рано".
+
+**Pavel on Anny's own space:** "так хорошие же тела! почему мы их не используем?" — Anny's native settings give real
+bodies; the cage (path 9) can be laid on top a little for artfulness; clearly better than the drawn bodies of path 7.
+Agreed: Anny first, our form on top.
