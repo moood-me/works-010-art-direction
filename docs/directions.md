@@ -86,3 +86,7 @@ silhouette; non-human heroes.
   modelled eyeballs. What stops them: the profile — a drawn face on a smooth egg has no nose–lip–chin line in side view;
   hair as ribbons reads as plastic panels, as a mass as a helmet — missing the rhythm of a few big designed clumps;
   brows hidden under bangs; no edge loops around eyes and mouth.
+  Second version, after Pavel's note: chins, noses and mouths now differ (pointed, square, round, jowly, long; tiny,
+  button, straight, upturned, ball, long wedge; line, pout, smirk, crooked grin, lips) — four heads close to their
+  picture at its angle. Still: hair approximate (panels and helmets), features painted by front projection, the
+  angular teen boys came out round and babyish.
