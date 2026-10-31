@@ -168,7 +168,16 @@ function sweep(pts, sect, o = {}) {
 const circle = r => (i, a) => [Math.cos(a) * r(i), Math.sin(a) * r(i)];
 const lerp = (a, b, t) => a + (b - a) * t, clamp = (x, a, b) => Math.max(a, Math.min(b, x)), sst = t => t * t * (3 - 2 * t);
 // a smooth curve through keys (uniform Catmull-Rom on numbers)
+function pchip(ks, t) {
+  const n = ks.length; if (t <= ks[0][0]) return ks[0][1]; if (t >= ks[n - 1][0]) return ks[n - 1][1];
+  const h = [], d = []; for (let k = 0; k < n - 1; k++) { h.push(ks[k + 1][0] - ks[k][0]); d.push((ks[k + 1][1] - ks[k][1]) / h[k]); }
+  const m = ks.map((_, k) => k === 0 ? d[0] : k === n - 1 ? d[n - 2] : (d[k - 1] * d[k] <= 0 ? 0 : (3 * (h[k - 1] + h[k])) / ((2 * h[k] + h[k - 1]) / d[k - 1] + (h[k] + 2 * h[k - 1]) / d[k])));
+  let k = 0; while (t > ks[k + 1][0]) k++;
+  const u = (t - ks[k][0]) / h[k], u2 = u * u, u3 = u2 * u;
+  return (2 * u3 - 3 * u2 + 1) * ks[k][1] + (u3 - 2 * u2 + u) * h[k] * m[k] + (-2 * u3 + 3 * u2) * ks[k + 1][1] + (u3 - u2) * h[k] * m[k + 1];
+}
 function keys(ks, t) {
+  if (Array.isArray(ks[0])) return pchip(ks, clamp(t, 0, 1));
   if (ks.length === 1) return ks[0];
   const n = ks.length - 1, x = clamp(t, 0, 1) * n, i = Math.min(n - 1, Math.floor(x)), f = x - i;
   const p0 = ks[Math.max(0, i - 1)], p1 = ks[i], p2 = ks[i + 1], p3 = ks[Math.min(n, i + 2)];
@@ -393,7 +402,7 @@ function build(C, poseName, exprName) {
   const T = C.torso, down = new V3(0, -1, 0).applyQuaternion(W[JI.Hips]);
   const spinePts = [J('Hips').clone().addScaledVector(down, T.below ?? 0.09), J('Hips'), J('Spine1'), J('Spine2'), J('Chest'), J('Neck1').clone().lerp(J('Neck2'), 0.5)];
   if (T.tail) { const back = new V3(0, 0, -1).applyQuaternion(W[JI.Hips]); spinePts.unshift(...T.tail(J('Hips'), down, back).reverse()); }
-  const curve = new THREE.CatmullRomCurve3(spinePts), NS = 64, path = curve.getSpacedPoints(NS);
+  const NS = 64, path = T.smooth ? bezier(spinePts.filter((p, k) => !T.skip || !T.skip.includes(k)), NS) : new THREE.CatmullRomCurve3(spinePts).getSpacedPoints(NS);
   const side0 = new V3(1, 0, 0).applyQuaternion(W[JI.Hips]), side1 = new V3(1, 0, 0).applyQuaternion(W[JI.Chest]);
   const frame = (i, t) => { const s = i / NS, N = side0.clone().lerp(side1, s); N.addScaledVector(t, -N.dot(t)).normalize(); const B = new V3().crossVectors(N, t); return [N, B]; };
   const sec = (i, a) => { const s = i / NS, w = keys(T.w, s), n = keys(T.n || [2.2], s), df = keys(T.df || T.d, s), db = keys(T.db || T.d, s), c = Math.cos(a), sn = Math.sin(a);
@@ -422,7 +431,7 @@ function build(C, poseName, exprName) {
   const F = { ...C.face, ...(EXPR[exprName] ? EXPR[exprName](C.face) : {}) };
   F.eye = { ...C.face.eye, ...(F.eye || {}) };
   add(hg, headGeometry(head), 0xffffff, { map: drawFace({ ...F, skin: col.skin }), ink: 0.05 });
-  for (const part of C.parts || []) part(hg, root, { P, W, J, R, hc, up, fwd, col });
+  for (const part of C.parts || []) part(hg, root, { P, W, J, R, hc, up, fwd, col, head });
   root.userData = { hc, R, P };
   return root;
 }
@@ -523,12 +532,20 @@ const ruff = (o) => (hg, root, ctx) => { const c = ctx.J('Neck1').clone().lerp(c
   for (let k = 0; k <= 96; k++) { const a = k / 96 * Math.PI * 2, r = o.r * (1 + 0.12 * Math.cos(a * (o.waves || 10))); pts.push(c.clone().add(new V3(Math.cos(a) * r, 0.015 * Math.sin(a * (o.waves || 10)), Math.sin(a) * r * 0.85).applyQuaternion(q))); }
   add(root, sweep(pts, circle(() => o.th), { radial: 12, capStart: false, capEnd: false }), o.color, { ink: 0.004 }); };
 const antenna = (o) => (hg) => { for (const sd of [-1, 1]) { const pts = bezier([new V3(sd * 0.3, 0.6, 0), new V3(sd * 0.45, 1.2, 0), new V3(sd * 0.8, 1.6, 0.1)], 14); add(hg, sweep(pts, circle(() => 0.04), { radial: 10 }), o.color, { ink: 0.02 }); const b = new THREE.SphereGeometry(0.12, 16, 10); const e = pts[pts.length - 1]; b.translate(e.x, e.y, e.z); add(hg, b, o.tip, { ink: 0.02 }); } };
-const hair = (o) => (hg) => { for (const s of o.locks) { const pts = bezier(s.pts.map(p => new V3(...p)), 24); add(hg, sweep(pts, (i, a) => { const t = i / 24, w = s.r * Math.max(0.02, Math.sin(Math.PI * Math.min(1, t * 1.6 + 0.15))) * (1 - t * 0.6); return [Math.cos(a) * w, Math.sin(a) * w * (s.flat || 0.6)]; }, { radial: 16, up: s.up ? new V3(...s.up) : undefined }), o.color, { ink: 0.035 }); } };
+const hair = (o) => (hg) => { for (const s of o.locks) { const pts = bezier(s.pts.map(p => new V3(...p)), 24); add(hg, sweep(pts, (i, a) => { const t = i / 24, w = s.full ? s.r * Math.min(1, 0.35 + t * 5) * Math.max(0.05, 1 - t ** (s.full) * 0.92) : s.r * Math.max(0.02, Math.sin(Math.PI * Math.min(1, t * 1.6 + 0.15))) * (1 - t * 0.6); return [Math.cos(a) * w, Math.sin(a) * w * (s.flat || 0.6)]; }, { radial: 16, up: s.up ? new V3(...s.up) : undefined }), o.color, { ink: 0.035 }); } };
 const stem = (o) => (hg) => { const pts = bezier([new V3(0, 0.82, 0), new V3(0, 1.15, 0), new V3(0.25, 1.35, 0.05), new V3(0.4, 1.2, 0.1)], 16); add(hg, sweep(pts, circle(i => 0.11 * (1 - i / 22)), { radial: 12 }), o.color, { ink: 0.03 });
   const leaf = new THREE.SphereGeometry(0.3, 16, 8); leaf.scale(1, 0.12, 0.55); leaf.rotateZ(0.4); leaf.translate(-0.3, 0.92, 0.05); add(hg, leaf, o.leaf, { ink: 0.03 }); };
 const noseBall = (o) => (hg) => { const g = new THREE.SphereGeometry(o.r, 24, 16); g.translate(0, o.y, 0.98); add(hg, g, o.color, { ink: 0.02 }); };
 const ring = (o) => (hg) => { const g = new THREE.TorusGeometry(o.r, o.th, 10, 32); g.rotateY(0.0); g.translate(0, o.y, o.z); add(hg, g, o.color, { ink: 0.015 }); };
 
+const bob = (o) => (hg, root, ctx) => {
+  const H = ctx.head, sc = o.s || 1.1;
+  const shell = new THREE.SphereGeometry(1, 64, 32, Math.PI / 2 + (o.open || 0.75), Math.PI * 2 - 2 * (o.open || 0.75), 0, Math.PI * (o.down || 0.62));
+  shell.scale(H.rx * sc, H.ry * sc, H.rz * sc); shell.translate(0, o.lift || 0.04, -(o.back || 0.04));
+  const m = new THREE.Mesh(shell, mat(o.color)); m.material.side = THREE.DoubleSide; hg.add(m);
+  const fr = new THREE.SphereGeometry(1, 64, 16, 0, Math.PI * 2, 0, Math.PI * (o.fringe || 0.28)); fr.scale(H.rx * sc * 1.01, H.ry * sc * 1.01, H.rz * sc * 1.01); fr.translate(0, (o.lift || 0.04), 0);
+  add(hg, fr, o.color, { ink: 0.04 });
+};
 const CAST = {
   host: { name: 'Хозяин отеля', base: 'man', pose: 'present', len: { legs: 1.12, arms: 1.15, hand: 1.25, neck: 1.25, foot: 1.1 },
     colors: { skin: '#e9d8d2', body: '#8f1d33', limbs: '#8f1d33', gloves: '#1e1218', shoes: '#1e1218', neck: '#e9d8d2' },
@@ -658,6 +675,65 @@ const CAST = {
     parts: [horn({ pts: [[0.6, 0.6, 0], [1.1, 0.75, 0.05], [1.4, 1.15, 0.15]], r: 0.2, color: '#efe6d0', pow: 0.9 }), ring({ r: 0.14, th: 0.03, y: -0.32, z: 1.22, color: '#e8b830' })] },
 };
 
+// ———— version 2: torsos drawn as silhouettes, legs that taper; the weaker six reworked ————
+// widths and depths are keys at chosen places along the torso, from the hem (0) to the neck (1)
+const sil = (w, df, db, o = {}) => ({ smooth: true, w, df, db: db || df, n: o.n || [2.2], below: o.below ?? 0.1, paint: o.paint, tail: o.tail });
+const CAST2 = {
+  host: { head: { size: 2.25, rx: 1.0, ry: 1.1, rz: 0.92, n: 2.2, taper: 0.28, chin: 0.9, rise: 0.8 },
+    torso: sil([[0, 0.1], [0.14, 0.13], [0.42, 0.058], [0.74, 0.19], [0.86, 0.22], [1, 0.035]], [[0, 0.06], [0.2, 0.085], [0.45, 0.055], [0.78, 0.095], [1, 0.03]], [[0, 0.065], [0.2, 0.09], [0.45, 0.06], [0.78, 0.085], [1, 0.03]],
+      { below: 0.2, n: [2.4], paint: (s, a) => { const fr = Math.sin(a), x = Math.cos(a); return fr > 0.3 && Math.abs(x) < 0.55 * Math.max(0, (s - 0.4) / 0.6) ? '#17101a' : (s < 0.2 && fr > 0 && Math.abs(x) < 0.25 ? '#17101a' : '#8f1d33'); } }),
+    legs: { r: [[0, 0.065], [0.3, 0.042], [0.7, 0.022], [1, 0.013]], bend: 1.0, color: '#17101a' }, arms: { r: [[0, 0.04], [0.5, 0.026], [1, 0.02]], bend: 1.2 } },
+  jester: { torso: sil([[0, 0.05], [0.22, 0.125], [0.55, 0.12], [0.85, 0.095], [1, 0.035]], [[0, 0.05], [0.3, 0.1], [0.65, 0.085], [1, 0.03]], null, { below: 0.08, paint: (s, a) => (Math.cos(a) > 0) !== (s > 0.5) ? '#6b3fa0' : '#2b8a8a' }),
+    legs: { r: [[0, 0.045], [0.5, 0.034], [1, 0.026]], bend: 1.2, paint: (t, a, sd) => sd === 'Left' ? '#6b3fa0' : '#2b8a8a' } },
+  imp: { torso: sil([[0, 0.04], [0.28, 0.1], [0.55, 0.09], [0.85, 0.065], [1, 0.03]], [[0, 0.04], [0.35, 0.1], [0.7, 0.07], [1, 0.028]], [[0, 0.04], [0.4, 0.065], [1, 0.028]], { below: 0.07 }),
+    legs: { r: [[0, 0.04], [0.4, 0.028], [1, 0.016]], bend: 1.3 } },
+  cat: { torso: sil([[0, 0.06], [0.3, 0.14], [0.65, 0.11], [1, 0.04]], [[0, 0.06], [0.35, 0.12], [1, 0.035]], null, { below: 0.07, n: [2], paint: (s, a) => (Math.floor(s * 9) % 2 && Math.sin(a) < 0.5) ? '#5d3b8f' : '#9b6fd0' }),
+    legs: { r: [[0, 0.045], [0.5, 0.032], [1, 0.026]], bend: 1.2 } },
+  noodle: { torso: sil([[0, 0.08], [0.25, 0.17], [0.45, 0.175], [0.72, 0.09], [1, 0.03]], [[0, 0.08], [0.28, 0.19], [0.45, 0.21], [0.72, 0.07], [1, 0.025]], [[0, 0.08], [0.4, 0.1], [1, 0.025]], { below: 0.08, n: [2.3], paint: (s, a) => (Math.floor(s * 14) % 2 ? '#d7a12e' : '#b9821c') }),
+    legs: { r: [[0, 0.05], [0.4, 0.03], [1, 0.015]], bend: 1.3, color: '#5a3b2a' }, arms: { r: [[0, 0.024], [1, 0.014]], bend: 1.7, color: '#d7a12e' },
+    head: { size: 2.5, rx: 0.92, ry: 1.18, rz: 0.95, n: 2, jowl: 0.15, rise: 0.8 },
+    face: { eye: { shape: 'almond', gap: 0.3, y: 0.2, size: 0.21, sclera: '#fff', irisColor: '#2f6b3a', lid: 0.45, lidTilt: -0.12, look: [0.4, 0] },
+      brow: { style: 'wedge', angle: -0.25, lift: 0.35, len: 1.2, thick: 0.28 }, mouth: { type: 'smirk', y: -0.5, w: 0.42, curve: 0.35, asym: 0.6 }, mustache: { y: -0.32, w: 0.55, color: '#2b1a12' } },
+    parts: [bowler({ r: 0.74, color: '#3a2a20', y: 0.9, rz: -0.18 }), noseBall({ r: 0.26, y: -0.1, color: '#e9876f' }), bowtie({ s: 0.045, color: '#2f6b3a', down: 0.02, z: 0.06 })] },
+  pumpkin: { torso: sil([[0, 0.05], [0.3, 0.115], [0.7, 0.1], [1, 0.03]], [[0, 0.05], [0.35, 0.095], [1, 0.025]], null, { below: 0.08 }),
+    arms: { r: [[0, 0.028], [1, 0.016]], bend: 1.4 }, legs: { r: [[0, 0.04], [0.45, 0.024], [1, 0.014]], bend: 1.2, paint: (t) => (Math.floor(t * 10) % 2 ? '#3b2554' : '#f08a24') },
+    head: { size: 2.4, rx: 1.22, ry: 0.92, rz: 1.1, ribs: 0.12, ribN: 5, n: 2, rise: 0.75, flat: 0.15 },
+    face: { eye: { shape: 'tri', gap: 0.42, y: 0.15, size: 0.29, sclera: '#ffd23f', iris: 0, pupil: 'none', glint: false, irisRing: false }, mouth: { type: 'zigzag', y: -0.4, w: 0.85, curve: 0.8, notches: 9 }, nose: { type: 'tri', size: 0.13, y: -0.1, color: '#3a1404' } } },
+  ghost: { torso: sil([[0, 0.012], [0.25, 0.05], [0.5, 0.11], [0.72, 0.13], [0.88, 0.11], [1, 0.04]], [[0, 0.012], [0.3, 0.045], [0.55, 0.09], [0.75, 0.1], [1, 0.035]], [[0, 0.012], [0.3, 0.045], [0.55, 0.085], [0.75, 0.085], [1, 0.035]],
+      { below: 0, n: [2], tail: (H, down, back) => [H.clone().addScaledVector(down, 0.25).addScaledVector(back, 0.05), H.clone().addScaledVector(down, 0.5).addScaledVector(back, 0.2), H.clone().addScaledVector(down, 0.62).addScaledVector(back, 0.45).add(new V3(0.15, 0, 0)), H.clone().addScaledVector(down, 0.5).addScaledVector(back, 0.62).add(new V3(0.3, 0, 0))] }),
+    arms: { r: [[0, 0.026], [1, 0.015]], bend: 1.3 },
+    head: { size: 2.6, rx: 0.95, ry: 1.05, rz: 0.95, n: 2, chin: 0.45, rise: 0.8 },
+    face: { eye: { shape: 'almond', gap: 0.34, y: 0.1, size: 0.26, tilt: -0.1, sclera: '#ffffff', irisColor: '#7a4fd0', lid: 0.42, lidTilt: -0.15, lashes: 4, lidColor: '#9fd8cf' },
+      brow: { style: 'wedge', angle: -0.15, lift: 0.4, len: 1.0, thick: 0.15, arch: 0.5 }, mouth: { type: 'pout', y: -0.44, w: 0.23, lip: '#7a2a8c' }, beauty: [0.34, -0.36] },
+    parts: [bob({ color: '#2a2240', s: 1.1, open: 0.8, down: 0.6, fringe: 0.26 }),
+      hair({ color: '#2a2240', locks: [{ pts: [[0.55, 0.85, 0.55], [1.05, 0.85, 0.5], [1.25, 0.25, 0.3], [1.0, -0.2, 0.35]], r: 0.36, flat: 0.55, full: 1.5 }] })] },
+  tv: { torso: sil([[0, 0.1], [0.15, 0.14], [0.85, 0.15], [1, 0.05]], [[0, 0.08], [0.15, 0.1], [0.85, 0.1], [1, 0.04]], null, { below: 0.08, n: [5] }),
+    legs: { r: [[0, 0.036], [1, 0.028]], bend: 1.2, paint: (t) => (Math.floor(t * 14) % 2 ? '#8c97a8' : '#5f6878') } },
+  rabbit: { torso: sil([[0, 0.07], [0.2, 0.11], [0.5, 0.068], [0.8, 0.105], [1, 0.03]], [[0, 0.06], [0.3, 0.08], [0.55, 0.06], [0.8, 0.075], [1, 0.03]], null, { below: 0.08, n: [2.3],
+      paint: (s, a) => { const fr = Math.sin(a), x = Math.cos(a); return fr > 0.2 && Math.abs(x) < 0.35 * Math.max(0, (s - 0.4) / 0.6) + 0.02 ? '#ffffff' : '#15131c'; } }),
+    legs: { r: [[0, 0.05], [0.4, 0.03], [1, 0.015]], bend: 1.1, color: '#f7f4f0' } },
+  witch: { torso: sil([[0, 0.22], [0.3, 0.12], [0.55, 0.055], [0.8, 0.075], [1, 0.025]], [[0, 0.2], [0.3, 0.1], [0.55, 0.05], [1, 0.022]], [[0, 0.2], [0.3, 0.1], [0.55, 0.05], [1, 0.022]],
+      { below: 0.26, paint: (s, a) => s < 0.3 && (Math.floor((a + 0.2) / (Math.PI / 6)) % 2) ? '#4a2f6b' : '#2a1f3d' }),
+    legs: { r: [[0, 0.032], [0.4, 0.02], [1, 0.011]], bend: 1.1, paint: (t) => (Math.floor(t * 12) % 2 ? '#2a1f3d' : '#9c6bd6') },
+    parts: [witchHat({ r: 0.6, h: 2.0, color: '#2a1f3d', band: '#9c6bd6', y: 0.68, bend: 0.7 }),
+      bob({ color: '#ff7a1a', s: 1.08, open: 0.85, down: 0.55, fringe: 0.2, lift: 0.02 }),
+      hair({ color: '#ff7a1a', locks: [{ pts: [[-0.8, 0.0, -0.1], [-1.25, -0.4, -0.1], [-1.2, -1.0, 0.0], [-1.5, -1.6, 0.1]], r: 0.42, flat: 0.8, full: 1.6 }, { pts: [[0.8, 0.0, -0.1], [1.25, -0.4, -0.1], [1.2, -1.0, 0.0], [1.5, -1.6, 0.1]], r: 0.42, flat: 0.8, full: 1.6 }] })] },
+  bull: { torso: sil([[0, 0.1], [0.3, 0.14], [0.6, 0.24], [0.82, 0.28], [1, 0.09]], [[0, 0.09], [0.4, 0.13], [0.7, 0.17], [1, 0.08]], [[0, 0.08], [0.6, 0.15], [1, 0.08]], { below: 0.09, n: [2.8] }),
+    legs: { r: [[0, 0.075], [0.5, 0.05], [1, 0.04]], bend: 0.9 },
+    head: { size: 1.95, rx: 1.05, ry: 0.92, rz: 1.0, n: 2.4, muzzle: 0.3, jowl: 0.25, rise: 0.75, fwd: 0.06 },
+    face: { eye: { shape: 'almond', gap: 0.36, y: 0.3, size: 0.22, sclera: '#fff', irisColor: '#401a10', iris: 0.7, lid: 0.35, lidTilt: 0.45 },
+      brow: { style: 'wedge', angle: 0.6, lift: -0.1, len: 1.15, thick: 0.38 }, nose: { type: 'nostrils', size: 0.2, y: -0.1 },
+      mouth: { type: 'grin', y: -0.45, w: 0.6, curve: -0.4, open: 0.25, teeth: 'square', lower: true, dimples: false } } },
+};
+function v2(C, D) {
+  if (!D) return C;
+  const out = { ...C, ...D };
+  if (D.face) out.face = { ...C.face, ...D.face, eye: { ...C.face.eye, ...(D.face.eye || {}) }, brow: { ...C.face.brow, ...(D.face.brow || {}) }, mouth: { ...C.face.mouth, ...(D.face.mouth || {}) } };
+  if (D.legs && C.legs) out.legs = { ...C.legs, ...D.legs };
+  if (D.arms && C.arms) out.arms = { ...C.arms, ...D.arms };
+  return out;
+}
+
 // ———— the stage ————
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(2, devicePixelRatio)); renderer.setSize(innerWidth, innerHeight); renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -676,7 +752,7 @@ let names = (qs.get('c') || 'host').split(','); if (names[0] === 'all') names = 
 const exprs = expr.split(',');
 let x = 0; const built = [];
 names.forEach((n, i) => {
-  let C = CAST[n]; if (qs.get('bend')) { const b = +qs.get('bend'); C = { ...C, arms: C.arms && { ...C.arms, bend: b }, legs: C.legs && { ...C.legs, bend: b } }; }
+  let C = qs.get('v') === '2' ? v2(CAST[n], CAST2[n]) : CAST[n]; if (qs.get('bend')) { const b = +qs.get('bend'); C = { ...C, arms: C.arms && { ...C.arms, bend: b }, legs: C.legs && { ...C.legs, bend: b } }; }
   const ch = build(C, qs.get('pose') || C.pose, exprs[i % exprs.length] || exprs[0]);
   const box = new THREE.Box3().setFromObject(ch), w = box.max.x - box.min.x;
   ch.position.x = x - box.min.x; x += w + 0.12; scene.add(ch); built.push(ch);
