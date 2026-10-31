@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art direction gallery</title>
+<style>
+  :root { --bg: #f4f1ec; --card: #fffdf9; --ink: #26231f; --muted: #75706a; --line: #e2ddd5; --accent: #b4532a; --good: #2f7d4f; --mid: #a37a1c; --bad: #a33a3a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; } }
+  :root[data-theme="dark"] { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding: 28px 16px 8px; max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); }
+  nav { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); }
+  nav div { max-width: 1200px; margin: 0 auto; padding: 8px 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+  nav a { color: var(--ink); text-decoration: none; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  nav a:hover { border-color: var(--accent); }
+  main { max-width: 1200px; margin: 0 auto; padding: 8px 16px 64px; }
+  section { margin-top: 36px; scroll-margin-top: 110px; }
+  h2 { font-size: 20px; margin: 0 0 4px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .id { color: var(--accent); font-weight: 700; }
+  .st { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; }
+  .good { color: var(--good); } .mid { color: var(--mid); } .bad { color: var(--bad); }
+  .what { color: var(--muted); margin: 0 0 6px; max-width: 900px; }
+  .verdict { margin: 0 0 12px; max-width: 900px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  figure a { display: block; }
+  figure img { display: block; width: 100%; height: 220px; object-fit: contain; background: #d9d4cb; }
+  figcaption { padding: 7px 10px; font-size: 13px; }
+  figcaption b { color: var(--accent); margin-right: 4px; }
+  .group-title { margin: 48px 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Art direction: все пути</h1>
+  <p>Финал каждого пути, без промежуточных версий. Номер у пути, буква у картинки: «3б» — путь 3, картинка б. Картинку можно открыть по клику.</p>
+</header>
+<nav><div id="nav"></div></nav>
+<main id="main"></main>
+<script>
+const P = '../docs/pictures/';
+const groups = [
+  { title: 'Готовые жанры', items: [
+    { id: 1, name: 'Инди-герои', st: 'good', stt: 'нравится',
+      what: 'Конструктор из простых форм на суставах SOMA: шары, капли, цилиндры, вещи как часть силуэта, нечеловеческие герои. Цвет и контур, лица с чувствами, позы с линией действия.',
+      verdict: 'Павел: «о классссс! :3», «развей их, делай ещё и стильнее». Движения Kimodo садятся на большинство.',
+      pics: [['indie/v2-party.png', '24 героя, у каждого своя поза и чувство'], ['indie/v2-faces.png', '7 выражений на 4 героях'], ['indie/v2-poses.png', 'позы'], ['indie/motion/gif-walk.gif', 'Kimodo: шаг'], ['indie/motion/gif-dance.gif', 'Kimodo: танец'], ['indie/motion/gif-stomp.gif', 'Kimodo: топает']] },
+    { id: 2, name: 'Выразительные лица и руки-шланги', st: 'good', stt: 'нравится',
+      what: 'Свои персонажи на скелете SOMA: лицо — рисунок на голове, руки и ноги гнутся дугой, язык форм на пределе. Вторая версия: нарисованные туловища и сужающиеся ноги.',
+      verdict: 'Павел: «супер охуенно и супер ценно… я люблю тут всех персонажей». Вторая версия «стала лучше, отлично», первая сохранена.',
+      pics: [['toon/v2-liked-five.png', 'пятеро любимых: слева v1, справа v2'], ['toon/v2-weaker-six.png', 'слабые шестеро: v1 и v2'], ['toon/expr.png', '9 выражений на 4 головах'], ['toon/cast.png', 'v1: все 11']] },
+  ]},
+  { title: 'Части персонажа', items: [
+    { id: 3, name: 'Одежда со своей формой', st: 'good', stt: 'нравится',
+      what: 'Вещь читается вокруг оси и рисуется заново: силуэт, жёсткость, откуда висит, складки как рисунок. Упрощение вместе с телом: ткань → форма со складками → гладкая форма → знак. В движении — физика ткани с нарисованной формой покоя.',
+      verdict: 'Павел: «одежда и силуэты, фигура и всё это упрощение — вообще потрясающе»; физика в движении — «чудесно». Тела под одеждой уродливы — одежду переносят на хорошие тела.',
+      pics: [['clothes/dresses.png', '8 силуэтов одного платья'], ['clothes/ladder.png', 'лестница упрощения трёх вещей'], ['clothes/sE-kids.png', 'принцесса, малышка, бабушка, учительница'], ['clothes/motion/sM-bell.png', 'в движении: 3 способа, внизу физика'], ['clothes/motion/gif-phys-bell-walk.gif', 'шаг с физикой ткани']] },
+    { id: 4, name: 'Головы по аниме и рисованным референсам', st: 'mid', stt: 'более-менее',
+      what: 'Своя голова: лицо из кривых своего рисунка (овал спереди, профиль сбоку), носы и рты своими линиями, черты нарисованы на коже, мультяшный свет с контуром.',
+      verdict: 'Павел: «в целом можно считать более-менее норм». Волосы — главное уродство.',
+      pics: [['heads-anime/final1.png', 'аниме-девушка, рыжая девушка, Альва, женщина в капюшоне'], ['heads-anime/final2.png', 'девушка в маске, блондин, мальчик с хвостиками, Джеспер'], ['heads-anime/final3.png', 'мальчик с каре, старик, парень с длинным носом']] },
+    { id: 5, name: 'Обтяжка головы сеткой Anny', st: 'mid', stt: 'более-менее, в работе',
+      what: 'Придуманная голова обтянута анимационной сеткой головы Anny: вид сохранён, шея без шва, веки и рот двигаются самой сеткой.',
+      verdict: 'Павел: «вроде более-менее»; сделать лица красивыми, убрать явные ляпы (пятна, торчащие зубы).',
+      pics: [['heads-wrap/sheetW3.png', 'рыжая девушка, старик: придуманная → обтянутая, моргание, рот, улыбка'], ['heads-wrap/sheetW4.png', 'парень с длинным носом, женщина в капюшоне']] },
+    { id: 6, name: 'Головы по 3D-мультяшным референсам', st: 'bad', stt: 'не получилось, новый инструмент в работе',
+      what: 'Лепка объёмами (слитые формы и плоскости). Агент сам признал, что этим инструментом точные лица без багов не получить; сейчас пробует сетку лица, двигаемую по точкам и кривым.',
+      verdict: 'Павел: «баги на каждом лице… сделать ТОЧНО каждую ФОРМУ ЛИЦА».',
+      pics: [['heads-3d/v3/sheet-marco-gwen-gogo-jack-ariel-boy3d.png', 'Марко, Гвен, Гоу-Гоу, Джек, рыжая девушка, рыжий мальчик'], ['heads-3d/v3/sheet-giulia-ambrosius-nimona-doll-claire.png', 'Джулия, Амброзий, Нимона, кукла, Клэр']] },
+  ]},
+  { title: 'Тела и инструменты', items: [
+    { id: 7, name: 'Нарисованная форма тела (А)', st: 'mid', stt: 'основа для тел',
+      what: 'Каждый стиль рисует свои контуры тела кривыми, тело Anny натягивается на эту форму. Чисто, без бугров.',
+      verdict: 'Тела Диснея и аниме ниже шеи чистые; ритма в контурах пока мало.',
+      pics: [['designed-form/sA-final.png', 'Дисней, Пиксар, аниме: спереди и сбоку'], ['designed-form/sA-final-close.png', 'торс и ноги крупно']] },
+    { id: 8, name: 'Одетые персонажи с лицами (Б)', st: 'mid', stt: 'основа «тело + одежда»',
+      what: 'Генератор 72 персонажей: одежда MakeHuman на стилизованном теле, глаза, брови, рот. Дал находки о красоте.',
+      verdict: 'Павел: тела и одежда хорошо, лица плохо. Решено: брать как основу «тело + одежда», голову — из работ по головам.',
+      pics: [['dressed/best-of-72.png', 'лучшие 12 из 72'], ['dressed/lid-open-vs-heavy.png', 'открытое и тяжёлое веко']] },
+    { id: 9, name: 'Инструменты деформации', st: 'good', stt: 'служат остальным',
+      what: 'Сглаживание в сантиметрах, каркас (весь силуэт одним движением), лицо по опорным точкам, сабдив.',
+      verdict: 'Каркас — самая чистая новинка; инструменты дают формы, но не вкус.',
+      pics: [['tools/cage.png', 'каркас: одно тело, разные силуэты'], ['tools/breadth.png', 'стиль × каркас × лицо'], ['tools/face.png', 'лицо по опорным точкам']] },
+    { id: 10, name: 'Сама Anny', st: 'mid', stt: 'первый шаг',
+      what: 'Anny из исходников: её ползунки и поправки художников; голова другого возраста на взрослом теле.',
+      verdict: 'Пропорции от людей; поверхность реалистичная, мультяшного лица не даёт. Issue в moood: moood-me/moood#4.',
+      pics: [['anny-space/heads-of-other-age.png', 'головы другого возраста'], ['anny-space/bodies-on-moood-mesh.png', 'тела её средствами']] },
+    { id: 11, name: 'Стили тела на Anny (страница форм)', st: 'bad', stt: 'пройденный этап',
+      what: 'Жанры, характеры, язык форм, силуэт одной формой, знак; стиль как разница конструкций, перенесённая на настоящее тело.',
+      verdict: 'Тела разные, но ни одного красивого — отсюда пошли все остальные пути.',
+      pics: [['form/eight-styles-even-smoothing.png', '8 стилей на одном теле']] },
+    { id: 12, name: 'Соединение А и Б', st: 'bad', stt: 'тупик',
+      what: 'Голова Anny натянута на нарисованную форму лучами — дала бугры.',
+      verdict: 'Павел согласился: некрасиво. Вместо этого — правильная обтяжка (путь 5).',
+      pics: [['combined/C-heads.png', '8 голов крупно']] },
+  ]},
+  { title: 'Откуда начали', items: [
+    { id: 13, name: 'Hope (Claude Design)', st: 'good', stt: 'образец',
+      what: 'Сцены, которые хочется — и которые движок 3 повторяет почти один в один (works-009-hope).',
+      verdict: '', pics: [['hope/forest.webp', 'лес'], ['hope/lake.webp', 'озеро'], ['hope/title.webp', 'титул'], ['hope/title-engine-3.webp', 'титул на движке 3']] },
+  ]},
+];
+const nav = document.getElementById('nav'), main = document.getElementById('main');
+const letters = 'абвгдежзик';
+for (const g of groups) {
+  const t = document.createElement('div'); t.className = 'group-title'; t.textContent = g.title; main.appendChild(t);
+  for (const it of g.items) {
+    const a = document.createElement('a'); a.href = '#p' + it.id; a.textContent = it.id + '. ' + it.name; nav.appendChild(a);
+    const s = document.createElement('section'); s.id = 'p' + it.id;
+    s.innerHTML = `<h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
+      <p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}<div class="grid"></div>`;
+    const grid = s.querySelector('.grid');
+    it.pics.forEach(([src, cap], k) => {
+      const f = document.createElement('figure');
+      f.innerHTML = `<a href="${P + src}" target="_blank"><img loading="lazy" src="${P + src}" alt="${cap}"></a><figcaption><b>${it.id}${letters[k]}</b>${cap}</figcaption>`;
+      grid.appendChild(f);
+    });
+    main.appendChild(s);
+  }
+}
+</script>
+</body>
+</html>
