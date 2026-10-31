@@ -5,42 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Art direction gallery</title>
 <style>
-  :root { --bg: #f4f1ec; --card: #fffdf9; --ink: #26231f; --muted: #75706a; --line: #e2ddd5; --accent: #b4532a; --good: #2f7d4f; --mid: #a37a1c; --bad: #a33a3a; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; } }
-  :root[data-theme="dark"] { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; }
+  :root { --bg: #f4f1ec; --card: #fffdf9; --ink: #26231f; --muted: #75706a; --line: #e2ddd5; --accent: #b4532a; --good: #2f7d4f; --mid: #a37a1c; --bad: #a33a3a; --side: #ebe6de; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; --side: #201f1c; } }
+  :root[data-theme="dark"] { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; --side: #201f1c; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  header { padding: 28px 16px 8px; max-width: 1200px; margin: 0 auto; }
-  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
-  header p { margin: 0; color: var(--muted); }
-  nav { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); }
-  nav div { max-width: 1200px; margin: 0 auto; padding: 8px 16px; display: flex; flex-wrap: wrap; gap: 6px; }
-  nav a { color: var(--ink); text-decoration: none; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
-  nav a:hover { border-color: var(--accent); }
-  main { max-width: 1200px; margin: 0 auto; padding: 8px 16px 64px; }
-  section { margin-top: 36px; scroll-margin-top: 110px; }
-  h2 { font-size: 20px; margin: 0 0 4px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; display: flex; }
+  aside { width: 290px; flex: none; height: 100vh; position: sticky; top: 0; overflow-y: auto; background: var(--side); border-right: 1px solid var(--line); padding: 18px 10px 24px; }
+  aside h1 { font-size: 17px; margin: 0 8px 2px; }
+  aside .sub { color: var(--muted); font-size: 12px; margin: 0 8px 14px; }
+  .gt { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 16px 8px 4px; }
+  aside a { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 14px; }
+  aside a:hover { background: var(--card); }
+  aside a.on { background: var(--card); box-shadow: inset 3px 0 0 var(--accent); }
+  aside a .n { color: var(--accent); font-weight: 700; min-width: 18px; }
+  aside a .dot { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; flex: none; background: currentColor; }
+  main { flex: 1; min-width: 0; padding: 24px 28px 64px; max-width: 1300px; }
+  h2 { font-size: 24px; margin: 0 0 6px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
   .id { color: var(--accent); font-weight: 700; }
   .st { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; }
   .good { color: var(--good); } .mid { color: var(--mid); } .bad { color: var(--bad); }
   .what { color: var(--muted); margin: 0 0 6px; max-width: 900px; }
-  .verdict { margin: 0 0 12px; max-width: 900px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-  figure a { display: block; }
-  figure img { display: block; width: 100%; height: 220px; object-fit: contain; background: #d9d4cb; }
-  figcaption { padding: 7px 10px; font-size: 13px; }
+  .verdict { margin: 0 0 16px; max-width: 900px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; cursor: zoom-in; }
+  figure img { display: block; width: 100%; height: 260px; object-fit: contain; background: #d9d4cb; }
+  figure:hover { border-color: var(--accent); }
+  figcaption { padding: 8px 10px; font-size: 13px; }
   figcaption b { color: var(--accent); margin-right: 4px; }
-  .group-title { margin: 48px 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  #menuSel { display: none; }
+  #lb { position: fixed; inset: 0; background: rgba(12,11,10,.92); display: none; z-index: 10; flex-direction: column; }
+  #lb.on { display: flex; }
+  #lb .imgbox { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 16px 64px 0; }
+  #lb img { max-width: 100%; max-height: 100%; object-fit: contain; background: #d9d4cb; border-radius: 4px; }
+  #lb .cap { color: #eee; text-align: center; padding: 10px 16px 16px; font-size: 14px; }
+  #lb .cap b { color: #f0a070; margin-right: 6px; }
+  #lb button { position: absolute; background: rgba(255,255,255,.12); color: #fff; border: 0; border-radius: 50%; width: 44px; height: 44px; font-size: 22px; cursor: pointer; }
+  #lb button:hover { background: rgba(255,255,255,.25); }
+  #lbPrev { left: 12px; top: 50%; } #lbNext { right: 12px; top: 50%; } #lbClose { right: 12px; top: 12px; }
+  @media (max-width: 760px) {
+    body { display: block; } aside { display: none; }
+    #menuSel { display: block; width: 100%; padding: 10px; font-size: 15px; margin-bottom: 16px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
+    main { padding: 16px; } #lb .imgbox { padding: 12px 8px 0; } #lbPrev, #lbNext { top: auto; bottom: 56px; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Art direction: все пути</h1>
-  <p>Финал каждого пути, без промежуточных версий. Номер у пути, буква у картинки: «3б» — путь 3, картинка б. Картинку можно открыть по клику.</p>
-</header>
-<nav><div id="nav"></div></nav>
-<main id="main"></main>
+<aside id="side"><h1>Art direction</h1><p class="sub">Финал каждого пути. Номер — путь, буква — картинка: «3б».</p></aside>
+<main><select id="menuSel" aria-label="Путь"></select><div id="view"></div></main>
+<div id="lb" role="dialog" aria-modal="true"><div class="imgbox"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div>
+<button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
 <script>
 const P = '../docs/pictures/';
 const groups = [
@@ -104,24 +118,44 @@ const groups = [
       verdict: '', pics: [['hope/forest.webp', 'лес'], ['hope/lake.webp', 'озеро'], ['hope/title.webp', 'титул'], ['hope/title-engine-3.webp', 'титул на движке 3']] },
   ]},
 ];
-const nav = document.getElementById('nav'), main = document.getElementById('main');
 const letters = 'абвгдежзик';
+const side = document.getElementById('side'), view = document.getElementById('view'), sel = document.getElementById('menuSel');
+const all = groups.flatMap(g => g.items);
 for (const g of groups) {
-  const t = document.createElement('div'); t.className = 'group-title'; t.textContent = g.title; main.appendChild(t);
+  const t = document.createElement('div'); t.className = 'gt'; t.textContent = g.title; side.appendChild(t);
+  const og = document.createElement('optgroup'); og.label = g.title; sel.appendChild(og);
   for (const it of g.items) {
-    const a = document.createElement('a'); a.href = '#p' + it.id; a.textContent = it.id + '. ' + it.name; nav.appendChild(a);
-    const s = document.createElement('section'); s.id = 'p' + it.id;
-    s.innerHTML = `<h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
-      <p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}<div class="grid"></div>`;
-    const grid = s.querySelector('.grid');
-    it.pics.forEach(([src, cap], k) => {
-      const f = document.createElement('figure');
-      f.innerHTML = `<a href="${P + src}" target="_blank"><img loading="lazy" src="${P + src}" alt="${cap}"></a><figcaption><b>${it.id}${letters[k]}</b>${cap}</figcaption>`;
-      grid.appendChild(f);
-    });
-    main.appendChild(s);
+    const a = document.createElement('a'); a.href = '#' + it.id; a.dataset.id = it.id;
+    a.innerHTML = `<span class="n">${it.id}</span><span>${it.name}</span><span class="dot ${it.st}" title="${it.stt}"></span>`;
+    side.appendChild(a);
+    const o = document.createElement('option'); o.value = it.id; o.textContent = it.id + '. ' + it.name; og.appendChild(o);
   }
 }
+sel.onchange = () => { location.hash = '#' + sel.value; };
+let cur = null, idx = 0;
+function show(id) {
+  const it = all.find(x => x.id == id) || all[0]; cur = it; sel.value = it.id;
+  side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id == it.id));
+  view.innerHTML = `<h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
+    <p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}<div class="grid"></div>`;
+  const grid = view.querySelector('.grid');
+  it.pics.forEach(([src, cap], k) => {
+    const f = document.createElement('figure');
+    f.innerHTML = `<img loading="lazy" src="${P + src}" alt="${cap}"><figcaption><b>${it.id}${letters[k]}</b>${cap}</figcaption>`;
+    f.onclick = () => openLb(k); grid.appendChild(f);
+  });
+  window.scrollTo(0, 0);
+}
+const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
+function openLb(k) { idx = (k + cur.pics.length) % cur.pics.length; const [src, cap] = cur.pics[idx]; lbImg.src = P + src; lbCap.innerHTML = `<b>${cur.id}${letters[idx]}</b>${cap}`; lb.classList.add('on'); }
+function closeLb() { lb.classList.remove('on'); lbImg.removeAttribute('src'); }
+document.getElementById('lbPrev').onclick = e => { e.stopPropagation(); openLb(idx - 1); };
+document.getElementById('lbNext').onclick = e => { e.stopPropagation(); openLb(idx + 1); };
+document.getElementById('lbClose').onclick = closeLb;
+lb.onclick = e => { if (e.target === lb || e.target.classList.contains('imgbox')) closeLb(); };
+addEventListener('keydown', e => { if (!lb.classList.contains('on')) return; if (e.key === 'Escape') closeLb(); if (e.key === 'ArrowLeft') openLb(idx - 1); if (e.key === 'ArrowRight') openLb(idx + 1); });
+addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1) || all[0].id);
 </script>
 </body>
 </html>
