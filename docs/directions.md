@@ -47,3 +47,11 @@ Asked "what, in implementation, are we not doing", the answer was seven things; 
 From the indie and expressive references ([references.md](references.md)): a constructor of characters from simple
 forms with its own skeleton; limbs bending along a curve; a graphic face that changes a lot; things as part of the
 silhouette; non-human heroes.
+
+## Results so far
+
+- **Anny's own space** ([experiments/anny-space](../experiments/anny-space/README.md),
+  [pictures](pictures/anny-space/)): proportions made by people hold to about twice the slider range; a head of another
+  age on an adult body gives doll-like cartoon proportions with a whole head. The surface stays realistic and there is
+  no cute face — so Anny goes first (proportions, childlikeness by her own means), our designed form, simplification
+  and face on top.
