@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Heads on Anny's mesh</title>
+<style>html,body{margin:0;background:#d9d3ca;overflow:hidden}canvas{display:block}</style>
+<canvas id="cv"></canvas>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const V3 = THREE.Vector3;
+const cv = document.getElementById('cv'), renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(innerWidth, innerHeight); renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#dcd6cd');
+const camera = new THREE.PerspectiveCamera(18, innerWidth / innerHeight, 0.02, 30);
+scene.add(new THREE.HemisphereLight('#ffffff', '#b8b0a8', 1.2));
+const key = new THREE.DirectionalLight('#fff6ec', 2.0); key.position.set(-1.4, 2.0, 2.6); scene.add(key);
+const rim = new THREE.DirectionalLight('#e8f0ff', 0.9); rim.position.set(2, 1.4, -2.4); scene.add(rim);
+const dec = (s, K) => { const b = Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer; return new K(b); };
+function irisTex(col) { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 256; const g = cv.getContext('2d'); g.fillStyle = '#f6f2ec'; g.fillRect(0, 0, 512, 256);
+  const X = 128, Y = 128, R = 40; const gr = g.createRadialGradient(X, Y, 4, X, Y, R); gr.addColorStop(0, col); gr.addColorStop(0.75, col); gr.addColorStop(1, '#1c120c'); g.fillStyle = gr; g.beginPath(); g.arc(X, Y, R, 0, 7); g.fill();
+  g.fillStyle = '#0c0808'; g.beginPath(); g.arc(X, Y, R * 0.45, 0, 7); g.fill(); g.fillStyle = '#ffffff'; g.beginPath(); g.arc(X - 12, Y - 14, 7, 0, 7); g.fill();
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; }
+let group = null; const cache = {};
+window.__show = async (name, yaw, pitch = 0.05, zoom = 1, wire = false, roll = 0) => {
+  const D = cache[name] ?? (cache[name] = await (await fetch('out/' + name + '.json?' + Date.now())).json());
+  if (group) scene.remove(group); group = new THREE.Group();
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(dec(D.pos, Float32Array), 3));
+  const col = dec(D.col, Float32Array); for (let i = 0; i < col.length; i++) col[i] = Math.pow(col[i], 2.2);
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setIndex(new THREE.BufferAttribute(dec(D.tris, Uint32Array), 1)); g.computeVertexNormals();
+  group.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, wireframe: wire, side: window.__dbl ? THREE.DoubleSide : THREE.FrontSide })));
+  for (const e of D.eyes) { const c = new V3(...e.c); const ball = new THREE.Mesh(new THREE.SphereGeometry(e.r, 48, 32), new THREE.MeshStandardMaterial({ map: irisTex(D.iris), roughness: 0.25 }));
+    ball.position.copy(c); ball.lookAt(c.clone().add(new V3(D.gaze[0], D.gaze[1], 1))); group.add(ball); }
+  // the mouth's inside
+  scene.add(group);
+  const O = new V3(...D.frame.O), U = D.frame.U, Hh = D.frame.top - D.frame.chin, c = window.__at ? O.clone().add(new V3(...window.__at).multiplyScalar(U)) : new V3(0, (D.frame.top + D.frame.chin) / 2 - 0.08 * Hh, O.z - 0.6 * U), dist = Hh * 5.2 / zoom;
+  camera.position.set(c.x + Math.sin(yaw) * Math.cos(pitch) * dist, c.y + Math.sin(pitch) * dist, c.z + Math.cos(yaw) * Math.cos(pitch) * dist); const f = c.clone().sub(camera.position).normalize(), r = new V3().crossVectors(f, new V3(0, 1, 0)).normalize(), u = new V3().crossVectors(r, f); camera.up.copy(u.multiplyScalar(Math.cos(roll)).add(r.multiplyScalar(Math.sin(roll)))); camera.lookAt(c);
+  renderer.render(scene, camera); return D.view;
+};
+window.__ready = true; window.__dbl = false;
+</script>
