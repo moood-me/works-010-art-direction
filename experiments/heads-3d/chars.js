@@ -32,8 +32,8 @@ export default (CH, { L, braid, bun, band, helmet, stripe, THREE }) => {
     // hollows: the eye sockets
     if (q.sock) o.push(['carve', ['ell', ['@', c.eyeX, c.eyeY + 0.03, 0.02], [c.eyeR * 1.45, c.eyeR * 1.1, 0.07 * q.sock], ['n', 0]], q.sockK, true]);
     // the cheekbone: a ridge lying on the skin along its line; the hollow under it
-    if (q.cbH) o.push(['add', ['ell', ['@', q.cbX, q.cbY, -0.04 + q.cbH], [0.22, 0.045, 0.06], ['n', -0.35]], q.cbK * 0.6, true]);
-    if (q.hollow) o.push(['carve', ['ell', ['@', q.cbX - 0.05, q.cbY - 0.28, 0.03], [0.15, 0.12, 0.06 * q.hollow], ['n', 0]], 0.12, true]);
+    if (q.cbH) o.push(['add', ['ell', ['@', q.cbX, q.cbY - 0.04, -0.08 + q.cbH], [0.24, 0.11, 0.09], ['n', -0.35]], 0.1, true]);
+    if (q.hollow) o.push(['carve', ['ell', ['@', q.cbX - 0.05, q.cbY - 0.3, 0.05], [0.18, 0.15, 0.06 * q.hollow], ['n', 0]], 0.16, true]);
     // the nose: a wedge, ridge forward, from the bridge to the tip; the tip; the wings; the nostrils carved
     const zt = zf(q.tipY) + q.tipOut, zb = zf(q.noseTop) + 0.01, len = Math.hypot(q.noseTop - q.tipY, zt - zb), pitch = Math.atan2(zb - zt, q.noseTop - q.tipY);
     o.push(['add', ['nose', ['@', 0, q.noseTop, -0.03], ['@', 0, q.tipY + 0.02, q.tipOut - q.tipR * 0.5 + q.bend], q.noseW * 1.0, q.tipR * (q.baseW ?? 1.3), 0.1, 0.12], q.noseK ?? 0.035]);

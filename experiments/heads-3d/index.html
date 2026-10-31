@@ -56,16 +56,23 @@ function loft(H) {
 // a soft child's face a lot); the neck a column under it
 function block(H) {
   const c = H.cs, S = H.S || {};
-  const crY = 0.12, skull = ell([0, crY, (c.fore + c.back) / 2], [c.skull, c.crown - crY, (c.fore - c.back) / 2]);
+  // the skull's egg with its front-lower part taken away — the face region below the cheekbones belongs to the face's
+  // own mass (a whole egg reaching the chin swallows the face's form); behind, the egg goes on down to the nape
+  const crY = 0.12, egg = ell([0, crY, (c.fore + c.back) / 2], [c.skull, c.crown - crY, (c.fore - c.back) / 2]), yCut = c.cheekY + 0.2;
+  const skull = (x, y, z) => smax(egg(x, y, z), smin(yCut - y, z + 0.05, 0.15), 0.2);
+  const nape = ell([0, (yCut + c.jawY) / 2 - 0.05, c.back * 0.45], [c.jaw * 0.95, (yCut - c.jawY) / 2 + 0.25, -c.back * 0.5]);
   const top = 0.3, bot = c.chinY - 0.02, fz0 = -0.35;
-  const box = ell([0, (top + bot) / 2, (c.plane + fz0) / 2], [c.cheek * 1.04, (top - bot) / 2 + 0.06, (c.plane - fz0) / 2]);
-  // a side plane through two points of the front outline, outward; it shaves only below its upper point, fading in
-  // smoothly (a hard limit would leave a groove along it)
+  // the face's mass: a rounded block (a superellipsoid), full down to the chin, so the planes give the form and not
+  // the roundness of an egg
+  const box = (() => { const cx = 0, cy = (top + bot) / 2, cz = (c.plane + fz0) / 2, a = c.cheek * 1.02, bb = (top - bot) / 2 + 0.04, cc = (c.plane - fz0) / 2, n = S.faceN ?? 3.2;
+    return (x, y, z) => { const u = Math.abs(x - cx) / a, v = Math.abs(y - cy) / bb, w = Math.abs(z - cz) / cc; return (Math.pow(Math.pow(u, n) + Math.pow(v, n) + Math.pow(w, n), 1 / n) - 1) * Math.min(a, bb, cc) * 0.9; }; })();
+  // a side plane through two points of the front outline, outward; above its upper point it leans out of the face, so
+  // it needs no limit (a limit leaves a groove)
   const side = (ax, ay, bx, by) => { let nx = -(by - ay), ny = bx - ax; const l = Math.hypot(nx, ny); nx /= l; ny /= l; if (nx < 0) { nx = -nx; ny = -ny; }
-    return (x, y, z) => (Math.abs(x) - ax) * nx + (y - ay) * ny - 0.6 * (1 - sst(clamp((ay + 0.1 - y) / 0.3, 0, 1))); };
+    return (x, y, z) => (Math.abs(x) - ax) * nx + (y - ay) * ny; };
   // a front plane through two points of the profile, facing forward; it shaves only in front
   const front = (ay, az, by, bz, below) => { let ny = bz - az, nz = -(by - ay); const l = Math.hypot(ny, nz); ny /= l; nz /= l; if (nz < 0) { ny = -ny; nz = -nz; }
-    return (x, y, z) => (y - ay) * ny + (z - az) * nz - 0.6 * (1 - sst(clamp((below + 0.6 - y) / 0.6, 0, 1))) - 0.6 * (1 - sst(clamp((z - 0.1) / 0.3, 0, 1))); };
+    return (x, y, z) => (y - ay) * ny + (z - az) * nz - 0.6 * (1 - sst(clamp((z - 0.1) / 0.3, 0, 1))); };
   const cheek = side(c.cheek, c.cheekY, c.jaw, c.jawY), jaw = side(c.jaw, c.jawY, c.chin, c.chinY);
   const face = front(-0.12, c.eyeZ, c.chinY + 0.12, c.chinZ, -0.05);
   const under = (() => { const ay = c.chinY, az = c.chinZ - 0.08, by = c.chinY + 0.3, bz = 0.25; let ny = -(bz - az), nz = by - ay; const l = Math.hypot(ny, nz); ny /= l; nz /= l; if (ny > 0) { ny = -ny; nz = -nz; }
@@ -75,7 +82,7 @@ function block(H) {
   const f = (x, y, z) => {
     let d = box(x, y, z);
     d = smax(d, cheek(x, y, z), kC); d = smax(d, jaw(x, y, z), kJ); d = smax(d, face(x, y, z), kF); d = smax(d, under(x, y, z), kU);
-    d = smin(skull(x, y, z), d, S.skullK ?? 0.28);
+    d = smin(smin(skull(x, y, z), nape(x, y, z), 0.25), d, S.skullK ?? 0.28);
     return smin(d, neck(x, y, z), 0.14);
   };
   f.ZF = curveY(H.prof); return f;
@@ -578,6 +585,6 @@ function place(fig, H, mode, yaw, pitch) {
   return true;
 }
 await import('./chars.js?' + Date.now()).then(m => m.default(CH, { L, braid, bun, band, helmet, stripe, THREE }));
-window.__dbg = { headSDF, CH, hit, defaults }; window.__ready = true;
+window.__dbg = { headSDF, CH, hit, defaults, block }; window.__ready = true;
 </script>
 </body></html>
