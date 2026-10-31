@@ -86,3 +86,9 @@ but determined"; not saved, it came only inline.) "Imagine it is a person drawn 
 from "Klaus": 2D drawn as volume, lit like 3D; long faces, sharp noses, hair as a few big shapes, heavy lids.
 `luca-giulia.png` — Giulia from Pixar's "Luca": a "fiery triangle" led by a sharp nose, curly red hair in big clumps,
 round eyes, freckles. Pavel sent these as characters to make.
+
+## Picked for heads: Nimona
+
+`nimona-ambrosius.png` — Ambrosius Goldenloin: a long narrow face, long nose, worried brows, round eyes set in deep
+lids, light swept hair. `nimona-nimona.png` — Nimona: round face, huge grin with braces-like teeth, big round eyes,
+tufted red-pink hair with a shaved side. 3D made to look flat and graphic. Pavel sent these as characters to make.
