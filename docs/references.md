@@ -52,3 +52,19 @@ deformation. The rest of its beauty is painterly rendering, which is put aside f
 ## Silhouette
 
 `silhouette-with-lantern.png` — a far figure can be a 3D body filled almost black.
+
+## Alive: flowing hair, moving faces
+
+`anime-hair-closeup.png`, `kpop-demon-hunters.png`, `cel-action-group.webp`.
+
+Aliveness is layers, each made its own way, all at once:
+- **hair as locks,** each a ribbon on a chain of bones, moved by physics — heavy, stiff at the root and soft to the tip,
+  tips lagging the head, swinging and settling, colliding with head and shoulders, uneven wind; drawn strand lines and
+  highlights on top (rendering, put aside for now);
+- **a set of face shapes** (brows, lids, cheeks, mouth corners, jaw — commonly ARKit's 52), drawn for the style;
+- **mouth and cheeks from the voice** (Audio2Face, now open) — moood's lines are voiced;
+- **eyes that live by themselves:** blinks at uneven intervals and on head turns, small saccades, the gaze turning
+  before the head;
+- **drawn features that move with the face** — brows and mouth line as graphics on the skin that change shape too;
+- **breath** always, and **cloth** by physics like hair; body motion from Kimodo.
+Natural because nothing repeats in a visible cycle and hair and cloth answer any motion by physics, not keyframes.
