@@ -118,3 +118,7 @@ head, wrapped with Anny's mesh) and be joined to B's bodies and clothes later.
 персонажей… практически готовый вариант персонажей; если Kimodo может ими управлять, это отлично подойдёт для некоторых
 игр."
   Pavel on the second versions of the expressive characters: "новая стала лучше, да, отлично" (first versions kept).
+- **Wrap of Anny's head onto designed heads** ([experiments/heads-wrap](../experiments/heads-wrap/README.md),
+  [pictures](pictures/heads-wrap/)): technically works — the designed look held, no lumps, no seam at the neck, blink
+  and an opening jaw as real mesh. Attractiveness no better than the designed heads, in places worse (faint shading
+  marks where Anny's features were; the mouth opens as a ragged "o" — lips need their own rim laid on drawn curves).
