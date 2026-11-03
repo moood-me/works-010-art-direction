@@ -549,29 +549,29 @@ class Hair:
         sh = Shell(hd, **self.shell_kw)
         hl = self.hairline
         k = self.cap.get("k", 1.04)
+        # the visible half of the shell is lon in [-90 - yaw, 90 - yaw]; its edge meridians are the silhouette
+        yaw = math.degrees(hd.yaw)
+        L, R = -90 - yaw, 90 - yaw
         pts = []
-        for la in range(-40, 91, 3):
-            for lo in range(-180, 180, 4):
-                if la >= hl(lo):
-                    pts.append(hd.proj(sh.pt(la, lo, k))[0])
-        cx = sum(p[0] for p in pts) / len(pts)
-        cy = sum(p[1] for p in pts) / len(pts)
-        buckets = {}
-        for p in pts:
-            a = round(math.degrees(math.atan2(p[1] - cy, p[0] - cx)) / 4)
-            r = math.hypot(p[0] - cx, p[1] - cy)
-            if a not in buckets or r > buckets[a][0]:
-                buckets[a] = (r, p)
-        outl = [buckets[a][1] for a in sorted(buckets)]
-        d = smooth_path(outl[::2])
+        n = 40
+        for i in range(n + 1):
+            lo = L + (R - L) * i / n
+            pts.append(hd.proj(sh.pt(hl(lo), lo, k))[0])
+        for i in range(1, 16):
+            la = hl(R) + (90 - hl(R)) * i / 15
+            pts.append(hd.proj(sh.pt(la, R, k))[0])
+        for i in range(1, 16):
+            la = 90 - (90 - hl(L)) * i / 15
+            pts.append(hd.proj(sh.pt(la, L, k))[0])
+        d = smooth_path(pts)
         paint_volume(cv, d, self.base, self.dark, 70 * hd.s, lift=0.12, soft=0.1)
         kk = cv.clip(d)
         g = [f'<g clip-path="url(#{kk})">']
         tgt = self.cap.get("to", (60, 180))
-        for i, lo in enumerate(range(-160, 161, 8)):
+        for i, lo in enumerate(range(-150, 151, 10)):
             la0 = hl(lo)
             sd = 1 if lo >= 0 else -1
-            ctrl = [(la0, lo), (la0 + 12, lo * 0.97), ((la0 + tgt[0]) / 2 + 12, lo * 0.75 + sd * 25), (tgt[0], tgt[1] - sd * 20)]
+            ctrl = [(la0, lo), (la0 + 18, lo * 0.9), (58, lo * 0.6 + sd * 40), (tgt[0] + 14, tgt[1] - sd * 30)]
             seg = []
             for j in range(16):
                 t = j / 15

@@ -340,9 +340,10 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
     hsil = poly_path(Rh['sil'])
     cid = clip_def(doc, hsil)
     out.append('<g filter="url(#paint)">' + path(hsil, pal['skin']['lit']) + '</g>')
-    for side, sh, inner, face in ears:
-        if face > -0.05:
-            out.append(ear_svg(sh, inner, face))
+    if not getattr(P, 'ears_over_hair', False):
+        for side, sh, inner, face in ears:
+            if face > -0.05:
+                out.append(ear_svg(sh, inner, face))
     g = []
     # half-tones: a soft band before the terminator, cooler and darker toward it
     if pal['skin'].get('warm') and not Rh['warm'].is_empty:
@@ -524,6 +525,10 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
         out.append(P.hair_cap(doc, view, head))
     if hasattr(P, 'bun') and abs(math.degrees(view.yaw)) >= 60:
         out.append(P.bun(doc, view, None))
+    if getattr(P, 'ears_over_hair', False):
+        for side, sh, inner, face in ears:
+            if face > -0.05:
+                out.append(ear_svg(sh, inner, face))
     for d in sorted(front, key=lambda d: np.mean(d[2])):
         out.append(lock_svg(d))
     if getattr(P, 'glasses', None):

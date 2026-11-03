@@ -396,7 +396,7 @@ def savely_hair():
 
 def hl_bun(lon):
     a = abs(((lon + 180) % 360) - 180)
-    return 30 - 30 * (a / 90) ** 1.4 if a < 90 else 0 - 28 * ((a - 90) / 90) ** 0.8
+    return 36 - 10 * (a / 45) ** 1.2 if a < 45 else (26 - 26 * ((a - 45) / 45) ** 1.3 if a < 90 else 0 - 28 * ((a - 90) / 90) ** 0.8)
 
 
 def vera():
@@ -436,4 +436,4 @@ def vera_hair():
     locks.append(dict(pts=[('s', 24, 40, 1.04), ('s', 12, 55, 1.07), ('s', -4, 60, 1.08), ('s', -18, 56, 1.07)],
                       w=[2, 3, 2.5, 0.3], size=10, z=30))
     return Hair("#3e2c27", "#1d1412", "#8e6e60", locks, sheen_a=0.35, bun=dict(lat=bun[0], lon=bun[1], r=17, k=1.25),
-                cap=dict(k=1.04, to=(30, 180)), hairline=hl_bun)
+                cap=dict(k=1.07, to=(30, 180)), hairline=hl_bun)
