@@ -33,7 +33,7 @@ if eng.startswith('WB'):
     w = bpy.data.worlds.new('neutral'); w.color = (0.85, 0.84, 0.82); sc.world = w
 elif eng == 'EEVEE':
     sc.render.engine = 'BLENDER_EEVEE_NEXT' if hasattr(bpy.types, 'RenderSettings') and 'BLENDER_EEVEE_NEXT' in [i.identifier for i in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items] else 'BLENDER_EEVEE'
-    sc.eevee.taa_render_samples = 32
+    sc.eevee.taa_render_samples = 24
 else:
     sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = cfg.get('samples', 24); sc.cycles.use_denoising = True
     sc.render.threads_mode = 'FIXED'; sc.render.threads = 2
@@ -95,6 +95,20 @@ def bone_head(n): return rig.matrix_world @ rig.data.bones[n].head_local
 EYE_L = bone_head({'rain': 'DEF-Eye.L', 'snow': 'ROOT-Eye.L'}[cfg['char']])
 MOUTH = (bone_head({'rain': 'ACT-Lips_Corner.L', 'snow': 'ACT-Lips_Corner.L'}[cfg['char']]) + bone_head({'rain': 'ACT-Lips_Corner.R', 'snow': 'ACT-Lips_Corner.R'}[cfg['char']])) / 2
 print('EYE', tuple(EYE_L), 'MOUTH', tuple(MOUTH))
+WIRES = []
+def wire_on():
+    # the base cage drawn as thin dark tubes over the cage surface: what the topology (edge loops) is
+    if WIRES: return
+    sc.display.shading.color_type = 'OBJECT'
+    t = (hb[1].z - hb[0].z) * 0.0011
+    for o in [o for o in bpy.data.objects if o.type == 'MESH' and not o.hide_render]:
+        o.color = (0.80, 0.78, 0.76, 1)
+        for m in o.modifiers:
+            if m.type == 'SUBSURF': m.show_render = False
+        w = o.copy(); w.data = o.data; sc.collection.objects.link(w)
+        wm = w.modifiers.new('wire', 'WIREFRAME'); wm.thickness = t; wm.offset = 1.0; wm.use_even_offset = True; wm.use_boundary = True
+        w.color = (0.12, 0.13, 0.16, 1); WIRES.append(w)
+
 body = {'rain': 'GEO-rain-body', 'snow': 'GEO-snow-body'}[cfg['char']]
 for s in cfg['shots']:
     reset_pose(); apply_pose(s.get('pose', {})); bpy.context.view_layer.update()
@@ -105,9 +119,5 @@ for s in cfg['shots']:
         print('HB', tuple(hb[0]), tuple(hb[1]), 'BB', tuple(bb[0]), tuple(bb[1]))
     place(s['view'], hb, bb)
     w, h = s.get('res', [900, 900]); sc.render.resolution_x = w; sc.render.resolution_y = h; sc.render.resolution_percentage = 100
-    for o in bpy.data.objects:
-        if o.type == 'MESH':
-            o.show_wire = bool(s.get('wire')); o.show_all_edges = True
-    if s.get('wire') and eng.startswith('WB'):
-        sc.display.shading.show_xray = False
+    if s.get('wire'): wire_on()
     sc.render.filepath = s['out']; bpy.ops.render.render(write_still=True); print('WROTE', s['out'])
