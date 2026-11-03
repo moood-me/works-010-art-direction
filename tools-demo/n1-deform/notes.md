@@ -38,6 +38,25 @@ Found on the way: the raw Anny mesh (and the posed one in lines) has 4 zero-area
 exactly on each other). libigl's cotangent Laplacian gives NaN there, so `common.merged` merges coincident points
 (`igl.remove_duplicate_vertices`, 1e-7), drops the collapsed triangles and maps the result back.
 
+## libigl in its own uses (`uses`, asked by Pavel through the coordinator)
+
+Pavel asked to show also what libigl is made for, used as intended, even where it isn't ours. `tools/uses.py`, on
+the raw Anny woman at rest (merged as above):
+- **ARAP puppet** — the feet pinned, the left hand dragged to (0.62, 1.62, 0.12), the head 10 cm aside; 48 steps, each
+  ARAP solve warm-started from the last → frames → `pics/use-puppet.mp4` (24 fps, there and back, ffmpeg libx264).
+  Beside it the naive way for the same pins: the biharmonic displacement (`igl.harmonic`, k=2), which stretches.
+  The dark streak on the thigh in the ARAP picture is the shadow of the right hand, not a fold.
+- **BBW rig** — 11 handles (head, chest, hips, elbows, hands, knees, feet: regions by skin weight), `igl.bbw`, weights
+  shown as colour (`shot.html` takes per-vertex colours, sRGB converted to linear); then rotations: the left arm up
+  75° about the shoulder and the forearm 50° more, the right forearm 100° about the elbow, the left leg 40° forward;
+  linear blend skinning.
+- **Denoising** — normal noise σ = 0.7 mm, two implicit steps (M − 4·10⁻⁶·L); the face loses its small forms too.
+- **Heat geodesics** — `igl.heat_geodesics_precompute/solve` from the tip of the left middle finger, stripes every 4 cm.
+Pictures: `shots.py` sets `use-puppet`, `use-rig`, `use-denoise`, `use-geodesic`; the film frames by a job list of
+`out/frames/puppet_*.f4` at 540×720.
+
+Each compare block's "with" text now starts with a plain sentence on what the method is and what it is for.
+
 ## Repeat
 
 ```sh
@@ -46,8 +65,8 @@ cd /home/user/works-010-art-direction
 node tools-demo/n1-deform/tools/export.mjs /home/user/cache/n1-deform/mesh       # ~2 min, Playwright from /opt/node-tools
 cd tools-demo/n1-deform/tools
 P=/home/user/cache/n1-deform/venv/bin/python
-$P cage.py; $P arap.py; $P arap2.py; $P smooth.py; $P face.py                   # seconds each
-for s in cage cage-close arap smooth face; do $P shots.py jobs $s > /home/user/cache/n1-deform/jobs.json; \
+$P cage.py; $P arap.py; $P arap2.py; $P smooth.py; $P face.py; $P uses.py      # seconds each (uses ~30 s)
+for s in cage cage-close arap smooth face use-puppet use-rig use-denoise use-geodesic; do $P shots.py jobs $s > /home/user/cache/n1-deform/jobs.json; \
   (cd ../../.. && node tools-demo/n1-deform/tools/shot.mjs /home/user/cache/n1-deform/jobs.json); $P shots.py sheet $s; done
 ```
 
