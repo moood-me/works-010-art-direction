@@ -7,6 +7,8 @@ mkdir -p "$P"
 # the toon trio: cut to the figures
 for f in "$O"/p-three-*.png; do python3 -c "import sys;from PIL import Image;Image.open(sys.argv[1]).crop((120,80,1080,680)).save(sys.argv[2])" "$f" "${f%.png}.crop.png"; done
 
+# ours alone, for the 'now' side
+$S "$P/heads-now.webp" 3 400 "$O/g-anime-tq-ours.png|аниме-девушка" "$O/g-red-tq-ours.png|рыжая девушка" "$O/g-hood-side-ours.png|женщина в капюшоне"
 # shade: hard and soft
 $S "$P/shade-anime.webp" 4 400 "$O/g-anime-tq-ours.png|наш тун" "$O/g-anime-tq-hard.png|MToon жёсткая, наш свет" "$O/g-anime-tq-hard+one.png|MToon жёсткая, один свет" "$O/g-anime-tq-soft+one.png|MToon мягкая, один свет"
 $S "$P/shade-red.webp" 4 400 "$O/g-red-tq-ours.png|наш тун" "$O/g-red-tq-hard.png|MToon жёсткая, наш свет" "$O/g-red-tq-hard+one.png|MToon жёсткая, один свет" "$O/g-red-tq-soft+one.png|MToon мягкая, один свет"

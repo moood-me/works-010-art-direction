@@ -19,3 +19,19 @@ SNOW = {
   'blink': M(LR('MSTR-Eyelid_Upper', 0, -0.024, 0)),
   'anger': M(LR('MSTR-Eyebrow', -0.012, -0.025, 0), LR('ACT-Lips_Corner', 0, -0.012, 0), LR('MSTR-Eyelid_Upper', 0, -0.005, 0), LR('MSTR-Eyelid_Lower', 0, 0.006, 0)),
 }
+
+# more expressions, for the range of the rigs
+RAIN.update({
+  'sad': M(LR('MSTR-Eyebrow', -0.008, 0.02, 0), LR('ACT-Lips_Corner', 0, -0.015, 0, False), LR('ACT-Eyelid_Upper', 0, -0.01, 0)),
+  'disgust': M({'ACT-Sneer.L': {'loc': [0, 0.02, 0]}, 'ACT-Lips_Corner.L': {'loc': [0, 0.012, 0]}, 'MSTR-Eyebrow.L': {'loc': [0, -0.02, 0]}, 'ACT-Eyelid_Lower.L': {'loc': [0, 0.012, 0]}}),
+  'puff': M(LR('SK-Cheek_Puff', 0, 0.02, 0), LR('MSTR-Eyebrow', 0, 0.01, 0)),
+  'wink': M({'ACT-Eyelid_Upper.L': {'loc': [0, -0.04, 0]}, 'ACT-Lips_Corner.L': {'loc': [0, 0.02, 0.008]}, 'ACT-Cheek_Outer.L': {'loc': [0, 0.02, 0]}}),
+  'oo': M({'MSTR-Jaw': {'rot': [9, 0, 0]}}, LR('ACT-Lips_Corner', 0.015, 0, -0.01, True), {'SK-Lip_Puff_Upper': {'loc': [0, 0.008, 0]}, 'SK-Lip_Puff_Lower': {'loc': [0, 0.008, 0]}}),
+})
+SNOW.update({
+  'sad': M(LR('MSTR-Eyebrow', -0.012, 0.02, 0), LR('ACT-Lips_Corner', 0, -0.015, 0), LR('MSTR-Eyelid_Upper', 0, -0.006, 0)),
+  'disgust': M({'ACT-Lips_Corner.L': {'loc': [0, 0.012, 0]}, 'MSTR-Eyebrow.L': {'loc': [0, -0.02, 0]}, 'CheekRaiser.L': {'loc': [0, 0.02, 0]}}),
+  'puff': M({'ACT-CheekPuff.L': {'loc': [0, 0, -0.02]}, 'ACT-CheekPuff.R': {'loc': [0, 0, -0.02]}}),
+  'wink': M({'MSTR-Eyelid_Upper.L': {'loc': [0, -0.024, 0]}, 'CheekRaiser.L': {'loc': [0, 0.015, 0]}, 'ACT-Lips_Corner.L': {'loc': [-0.01, 0.02, 0]}}),
+  'oo': M({'Jaw': {'rot': [9, 0, 0]}}, LR('ACT-Lips_Corner', 0.012, 0, 0)),
+})
