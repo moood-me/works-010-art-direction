@@ -79,6 +79,12 @@ def resample(A, k):
     return np.stack([np.interp(t, d, A[:, c]) for c in range(3)], -1)
 
 co = S.stage(res=(400, 470), samples=samples)
+# the hair's node groups only in the render (they follow the deforming body and scalp, so the viewport would rebuild
+# the whole hairstyle every simulated frame)
+for o in bpy.data.objects:
+    if o.name.startswith('hair-'):
+        for m in o.modifiers: m.show_viewport = False
+import time; T0 = time.time()
 sc.frame_end = F
 rest = {h.name: np.array([p.position[:] for p in h.data.points]) for h, *_ in dyn}
 for f in range(1, F + 1):
@@ -95,6 +101,7 @@ for f in range(1, F + 1):
             hair.data.points.foreach_set('position', L.astype(np.float32).ravel())
             hair.data.update_tag()
     if (f - 1) % step: continue
+    print('frame', f, round(time.time() - T0), 's', flush=True)
     hp = head.matrix_world @ Vector(S.bl(R['head'])); target = np.array([hp.x, hp.z - 0.03, -hp.y])
     S.look(co, target, yaw, 0.06, H['st']['dist'])
     sc.render.filepath = f'{out}/{f:04d}.png'
