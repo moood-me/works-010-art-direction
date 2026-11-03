@@ -59,6 +59,9 @@ if mode == 'dyn':
     # same motion — against the full 17k-point body the hair solver slows to minutes a frame
     proxy = objs[0].copy(); proxy.data = objs[0].data.copy(); proxy.name = 'collider'
     bpy.context.scene.collection.objects.link(proxy); proxy.hide_render = True
+    vg = proxy.vertex_groups.new(name='below')   # below the chin only: the hair's roots lie on the head, inside any collider round it
+    vg.add([v.index for v in proxy.data.vertices if v.co.z < H['ey'] - 0.11], 1.0, 'REPLACE')
+    mk = proxy.modifiers.new('below', 'MASK'); mk.vertex_group = 'below'
     proxy.modifiers.new('coarse', 'DECIMATE').ratio = 0.06
     proxy.modifiers.new('collision', 'COLLISION')
     proxy.collision.thickness_outer = 0.012; proxy.collision.cloth_friction = 5

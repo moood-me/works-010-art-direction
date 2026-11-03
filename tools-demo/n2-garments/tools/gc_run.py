@@ -35,6 +35,7 @@ ap.add_argument('--body', required=True, help='DIR/NAME without extension')
 ap.add_argument('--out', required=True)
 ap.add_argument('--name', default=None)
 ap.add_argument('--sim', default='gui', help='gui (mid-soft fabric) or default (very soft)')
+ap.add_argument('--res', type=float, default=None, help="GarmentCode's resolution_scale (mesh edge ~ res cm); default 1.0")
 ap.add_argument('--dry', action='store_true', help='only make the pattern')
 ap.add_argument('--set', action='append', default=[], help='override design value: a.b.c=value (yaml)')
 a = ap.parse_args()
@@ -64,6 +65,7 @@ if a.dry:
     print('PATTERN', folder); sys.exit(0)
 props = data_config.Properties(f'./assets/Sim_props/{a.sim}_sim_props.yaml')
 props['sim']['config']['max_frame_time'] = None
+if a.res: props['sim']['config']['resolution_scale'] = a.res
 props['sim']['config']['max_sim_time'] = 3000
 props.set_section_stats('sim', fails={}, sim_time={}, spf={}, fin_frame={}, body_collisions={}, self_collisions={})
 props.set_section_stats('render', render_time={})

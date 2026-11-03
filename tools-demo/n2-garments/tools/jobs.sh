@@ -1,10 +1,12 @@
 # GarmentCode designs draped here: name | body | overrides of assets/design_params/default.yaml
+# RES=1.6 (coarser mesh: ~1/2.5 the points; the CPU here is shared) — used for all but dress-bell
 # run: bash jobs.sh [--dry] [only-name]   (from anywhere)
 GC=/home/user/cache/n2-garments
 T=$(dirname "$(readlink -f "$0")")
 run() { n=$1; b=$2; shift 2; [ -n "$ONLY" ] && [ "$ONLY" != "$n" ] && return
+  [ -z "$DRY" ] && [ -f $GC/runs/${b##*/}/${n}_sim/${n}_sim_sim.obj ] && return   # done already
   args=(); for s in "$@"; do args+=(--set "$s"); done
-  (cd $GC/src && PYTHONPATH=. $GC/venv/bin/python $T/gc_run.py --design assets/design_params/default.yaml --body $b --out $GC/runs/${b##*/} --name $n $DRY "${args[@]}" 2>&1 | grep -v Progress | tail -4); }
+  (cd $GC/src && PYTHONPATH=. $GC/venv/bin/python $T/gc_run.py --design assets/design_params/default.yaml --body $b --out $GC/runs/${b##*/} --name $n $DRY ${RES:+--res $RES} "${args[@]}" 2>&1 | grep -v Progress | tail -4); }
 DRY=""; [ "$1" = "--dry" ] && { DRY=--dry; shift; }; ONLY=$1
 A=$GC/bodies/anny/moood-woman
 NOSLV="sleeve.sleeveless=true"
@@ -24,3 +26,7 @@ run var-sleeve-puff $A $BELL sleeve.sleeveless=false sleeve.length=0.25 sleeve.c
 # the tool's own use: one design made to measure on other bodies (GarmentCode's own female and male)
 run dress-bell $GC/bodies/gc/mean_female $BELL $NOSLV
 run shirt-long $GC/bodies/gc/mean_male meta.upper=Shirt shirt.length=1.25 shirt.width=1.1 sleeve.sleeveless=false sleeve.length=1.0 sleeve.end_width=0.6 collar.f_collar=VNeckHalf collar.fc_depth=0.8
+# the tool's own use: random designs from its sampler (tools/sample.py, seed 7), draped on Anny
+for k in 01 09 10; do n=rand$k; [ -n "$ONLY" ] && [ "$ONLY" != "$n" ] && continue
+  [ -f $GC/runs/moood-woman/${n}_sim/${n}_sim_sim.obj ] && continue
+  (cd $GC/src && PYTHONPATH=. $GC/venv/bin/python $T/gc_run.py --design $GC/runs/samples/$n.yaml --body $A --out $GC/runs/moood-woman --name $n $DRY ${RES:+--res $RES} 2>&1 | grep -v Progress | tail -4); done
