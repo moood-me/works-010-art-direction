@@ -2,6 +2,8 @@
 # drawn the way Monster Mash wants: one outline per body part, back to front; a part that grows out of another
 # is an open stroke that starts and ends inside it (the app closes it with an invisible "Neumann" line, which
 # makes the join smooth), a part lying on another (muzzle on the head) is a closed stroke.
+# Colours (frame.json): parts in 'tex' carry the picture (face, stripes) on their front side; the others, and every
+# back side, are one colour each - the median of the picture over the part, or the one given in 'colors'.
 # usage: python3 outlines.py <workdir>   -> <workdir>/<name>/shape.txt, frame.json, trace.png
 import json, math, os, sys
 import numpy as np
@@ -48,7 +50,7 @@ def poly(pts, n=12): return catmull(pts, n)
 
 # —— the characters: (name, closed curve, the part it grows out of or None), back to front; coordinates of the front picture
 CHARS = {
-  'bear': dict(src='our-bear-front.png', parts=[
+  'bear': dict(src='our-bear-front.png', tex=['head', 'muzzle', 'body'], thin=True, colors={}, parts=[
     ('earL', ell(113, 115, 31, 30), 'head'),
     ('earR', ell(328, 106, 31, 30), 'head'),
     ('legL', poly([(158, 290), (234, 290), (236, 362), (224, 378), (168, 378), (155, 364)]), 'body'),
@@ -59,7 +61,7 @@ CHARS = {
     ('head', ell(228, 147, 128, 62), None),
     ('muzzle', ell(228, 185, 62, 23), None),
   ]),
-  'cat': dict(src='our-cat-front.png', parts=[
+  'cat': dict(src='our-cat-front.png', tex=['head', 'body'], thin=False, colors={}, parts=[
     ('earL', poly([(236, 114), (250, 170), (272, 250), (232, 255), (234, 180)], 8), 'head'),
     ('earR', poly([(452, 110), (454, 180), (458, 250), (418, 245), (436, 170)], 8), 'head'),
     ('legL', tube([(310, 470), (304, 560), (296, 650)], 10, 9), 'body'),
@@ -73,7 +75,7 @@ CHARS = {
     ('body', poly([(290, 390), (340, 380), (396, 390), (408, 440), (394, 484), (342, 498), (292, 484), (280, 440)]), 'head'),
     ('head', ell(345, 278, 166, 112), None),
   ]),
-  'imp': dict(src='our-imp-front.png', parts=[
+  'imp': dict(src='our-imp-front.png', tex=['head', 'body'], thin=False, colors={'handL': '#3b1c1e', 'handR': '#3b1c1e', 'tip': '#3b1c1e', 'hoofL': '#3b1c1e', 'hoofR': '#3b1c1e', 'hornL': '#3b1c1e', 'hornR': '#3b1c1e'}, parts=[
     ('hornL', poly([(312, 96), (322, 120), (340, 150), (300, 156), (304, 120)], 8), 'head'),
     ('hornR', poly([(396, 94), (404, 120), (404, 150), (366, 146), (380, 118)], 8), 'head'),
     ('tail', tube([(390, 440), (430, 380), (468, 330), (500, 292)], 7, 6), 'body'),
@@ -133,7 +135,8 @@ def main(work):
         open(os.path.join(out, 'shape.txt'), 'w').write('\n'.join(L) + '\n')
         im.save(os.path.join(out, 'trace.png'))
         json.dump({'src': C['src'], 'imgW': img.width, 'imgH': img.height, 'cx': float(cx), 'cy': float(cy), 's': float(s),
-                   'canvas': CANVAS, 'names': [n for n, _, _ in C['parts']]}, open(os.path.join(out, 'frame.json'), 'w'))
+                   'canvas': CANVAS, 'names': [n for n, _, _ in C['parts']],
+                   'tex': C['tex'], 'thin': C['thin'], 'colors': C['colors']}, open(os.path.join(out, 'frame.json'), 'w'))
 
 if __name__ == '__main__':
     main(sys.argv[1])

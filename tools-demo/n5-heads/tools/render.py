@@ -15,6 +15,10 @@ for n in CH['hide']:
     if n in bpy.data.objects: bpy.data.objects[n].hide_render = True
 for o in bpy.data.objects:
     if o.name.startswith('WGT-'): o.hide_render = True
+# the clear cornea over the iris renders milky in EEVEE without ray tracing; it is hidden so the iris shows as made
+if cfg.get('engine') == 'EEVEE':
+    for n in ('GEO-rain-eye_cornea', 'GEO-snow_eye_corneas'):
+        if n in bpy.data.objects: bpy.data.objects[n].hide_render = True
 
 eng = cfg.get('engine', 'WB_CLAY')
 if eng.startswith('WB'):

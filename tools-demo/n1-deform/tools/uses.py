@@ -36,9 +36,7 @@ print('puppet done')
 
 # ——— 2. bounded biharmonic weights: an automatic rig ———
 def region(rx, thr=0.9): return np.where(wm(rx) > thr)[0]
-H = [('head', region(r'^(Head|HeadEnd|Jaw|LeftEye|RightEye)$', 0.95)), ('chest', region(r'^Chest$', 0.8)), ('hips', region(r'^Hips$', 0.8)),
-     ('elbowL', region(r'^LeftForeArm$', 0.45) [:0]), ]
-H = [h for h in H if len(h[1])]
+H = [('head', region(r'^(Head|HeadEnd|Jaw|LeftEye|RightEye)$', 0.95)), ('chest', region(r'^Chest$', 0.8)), ('hips', region(r'^Hips$', 0.8))]
 def ring(a, bname): x = wm('^' + a + '$'); y = wm('^' + bname + '$'); return np.where((x > 0.35) & (y > 0.35))[0]
 for s in ('Left', 'Right'):
     H += [('elbow' + s, ring(s + 'Arm', s + 'ForeArm')), ('hand' + s, region('^' + s + 'Hand', 0.9)), ('knee' + s, ring(s + 'Leg', s + 'Shin')), ('foot' + s, region('^' + s + '(Foot|Toe)', 0.9))]
@@ -54,11 +52,14 @@ def R(axis, deg):
     a = np.radians(deg); axis = np.asarray(axis, float) / np.linalg.norm(axis); K = np.array([[0, -axis[2], axis[1]], [axis[2], 0, -axis[0]], [-axis[1], axis[0], 0]])
     return np.eye(3) + np.sin(a) * K + (1 - np.cos(a)) * K @ K
 c = {h[0]: V0[h[1]].mean(0) for h in H}
-shL = V0[np.where(wm(r'^LeftArm$') > 0.5)[0]].mean(0) * [1, 1, 1]
+shL = V0[np.where(wm(r'^LeftArm$') > 0.5)[0]].mean(0)
 T = {h[0]: (np.eye(3), np.zeros(3)) for h in H}
 def about(Rm, p): return Rm, p - Rm @ p
 Rup = R([0, 0, 1], 75)                        # the left arm raised about the shoulder
-T['elbowLeft'] = about(Rup, shL); T['handLeft'] = (lambda A, t: (R([0, 0, 1], 50) @ A, R([0, 0, 1], 50) @ t + (Rup @ c['elbowLeft'] + T['elbowLeft'][1]) - R([0, 0, 1], 50) @ (Rup @ c['elbowLeft'] + T['elbowLeft'][1])))(*about(Rup, shL))
+T['elbowLeft'] = about(Rup, shL)
+def then(T1, T2): return T2[0] @ T1[0], T2[0] @ T1[1] + T2[1]       # T1 first, then T2
+e2 = Rup @ c['elbowLeft'] + T['elbowLeft'][1]                      # the elbow where the raised arm puts it
+T['handLeft'] = then(about(Rup, shL), about(R([0, 0, 1], 50), e2))  # and the forearm bent further about it
 Rf = R([1, 0, 0], -100)                       # the right forearm bent forward about the elbow
 T['handRight'] = about(Rf, c['elbowRight'])
 hipL = V0[np.where(wm(r'^LeftLeg$') > 0.5)[0]].mean(0); hipL[1] = c['hips'][1]
@@ -80,12 +81,8 @@ print('denoise done')
 # ——— 4. heat geodesics from the tip of the left middle finger ———
 src = np.where(wm(r'^LeftHandMiddle(3|4|End)') > 0.5)[0]
 tip = src[np.argmax(V0[src, 0])]
-hg = igl.heat_geodesics_precompute(V0, f) if False else None
-d = None
-try:
-    data_h = igl.HeatGeodesicsData(); igl.heat_geodesics_precompute(V0, f, data_h); d = igl.heat_geodesics_solve(data_h, np.array([tip], dtype=np.int64))
-except Exception as e: print('heat api', e)
-d = np.asarray(d).ravel(); d -= d.min()
+data_h = igl.HeatGeodesicsData(); igl.heat_geodesics_precompute(V0, f, data_h)
+d = np.asarray(igl.heat_geodesics_solve(data_h, np.array([tip], dtype=np.int64))).ravel(); d -= d.min()
 band = 0.5 + 0.5 * np.cos(2 * np.pi * d / 0.05)
 u = np.clip(d / d.max(), 0, 1)[:, None]
 base_c = lin([0.95, 0.78, 0.45]) * (1 - u) + lin([0.35, 0.45, 0.75]) * u

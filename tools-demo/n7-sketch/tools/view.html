@@ -84,7 +84,9 @@ window.show = async o => {
   }
   const med = {};
   for (const [l, c] of Object.entries(byPart)) { med[l] = [0, 1, 2].map(ch => { const a = c.map(x => x[ch]).sort((p, q) => p - q); return a[a.length >> 1] / 255; }); }
-  for (let i = 0; i < n; i++) { const m = med[pid[i] >> 1] || [0.5, 0.5, 0.5], back = pid[i] % 2; bc.set([...m.map(c => Math.pow(c, 2.2)), back], 4 * i); }
+  fr.names.forEach((nm, l) => { const c = fr.colors?.[nm]; if (c) { const t = new THREE.Color(c); med[l] = [t.r, t.g, t.b].map(x => Math.pow(x, 1 / 2.2)); } });
+  const textured = new Set((fr.tex || fr.names).map(nm => fr.names.indexOf(nm)));
+  for (let i = 0; i < n; i++) { const l = pid[i] >> 1, m = med[l] || [0.5, 0.5, 0.5], flat = pid[i] % 2 || !textured.has(l) ? 1 : 0; bc.set([...m.map(c => Math.pow(c, 2.2)), flat], 4 * i); }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); g.setAttribute('bcol', new THREE.BufferAttribute(bc, 4));
   g.setIndex(rest.f); g.computeVertexNormals();

@@ -26,6 +26,12 @@ near = np.asarray(Image.fromarray((bg * 255).astype(np.uint8)).filter(ImageFilte
 lum = a @ [0.3, 0.59, 0.11]
 ink = near & ((lum < 80) | ((sat < 45) & (lum < 170))) & ~bg
 valid = ~bg & ~ink
+import json
+if json.load(open(os.path.join(work, name, 'frame.json')))['thin']:
+    # thin dark lines inside the figure (where one part overlaps another) are lines of the drawing, not colour
+    dark = Image.fromarray((((lum < 80) & ~bg) * 255).astype(np.uint8))
+    thick = np.asarray(dark.filter(ImageFilter.MinFilter(7)).filter(ImageFilter.MaxFilter(9))) > 0
+    valid &= ~((lum < 80) & ~thick)
 # an ink pixel whose inner neighbours are dark too (hooves, claws) is the thing's own colour, not a line: keep it
 dark_inside = np.asarray(Image.fromarray(((lum < 80) & ~bg).astype(np.uint8) * 255).filter(ImageFilter.MinFilter(9))) > 0
 valid |= ink & np.asarray(Image.fromarray(dark_inside.astype(np.uint8) * 255).filter(ImageFilter.MaxFilter(9))) > 0
