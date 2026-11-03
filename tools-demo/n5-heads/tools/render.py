@@ -82,7 +82,7 @@ def place(view, hb, bb):
         tgt = MOUTH.copy(); dist = hs.z * 0.42 / (36 / 85)
     else:
         tgt = (EYE_L + MOUTH) / 2; tgt.x = 0; tgt.z += hs.z * 0.08; dist = hs.z * 1.35 / (36 / 85)
-    a = math.radians(yaw)
+    print("PLACE", view, tuple(tgt), dist, tuple(hs)); a = math.radians(yaw)
     d = Vector((math.sin(a), -math.cos(a), 0.0))
     cam.location = tgt + d * dist + Vector((0, 0, dist * 0.02))
     dirv = tgt - cam.location; cam.rotation_euler = dirv.to_track_quat('-Z', 'Y').to_euler()
