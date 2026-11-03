@@ -1,0 +1,201 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Faces on Anny's mesh</title>
+<style>html,body{margin:0;background:#d9d3ca;overflow:hidden}canvas{display:block}</style>
+<canvas id="cv"></canvas>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const V3 = THREE.Vector3, M4 = THREE.Matrix4;
+const lerp = (a, b, t) => a + (b - a) * t, clamp = (x, a, b) => Math.max(a, Math.min(b, x)), sst = t => t * t * (3 - 2 * t);
+
+// ———— Anny's files, as the engine reads them ————
+const META = await (await fetch('meta.json')).json(), JN = META.joints, JI = Object.fromEntries(JN.map((n, i) => [n, i]));
+const reader = (buf, at = 0) => (Kind, n) => { const a = new Kind(buf.slice(at, at + n * Kind.BYTES_PER_ELEMENT)); at += n * Kind.BYTES_PER_ELEMENT; return a; };
+const parseBase = buf => { const take = reader(buf), [N, T] = take(Uint32Array, 2), tris = take(Uint16Array, T * 3), joint = take(Uint8Array, N * 4), weight = take(Uint8Array, N * 4); const [F] = take(Uint32Array, 1), face = take(Uint16Array, F); return { N, tris, joint, weight, face }; };
+const parsePerson = (buf, bs) => { const take = reader(buf), m = v => v / 10000; const at = Float32Array.from(take(Int16Array, bs.N * 3), m); take(Int16Array, bs.face.length * 3); const inv = take(Float32Array, 77 * 12);
+  const J = []; const M = new M4(); for (let j = 0; j < 77; j++) { const a = inv.subarray(j * 12, j * 12 + 12); M.set(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], 0, 0, 0, 1).invert(); J.push(new V3().setFromMatrixPosition(M)); } return { at, J }; };
+const load = name => import('./data/' + name + '.js').then(m => Uint8Array.from(atob(m.default), c => c.charCodeAt(0)).buffer);
+const bs = parseBase(await load('base')), N = bs.N;
+const wOf = (i, re) => { let w = 0; for (let k = 0; k < 4; k++) if (re.test(JN[bs.joint[i * 4 + k]])) w += bs.weight[i * 4 + k] / 255; return w; };
+const headW = Float32Array.from({ length: N }, (_, i) => wOf(i, /^(Head|HeadEnd|Jaw|LeftEye|RightEye)$/));
+const eyeW = Float32Array.from({ length: N }, (_, i) => wOf(i, /^(LeftEye|RightEye)$/));
+const used = new Uint8Array(N); for (const v of bs.tris) used[v] = 1;
+const NB = (() => { const s = Array.from({ length: N }, () => new Set()); for (let t = 0; t < bs.tris.length; t += 3) { const a = bs.tris[t], b = bs.tris[t + 1], c = bs.tris[t + 2]; s[a].add(b).add(c); s[b].add(a).add(c); s[c].add(a).add(b); } return s.map(q => Int32Array.from(q)); })();
+const diffuse = (f, its, dim = 1, keep) => { let a = Float32Array.from(f), b = new Float32Array(f.length); for (let it = 0; it < its; it++) { for (let i = 0; i < N; i++) { const ns = NB[i]; for (let c = 0; c < dim; c++) { if (!ns.length || (keep && keep(i))) { b[i * dim + c] = a[i * dim + c]; continue; } let s = 0; for (const j of ns) s += a[j * dim + c]; b[i * dim + c] = 0.5 * a[i * dim + c] + 0.5 * s / ns.length; } } [a, b] = [b, a]; } return a; };
+// how much of a point belongs to the face's change: the head fully, fading down the neck
+const omega = diffuse(Float32Array.from(headW, w => clamp(w * 1.3, 0, 1)), 10);
+
+// ———— the face frame: the eyes' line at 0, the chin at -1, the eyes' front at depth 0 ————
+function frameOf(at, J) {
+  const eL = J[JI.LeftEye], eR = J[JI.RightEye], ey = (eL.y + eR.y) / 2;
+  // the front at the eyes' height: the most forward skin point between and around the eyes
+  let ez = -9; for (let i = 0; i < N; i++) if (used[i] && headW[i] > 0.5 && Math.abs(at[i * 3 + 1] - ey) < 0.006 && Math.abs(at[i * 3]) < Math.abs(eL.x) * 1.2) ez = Math.max(ez, at[i * 3 + 2]);
+  let cy = 9, cz = 0; for (let i = 0; i < N; i++) if (used[i] && headW[i] > 0.6 && Math.abs(at[i * 3]) < 0.006 && at[i * 3 + 2] > ez - 0.06 && at[i * 3 + 1] < cy) { cy = at[i * 3 + 1]; cz = at[i * 3 + 2]; }
+  const U = ey - cy;
+  return { x0: 0, y0: ey, z0: ez, U, chinZ: (cz - ez) / U, eyes: [eL, eR] };
+}
+// the face as Anny has it: its half-width and its front (the midline) at each height, its landmarks
+const BIN = 0.04;
+function measure(at, F) {
+  const W = new Map(), Z = new Map(), u = i => (at[i * 3] - F.x0) / F.U, v = i => (at[i * 3 + 1] - F.y0) / F.U, w = i => (at[i * 3 + 2] - F.z0) / F.U;
+  for (let i = 0; i < N; i++) { if (!used[i] || omega[i] < 0.3) continue; const k = Math.round(v(i) / BIN); if (w(i) > -0.8) W.set(k, Math.max(W.get(k) ?? 0, Math.abs(u(i)))); if (Math.abs(u(i)) < 0.025) Z.set(k, Math.max(Z.get(k) ?? -9, w(i))); }
+  const fill = M => { const ks = [...M.keys()].sort((a, b) => a - b); return y => { const k = y / BIN, a = Math.floor(k), t = k - a; const g = q => M.get(clamp(q, ks[0], ks[ks.length - 1])) ?? M.get(ks.reduce((p, c) => Math.abs(c - q) < Math.abs(p - q) ? c : p)); return lerp(g(a), g(a + 1), t); }; };
+  // landmarks along the midline: the nose's tip (the most forward point below the eyes), the mouth (the hollow between lips? the
+  // parting found as the deepest point between the tip and the chin), the brow
+  let tipV = 0, tipZ = -9; for (const [k, z] of Z) { const y = k * BIN; if (y < -0.2 && y > -0.75 && z > tipZ) { tipZ = z; tipV = y; } }
+  let mV = -0.7, mZ = 9; for (const [k, z] of Z) { const y = k * BIN; if (y < tipV - 0.12 && y > -0.78 && z < mZ) { mZ = z; mV = y; } }
+  return { W: fill(W), Z: fill(Z), tipV, tipZ, mouthV: mV };
+}
+// the lids cut open: around each eye, the closed lid's triangles are split by the eye line into upper and lower; the
+// points on the line shared by both get a copy for the lower lid, so the two lids can part along the mesh's own edges
+function cutLids(at, F) {
+  const tris = Uint32Array.from(bs.tris), extra = [], side = [];
+  for (const E of F.eyes) {
+    const aw = 0.0135, sl = x => E.y - 0.0012 - 0.0015 * (x / aw) ** 2, inR = i => Math.abs(at[i * 3] - E.x) < aw * 1.7 && Math.abs(at[i * 3 + 1] - E.y) < 0.02 && at[i * 3 + 2] > E.z;
+    const tside = new Int8Array(tris.length / 3), vUp = new Uint8Array(N), vLo = new Uint8Array(N);
+    for (let t = 0; t < tris.length / 3; t++) { const a = tris[t * 3], b = tris[t * 3 + 1], c = tris[t * 3 + 2]; if (!(inR(a) && inR(b) && inR(c))) continue;
+      const cx = (at[a * 3] + at[b * 3] + at[c * 3]) / 3 - E.x, cy = (at[a * 3 + 1] + at[b * 3 + 1] + at[c * 3 + 1]) / 3; tside[t] = cy > sl(cx) ? 1 : -1;
+      for (const v of [a, b, c]) (tside[t] > 0 ? vUp : vLo)[v] = 1; }
+    const dup = new Map();
+    for (let i = 0; i < N; i++) if (vUp[i] && vLo[i] && Math.abs(at[i * 3] - E.x) < aw) { dup.set(i, N + extra.length); extra.push(i); }
+    for (let t = 0; t < tris.length / 3; t++) if (tside[t] < 0) for (let k = 0; k < 3; k++) { const v = tris[t * 3 + k]; if (dup.has(v)) tris[t * 3 + k] = dup.get(v); }
+    side.push({ vUp, vLo, dup });
+  }
+  // per eye: +1 the upper lid's points, -1 the lower's (and the copies)
+  const M = N + extra.length;
+  const sides = side.map(({ vUp, vLo, dup }) => { const s = new Int8Array(M); for (let i = 0; i < N; i++) { if (vUp[i]) s[i] = 1; else if (vLo[i]) s[i] = -1; } for (const [, j] of dup) s[j] = -1; return s; });
+  return { tris, extra, side: sides };
+}
+// a smooth curve through [y, value] keys
+// (monotone cubic: smooth through every key, no flat spot at a key — a flat spot there would gather the mesh into a ridge)
+function keys(K) {
+  const P = K.slice().sort((a, b) => a[0] - b[0]), n = P.length, dl = [], m = new Array(n).fill(0);
+  for (let i = 0; i < n - 1; i++) dl.push((P[i + 1][1] - P[i][1]) / (P[i + 1][0] - P[i][0]));
+  m[0] = dl[0]; m[n - 1] = dl[n - 2]; for (let i = 1; i < n - 1; i++) m[i] = dl[i - 1] * dl[i] <= 0 ? 0 : (dl[i - 1] + dl[i]) / 2;
+  for (let i = 0; i < n - 1; i++) { if (dl[i] === 0) { m[i] = m[i + 1] = 0; continue; } const a = m[i] / dl[i], b = m[i + 1] / dl[i], h = Math.hypot(a, b); if (h > 3) { m[i] = 3 * a / h * dl[i]; m[i + 1] = 3 * b / h * dl[i]; } }
+  return y => { if (y <= P[0][0]) return P[0][1] + m[0] * (y - P[0][0]); if (y >= P[n - 1][0]) return P[n - 1][1] + m[n - 1] * (y - P[n - 1][0]); let i = 0; while (P[i + 1][0] < y) i++;
+    const hh = P[i + 1][0] - P[i][0], t = (y - P[i][0]) / hh, t2 = t * t, t3 = t2 * t; return (2 * t3 - 3 * t2 + 1) * P[i][1] + (t3 - 2 * t2 + t) * hh * m[i] + (-2 * t3 + 3 * t2) * P[i + 1][1] + (t3 - t2) * hh * m[i + 1]; };
+}
+
+// ———— each face, read off its picture, as changes of Anny's own face ————
+// v: heights in the face frame (eyes 0, chin -1); widths and depths in the same unit (the eyes-to-chin height)
+const C = {
+  ambrosius: { who: 'man', skin: '#e8b48c', ref: 'nimona-ambrosius.png', view: [0.45, 0.06],
+    chin: -1.18, tip: -0.5, mouth: -0.78, brow: 0.26,
+    width: [[0.7, 1.0], [0.25, 0.98], [-0.2, 0.92], [-0.6, 0.86], [-0.95, 0.72], [-1.2, 0.7]],
+    front: { tip: 0.32, mouth: -0.02, chin: -0.02, brow: 0.02 }, eye: 1.45, eyeX: 1.0, noseW: 0.9, mouthW: 0.95, jawSharp: 1 },
+  giulia: { who: 'girl', skin: '#e8a07a', ref: 'luca-giulia.png', view: [-0.35, 0.1],
+    chin: -0.98, tip: -0.48, mouth: -0.72, brow: 0.3,
+    width: [[0.7, 1.05], [0.2, 1.08], [-0.25, 1.12], [-0.6, 1.0], [-0.9, 0.9], [-1.1, 0.85]],
+    front: { tip: 0.34, mouth: 0.0, chin: -0.04, brow: 0.0 }, eye: 1.6, eyeX: 1.04, noseW: 0.9, mouthW: 0.95 },
+  nimona: { who: 'girl', skin: '#ee9e7c', ref: 'nimona-nimona.png', view: [0.1, -0.15],
+    chin: -0.92, tip: -0.4, mouth: -0.66, brow: 0.3,
+    width: [[0.7, 1.1], [0.2, 1.15], [-0.25, 1.2], [-0.6, 1.12], [-0.9, 0.95], [-1.1, 0.9]],
+    front: { tip: 0.0, mouth: 0.02, chin: 0.0, brow: 0.0 }, eye: 1.75, eyeX: 1.06, noseW: 0.85, mouthW: 1.35 },
+};
+
+// the change: heights remapped (brow, tip, mouth, chin to theirs), each height's half-width scaled to the picture's
+// ratio, the midline's front moved to the picture's, the eyes, nose and mouth scaled in their own regions; then the
+// change is smoothed over the mesh as one field, and faded down the neck
+function sculpt(at, F, A, S) {
+  const toF = i => [(at[i * 3] - F.x0) / F.U, (at[i * 3 + 1] - F.y0) / F.U, (at[i * 3 + 2] - F.z0) / F.U];
+  const vmap = keys([[1.6, 1.6], [0.3, S.brow ?? 0.3], [0, 0], [A.tipV, S.tip], [A.mouthV, S.mouth], [-1, S.chin], [-1.6, S.chin - 0.6]]);
+  const R0 = keys(S.width), wy = S.width.map(k => k[0]), ratio = y => R0(clamp(y, Math.min(...wy), Math.max(...wy)));
+  const fr = S.front || {}, DZ = keys([[0.35, fr.brow ?? 0], [A.tipV, 0], [A.mouthV, fr.mouth ?? 0], [-1, fr.chin ?? 0]]), dz = y => DZ(clamp(y, -1.1, 0.35)) * (y > 0.35 ? Math.max(0, 1 - (y - 0.35) / 0.3) : 1);
+  const d = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    if (!used[i] || omega[i] < 0.01) continue;
+    let [u, v, w] = toF(i);
+    const v2 = vmap(v);
+    // width: the ratio picture/Anny at this height, everything in the slice scaled (the face and the head behind it)
+    u *= ratio(v2) * (v2 > 0.3 ? 1 : 1);
+    // depth: the midline's front moved; the move fades from the face back into the head
+    const front = clamp((w + 0.7) / 0.6, 0, 1) * Math.exp(-u * u / 0.35);
+    w += dz(v2) * front;
+    // the nose: its own forward part (beyond the face plane under it) lengthened
+    const nr = Math.exp(-((v - A.tipV) ** 2) / 0.04 - u * u / 0.012);
+    const plane = A.Z(-0.15) - 0.05 + (A.Z(A.mouthV) - A.Z(-0.15)) * clamp((-0.15 - v) / (-0.15 - A.mouthV), 0, 1);
+    if (w > plane - 0.02) { const out = (w - plane + 0.02) * (fr.tip ?? 0) * 3 * nr; w += out; u *= lerp(1, S.noseW ?? 1, nr); }
+    // the mouth: wider or narrower about its middle
+    const mr = Math.exp(-((v - A.mouthV) ** 2) / 0.015) * clamp((w + 0.4) / 0.3, 0, 1);
+    u *= lerp(1, S.mouthW ?? 1, mr);
+    const nv = v2 - vmap(v) + v2;
+    d[i * 3] = u * F.U + F.x0 - at[i * 3]; d[i * 3 + 1] = v2 * F.U + F.y0 - at[i * 3 + 1]; d[i * 3 + 2] = w * F.U + F.z0 - at[i * 3 + 2];
+  }
+  // the eyes and their lids larger, about each eye's centre, spaced to the picture's
+  for (const E of F.eyes) {
+    const cx = E.x, cy = E.y, cz = E.z;
+    const r = 0.2 * F.U, sE = S.eye ?? 1, sx = (S.eyeX ?? 1) - 1;
+    for (let i = 0; i < N; i++) { if (!used[i]) continue; const px = at[i * 3] + d[i * 3], py = at[i * 3 + 1] + d[i * 3 + 1], pz = at[i * 3 + 2] + d[i * 3 + 2];
+      const ox = px - (cx + d[0]), oy = py - cy, oz = pz - cz; const q = Math.hypot(at[i * 3] - cx, (at[i * 3 + 1] - cy) * 1.2, (at[i * 3 + 2] - cz) * 0.8) / r; const t = clamp(1 - q, 0, 1), k = sst(t);
+      const ex = cx * (1 + sx); d[i * 3] += k * ((at[i * 3] - cx) * (sE - 1) + (ex - cx)); d[i * 3 + 1] += k * (at[i * 3 + 1] - cy) * (sE - 1); d[i * 3 + 2] += k * (at[i * 3 + 2] - cz) * (sE - 1) * 0.6; }
+  }
+  const ds = diffuse(d, 4, 3);
+  const out = Float32Array.from(at);
+  for (let i = 0; i < N * 3; i++) out[i] += ds[i] * omega[(i / 3) | 0];
+  // the eyes: Anny's lids are closed skin, cut open along the eye line (cutLids) — the upper lid's points move up, the
+  // lower lid's (their own copies along the cut) down, each lying on a ball set where her eye is
+  const cut = A.cut, M = N + cut.extra.length, o2 = new Float32Array(M * 3); o2.set(out);
+  for (let k = 0; k < cut.extra.length; k++) { const j = cut.extra[k]; o2[(N + k) * 3] = out[j * 3]; o2[(N + k) * 3 + 1] = out[j * 3 + 1]; o2[(N + k) * 3 + 2] = out[j * 3 + 2]; }
+  o2.eyes = [];
+  F.eyes.forEach((E, ei) => {
+    const sE = S.eye ?? 1, sx = Math.sign(E.x), ex = E.x * (S.eyeX ?? 1);
+    const aw = 0.0135 * sE, up = 0.0085 * sE * (S.lidUp ?? 1), lo = 0.006 * sE * (S.lidLo ?? 1), tilt = (S.eyeTilt ?? 0) * sx, rB = 0.0128 * sE;
+    // the ball: its front just under where the closed lid was
+    let zl = -9; for (let i = 0; i < N; i++) { if (!used[i]) continue; if (Math.hypot(out[i * 3] - ex, out[i * 3 + 1] - E.y) < 0.003 * sE) zl = Math.max(zl, out[i * 3 + 2]); }
+    const c = new V3(ex, E.y + (S.eyeY ?? 0) * F.U, zl - rB + 0.0012);
+    const side = cut.side[ei];
+    // each column of the lid remapped: the band from the eye line out to `band` is stretched so its edge lands on the
+    // almond (the upper curve above, the lower below) and the rest of the band follows — monotone, so nothing folds
+    const band = 0.011 * sE, ys = x => E.y - 0.0012 * sE;
+    for (let i = 0; i < M; i++) { const s0 = side[i]; if (!s0) continue;
+      const x = o2[i * 3] - ex, prof = Math.pow(Math.max(0, 1 - (x / (aw * 1.04)) ** 2), 0.65), wx = clamp(1 - (Math.abs(x) - aw) / (aw * 0.5), 0, 1);
+      const y0 = ys(x), edge = s0 > 0 ? up * prof + x * tilt : -lo * prof + x * tilt * 0.5, d = s0 > 0 ? o2[i * 3 + 1] - y0 : y0 - o2[i * 3 + 1];
+      if (d > band || d < -0.004) continue;
+      const t = clamp(d / band, 0, 1), e = Math.abs(edge) * Math.sign(s0 > 0 ? edge || 1 : -(edge || -1));
+      o2[i * 3 + 1] += (s0 > 0 ? 1 : -1) * Math.max(0, (s0 > 0 ? edge : -edge)) * (1 - t) * wx + (s0 > 0 ? 0 : 0);
+      // lying on the ball, a skin's thickness in front of it
+      const X = o2[i * 3] - c.x, Y = o2[i * 3 + 1] - c.y, r2 = (rB + 0.0007) ** 2 - X * X - Y * Y;
+      if (r2 > 0) { const zb = c.z + Math.sqrt(r2); o2[i * 3 + 2] = lerp(o2[i * 3 + 2], zb, (1 - t) * wx); }
+    }
+    o2.eyes.push({ c, r: rB });
+  });
+  o2.tris = cut.tris;
+  return o2;
+}
+
+// ———— the studio ————
+const cv = document.getElementById('cv'), renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(innerWidth, innerHeight); renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#dcd6cd');
+const camera = new THREE.PerspectiveCamera(18, innerWidth / innerHeight, 0.02, 30);
+scene.add(new THREE.HemisphereLight('#ffffff', '#b8b0a8', 1.2));
+const key = new THREE.DirectionalLight('#fff6ec', 2.0); key.position.set(-1.4, 2.0, 2.6); scene.add(key);
+const rim = new THREE.DirectionalLight('#e8f0ff', 0.9); rim.position.set(2, 1.4, -2.4); scene.add(rim);
+let mesh = null; const cache = {};
+// an eyeball's paint: white, the iris and the pupil at the front, a glint
+function irisTex(col) { const cv = document.createElement('canvas'); cv.width = 512; cv.height = 256; const g = cv.getContext('2d'); g.fillStyle = '#f6f2ec'; g.fillRect(0, 0, 512, 256);
+  // the front of a sphere looking down +z after lookAt is u = 0.75? three's sphere: u=0.25 faces -x… the front (+z) is at u = 0.25 → x = 128
+  const X = 128 * 1, Y = 128, R = 52; const gr = g.createRadialGradient(X, Y, 4, X, Y, R); gr.addColorStop(0, col); gr.addColorStop(1, '#1c120c'); g.fillStyle = gr; g.beginPath(); g.arc(X, Y, R, 0, 7); g.fill();
+  g.fillStyle = '#0c0808'; g.beginPath(); g.arc(X, Y, R * 0.48, 0, 7); g.fill(); g.fillStyle = '#ffffff'; g.beginPath(); g.arc(X - 16, Y - 18, 9, 0, 7); g.fill();
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; }
+window.__show = async (name, yaw, pitch = 0.05, zoom = 1, at2 = null) => {
+  const S = C[name];
+  if (!cache[S.who]) { const P = parsePerson(await load(S.who), bs), at = P.at; const F = frameOf(at, P.J); const A = measure(at, F); A.cut = cutLids(at, F); cache[S.who] = { at, F, A }; }
+  const { at, F, A } = cache[S.who];
+  const pos = sculpt(at, F, A, S);
+  if (mesh) scene.remove(mesh);
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(Array.from(pos.tris)); g.computeVertexNormals();
+  mesh = new THREE.Group(); mesh.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: S.skin, roughness: 0.62 })));
+  for (const e of pos.eyes) { const ball = new THREE.Mesh(new THREE.SphereGeometry(e.r, 48, 32), new THREE.MeshStandardMaterial({ map: irisTex(S.iris ?? '#5a3a24'), roughness: 0.25 })); ball.position.copy(e.c); ball.lookAt(e.c.clone().add(new V3((S.gaze ?? [0, 0])[0], (S.gaze ?? [0, 0])[1], 1))); mesh.add(ball); }
+  scene.add(mesh);
+  const c = at2 ? new V3(F.x0 + at2[0] * F.U, F.y0 + at2[1] * F.U, F.z0 + at2[2] * F.U) : new V3(F.x0, F.y0 - 0.45 * F.U, F.z0 - 0.5 * F.U), dist = F.U * 8.2 / zoom;
+  camera.position.set(c.x + Math.sin(yaw) * Math.cos(pitch) * dist, c.y + Math.sin(pitch) * dist, c.z + Math.cos(yaw) * Math.cos(pitch) * dist); camera.lookAt(c);
+  renderer.render(scene, camera);
+  return { U: F.U, A: { tipV: A.tipV, tipZ: A.tipZ, mouthV: A.mouthV, chinZ: F.chinZ, W: [0.3, 0, -0.2, -0.5, -0.8, -0.95].map(y => +A.W(y).toFixed(3)), Z: [0.3, 0, -0.2, -0.4, -0.6, -0.8, -0.95].map(y => +A.Z(y).toFixed(3)) } };
+};
+window.__probe = async who => { const P = parsePerson(await load(who), bs), at = P.at, E = P.J[JI.LeftEye]; const rows = [];
+  for (let i = 0; i < N; i++) { if (!used[i]) continue; const dx = at[i * 3] - E.x, dy = at[i * 3 + 1] - E.y, dz = at[i * 3 + 2] - E.z; if (Math.abs(dx) < 0.02 && Math.abs(dy) < 0.012 && dz > -0.005) rows.push([+(dx * 1000).toFixed(1), +(dy * 1000).toFixed(1), +(dz * 1000).toFixed(1)]); }
+  rows.sort((a, b) => b[1] - a[1]); return JSON.stringify({ E: [E.x, E.y, E.z], n: rows.length, mid: rows.filter(r => Math.abs(r[0]) < 2.5) }); };
+window.__C = C; window.__ready = true;
+</script>

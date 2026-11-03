@@ -29,6 +29,10 @@ narrow what is here without asking him.
 - Keep everything we made: the experiment pages, their code and the current gallery stay as they are, running, so
   Pavel can return to them, show them and talk about them. The engine is built beside them, not in their place.
 
+- Presets matter, presets of parts too. Agents choosing a character's look will look through much of what exists,
+  try many, then modify a lot — the engine and presets now, then many games, scenes and characters by other agents.
+  Presets must be easy to browse, compare and combine.
+
 ## Motion
 
 - The body moves through the scene only by Kimodo and only along the coordinates Kimodo gives. Never carried
@@ -60,6 +64,8 @@ narrow what is here without asking him.
 - Runs locally from the repository with `python3 -m http.server`.
 
 ## Working
+
+- From time to time send Pavel pictures in the chat to show progress, even if they look like what he has seen.
 
 - Look with your own eyes, from several angles; don't show or send results with visible bugs or mediocre ones; if
   an edit doesn't make it better, revert it and try another; don't deliver a version worse than the last.
