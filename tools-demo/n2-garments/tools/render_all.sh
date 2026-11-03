@@ -4,7 +4,7 @@ declare -A COL=([dress-bell]=1f6b5c [dress-aline-puff]=8a3a5c [dress-trapeze]=c8
   [shirt-long]=b5523b [pants]=2b3147 [var-suns03]=1f6b5c [var-suns15-long]=1f6b5c [var-sleeve-puff]=1f6b5c
   [rand01]=6b4a8a [rand09]=3a6b8a [rand10]=8a6b3a)
 mkdir -p $GC/renders $GC/out
-for d in $GC/runs/*/*_sim; do n=$(basename $d _sim); body=$(basename $(dirname $d)); o=$d/${n}_sim_sim.obj
+for d in $GC/runs/[!_]*/*_sim; do n=$(basename $d _sim); body=$(basename $(dirname $d)); o=$d/${n}_sim_sim.obj
   [ -f $o ] || continue
   case $body in moood-woman) bo=$GC/bodies/anny/moood-woman.obj; skin=d9a88a;; *) bo=$GC/bodies/gc/$body.obj; skin=8a8f99;; esac
   for yaw in 20 160; do png=$GC/renders/$body-$n-$yaw.png; [ -f $png ] && continue

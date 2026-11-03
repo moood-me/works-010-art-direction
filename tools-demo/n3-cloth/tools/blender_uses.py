@@ -1,6 +1,9 @@
-# What Blender's cloth is made for, used as its manual shows it: a tablecloth dropped on a table, a flag in the wind,
-# a cushion blown up by pressure. blender -b -P blender_uses.py -- <out dir> [which: table|flag|pillow]
+# What Blender's cloth is made for, used as its manual shows it: a tablecloth dropped on a table, a flag in the wind.
+# blender -b -P blender_uses.py -- <out dir> table|flag   (NORENDER=1: only simulate and print where the cloth is)
 # Renders PNG frames (EEVEE) to <out dir>/<which>/; times go to <out dir>/<which>.json.
+# The tablecloth has Blender's Cotton preset as is (mass 0.3 per point); the flag's mass per point is the fabric's
+# weight (kg/m²) times its area over its points — with the preset's 0.3 kg per point (3721 points: over a tonne) no
+# wind could lift it.
 import bpy, sys, os, json, time, math
 
 args = sys.argv[sys.argv.index('--') + 1:]
@@ -44,23 +47,17 @@ if which == 'table':   # a tablecloth falls on a round table (cotton preset)
     cm.collision_settings.use_self_collision = True; cm.collision_settings.distance_min = 0.005; cm.collision_settings.self_distance_min = 0.004
     sub = cl.modifiers.new('s', 'SUBSURF'); sub.levels = sub.render_levels = 1
     camera((2.6, -2.6, 1.9), (0, 0, 0.6)); frames = 100
-elif which == 'flag':  # a flag on a pole in gusty wind (pinned edge, a wind force field with noise)
+else:                  # a flag on a pole in gusty wind (pinned edge, a wind force field with noise)
     bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=3, location=(0, 0, 1.5)); bpy.context.object.data.materials.append(mat('pole', (0.3, 0.3, 0.32), 0.4))
     cl = grid(1.0, 60, (0.52, 0, 2.5), (math.radians(90), 0, 0)); cl.scale = (1, 0.65, 1); bpy.ops.object.transform_apply(scale=True)
     cl.data.materials.append(mat('flag', (0.1, 0.25, 0.6))); bpy.ops.object.shade_smooth()
     vg = cl.vertex_groups.new(name='pin'); vg.add([v.index for v in cl.data.vertices if (cl.matrix_world @ v.co).x < 0.03], 1, 'REPLACE')
-    cm = cl.modifiers.new('cloth', 'CLOTH'); s = cm.settings; s.mass = 0.15; s.tension_stiffness = s.compression_stiffness = 5; s.bending_stiffness = 0.05; s.quality = 8
+    cm = cl.modifiers.new('cloth', 'CLOTH'); s = cm.settings; s.mass = 0.15 * 0.65 / len(cl.data.vertices); s.tension_stiffness = s.compression_stiffness = 5; s.bending_stiffness = 0.05; s.quality = 8
     s.vertex_group_mass = 'pin'
-    bpy.ops.object.effector_add(type='WIND', location=(-2, 0, 2.5), rotation=(0, math.radians(90), 0)); w = bpy.context.object
+    # (the wind a little across the flag's plane: wind exactly along a flat cloth pushes on nothing)
+    bpy.ops.object.effector_add(type='WIND', location=(-2, -0.6, 2.5), rotation=(0, math.radians(90), math.radians(20))); w = bpy.context.object
     w.field.strength = 900; w.field.noise = 2.5; w.field.flow = 0.5
-    camera((2.0, -3.6, 2.4), (0.6, 0, 2.2)); frames = 120
-else:                  # a cushion: a closed cloth blown up by pressure, dropped on the floor
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0.6)); cl = bpy.context.object; cl.scale = (0.6, 0.6, 0.12); bpy.ops.object.transform_apply(scale=True)
-    m = cl.modifiers.new('r', 'SUBSURF'); m.subdivision_type = 'SIMPLE'; m.levels = 5; bpy.ops.object.modifier_apply(modifier='r')
-    cl.data.materials.append(mat('cushion', (0.85, 0.65, 0.25))); bpy.ops.object.shade_smooth()
-    cm = cl.modifiers.new('cloth', 'CLOTH'); s = cm.settings; s.mass = 0.3; s.quality = 8; s.use_pressure = True; s.uniform_pressure_force = 6; s.shrink_min = 0
-    cm.collision_settings.use_self_collision = True
-    camera((1.9, -1.9, 1.3), (0, 0, 0.15)); frames = 80
+    camera((2.0, -3.6, 2.4), (0.6, 0, 2.2)); frames = 90
 sc.frame_start, sc.frame_end = 1, frames
 for o in sc.objects:
     if o.type == 'MESH' and o.name.startswith(('Plane',)): o.modifiers.new('c', 'COLLISION')
@@ -69,6 +66,9 @@ os.makedirs(os.path.join(out, which), exist_ok=True)
 t0 = time.time()
 for f in range(1, frames + 1): sc.frame_set(f)       # simulate (the point cache keeps it)
 sim = time.time() - t0
+if os.environ.get('NORENDER'):   # a quick look: where the cloth ends up, no pictures
+    dg = bpy.context.evaluated_depsgraph_get(); me = cl.evaluated_get(dg).to_mesh()
+    import numpy as np; a = np.array([(cl.matrix_world @ v.co)[:] for v in me.vertices]); print('bounds', a.min(0).round(2), a.max(0).round(2)); sys.exit(0)
 sc.render.filepath = os.path.join(out, which, '')
 t1 = time.time(); bpy.ops.render.render(animation=True); ren = time.time() - t1
 json.dump({'simulate_s': sim, 'render_s': ren, 'frames': frames, 'points': len(cl.data.vertices)}, open(os.path.join(out, which + '.json'), 'w'))

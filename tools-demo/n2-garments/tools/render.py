@@ -39,6 +39,9 @@ sun.data.energy = 2.2; sun.data.angle = math.radians(8)
 sun.rotation_euler = (math.radians(50), 0, math.radians(-35))
 fill = bpy.data.objects.new('fill', bpy.data.lights.new('fill', 'AREA')); sc.collection.objects.link(fill)
 fill.data.energy = 250; fill.data.size = 3; fill.location = (2.5, -3, 1.6); fill.rotation_euler = (math.radians(70), 0, math.radians(40))
+# the lights turn with the camera (a back view lit as the front one)
+rig = bpy.data.objects.new('rig', None); sc.collection.objects.link(rig)
+sun.parent = rig; fill.parent = rig; rig.rotation_euler = (0, 0, math.radians(opt['--yaw']))
 # camera: front, turned by yaw, framing the whole figure
 cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
 cam.data.lens = 70
