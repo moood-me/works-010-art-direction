@@ -164,3 +164,13 @@ offsets smoothed over the surface) into the common skinning; a contour deformer 
 with a strength from "touch up" to "replace with a drawn form entirely"; the style contour presets (Disney, Pixar,
 anime) as examples; the soft separate masses (bust, buttocks, the shoulder cap and slope from the neck). The clothes О1
 then move from Т7's bodies to the new ones. With these taken, nothing of value stays in today's Т7 but its pictures.
+
+Heads (same talk): the base is always Anny's head mesh (alive, no seam, moves with the skeleton). Its form by a set of
+ways that combine with a strength: Anny's own face settings and a head of another age; deformers on top (face by
+points, a cage on the head, smooth warps); a designed form the mesh is wrapped onto (as Г3), made from a drawing's
+curves (as Г1) or as a solid fitted to a picture (as Г2); separate pieces where the mesh won't stretch (a long nose, a
+ball nose). Features as a separate layer, per feature: painted on the skin or as volume, mixable. Expressions by the
+mesh with painted features following. Face light as an option (toon with outline, shading from the designed form, no
+cast shadows on the face). For authors: an overlay check against the picture; our heads as preset examples. Dropped:
+the old sculpting by balls (Г2's first way), the rays of Г4, and a standalone head without Anny. Not doing now:
+blending expressions, mouth shapes for speech, a gaze that follows.
