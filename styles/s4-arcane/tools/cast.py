@@ -114,7 +114,7 @@ def savely():
     P.freckles = [(rnd.uniform(-60, 60), rnd.uniform(-95, -55), rnd.uniform(0.9, 1.8)) for _ in range(9)]
     P.bags = 0.6
     P.moustache = [(0, 58.5), (7, 57.5), (15, 59.5), (22, 65), (26, 74), (21, 72.5), (13, 70.5), (0, 70)]
-    P.glasses = dict(rx=12.5, ry=11, dy=6, dz=20, color='#a8834a', w=1.3, square=0)
+    P.glasses = dict(rx=12.5, ry=11, dy=6, dz=16, color='#a8834a', w=1.3, square=0)
     P.pal = dict(skin=skinpal('#efcab4', '#b97c74', '#d8644a', '#7e4238', '#dc7a6a'),
                  neck=dict(skinpal('#ddb39d', '#b4766e', '#d8644a', '#7e4238', '#dc7a6a')),
                  blush='#dc7466', freckle='#a8735a', white='#e3d6cc', lidshadow='#a88a88', lid='#c98a80', lash='#3a2a26',
@@ -277,7 +277,7 @@ def vera():
     P.blush = [(42, 30, 14, 9, 0.22)]
     P.freckles = []
     P.bags = 0.45
-    P.glasses = dict(rx=14, ry=10, dy=1, dz=13, color='#2a2226', w=1.5, square=1)
+    P.glasses = dict(rx=14, ry=10, dy=1, dz=11, color='#2a2226', w=1.5, square=1)
     P.pal = dict(skin=skinpal('#ecccb8', '#ad7c78', '#cf6450', '#7a4440', '#d27c70'),
                  neck=dict(skinpal('#dcb5a2', '#a87472', '#cf6450', '#7a4440', '#d27c70')),
                  blush='#cf7a6e', freckle='#a07060', white='#e2d6d0', lidshadow='#9e8a90', lid='#c08a86', lash='#1e1416',
@@ -298,10 +298,10 @@ def vera():
     def locks(head):
         L = []
         # swept back from a side part to the bun
-        L += family([('s', 0.25, -112, 3), ('s', 0.9, -95, 5), ('s', 1.5, -60, 5), ('s', 2.3, -36, 5), (0, bun_y - 6, bun_z + 10)],
-                    [('s', 0.18, -86, 3), ('s', 0.85, -70, 5), ('s', 1.35, -30, 5), ('s', 2.0, -2, 5), (0, bun_y + 10, bun_z + 10)], 10, [6, 11, 10, 8, 2], seed=41, jit=1.5, strands=3, streak=(0.1, 0.4))
-        L += family([('s', 0.22, -112, 3), ('s', -0.6, -100, 5), ('s', -1.4, -66, 5), ('s', -2.3, -36, 5), (0, bun_y - 6, bun_z + 10)],
-                    [('s', 0.15, -84, 3), ('s', -0.6, -76, 5), ('s', -1.3, -34, 5), ('s', -2.0, -2, 5), (0, bun_y + 10, bun_z + 10)], 10, [6, 11, 10, 8, 2], seed=42, jit=1.5, strands=3, streak=(0.1, 0.4))
+        L += family([('s', 0.25, -112, 3), ('s', 0.9, -95, 5), ('s', 1.5, -60, 5), ('s', 2.3, -36, 5), ('s', 2.75, -28, 5)],
+                    [('s', 0.18, -86, 3), ('s', 0.85, -70, 5), ('s', 1.35, -30, 5), ('s', 2.0, -2, 5), ('s', 2.7, -10, 5)], 10, [6, 11, 10, 8, 2], seed=41, jit=1.5, strands=3, streak=(0.1, 0.4))
+        L += family([('s', 0.22, -112, 3), ('s', -0.6, -100, 5), ('s', -1.4, -66, 5), ('s', -2.3, -36, 5), ('s', -2.75, -28, 5)],
+                    [('s', 0.15, -84, 3), ('s', -0.6, -76, 5), ('s', -1.3, -34, 5), ('s', -2.0, -2, 5), ('s', -2.7, -10, 5)], 10, [6, 11, 10, 8, 2], seed=42, jit=1.5, strands=3, streak=(0.1, 0.4))
         # the grey streak at the front
         L.append(dict(pts=[('s', 0.2, -100, 5), ('s', 0.6, -92, 6), ('s', 1.1, -72, 6), ('s', 1.6, -46, 6)], w=[5, 8, 7, 1], tone=2, strands=2, streak=(0.1, 0.7), grey=True))
         # loose strands by the temples

@@ -7,8 +7,8 @@ args = sys.argv[sys.argv.index('--') + 1:]
 out, which = args[0], args[1]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene; sc.render.fps = 30
-sc.render.engine = 'BLENDER_EEVEE_NEXT'; sc.eevee.taa_render_samples = 16
-sc.render.resolution_x, sc.render.resolution_y = 480, 360
+sc.render.engine = 'BLENDER_EEVEE_NEXT'; sc.eevee.taa_render_samples = 8
+sc.render.resolution_x, sc.render.resolution_y = 400, 300
 sc.render.image_settings.file_format = 'PNG'
 world = bpy.data.worlds.new('w'); sc.world = world; world.use_nodes = True
 world.node_tree.nodes['Background'].inputs[0].default_value = (0.81, 0.78, 0.74, 1); world.node_tree.nodes['Background'].inputs[1].default_value = 0.7

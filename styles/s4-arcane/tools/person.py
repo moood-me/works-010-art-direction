@@ -308,9 +308,6 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
         out.append(lock_svg(d))
     if hasattr(P, 'bun') and abs(math.degrees(view.yaw)) < 60:
         out.append(P.bun(doc, view, None))
-    # ---- bust
-    if bust and hasattr(P, 'bust'):
-        out.append(P.bust(doc, view, head))
     # ---- neck
     Rn = regions(neck, view)
     Rh = regions(head, view, extra={'warm': lambda U, V, dl, nz: np.minimum(dl - 0.1, 0.55 - dl), 'half': lambda U, V, dl, nz: np.minimum(dl - 0.1, 0.28 - dl)})
@@ -321,6 +318,9 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
     if not cast.is_empty:
         neck_svg += path(poly_path(cast), pal['skin']['shadow'], extra=' style="mix-blend-mode:multiply" filter="url(#edge)"')
     out.append(neck_svg)
+    # ---- bust
+    if bust and hasattr(P, 'bust'):
+        out.append(P.bust(doc, view, head))
     if bust and hasattr(P, 'collar'):
         out.append(P.collar(doc, view, head))
     # ---- ears (behind the head when facing away)
@@ -699,8 +699,9 @@ def skin_strokes(surf, view, sp, seed=1, n=170, mask=None):
 def glasses_svg(doc, view, head, P):
     G = P.glasses
     out = []
-    zf = float(interp(P.zf, P.eye_y + G.get('dy', 0)))
-    z = zf + G.get('dz', 12)
+    ue = flat_uv(head, np.array([P.eye_x]), np.array([P.eye_y]))
+    _, _, ze = head.pos(ue, np.array([float(P.eye_y)]))
+    z = float(ze[0]) + G.get('dz', 12)
     y = P.eye_y + G.get('dy', 0)
     rx, ry = G['rx'], G['ry']
     sq = G.get('square', 0)

@@ -380,11 +380,11 @@ def savely_hair():
             lo = sd * lon
             locks.append(dict(pts=[('s', lat + 14, lo - sd * 6, 1.0), ('s', lat + 4, lo, 1.12), ('s', lat - 6, lo + sd * 8, out),
                                    ('s', lat - 12, lo + sd * 16, out - 0.05)],
-                              w=[6, 9, 6, 0.4], size=16, sheen=0.8, z=(-1 if lon > 95 else 1) * 10))
+                              w=[7, 11, 9, 4], size=18, sheen=0.8, z=(-1 if lon > 95 else 1) * 10))
         for j, (lon, lat) in enumerate([(70, 2), (95, 0), (125, -4), (155, -8)]):
             lo = sd * lon
             locks.append(dict(pts=[('s', lat + 12, lo, 1.0), ('s', lat, lo + sd * 3, 1.12), ('s', lat - 10, lo + sd * 10, 1.2)],
-                              w=[5, 7.5, 0.4], size=13, sheen=0.7, z=-20))
+                              w=[6, 9, 4], size=15, sheen=0.7, z=-20))
     # three wisps across the top
     for lon, ln in [(-26, 40), (-8, 46), (12, 40)]:
         locks.append(dict(pts=[('s', 45, -80, 1.0), ('s', 74, lon - 26, 1.03), ('s', 80, lon + 16, 1.05), ('s', 70, lon + ln, 1.08)],
@@ -429,20 +429,11 @@ def vera():
 def vera_hair():
     locks = []
     bun = (14, 180)
-    # sleek strips from the hairline back to the bun
-    for lon in range(-180, 180, 15):
-        a = abs(((lon + 180) % 360) - 180)
-        if a > 150:
-            continue
-        lat0 = hl_bun(lon)
-        sd = 1 if lon >= 0 else -1
-        pts = [('s', lat0 - 2, lon, 1.0), ('s', lat0 + 6, lon, 1.04), ('s', (lat0 + 60) / 2 + 10, lon * 0.8 + sd * 30, 1.06),
-               ('s', 40, 180 - sd * 25, 1.05), ('s', bun[0] + 6, 180 - sd * 6, 1.02)]
-        locks.append(dict(pts=pts, w=[8, 10, 11, 9, 2], size=40, sheen=1.3))
     # a grey streak from the parting, on the screen-left
-    locks.append(dict(pts=[('s', 29, -22, 1.03), ('s', 40, -24, 1.06), ('s', 62, -40, 1.07), ('s', 50, -130, 1.06),
-                           ('s', 22, -172, 1.03)], w=[2, 4.5, 5, 4, 1], size=20, col="#8d8580", dark="#5a5450", sheen=0.8, z=30))
+    locks.append(dict(pts=[('s', 29, -20, 1.045), ('s', 42, -22, 1.06), ('s', 62, -40, 1.065), ('s', 50, -130, 1.06),
+                           ('s', 24, -168, 1.05)], w=[3, 4.5, 5, 4, 1], size=20, col="#9a928c", dark="#615a55", sheen=0.8, z=30))
     # one loose lock by the temple: tired
-    locks.append(dict(pts=[('s', 26, 36, 1.04), ('s', 14, 52, 1.07), ('s', -2, 58, 1.08), ('s', -16, 54, 1.07)],
+    locks.append(dict(pts=[('s', 24, 40, 1.04), ('s', 12, 55, 1.07), ('s', -4, 60, 1.08), ('s', -18, 56, 1.07)],
                       w=[2, 3, 2.5, 0.3], size=10, z=30))
-    return Hair("#3b2a25", "#1d1412", "#8a6a5c", locks, sheen_a=0.35, bun=dict(lat=bun[0], lon=bun[1], r=17, k=1.25))
+    return Hair("#3e2c27", "#1d1412", "#8e6e60", locks, sheen_a=0.35, bun=dict(lat=bun[0], lon=bun[1], r=17, k=1.25),
+                cap=dict(k=1.04, to=(30, 180)), hairline=hl_bun)

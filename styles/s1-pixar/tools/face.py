@@ -411,7 +411,7 @@ class Hair:
     """locks on a shell. each lock: list of control specs; ('s', lat, lon, k) on the shell,
     ('c', lon, y, rad) on a cylinder around the head axis (for hanging hair). widths: list (same length)."""
 
-    def __init__(self, base, dark, light, locks, shell=dict(), back_mass=None, cap=True, sheen="#ffffff",
+    def __init__(self, base, dark, light, locks, shell=dict(), back_mass=None, cap=None, sheen="#ffffff",
                  sheen_a=0.22, hairline=None, bun=None):
         self.bun = bun
         self.base, self.dark, self.light = base, dark, light
@@ -544,7 +544,56 @@ class Hair:
         g.append('</g>')
         cv.add("".join(g))
 
+    def draw_cap(self, cv, hd):
+        """one smooth mass over the scalp above the hairline (sleek hair), with strands toward the bun"""
+        sh = Shell(hd, **self.shell_kw)
+        hl = self.hairline
+        k = self.cap.get("k", 1.04)
+        pts = []
+        for la in range(-40, 91, 3):
+            for lo in range(-180, 180, 4):
+                if la >= hl(lo):
+                    pts.append(hd.proj(sh.pt(la, lo, k))[0])
+        cx = sum(p[0] for p in pts) / len(pts)
+        cy = sum(p[1] for p in pts) / len(pts)
+        buckets = {}
+        for p in pts:
+            a = round(math.degrees(math.atan2(p[1] - cy, p[0] - cx)) / 4)
+            r = math.hypot(p[0] - cx, p[1] - cy)
+            if a not in buckets or r > buckets[a][0]:
+                buckets[a] = (r, p)
+        outl = [buckets[a][1] for a in sorted(buckets)]
+        d = smooth_path(outl[::2])
+        paint_volume(cv, d, self.base, self.dark, 70 * hd.s, lift=0.12, soft=0.1)
+        kk = cv.clip(d)
+        g = [f'<g clip-path="url(#{kk})">']
+        tgt = self.cap.get("to", (60, 180))
+        for i, lo in enumerate(range(-160, 161, 8)):
+            la0 = hl(lo)
+            sd = 1 if lo >= 0 else -1
+            ctrl = [(la0, lo), (la0 + 12, lo * 0.97), ((la0 + tgt[0]) / 2 + 12, lo * 0.75 + sd * 25), (tgt[0], tgt[1] - sd * 20)]
+            seg = []
+            for j in range(16):
+                t = j / 15
+                # quadratic-ish blend through the controls
+                idx = t * (len(ctrl) - 1)
+                a = int(min(idx, len(ctrl) - 2))
+                u = idx - a
+                la = ctrl[a][0] + (ctrl[a + 1][0] - ctrl[a][0]) * u
+                lon = ctrl[a][1] + (ctrl[a + 1][1] - ctrl[a][1]) * u
+                p3 = sh.pt(la, lon, k + 0.005)
+                if hd.rot(p3)[2] > 0:
+                    seg.append(hd.proj(p3)[0])
+            if len(seg) > 2:
+                g.append(f'<path d="{smooth_path(seg, closed=False)}" fill="none" stroke="{self.light if i % 2 else self.dark}" '
+                         f'stroke-width="{f(hd.s * 0.6)}" opacity="0.4"/>')
+        # sheen band
+        g.append('</g>')
+        cv.add("".join(g))
+
     def front(self, cv, hd):
+        if self.cap:
+            self.draw_cap(cv, hd)
         for z, pts, c2, L in sorted(self._locks, key=lambda a: a[0]):
             if z >= L.get("split", 0):
                 self.draw_lock(cv, hd, pts, c2, L)
