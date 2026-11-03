@@ -1,5 +1,5 @@
 # What Blender's hair node groups do by themselves: one patch of scalp, the same nine guide curves, and on top of
-# Interpolate Hair Curves one more node group each (Clump, Curl, Frizz, Braid, Noise). Then a realistic groom (the use
+# Interpolate Hair Curves one more node group each (Clump, Curl, Frizz, Noise). Then a realistic groom (the use
 # they are mostly made for) of Alva's hairstyle: thin strands, many of them, frizz and noise, less clumping.
 # blender -b --factory-startup -P uses.py -- <out dir> patches|real
 import bpy, sys, math
@@ -35,11 +35,10 @@ if what == 'patches':
          ([('Clump Hair Curves', dict(Existing_Guide_Map=False, Guide_Distance=0.03, Shape=0.3, Preserve_Length=True))], 'Clump'),
          ([('Curl Hair Curves', dict(Existing_Guide_Map=False, Guide_Distance=0.03, Radius=0.012, Frequency=6.0, Curl_Start=0.15))], 'Curl'),
          ([('Frizz Hair Curves', dict(Distance=0.01, Shape=0.4))], 'Frizz'),
-         ([('Braid Hair Curves', dict(Existing_Guide_Map=False, Guide_Distance=0.2, Radius=0.014, Frequency=2.0, Braid_Start=0.08, Thickness=1.0))], 'Braid'),
          ([('Hair Curves Noise', dict(Distance=0.02, Scale=4.0, Shape=0.4))], 'Noise')]
     for k, (ex, t) in enumerate(V): patch(k * 0.13, ex, t)
-    co = S.stage(res=(1500, 500), samples=16)
+    co = S.stage(res=(3000, 1000), samples=12)
     bpy.data.objects['ground'].hide_render = True
-    co.data.type = 'ORTHO'; co.data.ortho_scale = 0.78
+    co.data.type = 'ORTHO'; co.data.ortho_scale = 0.78; bpy.context.scene.render.film_transparent = True
     co.location = (0.325, -1.2, 0.115); co.rotation_euler = (math.radians(88), 0, 0)
     bpy.context.scene.render.filepath = f'{out}/use-nodes.png'; bpy.ops.render.render(write_still=True)
