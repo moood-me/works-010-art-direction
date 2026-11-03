@@ -28,19 +28,28 @@ ARMS = {'yaw': 0.5, 'pitch': 0.12, 'dist': 1.9, 'target': [0.12, 1.15, 0.0]}
 KNEES = {'yaw': 0.3, 'pitch': 0.15, 'dist': 2.0, 'target': [0.0, 0.45, 0.0]}
 AR = [(m('ln_base'), 'исходное'), (m('ln_arc1'), 'наше: дуга 1'), (o('arap_arc1'), 'ARAP: колено, локоть'), (o('arapR_arc1'), 'ARAP: по всей дуге'), (o('arapR_arc05'), 'ARAP по дуге: 0.5')]
 SETS['arap'] = dict(w=330, h=540, rows=[AR, AR, AR], cams=[POSED, ARMS, KNEES])
+# libigl in its own uses (uses.py)
+FULL = {'yaw': 0.2, 'pitch': 0.05, 'dist': 5.2, 'target': [0.0, 0.95, 0.0]}
+SETS['use-puppet'] = dict(w=380, h=600, cam=FULL, rows=[[(m('raw_woman'), 'исходное: булавки на стопах'), (o('use_naive'), 'просто гладко: тянется'), (o('use_arap'), 'ARAP: форма держится')]])
+SETS['use-rig'] = dict(w=380, h=600, cam=FULL, rows=[[(m('raw_woman'), 'веса 11 ручек', o('use_bbw_colors')), (o('use_bbw_posed'), 'ручки повёрнуты', o('use_bbw_posed_colors')), (o('use_bbw_posed'), 'та же поза')]])
+HEAD = {'yaw': 0.45, 'pitch': 0.05, 'dist': 1.3, 'target': [0.0, 1.38, 0.03]}
+SETS['use-denoise'] = dict(w=420, h=520, cam=HEAD, rows=[[(m('raw_woman'), 'исходное'), (o('use_noisy'), 'с шумом, как со сканера'), (o('use_denoised'), 'после сглаживания libigl')]])
+SETS['use-geodesic'] = dict(w=380, h=600, rows=[[(m('raw_woman'), 'спереди', o('use_geo_colors')), (m('raw_woman'), 'сзади', o('use_geo_colors'))]], cams=[{'yaw': 0.3, 'pitch': 0.05, 'dist': 5.2, 'target': [0.0, 0.95, 0.0]}, {'yaw': 2.8, 'pitch': 0.05, 'dist': 5.2, 'target': [0.0, 0.95, 0.0]}])
 def jobs(name):
     s = SETS[name]; out = []
     for r, row in enumerate(s['rows']):
-        for c, (mesh, lab) in enumerate(row):
-            out.append({'out': f'{S}/{name}-{r}-{c}.png', 'tris': TR, 'meshes': [mesh], 'w': s['w'], 'h': s['h'], 'cam': row_cam(s, r, c), 'gap': 0})
+        for c, (mesh, lab, *col) in enumerate(row):
+            out.append({'out': f'{S}/{name}-{r}-{c}.png', 'tris': TR, 'meshes': [mesh], 'colors': [col[0] if col else None], 'w': s['w'], 'h': s['h'], 'cam': row_cam(s, r, c), 'gap': 0})
     return out
 def row_cam(s, r, c):
-    cams = s.get('cams'); return cams[r] if cams else s['cam']
+    cams = s.get('cams')
+    if not cams: return s['cam']
+    return cams[r] if len(cams) == len(s['rows']) and len(s['rows']) > 1 else cams[c]
 def sheet(name, fmt='webp'):
     s = SETS[name]; W, H = s['w'], s['h']; rows = s['rows']; cols = max(len(r) for r in rows); lh = 34
     im = Image.new('RGB', (W * cols, (H + lh) * len(rows)), '#f3efe8'); d = ImageDraw.Draw(im)
     for r, row in enumerate(rows):
-        for c, (mesh, lab) in enumerate(row):
+        for c, (mesh, lab, *col) in enumerate(row):
             im.paste(Image.open(f'{S}/{name}-{r}-{c}.png').convert('RGB'), (c * W, r * (H + lh)))
             tw = d.textlength(lab, font=FONT); d.text((c * W + (W - tw) / 2, r * (H + lh) + H + 5), lab, fill='#2a2622', font=FONT)
     p = os.path.join(PICS, f'{name}.{fmt}'); im.save(p, quality=86); print(p, im.size)
