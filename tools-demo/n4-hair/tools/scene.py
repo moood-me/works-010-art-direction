@@ -64,11 +64,13 @@ def skull(R):
 def sph(c, r, th, ph, rr=1.0):  # a point on the (scaled) skull: th azimuth (0 front, + to the person's left), ph elevation
     return c + r * rr * np.array([math.cos(ph) * math.sin(th), math.sin(ph), math.cos(ph) * math.cos(th)])
 
-def scalp(R, c, r, line, name='scalp'):
-    """The body's faces inside the hairline line(th) (elevation), lifted 1 mm: the surface the hair grows from."""
+def scalp(R, c, r, line, region=None, name='scalp'):
+    """The body's faces inside the hairline line(th) (elevation) and the part's region(th, ph), lifted 1 mm: the
+    surface the hair grows from."""
     P = np.asarray(R['body']['pos']).reshape(-1, 3); T = np.asarray(R['body']['tris']).reshape(-1, 3)
     d = (P - c) / r; th = np.arctan2(d[:, 0], d[:, 2]); ph = np.arcsin(np.clip(d[:, 1] / np.linalg.norm(d, axis=1), -1, 1))
     inside = (ph > np.vectorize(line)(th)) & (np.linalg.norm(P - c, axis=1) < 0.16)
+    if region: inside &= np.vectorize(region)(th, ph)
     keep = T[inside[T].all(1)]
     used = np.unique(keep); remap = -np.ones(len(P), int); remap[used] = np.arange(len(used))
     ob = mesh(name, P[used], remap[keep])

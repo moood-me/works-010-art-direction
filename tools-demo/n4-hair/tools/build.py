@@ -13,23 +13,35 @@ def make(name, motion_body=False):
     c, r, ey = S.skull(R)
     st = STYLES[name](c, r, ey)
     R, body, garments = S.person(who, st['skin'])
-    sc = S.scalp(R, c, r, st['line'])
-    g = S.guides_object('hair', st['guides'], sc)
-    g.data.materials.append(S.hair_material('hair', S.srgb(st['color']), S.srgb(st.get('tip', st['color'])), rough=st.get('rough', 0.3)))
-    S.gn(g, 'Interpolate Hair Curves', Surface=sc, Surface_UV_Map=('attr', 'UVMap'), Part_by_Mesh_Islands=False,
-         Interpolation_Guides=st.get('guides_k', 4), Density=st['density'], Seed=3)
-    S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=st['clump'], Factor=st.get('clump_f', 0.95),
-         Shape=st.get('clump_shape', 0.35), Tip_Spread=st.get('tip_spread', 0.0015), Preserve_Length=True, Seed=1)
-    S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=st['clump2'], Factor=st.get('clump2_f', 0.6), Shape=0.1,
-         Tip_Spread=0.0005, Preserve_Length=True, Seed=2)
-    if st.get('noise'): S.gn(g, 'Hair Curves Noise', Distance=st['noise'], Scale=40.0, Shape=0.3, Seed=4)
-    if st.get('shrink'):
-        S.gn(g, 'Shrinkwrap Hair Curves', Surface=st.get('shrink_on') and bpy.data.objects[st['shrink_on']] or body,
-             Offset_Distance=st['shrink'], Above_Surface=0.5, Smoothing_Steps=3, Lock_Roots=True)
-    S.gn(g, 'Smooth Hair Curves', Amount=0.6, Iterations=6, Preserve_Length=True)
-    S.gn(g, 'Set Hair Curve Profile', Radius=st['radius'], Shape=st.get('profile', 0.3))
-    for o in st.get('extra', []): o(R, c, r, ey)
-    return dict(st=st, R=R, body=body, hair=g, scalp=sc, c=c, r=r, ey=ey, who=who)
+    mat = S.hair_material('hair', S.srgb(st['color']), S.srgb(st.get('tip', st['color'])), rough=st.get('rough', 0.25))
+    hairs = []
+    for k, part in enumerate(st['parts']):
+        p = {**st, **part}
+        sc = S.scalp(R, c, r, st['line'], p.get('region'), name=f'scalp-{k}')
+        g = S.guides_object(f'hair-{k}', p['guides'], sc)
+        g.data.materials.append(mat)
+        S.gn(g, 'Interpolate Hair Curves', Surface=sc, Surface_UV_Map=('attr', 'UVMap'), Part_by_Mesh_Islands=False,
+             Interpolation_Guides=p.get('guides_k', 4), Density=p.get('density', 1500000), Seed=3 + k)
+        S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=p.get('clump', 0.04), Factor=p.get('clump_f', 1.0),
+             Shape=p.get('clump_shape', 0.4), Tip_Spread=p.get('tip_spread', 0.003), Preserve_Length=True, Seed=1 + k)
+        S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=p.get('clump2', 0.012), Factor=p.get('clump2_f', 0.5),
+             Shape=0.1, Tip_Spread=0.0005, Preserve_Length=True, Seed=2 + k)
+        if p.get('noise'): S.gn(g, 'Hair Curves Noise', Distance=p['noise'], Scale=40.0, Shape=0.3, Seed=4)
+        for on in p.get('shrink_on', []):
+            S.gn(g, 'Shrinkwrap Hair Curves', Surface=bpy.data.objects[on], Offset_Distance=p.get('shrink', 0.006),
+                 Above_Surface=0.5, Smoothing_Steps=3, Lock_Roots=True)
+        S.gn(g, 'Smooth Hair Curves', Amount=0.6, Iterations=6, Preserve_Length=True)
+        S.gn(g, 'Set Hair Curve Profile', Radius=p.get('radius', 0.0011), Shape=p.get('profile', 0.3))
+        hairs.append(g)
+    if 'tie' in st:   # the hair tie: a plain torus
+        T = S.bl(st['tie']); d = S.bl(st['tie_dir'])
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.016, minor_radius=0.006, location=tuple(T))
+        tie = bpy.context.active_object; tie.name = 'tie'
+        tie.rotation_euler = S.Vector(tuple(d)).to_track_quat('Z', 'Y').to_euler()
+        tie.data.materials.append(S.principled('tie', S.srgb(0x2a2228), 0.4))
+        for p in tie.data.polygons: p.use_smooth = True
+        hairs.append(tie)
+    return dict(st=st, R=R, body=body, hairs=hairs, c=c, r=r, ey=ey, who=who)
 
 WHO = {'gwen': 'woman', 'alva': 'woman', 'kpony': 'woman', 'kbraid': 'woman', 'marco': 'child', 'jack': 'man'}
 
@@ -41,7 +53,7 @@ if __name__ == '__main__':
     co = S.stage(samples=int(argv[2]) if len(argv) > 2 else 48)
     head = np.asarray(H['R']['head'])
     ev = bpy.context.evaluated_depsgraph_get()
-    print('strands', len(H['hair'].evaluated_get(ev).data.curves))
+    print('strands', sum(len(h.evaluated_get(ev).data.curves) for h in H['hairs']))
     for v, yaw in views.items():
         S.look(co, head - np.array([0, 0.03, 0]), yaw, 0.06, H['st']['dist'])
         bpy.context.scene.render.filepath = f'{out}/{name}-{v}.png'
