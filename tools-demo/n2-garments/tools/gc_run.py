@@ -36,6 +36,7 @@ ap.add_argument('--out', required=True)
 ap.add_argument('--name', default=None)
 ap.add_argument('--sim', default='gui', help='gui (mid-soft fabric) or default (very soft)')
 ap.add_argument('--res', type=float, default=None, help="GarmentCode's resolution_scale (mesh edge ~ res cm); default 1.0")
+ap.add_argument('--dump', default=None, help='folder: save the cloth points every 4th frame (to film the sewing)')
 ap.add_argument('--dry', action='store_true', help='only make the pattern')
 ap.add_argument('--set', action='append', default=[], help='override design value: a.b.c=value (yaml)')
 a = ap.parse_args()
@@ -61,6 +62,13 @@ body.save(folder)
 with open(folder / 'design_params.yaml', 'w') as f:
     yaml.dump({'design': design}, f)
 
+if a.dump:
+    Path(a.dump).mkdir(parents=True, exist_ok=True)
+    _upd = gc_garment.Cloth.update
+    def _upd_dump(self, frame):
+        if frame % 4 == 0: np.save(Path(a.dump) / f'{frame:05d}.npy', np.asarray(self.current_verts, np.float32))
+        _upd(self, frame)
+    gc_garment.Cloth.update = _upd_dump
 if a.dry:
     print('PATTERN', folder); sys.exit(0)
 props = data_config.Properties(f'./assets/Sim_props/{a.sim}_sim_props.yaml')

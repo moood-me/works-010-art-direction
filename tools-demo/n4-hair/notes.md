@@ -78,3 +78,25 @@ object to a particle hair system with its own operator `curves.convert_to_partic
 
 Blender 4.5.15 LTS; HairDeck at commit of 2026-11-03 (shallow clone in `/home/user/cache/n4-hair/hairdeck`);
 torch 2.8.0+cpu; three 0.170.0; node 22.
+
+## Results and timings (this machine: 4 shared cores, 5–6 agents at once)
+
+- Static pictures: Cycles CPU, 440×520, 24 samples: about 1–2 minutes a view; 59–73 thousand strands per hairstyle.
+- Motion: the hair solver with the coarse collider ~0.2 s a frame without collisions, a few seconds with; the render
+  is the cost: 360×420, 6 samples, ~40 s a frame (Гвен: 6 s walk with "look" head turns, every 2nd frame → 15 fps;
+  Альва: 5 s standing with "snap" head turns, every 3rd frame → 10 fps). `ffmpeg -framerate 15 -pattern_type glob
+  -i '0*.png' -c:v libx264 -crf 24 -pix_fmt yuv420p mot-gwen.mp4`.
+- Seen in the motion: the hair sways softly, but on a head turn the fringe and side locks fall across the face — the
+  head can't be in the collider (the roots grow from it), only the pin spring holds them.
+- Look: real strands with a physical hair shader read as a realistic wig, not as the big drawn locks of the
+  references; Clump gives locks, but no clean stylised silhouette came out of these node groups here.
+- HairDeck on our clouds: 23 cards (Гвен), 30 (Альва), 371 s for both on 2 threads; crown left bare, a card over the
+  face; our heads are not its VRoid heads and the frame mapping is approximate.
+
+## Not used / dead ends
+
+- EEVEE: does not start headless here (no libEGL), so Cycles CPU only.
+- The first collider (whole body, then a decimated whole body) made the hair solver take 10–130 s a frame; the
+  collider below the chin fixed it.
+- Shrinkwrap Hair Curves with Above Surface 0.5 pulled the whole groom onto the skin (flat hair); 0 only pushes out
+  what went under the surface.

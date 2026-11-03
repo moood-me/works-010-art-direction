@@ -27,8 +27,17 @@ def load(path, scale, m):
     for p in o.data.polygons: p.use_smooth = True
     return o
 load(body, 1.0, mat('skin', skin, 0.5))
+UPPER = ('torso', 'sleeve', 'collar', 'cuff', 'turtle', 'lapel', 'hood', 'shirt')
 for k, (g, col) in enumerate(garments):
-    o = load(g, 0.01, mat(f'cloth{k}', col, 0.85, 0.4))
+    cols = col.split('/')
+    o = load(g, 0.01, mat(f'cloth{k}', cols[0], 0.85, 0.4))
+    if len(cols) > 1:   # a top and a bottom made as one garment: colour the bottom's panels (GarmentCode's labels) apart
+        lab = [l.strip().split(',') for l in open(g.replace('_sim_sim.obj', '_sim_sim_segmentation.txt'))]
+        up = [None if all(x.startswith('stitch') for x in L) else any(u in x for x in L for u in UPPER) for L in lab]
+        o.data.materials.append(mat(f'cloth{k}b', cols[1], 0.85, 0.4))
+        for p in o.data.polygons:
+            v = [up[i] for i in p.vertices if up[i] is not None]
+            p.material_index = 0 if v and sum(v) * 2 >= len(v) else 1
     sol = o.modifiers.new('thick', 'SOLIDIFY'); sol.thickness = 0.002; sol.offset = 1
 # floor and backdrop
 bpy.ops.mesh.primitive_plane_add(size=30); fl = bpy.context.object; fl.data.materials.append(mat('floor', 'b8ae9f', 0.9))
