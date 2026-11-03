@@ -15,8 +15,13 @@ cd = bpy.data.cameras.new('c'); cd.sensor_fit = 'VERTICAL'; cd.sensor_height = 3
 cam = bpy.data.objects.new('c', cd); sc.collection.objects.link(cam); sc.camera = cam
 for o in bpy.data.objects:  # widgets, helpers, cages, proxies the file itself keeps out of the picture
     if o.type == 'MESH' and any(k in o.name.lower() for k in ('wgt', 'widget', 'helper', 'cage', 'cs_', 'cornea', 'surfdef', 'deformer')): o.hide_render = True
+def unlink(o):
+    # out of the scene, not just hide_render: these rigs drive visibility with drivers that undo hide_render
+    cs = list(o.users_collection)
+    for c in cs: c.objects.unlink(o)
+    return cs
 for n in cfg.get('hide', []):
-    if n in bpy.data.objects: bpy.data.objects[n].hide_render = True
+    if n in bpy.data.objects: unlink(bpy.data.objects[n])
 rig = next((o for o in bpy.data.objects if o.type == 'ARMATURE' and o.name.startswith('RIG')), None)
 for b, t in cfg.get('pose', {}).items():
     pb = rig.pose.bones[b]
@@ -55,8 +60,8 @@ for v in cfg.get('views', []):
 for label, names in cfg.get('parts', []):
     keep = [bpy.data.objects[n] for n in names if n in bpy.data.objects]
     if not keep: print('MISSING', label); continue
-    was = {o: o.hide_render for o in bpy.data.objects}
-    for o in bpy.data.objects: o.hide_render = o not in keep  # everything else off, also instances and hair curves
     pb = bbox(keep); c = (pb[0] + pb[1]) / 2; s = pb[1] - pb[0]
-    shoot('part-' + label, c, max(s.z, s.x) * 1.15, 25, (500, 500))
-    for o, h in was.items(): o.hide_render = h
+    gone = {o: unlink(o) for o in list(sc.objects) if o not in keep and o.type not in ('ARMATURE', 'LATTICE', 'CAMERA', 'LIGHT') and o is not cam}
+    shoot('part-' + label, c, max(s.z, s.x, s.y) * 1.15, 25, (500, 500))
+    for o, cs in gone.items():
+        for col in cs: col.objects.link(o)

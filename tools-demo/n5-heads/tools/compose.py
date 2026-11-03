@@ -67,10 +67,10 @@ sheet('hbm-parts.webp', [[(pp('Head_-_Planar'), 'голова для лепки'
 Mo = lambda n: f'more/{n}.png'
 sheet('more-bodies.webp', [[(Mo('jay-body'), 'Jay'), (Mo('jay-bodytq'), ''), (Mo('phil-body'), 'Phil'), (Mo('phil-bodytq'), '')],
                            [(Mo('einar-body'), 'Einar'), (Mo('einar-bodytq'), ''), (Mo('phileas-body'), 'Phileas'), (Mo('phileas-bodytq'), '')]], cw=330)
-sheet('more-heads.webp', [[(Mo(f'{c}-{v}'), (nm if v == 'front' else '')) for v in ('front', 'tq', 'side')] for c, nm in [('jay', 'Jay (без шляпы и очков)'), ('phil', 'Phil'), ('einar', 'Einar')]], cw=360)
+sheet('more-heads.webp', [[(Mo(f'{c}-{v}'), (nm if v == 'front' else '')) for v in ('front', 'tq', 'side')] for c, nm in [('jay', 'Jay (без шляпы и очков)'), ('phil', 'Phil')]], cw=360)
 sheet('clothes-parts.webp', [[(Mo('rain-part-top'), 'Rain: майка'), (Mo('rain-part-jeans'), 'джинсы'), (Mo('rain-part-scarf'), 'платок'), (Mo('rain-part-shoes'), 'кеды'), (Mo('rain-part-hair'), 'волосы')],
                              [(Mo('snow-part-shirt'), 'Snow: футболка'), (Mo('snow-part-pants'), 'брюки'), (Mo('snow-part-shoes'), 'кеды'), (Mo('snow-part-hair'), 'волосы'), (Mo('rain-part-teeth'), 'Rain: зубы, дёсны, язык')],
                              [(Mo('jay-part-jacket'), 'Jay: куртка'), (Mo('jay-part-pants'), 'шорты'), (Mo('jay-part-shoes'), 'кроссовки'), (Mo('jay-part-hat'), 'панама'), (Mo('jay-part-shades'), 'очки')],
-                             [(Mo('einar-part-jacket'), 'Einar: куртка'), (Mo('einar-part-pants'), 'ремень'), (Mo('einar-part-boots'), 'ботинок'), (Mo('einar-part-hat'), 'шапка'), (Mo('phil-part-shirt'), 'Phil: рубашка')]], cw=300)
+                             [(Mo('einar-part-boots'), 'Einar: ботинок'), (Mo('einar-part-hat'), 'шапка'), (Mo('phil-part-shirt'), 'Phil: футболка'), (Mo('phil-part-pants'), 'шорты'), (Mo('jay-part-chain'), 'Jay: цепь')]], cw=300)
 X = lambda ch, e: f'expr2/m{ch}-front-{e}.png'
 sheet('expr-more.webp', [[(X(ch, e), (f'{ch.capitalize()}: ' if e == 'sad' else '') + l) for e, l in [('sad', 'грусть'), ('disgust', 'брезгливость'), ('puff', 'щёки надуты'), ('wink', 'подмигивание'), ('oo', '«у»')]] for ch in ('rain', 'snow')], cw=330)

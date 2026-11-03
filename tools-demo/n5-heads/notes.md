@@ -17,10 +17,14 @@ expressions are built). StdGEN (one picture → layered 3D character) was checke
 | Rain v3.3 (`rain_v3.2.blend`) | https://studio.blender.org/characters/rain/v3/ (free download, no subscription) | CC-BY 4.0 | Rain Rig (CC) Blender Foundation \| studio.blender.org |
 | Snow v4 (`snow_v4.2.blend`) | https://studio.blender.org/characters/snow/v4/ (free download) | CC-BY 4.0 | Snow Rig (CC) Blender Foundation \| studio.blender.org |
 | Human Base Meshes bundle v1.4.1 | https://www.blender.org/download/demo-files/ → Asset Bundles (mirror: `mirror.blender.org/demo/asset-bundles/human-base-meshes/human-base-meshes-bundle-v1.4.1.zip`) | CC0 | none required (Blender Foundation) |
+| Jay v1, Phil v1 (`.blend`, zstd) | https://studio.blender.org/characters/jay/v1/ , …/phil/v1/ (free download) | CC-BY 4.0 | Jay Rig / Phil Rig (CC-BY) Blender Foundation \| studio.blender.org |
+| Einar v1 (`einar_release_v1.blend`, 580 MB zip) | https://studio.blender.org/characters/einar/v1/ (free download) | CC-BY 4.0 | Einar Rig (CC-BY) Blender Foundation \| studio.blender.org |
+| Phileas v3 | https://studio.blender.org/characters/phileas/v3/ (free download) | CC-BY 4.0 | Phileas Rig (CC-BY) Blender Foundation \| studio.blender.org |
 | StdGEN teaser picture (`pics/stdgen-authors.webp`) | https://stdgen.github.io/static/images/teaser.png — the authors' own picture of their results, not run by us | code Apache-2.0; picture shown as a citation | He et al., StdGEN, CVPR 2025 |
 
-Other Blender Studio characters, checked by their pages: free download links on Huginn (a robot, not a person —
-not used), Einar, Autumn, Phil, Jay; Ellie and Mikassa offer no download without a subscription. Downloads and
+Other Blender Studio characters, checked by their pages: Huginn (a robot) and Autumn (a fox) download freely but are
+not people — not shown (Autumn's whole-body framing also came out wrong); Ellie and Mikassa offer no download
+without a subscription; Pip, Gabby, Lunte, Alpha, Elder Sprite have free links and were not tried. Downloads and
 unpacked files are in `/home/user/cache/n5-heads/` (not in the repository).
 
 ## How it was rendered
@@ -47,9 +51,20 @@ Blender 4.5.15 LTS, background mode, the `.blend` files as downloaded (scripts i
   `ffmpeg -framerate 24 -i f%04d.png -c:v libx264 -pix_fmt yuv420p -crf 26 face.mp4`.
 - `tools/render_hbm.py` — Human Base Meshes: each piece alone, smooth (subdivision / multires level), clay; wire on
   the base cage; `parts` mode renders the sheet of what the bundle holds.
+- `tools/render_any.py` — any character: whole body and head at three angles, and clothes/hair/teeth one piece at a
+  time (Workbench, the file's viewport colours). For pieces every other object is taken out of the scene: these
+  rigs drive `hide_render` with drivers, so hiding alone did not hold. Einar's eyes do not show in Workbench (his
+  head row was left out of the page); Einar's first run was killed by the machine's memory limit after the 3/4 view.
+- `tools/run_more.py`, `run_parts.py`, `run_parts2.sh`, `run_parts3.sh`, `run_phil.sh` — those batches (Phil's file
+  is set to write a movie, so the renderer forces PNG); `tools/run_expr2.sh` — five more expressions (sad, disgust,
+  puffed cheeks, wink, «oo») in Workbench; `tools/after.sh` runs batches one after another.
 - `tools/compose.py` — lays the renders out into the page's webp sheets with Russian labels.
 - `tools/grid.py`, `tools/inspect*.py`, `tools/probe_head.py` — quick contact sheets and probes of the files
   (objects, shape keys, drivers, bone collections, action-constraint ranges) used to find the controls.
+
+Rain's lip-corner in/out channel is not mirrored like the others; «oo» uses the narrow (Z) channel instead.
+Some batches were killed by other processes running the machine out of memory and were run again
+(`run_eevee2.sh`, `run_eevee3.sh`).
 
 Repeat: download and unzip into `/home/user/cache/n5-heads/{rain,snow,hbm}`, then run the three `run_*.sh`,
 `render_hbm.py` (both modes), `face_anim.py` for each character, ffmpeg, `compose.py`.

@@ -35,10 +35,14 @@ animated('shirt', cloth[:F], d['cloth_faces'], mat((0.25, 0.45, 0.6), 0.85))
 floor_z = body[:F, :, 2].min()
 bpy.ops.mesh.primitive_plane_add(size=30, location=(0, 0, floor_z)); bpy.context.object.data.materials.append(mat((0.62, 0.58, 0.53), 1))
 bpy.ops.object.light_add(type='SUN', rotation=(math.radians(50), math.radians(10), math.radians(-35))); bpy.context.object.data.energy = 3.5
-c0 = body[:F].mean((0, 1))
-bpy.ops.object.camera_add(location=(c0[0] + 2.2, c0[1] - 3.2, c0[2] + 0.5)); cam = bpy.context.object; sc.camera = cam
-look = bpy.data.objects.new('look', None); look.location = (c0[0], c0[1], c0[2]); sc.collection.objects.link(look)
+# the camera follows the body (its centre, smoothed), from the front-right
+bpy.ops.object.camera_add(); cam = bpy.context.object; sc.camera = cam
+look = bpy.data.objects.new('look', None); sc.collection.objects.link(look)
 t = cam.constraints.new('TRACK_TO'); t.target = look; t.track_axis = 'TRACK_NEGATIVE_Z'; t.up_axis = 'UP_Y'
+c = body[:F].mean(1); k = np.ones(15) / 15; c = np.stack([np.convolve(np.pad(c[:, i], 7, mode='edge'), k, 'valid') for i in range(3)], 1)
+for f in range(F):
+    look.location = c[f]; look.keyframe_insert('location', frame=f)
+    cam.location = c[f] + np.array([2.0, -2.8, 0.4]); cam.keyframe_insert('location', frame=f)
 sc.render.filepath = os.path.join(out, '')
 sc.frame_end = int(os.environ.get('LAST', F - 1))
 bpy.ops.render.render(animation=True)

@@ -55,8 +55,9 @@ with torch.no_grad():
 secs = time.time() - t0
 pred = np.asarray(traj['pred'], np.float32)
 print('pred', pred.shape, 'seconds', round(secs, 1))
-# HOOD predicts from the second frame on; the first is the garment as given
-if pred.shape[0] == F - 1: pred = np.concatenate([rest[None], pred], 0)
+# step i predicts the cloth for the body's next frame (its 'pred_pos' goes with the obstacle's 'target_pos'): so the
+# garment as given is frame 0 and step i is frame i + 1
+pred = np.concatenate([rest[None], pred[:F - 1]], 0)
 pred.tofile(os.path.join(run, f'hood-{gname}.f32'))
 json.dump({'seconds': secs, 'frames': int(pred.shape[0]), 'material': {k: float(mat[k]) for k in ['density_override', 'bending_coeff_override', 'lame_mu_override', 'lame_lambda_override']}},
           open(os.path.join(run, f'hood-{gname}.json'), 'w'), indent=1)
