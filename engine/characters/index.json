@@ -1,0 +1,76 @@
+{
+ "format": "engine/characters",
+ "version": 1,
+ "characters": [
+  {
+   "id": "woman",
+   "label": {
+    "ru": "Женщина",
+    "en": "Woman"
+   }
+  },
+  {
+   "id": "man",
+   "label": {
+    "ru": "Мужчина",
+    "en": "Man"
+   }
+  },
+  {
+   "id": "child",
+   "label": {
+    "ru": "Ребёнок",
+    "en": "Child"
+   }
+  },
+  {
+   "id": "girl",
+   "label": {
+    "ru": "Девочка",
+    "en": "Girl"
+   }
+  },
+  {
+   "id": "boy",
+   "label": {
+    "ru": "Подросток",
+    "en": "Teenage boy"
+   }
+  },
+  {
+   "id": "oldwoman",
+   "label": {
+    "ru": "Старушка",
+    "en": "Old woman"
+   }
+  },
+  {
+   "id": "oldman",
+   "label": {
+    "ru": "Старик",
+    "en": "Old man"
+   }
+  },
+  {
+   "id": "princess-toddler-head",
+   "label": {
+    "ru": "Т8: принцесса + голова малыша",
+    "en": "T8: princess with a toddler's head"
+   }
+  },
+  {
+   "id": "hero",
+   "label": {
+    "ru": "Т8: герой",
+    "en": "T8: hero"
+   }
+  },
+  {
+   "id": "elf",
+   "label": {
+    "ru": "Т8: эльф",
+    "en": "T8: elf"
+   }
+  }
+ ]
+}

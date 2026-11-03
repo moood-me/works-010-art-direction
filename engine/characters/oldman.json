@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 1,
+ "id": "oldman",
+ "label": {
+  "ru": "Старик",
+  "en": "Old man"
+ },
+ "body": "moood-oldman",
+ "skinning": {
+  "method": "cor",
+  "clavicleShare": 0,
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest",
+  "corrections": {}
+ },
+ "look": {
+  "skin": "#cf9f84",
+  "roughness": 0.65
+ }
+}

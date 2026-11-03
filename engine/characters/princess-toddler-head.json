@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 1,
+ "id": "princess-toddler-head",
+ "label": {
+  "ru": "Т8: принцесса + голова малыша",
+  "en": "T8: princess with a toddler's head"
+ },
+ "body": "anny-T-princ-tod125",
+ "skinning": {
+  "method": "cor",
+  "clavicleShare": 0,
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest",
+  "corrections": {}
+ },
+ "look": {
+  "skin": "#e6b99d",
+  "roughness": 0.65
+ }
+}

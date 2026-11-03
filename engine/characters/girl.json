@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 1,
+ "id": "girl",
+ "label": {
+  "ru": "Девочка",
+  "en": "Girl"
+ },
+ "body": "moood-girl",
+ "skinning": {
+  "method": "cor",
+  "clavicleShare": 0,
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest",
+  "corrections": {}
+ },
+ "look": {
+  "skin": "#efc2a3",
+  "roughness": 0.65
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 1,
+ "id": "man",
+ "label": {
+  "ru": "Мужчина",
+  "en": "Man"
+ },
+ "body": "moood-man",
+ "skinning": {
+  "method": "cor",
+  "clavicleShare": 0,
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest",
+  "corrections": {}
+ },
+ "look": {
+  "skin": "#d8a585",
+  "roughness": 0.65
+ }
+}
