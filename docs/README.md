@@ -1,6 +1,7 @@
 # Docs
 
 1. [problem.md](problem.md) — what is wrong with how moood games look now, concretely, and what we want instead.
+0. [requirements.md](requirements.md) — what Pavel said matters, gathered; add to it, never drop.
 2. [scenes.md](scenes.md) — why the hope scenes pull you in, and how a scene could be made beautiful, mid-shots
    included.
 3. [people.md](people.md) — bodies, simplification, style and motion: what we thought, tried and learned.
