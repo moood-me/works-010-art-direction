@@ -8,6 +8,7 @@ BG = (235, 234, 230)
 
 def sheet(name, rows, cw=420, ch=None):
     """rows: list of rows; each row a list of (path, label) or None."""
+    rows = [[(c if c and c[0] and os.path.exists(os.path.join(R, c[0])) else ((print('MISSING', c[0]) if c and c[0] else None) or (None, None))) for c in row] for row in rows]
     ims = [[(Image.open(os.path.join(R, p)).convert('RGB'), l) if p else None for p, l in row] for row in rows]
     W = max(len(r) for r in rows) * cw
     def cell_h(row):
@@ -45,13 +46,13 @@ sheet('expr-clay-close.webp', [[(C(ch, 'mouth', e), f'{ch.capitalize()}: {l}') f
 # eye and mouth close-ups
 sheet('eye-close.webp', [[(E('rain', 'eyeL'), 'Rain: глаз'), (C('rain', 'eyeL'), 'глина'), (Wr('rain', 'eyeL'), 'сетка'), (Wr('rain', 'eyeL', 'blink'), 'сетка, веко закрыто')],
                          [(E('snow', 'eyeL'), 'Snow: глаз'), (C('snow', 'eyeL'), 'глина'), (Wr('snow', 'eyeL'), 'сетка'), (Wr('snow', 'eyeL', 'smile'), 'сетка, улыбка')],
-                         [(H('sthead-eye-wire'), 'Base Meshes: глаз, сетка'), None, None, None]], cw=380)
+                         [(H('sthead-eye-wire'), 'Base Meshes: глаз, сетка'), (None, None), (None, None), (None, None)]], cw=380)
 sheet('mouth-close.webp', [[(E('rain', 'mouth'), 'Rain: рот'), (C('rain', 'mouth'), 'глина'), (Wr('rain', 'mouth'), 'сетка'), (Wr('rain', 'mouth', 'smile'), 'сетка, улыбка')],
                            [(E('snow', 'mouth'), 'Snow: рот'), (C('snow', 'mouth'), 'глина'), (Wr('snow', 'mouth'), 'сетка'), (Wr('snow', 'mouth', 'smile'), 'сетка, улыбка')],
-                           [(H('sthead-mouth-wire'), 'Base Meshes: рот, сетка'), None, None, None]], cw=380)
+                           [(H('sthead-mouth-wire'), 'Base Meshes: рот, сетка'), (None, None), (None, None), (None, None)]], cw=380)
 # topology of whole heads
 sheet('topology.webp', [[(Wr('rain', 'front'), 'Rain'), (Wr('rain', 'side'), 'Rain, профиль'), (Wr('snow', 'front'), 'Snow'), (Wr('snow', 'side'), 'Snow, профиль')],
-                        [(H('sthead-wire'), 'Base Meshes, стилиз.'), (H('anim-wire'), 'Base Meshes, реалист. для анимации'), (H('anim-front'), 'она же, гладкая'), None]], cw=400)
+                        [(H('sthead-wire'), 'Base Meshes, стилиз.'), (H('anim-wire'), 'Base Meshes, реалист. для анимации'), (H('anim-front'), 'она же, гладкая'), (None, None)]], cw=400)
 # bodies
 sheet('bodies.webp', [[(E('rain', 'bodyfront'), 'Rain'), (E('rain', 'body'), ''), (E('rain', 'bodyside'), ''), (E('snow', 'bodyfront'), 'Snow'), (E('snow', 'body'), ''), (E('snow', 'bodyside'), '')]], cw=300)
 sheet('bodies-hbm.webp', [[(H('body-f-front'), 'Base Meshes: женщина'), (H('body-f-tq'), ''), (H('body-f-side'), ''), (H('body-m-front'), 'мужчина'), (H('body-m-tq'), ''), (H('body-m-side'), '')]], cw=300)
@@ -60,3 +61,15 @@ pp = lambda n: f'parts/part-{n}.png'
 sheet('hbm-parts.webp', [[(pp('Head_-_Planar'), 'голова для лепки'), (pp('Head_-_Generic_Topology'), 'простая сетка головы'), (pp('Head_-_Primitives'), 'голова из простых объёмов')],
                          [(pp('Body_Female_-_Primitive_Stylized'), 'тело из простых частей'), (pp('Hand_-_Stylized'), 'кисть'), (pp('Foot_-_Stylized'), 'стопа')],
                          [(pp('Eye_-_Stylized'), 'глаз'), (pp('Jaw_-_Stylized'), 'зубы и дёсны'), (pp('Skull_-_Realistic'), 'череп')]], cw=360)
+
+# more characters, their clothes as separate pieces, more expressions
+Mo = lambda n: f'more/{n}.png'
+sheet('more-bodies.webp', [[(Mo('jay-body'), 'Jay'), (Mo('jay-bodytq'), ''), (Mo('phil-body'), 'Phil'), (Mo('phil-bodytq'), '')],
+                           [(Mo('einar-body'), 'Einar'), (Mo('einar-bodytq'), ''), (Mo('phileas-body'), 'Phileas'), (Mo('autumn-body'), 'Autumn (лиса)')]], cw=330)
+sheet('more-heads.webp', [[(Mo(f'{c}-{v}'), (nm if v == 'front' else '')) for v in ('front', 'tq', 'side')] for c, nm in [('jay', 'Jay (без шляпы и очков)'), ('phil', 'Phil'), ('einar', 'Einar')]], cw=360)
+sheet('clothes-parts.webp', [[(Mo('rain-part-top'), 'Rain: майка'), (Mo('rain-part-jeans'), 'джинсы'), (Mo('rain-part-scarf'), 'платок'), (Mo('rain-part-shoes'), 'кеды'), (Mo('rain-part-hair'), 'волосы')],
+                             [(Mo('snow-part-shirt'), 'Snow: футболка'), (Mo('snow-part-pants'), 'брюки'), (Mo('snow-part-shoes'), 'кеды'), (Mo('snow-part-hair'), 'волосы'), (Mo('rain-part-teeth'), 'Rain: зубы, дёсны, язык')],
+                             [(Mo('jay-part-jacket'), 'Jay: куртка'), (Mo('jay-part-pants'), 'шорты'), (Mo('jay-part-shoes'), 'кроссовки'), (Mo('jay-part-hat'), 'панама'), (Mo('jay-part-shades'), 'очки')],
+                             [(Mo('einar-part-jacket'), 'Einar: куртка'), (Mo('einar-part-pants'), 'ремень'), (Mo('einar-part-boots'), 'ботинок'), (Mo('einar-part-hat'), 'шапка'), (Mo('phil-part-shirt'), 'Phil: рубашка')]], cw=300)
+X = lambda ch, e: f'expr2/m{ch}-front-{e}.png'
+sheet('expr-more.webp', [[(X(ch, e), (f'{ch.capitalize()}: ' if e == 'sad' else '') + l) for e, l in [('sad', 'грусть'), ('disgust', 'брезгливость'), ('puff', 'щёки надуты'), ('wink', 'подмигивание'), ('oo', '«у»')]] for ch in ('rain', 'snow')], cw=330)
