@@ -1,34 +1,117 @@
-// A character: data that refers to presets and parameters (characters/<id>.json) — which body, how it is skinned, how
-// a motion is carried onto it, how it looks. Versioned: a description says which version of this format it was
-// written for, and each version keeps its own defaults, so a later engine that changes a default (or adds a step)
-// leaves the characters written before it as they were. A new version adds DEFAULTS[n] and a step in `upgrade`.
+// A character: plain data (characters/<id>.json) that names a body and says how it is changed, skinned, moved and
+// looked at. Checked against its schema: an unknown key or value is refused, not ignored. The body is pinned by its
+// content hash (`moood-woman@3f2a…`): if the body's data changes, the character is refused until someone looks at the
+// difference and pins it anew (tools/characters.mjs pin). The format has a version; when it changes, `upgrade` turns a
+// description of an earlier version into the current one (tools/characters.mjs upgrade). Whether an engine change
+// alters a character is what the checks see (check/numbers.mjs, check/pictures.mjs).
 //
-//   {format: "engine/character", version: 1, id, label: {ru, en},
-//    body: "<body preset id>"  (data/bodies/<id>.json),
-//    skinning: {method: "cor" | "dqs" | "lbs", clavicleShare: 0…1, seam: null | {iterations, rings}},
-//    motion: {floor: "lowest" | "pelvis", corrections: {<name>: {…}}  (src/corrections.js)},
+//   {format: "engine/character", version: 2, id, label: {ru, en},
+//    body: "<body id>@<hash>",
+//    rest: [change…]     changes of the body's rest, in order (src/changes.js):
+//                        {kind: "turn", joint, axis: [x, y, z] (in the joint's own frame), degrees, frames: "keep" | "turn"}
+//                        {kind: "morph", name, weight}
+//    pose: [layer…]      pose layers on every frame, in order (src/layers.js): {kind: "armsOff", degrees?},
+//                        {kind: "armsOutOfHead", margin?}, {kind: "amplifyLimbs", factor?, parts?},
+//                        {kind: "dampHeadSpine", spine?, head?}, {kind: "clavicleShare", share?},
+//                        {kind: "turn", joint, axis, degrees}, {kind: "morph", name, weight}
+//    skinning: {method: "cor" | "dqs" | "lbs", sigma (the centres' likeness, cor), seam: null | {iterations, rings}},
+//    motion: {floor: "lowest" | "pelvis"},
 //    look: {skin: "#rrggbb", roughness}}
-// motion.floor: "lowest" — the body's lowest point as high as SOMA's skin's lowest then (scaled): standing on its
-// feet, lying on its back, nothing goes into the floor; "pelvis" — only the pelvis's height scaled, nothing more.
+// motion.floor: "lowest" — after everything is drawn, the figure's lowest point as high as SOMA's skin's lowest then
+// (scaled): standing on its feet, lying on its back, nothing in the floor; "pelvis" — only the pelvis's height scaled.
+import { validate } from './schema.js';
+import { pinned } from './hash.js';
 
+export const FORMAT = 'engine/character', VERSION = 2;
+
+const PARTS = ['pelvis', 'spine', 'neck', 'head', 'eye', 'clavicle', 'upperArm', 'foreArm', 'hand', 'finger', 'thigh', 'shin', 'foot', 'toe'];
+// the defaults, the one place they are kept: a missing key takes these
 export const DEFAULTS = {
-  1: {
-    skinning: { method: 'cor', clavicleShare: 0, seam: null },
-    motion: { floor: 'lowest', corrections: {} },
-    look: { skin: '#d9b49a', roughness: 0.65 },
+  skinning: { method: 'cor', sigma: 0.1, seam: null },
+  seam: { iterations: 10, rings: 3 },
+  motion: { floor: 'lowest' },
+  look: { skin: '#d9b49a', roughness: 0.65 },
+  layers: {
+    armsOff: { degrees: 7 }, armsOutOfHead: { margin: 0.02 }, amplifyLimbs: { factor: 1.3, parts: ['upperArm', 'foreArm', 'thigh', 'shin'] },
+    dampHeadSpine: { spine: 0.7, head: 0.7 }, clavicleShare: { share: 1 / 3 },
   },
 };
-export const LATEST = 1;
 
-export function resolve(desc) {
-  if (desc.format !== 'engine/character') throw new Error(`${desc.id ?? '?'}: not a character`);
-  const D = DEFAULTS[desc.version];
-  if (!D) throw new Error(`${desc.id}: character version ${desc.version} is not known to this engine (it knows ${Object.keys(DEFAULTS).join(', ')})`);
-  if (typeof desc.body !== 'string') throw new Error(`${desc.id}: body must name a body preset`);
+const num = (min, max) => ({ type: 'number', min, max });
+const axis = { type: 'array', items: num(-1, 1), min: 3, max: 3 };
+export function schemaOf(skeleton) {
+  const joint = { type: 'string', enum: skeleton.names };
+  const turn = { type: 'object', props: { kind: { const: 'turn' }, joint, axis, degrees: num(-180, 180) }, required: ['kind', 'joint', 'axis', 'degrees'] };
+  const morph = { type: 'object', props: { kind: { const: 'morph' }, name: { type: 'string', pattern: /^[A-Za-z][A-Za-z0-9]*$/ }, weight: num(-2, 2) }, required: ['kind', 'name', 'weight'] };
+  const layer = (kind, props) => ({ type: 'object', props: { kind: { const: kind }, ...props }, required: ['kind'] });
   return {
-    id: desc.id, label: desc.label, version: desc.version, body: desc.body,
-    skinning: { ...D.skinning, ...(desc.skinning || {}) },
-    motion: { ...D.motion, ...(desc.motion || {}), corrections: { ...D.motion.corrections, ...(desc.motion?.corrections || {}) } },
-    look: { ...D.look, ...(desc.look || {}) },
+    type: 'object', required: ['format', 'version', 'id', 'label', 'body'],
+    props: {
+      format: { const: FORMAT }, version: { const: VERSION },
+      id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*$/ },
+      label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
+      body: { type: 'string', pattern: /^[A-Za-z0-9_.-]+@[0-9a-f]{12,64}$/ },
+      rest: { type: 'array', items: { type: 'union', key: 'kind', cases: {
+        turn: { ...turn, props: { ...turn.props, frames: { type: 'string', enum: ['keep', 'turn'] } }, required: [...turn.required, 'frames'] },
+        morph } } },
+      pose: { type: 'array', items: { type: 'union', key: 'kind', cases: {
+        armsOff: layer('armsOff', { degrees: num(-45, 45) }),
+        armsOutOfHead: layer('armsOutOfHead', { margin: num(0, 0.2) }),
+        amplifyLimbs: layer('amplifyLimbs', { factor: num(0, 3), parts: { type: 'array', items: { type: 'string', enum: PARTS }, min: 1 } }),
+        dampHeadSpine: layer('dampHeadSpine', { spine: num(0, 2), head: num(0, 2) }),
+        clavicleShare: layer('clavicleShare', { share: num(0, 1) }),
+        turn, morph } } },
+      skinning: { type: 'object', props: {
+        method: { type: 'string', enum: ['cor', 'dqs', 'lbs'] }, sigma: num(0.01, 1),
+        seam: { anyOf: [{ type: 'null' }, { type: 'object', props: { iterations: { type: 'integer', min: 1, max: 200 }, rings: { type: 'integer', min: 0, max: 20 } } }] } } },
+      motion: { type: 'object', props: { floor: { type: 'string', enum: ['lowest', 'pelvis'] } } },
+      look: { type: 'object', props: { skin: { type: 'string', pattern: /^#[0-9a-f]{6}$/i }, roughness: num(0, 1) } },
+    },
   };
+}
+
+// a description checked and completed by the defaults: what the engine builds a figure from
+export function resolve(desc, skeleton) {
+  if (desc?.format !== FORMAT) throw new Error(`${desc?.id ?? '?'}: not a character`);
+  if (desc.version !== VERSION) {
+    if (desc.version < VERSION) throw new Error(`${desc.id}: a character of version ${desc.version} — upgrade it to ${VERSION} (node engine/tools/characters.mjs upgrade ${desc.id})`);
+    throw new Error(`${desc.id}: character version ${desc.version} is newer than this engine knows (${VERSION})`);
+  }
+  validate(desc, schemaOf(skeleton), desc.id);
+  const sk = { ...DEFAULTS.skinning, ...(desc.skinning || {}) };
+  if (sk.seam) sk.seam = { ...DEFAULTS.seam, ...sk.seam };
+  return {
+    id: desc.id, label: desc.label, version: desc.version, body: desc.body, bodyId: pinned(desc.body).id,
+    rest: (desc.rest || []).map(c => ({ ...c })),
+    pose: (desc.pose || []).map(l => ({ ...(DEFAULTS.layers[l.kind] || {}), ...l })),
+    skinning: sk,
+    motion: { ...DEFAULTS.motion, ...(desc.motion || {}) },
+    look: { ...DEFAULTS.look, ...(desc.look || {}) },
+  };
+}
+
+// a description of an earlier version as the current one. bodyPin: the body's id@hash now (version 1 named a body by
+// id alone; upgrading pins the body as it is — look at the character after upgrading).
+export function upgrade(desc, { bodyPin }) {
+  let d = structuredClone(desc);
+  if (d.format !== FORMAT) throw new Error(`${d.id ?? '?'}: not a character`);
+  if (d.version === 1) {
+    // version 1: {body: id, skinning: {method, clavicleShare, seam}, motion: {floor, corrections: {name: params}}, look}
+    // → 2: the body pinned; the collarbone's share and the corrections are pose layers, in the order they were applied
+    // (corrections first, in their order, then the collarbone's share)
+    if (pinned(bodyPin).id !== d.body) throw new Error(`${d.id}: upgrading names body ${d.body}, not ${bodyPin}`);
+    const pose = [];
+    for (const [kind, prm] of Object.entries(d.motion?.corrections || {})) {
+      if (prm && prm.on === false) continue;
+      pose.push({ kind, ...Object.fromEntries(Object.entries(prm || {}).filter(([k]) => k !== 'on')) });
+    }
+    const share = d.skinning?.clavicleShare ?? 0;
+    if (share > 0) pose.push({ kind: 'clavicleShare', share });
+    const skinning = { ...(d.skinning || {}) }; delete skinning.clavicleShare;
+    const motion = { ...(d.motion || {}) }; delete motion.corrections;
+    d = { format: FORMAT, version: 2, id: d.id, label: d.label, body: bodyPin, rest: [], pose, skinning, motion, look: d.look };
+    for (const k of ['skinning', 'motion', 'look']) if (d[k] === undefined) delete d[k];
+  }
+  if (d.version !== VERSION) throw new Error(`${d.id}: no way from version ${d.version} to ${VERSION}`);
+  return d;
 }

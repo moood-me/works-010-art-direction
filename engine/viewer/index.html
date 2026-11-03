@@ -14,6 +14,7 @@
   #vpPanel .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   #vpPanel .lab { color: var(--muted); font-size: 12px; min-width: 64px; }
   #vpPanel select, #vpPanel button { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 3px 8px; color: var(--ink); cursor: pointer; }
+  #vpPanel button:disabled { opacity: .4; cursor: default; }
   #vpPanel button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
   #vpPanel .mv { display: flex; flex-wrap: wrap; gap: 4px; }
   #vpPanel input[type=range] { flex: 1; min-width: 120px; }
@@ -22,7 +23,7 @@
   #msg { position: fixed; inset: 0; display: grid; place-items: center; font: italic 20px Georgia, serif; color: #4a4640; pointer-events: none; z-index: 3; }
   @media (max-width: 520px) { #vpPanel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 45vh; } }
 </style>
-<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <canvas id="cv"></canvas>

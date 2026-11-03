@@ -1,20 +1,20 @@
 {
  "format": "engine/character",
- "version": 1,
+ "version": 2,
  "id": "oldman",
  "label": {
   "ru": "Старик",
   "en": "Old man"
  },
- "body": "moood-oldman",
+ "body": "moood-oldman@4cc8baf71d85269e",
+ "rest": [],
+ "pose": [],
  "skinning": {
   "method": "cor",
-  "clavicleShare": 0,
   "seam": null
  },
  "motion": {
-  "floor": "lowest",
-  "corrections": {}
+  "floor": "lowest"
  },
  "look": {
   "skin": "#cf9f84",

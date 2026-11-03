@@ -1,0 +1,408 @@
+{
+ "about": "The checks' moments (check/numbers.mjs: skinned positions; check/pictures.mjs: pictures). `each`: every character preset in these; `cases`: one character in moments that exercise an option. A case: {name, char, clip (a motion id, a chain id, or null: at rest), t (frames), over? (keys of the character's description replaced: still checked against its schema), place?, view (front | side | back | three | top: from where the figure faces then), picture (also a picture), w, h (its size; 400 × 400)}. The stored numbers keep the hashes of the bodies, motions and descriptions they were made from: a difference names what changed under them.",
+ "each": [
+  {
+   "name": "rest",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "picture": true
+  },
+  {
+   "name": "walk30",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "picture": true
+  },
+  {
+   "name": "run20",
+   "clip": "run",
+   "t": 20,
+   "view": "three"
+  },
+  {
+   "name": "sit100",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "lie170",
+   "clip": "lie",
+   "t": 170,
+   "view": "three",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "chain186",
+   "clip": "lie-rollover",
+   "t": 186,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  }
+ ],
+ "cases": [
+  {
+   "name": "dqs-sit100",
+   "char": "man",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "skinning": {
+     "method": "dqs"
+    }
+   },
+   "picture": true
+  },
+  {
+   "name": "lbs-sit100",
+   "char": "man",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "skinning": {
+     "method": "lbs"
+    }
+   },
+   "picture": true
+  },
+  {
+   "name": "dqs-wave40",
+   "char": "woman",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "dqs"
+    }
+   }
+  },
+  {
+   "name": "lbs-wave40",
+   "char": "woman",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "lbs"
+    }
+   }
+  },
+  {
+   "name": "sigma-wave40",
+   "char": "woman",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "cor",
+     "sigma": 0.2
+    }
+   }
+  },
+  {
+   "name": "clavicle-idle60",
+   "char": "woman",
+   "clip": "idle",
+   "t": 60,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "clavicleShare"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "seam-idle60",
+   "char": "woman",
+   "clip": "idle",
+   "t": 60,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "cor",
+     "seam": {}
+    }
+   },
+   "picture": true
+  },
+  {
+   "name": "armsOff-walk30",
+   "char": "oldwoman",
+   "clip": "walk",
+   "t": 30,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "armsOff",
+      "degrees": 10
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "armsOutOfHead-jump45",
+   "char": "princess-toddler-head",
+   "clip": "jump",
+   "t": 45,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "armsOutOfHead"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "amplify-dance50",
+   "char": "hero",
+   "clip": "dance",
+   "t": 50,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "amplifyLimbs",
+      "factor": 1.4
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "damp-bow45",
+   "char": "elf",
+   "clip": "bow",
+   "t": 45,
+   "view": "side",
+   "over": {
+    "pose": [
+     {
+      "kind": "dampHeadSpine"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "turnPose-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "pose": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12
+     }
+    ]
+   }
+  },
+  {
+   "name": "turnRestKeep-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "turnRestTurn-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12,
+      "frames": "turn"
+     }
+    ]
+   }
+  },
+  {
+   "name": "turnRestTurn-rest",
+   "char": "woman",
+   "clip": null,
+   "t": 0,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12,
+      "frames": "turn"
+     }
+    ]
+   }
+  },
+  {
+   "name": "morphRest-rest",
+   "char": "girl",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "over": {
+    "rest": [
+     {
+      "kind": "morph",
+      "name": "plainFace",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "morphPose-wave40",
+   "char": "girl",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "morph",
+      "name": "plainFace",
+      "weight": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "name": "pelvisFloor-sit100",
+   "char": "child",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "motion": {
+     "floor": "pelvis"
+    }
+   }
+  },
+  {
+   "name": "placed-walk60",
+   "char": "boy",
+   "clip": "walk",
+   "t": 60.5,
+   "view": "three",
+   "place": {
+    "position": [
+     1.5,
+     0.3,
+     -2
+    ],
+    "heading": 2.0
+   },
+   "picture": true
+  },
+  {
+   "name": "join178",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 178,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join180",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 180,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join182",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 182,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join186",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 186,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join195",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 195,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "rollover-prone",
+   "char": "man",
+   "clip": "lie-rollover",
+   "t": 240,
+   "view": "top",
+   "picture": true
+  }
+ ]
+}

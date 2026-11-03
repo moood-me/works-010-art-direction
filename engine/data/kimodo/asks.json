@@ -1,0 +1,326 @@
+{
+ "f555a59113ec14d816ef7a510d607a3a432bae37e85c0d6ac7c61d43afbebc46": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person walks forward at a relaxed pace."
+   ],
+   "seconds": [
+    4
+   ]
+  },
+  "made": "2026-10-31T12:48:38.090Z",
+  "startsAt": null
+ },
+ "533445e36c78dbf85cd24a8ec44d456711b85edfe75f3da82fd4cdc7492f89bb": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person runs forward."
+   ],
+   "seconds": [
+    3
+   ]
+  },
+  "made": "2026-10-31T13:02:16.027Z",
+  "startsAt": null
+ },
+ "1ece5113cb09f2b676f74614ad57105f8676d35e60698edc69740f2b9a1e8d76": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person sneaks forward on tiptoes, crouching."
+   ],
+   "seconds": [
+    4
+   ]
+  },
+  "made": "2026-10-31T13:04:47.776Z",
+  "startsAt": null
+ },
+ "87e6b449537b34333a719f053b90b21541bb2d311526c31c19733344c1e489b6": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person stands and waves hello with the right hand."
+   ],
+   "seconds": [
+    3
+   ]
+  },
+  "made": "2026-10-31T12:48:44.609Z",
+  "startsAt": null
+ },
+ "933719dbf16fec4fe78cff528c1aebcd3fc9aea077efb7d51c793d77c4e463b2": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person jumps up happily with both arms raised."
+   ],
+   "seconds": [
+    3
+   ]
+  },
+  "made": "2026-10-31T12:48:51.178Z",
+  "startsAt": null
+ },
+ "a68bef2fc712d04c5040122e43eff4a3ac932e1857ed6d7ca9b1acbd55e98fb3": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person dances cheerfully, swinging the arms."
+   ],
+   "seconds": [
+    4
+   ]
+  },
+  "made": "2026-10-31T13:04:20.180Z",
+  "startsAt": null
+ },
+ "cb04b420e335a2490a6b411abc43893ecfcef5ed2cfc06cee780daca17c6e452": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person bows politely."
+   ],
+   "seconds": [
+    3
+   ]
+  },
+  "made": "2026-10-31T13:04:34.688Z",
+  "startsAt": null
+ },
+ "cb0b726fa68337afddf42a3efee74d3c2fd8d0315eaf4fa663ede65138b10b6f": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person stomps angrily and shakes a fist."
+   ],
+   "seconds": [
+    3
+   ]
+  },
+  "made": "2026-10-31T13:05:24.722Z",
+  "startsAt": null
+ },
+ "b4718c096c53ea996d04d339aba6ebe034fe5812abb17f0ce1a5c1e70b7ee96b": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person stands idle, breathing, shifting weight and looking around."
+   ],
+   "seconds": [
+    5
+   ]
+  },
+  "made": "2026-10-31T13:04:00.320Z",
+  "startsAt": null
+ },
+ "91761c43090091a6fc2ed99b7575634df75483aedba60661f6c569b6f2902a8c": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person sits down on the ground and hugs their knees."
+   ],
+   "seconds": [
+    4
+   ]
+  },
+  "made": "2026-10-31T12:48:57.781Z",
+  "startsAt": null
+ },
+ "b148f30e2429a100ae27c91f4ad13e88ae4262cb91ca10f6dcd9ac5538f3addc": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person stands still.",
+    "A person kneels down and then lies down on the floor on their back."
+   ],
+   "seconds": [
+    1,
+    5
+   ]
+  },
+  "made": "2026-10-31T16:28:56.856Z",
+  "startsAt": null
+ },
+ "ae9eed0ac02db47acfc1a8ff4f0d4b78063513319d80843e65021ac975506cad": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person lies down on the floor on their back."
+   ],
+   "seconds": [
+    5
+   ]
+  },
+  "made": "2026-10-31T16:19:48.577Z",
+  "startsAt": null
+ },
+ "f9ede70a3b8952f970768c226b27b2720f5b616dd15c890748df229ff4edb38d": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person does a forward roll on the floor."
+   ],
+   "seconds": [
+    4
+   ]
+  },
+  "made": "2026-10-31T16:19:55.232Z",
+  "startsAt": null
+ },
+ "4de88a6dab600de0e6bae971c00f0c6bec9be0c256a2e4d3fc5b679db3f47b6a": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "prompts": [
+    "A person lies on the ground and rolls over sideways."
+   ],
+   "seconds": [
+    5
+   ]
+  },
+  "made": "2026-10-31T16:20:01.971Z",
+  "startsAt": null
+ },
+ "7a4c19b1e67d148d50b144da72ae4a1dfbfd1934bf70e567d1194195003f43db": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "after": {
+    "key": "b148f30e2429a100ae27c91f4ad13e88ae4262cb91ca10f6dcd9ac5538f3addc",
+    "frames": 5
+   },
+   "prompts": [
+    "A person lying on their back on the floor rolls over sideways onto their stomach, and keeps rolling onto their back again."
+   ],
+   "seconds": [
+    5
+   ]
+  },
+  "made": "2026-10-31T16:41:27.479Z",
+  "startsAt": {
+   "x": -0.1022,
+   "z": -0.6537
+  }
+ }
+}

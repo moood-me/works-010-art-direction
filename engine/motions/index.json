@@ -1,6 +1,6 @@
 {
  "format": "engine/motions",
- "version": 1,
+ "version": 2,
  "motions": [
   {
    "id": "walk",
@@ -147,8 +147,14 @@
     "en": "lies down → rolls over"
    },
    "motions": [
-    "lie",
-    "rollover"
+    "lie@c24c5ad967fd5758",
+    "rollover@2c11a8445eeb3beb"
+   ],
+   "joins": [
+    {
+     "blend": "dead",
+     "frames": 12
+    }
    ]
   }
  ]
