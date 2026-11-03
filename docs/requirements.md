@@ -83,7 +83,18 @@ Smooth transitions between motions; smooth and combined facial expressions; mout
 when speaking (else just the mouth); brows and face during speech; a gaze that follows; blinking and small eye
 movements by themselves; speed of cloth and hair for several characters.
 
+## After the engine is finished (Pavel, 2026-11-03, going to sleep)
+
+- Motions that come to the right places — a common task. A person walks up to a table and leans on it: the hands
+  touch the table; we tell the model, say, a second before the stop the hands must be here, and at the last frame
+  still there — the person comes up, leans, holds it about a second. One character comes up to another and puts a
+  hand on the shoulder. A character sits down in an armchair standing in the scene, with armrests of a known height,
+  puts the hands on the armrests and sits properly. If the model understands some motions badly, never mind — try
+  other similar tasks and motions; the main thing is to make the principle work.
+- After that, talk with Pavel (a discussion, not a build): how to make two people interact properly — one lifts the
+  other in his arms and carries them; A stands, B comes up and touches A's shoulder, A reacts and looks round.
+
 ## Not now
 
-Breathing and idle life; hands, fingers and grips (Kimodo has none); feet on the ground; contacts with the world;
-turning to a target; cartoon timing; scenes.
+Breathing and idle life; fingers and grips (Kimodo has none); feet on the ground; turning to a target; cartoon timing;
+scenes. (Contacts of the hands with the world — see above, after the engine.)
