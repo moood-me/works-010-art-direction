@@ -92,7 +92,7 @@ movements by themselves; speed of cloth and hair for several characters.
   puts the hands on the armrests and sits properly. If the model understands some motions badly, never mind — try
   other similar tasks and motions; the main thing is to make the principle work.
 - After that, talk with Pavel (a discussion, not a build): how to make two people interact properly — one lifts the
-  other in his arms and carries them; A stands, B comes up and touches A's shoulder, A reacts and looks round.
+  other in their arms and carries them; A stands, B comes up and touches A's shoulder, A reacts and looks round.
 
 ## Not now
 
