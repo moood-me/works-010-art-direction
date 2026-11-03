@@ -32,7 +32,8 @@ real sizes of body parts, no broken arms; motion from Kimodo, corrections on top
   weights; between trunk and limb by which piece the settled point lies on, over a seam 1.6 stick-radii wide (0.4 left
   thin webs under a raised arm). Tried and dropped: relaxing the hands' and feet's skin on the surface (it pulled the
   toes back and made the front flat again), melting them first by smoothing (more folds). In motion its edges now
-  stretch less than the plain man's (3.5× against 4.0× sitting), against 9–11× before.
+  stretch less than the plain man's (sitting: 99.9 % of edges within 2.2× of their rest against his 2.5×; at worst, against
+  the longer of their length on the body and on the sign, within his ×1.2), against 9–11× before.
 - *Folds* (3). Smoothing keeps the toes (and fingers) by default; anatomy moves no farther than a third of the local
   edge; any rest change (but the sign) that would still turn a triangle over has its move smoothed over the surface
   there until none is (`regions.js: unfold`: first tried as taking the move back, which made a short neck fold six
