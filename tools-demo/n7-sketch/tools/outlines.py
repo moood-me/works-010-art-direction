@@ -61,7 +61,7 @@ CHARS = {
     ('head', ell(228, 147, 128, 62), None),
     ('muzzle', ell(228, 185, 62, 23), None),
   ]),
-  'cat': dict(src='our-cat-front.png', tex=['head', 'body'], thin=False, colors={}, parts=[
+  'cat': dict(src='our-cat-front.png', tex=['head', 'body'], thin=False, colors={'handL': '#f1ecf7', 'handR': '#f1ecf7', 'footL': '#f1ecf7', 'footR': '#f1ecf7'}, parts=[
     ('earL', poly([(236, 114), (250, 170), (272, 250), (232, 255), (234, 180)], 8), 'head'),
     ('earR', poly([(452, 110), (454, 180), (458, 250), (418, 245), (436, 170)], 8), 'head'),
     ('legL', tube([(310, 470), (304, 560), (296, 650)], 10, 9), 'body'),

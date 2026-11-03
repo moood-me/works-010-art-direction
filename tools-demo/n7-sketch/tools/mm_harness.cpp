@@ -155,6 +155,8 @@ int main(int argc, char **argv) {
         cps.push_back(idx);
         start.push_back(def.getCP(idx).pos);
       } else if (tok == "frame") {
+        // while an animation plays, the app pauses the z-deformation (MainWindow::toggleAnimationPlayback)
+        defData.defEng.solveForZ = false;
         if (!offs.empty()) runFrame();
       } else if (tok == "d") {
         double dx, dy;
