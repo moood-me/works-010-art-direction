@@ -38,6 +38,12 @@ narrow what is here without asking him.
   by formulas, which would make a person look like in a fit. Pavel, softening his first wording: "не понимай меня так
   буквально" — corrections on top of Kimodo's motion (arms kept a little off the body for cloth, a head turn for hair,
   arms kept out of a big head, amplified limbs, a line of action as a pose layer) are allowed.
+- Use Kimodo even for small things: looking round, turning back, a head turn — Kimodo turns a head as a person does;
+  motions written with sines almost always look unnatural ("все движения, которые ты пишешь синусами, выглядят очень
+  плохо"), and I can't see that unnaturalness the way Pavel does. Learn to join Kimodo's motions well. Small life
+  (breathing, eye movements) may be by hand if decided from understanding, not from laziness. Kimodo has limits —
+  not everything can be asked or joined well — so reasonable departures and artificial corrections are needed
+  where it falls short. Best practices.
 - Transitions between Kimodo motions without jerks: the next motion made by Kimodo to start from the end of the
   previous one. Contacts with objects the same way, through Kimodo's constraints.
 - Clothes are cloth, not a mask on the body: they don't go through the body, they crumple, bend, take the wind, and
