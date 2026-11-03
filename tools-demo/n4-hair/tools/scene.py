@@ -69,13 +69,14 @@ def scalp(R, c, r, line, region=None, name='scalp'):
     surface the hair grows from."""
     P = np.asarray(R['body']['pos']).reshape(-1, 3); T = np.asarray(R['body']['tris']).reshape(-1, 3)
     d = (P - c) / r; th = np.arctan2(d[:, 0], d[:, 2]); ph = np.arcsin(np.clip(d[:, 1] / np.linalg.norm(d, axis=1), -1, 1))
-    inside = (ph > np.vectorize(line)(th)) & (np.linalg.norm(P - c, axis=1) < 0.16)
-    if region: inside &= np.vectorize(region)(th, ph)
-    keep = T[inside[T].all(1)]
+    hair = (ph > np.vectorize(line)(th)) & (np.linalg.norm(P - c, axis=1) < 0.16)
+    part = np.vectorize(region)(th, ph) if region else np.ones(len(P), bool)
+    keep = T[hair[T].all(1) & part[T].any(1)]   # (the parts overlap by a triangle: no seam of bare skin between them)
     used = np.unique(keep); remap = -np.ones(len(P), int); remap[used] = np.arange(len(used))
     ob = mesh(name, P[used], remap[keep])
     me = ob.data
-    for v in me.vertices: v.co += v.normal * 0.001
+    cc = Vector(bl(c))
+    for v in me.vertices: v.co += (v.co - cc).normalized() * 0.001   # (out from the skull: the triangles' winding is three's)
     me.uv_layers.new(name='UVMap')
     bpy.context.view_layer.objects.active = ob; ob.select_set(True)
     bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
@@ -176,7 +177,7 @@ def stage(res=(440, 520), samples=48):
         o = bpy.data.objects.new(name, L); s.collection.objects.link(o)
         o.rotation_euler = Vector(bl(d)).to_track_quat('Z', 'Y').to_euler()
         return o
-    sun('key', 2.6, (1, 0.97, 0.92), (1.2, 2.2, 2.4))
+    sun('key', 3.4, (1, 0.97, 0.92), (1.2, 2.2, 2.4))
     sun('rim', 2.0, (0.85, 0.9, 1.0), (-1.6, 1.4, -2.0))
     g = bpy.data.meshes.new('ground'); g.from_pydata([(-20, -20, 0), (20, -20, 0), (20, 20, 0), (-20, 20, 0)], [], [(0, 1, 2, 3)])
     go = bpy.data.objects.new('ground', g); s.collection.objects.link(go); g.materials.append(principled('ground', srgb(0xcbc3b6), 1))

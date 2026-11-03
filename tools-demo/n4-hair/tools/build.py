@@ -32,7 +32,7 @@ def make(name, motion_body=False):
         if p.get('noise'): S.gn(g, 'Hair Curves Noise', Distance=p['noise'], Scale=40.0, Shape=0.3, Seed=4)
         for on in p.get('shrink_on', ['body']):   # out of the head and body wherever the groom went into them
             S.gn(g, 'Shrinkwrap Hair Curves', Surface=bpy.data.objects[on], Offset_Distance=p.get('shrink', 0.006),
-                 Above_Surface=0.5, Smoothing_Steps=3, Lock_Roots=True)
+                 Above_Surface=0.0, Smoothing_Steps=3, Lock_Roots=True)   # only what went under the surface
         S.gn(g, 'Smooth Hair Curves', Amount=0.6, Iterations=6, Preserve_Length=True)
         S.gn(g, 'Set Hair Curve Profile', Radius=p.get('radius', 0.0011), Shape=p.get('profile', 0.3))
         hairs.append(g)
@@ -50,7 +50,7 @@ WHO = {'gwen': 'woman', 'alva': 'woman', 'kpony': 'woman', 'kbraid': 'woman', 'm
 if __name__ == '__main__':
     argv = sys.argv[sys.argv.index('--') + 1:]
     name, out = argv[0], argv[1]
-    views = {'front': -0.55, 'back': math.pi - 0.55}
+    views = {'front': 0.55, 'back': math.pi + 0.55}   # as experiments/hair's pictures
     H = make(name)
     co = S.stage(samples=int(argv[2]) if len(argv) > 2 else 48)
     head = np.asarray(H['R']['head'])

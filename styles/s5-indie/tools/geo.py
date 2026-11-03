@@ -2,8 +2,8 @@
 drawn as smooth flat shapes with one cel shade and a warm outline. Everything returns SVG strings."""
 import math
 
-LINE = '#3a2b2e'
-SW = 3.2          # outline width; set by the caller (thinner for close-ups)
+LINE = '#4a3036'
+SW = 2.4          # outline width; set by the caller (thinner for close-ups)
 _uid = [0]
 
 
@@ -193,5 +193,5 @@ def poly_d(pts, closed=False):
 def svg(body, vb, w, h, bg=None, defs=''):
     x, y, W, H = vb
     bgr = f'<rect x="{f(x)}" y="{f(y)}" width="{f(W)}" height="{f(H)}" fill="{bg}"/>' if bg else ''
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{f(x)} {f(y)} {f(W)} {f(H)}" width="{w}" height="{h}">'
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{f(x)} {f(y)} {f(W)} {f(H)}" width="{int(w)}" height="{int(h)}">'
             f'<defs>{defs}</defs>{bgr}{body}</svg>')

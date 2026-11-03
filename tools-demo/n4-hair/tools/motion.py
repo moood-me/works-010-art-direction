@@ -17,9 +17,9 @@ name, clip, out = argv[0], argv[1], argv[2]
 mode = argv[3] if len(argv) > 3 else 'dyn'
 step = int(argv[4]) if len(argv) > 4 else 2
 samples = int(argv[5]) if len(argv) > 5 else 10
-yaw = float(argv[6]) if len(argv) > 6 else -0.55
+yaw = float(argv[6]) if len(argv) > 6 else 0.55
 os.makedirs(out, exist_ok=True)
-STIFF = {'gwen': 2.0, 'marco': 5.0, 'alva': 0.5, 'kpony': 0.5}   # bending stiffness of each hairstyle's guides
+STIFF = {'gwen': (8.0, 3.0), 'marco': (15.0, 5.0), 'alva': (1.0, 0.5), 'kpony': (2.0, 0.6)}   # bending stiffness, pin (goal) stiffness
 
 H = build.make(name)
 who = H['who']; R = H['R']
@@ -74,7 +74,7 @@ if mode == 'dyn':
         ps = scalp.particle_systems[-1]; st = ps.settings
         ps.use_hair_dynamics = True
         cs = ps.cloth.settings; cs.quality = 8; cs.mass = 0.3; cs.air_damping = 1.5
-        cs.bending_stiffness = STIFF.get(name, 0.5); cs.pin_stiffness = 0.6; cs.bending_damping = 0.6
+        cs.bending_stiffness, cs.pin_stiffness = STIFF[name]; cs.bending_damping = 0.6
         cs.internal_friction = 0.2
         st.render_type = 'NONE'; st.display_step = 5
         ps.point_cache.frame_start = 1; ps.point_cache.frame_end = F

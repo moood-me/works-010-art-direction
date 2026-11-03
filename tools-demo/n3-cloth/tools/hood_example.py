@@ -1,6 +1,8 @@
-# HOOD on its own example, as its notebook Inference_from_any_pose.ipynb runs it: the T-shirt from
-# $HOOD_DATA/fromanypose/tshirt.obj on the SMPL body mesh sequence fromanypose/mesh_sequence.pkl, model postcvpr.pth,
-# on CPU. python hood_example.py <out.npz> [frames]  — saves the cloth and body trajectories and the time.
+# HOOD on its own example, as its notebook Inference_from_any_pose.ipynb runs it with a mesh sequence: the skirt
+# $HOOD_DATA/fromanypose/skirt.obj, which sits on the sequence's first frame (body.obj), on the SMPL body mesh sequence
+# fromanypose/mesh_sequence.pkl, model postcvpr.pth, on CPU. (The example tshirt.obj sits on the other example, the
+# SMPL pose sequence, which needs the SMPL model — not downloadable without registration.)
+# python hood_example.py <out.npz> [frames]  — saves the cloth and body trajectories and the time.
 import os, sys, time
 import numpy as np
 import torch
@@ -12,13 +14,13 @@ from utils.defaults import DEFAULTS
 
 out = sys.argv[1]; F = int(sys.argv[2]) if len(sys.argv) > 2 else -1
 d = DEFAULTS.data_root
-pickle_dump(obj2template(os.path.join(d, 'fromanypose', 'tshirt.obj')), os.path.join(d, 'fromanypose', 'tshirt.pkl'))
+pickle_dump(obj2template(os.path.join(d, 'fromanypose', 'skirt.obj')), os.path.join(d, 'fromanypose', 'skirt_ours.pkl'))
 if F > 0:   # a shorter piece of the sequence (CPU time)
     seq = pickle_load(os.path.join(d, 'fromanypose', 'mesh_sequence.pkl'))
     pickle_dump(dict(verts=seq['verts'][:F], faces=seq['faces']), os.path.join(d, 'fromanypose', 'mesh_sequence_short.pkl'))
 modules, config = load_params('aux/from_any_pose')
 ds = config.dataloader.dataset.from_any_pose
-ds.smpl_model = None; ds.pose_sequence_type = 'mesh'; ds.garment_template_path = 'fromanypose/tshirt.pkl'
+ds.smpl_model = None; ds.pose_sequence_type = 'mesh'; ds.garment_template_path = 'fromanypose/skirt_ours.pkl'
 ds.pose_sequence_path = 'fromanypose/mesh_sequence_short.pkl' if F > 0 else 'fromanypose/mesh_sequence.pkl'
 config.device = 'cpu'
 torch.set_num_threads(int(os.environ.get('THREADS', '2')))

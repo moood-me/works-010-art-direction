@@ -8,7 +8,7 @@ def uid(p='c'):
     return f'{p}{_n[0]}'
 
 
-LW = [2.6]  # current line width
+LW = [2.2]  # current line width
 
 
 def F(d, fill, line=None, w=None, extra=''):
@@ -54,3 +54,18 @@ def svg(w, h, body, bg=None):
 def text(x, y, t, size=22, col='#3a2e2a', anchor='middle', weight=600):
     return (f'<text x="{x}" y="{y}" font-family="Georgia, \'DejaVu Serif\', serif" font-size="{size}" '
             f'fill="{col}" text-anchor="{anchor}" font-weight="{weight}">{t}</text>')
+
+
+def mx(d):
+    """Mirror an absolute path (pairs of numbers only) across x=0."""
+    import re
+    toks = re.findall(r'[A-Za-z]|-?\d+(?:\.\d+)?', d)
+    out, i = [], 0
+    for t in toks:
+        if t.isalpha():
+            out.append(t)
+            i = 0
+        else:
+            out.append(str(-float(t) if i % 2 == 0 else float(t)).rstrip('0').rstrip('.'))
+            i += 1
+    return ' '.join(out)

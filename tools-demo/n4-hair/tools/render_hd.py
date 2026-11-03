@@ -47,11 +47,11 @@ if mode == 'charm':
     pc.modifiers.new('pts', 'NODES').node_group = ng; pc.data.materials.append(S.principled('pts', (0.25, 0.35, 0.6), 0.6))
     cs = cards(glb, 0x8a6a4a)
     co = S.stage(res=(420, 480), samples=24); bpy.data.objects['ground'].hide_render = True
-    tgt = c + np.array([0, -0.03, 0])
+    lo, hi = np.minimum(X.min(0), c - r), np.maximum(X.max(0), c + r); tgt = (lo + hi) / 2; span = (hi - lo)[1]
     for name, show in (('input', [pc]), ('cards', cs)):
         for ob in [pc] + cs: ob.hide_render = ob not in show
         for v, yaw in (('front', -0.5), ('back', math.pi - 0.5)):
-            S.look(co, tgt, yaw, 0.1, 0.62)
+            S.look(co, tgt, yaw, 0.1, span * 3.3)
             bpy.context.scene.render.filepath = f'{out}-{name}-{v}.png'; bpy.ops.render.render(write_still=True)
 
 if mode == 'ours':
@@ -68,6 +68,6 @@ if mode == 'ours':
     for ob in cs: ob.matrix_world = M @ ob.matrix_world
     co = S.stage(samples=int(argv[6]) if len(argv) > 6 else 32)
     head = np.asarray(H['R']['head'])
-    for v, yaw in (('front', -0.55), ('back', math.pi - 0.55)):
+    for v, yaw in (('front', 0.55), ('back', math.pi + 0.55)):
         S.look(co, head - np.array([0, 0.03, 0]), yaw, 0.06, H['st']['dist'])
         bpy.context.scene.render.filepath = f'{out}-{v}.png'; bpy.ops.render.render(write_still=True)

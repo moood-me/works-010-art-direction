@@ -13,7 +13,7 @@ def oval(cx, cy, rx, ry, top=1.0, bot=1.0, tilt=0.0):
 
 
 def eye(cx, cy, rx, ry, c, look=(0, 0), lid=0.0, lidtilt=0.0, lower=0.0, ir=None, sq=1.0, flick=1,
-        tilt=0.0, top=1.0, bot=1.0, lash=2.4, lowline=True, hl=True):
+        tilt=0.0, top=1.0, bot=1.0, lash=2.4, lowline=True, hl=True, wing=True, lashes=True, lidshade=True):
     """c: dict with skin, line, white, iris, pupil, lash.
     lid: 0 open … 1 shut (from the top); lower: 0 … 1 lower lid pushed up (smile)."""
     ir = ir or ry * 0.62
@@ -31,8 +31,9 @@ def eye(cx, cy, rx, ry, c, look=(0, 0), lid=0.0, lidtilt=0.0, lower=0.0, ir=None
     ya, yb = cy + e + lidtilt, cy + e - lidtilt
     yc = (4 * h - (ya + yb) / 2) / 3
     edge = f'M {cx - rx - 3} {ya} C {cx - rx} {yc}, {cx + rx} {yc}, {cx + rx + 3} {yb}'
-    inner.append(F(edge + f' L {cx + rx + 3} {yb + 7} C {cx + rx} {yc + 7}, {cx - rx} {yc + 7}, {cx - rx - 3} {ya + 7} Z',
-                   c['line'], extra='opacity=".18"'))
+    if lidshade:
+        inner.append(F(edge + f' L {cx + rx + 3} {yb + 7} C {cx + rx} {yc + 7}, {cx - rx} {yc + 7}, {cx - rx - 3} {ya + 7} Z',
+                       c['line'], extra='opacity=".18"'))
     lidfill = edge + f' L {cx + rx + 6} {cy - ry - 30} L {cx - rx - 6} {cy - ry - 30} Z'
     inner.append(F(lidfill, c['skin']))
     if lower > 0:
@@ -41,21 +42,23 @@ def eye(cx, cy, rx, ry, c, look=(0, 0), lid=0.0, lidtilt=0.0, lower=0.0, ir=None
                f'L {cx + rx + 6} {cy + ry + 30} L {cx - rx - 6} {cy + ry + 30} Z')
         inner.append(F(low, c['skin']))
     out = [clip(d, *inner)]
-    # lid line, thick, with a flick at the outer corner
-    if flick > 0:
-        fx, fy = cx + rx + 3, yb
-        fl = f' C {fx + 4} {fy - 1}, {fx + 8} {fy - 4}, {fx + 10} {fy - 9}'
-    elif flick < 0:
-        fx, fy = cx - rx - 3, ya
-        fl = ''
+    # lid line: a filled lash shape, thick toward the outer corner, with a small wing
+    th = LW[0] * lash
+    wing_on = wing
+    if flick >= 0:  # outer corner on the right
+        xi, yi, xo, yo = cx - rx - 1, ya, cx + rx + 2, yb
+        wing = f' C {xo + 4} {yo - 2}, {xo + 8} {yo - th * .9}, {xo + 10} {yo - th * 2.2} C {xo + 4} {yo - th * 1.6}, {xo} {yo - th * 1.3}, {xo - 4} {yo - th * 1.2}'
+        wing = wing if wing_on else f' L {xo - 2} {yo - th * .9}'
+        lash_d = (f'M {xi} {yi + 1} C {cx - rx} {yc}, {cx + rx} {yc}, {xo} {yo}{wing} '
+                  f'C {cx + rx * .7} {yc - th * 1.1}, {cx - rx * .8} {yc - th * .5}, {xi} {yi + 1} Z')
     else:
-        fl = ''
-    if flick < 0:
-        lidline = (f'M {cx - rx - 13} {ya - 9} C {cx - rx - 11} {ya - 4}, {cx - rx - 7} {ya - 1}, {cx - rx - 3} {ya} '
-                   f'C {cx - rx} {yc}, {cx + rx} {yc}, {cx + rx + 3} {yb}')
-    else:
-        lidline = edge + fl
-    out.append(L(lidline, c['lash'], LW[0] * lash))
+        xi, yi, xo, yo = cx + rx + 1, yb, cx - rx - 2, ya
+        wing = f' C {xo - 4} {yo - 2}, {xo - 8} {yo - th * .9}, {xo - 10} {yo - th * 2.2} C {xo - 4} {yo - th * 1.6}, {xo} {yo - th * 1.3}, {xo + 4} {yo - th * 1.2}'
+        wing = wing if wing_on else f' L {xo + 2} {yo - th * .9}'
+        lash_d = (f'M {xi} {yi + 1} C {cx + rx} {yc}, {cx - rx} {yc}, {xo} {yo}{wing} '
+                  f'C {cx - rx * .7} {yc - th * 1.1}, {cx + rx * .8} {yc - th * .5}, {xi} {yi + 1} Z')
+    if lashes:
+        out.append(F(lash_d, c['lash'], c['lash'], LW[0] * .5))
     if lower > 0:
         yl = cy + K * ry * (1 - 2.2 * lower)
         out.append(L(f'M {cx - rx * .8} {cy + ry * .55 - lower * ry * .5} C {cx - rx * .5} {yl + 2}, '
@@ -79,3 +82,15 @@ def brow(x0, y0, x1, y1, bend, thick, col, taper_end=1):
     t = thick
     return F(f'M {x0} {y0 + t * .5} Q {mx} {my + t * .4} {x1} {y1} Q {mx} {my - t * .6} {x0} {y0 - t * .5} Z', col,
              col, LW[0] * .6)
+
+
+def shout(x0, x1, y, h, line, tilt=0):
+    """An angry open mouth: a wide box with clenched teeth top and bottom, corners pulled down."""
+    w = x1 - x0
+    d = (f'M {x0} {y + 6} C {x0 + w * .3} {y - 4 + tilt}, {x0 + w * .7} {y - 4 - tilt}, {x1} {y + 4 - tilt} '
+         f'C {x1 + 2} {y + h * .7}, {x1 - w * .15} {y + h}, {x0 + w * .5} {y + h} '
+         f'C {x0 + w * .15} {y + h}, {x0 - 2} {y + h * .7}, {x0} {y + 6} Z')
+    return (F(d, '#5e1f1a') + clip(d, F(f'M {x0 - 10} {y - 10} L {x1 + 10} {y - 10} L {x1 + 10} {y + h * .3} L {x0 - 10} {y + h * .34} Z', '#fff'),
+                                    F(f'M {x0 - 10} {y + h * .78} L {x1 + 10} {y + h * .74} L {x1 + 10} {y + h + 10} L {x0 - 10} {y + h + 10} Z', '#fff'),
+                                    L(f'M {x0 + w * .35} {y} L {x0 + w * .35} {y + h * .32} M {x0 + w * .62} {y - 2} L {x0 + w * .62} {y + h * .3}', '#cbbdb6', LW[0] * .6))
+            + L(d, line))
