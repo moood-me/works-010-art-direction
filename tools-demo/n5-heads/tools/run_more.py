@@ -17,4 +17,4 @@ run('rain/Rain v3.3/rain_v3.2.blend', {'name': 'rain', 'head': 'GEO-rain-head', 
     'parts': [['top', ['GEO-rain-top']], ['jeans', ['GEO-rain-jeans']], ['scarf', ['GEO-rain-scarf']], ['shoes', ['GEO-rain-shoes']], ['hair', ['GEO-rain-hair_main', 'GEO-rain-hair_ponytail', 'GEO-rain-hair_strand', 'GEO-rain-hairband']], ['teeth', ['GEO-rain-gums_upper', 'GEO-rain-gums_lower', 'GEO-rain-tongue']]]})
 run('snow/Snow/snow_v4.2.blend', {'name': 'snow', 'head': 'GEO-snow-head', 'views': [],
     'parts': [['shirt', ['GEO-snow-shirt']], ['pants', ['GEO-snow-pants']], ['shoes', ['GEO-snow-shoes_base', 'GEO-snow-shoes_bottom', 'GEO-snow-shoes_parts']], ['hair', ['GEO-snow-hair_base']]]})
-run('autumn/autumn/autumn.blend', {'name': 'autumn', 'head': 'GEO_autumn_body', 'views': ['body', 'bodytq']})
+

@@ -469,12 +469,12 @@ class Hair:
         base = L.get("col", self.base)
         dark = L.get("dark", self.dark)
         size = L.get("size", 22) * s
-        paint_volume(cv, d, base, dark, size, lift=0.16, soft=0.11)
+        kv = paint_volume(cv, d, base, dark, size, lift=0.16, soft=0.11)
         # strands: a few fine lines along the lock
         lx, ly = LIGHT
         q = c2[1:-2]
         if len(q) > 3 and L.get("strands", 1):
-            kk0 = cv.clip(d)
+            kk0 = kv
             g = [f'<g clip-path="url(#{kk0})">']
             for j, o in enumerate((-0.55, -0.2, 0.15, 0.45)):
                 off = []
@@ -489,7 +489,7 @@ class Hair:
             cv.add("".join(g))
         if len(q) > 2:
             off = [(x + lx * size * 0.12, y + ly * size * 0.12) for x, y in q]
-            kk = cv.clip(d)
+            kk = kv
             cv.add(f'<g clip-path="url(#{kk})"><path d="{smooth_path(off, closed=False)}" fill="none" stroke="{self.light}" '
                    f'stroke-width="{f(size * 0.16)}" stroke-linecap="round" opacity="{self.sheen_a * L.get("sheen", 1)}" '
                    f'filter="url(#{cv.blur(size * 0.07)})"/></g>')

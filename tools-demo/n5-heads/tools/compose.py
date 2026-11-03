@@ -66,7 +66,7 @@ sheet('hbm-parts.webp', [[(pp('Head_-_Planar'), 'голова для лепки'
 # more characters, their clothes as separate pieces, more expressions
 Mo = lambda n: f'more/{n}.png'
 sheet('more-bodies.webp', [[(Mo('jay-body'), 'Jay'), (Mo('jay-bodytq'), ''), (Mo('phil-body'), 'Phil'), (Mo('phil-bodytq'), '')],
-                           [(Mo('einar-body'), 'Einar'), (Mo('einar-bodytq'), ''), (Mo('phileas-body'), 'Phileas'), (Mo('autumn-body'), 'Autumn (лиса)')]], cw=330)
+                           [(Mo('einar-body'), 'Einar'), (Mo('einar-bodytq'), ''), (Mo('phileas-body'), 'Phileas'), (Mo('phileas-bodytq'), '')]], cw=330)
 sheet('more-heads.webp', [[(Mo(f'{c}-{v}'), (nm if v == 'front' else '')) for v in ('front', 'tq', 'side')] for c, nm in [('jay', 'Jay (без шляпы и очков)'), ('phil', 'Phil'), ('einar', 'Einar')]], cw=360)
 sheet('clothes-parts.webp', [[(Mo('rain-part-top'), 'Rain: майка'), (Mo('rain-part-jeans'), 'джинсы'), (Mo('rain-part-scarf'), 'платок'), (Mo('rain-part-shoes'), 'кеды'), (Mo('rain-part-hair'), 'волосы')],
                              [(Mo('snow-part-shirt'), 'Snow: футболка'), (Mo('snow-part-pants'), 'брюки'), (Mo('snow-part-shoes'), 'кеды'), (Mo('snow-part-hair'), 'волосы'), (Mo('rain-part-teeth'), 'Rain: зубы, дёсны, язык')],

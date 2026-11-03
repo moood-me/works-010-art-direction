@@ -93,7 +93,8 @@ def clean(geom):
 class View:
     """Rotation (yaw about the vertical axis, then pitch), scale and placement."""
 
-    def __init__(self, yaw=0.0, pitch=0.0, roll=0.0, s=1.0, cx=0.0, cy=0.0, light=(-0.55, -0.5, 0.67), rim=(0.85, -0.2, -0.3)):
+    def __init__(self, yaw=0.0, pitch=0.0, roll=0.0, s=1.0, cx=0.0, cy=0.0, light=(-0.55, -0.5, 0.67), rim=(0.85, -0.2, -0.3), rimcol=None):
+        self.rimcol = rimcol
         self.yaw, self.pitch, self.roll = math.radians(yaw), math.radians(pitch), math.radians(roll)
         self.s, self.cx, self.cy = s, cx, cy
         L = np.array(light, float)
@@ -449,7 +450,7 @@ FILTERS = '''
 </filter>
 <filter id="brush" x="-5%" y="-5%" width="110%" height="110%">
   <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="7" result="n"/>
-  <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" result="d"/>
+  <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" result="d"/>
   <feTurbulence type="fractalNoise" baseFrequency="0.03 0.07" numOctaves="3" seed="11" result="s"/>
   <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.9 0 0 0 0.25" result="sa"/>
   <feComposite in="d" in2="sa" operator="in" result="t"/>

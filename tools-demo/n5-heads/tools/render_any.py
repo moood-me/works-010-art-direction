@@ -55,7 +55,8 @@ for v in cfg.get('views', []):
 for label, names in cfg.get('parts', []):
     keep = [bpy.data.objects[n] for n in names if n in bpy.data.objects]
     if not keep: print('MISSING', label); continue
-    for o in allv: o.hide_render = o not in keep
+    was = {o: o.hide_render for o in bpy.data.objects}
+    for o in bpy.data.objects: o.hide_render = o not in keep  # everything else off, also instances and hair curves
     pb = bbox(keep); c = (pb[0] + pb[1]) / 2; s = pb[1] - pb[0]
     shoot('part-' + label, c, max(s.z, s.x) * 1.15, 25, (500, 500))
-    for o in allv: o.hide_render = False
+    for o, h in was.items(): o.hide_render = h

@@ -7,3 +7,12 @@ cfg = {'name': 'phil', 'head': 'GEO-phil_head', 'out': '/home/user/cache/n5-head
        'parts': [['shirt', ['GEO-phil_shirt']], ['pants', ['GEO-phil_pants', 'GEO-phil_shorts_fray']], ['flippers', ['GEO-phil_flippers']]]}
 subprocess.run(['/home/user/cache/blender/blender', '-b', '/home/user/cache/n5-heads/phil/phil.blend', '-P', '/home/user/works-010-art-direction/tools-demo/n5-heads/tools/render_any.py', '--', json.dumps(cfg)])
 PY
+# Einar's side view and clothes: the first run was killed (out of memory) after the 3/4 view
+python3 - <<'PY'
+import json, subprocess
+cfg = {'name': 'einar', 'head': 'GEO-einar_head', 'out': '/home/user/cache/n5-heads/r/more', 'views': ['side'],
+       'parts': [['jacket', ['GEO-einar_jacket_main', 'GEO-einar_jacket_collar1', 'GEO-einar_jacket_collar2', 'GEO-einar_jacket_pocket1', 'GEO-einar_jacket_pocket2', 'GEO-einar_jacket_zipper', 'GEO-einar_jacket_tape', 'GEO-einar_jacket_belts']],
+                 ['boots', ['GEO-einar_boot_main.L', 'GEO-einar_boot_sole.L']], ['hat', ['GEO-einar_hat']], ['glove', ['GEO-einar_glove', 'GEO-einar_fingers']]]}
+subprocess.run(['/home/user/cache/blender/blender', '-b', '/home/user/cache/n5-heads/einar/einar_release_v1.blend', '-P', '/home/user/works-010-art-direction/tools-demo/n5-heads/tools/render_any.py', '--', json.dumps(cfg)])
+PY
+python3 $(dirname "$0")/run_parts.py

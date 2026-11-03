@@ -13,11 +13,19 @@ import math
 # ------------------------------------------------------------------ svg helpers
 
 def f(v):
-    return f"{v:.1f}"
+    t = f"{v:.1f}"
+    return t[:-2] if t.endswith(".0") else t
 
 
 def smooth_path(pts, closed=True, t=0.5):
-    """Catmull-Rom through points -> cubic Bezier path string."""
+    """Catmull-Rom through points -> cubic Bezier path string (points closer than ~1.5px are merged)."""
+    if len(pts) > 4:
+        q = [pts[0]]
+        for p in pts[1:]:
+            if abs(p[0] - q[-1][0]) + abs(p[1] - q[-1][1]) > 1.5:
+                q.append(p)
+        if len(q) >= 3:
+            pts = q
     n = len(pts)
     if n < 2:
         return ""
@@ -140,20 +148,18 @@ LIGHT = (-0.62, -0.78)   # direction the light comes FROM, in screen space (uppe
 def paint_volume(cv, d, base, shadow, size, light=None, lift=0.07, soft=0.06, rim=None, rim_side=1, extra=None,
                  tf=""):
     """A shape painted as a soft volume: shadow-coloured base, the shape again in base colour shifted toward the
-    light and blurred inside the clip, an optional cool rim on the shadow side."""
+    light and blurred inside the clip, an optional cool rim on the shadow side. The path is stored once."""
     lx, ly = light or LIGHT
-    k = cv.clip(d) if not tf else None
-    g = [f'<g{tf}>']
-    if tf:
-        k = cv.clip(d)
-    g.append(f'<path d="{d}" fill="{shadow}"/>')
-    g.append(f'<g clip-path="url(#{k})">')
+    pid = cv.uid("p")
+    cv.defs.append(f'<path id="{pid}" d="{d}"/>')
+    k = cv.uid("c")
+    cv.defs.append(f'<clipPath id="{k}"><use href="#{pid}"/></clipPath>')
+    g = [f'<g{tf}>', f'<use href="#{pid}" fill="{shadow}"/>', f'<g clip-path="url(#{k})">']
     dx, dy = lx * size * lift, ly * size * lift
-    sc = 1 - lift * 0.6
-    g.append(f'<path d="{d}" fill="{base}" filter="url(#{cv.blur(size * soft)})" '
+    g.append(f'<use href="#{pid}" fill="{base}" filter="url(#{cv.blur(size * soft)})" '
              f'transform="translate({f(dx)},{f(dy)})"/>')
     if rim:
-        g.append(f'<path d="{d}" fill="none" stroke="{rim}" stroke-width="{f(size * 0.035)}" stroke-opacity="0.55" '
+        g.append(f'<use href="#{pid}" fill="none" stroke="{rim}" stroke-width="{f(size * 0.035)}" stroke-opacity="0.55" '
                  f'filter="url(#{cv.blur(size * 0.012)})" transform="translate({f(-lx * size * 0.012)},{f(-ly * size * 0.012)})"/>')
     if extra:
         g.append(extra)

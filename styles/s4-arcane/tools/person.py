@@ -606,7 +606,7 @@ def family(A, B, n, w, seed=1, jit=2.0, layer=None, streak=(0.25, 0.6), tones=(0
             ph = rnd.uniform(-0.4, 0.4)
             pts = [p if p[0] == 's' else (p[0] + (wave if p[0] > 0 else -wave) * math.sin(2 * math.pi * p[1] / period + ph), p[1], p[2]) for p in pts]
         sc = 1 + rnd.uniform(-wj, wj)
-        L = dict(pts=pts, w=[x * sc for x in w], tone=rnd.choice(tones), strands=strands, streak=(streak[0] + rnd.uniform(-.1, .1), streak[1] + rnd.uniform(-.1, .1)) if rnd.random() < 0.6 else None)
+        L = dict(pts=pts, w=[x * sc for x in w], tone=rnd.choice(tones), strands=strands, streak=(streak[0] + rnd.uniform(-.1, .1), streak[1] + rnd.uniform(-.1, .1)) if (streak and rnd.random() < 0.6) else None)
         if layer:
             L['layer'] = layer
         out.append(L)
@@ -687,24 +687,21 @@ def draw_cloth(doc, view, surf, base, pieces, shadow='#8f7c8c', hi='#fff3e0', ri
         g += path(poly_path(R['deep']), shadow, op=0.5, extra=' filter="url(#soft)" style="mix-blend-mode:multiply"')
     if not R['hi'].is_empty:
         g += path(poly_path(R['hi']), hi, op=0.25, extra=' filter="url(#soft2)"')
+    rim = rim or getattr(view, 'rimcol', None)
     if rim and not R['rim'].is_empty:
-        g += path(poly_path(R['rim']), rim, op=0.6, extra=' filter="url(#edge)"')
+        g += path(poly_path(R['rim']), rim, op=0.45, extra=' filter="url(#edge)"')
     edge = path(sil, 'none', mix(base, '#000000', 0.55), max(1.0, 1.1 * view.s), 0.5)
     return s + '<g clip-path="url(#%s)">' % cid + g + '</g>' + edge
 
 
 def background(doc, w, h, c1, c2, c3, seed=1, x=0, y=0):
-    """A painted backdrop: a radial glow, a canvas grain and a few soft shapes."""
+    """A painted backdrop: a warm glow behind the head falling off into a dark ground, with canvas grain."""
     gid = doc.uid('bg')
-    doc.defs.append('<radialGradient id="%s" cx="0.38" cy="0.32" r="0.85"><stop offset="0" stop-color="%s"/><stop offset="0.55" stop-color="%s"/><stop offset="1" stop-color="%s"/></radialGradient>' % (gid, c1, c2, c3))
-    rnd = random.Random(seed)
+    doc.defs.append('<radialGradient id="%s" gradientUnits="userSpaceOnUse" cx="%s" cy="%s" r="%s"><stop offset="0" stop-color="%s"/><stop offset="0.45" stop-color="%s"/><stop offset="1" stop-color="%s"/></radialGradient>'
+                    % (gid, fmt(w * 0.36), fmt(h * 0.3), fmt(max(w, h) * 0.8), c1, c2, c3))
     s = '<g transform="translate(%s,%s)">' % (fmt(x), fmt(y))
     s += '<rect width="%d" height="%d" fill="url(#%s)"/>' % (w, h, gid)
-    for _ in range(7):
-        cx, cy = rnd.uniform(0, w), rnd.uniform(0, h)
-        r = rnd.uniform(w * 0.08, w * 0.25)
-        s += '<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s" opacity="%.2f" filter="url(#soft2)"/>' % (fmt(cx), fmt(cy), fmt(r), fmt(r * rnd.uniform(0.4, 1)), rnd.choice([c1, c2, c3]), rnd.uniform(0.15, 0.4))
-    s += '<rect width="%d" height="%d" filter="url(#canvas)" opacity="0.10" style="mix-blend-mode:overlay"/>' % (w, h)
+    s += '<rect width="%d" height="%d" filter="url(#canvas)" opacity="0.12" style="mix-blend-mode:overlay"/>' % (w, h)
     s += '</g>'
     return s
 
