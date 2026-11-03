@@ -81,7 +81,7 @@ cand = [(y, front_z(y, 0.03, 0.15)) for y in ys[(ys > waist_y + 0.05) & (ys < ar
 bust_y, bp = max(((y, p) for y, p in cand if p is not None), key=lambda t: t[1][2])
 bi = int(np.argmin(np.abs(ys - bust_y))); bust = C[bi]
 # underbust: narrowest below the bust within 12 cm
-u_rng = (ys < bust_y - 0.02) & (ys > max(bust_y - 0.15, waist_y))
+u_rng = (ys < bust_y - 0.03) & (ys > max(bust_y - 0.09, waist_y))
 ui = np.nanargmin(np.where(u_rng, C, 1e9)); underbust = C[ui]
 # hips: the tape at the height of the bottom's most backward point
 cand = [(y, back_z(y, 0.05, 0.15)) for y in ys[(ys > crotch) & (ys < waist_y - 0.04)]]

@@ -16,10 +16,10 @@ def bear_wave(F=60):
     for f in range(F):
         t = f / (F - 1)
         up = ease(min(1, t / 0.25)) * ease(min(1, (1 - t) / 0.25))           # raise, hold, lower
-        wave = math.sin((t - 0.25) / 0.5 * 2 * math.pi * 2) * 0.35 if 0.25 < t < 0.75 else 0
-        a = a0 + up * (-math.radians(110) + wave)
+        wave = math.sin((t - 0.25) / 0.5 * 2 * math.pi * 2) * 0.3 if 0.25 < t < 0.75 else 0
+        a = a0 + up * (-math.radians(62) + wave)
         hp = (sh[0] + r * math.cos(a), sh[1] + r * math.sin(a))
-        frames.append([(0, 0)] * len(hold) + [(hp[0] - hand[0], hp[1] - hand[1]), (up * 10 + wave * 8, 0)])
+        frames.append([(0, 0)] * len(hold) + [(hp[0] - hand[0], hp[1] - hand[1]), (up * 6 + wave * 6, 0)])
     return 'bear', hold + [hand, head], frames
 
 MOTIONS = {'bear-wave': bear_wave}
