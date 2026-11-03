@@ -6,7 +6,7 @@
 // way went wrong for is relaxed among its neighbours and set on again). The strength blends the body into its sign.
 // Usually after smoothing (presets/pictogram).
 import { register } from '../deform.js';
-import { taubin, normalsAt, smoothField, lerp, clamp } from '../regions.js';
+import { taubin, normalsAt, smoothField, lerp, clamp, sst } from '../regions.js';
 import { cone } from './masses.js';
 
 const num = (min, max) => ({ type: 'number', min, max });
@@ -18,10 +18,20 @@ register({
   defaults: { figure: 'rectangle', gap: 0, limbs: 1 },
   rest(p, R) {
     const F = signSurface(p, R), P = R.mesh.positions, hand = Float32Array.from(R.ends, (v, i) => Math.min(1, v + R.head[i]));
-    const own = Int8Array.from({ length: R.mesh.N }, (_, i) => { let b = 0; for (let c = 1; c < 5; c++) if (R.limb[i * 5 + c] > R.limb[i * 5 + b]) b = c; return b; });
-    const Fi = i => own[i] ? F.part[own[i] - 1] : F;
-    const sg = settle(R, Float32Array.from(P), Fi, hand), s = p.strength;
-    return { positions: Float32Array.from(P, (v, i) => lerp(v, sg[i], s)) };
+    // the trunk's and the head's skin settles onto the sign's surface; each limb's skin goes round its own axis onto its
+    // stick (and the hand's onto its ball) — then the two are blended by the limb's share of each point (smoothed over
+    // the surface), so the skin of an armpit or a groin is never torn between the trunk and a limb
+    const T = settle(R, Float32Array.from(P), () => F, hand), out = Float32Array.from(P), s = p.strength, q = [0, 0, 0];
+    for (const i of R.mesh.used) {
+      let x = 0, y = 0, z = 0, wl = 0;
+      for (let l = 1; l < 5; l++) {
+        const w = R.limb[i * 5 + l]; if (w < 1e-3) continue;
+        F.limbs[l - 1](P[i * 3], P[i * 3 + 1], P[i * 3 + 2], q); x += w * q[0]; y += w * q[1]; z += w * q[2]; wl += w;
+      }
+      const wb = 1 - wl;
+      for (let c = 0; c < 3; c++) out[i * 3 + c] = lerp(P[i * 3 + c], wb * T[i * 3 + c] + [x, y, z][c], s);
+    }
+    return { positions: out };
   },
 });
 
@@ -57,7 +67,27 @@ function signSurface(p, R) {
   const arm = (a, h, s) => U([a, h, s], [0, 0.012, 0.03]), leg = (l, f) => U([l, f], [0, 0.012]);
   const A = [arm(aL, hL, sL), arm(aR, hR, sR), leg(lL, fL), leg(lR, fR)];
   const all = (x, y, z) => { const t = trunk(x, y, z); return Math.min(smin(t, A[0](x, y, z), 0.035), smin(t, A[1](x, y, z), 0.035), smin(t, A[2](x, y, z), 0.012), smin(t, A[3](x, y, z), 0.012)); };
-  all.part = A.map((f, i) => (x, y, z) => smin(trunk(x, y, z), f(x, y, z), i < 2 ? 0.035 : 0.012));
+  // each limb's skin round its own axis: onto its stick (shoulder to wrist, hip to ankle), past its end onto its ball
+  // (the hand) or its foot's stick
+  const onto = (c, rr, x, y, z, out) => { const v = [x - c[0], y - c[1], z - c[2]], n = Math.hypot(...v) || 1; out[0] = c[0] + v[0] / n * rr; out[1] = c[1] + v[1] / n * rr; out[2] = c[2] + v[2] / n * rr; return out; };
+  const seg = (A, B) => { const d = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], L2 = d[0] ** 2 + d[1] ** 2 + d[2] ** 2; return (x, y, z) => ((x - A[0]) * d[0] + (y - A[1]) * d[1] + (z - A[2]) * d[2]) / L2; };
+  const along = (A, B, t) => [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t, A[2] + (B[2] - A[2]) * t];
+  // the stick, and past its end (over a short span, smoothly) the hand's ball or the foot's stick
+  const ray = (a, b, r, end) => {
+    const A = at(a), B = at(b), tA = seg(A, B), o1 = [0, 0, 0], o2 = [0, 0, 0];
+    return (x, y, z, out) => {
+      const t = tA(x, y, z), w = sst((t - 0.9) / 0.2);
+      onto(along(A, B, clamp(t, 0, 1)), r, x, y, z, o1);
+      if (w <= 0) { out[0] = o1[0]; out[1] = o1[1]; out[2] = o1[2]; return out; }
+      end(x, y, z, o2);
+      for (let c = 0; c < 3; c++) out[c] = lerp(o1[c], o2[c], w);
+      return out;
+    };
+  };
+  const ballEnd = (c, rr) => (x, y, z, out) => onto(c, rr, x, y, z, out);
+  const footEnd = (a, b, rr) => { const A = at(a), B = at(b), t = seg(A, B); return (x, y, z, out) => onto(along(A, B, clamp(t(x, y, z), 0, 1)), rr, x, y, z, out); };
+  all.limbs = [ray('LeftArm', 'LeftHand', lr * 0.85, ballEnd(at('LeftHandMiddle2'), lr * 1.15)), ray('RightArm', 'RightHand', lr * 0.85, ballEnd(at('RightHandMiddle2'), lr * 1.15)),
+    ray('LeftLeg', 'LeftFoot', lr, footEnd('LeftFoot', 'LeftToeEnd', lr * 0.9)), ray('RightLeg', 'RightFoot', lr, footEnd('RightFoot', 'RightToeEnd', lr * 0.9))];
   return all;
 }
 function smin(a, b, k) { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; }

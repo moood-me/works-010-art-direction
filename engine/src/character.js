@@ -10,10 +10,14 @@
 //    rest: [change…]     changes of the body's rest, in order (src/changes.js):
 //                        {kind: "turn", joint, axis: [x, y, z] (in the joint's own frame), degrees, frames: "keep" | "turn"}
 //                        {kind: "morph", name, weight}
+//                        {kind: <a deformer>, …its parameters, strength, frames} (src/deform.js, src/deformers/)
+//                        {kind: "preset", id: "<preset>@<hash>", strength, frames} (presets/: its changes, each × strength)
 //    pose: [layer…]      pose layers on every frame, in order (src/layers.js): {kind: "armsOff", degrees?},
 //                        {kind: "armsOutOfHead", margin?}, {kind: "amplifyLimbs", factor?, parts?},
 //                        {kind: "dampHeadSpine", spine?, head?}, {kind: "clavicleShare", share?},
-//                        {kind: "turn", joint, axis, degrees}, {kind: "morph", name, weight}
+//                        {kind: "turn", joint, axis, degrees}, {kind: "morph", name, weight},
+//                        {kind: <a deformer that moves no joints>, …, strength, space?: "pelvis" | "upright"},
+//                        {kind: "preset", id, strength, space?}
 //    skinning: {method: "cor" | "dqs" | "lbs", sigma (the centres' likeness, cor), seam: null | {iterations, rings}},
 //    motion: {floor: "lowest" | "pelvis"},
 //    look: {skin: "#rrggbb", roughness}}
