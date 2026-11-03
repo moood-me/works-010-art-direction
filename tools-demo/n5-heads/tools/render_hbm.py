@@ -2,7 +2,7 @@
 usage: blender -b human_base_meshes_bundle.blend -P render_hbm.py -- OUTDIR"""
 import bpy, sys, math
 from mathutils import Vector
-out = sys.argv[sys.argv.index('--') + 1]
+args = sys.argv[sys.argv.index('--') + 1:]; out = args[0]; mode = args[1] if len(args) > 1 else 'main'
 sc = bpy.context.scene
 sc.render.engine = 'BLENDER_WORKBENCH'; sh = sc.display.shading
 sh.light = 'STUDIO'; sh.color_type = 'OBJECT'; sh.single_color = (0.80, 0.78, 0.76)
@@ -12,6 +12,7 @@ w = bpy.data.worlds.new('neutral'); w.color = (0.85, 0.84, 0.82); sc.world = w
 cd = bpy.data.cameras.new('c'); cam = bpy.data.objects.new('c', cd); sc.collection.objects.link(cam); sc.camera = cam
 
 def objs_of(coll):
+    if coll in bpy.data.objects: return [bpy.data.objects[coll]]
     return [o for o in bpy.data.collections[coll].all_objects if o.type == 'MESH']
 
 CLAY = (0.80, 0.78, 0.76, 1); INK = (0.12, 0.13, 0.16, 1)
@@ -63,6 +64,13 @@ def shot(coll, name, yaw, res=(900, 900), wire=False, frame=1.25, focus=None, le
     sc.render.resolution_x, sc.render.resolution_y = res
     sc.render.filepath = f'{out}/{name}.png'; bpy.ops.render.render(write_still=True); print('WROTE', name, tuple(mn), tuple(mx))
 
+if mode == 'parts':
+    # what the bundle is: starting pieces for sculpting and modelling, from blocky to finished
+    for name, yaw, wire in [('Head - Planar', 30, False), ('Head - Generic Topology', 30, True), ('Head - Primitives', 30, False),
+                            ('Body Female - Primitive (Stylized)', 30, False), ('Jaw - Stylized ', 30, False), ('Eye - Stylized', 20, False),
+                            ('Hand - Stylized ', 0, False), ('Foot - Stylized ', 40, False), ('Skull - Realistic', 30, False)]:
+        shot(name, 'part-' + name.strip().replace(' ', '_').replace('(', '').replace(')', ''), yaw, res=(600, 600), wire=wire, frame=1.15, mres=2)
+    sys.exit(0)
 H = 'Head - Stylized'; HA = 'Head (Animation) - Realistic'
 for yaw, v in [(0, 'front'), (35, 'tq'), (90, 'side')]:
     shot(H, f'hbm-sthead-{v}', yaw, frame=1.15)

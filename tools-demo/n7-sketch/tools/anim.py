@@ -22,14 +22,34 @@ def bear_wave(F=60):
         frames.append([(0, 0)] * len(hold) + [(hp[0] - hand[0], hp[1] - hand[1]), (up * 6 + wave * 6, 0)])
     return 'bear', hold + [hand, head], frames
 
-MOTIONS = {'bear-wave': bear_wave}
+def monster_walk(F=48, cycles=2):
+    """the drawn creature walks on the spot, as in the paper's examples: four feet stepping in diagonal pairs,
+    the body bobbing, the tail and head swinging a little"""
+    feet = [(380, 798), (670, 798), (326, 803), (722, 803)]    # far front, far back, near front, near back
+    phase = [0.5, 0.0, 0.0, 0.5]
+    body, head, tail = (550, 500), (300, 380), (866, 285)
+    frames = []
+    for f in range(F * cycles):
+        t = (f / F) % 1
+        fr = []
+        for (x, y), ph in zip(feet, phase):
+            q = (t + ph) % 1
+            if q < 0.6: dx = 45 - 90 * (q / 0.6); dy = 0                      # on the ground, moving back
+            else: s = (q - 0.6) / 0.4; dx = -45 + 90 * ease(s); dy = -38 * math.sin(math.pi * s)   # lifted, forward
+            fr.append((dx, dy))
+        bob = -8 * math.cos(4 * math.pi * t)
+        fr += [(0, bob), (6 * math.sin(2 * math.pi * t), bob * 1.4), (0, 25 * math.sin(2 * math.pi * t))]
+        frames.append(fr)
+    return 'monster', feet + [body, head, tail], frames
+
+MOTIONS = {'bear-wave': bear_wave, 'monster-walk': monster_walk}
 
 if __name__ == '__main__':
     work, m = sys.argv[1], sys.argv[2]
     ch, cps, frames = MOTIONS[m]()
     fr = json.load(open(os.path.join(work, ch, 'frame.json')))
     T = lambda x, y: ((x - fr['cx']) * fr['s'] + fr['canvas'] / 2, (y - fr['cy']) * fr['s'] + fr['canvas'] / 2)
-    L = ['iters 6'] + ['cp %.1f %.1f' % T(*p) for p in cps]
+    L = ['iters 10'] + ['cp %.1f %.1f' % T(*p) for p in cps]
     for f in frames:
         L.append('frame'); L += ['d %.2f %.2f' % (dx * fr['s'], dy * fr['s']) for dx, dy in f]
     open(os.path.join(work, ch, 'anim.txt'), 'w').write('\n'.join(L) + '\n')

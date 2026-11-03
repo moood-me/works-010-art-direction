@@ -45,7 +45,7 @@ if (preset === 'indie') {
   ramp = new THREE.DataTexture(new Uint8Array([70, 70, 70, 255, 150, 150, 150, 255, 215, 215, 215, 255, 255, 255, 255, 255]), 4, 1);
   inkColor = 0x1d0f18; inkW = 0.006;
 }
-if (ramp) ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
+if (ramp) { ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true; }
 
 const text = async u => (await fetch(u)).text();
 function parseObj(t) {

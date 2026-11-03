@@ -15,10 +15,12 @@ def make(name, motion_body=False):
     R, body, garments = S.person(who, st['skin'])
     mel = st['melanin']
     mat = S.hair_material('hair', mel[0], mel[1], S.srgb(mel[2]) if len(mel) > 2 else None, rough=st.get('rough', 0.25))
+    scalp_mat = S.principled('scalp', S.srgb(st['scalp']), 0.8)
     hairs = []
     for k, part in enumerate(st['parts']):
         p = {**st, **part}
         sc = S.scalp(R, c, r, st['line'], p.get('region'), name=f'scalp-{k}')
+        sc.data.materials.append(scalp_mat)   # the scalp painted in the hair's colour, as grooms do: no skin between locks
         g = S.guides_object(f'hair-{k}', p['guides'], sc)
         g.data.materials.append(mat)
         S.gn(g, 'Interpolate Hair Curves', Surface=sc, Surface_UV_Map=('attr', 'UVMap'), Part_by_Mesh_Islands=False,

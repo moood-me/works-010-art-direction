@@ -50,7 +50,7 @@ def poly(pts, n=12): return catmull(pts, n)
 
 # —— the characters: (name, closed curve, the part it grows out of or None), back to front; coordinates of the front picture
 CHARS = {
-  'bear': dict(src='our-bear-front.png', tex=['head', 'muzzle', 'body', 'armL', 'armR'], thin=True, colors={}, parts=[
+  'bear': dict(src='our-bear-front.png', tex=['head', 'muzzle', 'body'], thin=True, colors={}, parts=[
     ('earL', ell(113, 115, 31, 30), 'head'),
     ('earR', ell(328, 106, 31, 30), 'head'),
     ('legL', poly([(158, 290), (234, 290), (236, 362), (224, 378), (168, 378), (155, 364)]), 'body'),

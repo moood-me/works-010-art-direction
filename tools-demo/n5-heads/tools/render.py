@@ -15,8 +15,8 @@ for n in CH['hide']:
     if n in bpy.data.objects: bpy.data.objects[n].hide_render = True
 for o in bpy.data.objects:
     if o.name.startswith('WGT-'): o.hide_render = True
-# the clear cornea over the iris renders milky in EEVEE without ray tracing; it is hidden so the iris shows as made
-if cfg.get('engine') == 'EEVEE':
+# the clear cornea over the iris renders milky in EEVEE without ray tracing and opaque in Workbench; it is hidden so the iris shows as made
+if True:
     for n in ('GEO-rain-eye_cornea', 'GEO-snow_eye_corneas'):
         if n in bpy.data.objects: bpy.data.objects[n].hide_render = True
 
@@ -102,6 +102,7 @@ def wire_on():
     sc.display.shading.color_type = 'OBJECT'
     t = (hb[1].z - hb[0].z) * 0.0011
     for o in [o for o in bpy.data.objects if o.type == 'MESH' and not o.hide_render]:
+        if not any(k in o.name for k in ('head', 'eye', 'brow', 'lash', 'body', 'gums', 'tongue', 'teeth')): o.color = (0.80, 0.78, 0.76, 1); continue
         o.color = (0.80, 0.78, 0.76, 1)
         for m in o.modifiers:
             if m.type == 'SUBSURF': m.show_render = False
