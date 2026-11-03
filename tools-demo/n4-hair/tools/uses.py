@@ -24,7 +24,7 @@ def patch(x, extra, title):
     G = [np.stack([g[:, 0], g[:, 2], -g[:, 1]], -1) for g in G]   # (written in three's axes, as guides_object wants)
     h = S.guides_object('hair', G, p)
     h.data.materials.append(MAT)
-    S.gn(h, 'Interpolate Hair Curves', Surface=p, Surface_UV_Map=('attr', 'UVMap'), Part_by_Mesh_Islands=False, Density=60000.0)
+    S.gn(h, 'Interpolate Hair Curves', Surface=p, Surface_UV_Map=('attr', 'UVMap'), Part_by_Mesh_Islands=False, Density=250000.0)
     for g, kw in extra: S.gn(h, g, **kw)
     S.gn(h, 'Set Hair Curve Profile', Radius=0.0006, Shape=0.3)
 
@@ -35,11 +35,11 @@ if what == 'patches':
          ([('Clump Hair Curves', dict(Existing_Guide_Map=False, Guide_Distance=0.03, Shape=0.3, Preserve_Length=True))], 'Clump'),
          ([('Curl Hair Curves', dict(Existing_Guide_Map=False, Guide_Distance=0.03, Radius=0.012, Frequency=6.0, Curl_Start=0.15))], 'Curl'),
          ([('Frizz Hair Curves', dict(Distance=0.01, Shape=0.4))], 'Frizz'),
-         ([('Braid Hair Curves', dict(Existing_Guide_Map=False, Guide_Distance=0.2, Radius=0.012, Frequency=1.5, Braid_Start=0.1, Thickness=0.8))], 'Braid'),
+         ([('Braid Hair Curves', dict(Existing_Guide_Map=False, Guide_Distance=0.2, Radius=0.014, Frequency=2.0, Braid_Start=0.08, Thickness=1.0))], 'Braid'),
          ([('Hair Curves Noise', dict(Distance=0.02, Scale=4.0, Shape=0.4))], 'Noise')]
     for k, (ex, t) in enumerate(V): patch(k * 0.13, ex, t)
-    co = S.stage(res=(1300, 420), samples=16)
+    co = S.stage(res=(1500, 500), samples=16)
     bpy.data.objects['ground'].hide_render = True
-    co.data.type = 'ORTHO'; co.data.ortho_scale = 0.8
-    co.location = (0.325, -1.2, 0.12); co.rotation_euler = (math.radians(88), 0, 0)
+    co.data.type = 'ORTHO'; co.data.ortho_scale = 0.78
+    co.location = (0.325, -1.2, 0.115); co.rotation_euler = (math.radians(88), 0, 0)
     bpy.context.scene.render.filepath = f'{out}/use-nodes.png'; bpy.ops.render.render(write_still=True)
