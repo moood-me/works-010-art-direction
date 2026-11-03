@@ -1,0 +1,63 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "moood-boy",
+ "label": {
+  "ru": "Подросток",
+  "en": "Teenage boy"
+ },
+ "source": "moood engines/1/bodies/boy.bin (experiments/data/boy.js): Anny baked by moood",
+ "topology": "anny-moood",
+ "skeleton": "soma77",
+ "eyes": {
+  "centers": [
+   [
+    0.03,
+    1.5441,
+    0.1437
+   ],
+   [
+    -0.0311,
+    1.5446,
+    0.1438
+   ]
+  ],
+  "size": 0.0043,
+  "about": "moood's drawn eyes: where they sit, their size"
+ },
+ "bin": "moood-boy.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 165768
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 166692
+  },
+  "facePlain": {
+   "dtype": "float32",
+   "shape": [
+    2817,
+    3
+   ],
+   "offset": 167924
+  }
+ }
+}

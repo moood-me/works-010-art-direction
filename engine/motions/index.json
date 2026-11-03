@@ -1,0 +1,155 @@
+{
+ "format": "engine/motions",
+ "version": 1,
+ "motions": [
+  {
+   "id": "walk",
+   "label": {
+    "ru": "шаг",
+    "en": "walk"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "run",
+   "label": {
+    "ru": "бег",
+    "en": "run"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "sneak",
+   "label": {
+    "ru": "крадётся",
+    "en": "sneak"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "wave",
+   "label": {
+    "ru": "машет",
+    "en": "wave"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "jump",
+   "label": {
+    "ru": "прыжок",
+    "en": "jump"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "dance",
+   "label": {
+    "ru": "танец",
+    "en": "dance"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "bow",
+   "label": {
+    "ru": "поклон",
+    "en": "bow"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "stomp",
+   "label": {
+    "ru": "топает",
+    "en": "stomp"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "idle",
+   "label": {
+    "ru": "стоит",
+    "en": "idle"
+   },
+   "frames": 150,
+   "fps": 30
+  },
+  {
+   "id": "sit",
+   "label": {
+    "ru": "садится",
+    "en": "sit"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "lie",
+   "label": {
+    "ru": "ложится",
+    "en": "lie down"
+   },
+   "frames": 180,
+   "fps": 30
+  },
+  {
+   "id": "lying",
+   "label": {
+    "ru": "лежит",
+    "en": "lying"
+   },
+   "frames": 150,
+   "fps": 30
+  },
+  {
+   "id": "roll",
+   "label": {
+    "ru": "кувырок",
+    "en": "forward roll"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "roll-side",
+   "label": {
+    "ru": "катается",
+    "en": "rolls sideways"
+   },
+   "frames": 150,
+   "fps": 30
+  },
+  {
+   "id": "rollover",
+   "label": {
+    "ru": "перекатывается",
+    "en": "rolls over"
+   },
+   "frames": 150,
+   "fps": 30,
+   "after": "lie"
+  }
+ ],
+ "chains": [
+  {
+   "id": "lie-rollover",
+   "label": {
+    "ru": "ложится → перекатывается",
+    "en": "lies down → rolls over"
+   },
+   "motions": [
+    "lie",
+    "rollover"
+   ]
+  }
+ ]
+}

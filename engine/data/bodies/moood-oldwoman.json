@@ -1,0 +1,63 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "moood-oldwoman",
+ "label": {
+  "ru": "Старушка",
+  "en": "Old woman"
+ },
+ "source": "moood engines/1/bodies/oldwoman.bin (experiments/data/oldwoman.js): Anny baked by moood",
+ "topology": "anny-moood",
+ "skeleton": "soma77",
+ "eyes": {
+  "centers": [
+   [
+    0.028,
+    1.4427,
+    0.1452
+   ],
+   [
+    -0.029,
+    1.4432,
+    0.1453
+   ]
+  ],
+  "size": 0.004,
+  "about": "moood's drawn eyes: where they sit, their size"
+ },
+ "bin": "moood-oldwoman.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 165768
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 166692
+  },
+  "facePlain": {
+   "dtype": "float32",
+   "shape": [
+    2817,
+    3
+   ],
+   "offset": 167924
+  }
+ }
+}
