@@ -94,6 +94,16 @@ movements by themselves; speed of cloth and hair for several characters.
 - After that, talk with Pavel (a discussion, not a build): how to make two people interact properly — one lifts the
   other in their arms and carries them; A stands, B comes up and touches A's shoulder, A reacts and looks round.
 
+- Two people (Pavel, 2026-11-03): through Kimodo's constraints. One leads, the other follows, the roles change in
+  turn; made in parts, by the logic of the script — who reacts to what. The carrier: try by simple means, through
+  Kimodo; may be left if too hard. The carried one may be attached — they're moved by the other person's Kimodo
+  motion, and that's fine; the rule meant only that people aren't moved by formulas ("не воспринимай меня слишком
+  прямо… возможно что-то и ок").
+- Reaching to a place: not stretched by formulas afterwards — when we reach, the body leans in, the elbow turns, many
+  muscles work. Ask Kimodo to make it right by giving it the right coordinates, as far as possible and easy. An
+  idea of direction, not a hard requirement.
+- Add what Pavel asks to this file, so it isn't lost.
+
 ## Not now
 
 Breathing and idle life; fingers and grips (Kimodo has none); feet on the ground; turning to a target; cartoon timing;
