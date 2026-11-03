@@ -28,7 +28,7 @@ def make(name, motion_body=False):
         S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=p.get('clump2', 0.012), Factor=p.get('clump2_f', 0.5),
              Shape=0.1, Tip_Spread=0.0005, Preserve_Length=True, Seed=2 + k)
         if p.get('noise'): S.gn(g, 'Hair Curves Noise', Distance=p['noise'], Scale=40.0, Shape=0.3, Seed=4)
-        for on in p.get('shrink_on', []):
+        for on in p.get('shrink_on', ['body']):   # out of the head and body wherever the groom went into them
             S.gn(g, 'Shrinkwrap Hair Curves', Surface=bpy.data.objects[on], Offset_Distance=p.get('shrink', 0.006),
                  Above_Surface=0.5, Smoothing_Steps=3, Lock_Roots=True)
         S.gn(g, 'Smooth Hair Curves', Amount=0.6, Iterations=6, Preserve_Length=True)

@@ -50,7 +50,7 @@ def poly(pts, n=12): return catmull(pts, n)
 
 # —— the characters: (name, closed curve, the part it grows out of or None), back to front; coordinates of the front picture
 CHARS = {
-  'bear': dict(src='our-bear-front.png', tex=['head', 'muzzle', 'body'], thin=True, colors={}, parts=[
+  'bear': dict(src='our-bear-front.png', tex=['head', 'muzzle', 'body', 'armL', 'armR'], thin=True, colors={}, parts=[
     ('earL', ell(113, 115, 31, 30), 'head'),
     ('earR', ell(328, 106, 31, 30), 'head'),
     ('legL', poly([(158, 290), (234, 290), (236, 362), (224, 378), (168, 378), (155, 364)]), 'body'),
@@ -93,6 +93,18 @@ CHARS = {
     ('earR', poly([(556, 168), (500, 192), (450, 198), (450, 240), (500, 218)], 8), 'head'),
     ('head', ell(350, 258, 134, 122), None),
   ]),
+  # the tool's own kind of case: a creature drawn from scratch in side view (no picture under it), canvas pixels
+  'monster': dict(src=None, tex=[], thin=False, colors={}, parts=[
+    ('legFarF', tube([(400, 520), (392, 680), (380, 800)], 26, 22), 'body'),
+    ('legFarB', tube([(650, 520), (662, 680), (670, 800)], 28, 22), 'body'),
+    ('tail', tube([(700, 470), (790, 430), (850, 340), (868, 280)], 30, 12), 'body'),
+    ('body', ell(550, 500, 205, 110), 'head'),
+    ('legF', tube([(350, 540), (336, 680), (326, 805)], 34, 28), 'body'),
+    ('legB', tube([(700, 540), (712, 680), (722, 805)], 36, 28), 'body'),
+    ('ear', poly([(320, 300), (350, 210), (380, 200), (370, 290)], 8), 'head'),
+    ('head', ell(300, 380, 120, 88, -0.15), None),
+    ('eye', ell(260, 352, 20, 22), None),
+  ]),
 }
 
 def contains(poly, pts):
@@ -118,10 +130,13 @@ def stroke(curve, parent):
 
 def main(work):
     for name, C in CHARS.items():
-        img = Image.open(os.path.join(work, C['src'])).convert('RGB')
-        allp = np.concatenate([c for _, c, _ in C['parts']])
-        lo, hi = allp.min(0), allp.max(0)
-        s = 760 / (hi[1] - lo[1]); cx, cy = (lo + hi) / 2
+        if C['src']:
+            img = Image.open(os.path.join(work, C['src'])).convert('RGB')
+            allp = np.concatenate([c for _, c, _ in C['parts']])
+            lo, hi = allp.min(0), allp.max(0)
+            s = 760 / (hi[1] - lo[1]); cx, cy = (lo + hi) / 2
+        else:
+            img = Image.new('RGB', (CANVAS, CANVAS), (255, 255, 255)); s = 1; cx = cy = CANVAS / 2
         T = lambda P: np.stack([(P[:, 0] - cx) * s + CANVAS / 2, (P[:, 1] - cy) * s + CANVAS / 2], 1)
         curves = {n: c for n, c, _ in C['parts']}
         out = os.path.join(work, name); os.makedirs(out, exist_ok=True)

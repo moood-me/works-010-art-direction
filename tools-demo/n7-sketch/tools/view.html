@@ -30,6 +30,10 @@ if (preset === 'indie') {
   ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
   ramp = new THREE.DataTexture(new Uint8Array([150, 150, 150, 255, 215, 215, 215, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat);
   inkColor = '#2a2228'; inkW = 0.0075;
+} else if (preset === 'mm') {
+  // Monster Mash's own look: its matcap (data/shaders/matcapOrange.jpg), no lights, no line
+  scene.background = new THREE.Color('#f4f1ec');
+  camera = new THREE.PerspectiveCamera(26, W / H, 0.05, 50);
 } else {
   scene.background = new THREE.Color('#d8d0c3');
   camera = new THREE.PerspectiveCamera(26, W / H, 0.05, 50);
@@ -41,7 +45,7 @@ if (preset === 'indie') {
   ramp = new THREE.DataTexture(new Uint8Array([70, 70, 70, 255, 150, 150, 150, 255, 215, 215, 215, 255, 255, 255, 255, 255]), 4, 1);
   inkColor = 0x1d0f18; inkW = 0.006;
 }
-ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
+if (ramp) ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
 
 const text = async u => (await fetch(u)).text();
 function parseObj(t) {
@@ -65,7 +69,7 @@ function place(v, fr, k, u0, vFloor) {
 window.show = async o => {
   const fr = JSON.parse(await text(o.dir + '/frame.json'));
   const pid = (await text(o.dir + '/parts.txt')).split('\n').filter(l => l && l[0] !== '#').map(Number);
-  const img = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = o.dir + '/tex.png'; });
+  const img = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => { const c = document.createElement('canvas'); c.width = c.height = 1; r(c); }; i.src = o.dir + '/tex.png'; });
   const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height; const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0);
   const px = cx.getImageData(0, 0, img.width, img.height).data;
   const rest = parseObj(await text(o.dir + '/' + (o.obj || 'rest.obj')));
@@ -98,6 +102,7 @@ window.show = async o => {
   };
   if (group) scene.remove(group);
   group = new THREE.Group(); scene.add(group);
+  if (preset === 'mm') { group.add(new THREE.Mesh(g, new THREE.MeshMatcapMaterial({ matcap: await new THREE.TextureLoader().loadAsync('matcapOrange.jpg') }))); base.g = g; view(o); return; }
   const mesh = new THREE.Mesh(g, mat); mesh.castShadow = true; group.add(mesh);
   const ink = new THREE.MeshBasicMaterial({ color: inkColor, side: THREE.BackSide });
   ink.onBeforeCompile = s => { s.vertexShader = s.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += normalize(normal) * ' + inkW.toFixed(4) + ';'); };
