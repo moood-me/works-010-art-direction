@@ -141,6 +141,7 @@ function show(id) {
   const tools = (it.tools || []).map(t => `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.name)}</a>`).join(', ');
   view.innerHTML = `<h2><span class="id">${it.id}</span>${esc(it.name)}<span class="st ${it.status}">${esc(it.statusText)}</span></h2>
     <p class="tool">Инструмент: ${tools}</p><p class="what">${esc(it.what)}</p>${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ''}
+    ${(it.uses || []).length ? `<section class="cmp"><h3>Что умеет сам по себе</h3><p class="what">Для чего этот инструмент сделан и что он делает в своих задачах, даже если это не наше.</p>${it.uses.map(u => `<div class="col with" style="margin-bottom:14px"><h4>${esc(u.title)}</h4><p>${esc(u.text)}</p><div class="grid">${figs(it, u.pics)}</div></div>`).join('')}</section><h3 style="margin-top:28px">Против того, что у нас</h3>` : ''}
     ${(it.compare || []).map(c => `<section class="cmp"><h3>${esc(c.title)}</h3><div class="pair">
       <div class="col now"><h4>Сейчас у нас</h4><p>${esc(c.now?.text)}</p><div class="grid">${figs(it, c.now?.pics)}</div></div>
       <div class="col with"><h4>С инструментом</h4><p>${esc(c.with?.text)}</p><div class="grid">${figs(it, c.with?.pics)}</div></div>

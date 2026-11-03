@@ -11,6 +11,9 @@ narrow what is here without asking him.
   attractiveness": polish, manner and precision in the details.
 - Faces exact to their reference: every character's face shape, chin, cheekbones, nose (its curve and sharpness),
   mouth (shape, size, where it sits against nose and chin) — different characters have clearly different faces.
+- Curves of limbs (Pavel, 2026-11-03, correcting what Т5 made of it): he never meant to deform people. In a
+  conventional style an arm shown as a cylinder needs to be a little curved, with small aesthetic bends, to be a bit
+  more real — symbolic, yet truly conveying the body. Not bowed legs.
 - Breadth first, to find the principles of beauty and learn, instrumentally, to make the characters Pavel wants.
 
 ## The engine
@@ -61,6 +64,8 @@ narrow what is here without asking him.
   number, pictures as «Т5-б»); what belongs to what and what grew from what; an overview to orient by sight.
 - Pictures preview on the same page; 3D on the same page, large, without its own scroll, the controls always there:
   turn every model, choose the character, its motions and the rest.
+- When showing a tool someone else made: besides our thing done by it, show what the tool does in the cases it was
+  made for, used as intended — so it is clear what it is and why it exists.
 - Runs locally from the repository with `python3 -m http.server`.
 
 ## Working

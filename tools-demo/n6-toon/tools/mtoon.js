@@ -34,14 +34,18 @@ const isInk = m => m && m.isMeshBasicMaterial && m.side === THREE.BackSide;
 const isLit = m => m && (m.isMeshToonMaterial || m.isMeshStandardMaterial || m.isMeshPhongMaterial || m.isMeshLambertMaterial);
 
 export function look(scene, name, over = {}) {
-  const L = name === 'ours' ? null : { ...LOOKS[name], ...over };
+  // a name may carry '+one': the same look with only the key light (see oneLight)
+  const [base, ...flags] = name.split('+');
+  const L = base === 'ours' ? null : { ...LOOKS[base], ...over, oneLight: flags.includes('one') };
   const meshes = []; scene.traverse(o => { if (o.isMesh && !o.isInstancedMesh) meshes.push(o); });
+  // oneLight: the back (rim) light off — MToon counts every directional light as a sun, and draws its own rim
+  scene.traverse(o => { if (o.isDirectionalLight && !o.castShadow) { if (o.userData.mtoonI === undefined) o.userData.mtoonI = o.intensity; o.intensity = L && L.oneLight ? 0 : o.userData.mtoonI; } });
   for (const o of meshes) {
     const u = o.userData;
     if (u.mtoonOrig === undefined) {
       const m = o.material;
       if (isInk(m)) u.mtoonOrig = { ink: true, visible: o.visible };
-      else if (isLit(m) && o.castShadow)   // the figures cast shadows; floors don't u.mtoonOrig = { mat: m, groups: o.geometry.groups.slice() };
+      else if (isLit(m) && o.castShadow /* the figures cast shadows, floors do not */) u.mtoonOrig = { mat: m, groups: o.geometry.groups.slice() };
       else u.mtoonOrig = null;
     }
     const O = u.mtoonOrig; if (!O) continue;
@@ -61,7 +65,7 @@ export function look(scene, name, over = {}) {
     if (L.matcap) { mt.matcapTexture = matcap(); mt.matcapFactor = new THREE.Color(1, 1, 1); }
     if (L.outline) {
       mt.outlineWidthMode = L.outline[0] === 'screen' ? 'screenCoordinates' : 'worldCoordinates';
-      mt.outlineWidthFactor = L.outline[1] * (over.outlineScale || 1); mt.outlineColorFactor = new THREE.Color(L.outlineColor || '#24161e'); mt.outlineLightingMixFactor = 0;
+      mt.outlineWidthFactor = L.outline[1] * (L.outline[0] === 'world' ? over.outlineScale || 1 : 1); mt.outlineColorFactor = new THREE.Color(L.outlineColor || '#24161e'); mt.outlineLightingMixFactor = 0;
     }
     if (L.outline) {
       // as three-vrm's loader does it: the same triangles twice, the second time with the outline copy

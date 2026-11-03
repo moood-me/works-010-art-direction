@@ -28,7 +28,8 @@ for (const j of jobs) {
     }, j);
   } else {
     await page.goto(srv.url + 'tools-demo/n6-toon/tools/run.html?src=' + j.src + '&look=ours&' + (j.q || ''));
-    await page.waitForFunction(() => window.__ready, null, { timeout: 240000 });
+    try { await page.waitForFunction(() => window.__ready, null, { timeout: j.timeout || 300000 }); }
+    catch (e) { console.log('TIMEOUT', j.name, errs.join(' | ')); await page.close(); continue; }
   }
   for (const l of j.looks) {
     await page.evaluate(([l, over]) => window.__look(l, over), [l, j.over || {}]);

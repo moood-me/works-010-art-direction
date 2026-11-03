@@ -72,7 +72,7 @@ def place(view, hb, bb):
     """front: camera on -Y looking +Y. Focal 85 mm-ish framing."""
     hc = (hb[0] + hb[1]) / 2; hs = hb[1] - hb[0]
     yaw = {'front': 0, 'tq': 35, 'side': 90, 'body': 25, 'bodyfront': 0, 'bodyside': 90, 'eyeL': 12, 'mouth': 10, 'eyeLside': 60}[view]
-    cam_d.lens = 85; cam_d.sensor_width = 36
+    cam_d.lens = 85; cam_d.sensor_fit = 'VERTICAL'; cam_d.sensor_height = 36
     if view.startswith('body'):
         c = (bb[0] + bb[1]) / 2; h = bb[1].z - bb[0].z; dist = h * 1.25 / 0.42 * 0.5 * 1.0
         tgt = Vector((c.x, c.y, c.z)); cam_d.lens = 50; dist = h / (36 / 50) * 1.12
@@ -81,8 +81,8 @@ def place(view, hb, bb):
     elif view == 'mouth':
         tgt = MOUTH.copy(); dist = hs.z * 0.42 / (36 / 85)
     else:
-        tgt = (EYE_L + MOUTH) / 2; tgt.x = 0; tgt.z += hs.z * 0.08; dist = hs.z * 1.35 / (36 / 85)
-    print("PLACE", view, tuple(tgt), dist, tuple(hs)); a = math.radians(yaw)
+        tgt = (EYE_L + MOUTH) / 2; tgt.x = 0; tgt.z += hs.z * 0.08; dist = hs.z * 1.2 / (36 / 85)
+    a = math.radians(yaw)
     d = Vector((math.sin(a), -math.cos(a), 0.0))
     cam.location = tgt + d * dist + Vector((0, 0, dist * 0.02))
     dirv = tgt - cam.location; cam.rotation_euler = dirv.to_track_quat('-Z', 'Y').to_euler()

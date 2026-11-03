@@ -14,7 +14,7 @@ RAIN = {
 }
 SNOW = {
   'neutral': {},
-  'smile': M(LR('ACT-Lips_Corner', -0.01, 0.016, 0), LR('CheekRaiser', 0, 0.015, 0), LR('MSTR-Eyelid_Lower', 0, 0.006, 0), LR('MSTR-Eyebrow', 0, 0.005, 0)),
+  'smile': M(LR('ACT-Lips_Corner', -0.015, 0.026, 0), LR('CheekRaiser', 0, 0.02, 0), LR('CenterCheekRaiser', 0, 0.012, 0), LR('MSTR-Eyelid_Lower', 0, 0.006, 0), LR('MSTR-Eyebrow', 0, 0.005, 0)),
   'surprise': M({'Jaw': {'rot': [14, 0, 0]}}, LR('MSTR-Eyebrow', 0, 0.03, 0), LR('MSTR-Eyelid_Upper', 0, 0.008, 0), LR('ACT-Lips_Corner', 0.006, 0, 0)),
   'blink': M(LR('MSTR-Eyelid_Upper', 0, -0.024, 0)),
   'anger': M(LR('MSTR-Eyebrow', -0.012, -0.025, 0), LR('ACT-Lips_Corner', 0, -0.012, 0), LR('MSTR-Eyelid_Upper', 0, -0.005, 0), LR('MSTR-Eyelid_Lower', 0, 0.006, 0)),

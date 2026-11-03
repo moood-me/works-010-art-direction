@@ -53,8 +53,10 @@ bo.collision.thickness_outer = 0.004; bo.collision.cloth_friction = 5; bo.collis
 PRESET = {'silk': (0.15, 5, 5, 0.05, 1), 'chiffon': (0.15, 5, 5, 0.05, 1), 'jersey': (0.3, 15, 5, 0.5, 1),
   'heavyjersey': (0.3, 15, 5, 0.5, 1), 'suiting': (0.4, 40, 40, 5, 1), 'denim': (1, 40, 40, 10, 1), 'twill': (1, 40, 40, 10, 1)}
 
+# what each garment meets: the floor, the body, and the garments under it (innermost first, as export.mjs gives them)
+under = bpy.data.collections.new('under0'); under.objects.link(floor); under.objects.link(bo)
 garms = []
-for g in info['garments']:
+for li, g in enumerate(info['garments']):
     n = g['n']; name = g['name']
     tris = rd(f'{name}-tris.u32', np.uint32).reshape(-1, 3)
     rest = rd(f'{name}-rest.f32', np.float32).reshape(n, 3)
@@ -84,7 +86,12 @@ for g in info['garments']:
     cs.collision_quality = 4; cs.distance_min = 0.003; cs.use_self_collision = True; cs.self_distance_min = 0.002
     cs.self_friction = 5; cs.friction = 5
     cm.point_cache.frame_start = 0; cm.point_cache.frame_end = F - 1
-    ob.modifiers.new('col', 'COLLISION'); ob.collision.thickness_outer = g['F']['thick']; ob.collision.cloth_friction = 5
+    cs.collection = under
+    if li < len(info['garments']) - 1:   # a solid for the garments over it
+        ob.modifiers.new('col', 'COLLISION'); ob.collision.thickness_outer = g['F']['thick']; ob.collision.cloth_friction = 5
+        nxt = bpy.data.collections.new(f'under{li + 1}')
+        for o in under.objects: nxt.objects.link(o)
+        nxt.objects.link(ob); under = nxt
     garms.append((g, ob, s))
     print(name, n, g['fabric'], PRESET[g['fabric']])
 
