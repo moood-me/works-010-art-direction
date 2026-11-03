@@ -14,7 +14,7 @@ await p.waitForFunction(() => window.ready, null, { timeout: 60000 });
 const U = s => srv.url + s.replace(/^\/home\/user\//, '');
 for (const j of jobs) {
   await p.setViewportSize({ width: j.w, height: j.h });
-  await p.evaluate(j => window.shot(j), { ...j, tris: U(j.tris), meshes: j.meshes.map(U) });
+  await p.evaluate(j => window.shot(j), { ...j, tris: U(j.tris), meshes: j.meshes.map(U), colors: j.colors && j.colors.map(c => c && U(c)) });
   await (await p.$('#st')).screenshot({ path: j.out, type: j.out.endsWith('.jpg') ? 'jpeg' : 'png', ...(j.out.endsWith('.jpg') ? { quality: 88 } : {}) });
   console.log(j.out);
 }

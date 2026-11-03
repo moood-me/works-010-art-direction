@@ -1,0 +1,134 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Monster Mash view</title>
+<style>html,body{margin:0;background:#d8d0c3;overflow:hidden}</style></head>
+<body>
+<script type="module">
+// Shows a mesh inflated by Monster Mash (mm_harness) in the look of our pages:
+// preset 'indie' = П1 (experiments/indie: toon ramp of 3, dark line, its lights, floor, fixed camera),
+// preset 'toon'  = П2 (experiments/toon: ramp of 4, ink hull, its lights, camera fitted to the figure, turned by yaw).
+// Colours: Monster Mash's template-image texture (our front picture) on the front side; the back side, which the
+// picture cannot show, in the part's own colour.
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const qs = new URLSearchParams(location.search);
+const W = +(qs.get('w') || 700), H = +(qs.get('h') || 800);
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+let camera, ramp, inkColor, inkW, preset = qs.get('preset') || 'toon';
+if (preset === 'indie') {
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+  scene.background = new THREE.Color('#d9d2c6');
+  camera = new THREE.PerspectiveCamera(18, W / H, 0.1, 80);
+  scene.add(new THREE.HemisphereLight('#fff6ea', '#6b6258', 1.15));
+  const key = new THREE.DirectionalLight('#fff0dc', 2.0); key.position.set(-3, 5, 4); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 20 }); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 3;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight('#d8e6ff', 1.0); rim.position.set(3, 3, -4); scene.add(rim);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: '#d2cabd', roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  ramp = new THREE.DataTexture(new Uint8Array([150, 150, 150, 255, 215, 215, 215, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat);
+  inkColor = '#2a2228'; inkW = 0.0075;
+} else {
+  scene.background = new THREE.Color('#d8d0c3');
+  camera = new THREE.PerspectiveCamera(26, W / H, 0.05, 50);
+  scene.add(new THREE.HemisphereLight(0xfff4e6, 0x6a5a6e, 1.1));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(1.6, 3, 2.4); key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, { left: -3, right: 3, top: 3, bottom: -1, near: 0.5, far: 10 }); key.shadow.radius = 6; scene.add(key);
+  const rim = new THREE.DirectionalLight(0xbfd8ff, 0.9); rim.position.set(-2, 2, -2.5); scene.add(rim);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.18 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  ramp = new THREE.DataTexture(new Uint8Array([70, 70, 70, 255, 150, 150, 150, 255, 215, 215, 215, 255, 255, 255, 255, 255]), 4, 1);
+  inkColor = 0x1d0f18; inkW = 0.006;
+}
+ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
+
+const text = async u => (await fetch(u)).text();
+function parseObj(t) {
+  const v = [], f = [];
+  for (const l of t.split('\n')) {
+    if (l.startsWith('v ')) { const p = l.split(/\s+/); v.push(+p[1], +p[2], +p[3]); }
+    else if (l.startsWith('f ')) { const p = l.trim().split(/\s+/).slice(1).map(s => +s.split('/')[0] - 1); for (let i = 1; i + 1 < p.length; i++) f.push(p[0], p[i], p[i + 1]); }
+  }
+  return { v, f };
+}
+let group = null, base = null;
+// image pixels -> world: k world units per pixel of our front picture, the figure's feet on the floor
+function place(v, fr, k, u0, vFloor) {
+  const out = new Float32Array(v.length);
+  for (let i = 0; i < v.length; i += 3) {
+    const u = (v[i] - fr.canvas / 2) / fr.s + fr.cx, w = (v[i + 1] - fr.canvas / 2) / fr.s + fr.cy, z = v[i + 2] / fr.s;
+    out[i] = (u - u0) * k; out[i + 1] = (vFloor - w) * k; out[i + 2] = -z * k;
+  }
+  return out;
+}
+window.show = async o => {
+  const fr = JSON.parse(await text(o.dir + '/frame.json'));
+  const pid = (await text(o.dir + '/parts.txt')).split('\n').filter(l => l && l[0] !== '#').map(Number);
+  const img = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = o.dir + '/tex.png'; });
+  const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height; const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0);
+  const px = cx.getImageData(0, 0, img.width, img.height).data;
+  const rest = parseObj(await text(o.dir + '/' + (o.obj || 'rest.obj')));
+  base = { fr, pid, rest, o };
+  // the scale: as on our page (indie: world units per pixel of the fixed camera; toon: the figure's height)
+  let vmax = -1e9; for (let i = 1; i < rest.v.length; i += 3) vmax = Math.max(vmax, (rest.v[i] - fr.canvas / 2) / fr.s + fr.cy);
+  base.k = o.k; base.u0 = o.u0 ?? fr.imgW / 2; base.vFloor = o.vFloor ?? vmax;
+  const P = place(rest.v, fr, base.k, base.u0, base.vFloor);
+  const n = P.length / 3, uv = new Float32Array(n * 2), bc = new Float32Array(n * 4);
+  // each part's own colour for its back side: the median of the picture over its front side
+  const byPart = {};
+  for (let i = 0; i < n; i++) {
+    const u = (rest.v[3 * i] - fr.canvas / 2) / fr.s + fr.cx, w = (rest.v[3 * i + 1] - fr.canvas / 2) / fr.s + fr.cy;
+    uv[2 * i] = u / fr.imgW; uv[2 * i + 1] = 1 - w / fr.imgH;
+    if (pid[i] % 2 === 0) { const x = Math.max(0, Math.min(img.width - 1, Math.round(u))), y = Math.max(0, Math.min(img.height - 1, Math.round(w))), j = 4 * (y * img.width + x); (byPart[pid[i] >> 1] ||= []).push([px[j], px[j + 1], px[j + 2]]); }
+  }
+  const med = {};
+  for (const [l, c] of Object.entries(byPart)) { med[l] = [0, 1, 2].map(ch => { const a = c.map(x => x[ch]).sort((p, q) => p - q); return a[a.length >> 1] / 255; }); }
+  for (let i = 0; i < n; i++) { const m = med[pid[i] >> 1] || [0.5, 0.5, 0.5], back = pid[i] % 2; bc.set([...m.map(c => Math.pow(c, 2.2)), back], 4 * i); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); g.setAttribute('bcol', new THREE.BufferAttribute(bc, 4));
+  g.setIndex(rest.f); g.computeVertexNormals();
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.flipY = true;
+  const mat = new THREE.MeshToonMaterial({ map: tex, gradientMap: ramp });
+  mat.onBeforeCompile = s => {
+    s.vertexShader = 'attribute vec4 bcol;\nvarying vec4 vBcol;\n' + s.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvBcol = bcol;');
+    s.fragmentShader = 'varying vec4 vBcol;\n' + s.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vBcol.rgb, vBcol.a);');
+  };
+  if (group) scene.remove(group);
+  group = new THREE.Group(); scene.add(group);
+  const mesh = new THREE.Mesh(g, mat); mesh.castShadow = true; group.add(mesh);
+  const ink = new THREE.MeshBasicMaterial({ color: inkColor, side: THREE.BackSide });
+  ink.onBeforeCompile = s => { s.vertexShader = s.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += normalize(normal) * ' + inkW.toFixed(4) + ';'); };
+  group.add(new THREE.Mesh(g, ink));
+  base.g = g;
+  view(o);
+};
+// another frame of the same mesh (the animation): new positions, same colours
+window.frame = async obj => {
+  const t = parseObj(await text(base.o.dir + '/' + obj));
+  base.g.attributes.position.array.set(place(t.v, base.fr, base.k, base.u0, base.vFloor)); base.g.attributes.position.needsUpdate = true;
+  base.g.computeVertexNormals(); view(base.o);
+};
+let fit = null;
+function view(o) {
+  const yaw = o.yaw || 0;
+  if (preset === 'indie') {
+    group.rotation.y = yaw;
+    camera.position.set(0, 0.45, 3.6); camera.lookAt(0, 0.33, 0);
+  } else {
+    // as experiments/toon: the camera on a circle round the figure's box, fitted to it (fitted once, on the rest shape)
+    if (!fit || o.refit) {
+      const box = new THREE.Box3().setFromObject(group), c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+      const fitH = sz.y / 2 / Math.tan(THREE.MathUtils.degToRad(13)), fitW = sz.x / 2 / Math.tan(THREE.MathUtils.degToRad(13)) / camera.aspect;
+      fit = { c, dist: Math.max(fitH, fitW) * 1.12 + sz.z }; o.refit = false;
+    }
+    const { c, dist } = fit;
+    camera.position.set(c.x + Math.sin(yaw) * dist, c.y + dist * 0.06, c.z + Math.cos(yaw) * dist); camera.lookAt(c);
+  }
+  camera.updateProjectionMatrix();
+  renderer.render(scene, camera);
+}
+window.setYaw = y => { base.o.yaw = y; view(base.o); };
+window.__ready = true;
+</script>
+</body></html>

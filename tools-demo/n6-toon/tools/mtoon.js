@@ -23,7 +23,7 @@ export const LOOKS = {
   hard:   { toony: 0.95, shift: 0.0,  shade: [0.42, 0.42, 0.42], outline: ['world', 0.0022] },
   soft:   { toony: 0.3,  shift: 0.0,  shade: [0.42, 0.42, 0.42], outline: ['world', 0.0022] },
   tint:   { toony: 0.92, shift: -0.05, shade: [0.55, 0.36, 0.48], outline: ['world', 0.0022], outlineColor: '#3a1830' },
-  rim:    { toony: 0.92, shift: -0.05, shade: [0.55, 0.36, 0.48], rim: ['#ffe2c4', 3.0, 0.08], matcap: true, outline: ['world', 0.0022], outlineColor: '#3a1830' },
+  rim:    { toony: 0.92, shift: -0.05, shade: [0.55, 0.36, 0.48], rim: ['#c89a7a', 4.0, 0.0], matcap: true, outline: ['world', 0.0022], outlineColor: '#3a1830' },
   thin:   { toony: 0.92, shift: -0.05, shade: [0.55, 0.36, 0.48], outline: ['world', 0.0008], outlineColor: '#3a1830' },
   thick:  { toony: 0.92, shift: -0.05, shade: [0.55, 0.36, 0.48], outline: ['world', 0.006], outlineColor: '#3a1830' },
   screen: { toony: 0.92, shift: -0.05, shade: [0.55, 0.36, 0.48], outline: ['screen', 0.006], outlineColor: '#3a1830' },
@@ -62,7 +62,7 @@ export function look(scene, name, over = {}) {
     });
     mt.vertexColors = vc; mt.ignoreVertexColor = !vc;
     if (L.rim) { mt.parametricRimColorFactor = new THREE.Color(L.rim[0]); mt.parametricRimFresnelPowerFactor = L.rim[1]; mt.parametricRimLiftFactor = L.rim[2]; mt.rimLightingMixFactor = 0.5; }
-    if (L.matcap) { mt.matcapTexture = matcap(); mt.matcapFactor = new THREE.Color(1, 1, 1); }
+    if (L.matcap) { mt.matcapTexture = matcap(); mt.matcapFactor = new THREE.Color(0.5, 0.5, 0.5); }
     if (L.outline) {
       mt.outlineWidthMode = L.outline[0] === 'screen' ? 'screenCoordinates' : 'worldCoordinates';
       mt.outlineWidthFactor = L.outline[1] * (L.outline[0] === 'world' ? over.outlineScale || 1 : 1); mt.outlineColorFactor = new THREE.Color(L.outlineColor || '#24161e'); mt.outlineLightingMixFactor = 0;

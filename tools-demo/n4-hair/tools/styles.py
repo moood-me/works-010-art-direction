@@ -26,25 +26,30 @@ def gwen(c, r, ey):
     for th, ph in grid(line, 4, 22, keep=lambda th, ph: not fr(th, ph)):
         tip = ey - 0.115 + 0.03 * (abs(th) / math.pi) ** 2
         rest.append(strand(c, r, th, ph, -0.05, tip, lift=0.09, sweep=0.25 * math.sin(th) if ph > 1.0 else 0, flare=0.025, curl=0.02))
-    return dict(skin=0xf1cdb4, line=line, color=0xe2bf6a, tip=0xf0d48a, dist=1.15 * 1.3,
+    return dict(skin=0xf1cdb4, line=line, melanin=(0.22, 0.45), dist=1.15 * 1.3,
                 parts=[dict(region=fr, guides=fringe, clump=0.03), dict(region=lambda th, ph: not fr(th, ph), guides=rest)])
 
 def alva(c, r, ey):
     """Alva: long straight brown hair, a centre part, down to the chest; in front of the shoulders at the sides."""
     line = hairline(0.62, 0.02, -0.7)
+    FRONT = 1.5
     parts = []
-    for sgn in (1, -1):
+    for sgn in (1, -1):   # the front halves, each side of the part
         G = []
-        for th, ph in grid(line, 4, 13, th0=0.02 if sgn > 0 else -math.pi, th1=math.pi if sgn > 0 else -0.02, seed=2 + sgn):
-            a = abs(th); s = math.copysign(1, th)
-            front = a < 1.5
-            if front:   # in front of the shoulder: out to the side and forward
-                out = np.array([s * 0.55, 0, 0.85]); tip = ey - 0.36 + 0.04 * a; fl = 0.05 + 0.06 * a
-            else:       # down the back
-                out = np.array([s * math.sin(a) * 0.4, 0, math.cos(a)]); tip = ey - 0.42; fl = 0.03
-            G.append(strand(c, r, th, ph, -0.15, tip, lift=0.08, sweep=0.12 * s * max(0, 1 - a), flare=fl, curl=0.0, n=32, out=out / np.linalg.norm(out)))
-        parts.append(dict(region=(lambda th, ph: th > 0) if sgn > 0 else (lambda th, ph: th <= 0), guides=G))
-    return dict(skin=0xf0c8b0, line=line, color=0x8a6a2a, tip=0xa8843e, dist=1.8 * 1.3, ty=-0.12,
+        for th, ph in grid(line, 4, 9, th0=0.03 if sgn > 0 else -FRONT, th1=FRONT if sgn > 0 else -0.03, seed=2 + sgn):
+            a = abs(th)
+            sweep = sgn * max(0.0, 1.25 - a)               # off the face to the side, as it comes down
+            out = np.array([sgn * 0.75, 0, 0.66]); tip = ey - 0.34 + 0.05 * a
+            G.append(strand(c, r, th, ph, -0.2, tip, lift=0.08, sweep=sweep, flare=0.03 + 0.03 * a, n=32, out=out / np.linalg.norm(out)))
+        parts.append(dict(region=(lambda th, ph: 0 < th < FRONT) if sgn > 0 else (lambda th, ph: -FRONT < th <= 0), guides=G))
+    G = []
+    for th, ph in grid(line, 4, 16, th0=FRONT, th1=2 * math.pi - FRONT, seed=7):
+        th = (th + math.pi) % (2 * math.pi) - math.pi; a = abs(th)
+        out = np.array([math.sin(th) * 0.5, 0, math.cos(th)])
+        sweep = (0.35 * math.copysign(1, th) * (a - FRONT) / (math.pi - FRONT)) if ph > 0.9 else 0.0
+        G.append(strand(c, r, th, ph, -0.15, ey - 0.43 + 0.04 * (math.pi - a), lift=0.08, flare=0.03, n=32, out=out / np.linalg.norm(out)))
+    parts.append(dict(region=lambda th, ph: abs(th) >= FRONT, guides=G))
+    return dict(skin=0xf0c8b0, line=line, melanin=(0.55, 0.55), dist=1.8 * 1.3, ty=-0.12,
                 parts=parts, clump=0.05, clump_shape=0.45, tip_spread=0.004, shrink_on=['body', 'tshirt'], shrink=0.008)
 
 def kpony(c, r, ey):
@@ -70,7 +75,7 @@ def kpony(c, r, ey):
         G.append(np.array(pts))
     locks = [strand(c, r, th, ph, 0.0, ey - 0.13, lift=0.03, flare=0.012, curl=0.006, n=18)
              for th, ph in grid(line, 2, 20, keep=side)]
-    return dict(skin=0xf3cdb8, line=line, color=0xb8304e, tip=0xd04060, dist=1.8 * 1.3, ty=-0.1,
+    return dict(skin=0xf3cdb8, line=line, melanin=(0.08, 0.2, 0xd23a5a), dist=1.8 * 1.3, ty=-0.1,
                 parts=[dict(region=lambda th, ph: not side(th, ph), guides=G, clump=0.03, clump_shape=0.6, tip_spread=0.004, guides_k=3),
                        dict(region=side, guides=locks, clump=0.02, density=900000)],
                 tie=T, tie_dir=back * 0.4 + np.array([0, -1, 0]))
@@ -84,7 +89,7 @@ def marco(c, r, ey):
         tip = ey + 0.03 - 0.07 * min(1, a * 2.2) - 0.02 * max(0, a - 0.5) * 2
         leave = 0.42 if a < 0.2 else 0.15
         G.append(strand(c, r, th, ph, leave, tip, lift=0.12, flare=0.018, curl=0.012, n=20))
-    return dict(skin=0xf0c8a6, line=line, color=0x3e2618, tip=0x5a3a22, dist=1.15 * 1.3,
+    return dict(skin=0xf0c8a6, line=line, melanin=(0.82, 0.5), dist=1.15 * 1.3,
                 parts=[dict(guides=G)], clump=0.03, clump_shape=0.5, tip_spread=0.002)
 
 STYLES = {'gwen': gwen, 'alva': alva, 'kpony': kpony, 'marco': marco}

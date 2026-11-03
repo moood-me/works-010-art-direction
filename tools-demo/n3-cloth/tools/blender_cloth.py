@@ -83,7 +83,7 @@ for li, g in enumerate(info['garments']):
     s.tension_stiffness = s.compression_stiffness = t; s.shear_stiffness = sh; s.bending_stiffness = bd
     s.air_damping = air; s.quality = 10; s.vertex_group_mass = 'hold'; s.pin_stiffness = 1
     s.use_dynamic_mesh = False
-    cs.collision_quality = 4; cs.distance_min = 0.003; cs.use_self_collision = True; cs.self_distance_min = 0.002
+    cs.collision_quality = 4; cs.distance_min = 0.005; cs.use_self_collision = True; cs.self_distance_min = 0.002
     cs.self_friction = 5; cs.friction = 5
     cm.point_cache.frame_start = 0; cm.point_cache.frame_end = F - 1
     cs.collection = under

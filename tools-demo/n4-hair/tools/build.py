@@ -13,7 +13,8 @@ def make(name, motion_body=False):
     c, r, ey = S.skull(R)
     st = STYLES[name](c, r, ey)
     R, body, garments = S.person(who, st['skin'])
-    mat = S.hair_material('hair', S.srgb(st['color']), S.srgb(st.get('tip', st['color'])), rough=st.get('rough', 0.25))
+    mel = st['melanin']
+    mat = S.hair_material('hair', mel[0], mel[1], S.srgb(mel[2]) if len(mel) > 2 else None, rough=st.get('rough', 0.25))
     hairs = []
     for k, part in enumerate(st['parts']):
         p = {**st, **part}
@@ -40,7 +41,6 @@ def make(name, motion_body=False):
         tie.rotation_euler = S.Vector(tuple(d)).to_track_quat('Z', 'Y').to_euler()
         tie.data.materials.append(S.principled('tie', S.srgb(0x2a2228), 0.4))
         for p in tie.data.polygons: p.use_smooth = True
-        hairs.append(tie)
     return dict(st=st, R=R, body=body, hairs=hairs, c=c, r=r, ey=ey, who=who)
 
 WHO = {'gwen': 'woman', 'alva': 'woman', 'kpony': 'woman', 'kbraid': 'woman', 'marco': 'child', 'jack': 'man'}

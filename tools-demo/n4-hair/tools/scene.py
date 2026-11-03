@@ -141,20 +141,22 @@ def gn(ob, group, **vals):
             m[key] = v
     return m
 
-def hair_material(name, color, tip=None, rough=0.32, coat=0.0, rand=0.12):
-    """Blender's Principled Hair BSDF (Chiang), coloured directly; a root-to-tip gradient and per-strand variation."""
+def hair_material(name, melanin, redness, tint=None, rough=0.25, root=0.12):
+    """Blender's Principled Hair BSDF (Chiang) by melanin (natural colours) and a tint (dyed ones); the roots a little
+    darker (melanin up by `root` toward the root, along the strand's Intercept), per-strand random colour."""
     m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; N = nt.nodes
     N.remove(N['Principled BSDF'])
-    h = N.new('ShaderNodeBsdfHairPrincipled'); h.model = 'CHIANG'; h.parametrization = 'COLOR'
-    info = N.new('ShaderNodeHairInfo'); ramp = N.new('ShaderNodeValToRGB')
-    ramp.color_ramp.elements[0].color = (*[x * 0.55 for x in color], 1)
-    ramp.color_ramp.elements[0].position = 0.0
-    ramp.color_ramp.elements[1].color = (*(tip or color), 1); ramp.color_ramp.elements[1].position = 0.35
-    nt.links.new(info.outputs['Intercept'], ramp.inputs['Fac'])
-    nt.links.new(ramp.outputs['Color'], h.inputs['Color'])
+    h = N.new('ShaderNodeBsdfHairPrincipled'); h.model = 'CHIANG'; h.parametrization = 'MELANIN'
+    info = N.new('ShaderNodeHairInfo'); mr = N.new('ShaderNodeMapRange')
+    mr.inputs['To Min'].default_value = min(1, melanin + root); mr.inputs['To Max'].default_value = melanin
+    mr.inputs['From Max'].default_value = 0.3
+    nt.links.new(info.outputs['Intercept'], mr.inputs['Value'])
+    nt.links.new(mr.outputs['Result'], h.inputs['Melanin'])
+    h.inputs['Melanin Redness'].default_value = redness
+    if tint: h.inputs['Tint'].default_value = (*tint, 1)
     h.inputs['Roughness'].default_value = rough
-    h.inputs['Radial Roughness'].default_value = 0.6
-    h.inputs['Coat'].default_value = coat
+    h.inputs['Radial Roughness'].default_value = 0.5
+    h.inputs['Random Color'].default_value = 0.15
     h.inputs['Random Roughness'].default_value = 0.1
     nt.links.new(h.outputs[0], N['Material Output'].inputs['Surface'])
     return m
