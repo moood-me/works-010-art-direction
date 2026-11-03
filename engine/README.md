@@ -11,7 +11,9 @@ browser and in node (`src/` has no three.js except `view3d.js`, which is given i
 The viewer: `viewer/index.html` (in the gallery: Д1). Several figures side by side (＋, ✕; the panel edits the chosen
 one); a motion or a chain; pause, scrub; the camera follows the box around all of them; front and side from where the
 chosen one faces; skinning methods, Т7's fixes and pose layers as toggles; the joints and the collision capsules
-shown. `?c=woman,man&m=walk&t=40&paused`.
+shown. `?c=woman,man&m=walk&t=40&paused`. With `?bodies` (in the gallery: Д2–Д4) the bodies' panel: the chosen figure's
+base body (any of `data/bodies/index.json`) and its deformers — presets added from `presets/index.json`, each with its
+strength, on the rest (frames kept or turned) or as a pose layer, taken away; `&b=<body>&d=<preset>:<strength>[:pose],…`.
 
 ## Layout
 
@@ -28,6 +30,11 @@ src/       engine.js      the entry: createEngine({root?, read?}) → body(ref),
            retarget.js    a clip's moment on a rig: the turns, the bones, the travel, placement
            layers.js      pose layers on every frame (the corrections, Т7's collarbone share, a joint turn, a morph)
            changes.js     the same changes on the rest, with the frames kept (design) or turned (anatomy)
+           deform.js      deformers: their registry; on the rest; as pose layers (a mesh layer after skinning, or a morph)
+           regions.js     what deformers read off a body: parts along bones, limb shares, landmarks by height; smoothing
+           deformers/     lines.js (line, squash, contrapposto), limbs.js (taper, straight, arc), silhouette.js,
+                          proportions.js (proportions, caricature), surface.js (anatomy, smooth), contour.js, masses.js,
+                          sign.js, curves.js; index.js registers them
            skin.js        skinning (centres of rotation / dual quaternions / linear), Т7's seam fix
            collision.js   the body as tapered capsules per bone, moved by the pose: distance and normal
            figure.js      a rig with its meshes: pose → layers → place → meshes → floor → normals; frame and step
@@ -36,13 +43,16 @@ src/       engine.js      the entry: createEngine({root?, read?}) → body(ref),
            view3d.js      three.js stage (lights and shadows for any number of figures, a camera framed by a box)
 data/      skeleton.json, soma/ (Kimodo's SOMA skin, Apache-2.0: NOTICE), topology/anny-moood.*, bodies/*.json + .bin,
            kimodo/ (the studio's asks, asks.json, and data of motions not kept in experiments/motions-raw)
+           anny/specs.json (the new bodies' Anny settings), bodies/index.json (every body by group, pinned)
 motions/   <id>.json, index.json (motions and chains)
 characters/<id>.json, index.json
+presets/   <id>.json, index.json — presets of parts (deformers with their parameters), by group, pinned
 viewer/    the viewer
 check/     numbers.mjs (the numeric check), pictures.mjs + render.html (the picture check), units.mjs (contracts),
            cases.json (their moments), numbers/ and pictures/ (the stored ones), serve.mjs, browser.mjs, node-read.mjs
-tools/     Python that makes data/ and motions/: soma.py, bodies_moood.py, bodies_anny.py, motions.py, pack.py;
-           characters.mjs (upgrade characters, pin bodies and chains)
+tools/     Python that makes data/ and motions/: soma.py, bodies_moood.py, bodies_anny.py, bodies_new.py, motions.py,
+           pack.py; characters.mjs (upgrade characters, pin bodies, presets and chains; index presets and bodies);
+           sheets.mjs + sheet.py + sheets/ (labelled sheets of moments for the docs)
 vendor/    three.js
 ```
 
@@ -73,9 +83,21 @@ unchanged (every joint's world rotation, int16/32767, x y z w; its place, int16 
 skin's lowest point each frame). `motions/index.json` (`engine/motions` 2): the motions, and the chains
 (`motions: [id@hash…]`, `joins: [{blend: 'cut'} | {blend: 'dead', frames}]`).
 
+**Preset** `presets/<id>.json` (`engine/preset` 1): `id`, `label {ru, en}`, `group`, `about {ru, en}`, `changes` —
+deformers with their parameters and strengths (or other presets). A character takes one by `{kind: "preset", id:
+"<id>@<hash>", strength, frames}` in its rest or `{…, space?}` in its pose; each change's strength is multiplied by the
+reference's. `presets/index.json` lists them by group (silhouette, line, squash, contrapposto, limbs, proportions,
+caricature, surface, contour, masses, pictogram) with their pins.
+
+**Bodies' index** `data/bodies/index.json`: every body with its pin, group (moood, t8, t8-head, age, build, origin),
+label and height. **Anny's settings** `data/anny/specs.json`: per new body its phenotype (`ph`), local changes (`lc`)
+and an optional head of another age (`head: {ph, lc, r}`).
+
 **Character** `characters/<id>.json` (`engine/character` 2), checked against a schema (unknown keys and values refused):
 `body: "<id>@<hash>"`, `rest: [changes]`, `pose: [layers]`, `skinning: {method, sigma, seam}`, `motion: {floor}`,
-`look: {skin, roughness}` — the whole list in `src/character.js`; the defaults are kept there (`DEFAULTS`).
+`look: {skin, roughness}` — the whole list in `src/character.js`; the defaults are kept there (`DEFAULTS`). Rest
+changes and pose layers include every deformer and presets (stage 1 added them to version 2: what a description of
+version 2 already said means the same).
 
 ## How it works, and why so
 
@@ -121,6 +143,49 @@ ctx)}`) and meshes when it makes its figure. Morphs (`mesh.morphs`: indices and 
 each frame (`{kind: "morph", name, weight}` as a pose layer — a code layer can animate the weight — or baked into the
 rest).
 
+**Bodies: the base** (stage 1). Always Anny with her own settings: moood's seven, Т8's 24 and 28 new ones made by Anny
+herself (`tools/bodies_new.py` from `data/anny/specs.json`: ages, builds, her origin sliders). The new ones are made as
+Т8's were — Anny run (a head of another age blended in over the neck when asked), carried onto moood's mesh as a change
+from moood's woman smoothed by 6 steps (this gives Т8's own bodies again within 1e-7 m), joints by Anny's regression.
+
+**Deformers** (`src/deform.js`, `src/deformers/`). A deformer has a strength and its parameters; a character lists them
+in its order. Two kinds by what they act on. *Of the figure* (line of action, squash and stretch, contrapposto, the
+silhouette, taper, straight against curved, arcs) — a field over the figure's space that moves every point by where it
+is and which limb it belongs to (each vertex's share of the five limbs, from the skin, smoothed over the surface), and
+every joint the same way. On the rest they move the body and its joints once (then `frames` keep or turn); as a pose
+layer they move the posed figure every frame after skinning, in the figure's own space — `space: "pelvis"` (rest-like
+coordinates under the pelvis's turn and place now: a lying figure is bent along its length) or `"upright"` (its
+heading only, the vertical kept); every mesh of the figure follows by its own limb shares, the joints' places too, then
+the floor step. Sizes are shares of the body's own height measured at its rest, so a field doesn't change from frame to
+frame. *Of the surface* (proportions, caricature, anatomy, smoothing, contours, masses, the sign) — computed on the
+rest; as a pose layer, its rest change is a morph of the body weighed by strength (a code layer can animate it); those
+that move joints (proportions, caricature) are rest changes only and are refused as layers.
+- *Silhouette* — Т5's body-as-one-shape and Т6's cage were the same thing (width, depth and forward by height): one
+  deformer, keys at landmarks (`regions.js`: floor, ankle, knee, crotch, hips, waist, chest, armpit, shoulders, neck,
+  head, top) or shares of the height, a monotone curve between them smoothed over `soft`; the arms ride with their root
+  and turn out as far as the new torso needs. Т5's hard corner at the hip (its keys eased with zero slope each, close
+  keys of very different widths) and its shoulder shelf (everything at shoulder height widened by the shoulders' factor
+  up to the head) are gone; widening the shoulder along its slope from the neck was tried and creased the chest.
+- *Contour* — a body's own sections read as Т7's `construct()` reads them (8 directions round each bone, 24 places
+  along, the 70th percentile, smoothed), and Т7's drawn forms in the same terms (four contours of each limb, the
+  torso's side, front and back, in the body's own units): strength blends the radii; `own` how much of the body's small
+  forms ride on the new section (0: the drawn form itself); edits multiply radii by part and direction. The change is
+  smoothed where parts meet; hands, feet and head stay.
+- *Masses* — simple solids (ellipsoids, capsules) set at joints in body units, melted in by a smooth union along each
+  point's normal (Т7's bust, buttocks, the shoulder's cap and its slope from the neck).
+- *Proportions* — Т1's `placeIn`: each part laid along its bone, longer or wider, its children carried along; the
+  displacement smoothed a little so where two parts meet no pinch is left. *Caricature* — against the average of
+  bodies of one topology scaled to this one's height.
+- *Smooth* (Т9: the cotangent Laplacian, one implicit step, the girth given back along the normal), *anatomy* (Т1).
+- *Sign* (Т4) — the trunk's skin settles onto the sign's surface, each limb's skin goes round its own axis onto its
+  stick (and the hand's ball, the foot's stick), blended by the limb shares: no armpit is torn between two surfaces.
+
+**Presets** (`presets/`) are plain data: Т5's ten silhouettes and Т6's four others, six lines, squash, stretch,
+contrapposto, five limbs, fifteen proportions, caricature and its reverse, anatomy both ways, smoothing 2, 4, 8 cm, Т7's
+three contours and their masses and the shoulder, four pictograms. Full-body presets are characters (princess of
+Disney, mother of Pixar, girl of anime, Burton-thin, pear old woman, V hero, egg baby, two pictograms): a base body and
+presets with strengths, some with pose layers.
+
 **Chains** (`clipOf`). A motion made with `make_motion(after: {key, frames})` begins with the other's last frames.
 Where it stands and which way it faces in the other's space is measured from those shared frames (the same pose in
 both: a turn about the vertical and a move), checked against the studio's `startsAt`; a motion whose first frames are
@@ -160,22 +225,36 @@ character is not promised away by versions: the checks see it, and then it is de
 **The checks** (`check/`). `numbers.mjs`: every case of `cases.json` — every preset at rest, walking, running, sitting,
 lying, at the chain's join, and moments that exercise each option (dual quaternions, linear, sigma, the collarbone's
 share, the seam, each correction, a turn as a pose layer and as a rest change kept and turned, a morph both ways,
-the pelvis floor, placement and heading, the joins frame by frame, prone) — computed in node: the joints and every
+the pelvis floor, placement and heading, the joins frame by frame, prone; and since stage 1 the full-body presets and
+deformers: squash, straight and arcs, caricature, a line with frames turned, a silhouette in a run, a line as a pose
+layer in a walk, lying in both spaces, placed and turned, squash as a layer in a jump, smoothing as a layer, a contour
+at half strength sitting, a new Anny body walking — 157 cases) — computed in node: the joints and every
 4th used vertex of every mesh, compared in millimetres (tolerance 0.05 mm), naming the body or motion whose data
-changed under it. Doubling the centres' sigma moved 68 of the 85 cases it had then (now 90). `pictures.mjs`: the cases marked `picture`
+changed under it. Doubling the centres' sigma moved 68 of the 85 cases it had then. `pictures.mjs`: the cases marked `picture`
 drawn by their own page (`render.html`: the camera framed by the figure's bounds, 400 × 400 or wide for lying, the
 repository's three.js), compared with the stored ones; for eyes. `units.mjs`: refusals, poses, the step, several meshes
-and the floor, large meshes, morphs, rest changes and frames, capsules. Each fails with no cases or a wrong `--only`.
+and the floor, large meshes, morphs, rest changes and frames, capsules; deformers refused where they don't belong (a
+joint-moving one as a layer, a preset whose content changed), every deformer at strength 0 leaving the body as it is on
+the rest and as a layer, a layer of the figure the same wherever it stands and faces and carrying every mesh and the
+joints, a surface layer as its rest change, every preset making a body, the landmarks in order on five bodies (118
+pictures, 18 contracts). Each fails with no cases or a wrong `--only`.
 `pictures.mjs --jobs jobs.json outdir` makes pictures of any moments (`focus` on a joint for a close-up).
 
 ## Adding things
 
 - *A body*: write a pack with `format: engine/body` on an existing topology (`tools/bodies_moood.py: body_file`), or a
   new topology beside it; joints from Anny's regression if it is Anny's mesh (`tools/bodies_anny.py: Regression`).
+- *A body from Anny's settings*: a line in `data/anny/specs.json`, `python3 engine/tools/bodies_new.py <id>`, then
+  `node engine/tools/characters.mjs bodies`.
+- *A deformer*: `register({kind, of: 'figure' | 'skin', joints?, params, defaults, field | rest, prepare?})` in a file of
+  `src/deformers/` imported by its `index.js` — the schema of characters and presets takes it from there; a case for it
+  in `check/units.mjs` (strength 0 leaves the body) and in `check/cases.json`.
+- *A preset*: `presets/<id>.json` with its label and about in both languages, then `node engine/tools/characters.mjs
+  presets` (checks it, pins what it takes, writes the index); a character takes it by its pin.
+- *Pictures of bodies*: a sheet in `tools/sheets/bodies.json`, `node engine/tools/sheets.mjs
+  engine/tools/sheets/bodies.json <name>`.
 - *A rig not from Anny*: `makeRig({skeleton, joints, frames, floor})` and its meshes (`makeMesh`), then
   `new Figure({rig, meshes, layers, floor})`.
-- *A deformer* (a rest change): body → body through `withRest(body, {positions, joints, frames: 'keep' | 'turn'})`;
-  its pose-layer form in `LAYERS` (`src/layers.js`) if it can ride on frames too; both in the character schema.
 - *A mesh on a character*: `E.figure(id, {meshes: [{mesh, name}]})` or `figure.addMesh(mesh)`; `floor: false` for one
   that must not lift the figure (hair, simulated cloth).
 - *A simulation*: `figure.addSimulation({step({pose, previous, dt, reset, collider})})`, driven by `figure.step`.
@@ -191,6 +270,11 @@ and the floor, large meshes, morphs, rest changes and frames, capsules. Each fai
   difference is either a bug or a change meant — then look at the new pictures and store them with `--update`.
 
 ## Not done yet
+
+Bodies (stage 1): the pictogram reads at rest and walking, but with an arm swung far (running, sitting with the arms
+forward) its thin shoulder opens — the skin gathered at the stick's root spreads under Anny's weights; the seam fix does
+not help. Anny's own "heavy" stays mild even far past her range. The contour deformer keeps the body's small forms
+unless `own` < 1; Т7's look also needs its smoothing and proportions (the full presets combine them).
 
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole
 (no foot contacts); the arm can press into the chest's side at the armpit when it hangs close (Anny's weights;
