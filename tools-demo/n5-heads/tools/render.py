@@ -77,17 +77,20 @@ def place(view, hb, bb):
         c = (bb[0] + bb[1]) / 2; h = bb[1].z - bb[0].z; dist = h * 1.25 / 0.42 * 0.5 * 1.0
         tgt = Vector((c.x, c.y, c.z)); cam_d.lens = 50; dist = h / (36 / 50) * 1.12
     elif view in ('eyeL', 'eyeLside'):
-        # character's left eye is on +X
-        tgt = Vector((hc.x + hs.x * 0.2, hb[0].y, hc.z + hs.z * 0.08)); dist = hs.z * 0.55 / (36 / 85)
+        tgt = EYE_L.copy(); dist = hs.z * 0.42 / (36 / 85)
     elif view == 'mouth':
-        tgt = Vector((hc.x, hb[0].y, hc.z - hs.z * 0.2)); dist = hs.z * 0.6 / (36 / 85)
+        tgt = MOUTH.copy(); dist = hs.z * 0.42 / (36 / 85)
     else:
-        tgt = hc.copy(); tgt.z += hs.z * 0.02; dist = hs.z * 1.25 / (36 / 85)
+        tgt = (EYE_L + MOUTH) / 2; tgt.x = 0; tgt.z += hs.z * 0.08; dist = hs.z * 1.35 / (36 / 85)
     a = math.radians(yaw)
     d = Vector((math.sin(a), -math.cos(a), 0.0))
     cam.location = tgt + d * dist + Vector((0, 0, dist * 0.02))
     dirv = tgt - cam.location; cam.rotation_euler = dirv.to_track_quat('-Z', 'Y').to_euler()
 
+def bone_head(n): return rig.matrix_world @ rig.data.bones[n].head_local
+EYE_L = bone_head({'rain': 'DEF-Eye.L', 'snow': 'ROOT-Eye.L'}[cfg['char']])
+MOUTH = (bone_head({'rain': 'ACT-Lips_Corner.L', 'snow': 'ACT-Lips_Corner.L'}[cfg['char']]) + bone_head({'rain': 'ACT-Lips_Corner.R', 'snow': 'ACT-Lips_Corner.R'}[cfg['char']])) / 2
+print('EYE', tuple(EYE_L), 'MOUTH', tuple(MOUTH))
 body = {'rain': 'GEO-rain-body', 'snow': 'GEO-snow-body'}[cfg['char']]
 for s in cfg['shots']:
     reset_pose(); apply_pose(s.get('pose', {})); bpy.context.view_layer.update()

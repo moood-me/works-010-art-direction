@@ -20,9 +20,9 @@ def make(name, motion_body=False):
          Interpolation_Guides=st.get('guides_k', 4), Density=st['density'], Seed=3)
     S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=st['clump'], Factor=st.get('clump_f', 0.95),
          Shape=st.get('clump_shape', 0.35), Tip_Spread=st.get('tip_spread', 0.0015), Preserve_Length=True, Seed=1)
-    S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=st['clump2'], Factor=0.6, Shape=0.1,
+    S.gn(g, 'Clump Hair Curves', Existing_Guide_Map=False, Guide_Distance=st['clump2'], Factor=st.get('clump2_f', 0.6), Shape=0.1,
          Tip_Spread=0.0005, Preserve_Length=True, Seed=2)
-    S.gn(g, 'Hair Curves Noise', Distance=st.get('noise', 0.0015), Scale=40.0, Shape=0.3, Seed=4)
+    if st.get('noise'): S.gn(g, 'Hair Curves Noise', Distance=st['noise'], Scale=40.0, Shape=0.3, Seed=4)
     if st.get('shrink'):
         S.gn(g, 'Shrinkwrap Hair Curves', Surface=st.get('shrink_on') and bpy.data.objects[st['shrink_on']] or body,
              Offset_Distance=st['shrink'], Above_Surface=0.5, Smoothing_Steps=3, Lock_Roots=True)

@@ -17,6 +17,17 @@ SETS['smooth'] = dict(w=330, h=560, rows=[SM, SM, SM], cams=[
     {'yaw': 0.25, 'pitch': 0.05, 'dist': 4.3, 'target': [0.0, 0.84, 0.0]},
     {'yaw': 0.3, 'pitch': 0.05, 'dist': 1.25, 'target': [0.0, 1.1, 0.05]},
     {'yaw': 0.45, 'pitch': 0.35, 'dist': 1.0, 'target': [0.06, 0.08, 0.06]}])
+CG = [('hourglass', 'песочные часы'), ('pear', 'груша'), ('egg', 'яйцо'), ('wedge', 'клин')]
+BODY = {'yaw': 0.3, 'pitch': 0.05, 'dist': 5.0, 'target': [0.0, 0.92, 0.0]}
+SETS['cage'] = dict(w=330, h=560, cam=BODY, rows=[[(m('ft_disney'), 'исходное')] + [(m('ft_cage_' + k), 'наше: ' + l) for k, l in CG], [(m('ft_disney'), 'исходное')] + [(o('cage_bbw_' + k), 'libigl: ' + l) for k, l in CG]])
+TORSO = {'yaw': 0.7, 'pitch': 0.1, 'dist': 2.3, 'target': [0.0, 1.15, 0.0]}
+SETS['cage-close'] = dict(w=360, h=520, cam=TORSO, rows=[[(m('ft_cage_' + k), 'наше: ' + l), (o('cage_bbw_' + k), 'libigl: ' + l)] * 1 for k, l in [('wedge', 'клин'), ('hourglass', 'песочные часы')]])
+SETS['cage-close']['rows'] = [SETS['cage-close']['rows'][0] + SETS['cage-close']['rows'][1]]
+POSED = {'yaw': 0.0, 'pitch': 0.05, 'dist': 4.6, 'target': [0.0, 0.85, 0.0]}
+ARMS = {'yaw': 0.5, 'pitch': 0.12, 'dist': 1.9, 'target': [0.12, 1.15, 0.0]}
+KNEES = {'yaw': 0.3, 'pitch': 0.15, 'dist': 2.0, 'target': [0.0, 0.45, 0.0]}
+AR = [(m('ln_base'), 'исходное'), (m('ln_arc1'), 'наше: дуга 1'), (o('arap_arc1'), 'ARAP: колено, локоть'), (o('arapR_arc1'), 'ARAP: по всей дуге'), (o('arapR_arc05'), 'ARAP по дуге: 0.5')]
+SETS['arap'] = dict(w=330, h=540, rows=[AR, AR, AR], cams=[POSED, ARMS, KNEES])
 def jobs(name):
     s = SETS[name]; out = []
     for r, row in enumerate(s['rows']):
