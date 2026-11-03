@@ -79,7 +79,7 @@ def place(view, hb, bb):
     cam_d.lens = 85; cam_d.sensor_fit = 'VERTICAL'; cam_d.sensor_height = 36
     if view.startswith('body'):
         c = (bb[0] + bb[1]) / 2; h = bb[1].z - bb[0].z; dist = h * 1.25 / 0.42 * 0.5 * 1.0
-        tgt = Vector((c.x, c.y, c.z)); cam_d.lens = 50; dist = h / (36 / 50) * 1.12
+        tgt = Vector((c.x, c.y, c.z)); cam_d.lens = 50; span = h * 1.08 if view == "bodyside" else max(h * 1.08, (bb[1].x - bb[0].x) * 1.04 * 1.5); dist = span / (36 / 50)
     elif view in ('eyeL', 'eyeLside'):
         tgt = EYE_L.copy(); dist = hs.z * 0.42 / (36 / 85)
     elif view == 'mouth':

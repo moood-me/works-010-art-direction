@@ -87,8 +87,10 @@ for o in bpy.data.objects:
 import time; T0 = time.time()
 sc.frame_end = F
 rest = {h.name: np.array([p.position[:] for p in h.data.points]) for h, *_ in dyn}
-for f in range(1, F + 1):
+LAST = int(os.environ.get('LAST', F))
+for f in range(1, LAST + 1):
     sc.frame_set(f)
+    if os.environ.get('DBG'): print('set', f, round(time.time() - T0, 1), flush=True)
     if dyn:
         dg = bpy.context.evaluated_depsgraph_get()
         for hair, scalp, n, k in dyn:

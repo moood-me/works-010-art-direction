@@ -48,7 +48,7 @@ allv = vis(); bb = bbox(allv)
 hb = bbox([bpy.data.objects[cfg['head']]]) if cfg.get('head') else None
 for v in cfg.get('views', []):
     if v.startswith('body'):
-        c = (bb[0] + bb[1]) / 2; shoot(v, c, (bb[1].z - bb[0].z) * 1.08, {'body': 0, 'bodytq': 35, 'bodyside': 90}[v], (600, 900), 50)
+        c = (bb[0] + bb[1]) / 2; shoot(v, c, (bb[1].z - bb[0].z) * 1.08 if v == 'bodyside' else max((bb[1].z - bb[0].z) * 1.08, (bb[1].x - bb[0].x) * 1.04 * 1.5), {'body': 0, 'bodytq': 35, 'bodyside': 90}[v], (600, 900), 50)
     else:
         c = (hb[0] + hb[1]) / 2; s = hb[1] - hb[0]; c.z += s.z * cfg.get('dz', 0.0)
         shoot(v, c, s.z * cfg.get('hframe', 1.25), {'front': 0, 'tq': 35, 'side': 90}[v], (700, 700))
