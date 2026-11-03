@@ -14,12 +14,12 @@ def lin(c): c = np.asarray(c, float); return np.where(c <= 0.04045, c / 12.92, (
 def savec(name, C): out = np.ones((len(v0), 3)) * 0.5; out[:NU] = C[SVJ]; save(name, out)
 os.makedirs(f'{OUT}/frames', exist_ok=True)
 
-# ——— 1. ARAP puppet: feet pinned, the left hand dragged over the head, the head pulled a little aside ———
+# ——— 1. ARAP puppet: feet pinned, the left hand dragged up and forward, the head pulled a little aside ———
 feet = np.where(wm(r'^(Left|Right)(Foot|Toe)') > 0.9)[0]
 hand = np.where(wm(r'^LeftHand') > 0.9)[0]
 head = np.where(wm(r'^(Head|HeadEnd|Jaw|LeftEye|RightEye)$') > 0.95)[0]
 b = np.concatenate([feet, hand, head])
-goal_hand = np.array([0.12, 1.92, 0.05]) - V0[hand].mean(0)
+goal_hand = np.array([0.62, 1.62, 0.12]) - V0[hand].mean(0)
 goal_head = np.array([-0.10, -0.03, 0.0])
 data = igl.ARAPData(); data.max_iter = 20
 igl.arap_precomputation(V0, f, 3, b.astype(np.int32), data)
@@ -72,9 +72,10 @@ print('bbw done')
 # ——— 3. a noisy surface smoothed ———
 rng = np.random.default_rng(1)
 N = igl.per_vertex_normals(V0, f)
-noisy = V0 + N * rng.normal(0, 0.0015, (nV, 1))
-L = igl.cotmatrix(V0, f); M = igl.massmatrix(noisy, f, igl.MASSMATRIX_TYPE_BARYCENTRIC)
-clean = sla.spsolve((M - 0.00002 * L).tocsc(), M @ noisy)
+noisy = V0 + N * rng.normal(0, 0.0007, (nV, 1))
+L = igl.cotmatrix(V0, f); clean = noisy
+for _ in range(2):
+    M = igl.massmatrix(clean, f, igl.MASSMATRIX_TYPE_BARYCENTRIC); clean = sla.spsolve((M - 0.000004 * L).tocsc(), M @ clean)
 save('use_noisy', back(noisy)); save('use_denoised', back(clean))
 print('denoise done')
 
@@ -83,8 +84,8 @@ src = np.where(wm(r'^LeftHandMiddle(3|4|End)') > 0.5)[0]
 tip = src[np.argmax(V0[src, 0])]
 data_h = igl.HeatGeodesicsData(); igl.heat_geodesics_precompute(V0, f, data_h)
 d = np.asarray(igl.heat_geodesics_solve(data_h, np.array([tip], dtype=np.int64))).ravel(); d -= d.min()
-band = 0.5 + 0.5 * np.cos(2 * np.pi * d / 0.05)
+band = 0.5 + 0.5 * np.cos(2 * np.pi * d / 0.04)
 u = np.clip(d / d.max(), 0, 1)[:, None]
 base_c = lin([0.95, 0.78, 0.45]) * (1 - u) + lin([0.35, 0.45, 0.75]) * u
-savec('use_geo_colors', base_c * (0.55 + 0.45 * band[:, None]))
+savec('use_geo_colors', base_c * (0.3 + 0.7 * band[:, None]))
 print('geodesic max m', d.max())

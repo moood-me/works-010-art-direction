@@ -31,7 +31,7 @@ SETS['arap'] = dict(w=330, h=540, rows=[AR, AR, AR], cams=[POSED, ARMS, KNEES])
 # libigl in its own uses (uses.py)
 FULL = {'yaw': 0.2, 'pitch': 0.05, 'dist': 5.2, 'target': [0.0, 0.95, 0.0]}
 SETS['use-puppet'] = dict(w=380, h=600, cam=FULL, rows=[[(m('raw_woman'), 'исходное: булавки на стопах'), (o('use_naive'), 'просто гладко: тянется'), (o('use_arap'), 'ARAP: форма держится')]])
-SETS['use-rig'] = dict(w=380, h=600, cam=FULL, rows=[[(m('raw_woman'), 'веса 11 ручек', o('use_bbw_colors')), (o('use_bbw_posed'), 'ручки повёрнуты', o('use_bbw_posed_colors')), (o('use_bbw_posed'), 'та же поза')]])
+SETS['use-rig'] = dict(w=380, h=600, cam=FULL, rows=[[(m('raw_woman'), 'веса 11 ручек', o('use_bbw_colors')), (o('use_bbw_posed'), 'ручки повёрнуты', o('use_bbw_posed_colors')), (o('use_bbw_posed'), 'та же поза, без цвета')]])
 HEAD = {'yaw': 0.45, 'pitch': 0.05, 'dist': 1.3, 'target': [0.0, 1.38, 0.03]}
 SETS['use-denoise'] = dict(w=420, h=520, cam=HEAD, rows=[[(m('raw_woman'), 'исходное'), (o('use_noisy'), 'с шумом, как со сканера'), (o('use_denoised'), 'после сглаживания libigl')]])
 SETS['use-geodesic'] = dict(w=380, h=600, rows=[[(m('raw_woman'), 'спереди', o('use_geo_colors')), (m('raw_woman'), 'сзади', o('use_geo_colors'))]], cams=[{'yaw': 0.3, 'pitch': 0.05, 'dist': 5.2, 'target': [0.0, 0.95, 0.0]}, {'yaw': 2.8, 'pitch': 0.05, 'dist': 5.2, 'target': [0.0, 0.95, 0.0]}])

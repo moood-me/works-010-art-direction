@@ -7,7 +7,7 @@
 // preset 'indie' = П1 (experiments/indie: toon ramp of 3, dark line, its lights, floor, fixed camera),
 // preset 'toon'  = П2 (experiments/toon: ramp of 4, ink hull, its lights, camera fitted to the figure, turned by yaw).
 // Colours: Monster Mash's template-image texture (our front picture) on the front side; the back side, which the
-// picture cannot show, in the part's own colour.
+// picture cannot show, in the part's own colour; so are the steep sides, where the picture would only be smeared.
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const qs = new URLSearchParams(location.search);
 const W = +(qs.get('w') || 700), H = +(qs.get('h') || 800);
@@ -93,7 +93,7 @@ window.show = async o => {
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.flipY = true;
   const mat = new THREE.MeshToonMaterial({ map: tex, gradientMap: ramp });
   mat.onBeforeCompile = s => {
-    s.vertexShader = 'attribute vec4 bcol;\nvarying vec4 vBcol;\n' + s.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvBcol = bcol;');
+    s.vertexShader = 'attribute vec4 bcol;\nvarying vec4 vBcol;\n' + s.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvBcol = vec4(bcol.rgb, max(bcol.a, 1.0 - smoothstep(0.2, 0.5, normalize(normal).z)));');
     s.fragmentShader = 'varying vec4 vBcol;\n' + s.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vBcol.rgb, vBcol.a);');
   };
   if (group) scene.remove(group);
