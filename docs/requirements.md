@@ -32,7 +32,12 @@ narrow what is here without asking him.
 ## Motion
 
 - The body moves through the scene only by Kimodo and only along the coordinates Kimodo gives. Never carried
-  sideways, never walking on the spot. No motion by formulas — of the body, the neck, the arms, anything.
+  sideways, never walking on the spot.
+- Motions themselves come from Kimodo: touching things (sitting on a chair, leaning, taking an object, hugging),
+  turning the body to a target, small life while standing ("a person stands" from Kimodo has it sewn in) — not made
+  by formulas, which would make a person look like in a fit. Pavel, softening his first wording: "не понимай меня так
+  буквально" — corrections on top of Kimodo's motion (arms kept a little off the body for cloth, a head turn for hair,
+  arms kept out of a big head, amplified limbs, a line of action as a pose layer) are allowed.
 - Transitions between Kimodo motions without jerks: the next motion made by Kimodo to start from the end of the
   previous one. Contacts with objects the same way, through Kimodo's constraints.
 - Clothes are cloth, not a mask on the body: they don't go through the body, they crumple, bend, take the wind, and
