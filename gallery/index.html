@@ -132,7 +132,7 @@ const groups = [
       pics: [['combined/C-heads.png', '8 голов крупно']] },
   ]},
   { title: 'В — Волосы', items: [
-    { id: 'В1', rel: 'Отдельный путь. Причёски на пустых головах.', name: 'Волосы: пряди по кривым', st: 'mid', stt: 'половина читается',
+    { id: 'В1', rel: 'Отдельный путь. Причёски на пустых головах.', name: 'Волосы: пряди по кривым, в движении', st: 'good', stt: '12 из 14 читаются, двигаются',
       what: 'Свой инструмент: причёска из нескольких частей, внутри части всё слито в одну поверхность; пряди-объёмы по направляющим кривым с острыми или мягкими кончиками; чёлка, коса, кудри, пучки. Пряди можно потом повесить на кости. Движутся: каждая прядь — цепочка на кости головы с инерцией, ветром с порывами и столкновениями с головой, шеей, плечами, телом и полом; на женщине, мужчине и ребёнке, в 13 движениях Kimodo. Живой вид: страница волос без параметров.',
       verdict: 'После «все пластилиновые!»: пряди отдельными поверхностями с тонкими кончиками, тёмный внутренний слой между прядями, направление волосков и полоса блика. Хорошо: Гоу-Гоу, Марко, пучки, коса и хвост K-pop, кудри Джулии, Нимона, кукла, Альва, аниме-девушка. Средне: Гвен, Ариэль. Слабо: Джек, рыжий мальчик.',
       pics: [['hair/sheet-short.png', 'короткие: Гвен, Гоу-Гоу, Марко'], ['hair/sheet-tied-curly.png', 'собранные и кудри: пучки, коса, хвост, Джулия, Нимона'], ['hair/sheet-long.png', 'длинные: кукла, Альва, аниме-девушка, Ариэль'], ['hair/sheet-unfinished.png', 'недоделанные: Джек, рыжий мальчик'], ['hair/motion/kpony-run.gif', 'хвост K-pop: бег'], ['hair/motion/gwen-walk-w12.gif', 'Гвен: шаг на ветру'], ['hair/motion/ariel-walk-w3.gif', 'Ариэль: шаг, сильный ветер'], ['hair/motion/giulia-dance.gif', 'кудри Джулии: танец'], ['hair/motion/kbraid-idle-snap.gif', 'коса: резкие повороты головы'], ['hair/motion/alva-lie.gif', 'Альва: лечь'], ['hair/motion/anime-roll.gif', 'аниме-девушка: кувырок'], ['hair/motion/jack-run.gif', 'Джек: бег'], ['hair/motion/sheet-rest.png', 'в покое: задумано и после симуляции, все 14'], ['hair/motion/sheet-long.png', 'длинные в движениях'], ['hair/motion/sheet-floor.png', 'лёжа, кувырок, сидя']] },
@@ -212,7 +212,7 @@ const VIEW3D = {
   'Т7': [E + 'designed-form/index.html?viewer', 'Дисней, Пиксар, аниме'],
   'Т8': [E + 'anny-space/view.html?viewer', 'тела самой Anny на сетке moood; смена тела перезагружает вид'],
   'Т9': [E + 'form-tools/index.html?viewer', 'стиль × каркас × лицо'],
-  'В1': [E + 'hair/index.html?viewer', 'только вращение, без движений'],
+  'В1': [E + 'hair/index.html?live', 'причёска на теле в движении: выбор причёски, кто носит, 13 движений Kimodo, ветер, поворот головы'],
 };
 let tab = 'pics';
 function show(id) {
@@ -220,7 +220,7 @@ function show(id) {
   const it = all.find(x => x.id == id) || all[0]; cur = it; sel.value = it.id;
   side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id == it.id));
   view.innerHTML = `<h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
-    <p class="rel">${it.rel || ''}</p><p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}${VIEW3D[it.id] ? `<div class="tabs"><button data-t="pics">Картинки</button><button data-t="3d">3D: вращать и двигать</button></div>` : ''}<div class="grid"></div><div class="d3"></div>`;
+    <p class="rel">${it.rel || ''}</p><p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}${VIEW3D[it.id] ? `<div class="tabs"><button data-t="pics">Картинки</button><button data-t="3d">${it.id === 'В1' ? '3D: волосы в движении' : '3D: вращать и двигать'}</button></div>` : ''}<div class="grid"></div><div class="d3"></div>`;
   const grid = view.querySelector('.grid'), d3 = view.querySelector('.d3');
   const setTab = t => {
     tab = VIEW3D[it.id] ? t : 'pics';
@@ -233,7 +233,7 @@ function show(id) {
     const fr = d3.querySelector('iframe'), wait = d3.querySelector('.v3dwait'), t0 = Date.now(), errs = [];
     fr.onload = () => { try { fr.contentWindow.addEventListener('error', e => errs.push(e.message)); fr.contentWindow.addEventListener('unhandledrejection', e => errs.push(String(e.reason))); } catch (e) {} };
     d3.timer = setInterval(() => {
-      let ready = false; try { ready = !!fr.contentDocument.getElementById('vpPanel'); } catch (e) {}
+      let ready = false; try { ready = !!fr.contentDocument.getElementById('vpPanel') || (VIEW3D[it.id][0].includes('?live') && !!fr.contentWindow.__ready); } catch (e) {}
       if (ready) { wait.remove(); clearInterval(d3.timer); return; }
       const sec = Math.round((Date.now() - t0) / 1000);
       wait.textContent = errs.length ? 'не загрузилось: ' + errs[0] : sec > 180 ? 'не загрузилось за три минуты' : `собирается… ${sec} с (первый показ — до минуты)`;
