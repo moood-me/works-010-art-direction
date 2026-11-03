@@ -114,13 +114,17 @@ export function signOf(p, R) {
     // heel to a smaller one at its toes' tips (the line its skin goes out from runs along it)
     const ext = footOf(R, l, ankle[1]), rh = Math.min(lr * 0.8, 0.5 * (ankle[1] - floor)), rt = clamp(0.5 * ext.toeHeight, 0.6 * rh, rh);
     const heel = [ext.x, floor + rh, ext.back + rh], tip = [ext.x, floor + rt, Math.max(ext.back + rh, ext.front - rt)];
-    return { axis: [heel, tip], prims: [cone(heel, tip, rh, rt)] };
+    // as wide as the foot's own skin (a round cone seen from the front would be a spike): its width drawn out across
+    const f = cone(heel, tip, rh, rt), kh = Math.max(1, 0.5 * ext.width / rh), kt = Math.max(1, 0.5 * ext.width / rt);
+    const k = z => lerp(kh, kt, clamp((z - heel[2]) / (tip[2] - heel[2] || 1), 0, 1));
+    return { axis: [heel, tip], prims: [(x, y, z) => f(ext.x + (x - ext.x) / k(z), y, z)] };
   });
   const limbs = [arm('Left'), arm('Right'), leg('Left', 3), leg('Right', 4)];
   const all = (x, y, z) => { let d = trunk(x, y, z); for (const l of limbs) d = smin(d, l.f(x, y, z), k * 1.6); return d; };
   return { trunk, limbs, all, hc, hr, lr, k, seam: 1.6 * lr };
 }
-// a foot's own extent at the rest (below its ankle): its middle across, its back and its front, its height at the toes
+// a foot's own extent at the rest (below its ankle): its middle across, its back and its front, its height at the
+// toes, its width
 function footOf(R, l, ankleY) {
   const P = R.mesh.positions; let x = 0, n = 0, back = Infinity, front = -Infinity;
   for (const i of R.mesh.used) {
@@ -133,7 +137,10 @@ function footOf(R, l, ankleY) {
     if (R.limb[i * 5 + l] < 0.9 || R.ends[i] < 0.5 || P[i * 3 + 1] > ankleY || P[i * 3 + 2] < z0) continue;
     lo = Math.min(lo, P[i * 3 + 1]); hi = Math.max(hi, P[i * 3 + 1]);
   }
-  return { x: x / n, back, front, toeHeight: hi - lo };
+  // and how wide it is (the 5th to the 95th percentile across)
+  const xs = []; for (const i of R.mesh.used) if (R.limb[i * 5 + l] >= 0.9 && R.ends[i] >= 0.5 && P[i * 3 + 1] <= ankleY) xs.push(P[i * 3]);
+  xs.sort((a, b) => a - b);
+  return { x: x / n, back, front, toeHeight: hi - lo, width: xs[Math.floor(xs.length * 0.95)] - xs[Math.floor(xs.length * 0.05)] };
 }
 // a limb's skin onto its surface: from the nearest point of its line (shoulder, elbow, wrist, hand — or hip, knee,
 // ankle, toes) out through the point, to where that ray meets the surface

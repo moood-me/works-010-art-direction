@@ -1827,7 +1827,7 @@
   {
    "name": "pictogram",
    "out": "docs/pictures/engine/bodies/pictogram.png",
-   "title": "Пиктограмма (Т4): сглаживание и знак; виден разрыв кожи у подмышки (как у Т4)",
+   "title": "Пиктограмма (Т4): сглаживание и знак; свои веса кожи — палочка на кость, шары в суставах",
    "cols": 6,
    "w": 280,
    "h": 440,
@@ -1896,19 +1896,55 @@
      ]
     },
     {
+     "label": "мужчина · шаг",
+     "char": "pictogram-man",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "мужчина · бег",
+     "char": "pictogram-man",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
      "label": "мужчина · сидит",
      "char": "pictogram-man",
      "clip": "sit",
      "t": 100,
      "view": "three"
+    },
+    {
+     "label": "женщина · прыжок",
+     "char": "pictogram-woman",
+     "clip": "jump",
+     "t": 45,
+     "view": "front"
+    },
+    {
+     "label": "женщина · танец",
+     "char": "pictogram-woman",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "женщина · лежит",
+     "char": "pictogram-woman",
+     "clip": "lie",
+     "t": 170,
+     "view": "three",
+     "w": 420
     }
    ]
   },
   {
    "name": "pose-layers",
    "out": "docs/pictures/engine/bodies/pose-layers.png",
-   "title": "Слоем позы и на покое: линия действия, сжатие, сглаживание; на любом месте, при любом повороте",
-   "cols": 9,
+   "title": "Слоем позы: линия действия и контрапост — повороты позвоночника и таза, стопы на месте; сжатие и сглаживание — их изменение покоя каждый кадр",
+   "cols": 6,
    "w": 280,
    "h": 420,
    "items": [
@@ -1955,6 +1991,33 @@
      }
     },
     {
+     "label": "шаг · контрапост слоем",
+     "clip": "walk",
+     "t": 30,
+     "view": "front",
+     "pose": [
+      {
+       "kind": "contrapposto",
+       "degrees": 12,
+       "space": "upright"
+      }
+     ]
+    },
+    {
+     "label": "бег · линия S спереди слоем",
+     "clip": "run",
+     "t": 20,
+     "view": "front",
+     "pose": [
+      {
+       "kind": "line",
+       "view": "front",
+       "curve": "S",
+       "bend": 0.06
+      }
+     ]
+    },
+    {
      "label": "шаг · линия на покое, кадры держать",
      "clip": "walk",
      "t": 30,
@@ -1983,31 +2046,31 @@
      ]
     },
     {
-     "label": "лежит · слой по тазу",
+     "label": "лежит · линия спереди слоем, по тазу",
      "clip": "lie",
      "t": 170,
      "view": "three",
      "pose": [
       {
        "kind": "line",
-       "view": "side",
+       "view": "front",
        "curve": "C",
-       "bend": 0.08
+       "bend": 0.1
       }
      ],
      "w": 420
     },
     {
-     "label": "лежит · слой вертикально",
+     "label": "лежит · линия спереди слоем, вертикально",
      "clip": "lie",
      "t": 170,
      "view": "three",
      "pose": [
       {
        "kind": "line",
-       "view": "side",
+       "view": "front",
        "curve": "C",
-       "bend": 0.08,
+       "bend": 0.1,
        "space": "upright"
       }
      ],
@@ -2021,8 +2084,7 @@
      "pose": [
       {
        "kind": "squash",
-       "stretch": -0.3,
-       "space": "upright"
+       "stretch": -0.3
       }
      ]
     },

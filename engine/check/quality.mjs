@@ -46,10 +46,10 @@ function stretch(mesh, from, to, also = null) {
 if (!only || only.includes('skin')) {
   // every preset on the rest, on five bodies: nothing turned over (the sign gathers the hands' and feet's skin onto
   // balls and folds it there by its nature — measured by its stretch in motion instead)
-  // Some changes pushed past what a body has room for press its skin into itself — a reed's or a slim torso's narrow
-  // hips into a heavy body's or a baby's thighs, a baby's difference from grown-ups drawn out: there a few triangles
-  // turn over where two surfaces meet; their limits say how many
-  const PUSHED = { 'silhouette-reed': 10, 'proportions-slim-torso': 10, 'proportions-short-neck': 15, average: 10, caricature: 40 };
+  // Some changes pushed past what a body has room for press its skin into itself — a reed's, a V's or a slim torso's
+  // narrow hips into a heavy body's or a baby's thighs, thicker limbs into a heavy body, a baby's difference from
+  // grown-ups drawn out: there a few triangles turn over where two surfaces meet; their limits say how many
+  const PUSHED = { 'silhouette-reed': 10, 'silhouette-v': 6, 'proportions-slim-torso': 10, 'proportions-thick-limbs': 6, 'proportions-short-neck': 15, average: 10, caricature: 40 };
   for (const id of BODIES) {
     const base = await E.body(id), pin = await bodyPin(id), roomy = id.startsWith('moood-');
     for (const p of presets) {
@@ -63,7 +63,7 @@ if (!only || only.includes('skin')) {
   for (const c of FULL) {
     const spec = await E.character(c), base = await E.body(spec.body), rest = await E.restBody(spec);
     const sign = spec.rest.some(r => r.kind === 'sign');
-    check(`${c} at rest: edge stretch against its base body`, stretch(base.mesh, base.mesh.positions, rest.mesh.positions), sign ? 8 : 3, '×');
+    check(`${c} at rest: edge stretch against its base body`, stretch(base.mesh, base.mesh.positions, rest.mesh.positions), sign ? 10 : 3, '×');   // (a sign gathers a hand onto a ball and draws a foot's sole out: its rest is far from the body's
     const fig = await E.figure(c), plain = await E.figure(resolve({ ...structuredClone(woman), body: spec.body }, sk));
     for (const [m, t] of MOMENTS) {
       const clip = await E.clip(m); fig.frame(clip, t, fig.pose); plain.frame(clip, t, plain.pose);
