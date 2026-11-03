@@ -174,3 +174,11 @@ mesh with painted features following. Face light as an option (toon with outline
 cast shadows on the face). For authors: an overlay check against the picture; our heads as preset examples. Dropped:
 the old sculpting by balls (Г2's first way), the rays of Г4, and a standalone head without Anny. Not doing now:
 blending expressions, mouth shapes for speech, a gaze that follows.
+
+Characters not from Anny (same talk): П1 and П2 differ in one thing — how a body part is built and bends: merged
+simple forms skinned to bones (П1) or sweeps along curves through the joints rebuilt every frame, bending in an arc
+(П2). One constructor for them: a shared SOMA skeleton with the character's own bone lengths; per part a choice of
+"form" or "sweep" (mixable); shared things on joints keeping their orientation; one face library (a drawn layer on the
+head, eyes, brows, mouths, marks, expressions from both); one look (tones, outline, plastic or clay); one Kimodo
+retargeting with options (amplify limbs, push arms out of a big head, damp head and spine bends); all our characters
+rewritten in one description as presets.
