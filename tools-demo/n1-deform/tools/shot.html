@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#cfc8bd;overflow:hidden}#st{position:relative}canvas{display:block}
+.tag{position:absolute;bottom:6px;transform:translateX(-50%);font:15px/1.2 system-ui,sans-serif;color:#2a2622;background:#efe9df;padding:3px 8px;border-radius:3px;white-space:nowrap}</style>
+<div id="st"><canvas id="cv"></canvas></div>
+<script type="module">
+// The same scene as experiments/form-tools (light, clay, floor, camera of 24°), for meshes given as raw Float32 files:
+// our results and libigl's are shown by this one page, so they compare fairly
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const cv = document.getElementById('cv'), st = document.getElementById('st');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true });
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#cfc8bd');
+const camera = new THREE.PerspectiveCamera(24, 2, 0.05, 80);
+scene.add(new THREE.HemisphereLight('#fff4e6', '#5b544c', 1.0));
+const key = new THREE.DirectionalLight('#fff0dc', 2.2); key.position.set(-2.6, 4.4, 3.6); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -5, right: 5, top: 3, bottom: -1, near: 0.5, far: 16 }); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+scene.add(key);
+const rim = new THREE.DirectionalLight('#d6e4ff', 1.3); rim.position.set(2.6, 2.4, -3.2); scene.add(rim);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(40, 64), new THREE.MeshStandardMaterial({ color: '#c9c1b5', roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+const group = new THREE.Group(); scene.add(ground, group);
+const CLAY = new THREE.MeshStandardMaterial({ color: '#d9b79c', roughness: 0.68 });
+const f4 = async u => new Float32Array(await (await fetch(u)).arrayBuffer());
+let TRIS = null;
+window.shot = async job => {
+  TRIS ??= new Uint32Array(await (await fetch(job.tris)).arrayBuffer());
+  renderer.setSize(job.w, job.h, false); camera.aspect = job.w / job.h; camera.updateProjectionMatrix();
+  st.style.width = job.w + 'px'; st.style.height = job.h + 'px';
+  group.clear(); st.querySelectorAll('.tag').forEach(t => t.remove());
+  const n = job.meshes.length, gap = job.gap ?? 0.75;
+  for (let k = 0; k < n; k++) {
+    const pos = await f4(job.meshes[k]);
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(new THREE.BufferAttribute(TRIS, 1)); g.computeVertexNormals();
+    const m = new THREE.Mesh(g, CLAY); m.castShadow = m.receiveShadow = true;
+    let minY = Infinity; for (let i = 1; i < pos.length; i += 3) if (pos[i] !== 0 || pos[i - 1] !== 0) minY = Math.min(minY, pos[i]);
+    m.position.set((k - (n - 1) / 2) * gap, job.floor === false ? 0 : -minY, 0); group.add(m);
+  }
+  const c = job.cam, cp = Math.cos(c.pitch);
+  camera.position.set(c.target[0] + Math.sin(c.yaw) * cp * c.dist, c.target[1] + Math.sin(c.pitch) * c.dist, c.target[2] + Math.cos(c.yaw) * cp * c.dist);
+  camera.lookAt(new THREE.Vector3(...c.target));
+  ground.visible = job.ground !== false;
+  renderer.render(scene, camera);
+  (job.labels || []).forEach((l, k) => { if (!l) return; const v = new THREE.Vector3((k - (n - 1) / 2) * gap, 0, 0).project(camera); const t = document.createElement('div'); t.className = 'tag'; t.textContent = l; t.style.left = ((v.x + 1) / 2 * job.w) + 'px'; st.appendChild(t); });
+  return true;
+};
+window.ready = true;
+</script>

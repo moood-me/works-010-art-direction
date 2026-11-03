@@ -1,0 +1,39 @@
+# Writes the jobs for shot.mjs and puts the single shots together into the page's pictures.
+# python shots.py jobs <set> > jobs.json ; node shot.mjs jobs.json ; python shots.py sheet <set>
+import sys, json, os
+from PIL import Image, ImageDraw, ImageFont
+M, O, S = '/home/user/cache/n1-deform/mesh', '/home/user/cache/n1-deform/out', '/home/user/cache/n1-deform/shots'
+PICS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'pics')
+TR = M + '/tris.i4'
+FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 22)
+def m(n): return f'{M}/{n}.f4'
+def o(n): return f'{O}/{n}.f4'
+SETS = {}
+# rows of [mesh, label]; cam; size
+FACE_CAM = {'yaw': 0.35, 'pitch': 0.03, 'dist': 0.95, 'target': [0.0, 1.655, 0.05]}
+SETS['face'] = dict(w=340, h=400, cam=FACE_CAM, rows=[[(m('ft_disney'), 'исходное'), (m('ft_face_' + k), 'наше: ' + lab), (o('face_bih_' + k), 'libigl бигармон.'), (o('face_arap_' + k), 'libigl ARAP')] for k, lab in [('anime', 'аниме'), ('burton', 'Бёртон'), ('pixar', 'Pixar'), ('hero', 'герой')]])
+SM = [(m('raw_woman'), 'исходное'), (m('ours_taubin'), 'наше старое (равномерное)'), (m('ours_cot_2'), 'наше: 2 см'), (o('mcf_2'), 'libigl MCF: 2 см'), (m('ours_cot_4'), 'наше: 4 см'), (o('mcf_4'), 'libigl MCF: 4 см')]
+SETS['smooth'] = dict(w=330, h=560, rows=[SM, SM, SM], cams=[
+    {'yaw': 0.25, 'pitch': 0.05, 'dist': 4.3, 'target': [0.0, 0.84, 0.0]},
+    {'yaw': 0.3, 'pitch': 0.05, 'dist': 1.25, 'target': [0.0, 1.1, 0.05]},
+    {'yaw': 0.45, 'pitch': 0.35, 'dist': 1.0, 'target': [0.06, 0.08, 0.06]}])
+def jobs(name):
+    s = SETS[name]; out = []
+    for r, row in enumerate(s['rows']):
+        for c, (mesh, lab) in enumerate(row):
+            out.append({'out': f'{S}/{name}-{r}-{c}.png', 'tris': TR, 'meshes': [mesh], 'w': s['w'], 'h': s['h'], 'cam': row_cam(s, r, c), 'gap': 0})
+    return out
+def row_cam(s, r, c):
+    cams = s.get('cams'); return cams[r] if cams else s['cam']
+def sheet(name, fmt='webp'):
+    s = SETS[name]; W, H = s['w'], s['h']; rows = s['rows']; cols = max(len(r) for r in rows); lh = 34
+    im = Image.new('RGB', (W * cols, (H + lh) * len(rows)), '#f3efe8'); d = ImageDraw.Draw(im)
+    for r, row in enumerate(rows):
+        for c, (mesh, lab) in enumerate(row):
+            im.paste(Image.open(f'{S}/{name}-{r}-{c}.png').convert('RGB'), (c * W, r * (H + lh)))
+            tw = d.textlength(lab, font=FONT); d.text((c * W + (W - tw) / 2, r * (H + lh) + H + 5), lab, fill='#2a2622', font=FONT)
+    p = os.path.join(PICS, f'{name}.{fmt}'); im.save(p, quality=86); print(p, im.size)
+if __name__ == '__main__':
+    os.makedirs(S, exist_ok=True)
+    if sys.argv[1] == 'jobs': print(json.dumps(jobs(sys.argv[2])))
+    else: sheet(sys.argv[2])

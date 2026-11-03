@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<title>MToon on our scenes</title>
+<!-- An experiment page of this repository, run as it is, then drawn with MToon.
+     ?src=experiments/toon/index.html&look=hard&<the page's own parameters>
+     The page's module is fetched, three small hooks added (scene, renderer, camera to window; "ready" held until
+     MToon is put on), and run with the page's own folder as base, so it loads its own data. -->
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script>
+  window.__mine = new URL('./', location.href).href;
+  window.__src = new URLSearchParams(location.search).get('src');
+  document.write('<base href="' + new URL(window.__src.replace(/[^/]*$/, ''), new URL('../../../', location.href)).href + '">');
+</script>
+</head><body>
+<script type="module">
+const src = window.__src, html = await (await fetch(new URL(src.replace(/^.*\//, ''), document.baseURI))).text();
+const doc = new DOMParser().parseFromString(html, 'text/html');
+for (const s of doc.querySelectorAll('style')) document.head.appendChild(s.cloneNode(true));
+for (const n of [...doc.body.childNodes]) if (n.nodeName !== 'SCRIPT') document.body.appendChild(document.importNode(n, true));
+const mod = [...doc.querySelectorAll('script[type=module]')].pop();
+let code = mod.textContent;
+const hook = (re, to) => { if (!re.test(code)) throw new Error('hook not found: ' + re); code = code.replace(re, to); };
+hook(/const scene = new THREE\.Scene\(\)/, 'const scene = window.__S = new THREE.Scene()');
+hook(/(renderer) = new THREE\.WebGLRenderer\(/, 'renderer = window.__R = new THREE.WebGLRenderer(');
+hook(/const camera = new THREE\.PerspectiveCamera\(/, 'const camera = window.__C = new THREE.PerspectiveCamera(');
+hook(/window\.__ready = true;\s*$/, 'window.__built = true;');
+const s = document.createElement('script'); s.type = 'module'; s.textContent = code; document.body.appendChild(s);
+const { look } = await import(window.__mine + 'mtoon.js');
+while (!window.__built) await new Promise(r => setTimeout(r, 50));
+window.__look = (name, over) => { look(window.__S, name, over); window.__R.render(window.__S, window.__C); };
+window.__look(new URLSearchParams(location.search).get('look') || 'hard');
+window.__ready = true;
+</script>
+</body></html>

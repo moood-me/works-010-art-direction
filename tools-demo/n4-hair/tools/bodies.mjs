@@ -31,7 +31,7 @@ const sunk = (P, Nn) => { for (let i = 0; i < sink.length; i++) if (sink[i]) for
 // rest (standing, as `moment` gives before the motion starts)
 const pose0 = new Pose(THREE, body), r0 = pose0.skin(pose0.at(null));
 const rest = { body: { pos: Array.from(sunk(r0.pos, r0.nrm)), tris: Array.from(body.tris) }, garments: garments.map(g => { const p = new Float32Array(g.rest.length); skinInto(g.rest, null, g.J, g.W, 255, r0.E, p, null); return { name: g.name, pos: Array.from(p), tris: Array.from(g.tris) }; }),
-  head: body.J[headJ].toArray(), eyes: META.people[who].eyes, height: body.height };
+  head: body.J[headJ].toArray(), headE: Array.from(r0.E[headJ]), eyes: META.people[who].eyes, height: body.height };
 fs.mkdirSync(out, { recursive: true });
 fs.writeFileSync(`${out}/${who}-rest.json`, JSON.stringify(rest));
 // the timeline and head turns, as live.js
