@@ -579,6 +579,66 @@
     ]
    }
   },
+  "woman-chain4-120": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-123": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-190": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-305": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-360": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
   "woman-clavicle-idle60": {
    "joints": 77,
    "sources": {
@@ -1280,7 +1340,7 @@
    ],
    "offset": 2449980
   },
-  "woman-clavicle-idle60": {
+  "woman-chain4-120": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1288,7 +1348,7 @@
    ],
    "offset": 2487672
   },
-  "woman-dqs-wave40": {
+  "woman-chain4-123": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1296,7 +1356,7 @@
    ],
    "offset": 2525364
   },
-  "woman-join178": {
+  "woman-chain4-190": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1304,7 +1364,7 @@
    ],
    "offset": 2563056
   },
-  "woman-join180": {
+  "woman-chain4-305": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1312,7 +1372,7 @@
    ],
    "offset": 2600748
   },
-  "woman-join182": {
+  "woman-chain4-360": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1320,7 +1380,7 @@
    ],
    "offset": 2638440
   },
-  "woman-join186": {
+  "woman-clavicle-idle60": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1328,7 +1388,7 @@
    ],
    "offset": 2676132
   },
-  "woman-join195": {
+  "woman-dqs-wave40": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1336,7 +1396,7 @@
    ],
    "offset": 2713824
   },
-  "woman-lbs-wave40": {
+  "woman-join178": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1344,7 +1404,7 @@
    ],
    "offset": 2751516
   },
-  "woman-lie170": {
+  "woman-join180": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1352,7 +1412,7 @@
    ],
    "offset": 2789208
   },
-  "woman-rest": {
+  "woman-join182": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1360,7 +1420,7 @@
    ],
    "offset": 2826900
   },
-  "woman-run20": {
+  "woman-join186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1368,7 +1428,7 @@
    ],
    "offset": 2864592
   },
-  "woman-seam-idle60": {
+  "woman-join195": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1376,7 +1436,7 @@
    ],
    "offset": 2902284
   },
-  "woman-sigma-wave40": {
+  "woman-lbs-wave40": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1384,7 +1444,7 @@
    ],
    "offset": 2939976
   },
-  "woman-sit100": {
+  "woman-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1392,7 +1452,7 @@
    ],
    "offset": 2977668
   },
-  "woman-turnPose-walk30": {
+  "woman-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1400,7 +1460,7 @@
    ],
    "offset": 3015360
   },
-  "woman-turnRestKeep-walk30": {
+  "woman-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1408,7 +1468,7 @@
    ],
    "offset": 3053052
   },
-  "woman-turnRestTurn-rest": {
+  "woman-seam-idle60": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1416,7 +1476,7 @@
    ],
    "offset": 3090744
   },
-  "woman-turnRestTurn-walk30": {
+  "woman-sigma-wave40": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1424,13 +1484,53 @@
    ],
    "offset": 3128436
   },
-  "woman-walk30": {
+  "woman-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
     3
    ],
    "offset": 3166128
+  },
+  "woman-turnPose-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3203820
+  },
+  "woman-turnRestKeep-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3241512
+  },
+  "woman-turnRestTurn-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3279204
+  },
+  "woman-turnRestTurn-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3316896
+  },
+  "woman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3354588
   }
  }
 }

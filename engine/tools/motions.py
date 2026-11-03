@@ -45,11 +45,17 @@ MOTIONS = [
     # made to go on from `lie` (after: its last 5 frames); the studio's own data (the earlier engine had taken it back
     # from experiments/cloth's joined file: the same within a unit of rounding)
     ('rollover', None, '7a4c19b1e67d148d50b144da72ae4a1dfbfd1934bf70e567d1194195003f43db', ('перекатывается', 'rolls over')),
+    # a chain to test joins with (ordered 2026-11-03): walk → stop → look around → turn back, each after the one before
+    ('stop', None, 'a54282c0b563d9f25e56a45efcca08111c30cbcc50c3f006f9ca10428169e6ea', ('останавливается', 'comes to a stop')),
+    ('look-around', None, '679cda3a7ca6d1db236db3199efdb6d4113b6d55e224c0088ea145c28ef58102', ('оглядывается', 'looks around')),
+    ('turn-back', None, 'b9fe1859080faed6f3690b49f010718fdb8c38c895a90738ee351ac655f69913', ('поворачивает назад', 'turns back')),
 ]
 # chains: their motions (pinned by content hash when written) and how each join is treated (src/motion.js)
 CHAINS = [
     {'id': 'lie-rollover', 'label': {'ru': 'ложится → перекатывается', 'en': 'lies down → rolls over'}, 'motions': ['lie', 'rollover'],
      'joins': [{'blend': 'dead', 'frames': 12}]},
+    {'id': 'walk-stop-look-back', 'label': {'ru': 'идёт → останавливается → оглядывается → назад', 'en': 'walks → stops → looks around → turns back'},
+     'motions': ['walk', 'stop', 'look-around', 'turn-back'], 'joins': [{'blend': 'cut'}, {'blend': 'cut'}, {'blend': 'cut'}]},
 ]
 
 S = soma.load()

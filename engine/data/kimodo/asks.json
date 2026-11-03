@@ -322,5 +322,89 @@
    "x": -0.1022,
    "z": -0.6537
   }
+ },
+ "a54282c0b563d9f25e56a45efcca08111c30cbcc50c3f006f9ca10428169e6ea": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "after": {
+    "key": "f555a59113ec14d816ef7a510d607a3a432bae37e85c0d6ac7c61d43afbebc46",
+    "frames": 5
+   },
+   "prompts": [
+    "A person walking forward comes to a stop and stands."
+   ],
+   "seconds": [
+    2.5
+   ]
+  },
+  "made": "2026-11-03T20:10:19.216Z",
+  "startsAt": {
+   "x": 0.0285,
+   "z": 6.0585
+  }
+ },
+ "679cda3a7ca6d1db236db3199efdb6d4113b6d55e224c0088ea145c28ef58102": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "after": {
+    "key": "a54282c0b563d9f25e56a45efcca08111c30cbcc50c3f006f9ca10428169e6ea",
+    "frames": 5
+   },
+   "prompts": [
+    "A person stands and looks around, turning the head to the left and to the right."
+   ],
+   "seconds": [
+    4
+   ]
+  },
+  "made": "2026-11-03T20:12:47.683Z",
+  "startsAt": {
+   "x": -0.2031,
+   "z": 2.2801
+  }
+ },
+ "b9fe1859080faed6f3690b49f010718fdb8c38c895a90738ee351ac655f69913": {
+  "ask": {
+   "cfg": "default",
+   "seed": 0,
+   "steps": 100,
+   "heading": 0,
+   "cfg_weight": [],
+   "constraints": [],
+   "postprocess": true,
+   "root_margin": 0.04,
+   "transition_frames": 5,
+   "after": {
+    "key": "679cda3a7ca6d1db236db3199efdb6d4113b6d55e224c0088ea145c28ef58102",
+    "frames": 5
+   },
+   "prompts": [
+    "A person turns around and walks back the way they came."
+   ],
+   "seconds": [
+    4
+   ]
+  },
+  "made": "2026-11-03T20:13:10.279Z",
+  "startsAt": {
+   "x": -0.0147,
+   "z": 0.0664
+  }
  }
 }

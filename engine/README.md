@@ -132,6 +132,8 @@ its speed, slowing, and crossfaded into Kimodo's frames over n frames, joint by 
 parents and on the pelvis; SOMA's lowest point is computed again for those frames (`src/soma.js`). lie → rollover
 uses 12 frames: at most 25 mm a frame, the rollover's own median speed (`../docs/pictures/engine/join.png`).
 Inertialization (Bollo 2016) was tried first: it removes the step at frame 180 but not Kimodo's fast frames after it.
+walk → stop → look around → turn back (ordered to test joins) joins without a flick in Kimodo's own frames: its joins
+are `cut`; she walks back along her own path, the turn measured from the shared frames.
 
 **Skinning** (`src/skin.js`). Centres of rotation (Le & Hodgins 2016) by default: per vertex the joints' turns blended
 as quaternions (no candy-wrapper collapse at a twisting forearm, which linear blending has) about a centre found from
@@ -158,9 +160,9 @@ character is not promised away by versions: the checks see it, and then it is de
 **The checks** (`check/`). `numbers.mjs`: every case of `cases.json` — every preset at rest, walking, running, sitting,
 lying, at the chain's join, and moments that exercise each option (dual quaternions, linear, sigma, the collarbone's
 share, the seam, each correction, a turn as a pose layer and as a rest change kept and turned, a morph both ways,
-the pelvis floor, placement and heading, the join frame by frame, prone) — computed in node: the joints and every
+the pelvis floor, placement and heading, the joins frame by frame, prone) — computed in node: the joints and every
 4th used vertex of every mesh, compared in millimetres (tolerance 0.05 mm), naming the body or motion whose data
-changed under it. Doubling the centres' sigma moves 68 of its 85 cases. `pictures.mjs`: the cases marked `picture`
+changed under it. Doubling the centres' sigma moved 68 of the 85 cases it had then (now 90). `pictures.mjs`: the cases marked `picture`
 drawn by their own page (`render.html`: the camera framed by the figure's bounds, 400 × 400 or wide for lying, the
 repository's three.js), compared with the stored ones; for eyes. `units.mjs`: refusals, poses, the step, several meshes
 and the floor, large meshes, morphs, rest changes and frames, capsules. Each fails with no cases or a wrong `--only`.

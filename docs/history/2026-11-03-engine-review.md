@@ -27,11 +27,11 @@ characters, then decide. A versioned pipeline had been started and was taken out
   upgrade | pin | chains`); the ten presets upgraded.
 - *The floor* is its own step after every mesh is drawn, over the vertices triangles use, its shift exposed
   (`pose.shift`); stage 0's bodies stood up to 7 mm high on invisible vertices (now measured: 1.5–7 mm lower).
-- *The checks.* `check/numbers.mjs` — 85 cases (every preset in six moments, and moments that exercise DQS, LBS,
+- *The checks.* `check/numbers.mjs` — 85 cases (90 with the new chain) (every preset in six moments, and moments that exercise DQS, LBS,
   sigma, the collarbone's share, the seam, each correction, a turn as a layer and as a rest change kept and turned,
   a morph both ways, the pelvis floor, placement and heading, the join frame by frame, prone), joints and every 4th
   used vertex of every mesh, in node, tolerance 0.05 mm, naming data that changed; doubling sigma moves 68 of 85.
-  `check/pictures.mjs` + `render.html` — 62 pictures framed by the figure's bounds (400 × 400, wide for lying), by
+  `check/pictures.mjs` + `render.html` — 62 pictures (64) framed by the figure's bounds (400 × 400, wide for lying), by
   their own page, not the viewer. `check/units.mjs` — 12 contracts. Each fails with no cases or a wrong `--only`.
   three.js 0.160.0 kept in `engine/vendor/three`.
 - *The foundation for the next stages.* A rig (`src/rig.js`) apart from meshes (`src/mesh.js`: skinned with any number
@@ -58,6 +58,10 @@ Measuring the join: max vertex movement per frame around it, cut against blends 
 Pictures with `node engine/check/pictures.mjs --jobs jobs.json outdir` (close-ups with `focus`), the viewer with
 headless Chromium (software WebGL). Checks: `node engine/check/units.mjs`, `numbers.mjs`, `pictures.mjs`.
 
-**Seen and left.** A test chain walk → stop → look around → turn back was ordered from the studio; its GPU did not
-wake (failed after 25 minutes), see the note's end for what came of it. Skinning stays on the CPU; the collision shape
+*A chain to test joins.* walk → stop → look around → turn back, ordered from the studio (`make_motion` with `after`, each
+on the one before; the first try failed: the GPU did not wake in 25 minutes; the second made all three in a minute).
+Its joins have no flick in Kimodo's own frames (at most what a walking step moves) and stay `cut`; the turn back is
+measured from the shared frames and she walks back along her own path. In the viewer and in the checks (5 cases).
+
+**Seen and left.** Skinning stays on the CPU; the collision shape
 is capsules only (no distance field); hands, fingers and foot contacts as before.

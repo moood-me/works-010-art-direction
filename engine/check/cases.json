@@ -403,6 +403,43 @@
    "t": 240,
    "view": "top",
    "picture": true
+  },
+  {
+   "name": "chain4-120",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 120,
+   "view": "three"
+  },
+  {
+   "name": "chain4-123",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 123,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "chain4-190",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 190,
+   "view": "three"
+  },
+  {
+   "name": "chain4-305",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 305,
+   "view": "three"
+  },
+  {
+   "name": "chain4-360",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 360,
+   "view": "three",
+   "picture": true
   }
  ]
 }
