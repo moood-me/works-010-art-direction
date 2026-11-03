@@ -150,3 +150,17 @@ Agreed: Anny first, our form on top.
 **Pavel at home, on the gallery:** О3 (cloth) — "более-менее классно. на самом деле классно"; Т5 — "примерно понятно",
 Т5-з (body as one shape) — "нравится, теперь понятно к чему она"; В1 (hair) — "все пластилиновые! улучшай"; Г3 —
 "неплохо". He asked for the 3D view to be large and comfortable, without its own scroll, and for the controls to stay.
+
+## The engine view (talk with Pavel, 2026-11-03)
+
+We make an engine: few assumptions, much allowed; examples of preset bodies and of recommended deformations; the agents
+who write concrete characters have their own vision, choose the tools and are responsible for moderation themselves —
+the engine doesn't guard them from mistakes. A deformer that can apply both to the rest shape and as a pose layer should
+offer both. Where it ends up (baking or the engine) is not thought about now — later, from this repository.
+
+Bodies: Т8 (Anny's own settings) as the base and Т5's deformers on top (with the cage Т6) — agreed as the direction,
+not combined yet. From Т7 to take into it: the two posing fixes (the clavicle takes a third of the arm drop; skin
+offsets smoothed over the surface) into the common skinning; a contour deformer that edits a body's own contour curves,
+with a strength from "touch up" to "replace with a drawn form entirely"; the style contour presets (Disney, Pixar,
+anime) as examples; the soft separate masses (bust, buttocks, the shoulder cap and slope from the neck). The clothes О1
+then move from Т7's bodies to the new ones. With these taken, nothing of value stays in today's Т7 but its pictures.
