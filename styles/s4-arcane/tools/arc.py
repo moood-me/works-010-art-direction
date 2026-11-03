@@ -451,10 +451,10 @@ FILTERS = '''
   <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="7" result="n"/>
   <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" result="d"/>
   <feTurbulence type="fractalNoise" baseFrequency="0.03 0.07" numOctaves="3" seed="11" result="s"/>
-  <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.2 0 0 0 -0.1" result="sa"/>
+  <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.9 0 0 0 0.25" result="sa"/>
   <feComposite in="d" in2="sa" operator="in" result="t"/>
   <feGaussianBlur in="d" stdDeviation="0.6" result="db"/>
-  <feComponentTransfer in="db" result="dbh"><feFuncA type="linear" slope="0.72"/></feComponentTransfer>
+  <feComponentTransfer in="db" result="dbh"><feFuncA type="linear" slope="0.8"/></feComponentTransfer>
   <feMerge><feMergeNode in="dbh"/><feMergeNode in="t"/></feMerge>
 </filter>
 <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>

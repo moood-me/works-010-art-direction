@@ -102,7 +102,7 @@ def eye_shapes(P, side, e):
     # lash line along the upper lid, with a wing past the outer corner
     lash_c = [upper[1][:2], upper[2][:2], upper[3][:2], upper[4][:2], (xo + s * w * P.wing, yo - h * 0.32 * P.wing / 0.12 if P.wing else yo)]
     # crease above
-    cr = H * 0.55 + P.crease
+    cr = H * 0.18 + P.crease * 0.6
     crease = [(X(0.1), Y(0.1) - H * 0.45 - cr * 0.6), (X(lidp), Y(lidp) - H - cr), (X(0.8), Y(0.8) - H * 0.8 - cr * 0.9), (xo + s * w * 0.04, yo - cr * 0.45)]
     lid_skin = [q[:2] for q in upper[1:5]] + crease[::-1]
     lowline = [(X(0.4), Y(0.4) + L * 1.02), (X(0.75), Y(0.75) + L * 0.82), (xo - s * 1, yo + 0.5)]
@@ -452,7 +452,7 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
         dl, _ = wrap_shape(head, view, es['lid_skin'], True, 0.9, 0.0)
         g.append(path(dl, pal['lid'], op=0.35, extra=' filter="url(#edge)" style="mix-blend-mode:multiply"'))
         dc, _ = wrap_shape(head, view, es['crease'], False, 0.9, 0.0)
-        g.append(path(dc, 'none', pal['skin']['line'], 1.1 * view.s, 0.55))
+        g.append(path(dc, 'none', pal['skin']['line'], 1.0 * view.s, 0.38))
         # lash line as a tapered ribbon
         sp, nz = wrap(head, view, es['lash'], 1.0)
         dd, _ = ribbon_screen([q[:2] for q in sp], [P.lash_w[0] * view.s, P.lash_w[1] * view.s, P.lash_w[2] * view.s, P.lash_w[3] * view.s, 0.3])
@@ -522,6 +522,7 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
         dd, nz = wrap_shape(head, view, c, False, 1.3, 0.1)
         g.append(path(dd, 'none', pal['skin']['line'], 1.1 * view.s, 0.6))
     out.append('<g clip-path="url(#%s)">' % cid + ''.join(g) + '</g>')
+    out.append(path(hsil, 'none', pal['skin']['line'], 1.3 * view.s, 0.35))
     # ---- nose
     Rno = regions(nose, view)
     nsil = poly_path(Rno['sil'])
@@ -533,6 +534,20 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
         # blush on the tip
         tip, _ = on_surface(nose, view, [(0, 0.8)], 1)
         ns += '<circle cx="%s" cy="%s" r="%s" fill="%s" opacity="0.4" filter="url(#soft)" style="mix-blend-mode:multiply"/>' % (fmt(tip[0][0]), fmt(tip[0][1]), fmt(7 * view.s), pal['blush'])
+        # the bridge catches the light; the side away from the light is shaded softly
+        sides = []
+        for sd in (1, -1):
+            P_, N_ = nose.normals(np.array([sd * 0.85]), np.array([0.5]))
+            nx_, ny_, nz_ = view.rot(N_[:, 0], N_[:, 1], N_[:, 2])
+            sides.append((float(nx_[0] * view.L[0] + ny_[0] * view.L[1] + nz_[0] * view.L[2]), sd))
+        lit_sd = max(sides)[1]
+        dark_sd = -lit_sd
+        sp, nz = on_surface(nose, view, [(lit_sd * 0.25, 0.22), (lit_sd * 0.3, 0.45), (lit_sd * 0.3, 0.68)], 0.6)
+        ns += path(lines_path(sp), 'none', pal['skin']['hi'], 2.6 * view.s, 0.55, ) .replace('/>', ' filter="url(#edge)"/>')
+        sp, nz = on_surface(nose, view, [(lit_sd * 0.2, 0.8)], 0.8)
+        ns += '<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s" opacity="0.6" filter="url(#edge)"/>' % (fmt(sp[0][0]), fmt(sp[0][1]), fmt(2.8 * view.s), fmt(2.0 * view.s), pal['skin']['hi'])
+        sp, nz = on_surface(nose, view, [(dark_sd * 0.75, 0.15), (dark_sd * 0.85, 0.45), (dark_sd * 0.9, 0.75)], 0.4)
+        ns += path(lines_path(sp), 'none', pal['skin']['shadow'], 4.5 * view.s, 0.45).replace('/>', ' filter="url(#soft)" style="mix-blend-mode:multiply"/>')
         # nostrils and wing creases on the nose surface
         for side in (1, -1):
             nos = [(side * 0.25, 0.9), (side * 0.55, 0.88), (side * 0.75, 0.94), (side * 0.6, 0.99), (side * 0.3, 0.97)]

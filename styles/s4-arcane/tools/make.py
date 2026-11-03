@@ -5,7 +5,7 @@ from cast import *
 HERE = os.path.dirname(os.path.abspath(__file__))
 SVG = os.path.join(HERE, '..', 'svg')
 PIC = os.path.join(HERE, '..', 'pics')
-LIGHT = (-0.7, -0.45, 0.55)
+LIGHT = (-0.5, -0.55, 0.67)
 
 
 def doc(w, h):
@@ -24,6 +24,11 @@ def save(d, name):
     print(name)
 
 
+def bust_parts(parts):
+    """The parts that show above the chest (no legs, feet or skirts)."""
+    return [p for p in parts if float(p.center[1]) < 700]
+
+
 def ground(cx, cy, rx, op=0.35):
     return '<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="#14100e" opacity="%s" filter="url(#soft2)"/>' % (fmt(cx), fmt(cy), fmt(rx), fmt(rx * 0.16), fmt(op))
 
@@ -35,7 +40,7 @@ def portrait(k):
     d = doc(W, H)
     d.add(background(d, W, H, *c['bg'], seed=3))
     v = View(yaw=22, s=2.2, cx=330, cy=330, light=LIGHT)
-    d.add(draw_head(d, P, v, c['neutral']))
+    d.add(draw_figure(d, P, v, c['neutral'], parts=bust_parts(c['body'](P))))
     save(d, 'portrait-' + k)
 
 
@@ -47,7 +52,7 @@ def turnaround(k):
     d.add(background(d, W, H, *c['bg'], seed=5))
     for i, yaw in enumerate([0, 40, 88]):
         v = View(yaw=yaw, s=1.45, cx=260 + i * 490, cy=270, light=LIGHT)
-        d.add(draw_head(d, P, v, c['neutral']))
+        d.add(draw_figure(d, P, v, c['neutral'], parts=bust_parts(c['body'](P))))
     save(d, 'turn-' + k)
 
 
@@ -59,7 +64,7 @@ def expressions(k):
     d.add(background(d, W, H, *c['bg'], seed=7))
     for i, (name, e) in enumerate(EXPR):
         v = View(yaw=14, s=1.3, cx=200 + i * 400, cy=250, light=LIGHT)
-        d.add(draw_head(d, P, v, e))
+        d.add(draw_figure(d, P, v, e, parts=bust_parts(c['body'](P))))
     save(d, 'expr-' + k)
 
 

@@ -142,9 +142,9 @@ def draw_brow(cv, hd, c, ex, side):
     x0, y0 = c["eye_x"] * side, c["eye_y"] - c.get("brow_h", 9.5)
     L = c.get("brow_len", 20)
     th = c.get("brow_w", 2.4)
-    raise_ = ex["brow"] * 4
-    bi = ex["brow_in"] * 4      # inner end up (+)
-    bo = ex["brow_out"] * 4
+    raise_ = ex["brow"] * 5
+    bi = ex["brow_in"] * 6      # inner end up (+)
+    bo = ex["brow_out"] * 5
     if ex.get("brow_l") is not None and side < 0:
         raise_ = ex["brow_l"] * 4
     pts_c = []
@@ -206,8 +206,8 @@ def draw_nose(cv, hd, c, ex):
 def mouth_curves(c, ex):
     my = c["mouth_y"] + ex.get("mouth_dy", 0)
     mw = c["mouth_w"] / 2 * ex["mwide"] * (1 + 0.18 * ex["smile"])
-    sm = ex["smile"] * 4.0 - ex["frown"] * 3.2
-    op = ex["mopen"] * c.get("mouth_open_max", 9)
+    sm = ex["smile"] * 5.5 - ex["frown"] * 4.5
+    op = ex["mopen"] * c.get("mouth_open_max", 12)
     sk = ex["skew"] * 2.5
     mx = ex["mouth_x"]
     # parting line (between the lips) / top edge of the opening

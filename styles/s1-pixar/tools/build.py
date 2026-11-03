@@ -66,14 +66,17 @@ PORTRAIT = {
 
 FIGURE = {
     "anya": dict(yaw=0.25, ex=expr(smile=0.5, gaze=(-0.25, -0.3)), head_roll=0.08,
-                 pose=dict(el={-1: (-42, 182, 8), 1: (42, 182, 8)}, wr={-1: (-11, 262, 32), 1: (11, 266, 32)}, curl=0.6)),
+                 pose=dict(el={-1: (-42, 182, 8), 1: (42, 182, 8)}, wr={-1: (-11, 262, 32), 1: (11, 266, 32)}, curl=0.6,
+                           kn={-1: (-7, 425, 12)}, an={-1: (-15, 548, 2)})),
     "savely": dict(yaw=-0.35, ex=expr(frown=0.4, brow_in=-0.55, open=0.75), head_pitch=0.05,
                    pose=dict(el={-1: (-40, 170, -16), 1: (40, 170, -16)}, wr={-1: (-16, 246, -30), 1: (16, 246, -30)},
-                             hide_hand=(-1, 1))),
+                             hide_hand=(-1, 1), an={-1: (-17, 448, 0), 1: (17, 448, 0)}, kn={-1: (-15, 370, 2), 1: (15, 370, 2)})),
     "tim": dict(yaw=0.3, ex=expr(smile=0.9, mopen=0.35, skew=0.35, brow_l=0.7, squint=0.2, gaze=(0.35, 0)), head_roll=-0.1,
-                pose=dict(el={-1: (-34, 140, -14)}, wr={-1: (-12, 188, -26)}, hide_hand=(-1,), curl=0.9)),
+                pose=dict(el={-1: (-34, 140, -14)}, wr={-1: (-12, 188, -26)}, hide_hand=(-1,), curl=0.9,
+                          kn={-1: (-14, 292, 3), 1: (14, 292, 3)}, an={-1: (-19, 372, -2), 1: (19, 372, -2)})),
     "vera": dict(yaw=-0.3, ex=expr(open=0.84, brow_in=-0.15, frown=0.15, gaze=(0.15, 0)),
-                 pose=dict(el={1: (48, 196, -6)}, wr={1: (34, 286, 18)}, hide_hand=(1,))),
+                 pose=dict(el={1: (48, 196, -6)}, wr={1: (34, 286, 18)}, hide_hand=(1,),
+                           kn={-1: (-8, 450, 10)}, an={-1: (-6, 574, 14)})),
 }
 
 FLOOR = {"anya": 566, "savely": 462, "tim": 388, "vera": 590}
@@ -95,7 +98,7 @@ def figure(name, w=620, h=900):
     floor(cv, h - 90, name)
     P = PEOPLE[name]()
     fl = FLOOR[name]
-    s = min(1.25, (h - 150) / (fl + 60))
+    s = min(1.6, (h - 150) / (fl + 60))
     draw_person(cv, P, w / 2, h - 90 - fl * s, s, **FIGURE[name])
     save(cv, f"{name}-figure")
 
@@ -106,7 +109,7 @@ def turnaround(name, w=1500, h=900):
     floor(cv, h - 90, name)
     P = PEOPLE[name]()
     fl = FLOOR[name]
-    s = min(1.25, (h - 150) / (fl + 60))
+    s = min(1.6, (h - 150) / (fl + 60))
     calm = expr(smile=0.25) if name != "savely" else expr(frown=0.3, open=0.8)
     for i, yaw in enumerate([0.0, 0.62, 1.5708]):
         draw_person(cv, P, w * (0.18 + 0.32 * i), h - 90 - fl * s, s, yaw=yaw, ex=calm)
@@ -114,14 +117,14 @@ def turnaround(name, w=1500, h=900):
 
 
 EXPR = [
-    ("joy", expr(smile=1.0, mopen=0.6, squint=0.35, brow=0.35)),
-    ("surprise", expr(open=1.22, mopen=0.95, mwide=0.55, brow=1.1, teeth=False)),
-    ("sadness", expr(brow_in=1.1, brow=-0.15, frown=0.75, open=0.78, gaze=(0, 0.55), lower=0.15)),
-    ("anger", expr(brow_in=-1.25, brow=-0.45, squint=0.45, frown=0.55, mopen=0.32, mwide=1.1, gaze=(0, 0.1))),
+    ("joy", expr(smile=1.0, mopen=0.85, mwide=1.15, squint=0.45, brow=0.45, gaze=(0, -0.1))),
+    ("surprise", expr(open=1.3, mopen=1.0, mwide=0.5, brow=1.3, teeth=False, pupil=0.75)),
+    ("sadness", expr(brow_in=1.3, brow=-0.1, frown=1.0, open=0.72, gaze=(0.1, 0.65), lower=0.2, mwide=0.85)),
+    ("anger", expr(brow_in=-1.4, brow=-0.6, squint=0.5, frown=0.45, mopen=0.75, mwide=1.2, gaze=(0, 0.05))),
 ]
 
 
-def expressions(name, w=1600, h=560, s=1.9):
+def expressions(name, w=1600, h=560, s=2.3):
     cv = Canvas(w, h)
     backdrop(cv, name, cy=h * 0.45, r=w * 0.7)
     P = PEOPLE[name]()
@@ -131,7 +134,7 @@ def expressions(name, w=1600, h=560, s=1.9):
         if name == "savely":
             e = dict(e)
             e["open"] = e.get("open", 1.0) * 0.85
-        draw_person(cv, P, w * (0.125 + 0.25 * i), 210 - hy * s, s, yaw=0.18, ex=e, shadow=False, head_roll=rolls[i],
+        draw_person(cv, P, w * (0.125 + 0.25 * i), 250 - hy * s, s, yaw=0.18, ex=e, shadow=False, head_roll=rolls[i],
                     head_pitch=0.06 if k == "sadness" else 0.0)
     save(cv, f"{name}-expressions")
 
@@ -140,12 +143,12 @@ def together(w=1600, h=1000):
     cv = Canvas(w, h)
     backdrop(cv, "cast", cy=h * 0.4, r=w * 0.7)
     floor(cv, h - 110, "cast")
-    s = 1.18
-    base = h - 120
+    s = 1.3
+    base = h - 110
     # back row: Вера, Аня, Савелий; Тим in front
     items = [
-        ("vera", 1180, base - 20, -0.38, expr(open=0.86, frown=0.1, gaze=(-0.2, 0.25)), dict(el={1: (48, 196, -6)}, wr={1: (34, 286, 18)}, hide_hand=(1,)), 0.0),
-        ("savely", 380, base - 10, 0.42, expr(frown=0.35, brow_in=-0.5, open=0.75, gaze=(0.35, 0.3)), dict(el={-1: (-40, 170, -16), 1: (40, 170, -16)}, wr={-1: (-16, 246, -30), 1: (16, 246, -30)}, hide_hand=(-1, 1)), 0.0),
+        ("vera", 1130, base - 20, -0.38, expr(open=0.86, frown=0.1, gaze=(-0.2, 0.25)), dict(el={1: (48, 196, -6)}, wr={1: (34, 286, 18)}, hide_hand=(1,)), 0.0),
+        ("savely", 420, base - 10, 0.42, expr(frown=0.35, brow_in=-0.5, open=0.75, gaze=(0.35, 0.3)), dict(el={-1: (-40, 170, -16), 1: (40, 170, -16)}, wr={-1: (-16, 246, -30), 1: (16, 246, -30)}, hide_hand=(-1, 1)), 0.0),
         ("anya", 860, base - 25, -0.15, expr(smile=0.55, gaze=(-0.4, 0.3)), dict(el={-1: (-42, 182, 8), 1: (42, 182, 8)}, wr={-1: (-11, 262, 32), 1: (11, 266, 32)}, curl=0.6), 0.1),
         ("tim", 640, base + 25, 0.2, expr(smile=0.9, mopen=0.4, skew=0.35, brow_l=0.7, squint=0.2, gaze=(0.4, -0.2)), dict(el={-1: (-34, 140, -14)}, wr={-1: (-12, 188, -26)}, hide_hand=(-1,), curl=0.9), -0.1),
     ]
@@ -156,12 +159,16 @@ def together(w=1600, h=1000):
     save(cv, "cast")
 
 
-def construction(w=1200, h=700):
+def construction(w=1200, h=760):
     """the head's construction, with guide lines: where the eyes, nose, mouth sit; eye spacing"""
     cv = Canvas(w, h, bg="#f6f1e8")
     c = cast.anya()
     s = 4.6
     cx, cy = 330, 350
+    from body import Rig, tube
+    for x0, yaw in ((cx, 0.0), (880, 1.5708)):
+        rig = Rig(x0, cy, s, yaw)
+        tube(cv, rig, [(0, 30, -12), (0, 60, -11), (0, 92, -10)], [9.5, 9.8, 10.5], c["skin"], c["skin_sh"], caps=(False, False))
     hd = draw_head(cv, c, cx, cy, s, ex=expr(smile=0.3), hair=None)
     ink = "#b4532a"
     for y, lab in [(-50, ""), (c["eye_y"], ""), (c["nose_y"] + 3, ""), (c["mouth_y"], ""), (50, "")]:

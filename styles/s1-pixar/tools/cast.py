@@ -9,9 +9,9 @@ def woman_head(**kw):
     c = dict(
         w=[(-50, 0), (-47, 18), (-40, 32), (-30, 40), (-18, 43.5), (-5, 43), (5, 41), (15, 38), (25, 33),
            (33, 27), (40, 20.5), (45, 14), (48.5, 7), (50, 0)],
-        zf=[(-50, -4), (-46, 14), (-40, 26), (-30, 34), (-18, 37.5), (-5, 37), (5, 34), (15, 34.5), (25, 34),
-            (35, 33), (42, 30), (47, 24), (50, 12)],
-        zb=[(-50, -4), (-44, -24), (-35, -38), (-20, -45), (-5, -46), (10, -40), (20, -28), (30, -14), (40, -5),
+        zf=[(-50, -4), (-46, 14), (-40, 26), (-30, 34), (-18, 37.5), (-5, 37), (5, 34), (15, 34.5), (25, 35),
+            (32, 35.5), (38, 34.5), (43, 32), (47, 27), (50, 16)],
+        zb=[(-50, -4), (-44, -24), (-35, -37), (-20, -43), (-5, -43), (8, -37), (18, -27), (28, -16), (38, -7),
             (50, 0)],
         n=2.35,
         eye_x=18.0, eye_y=2.0, eye_w=21.5, eye_h=13.5, iris=7.6, eye_tilt=1.2, eye_peak=0.2,
@@ -24,8 +24,8 @@ def woman_head(**kw):
         (0, 8, 3.2, 9, 2.0),        # bridge
         (0, 19.5, 4.4, 4.6, 8.5),   # tip
         (-4.6, 21.5, 2.8, 2.6, 2.4), (4.6, 21.5, 2.8, 2.6, 2.4),   # wings
-        (0, 30.5, 8.0, 2.3, 1.6),   # upper lip
-        (0, 36.5, 6.5, 2.4, 2.0),   # lower lip
+        (0, 30.5, 8.0, 2.3, 2.4),   # upper lip
+        (0, 36.5, 6.5, 2.4, 2.6),   # lower lip
         (0, 44.5, 7.5, 3.8, 1.2),   # chin
         (-17, -8, 10, 3.5, 1.4), (17, -8, 10, 3.5, 1.4),          # brow ridge
         (-24, 16, 8, 7, 2.2), (24, 16, 8, 7, 2.2),                 # cheeks
@@ -96,9 +96,9 @@ def anya_hair():
                       w=[3, 15, 12, 10, 9.5, 8.5, 6, 0.4], size=30))
     # top: two wide sweeps from the parting
     locks.append(dict(pts=[('s', 88, part + 40, 1.04), ('s', 70, -10, 1.08), ('s', 48, -40, 1.10), ('s', 30, -62, 1.09)],
-                      w=[4, 16, 14, 0.5], size=28, z=-2))
+                      w=[9, 16, 14, 0.5], size=28, z=-2))
     locks.append(dict(pts=[('s', 88, part - 30, 1.04), ('s', 68, 40, 1.08), ('s', 44, 62, 1.09), ('s', 28, 74, 1.08)],
-                      w=[4, 14, 12, 0.5], size=28, z=-2))
+                      w=[9, 14, 12, 0.5], size=28, z=-2))
     # back: hanging locks over a mass
     for i, lon in enumerate(range(115, 250, 22)):
         locks.append(wave_lock((40, lon, 1.06), (10, lon, 1.08), lon, 16, 112 + 6 * (i % 2), 48, 52, 5, 4, 5, 12,
@@ -159,7 +159,7 @@ def anya_person():
 
     return dict(
         head=c, hs=1.04, head_at=(0, 10, 0),
-        neck=((0, 40, -6), (0, 92, -8), 9.0, 10.5),
+        neck=((0, 40, -12), (0, 92, -10), 9.5, 10.5),
         sh=(32, 108, -4), el=(47, 186, -8), wr=(49, 268, 2), hip=(15, 300, 0), kn=(12, 425, 3), an=(10, 548, -2),
         arm_r=[10, 7.5, 5.5], sleeve=dict(r=[15, 13.5, 12.5], col=A["cardi"], sh=A["cardi_sh"],
                                            cuff=_mix(A["cardi"], "#ffffff", 0.08), cuff_len=15),
@@ -272,7 +272,7 @@ def tim():
         eye_x=18.5, eye_y=7.0, eye_w=21.0, eye_h=15.5, iris=7.8, eye_tilt=0.4, eye_peak=0.0,
         brow_h=13.5, brow_len=19, brow_w=3.4, brow_arch=1.4,
         nose_y=25.5, nose_w=5.4, nose_sh=0.5,
-        mouth_y=36.5, mouth_w=22.0, lip_up=1.6, lip_low=2.8, lips_soft=True, gap_tooth=True, mouth_open_max=10,
+        mouth_y=36.5, mouth_w=22.0, lip_up=1.6, lip_low=2.8, lips_soft=True, gap_tooth=True, mouth_open_max=17,
         lid_w=1.0, wing=0.0, crease=3.8, lower_a=0.35,
         skin="#f3c7a2", skin_sh="#d88c70", blush="#ef7d6e", blush_a=0.42, lip="#d27a70", rim="#ffdcc6",
         iris_col="#6f4a2a", brow_col="#9a5f2c", lash="#3a2216", nostril="#a0503e", ear_in="#e8806a",
@@ -299,10 +299,10 @@ def tim_hair():
         a = abs(((lon + 180) % 360) - 180)
         lat_end = hl_short(lon)
         front = a < 80
-        tip_lift = 1.18 if front else 1.1
+        tip_lift = 1.18 if front else 1.03
         mid_lon = lon + (12 if lon > 0 else -12) * (1 if front else 0)
         pts = [('s', whorl[0], whorl[1], 1.06), ('s', (whorl[0] + lat_end) / 2 + 14, lon * 0.92, 1.12),
-               ('s', lat_end + 6, mid_lon, 1.10), ('s', lat_end - 4, mid_lon + (8 if lon >= 0 else -8), tip_lift)]
+               ('s', lat_end + 6, mid_lon, 1.10 if front else 1.07), ('s', lat_end - 4, mid_lon + (8 if lon >= 0 else -8), tip_lift)]
         locks.append(dict(pts=pts, w=[3, 11, 9.5, 0.4], size=26, sheen=0.9))
     # fringe: tufts over the forehead with sharp tips pointing every which way
     for lon, tilt, ln in [(-34, -14, 14), (-14, -6, 18), (6, 10, 16), (24, 16, 14), (42, 18, 11)]:
@@ -476,11 +476,11 @@ def tim_person():
 
     return dict(
         head=c, hs=1.0, head_at=(0, 8, 0),
-        neck=((0, 38, -6), (0, 74, -6), 8.0, 8.6),
+        neck=((0, 38, -11), (0, 74, -8), 8.4, 8.8),
         sh=(24, 92, -3), el=(31, 138, -4), wr=(32, 190, 5), hip=(11, 205, 0), kn=(10, 292, 3), an=(9, 372, -2),
         arm_r=[8.2, 6.4, 5.0], sleeve=dict(r=[12.5, 11, 9.5], col=T["shirt"], sh=T["shirt_sh"], end=0.36),
         leg_r=[10.5, 7.0, 4.6], calf=2.2, leg_marks=[knee_patch],
-        pants=dict(r=[14, 12.5, 11], col=T["shorts"], sh=T["shorts_sh"], end=0.4, cuff=_mix(T["shorts"], "#ffffff", 0.08)),
+        pants=dict(r=[13.5, 11.5, 10], col=T["shorts"], sh=T["shorts_sh"], end=0.34, cuff=_mix(T["shorts"], "#ffffff", 0.08)),
         sock=dict(r=5.3, col="#f4f0e8", sh="#cbc2b5", h=34),
         shoe=dict(floor=388, len=36, wid=10, h=14, col="#e6e1d8", sh="#a59f96", back=7, sole="#c94a36", sole_h=3),
         hand=dict(scale=1.35, curl=0.75, fat=1.1), shadow_w=55,
@@ -532,7 +532,7 @@ def savely_person():
 
     return dict(
         head=c, hs=1.0, head_at=(0, 14, 10),
-        neck=((0, 46, 2), (0, 86, -8), 13.0, 14.5),
+        neck=((0, 46, -4), (0, 86, -10), 13.0, 14.5),
         sh=(33, 104, -6), el=(43, 168, -6), wr=(40, 236, 8), hip=(15, 285, 0), kn=(14, 370, 2), an=(13, 448, -2),
         arm_r=[9.5, 8.0, 6.6], sleeve=dict(r=[13, 12, 11], col=S["shirt"], sh=S["shirt_sh"], end=0.62, roll="#e3eaee"),
         leg_r=[15, 11, 8], calf=0,
@@ -573,7 +573,7 @@ def vera_person():
 
     return dict(
         head=c, hs=1.12, head_at=(0, 8, 0),
-        neck=((0, 40, -6), (0, 94, -8), 8.8, 9.8),
+        neck=((0, 40, -12), (0, 94, -10), 9.0, 9.8),
         sh=(33, 112, -4), el=(43, 196, -6), wr=(44, 280, 4), hip=(14, 322, 0), kn=(12, 450, 3), an=(10, 574, -2),
         arm_r=[9, 7, 5.2], sleeve=dict(r=[13.5, 12, 11], col=V["coat"], sh=V["coat_sh"], cuff=_mix(V["coat"], "#000000", 0.06), cuff_len=10),
         leg_r=[14, 8.6, 5.4], calf=2.5,
