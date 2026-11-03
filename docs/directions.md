@@ -182,3 +182,13 @@ simple forms skinned to bones (П1) or sweeps along curves through the joints re
 head, eyes, brows, mouths, marks, expressions from both); one look (tones, outline, plastic or clay); one Kimodo
 retargeting with options (amplify limbs, push arms out of a big head, damp head and spine bends); all our characters
 rewritten in one description as presets.
+
+Clothes and hair (same talk): one clothing system with О3 (real cloth: garments, fabrics with their properties,
+collisions, wind, every motion) as the base; from О1 the designed silhouette of a garment (bell, trapeze, tulip, flare,
+puff sleeve…) as a shape the cloth is pulled towards, with a strength from "a stiff petticoat holds the bell" to "the
+cloth hangs freely", and folds as drawing; О1's silhouettes as presets; О1's own physics replaced by О3's with a rest
+shape; the garment-to-sign ladder kept only with the pictogram Т4. From О2: MakeHuman garments as source meshes and the
+written findings on beauty; its faces and generator dropped. Collision with the body shared by clothes and hair. Body
+simplification as a separate path is not needed (П1 and П2 cover simple and symbolic characters); smoothing in
+centimetres stays as a deformer and the pictogram Т4 as a preset. Hair В1 is one path; on designed heads (Г1, Г3) and
+on characters not from Anny (П1, П2) it hasn't been tried.
