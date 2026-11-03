@@ -13,6 +13,10 @@ narrow what is here without asking him.
   mouth (shape, size, where it sits against nose and chin) — different characters have clearly different faces.
 - Breadth first, to find the principles of beauty and learn, instrumentally, to make the characters Pavel wants.
 
+- On "limbs as arcs" (Т5): Pavel never wanted to deform people or bend their limbs. The thought was that even a
+  conventional, simple form can convey a real body if it has living, symbolic curves — an explanation of where the
+  theme came from, not a rule to bend arms or legs.
+
 ## The engine
 
 - It is an engine: few assumptions, much allowed. The agents who write concrete characters have their own vision,
