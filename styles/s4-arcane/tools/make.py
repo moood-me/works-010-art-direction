@@ -1,10 +1,11 @@
 """Build every picture of the page: python3 make.py [what...]; SVG into ../svg, PNG into ../pics (headless Chrome)."""
-import os, sys, subprocess
+import os, sys, subprocess, gzip
 from cast import *
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SVG = os.path.join(HERE, '..', 'svg')
 PIC = os.path.join(HERE, '..', 'pics')
+SCRATCH = os.environ.get('S4_SCRATCH', '/home/user/cache/styles-s4-arcane/render')
 LIGHT = (-0.5, -0.55, 0.67)
 
 
@@ -16,11 +17,16 @@ def doc(w, h):
 
 def save(d, name):
     d.add(grain(d.w, d.h))
-    p = os.path.join(SVG, name + '.svg')
+    # the drawing is kept gzipped (svgz); a plain copy for rendering goes to the scratch folder
+    os.makedirs(SCRATCH, exist_ok=True)
+    p = os.path.join(SCRATCH, name + '.svg')
     open(p, 'w').write(d.svg())
-    png = os.path.join(PIC, name + '.png')
+    with gzip.open(os.path.join(SVG, name + '.svgz'), 'wt') as f:
+        f.write(d.svg())
+    png = os.path.join(SCRATCH, name + '.png')
     subprocess.run(['google-chrome', '--headless=new', '--no-sandbox', '--disable-gpu', '--hide-scrollbars', '--screenshot=' + png,
                     '--window-size=%d,%d' % (d.w, d.h), 'file://' + os.path.abspath(p)], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    subprocess.run(['convert', png, '-quality', '86', os.path.join(PIC, name + '.jpg')])
     print(name)
 
 

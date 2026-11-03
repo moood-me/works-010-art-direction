@@ -17,6 +17,7 @@ import cast
 ROOT = os.path.dirname(HERE)
 SVG = os.path.join(ROOT, "svg")
 PICS = os.path.join(ROOT, "pics")
+SCRATCH = "/home/user/cache/styles-s1-pixar/render"   # full-size PNG renders, outside the repository
 os.makedirs(SVG, exist_ok=True)
 os.makedirs(PICS, exist_ok=True)
 
@@ -48,10 +49,12 @@ def save(cv, name):
     p = os.path.join(SVG, name + ".svg")
     with open(p, "w") as fh:
         fh.write(cv.svg())
-    png = os.path.join(PICS, name + ".png")
+    os.makedirs(SCRATCH, exist_ok=True)
+    png = os.path.join(SCRATCH, name + ".png")
     subprocess.run(["google-chrome", "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
                     f"--window-size={cv.w},{cv.h}", f"--screenshot={png}", "file://" + p],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(["convert", png, "-quality", "88", os.path.join(PICS, name + ".webp")], check=True)
     print("made", name)
 
 
