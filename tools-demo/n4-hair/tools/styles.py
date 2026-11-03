@@ -26,7 +26,7 @@ def gwen(c, r, ey):
     for th, ph in grid(line, 4, 22, keep=lambda th, ph: not fr(th, ph)):
         tip = ey - 0.115 + 0.03 * (abs(th) / math.pi) ** 2
         rest.append(strand(c, r, th, ph, -0.05, tip, lift=0.09, sweep=0.25 * math.sin(th) if ph > 1.0 else 0, flare=0.025, curl=0.02))
-    return dict(skin=0xf1cdb4, line=line, melanin=(0.22, 0.45), scalp=0x8a6a3a, dist=1.15 * 1.3,
+    return dict(skin=0xf1cdb4, line=line, melanin=(0.1, 0.35), scalp=0xb89a60, dist=1.15 * 1.3,
                 parts=[dict(region=fr, guides=fringe, clump=0.03), dict(region=lambda th, ph: not fr(th, ph), guides=rest)])
 
 def alva(c, r, ey):
