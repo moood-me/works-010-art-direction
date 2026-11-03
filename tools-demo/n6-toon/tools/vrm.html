@@ -36,10 +36,10 @@ vrm.scene.traverse(o => {
 });
 if (mat === 'plain') scene.add(new THREE.HemisphereLight('#ffffff', '#a09a90', 1.2));
 if (qs.get('expr')) vrm.expressionManager?.setValue(qs.get('expr'), 1);
-vrm.update(0);
+for (let i = 0; i < 30; i++) vrm.update(1 / 30);   // constraints and spring bones settle
 const head = hb('head').getWorldPosition(new THREE.Vector3());
 const view = qs.get('view') || 'full', yawBase = +(qs.get('yaw') ?? 0.45);
-const target = view === 'bust' ? head.clone().add(new THREE.Vector3(0, -0.02, 0)) : new THREE.Vector3(0, head.y * 0.55, 0), dist = view === 'bust' ? 0.95 : head.y * 2.9;
+const target = view === 'bust' ? head.clone().add(new THREE.Vector3(0, 0.03, 0)) : new THREE.Vector3(0, head.y * 0.54, 0), dist = view === 'bust' ? 1.25 : head.y * 3.3;
 window.__frame = yaw => {
   yaw = yaw ?? yawBase;
   camera.position.set(target.x + Math.sin(yaw) * dist, target.y + (view === 'bust' ? 0.03 : 0.1), target.z + Math.cos(yaw) * dist); camera.lookAt(target);

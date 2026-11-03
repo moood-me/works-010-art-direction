@@ -68,11 +68,15 @@ if mode == 'dyn':
         cs = ps.cloth.settings; cs.quality = 8; cs.mass = 0.3; cs.air_damping = 1.5
         cs.bending_stiffness = STIFF.get(name, 0.5); cs.pin_stiffness = 0.6; cs.bending_damping = 0.6
         cs.internal_friction = 0.2
-        st.render_type = 'NONE'
+        st.render_type = 'NONE'; st.display_step = 5
         ps.point_cache.frame_start = 1; ps.point_cache.frame_end = F
         n = len(hair.data.curves); k = len(hair.data.points) // n
         dyn.append((hair, scalp, n, k))
         print('dynamics on', hair.name, n, 'guides', k, 'points each')
+
+def resample(A, k):
+    d = np.r_[0, np.cumsum(np.linalg.norm(np.diff(A, axis=0), axis=1))]; t = np.linspace(0, d[-1], k)
+    return np.stack([np.interp(t, d, A[:, c]) for c in range(3)], -1)
 
 co = S.stage(res=(400, 470), samples=samples)
 sc.frame_end = F
@@ -83,7 +87,8 @@ for f in range(1, F + 1):
         dg = bpy.context.evaluated_depsgraph_get()
         for hair, scalp, n, k in dyn:
             se = scalp.evaluated_get(dg); ps = se.particle_systems[-1]
-            W = np.array([[ps.co_hair(se, particle_no=i, step=s)[:] for s in range(k)] for i in range(n)]).reshape(-1, 3)
+            m = 2 ** ps.settings.display_step   # co_hair gives the drawn hair: 2^display_step segments, resampled to k points
+            W = np.concatenate([resample(np.array([ps.co_hair(se, particle_no=i, step=s)[:] for s in range(m + 1)]), k) for i in range(n)])
             if not np.isfinite(W).all() or np.abs(W).sum() == 0: continue
             inv = hair.matrix_world.inverted()
             L = np.array([(inv @ Vector(w))[:] for w in W])

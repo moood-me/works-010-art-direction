@@ -57,7 +57,7 @@ def shot(coll, name, yaw, res=(900, 900), wire=False, frame=1.25, focus=None, le
     bpy.context.view_layer.update()
     mn, mx = bbox(objs); c = (mn + mx) / 2; s = mx - mn
     if focus: c = Vector((c.x + s.x * focus[0], mn.y, c.z + s.z * focus[1])); size = s.z * focus[2]
-    else: size = max(s.z, s.x) * frame
+    else: size = max(s.z, s.x, s.y if mode == "parts" else 0) * frame
     cd.lens = lens; cd.sensor_fit = 'VERTICAL'; cd.sensor_height = 36; dist = size / (36 / lens)
     a = math.radians(yaw); cam.location = c + Vector((math.sin(a), -math.cos(a), 0.02)) * dist
     cam.rotation_euler = (c - cam.location).to_track_quat('-Z', 'Y').to_euler()

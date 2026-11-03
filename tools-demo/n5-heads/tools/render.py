@@ -33,7 +33,7 @@ if eng.startswith('WB'):
     w = bpy.data.worlds.new('neutral'); w.color = (0.85, 0.84, 0.82); sc.world = w
 elif eng == 'EEVEE':
     sc.render.engine = 'BLENDER_EEVEE_NEXT' if hasattr(bpy.types, 'RenderSettings') and 'BLENDER_EEVEE_NEXT' in [i.identifier for i in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items] else 'BLENDER_EEVEE'
-    sc.eevee.taa_render_samples = 24
+    sc.eevee.taa_render_samples = 16
 else:
     sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = cfg.get('samples', 24); sc.cycles.use_denoising = True
     sc.render.threads_mode = 'FIXED'; sc.render.threads = 2

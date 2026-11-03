@@ -14,12 +14,13 @@ const fsrv = http.createServer(async (q, r) => { try { const d = await readFile(
 await new Promise(r => fsrv.listen(0, '127.0.0.1', r));
 const files = { url: `http://127.0.0.1:${fsrv.address().port}/`, close: () => fsrv.close() };
 const srv = await serve(), b = await browser();
-const shots = [
+const only = process.argv[4]; let shots = [
   ['seed', 'Seed-san.vrm', 'full', ['mtoon', 'nooutline', 'plain'], 0.45],
   ['seed', 'Seed-san.vrm', 'bust', ['mtoon', 'nooutline', 'plain'], 0.45],
   ['twist', 'VRM1_Constraint_Twist_Sample.vrm', 'full', ['mtoon', 'nooutline', 'plain'], 0.45],
   ['twist', 'VRM1_Constraint_Twist_Sample.vrm', 'bust', ['mtoon', 'nooutline', 'plain'], 0.45],
 ];
+if (only) shots = shots.filter(s => s[0] + '-' + s[2] === only);
 for (const [name, file, view, mats, yaw] of shots) for (const mat of mats) {
   const w = 600, h = view === 'full' ? 800 : 600;
   const p = await b.newPage({ viewport: { width: w, height: h } }); const errs = []; p.on('pageerror', e => errs.push(e.message));
