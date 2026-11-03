@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "proportions-short-legs",
+ "label": {
+  "ru": "пропорции: короткие ноги",
+  "en": "proportions: short legs"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "thigh": {
+     "length": 0.8
+    },
+    "shin": {
+     "length": 0.8
+    }
+   }
+  }
+ ]
+}

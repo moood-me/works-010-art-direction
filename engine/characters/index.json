@@ -71,6 +71,69 @@
     "ru": "Т8: эльф",
     "en": "T8: elf"
    }
+  },
+  {
+   "id": "disney-princess",
+   "label": {
+    "ru": "Дисней: принцесса",
+    "en": "Disney: a princess"
+   }
+  },
+  {
+   "id": "pixar-mother",
+   "label": {
+    "ru": "Pixar: мама",
+    "en": "Pixar: a mother"
+   }
+  },
+  {
+   "id": "anime-girl",
+   "label": {
+    "ru": "Аниме: девушка",
+    "en": "Anime: a girl"
+   }
+  },
+  {
+   "id": "burton-thin",
+   "label": {
+    "ru": "Бёртон: тонкий",
+    "en": "Burton: thin"
+   }
+  },
+  {
+   "id": "pear-old-woman",
+   "label": {
+    "ru": "Груша: старушка",
+    "en": "Pear: an old woman"
+   }
+  },
+  {
+   "id": "v-hero",
+   "label": {
+    "ru": "V: герой",
+    "en": "V: a hero"
+   }
+  },
+  {
+   "id": "egg-baby",
+   "label": {
+    "ru": "Яйцо: малыш",
+    "en": "Egg: a baby"
+   }
+  },
+  {
+   "id": "pictogram-man",
+   "label": {
+    "ru": "Пиктограмма: мужчина",
+    "en": "Pictogram: a man"
+   }
+  },
+  {
+   "id": "pictogram-woman",
+   "label": {
+    "ru": "Пиктограмма: женщина",
+    "en": "Pictogram: a woman"
+   }
   }
  ]
 }

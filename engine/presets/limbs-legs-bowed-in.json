@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "limbs-legs-bowed-in",
+ "label": {
+  "ru": "конечности: ноги дугой внутрь",
+  "en": "limbs: legs bowed in"
+ },
+ "group": "limbs",
+ "about": {
+  "ru": "Т5: ноги дугой внутрь (колени вместе)",
+  "en": "Т5: legs bowed inwards (knees together)"
+ },
+ "changes": [
+  {
+   "kind": "arc",
+   "amount": 0.4,
+   "arms": false,
+   "legs": "in"
+  }
+ ]
+}

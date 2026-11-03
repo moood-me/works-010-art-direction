@@ -1,0 +1,57 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "silhouette-mass-on-legs",
+ "label": {
+  "ru": "силуэт: масса на ножках",
+  "en": "silhouette: mass on legs"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т6: тяжёлое туловище на тонких ногах",
+  "en": "Т6: a heavy trunk on thin legs"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    [
+     0,
+     0.74,
+     0.8,
+     0
+    ],
+    [
+     0.36,
+     0.74,
+     0.8,
+     0
+    ],
+    [
+     0.52,
+     1.36,
+     1.3,
+     0
+    ],
+    [
+     0.72,
+     1.42,
+     1.3,
+     0
+    ],
+    [
+     0.86,
+     1.02,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     1,
+     0
+    ]
+   ]
+  }
+ ]
+}

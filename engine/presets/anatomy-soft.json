@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "anatomy-soft",
+ "label": {
+  "ru": "анатомия мягче",
+  "en": "anatomy softened"
+ },
+ "group": "surface",
+ "about": {
+  "ru": "Т1: мелкие формы тела сглажены",
+  "en": "Т1: the body's small forms softened"
+ },
+ "changes": [
+  {
+   "kind": "anatomy",
+   "amount": -0.8
+  }
+ ]
+}

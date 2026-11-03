@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "proportions-big-head",
+ "label": {
+  "ru": "пропорции: большая голова",
+  "en": "proportions: a big head"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "head": {
+     "size": 1.35
+    }
+   }
+  }
+ ]
+}

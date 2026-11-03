@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "proportions-broad-shoulders",
+ "label": {
+  "ru": "пропорции: широкие плечи",
+  "en": "proportions: broad shoulders"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "clav": {
+     "length": 1.4
+    }
+   }
+  }
+ ]
+}

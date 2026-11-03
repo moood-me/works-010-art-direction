@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "line-side-s",
+ "label": {
+  "ru": "линия действия: сбоку S",
+  "en": "line of action: side S"
+ },
+ "group": "line",
+ "about": {
+  "ru": "Т5: вся фигура изогнута одной кривой",
+  "en": "Т5: the whole figure bent along one curve"
+ },
+ "changes": [
+  {
+   "kind": "line",
+   "view": "side",
+   "curve": "S",
+   "bend": 0.06
+  }
+ ]
+}

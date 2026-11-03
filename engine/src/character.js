@@ -21,6 +21,8 @@
 // (scaled): standing on its feet, lying on its back, nothing in the floor; "pelvis" — only the pelvis's height scaled.
 import { validate } from './schema.js';
 import { pinned } from './hash.js';
+import { DEFORMERS } from './deform.js';
+import './deformers/index.js';
 
 export const FORMAT = 'engine/character', VERSION = 2;
 
@@ -44,6 +46,11 @@ export function schemaOf(skeleton) {
   const turn = { type: 'object', props: { kind: { const: 'turn' }, joint, axis, degrees: num(-180, 180) }, required: ['kind', 'joint', 'axis', 'degrees'] };
   const morph = { type: 'object', props: { kind: { const: 'morph' }, name: { type: 'string', pattern: /^[A-Za-z][A-Za-z0-9]*$/ }, weight: num(-2, 2) }, required: ['kind', 'name', 'weight'] };
   const layer = (kind, props) => ({ type: 'object', props: { kind: { const: kind }, ...props }, required: ['kind'] });
+  const frames = { type: 'string', enum: ['keep', 'turn'] }, space = { type: 'string', enum: ['pelvis', 'upright'] };
+  // a deformer (src/deform.js): its own parameters, its strength, and how it goes on the rest (frames) or as a layer (space)
+  const deformer = (d, more, required) => ({ type: 'object', props: { kind: { const: d.kind }, ...d.params, strength: num(-3, 3), ...more }, required: ['kind', ...required] });
+  // a preset (presets/<id>.json): its changes, each one's strength times this one
+  const preset = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
   return {
     type: 'object', required: ['format', 'version', 'id', 'label', 'body'],
     props: {
@@ -52,15 +59,17 @@ export function schemaOf(skeleton) {
       label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
       body: { type: 'string', pattern: /^[A-Za-z0-9_.-]+@[0-9a-f]{12,64}$/ },
       rest: { type: 'array', items: { type: 'union', key: 'kind', cases: {
-        turn: { ...turn, props: { ...turn.props, frames: { type: 'string', enum: ['keep', 'turn'] } }, required: [...turn.required, 'frames'] },
-        morph } } },
+        turn: { ...turn, props: { ...turn.props, frames }, required: [...turn.required, 'frames'] },
+        morph, preset: { ...preset, props: { ...preset.props, frames }, required: [...preset.required, 'frames'] },
+        ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, deformer(d, { frames }, ['frames'])])) } } },
       pose: { type: 'array', items: { type: 'union', key: 'kind', cases: {
         armsOff: layer('armsOff', { degrees: num(-45, 45) }),
         armsOutOfHead: layer('armsOutOfHead', { margin: num(0, 0.2) }),
         amplifyLimbs: layer('amplifyLimbs', { factor: num(0, 3), parts: { type: 'array', items: { type: 'string', enum: PARTS }, min: 1 } }),
         dampHeadSpine: layer('dampHeadSpine', { spine: num(0, 2), head: num(0, 2) }),
         clavicleShare: layer('clavicleShare', { share: num(0, 1) }),
-        turn, morph } } },
+        turn, morph, preset: { ...preset, props: { ...preset.props, space } },
+        ...Object.fromEntries(Object.values(DEFORMERS).filter(d => !d.joints).map(d => [d.kind, deformer(d, d.of === 'figure' ? { space } : {}, [])])) } } },
       skinning: { type: 'object', props: {
         method: { type: 'string', enum: ['cor', 'dqs', 'lbs'] }, sigma: num(0.01, 1),
         seam: { anyOf: [{ type: 'null' }, { type: 'object', props: { iterations: { type: 'integer', min: 1, max: 200 }, rings: { type: 'integer', min: 0, max: 20 } } }] } } },
@@ -68,6 +77,34 @@ export function schemaOf(skeleton) {
       look: { type: 'object', props: { skin: { type: 'string', pattern: /^#[0-9a-f]{6}$/i }, roughness: num(0, 1) } },
     },
   };
+}
+
+// A preset (presets/<id>.json): a named list of changes — deformers with their parameters and strengths, or other
+// presets — that a character takes into its rest or its pose layers ({kind: "preset", id: "<id>@<hash>", strength,
+// frames | space}); each of its changes' strength is multiplied by the reference's, the reference says how they go on
+// the rest (frames) or as a layer (space). Plain data an author can read, copy and change.
+//   {format: "engine/preset", version: 1, id, label: {ru, en}, group, about: {ru, en}, changes: [change…]}
+export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 1;
+export function presetSchemaOf() {
+  const num = (min, max) => ({ type: 'number', min, max });
+  const ref = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
+  return {
+    type: 'object', required: ['format', 'version', 'id', 'label', 'group', 'changes'],
+    props: {
+      format: { const: PRESET_FORMAT }, version: { const: PRESET_VERSION }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*$/ },
+      label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
+      group: { type: 'string', pattern: /^[a-z][a-z-]*$/ },
+      about: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
+      changes: { type: 'array', min: 1, items: { type: 'union', key: 'kind', cases: {
+        preset: ref,
+        ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, { type: 'object', props: { kind: { const: d.kind }, ...d.params, strength: num(-3, 3) }, required: ['kind'] }])) } } },
+    },
+  };
+}
+export function checkPreset(p) {
+  if (p?.format !== PRESET_FORMAT || p.version !== PRESET_VERSION) throw new Error(`${p?.id ?? '?'}: not a preset of version ${PRESET_VERSION}`);
+  validate(p, presetSchemaOf(), 'preset ' + p.id);
+  return p;
 }
 
 // a description checked and completed by the defaults: what the engine builds a figure from

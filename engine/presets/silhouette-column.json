@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "silhouette-column",
+ "label": {
+  "ru": "силуэт: колонна",
+  "en": "silhouette: column"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т6: ровный столб от ног до груди, полная талия",
+  "en": "Т6: an even column from the legs to the chest, a full waist"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    [
+     0,
+     1.12,
+     1.08,
+     0
+    ],
+    [
+     0.3,
+     1.12,
+     1.08,
+     0
+    ],
+    [
+     0.47,
+     1,
+     1,
+     0
+    ],
+    [
+     0.61,
+     1.42,
+     1.32,
+     0
+    ],
+    [
+     0.76,
+     1.05,
+     1.05,
+     0
+    ],
+    [
+     0.84,
+     0.9,
+     0.96,
+     0
+    ],
+    [
+     0.92,
+     1,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     1,
+     0
+    ]
+   ]
+  }
+ ]
+}

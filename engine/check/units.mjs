@@ -7,6 +7,8 @@ import { resolve, upgrade } from '../src/character.js';
 import { makeMesh } from '../src/mesh.js';
 import { Pose } from '../src/pose.js';
 import { withRest } from '../src/changes.js';
+import { DEFORMERS } from '../src/deform.js';
+import { regionsOf } from '../src/regions.js';
 
 const E = await createEngine({ read });
 let failed = 0, passed = 0;
@@ -136,6 +138,75 @@ await test('the collision shape: capsules on the body, moving with the pose', as
   const far = C.distance([P[H * 3] + 2, P[H * 3 + 1], P[H * 3 + 2]], out);
   ok(far > 1.5 && far < 2, `a point 2 m aside is ${far} m away`);
   ok(Math.abs(Math.hypot(...out.normal) - 1) < 1e-9, 'no normal');
+});
+
+await test('deformers in a description: unknown parameters refused; a deformer that moves joints is a rest change only', async () => {
+  await refuses(() => resolve(desc({ rest: [{ kind: 'line', bend: 0.1 }] }), E.skeleton), /"frames" is missing/);
+  await refuses(() => resolve(desc({ rest: [{ kind: 'line', bnd: 0.1, frames: 'keep' }] }), E.skeleton), /unknown key "bnd"/);
+  await refuses(() => resolve(desc({ rest: [{ kind: 'silhouette', keys: [['belly', 1, 1, 0]], frames: 'keep' }] }), E.skeleton), /none of the allowed forms/);
+  await refuses(() => resolve(desc({ pose: [{ kind: 'proportions', parts: { head: { size: 1.2 } } }] }), E.skeleton), /kind "proportions" is not one of/);
+  await refuses(() => resolve(desc({ pose: [{ kind: 'smooth', cm: 4, space: 'pelvis' }] }), E.skeleton), /unknown key "space"/);
+  const big = (await E.presets()).presets.find(p => p.id === 'proportions-big-head');
+  await refuses(() => E.figure(resolve(desc({ pose: [{ kind: 'preset', id: big.pin }] }), E.skeleton)), /a change of the rest only/);
+  await refuses(() => E.figure(resolve(desc({ rest: [{ kind: 'preset', id: 'silhouette-pear@0123456789abcdef', frames: 'keep' }] }), E.skeleton)), /changed under what pinned it/);
+});
+await test('every deformer at strength 0 leaves the body as it is (at rest, and as a pose layer)', async () => {
+  const b = await E.body(woman.body), clip = await E.clip('walk'), plain = await E.figure('woman'); plain.frame(clip, 30, plain.pose);
+  const P = { line: {}, squash: {}, contrapposto: {}, taper: {}, straight: {}, arc: {}, silhouette: { keys: [['waist', 0.7, 0.8, 0.02]] }, proportions: { parts: { head: { size: 1.4 }, thigh: { length: 1.3 } } },
+    caricature: {}, anatomy: {}, smooth: {}, contour: { edits: [{ part: 'legs', dir: 'outer', keys: [[0, 1.5], [1, 1]] }] }, masses: { items: [{ shape: 'ellipsoid', at: { from: 'Hips' }, radii: [1, 1, 1] }] }, sign: {} };
+  for (const kind of Object.keys(DEFORMERS)) {
+    ok(kind in P, `no case for the deformer ${kind}`);
+    const spec = resolve(desc({ rest: [{ kind, ...P[kind], strength: 0, frames: 'keep' }] }), E.skeleton), r = await E.restBody(spec);
+    const d = maxApart(r.mesh.positions, b.mesh.positions, b.mesh.used), dj = maxApart(r.rig.joints, b.rig.joints, all(77));
+    ok(d < 2e-5 && dj < 2e-5, `${kind} at strength 0 moved the rest ${d} m, joints ${dj} m`);
+    if (kind === 'proportions' || kind === 'caricature') continue;
+    const f = await E.figure(resolve(desc({ pose: [{ kind, ...P[kind], strength: 0 }] }), E.skeleton)); f.frame(clip, 30, f.pose);
+    ok(maxApart(f.positions, plain.positions, b.mesh.used) < 2e-5, `${kind} at strength 0 as a pose layer moved the figure`);
+  }
+});
+await test('a deformer of the figure as a pose layer: the same in the figure\'s own space wherever it stands and faces; every mesh and the joints go with it', async () => {
+  const clip = await E.clip('walk'), layer = { kind: 'line', view: 'side', curve: 'C', bend: 0.1 };
+  const a = await E.figure(resolve(desc({ pose: [layer] }), E.skeleton)), b = await E.figure(resolve(desc({ pose: [layer] }), E.skeleton), { place: { position: [3, 0, -2], heading: 2.2 } });
+  const p0 = await E.figure('woman');
+  for (const f of [a, b, p0]) f.frame(clip, 30, f.pose);
+  // b's figure brought back to a's place and heading
+  const c = Math.cos(-2.2), s = Math.sin(-2.2), back = (P, i) => { const x = P[i * 3] - 3, z = P[i * 3 + 2] + 2; return [c * x + s * z, P[i * 3 + 1], -s * x + c * z]; };
+  let d = 0; for (const i of a.outputs[0].mesh.used) { const q = back(b.positions, i); d = Math.max(d, Math.hypot(q[0] - a.positions[i * 3], q[1] - a.positions[i * 3 + 1], q[2] - a.positions[i * 3 + 2])); }
+  ok(d < 1e-4, `placed and turned, the layer differs by ${d} m`);
+  ok(maxApart(a.positions, p0.positions, a.outputs[0].mesh.used) > 0.05, 'the layer did nothing');
+  const H = E.skeleton.index.Head; ok(Math.hypot(a.pose.P[H * 3 + 2] - p0.pose.P[H * 3 + 2], a.pose.P[H * 3] - p0.pose.P[H * 3]) > 0.03, 'the joints did not go with it');
+  // a rigid mesh on the head moves with the layer too
+  const r = a.rig.joints, hat = makeMesh({ id: 'hat', kind: 'rigid', joint: H, positions: Float32Array.from([r[H * 3], r[H * 3 + 1] + 0.3, r[H * 3 + 2], r[H * 3] + 0.01, r[H * 3 + 1] + 0.3, r[H * 3 + 2], r[H * 3], r[H * 3 + 1] + 0.31, r[H * 3 + 2]]), triangles: [0, 1, 2], floor: false });
+  const a2 = await E.figure(resolve(desc({ pose: [layer] }), E.skeleton)); a2.addMesh(hat); a2.frame(clip, 30, a2.pose);
+  const p2 = await E.figure('woman'); p2.addMesh(hat); p2.frame(clip, 30, p2.pose);
+  ok(maxApart(a2.outputs[1].positions, p2.outputs[1].positions, [0, 1, 2]) > 0.01, 'a rigid mesh did not follow the layer');
+});
+await test('a deformer of the surface as a pose layer is its rest change carried as a morph', async () => {
+  const clip = await E.clip('idle'), sm = { kind: 'smooth', cm: 5 };
+  const lay = await E.figure(resolve(desc({ pose: [sm] }), E.skeleton)), rest = await E.figure(resolve(desc({ rest: [{ ...sm, frames: 'keep' }] }), E.skeleton));
+  lay.frame(clip, 60, lay.pose); rest.frame(clip, 60, rest.pose);
+  const d = maxApart(lay.positions, rest.positions, lay.outputs[0].mesh.used);
+  ok(d < 0.004, `the morph and the rest change differ by ${d} m (only the centres of rotation may)`);
+});
+await test('every preset makes a body, and its index and every character pin it as it is', async () => {
+  const index = await E.presets(), b = await E.body(woman.body);
+  for (const p of index.presets) {
+    const now = await E.preset(p.pin);
+    ok(now.label.ru && now.label.en && now.about?.ru && now.about?.en, `preset ${p.id} has no label or about in both languages`);
+    const spec = await E.expand(resolve(desc({ rest: [{ kind: 'preset', id: p.pin, frames: 'keep' }] }), E.skeleton)), r = await E.restBody(spec);
+    let bad = 0; for (const i of r.mesh.used) for (let c = 0; c < 3; c++) if (!Number.isFinite(r.mesh.positions[i * 3 + c])) bad++;
+    // (a mass smaller than the body's own form there adds nothing: a mass is a union)
+    ok(!bad && (p.group === 'masses' || maxApart(r.mesh.positions, b.mesh.positions, b.mesh.used) > 1e-4), `preset ${p.id}: ${bad ? bad + ' non-numbers' : 'changed nothing'}`);
+  }
+  for (const c of (await E.characters()).characters) await E.character(c.id);
+});
+await test('regions: landmarks in order on every body; parts and limbs of every vertex', async () => {
+  for (const id of ['moood-woman', 'moood-child', 'anny-f-toddler', 'anny-m-tall', 'anny-T-chibi-baby17']) {
+    const b = await E.body(id), R = regionsOf(b.mesh, b.rig), L = ['floor', 'ankle', 'knee', 'crotch', 'hips', 'waist', 'chest', 'armpit', 'shoulders', 'neck', 'head', 'top'];
+    for (let k = 1; k < L.length; k++) ok(R.levels[L[k]] > R.levels[L[k - 1]], `${id}: ${L[k]} (${R.levels[L[k]].toFixed(3)}) not above ${L[k - 1]} (${R.levels[L[k - 1]].toFixed(3)})`);
+    let worst = 0; for (const i of b.mesh.used) { let s = 0; for (let c = 0; c < 5; c++) s += R.limb[i * 5 + c]; worst = Math.max(worst, Math.abs(s - 1)); }
+    ok(worst < 1e-3, `${id}: limb shares sum to 1 within ${worst}`);
+  }
 });
 
 console.log(failed ? `${failed} of ${passed + failed} failed` : `all ${passed} hold`);

@@ -4,7 +4,9 @@
 //   2. pose layers, in their order (src/layers.js, and the character's code: {kind: 'code', apply(pose, ctx)}),
 //      the places rebuilt after each
 //   3. placed where the figure stands ({position, heading})
-//   4. every mesh off that one pose (src/mesh.js): skinned (morphs weighed in first), rigid, rebuilt (sweeps)
+//   4. every mesh off that one pose (src/mesh.js): skinned (morphs weighed in first), rigid, rebuilt (sweeps);
+//      then the mesh layers in their order (deformers of the figure as pose layers, src/deform.js: every mesh and
+//      the joints' places moved in the figure's own space)
 //   5. the floor (motion.floor 'lowest'): the lowest of all meshes that count for it, over the vertices their triangles
 //      use, set as high as the pose says — everything (meshes and pose) moved up by that one shift (pose.shift)
 //   6. normals
@@ -25,10 +27,11 @@ import { newSample } from './motion.js';
 export class Figure {
   // rig; meshes: [{mesh, name?, skinning?: {method, sigma, seam}}] (the first is the body's, named 'body'); layers: resolved pose layers;
   // body (for layers that need a body: armsOutOfHead); floor: 'lowest' | 'pelvis'; place: {position, heading}
-  constructor({ rig, meshes, layers = [], body = null, floor = 'lowest', place: where = {} }) {
+  constructor({ rig, meshes, layers = [], meshLayers = [], body = null, floor = 'lowest', place: where = {} }) {
     if (!['lowest', 'pelvis'].includes(floor)) throw new Error(`motion.floor "${floor}"`);
     for (const l of layers) if (l.kind !== 'code' && !LAYERS[l.kind]) throw new Error(`no pose layer "${l.kind}"`);
-    Object.assign(this, { rig, body, layers, floorMode: floor, maxGap: 3, simulations: [] });
+    for (const l of meshLayers) if (typeof l.apply !== 'function') throw new Error('a mesh layer applies itself: {apply(figure, pose)}');
+    Object.assign(this, { rig, body, layers, meshLayers, floorMode: floor, maxGap: 3, simulations: [] });
     this.place = { position: [0, 0, 0], heading: 0, ...where };
     this.retarget = makeRetarget(rig);
     this.sample = newSample(rig.J);
@@ -74,6 +77,7 @@ export class Figure {
       else if (m.kind === 'rigid') rigid(o, pose, this.rig);
       else if (m.build) m.build(pose, this.rig, o.positions);
     }
+    for (const l of this.meshLayers) l.apply(this, pose);
     pose.shift = 0;
     if (this.floorMode === 'lowest') {
       let lo = Infinity;

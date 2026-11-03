@@ -1,0 +1,30 @@
+{
+ "format": "engine/character",
+ "version": 2,
+ "id": "pictogram-woman",
+ "label": {
+  "ru": "Пиктограмма: женщина",
+  "en": "Pictogram: a woman"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "pictogram-oval@ba7da4de0faf88ac",
+   "strength": 1,
+   "frames": "keep"
+  }
+ ],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#d8cdbf",
+  "roughness": 0.65
+ }
+}

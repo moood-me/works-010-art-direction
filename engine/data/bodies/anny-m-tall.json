@@ -1,0 +1,52 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "anny-m-tall",
+ "label": {
+  "ru": "Anny: мужчина высокий",
+  "en": "Anny: man, tall"
+ },
+ "source": "data/anny/specs.json (anny-m-tall): Anny's own settings run by tools/bodies_new.py, carried onto moood's mesh as Т8's bodies are; joints by Anny's SOMA regression carried onto this mesh",
+ "topology": "anny-moood",
+ "skeleton": "soma77",
+ "anny": {
+  "ph": {
+   "muscle": 0.5,
+   "weight": 0.5,
+   "height": 0.7,
+   "proportions": 0.5,
+   "cupsize": 0.5,
+   "firmness": 0.5,
+   "gender": 0,
+   "age": 0.6
+  },
+  "lc": {}
+ },
+ "bin": "anny-m-tall.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 165768
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 166692
+  }
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "smooth-8cm",
+ "label": {
+  "ru": "сглаживание 8 см",
+  "en": "smoothing 8 cm"
+ },
+ "group": "surface",
+ "about": {
+  "ru": "Т9: мелкие формы в пределах 8 см уходят, руки и ноги не худеют; голова и пальцы свои",
+  "en": "Т9: the small forms within 8 cm go, the limbs keep their girth; the head and fingers keep theirs"
+ },
+ "changes": [
+  {
+   "kind": "smooth",
+   "cm": 8
+  }
+ ]
+}

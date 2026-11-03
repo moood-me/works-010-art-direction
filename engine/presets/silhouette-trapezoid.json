@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "silhouette-trapezoid",
+ "label": {
+  "ru": "силуэт: трапеция",
+  "en": "silhouette: trapezoid"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т5: шире книзу",
+  "en": "Т5: wider towards the feet"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    [
+     "ankle",
+     1.5,
+     1.25,
+     0
+    ],
+    [
+     "knee",
+     1.35,
+     1.175,
+     0
+    ],
+    [
+     "crotch",
+     1.2,
+     1.1,
+     0
+    ],
+    [
+     "hips",
+     1.12,
+     1.06,
+     0
+    ],
+    [
+     "waist",
+     1.05,
+     1.025,
+     0
+    ],
+    [
+     "chest",
+     0.92,
+     0.96,
+     0
+    ],
+    [
+     "shoulders",
+     0.8,
+     0.9,
+     0
+    ],
+    [
+     "neck",
+     1,
+     1,
+     0
+    ]
+   ]
+  }
+ ]
+}

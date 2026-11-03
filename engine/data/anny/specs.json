@@ -1,0 +1,557 @@
+{
+ "format": "engine/anny-specs",
+ "version": 1,
+ "about": "New bodies from Anny's own settings (tools/bodies_new.py): her phenotype sliders (gender 1 female, age 0 a baby … 1 old, muscle, weight, height, proportions, cupsize, firmness, african / asian / caucasian), her local targets (lc), and a head of another age (head: {ph, lc, r}).",
+ "bodies": [
+  {
+   "id": "anny-f-toddler",
+   "label": {
+    "ru": "Anny: малыш (девочка)",
+    "en": "Anny: toddler (girl)"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.05
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-child",
+   "label": {
+    "ru": "Anny: ребёнок (девочка)",
+    "en": "Anny: child (girl)"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.15
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-teen",
+   "label": {
+    "ru": "Anny: подросток (девочка)",
+    "en": "Anny: teenager (girl)"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.4
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-adult",
+   "label": {
+    "ru": "Anny: женщина, взрослый",
+    "en": "Anny: woman, adult"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-middle",
+   "label": {
+    "ru": "Anny: женщина, средних лет",
+    "en": "Anny: woman, middle-aged"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.8
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-old",
+   "label": {
+    "ru": "Anny: женщина, пожилой",
+    "en": "Anny: woman, old"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 1.0
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-toddler",
+   "label": {
+    "ru": "Anny: малыш (мальчик)",
+    "en": "Anny: toddler (boy)"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.05
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-child",
+   "label": {
+    "ru": "Anny: ребёнок (мальчик)",
+    "en": "Anny: child (boy)"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.15
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-teen",
+   "label": {
+    "ru": "Anny: подросток (мальчик)",
+    "en": "Anny: teenager (boy)"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.4
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-adult",
+   "label": {
+    "ru": "Anny: мужчина, взрослый",
+    "en": "Anny: man, adult"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-middle",
+   "label": {
+    "ru": "Anny: мужчина, средних лет",
+    "en": "Anny: man, middle-aged"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.8
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-old",
+   "label": {
+    "ru": "Anny: мужчина, пожилой",
+    "en": "Anny: man, old"
+   },
+   "group": "age",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 1.0
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-thin",
+   "label": {
+    "ru": "Anny: женщина худая",
+    "en": "Anny: woman, thin"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.3,
+    "weight": 0.0,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-heavy",
+   "label": {
+    "ru": "Anny: женщина полная",
+    "en": "Anny: woman, heavy"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.4,
+    "weight": 1.7,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-muscular",
+   "label": {
+    "ru": "Anny: женщина мускулистая",
+    "en": "Anny: woman, muscular"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 1.2,
+    "weight": 0.55,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-tall",
+   "label": {
+    "ru": "Anny: женщина высокая",
+    "en": "Anny: woman, tall"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.7,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-short",
+   "label": {
+    "ru": "Anny: женщина невысокая",
+    "en": "Anny: woman, short"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.2,
+    "proportions": 0.45,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-thin",
+   "label": {
+    "ru": "Anny: мужчина худой",
+    "en": "Anny: man, thin"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.3,
+    "weight": 0.0,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-heavy",
+   "label": {
+    "ru": "Anny: мужчина полный",
+    "en": "Anny: man, heavy"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.4,
+    "weight": 1.7,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-muscular",
+   "label": {
+    "ru": "Anny: мужчина мускулистый",
+    "en": "Anny: man, muscular"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 1.2,
+    "weight": 0.55,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-tall",
+   "label": {
+    "ru": "Anny: мужчина высокий",
+    "en": "Anny: man, tall"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.7,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-short",
+   "label": {
+    "ru": "Anny: мужчина невысокий",
+    "en": "Anny: man, short"
+   },
+   "group": "build",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.2,
+    "proportions": 0.45,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-african",
+   "label": {
+    "ru": "Anny: женщина, ползунок происхождения «африканский»",
+    "en": "Anny: woman, origin slider \"african\""
+   },
+   "group": "origin",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6,
+    "african": 1.0,
+    "asian": 0.0,
+    "caucasian": 0.0
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-asian",
+   "label": {
+    "ru": "Anny: женщина, ползунок происхождения «азиатский»",
+    "en": "Anny: woman, origin slider \"asian\""
+   },
+   "group": "origin",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6,
+    "african": 0.0,
+    "asian": 1.0,
+    "caucasian": 0.0
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-f-caucasian",
+   "label": {
+    "ru": "Anny: женщина, ползунок происхождения «европеоидный»",
+    "en": "Anny: woman, origin slider \"caucasian\""
+   },
+   "group": "origin",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 1,
+    "age": 0.6,
+    "african": 0.0,
+    "asian": 0.0,
+    "caucasian": 1.0
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-african",
+   "label": {
+    "ru": "Anny: мужчина, ползунок происхождения «африканский»",
+    "en": "Anny: man, origin slider \"african\""
+   },
+   "group": "origin",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6,
+    "african": 1.0,
+    "asian": 0.0,
+    "caucasian": 0.0
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-asian",
+   "label": {
+    "ru": "Anny: мужчина, ползунок происхождения «азиатский»",
+    "en": "Anny: man, origin slider \"asian\""
+   },
+   "group": "origin",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6,
+    "african": 0.0,
+    "asian": 1.0,
+    "caucasian": 0.0
+   },
+   "lc": {}
+  },
+  {
+   "id": "anny-m-caucasian",
+   "label": {
+    "ru": "Anny: мужчина, ползунок происхождения «европеоидный»",
+    "en": "Anny: man, origin slider \"caucasian\""
+   },
+   "group": "origin",
+   "ph": {
+    "muscle": 0.5,
+    "weight": 0.5,
+    "height": 0.5,
+    "proportions": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "gender": 0,
+    "age": 0.6,
+    "african": 0.0,
+    "asian": 0.0,
+    "caucasian": 1.0
+   },
+   "lc": {}
+  }
+ ]
+}

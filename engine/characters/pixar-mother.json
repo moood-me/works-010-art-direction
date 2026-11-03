@@ -1,0 +1,65 @@
+{
+ "format": "engine/character",
+ "version": 2,
+ "id": "pixar-mother",
+ "label": {
+  "ru": "Pixar: мама",
+  "en": "Pixar: a mother"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "smooth-4cm@09e7654817b456c0",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "contour-pixar@1cb80a889dbafaa6",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "masses-pixar-bust@5fe42ad312532fbe",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "masses-pixar-glutes@329df44f781bb8d8",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "masses-shoulders@e60b51b54a10b979",
+   "strength": 0.8,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-small-hands-feet@b03c8a07277d955a",
+   "strength": 0.6,
+   "frames": "keep"
+  }
+ ],
+ "pose": [
+  {
+   "kind": "armsOff",
+   "degrees": 6
+  }
+ ],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#e9b897",
+  "roughness": 0.65
+ }
+}

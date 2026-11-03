@@ -4,6 +4,58 @@
  "about": "check/numbers.mjs: each case's joints and every 4th used vertex, metres",
  "stride": 4,
  "jobs": {
+  "anime-girl-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "anime-girl-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "anime-girl-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "anime-girl-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "anime-girl-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "anime-girl-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
   "boy-chain186": {
    "joints": 77,
    "sources": {
@@ -56,10 +108,68 @@
     ]
    }
   },
+  "boy-squash-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441"
+   }
+  },
   "boy-walk30": {
    "joints": 77,
    "sources": {
     "body": "moood-boy@4c7e09025ff44441",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "burton-thin-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "burton-thin-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "burton-thin-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379"
+   }
+  },
+  "burton-thin-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "burton-thin-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "burton-thin-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
     "motions": [
      "walk@19f9d850a0b23180"
     ]
@@ -117,10 +227,123 @@
     ]
    }
   },
+  "child-squashPose-jump40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "jump@c8e333e5c41655fe"
+    ]
+   }
+  },
   "child-walk30": {
    "joints": 77,
    "sources": {
     "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "disney-princess-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "disney-princess-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "disney-princess-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189"
+   }
+  },
+  "disney-princess-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "disney-princess-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "disney-princess-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "egg-baby-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "egg-baby-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "egg-baby-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9"
+   }
+  },
+  "egg-baby-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "egg-baby-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "egg-baby-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
     "motions": [
      "walk@19f9d850a0b23180"
     ]
@@ -194,6 +417,15 @@
     "motions": [
      "lie@c24c5ad967fd5758",
      "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "girl-contourHalf-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "sit@b2da03b05736323e"
     ]
    }
   },
@@ -386,6 +618,24 @@
     ]
    }
   },
+  "man-smoothPose-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "man-straightArc-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
   "man-walk30": {
    "joints": 77,
    "sources": {
@@ -508,6 +758,214 @@
     ]
    }
   },
+  "pear-old-woman-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pear-old-woman-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pear-old-woman-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f"
+   }
+  },
+  "pear-old-woman-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pear-old-woman-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pear-old-woman-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "pictogram-man-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pictogram-man-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pictogram-man-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "pictogram-man-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pictogram-man-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pictogram-man-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "pictogram-woman-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pictogram-woman-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pictogram-woman-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "pictogram-woman-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pictogram-woman-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pictogram-woman-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "pixar-mother-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pixar-mother-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pixar-mother-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "pixar-mother-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pixar-mother-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pixar-mother-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
   "princess-toddler-head-armsOutOfHead-jump45": {
    "joints": 77,
    "sources": {
@@ -569,6 +1027,64 @@
     ]
    }
   },
+  "v-hero-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "v-hero-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "v-hero-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "v-hero-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "v-hero-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "v-hero-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-caricature-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
   "woman-chain186": {
    "joints": 77,
    "sources": {
@@ -725,6 +1241,60 @@
     ]
    }
   },
+  "woman-linePose-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-linePosePelvis-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "woman-linePosePlaced-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-linePoseUpright-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "woman-lineTurn-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-newBody-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@ceb1bd55596bb1a5",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
   "woman-rest": {
    "joints": 77,
    "sources": {
@@ -755,6 +1325,15 @@
     "body": "moood-woman@271c46992b9495aa",
     "motions": [
      "wave@e6263441c80bc6cc"
+    ]
+   }
+  },
+  "woman-silhouetteKeep-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
     ]
    }
   },
@@ -812,7 +1391,7 @@
  },
  "bin": "numbers.bin",
  "arrays": {
-  "boy-chain186": {
+  "anime-girl-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -820,7 +1399,7 @@
    ],
    "offset": 0
   },
-  "boy-lie170": {
+  "anime-girl-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -828,7 +1407,7 @@
    ],
    "offset": 37692
   },
-  "boy-placed-walk60": {
+  "anime-girl-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -836,7 +1415,7 @@
    ],
    "offset": 75384
   },
-  "boy-rest": {
+  "anime-girl-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -844,7 +1423,7 @@
    ],
    "offset": 113076
   },
-  "boy-run20": {
+  "anime-girl-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -852,7 +1431,7 @@
    ],
    "offset": 150768
   },
-  "boy-sit100": {
+  "anime-girl-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -860,7 +1439,7 @@
    ],
    "offset": 188460
   },
-  "boy-walk30": {
+  "boy-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -868,7 +1447,7 @@
    ],
    "offset": 226152
   },
-  "child-chain186": {
+  "boy-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -876,7 +1455,7 @@
    ],
    "offset": 263844
   },
-  "child-lie170": {
+  "boy-placed-walk60": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -884,7 +1463,7 @@
    ],
    "offset": 301536
   },
-  "child-pelvisFloor-sit100": {
+  "boy-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -892,7 +1471,7 @@
    ],
    "offset": 339228
   },
-  "child-rest": {
+  "boy-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -900,7 +1479,7 @@
    ],
    "offset": 376920
   },
-  "child-run20": {
+  "boy-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -908,7 +1487,7 @@
    ],
    "offset": 414612
   },
-  "child-sit100": {
+  "boy-squash-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -916,7 +1495,7 @@
    ],
    "offset": 452304
   },
-  "child-walk30": {
+  "boy-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -924,7 +1503,7 @@
    ],
    "offset": 489996
   },
-  "elf-chain186": {
+  "burton-thin-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -932,7 +1511,7 @@
    ],
    "offset": 527688
   },
-  "elf-damp-bow45": {
+  "burton-thin-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -940,7 +1519,7 @@
    ],
    "offset": 565380
   },
-  "elf-lie170": {
+  "burton-thin-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -948,7 +1527,7 @@
    ],
    "offset": 603072
   },
-  "elf-rest": {
+  "burton-thin-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -956,7 +1535,7 @@
    ],
    "offset": 640764
   },
-  "elf-run20": {
+  "burton-thin-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -964,7 +1543,7 @@
    ],
    "offset": 678456
   },
-  "elf-sit100": {
+  "burton-thin-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -972,7 +1551,7 @@
    ],
    "offset": 716148
   },
-  "elf-walk30": {
+  "child-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -980,7 +1559,7 @@
    ],
    "offset": 753840
   },
-  "girl-chain186": {
+  "child-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -988,7 +1567,7 @@
    ],
    "offset": 791532
   },
-  "girl-lie170": {
+  "child-pelvisFloor-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -996,7 +1575,7 @@
    ],
    "offset": 829224
   },
-  "girl-morphPose-wave40": {
+  "child-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1004,7 +1583,7 @@
    ],
    "offset": 866916
   },
-  "girl-morphRest-rest": {
+  "child-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1012,7 +1591,7 @@
    ],
    "offset": 904608
   },
-  "girl-rest": {
+  "child-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1020,7 +1599,7 @@
    ],
    "offset": 942300
   },
-  "girl-run20": {
+  "child-squashPose-jump40": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1028,7 +1607,7 @@
    ],
    "offset": 979992
   },
-  "girl-sit100": {
+  "child-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1036,7 +1615,7 @@
    ],
    "offset": 1017684
   },
-  "girl-walk30": {
+  "disney-princess-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1044,7 +1623,7 @@
    ],
    "offset": 1055376
   },
-  "hero-amplify-dance50": {
+  "disney-princess-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1052,7 +1631,7 @@
    ],
    "offset": 1093068
   },
-  "hero-chain186": {
+  "disney-princess-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1060,7 +1639,7 @@
    ],
    "offset": 1130760
   },
-  "hero-lie170": {
+  "disney-princess-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1068,7 +1647,7 @@
    ],
    "offset": 1168452
   },
-  "hero-rest": {
+  "disney-princess-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1076,7 +1655,7 @@
    ],
    "offset": 1206144
   },
-  "hero-run20": {
+  "disney-princess-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1084,7 +1663,7 @@
    ],
    "offset": 1243836
   },
-  "hero-sit100": {
+  "egg-baby-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1092,7 +1671,7 @@
    ],
    "offset": 1281528
   },
-  "hero-walk30": {
+  "egg-baby-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1100,7 +1679,7 @@
    ],
    "offset": 1319220
   },
-  "man-chain186": {
+  "egg-baby-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1108,7 +1687,7 @@
    ],
    "offset": 1356912
   },
-  "man-dqs-sit100": {
+  "egg-baby-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1116,7 +1695,7 @@
    ],
    "offset": 1394604
   },
-  "man-lbs-sit100": {
+  "egg-baby-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1124,7 +1703,7 @@
    ],
    "offset": 1432296
   },
-  "man-lie170": {
+  "egg-baby-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1132,7 +1711,7 @@
    ],
    "offset": 1469988
   },
-  "man-rest": {
+  "elf-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1140,7 +1719,7 @@
    ],
    "offset": 1507680
   },
-  "man-rollover-prone": {
+  "elf-damp-bow45": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1148,7 +1727,7 @@
    ],
    "offset": 1545372
   },
-  "man-run20": {
+  "elf-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1156,7 +1735,7 @@
    ],
    "offset": 1583064
   },
-  "man-sit100": {
+  "elf-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1164,7 +1743,7 @@
    ],
    "offset": 1620756
   },
-  "man-walk30": {
+  "elf-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1172,7 +1751,7 @@
    ],
    "offset": 1658448
   },
-  "oldman-chain186": {
+  "elf-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1180,7 +1759,7 @@
    ],
    "offset": 1696140
   },
-  "oldman-lie170": {
+  "elf-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1188,7 +1767,7 @@
    ],
    "offset": 1733832
   },
-  "oldman-rest": {
+  "girl-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1196,7 +1775,7 @@
    ],
    "offset": 1771524
   },
-  "oldman-run20": {
+  "girl-contourHalf-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1204,7 +1783,7 @@
    ],
    "offset": 1809216
   },
-  "oldman-sit100": {
+  "girl-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1212,7 +1791,7 @@
    ],
    "offset": 1846908
   },
-  "oldman-walk30": {
+  "girl-morphPose-wave40": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1220,7 +1799,7 @@
    ],
    "offset": 1884600
   },
-  "oldwoman-armsOff-walk30": {
+  "girl-morphRest-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1228,7 +1807,7 @@
    ],
    "offset": 1922292
   },
-  "oldwoman-chain186": {
+  "girl-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1236,7 +1815,7 @@
    ],
    "offset": 1959984
   },
-  "oldwoman-lie170": {
+  "girl-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1244,7 +1823,7 @@
    ],
    "offset": 1997676
   },
-  "oldwoman-rest": {
+  "girl-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1252,7 +1831,7 @@
    ],
    "offset": 2035368
   },
-  "oldwoman-run20": {
+  "girl-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1260,7 +1839,7 @@
    ],
    "offset": 2073060
   },
-  "oldwoman-sit100": {
+  "hero-amplify-dance50": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1268,7 +1847,7 @@
    ],
    "offset": 2110752
   },
-  "oldwoman-walk30": {
+  "hero-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1276,7 +1855,7 @@
    ],
    "offset": 2148444
   },
-  "princess-toddler-head-armsOutOfHead-jump45": {
+  "hero-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1284,7 +1863,7 @@
    ],
    "offset": 2186136
   },
-  "princess-toddler-head-chain186": {
+  "hero-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1292,7 +1871,7 @@
    ],
    "offset": 2223828
   },
-  "princess-toddler-head-lie170": {
+  "hero-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1300,7 +1879,7 @@
    ],
    "offset": 2261520
   },
-  "princess-toddler-head-rest": {
+  "hero-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1308,7 +1887,7 @@
    ],
    "offset": 2299212
   },
-  "princess-toddler-head-run20": {
+  "hero-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1316,7 +1895,7 @@
    ],
    "offset": 2336904
   },
-  "princess-toddler-head-sit100": {
+  "man-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1324,7 +1903,7 @@
    ],
    "offset": 2374596
   },
-  "princess-toddler-head-walk30": {
+  "man-dqs-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1332,7 +1911,7 @@
    ],
    "offset": 2412288
   },
-  "woman-chain186": {
+  "man-lbs-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1340,7 +1919,7 @@
    ],
    "offset": 2449980
   },
-  "woman-chain4-120": {
+  "man-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1348,7 +1927,7 @@
    ],
    "offset": 2487672
   },
-  "woman-chain4-123": {
+  "man-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1356,7 +1935,7 @@
    ],
    "offset": 2525364
   },
-  "woman-chain4-190": {
+  "man-rollover-prone": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1364,7 +1943,7 @@
    ],
    "offset": 2563056
   },
-  "woman-chain4-305": {
+  "man-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1372,7 +1951,7 @@
    ],
    "offset": 2600748
   },
-  "woman-chain4-360": {
+  "man-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1380,7 +1959,7 @@
    ],
    "offset": 2638440
   },
-  "woman-clavicle-idle60": {
+  "man-smoothPose-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1388,7 +1967,7 @@
    ],
    "offset": 2676132
   },
-  "woman-dqs-wave40": {
+  "man-straightArc-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1396,7 +1975,7 @@
    ],
    "offset": 2713824
   },
-  "woman-join178": {
+  "man-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1404,7 +1983,7 @@
    ],
    "offset": 2751516
   },
-  "woman-join180": {
+  "oldman-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1412,7 +1991,7 @@
    ],
    "offset": 2789208
   },
-  "woman-join182": {
+  "oldman-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1420,7 +1999,7 @@
    ],
    "offset": 2826900
   },
-  "woman-join186": {
+  "oldman-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1428,7 +2007,7 @@
    ],
    "offset": 2864592
   },
-  "woman-join195": {
+  "oldman-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1436,7 +2015,7 @@
    ],
    "offset": 2902284
   },
-  "woman-lbs-wave40": {
+  "oldman-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1444,7 +2023,7 @@
    ],
    "offset": 2939976
   },
-  "woman-lie170": {
+  "oldman-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1452,7 +2031,7 @@
    ],
    "offset": 2977668
   },
-  "woman-rest": {
+  "oldwoman-armsOff-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1460,7 +2039,7 @@
    ],
    "offset": 3015360
   },
-  "woman-run20": {
+  "oldwoman-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1468,7 +2047,7 @@
    ],
    "offset": 3053052
   },
-  "woman-seam-idle60": {
+  "oldwoman-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1476,7 +2055,7 @@
    ],
    "offset": 3090744
   },
-  "woman-sigma-wave40": {
+  "oldwoman-rest": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1484,7 +2063,7 @@
    ],
    "offset": 3128436
   },
-  "woman-sit100": {
+  "oldwoman-run20": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1492,7 +2071,7 @@
    ],
    "offset": 3166128
   },
-  "woman-turnPose-walk30": {
+  "oldwoman-sit100": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1500,7 +2079,7 @@
    ],
    "offset": 3203820
   },
-  "woman-turnRestKeep-walk30": {
+  "oldwoman-walk30": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1508,7 +2087,7 @@
    ],
    "offset": 3241512
   },
-  "woman-turnRestTurn-rest": {
+  "pear-old-woman-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1516,7 +2095,7 @@
    ],
    "offset": 3279204
   },
-  "woman-turnRestTurn-walk30": {
+  "pear-old-woman-lie170": {
    "dtype": "float32",
    "shape": [
     3141,
@@ -1524,13 +2103,549 @@
    ],
    "offset": 3316896
   },
-  "woman-walk30": {
+  "pear-old-woman-rest": {
    "dtype": "float32",
    "shape": [
     3141,
     3
    ],
    "offset": 3354588
+  },
+  "pear-old-woman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3392280
+  },
+  "pear-old-woman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3429972
+  },
+  "pear-old-woman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3467664
+  },
+  "pictogram-man-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3505356
+  },
+  "pictogram-man-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3543048
+  },
+  "pictogram-man-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3580740
+  },
+  "pictogram-man-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3618432
+  },
+  "pictogram-man-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3656124
+  },
+  "pictogram-man-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3693816
+  },
+  "pictogram-woman-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3731508
+  },
+  "pictogram-woman-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3769200
+  },
+  "pictogram-woman-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3806892
+  },
+  "pictogram-woman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3844584
+  },
+  "pictogram-woman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3882276
+  },
+  "pictogram-woman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3919968
+  },
+  "pixar-mother-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3957660
+  },
+  "pixar-mother-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 3995352
+  },
+  "pixar-mother-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4033044
+  },
+  "pixar-mother-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4070736
+  },
+  "pixar-mother-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4108428
+  },
+  "pixar-mother-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4146120
+  },
+  "princess-toddler-head-armsOutOfHead-jump45": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4183812
+  },
+  "princess-toddler-head-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4221504
+  },
+  "princess-toddler-head-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4259196
+  },
+  "princess-toddler-head-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4296888
+  },
+  "princess-toddler-head-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4334580
+  },
+  "princess-toddler-head-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4372272
+  },
+  "princess-toddler-head-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4409964
+  },
+  "v-hero-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4447656
+  },
+  "v-hero-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4485348
+  },
+  "v-hero-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4523040
+  },
+  "v-hero-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4560732
+  },
+  "v-hero-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4598424
+  },
+  "v-hero-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4636116
+  },
+  "woman-caricature-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4673808
+  },
+  "woman-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4711500
+  },
+  "woman-chain4-120": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4749192
+  },
+  "woman-chain4-123": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4786884
+  },
+  "woman-chain4-190": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4824576
+  },
+  "woman-chain4-305": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4862268
+  },
+  "woman-chain4-360": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4899960
+  },
+  "woman-clavicle-idle60": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4937652
+  },
+  "woman-dqs-wave40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 4975344
+  },
+  "woman-join178": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5013036
+  },
+  "woman-join180": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5050728
+  },
+  "woman-join182": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5088420
+  },
+  "woman-join186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5126112
+  },
+  "woman-join195": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5163804
+  },
+  "woman-lbs-wave40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5201496
+  },
+  "woman-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5239188
+  },
+  "woman-linePose-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5276880
+  },
+  "woman-linePosePelvis-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5314572
+  },
+  "woman-linePosePlaced-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5352264
+  },
+  "woman-linePoseUpright-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5389956
+  },
+  "woman-lineTurn-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5427648
+  },
+  "woman-newBody-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5465340
+  },
+  "woman-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5503032
+  },
+  "woman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5540724
+  },
+  "woman-seam-idle60": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5578416
+  },
+  "woman-sigma-wave40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5616108
+  },
+  "woman-silhouetteKeep-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5653800
+  },
+  "woman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5691492
+  },
+  "woman-turnPose-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5729184
+  },
+  "woman-turnRestKeep-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5766876
+  },
+  "woman-turnRestTurn-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5804568
+  },
+  "woman-turnRestTurn-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5842260
+  },
+  "woman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 5879952
   }
  }
 }

@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "squash",
+ "label": {
+  "ru": "сжатие",
+  "en": "squash"
+ },
+ "group": "squash",
+ "about": {
+  "ru": "Т5: ниже и шире, объём тот же",
+  "en": "Т5: lower and wider, the volume kept"
+ },
+ "changes": [
+  {
+   "kind": "squash",
+   "stretch": -0.25
+  }
+ ]
+}

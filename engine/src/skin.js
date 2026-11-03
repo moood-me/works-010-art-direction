@@ -18,7 +18,8 @@
 // What depends only on the rest (neighbours, centres, the seam's mask) is computed once per mesh and kept, so
 // making another Skinner of the same mesh (another figure, a toggle in the viewer) costs nothing. The loops over
 // vertices allocate nothing.
-const NEIGHBOURS = new WeakMap(), CENTRES = new WeakMap(), MASKS = new WeakMap();
+const CENTRES = new WeakMap(), MASKS = new WeakMap();
+import { neighboursOf } from './mesh.js';
 const cached = (map, key, sub, make) => { let m = map.get(key); if (!m) map.set(key, m = new Map()); if (!m.has(sub)) m.set(sub, make()); return m.get(sub); };
 
 export class Skinner {
@@ -28,7 +29,7 @@ export class Skinner {
     Object.assign(this, { mesh, rig, method, sigma, seam, N: mesh.N, J: rig.J, K: mesh.skin.K });
     this.idx = mesh.used;
     this.R = new Float64Array(this.J * 9); this.T = new Float64Array(this.J * 3); this.D = new Float64Array(this.J * 4);
-    const nb = cached(NEIGHBOURS, mesh.triangles, mesh.N, () => neighbours(mesh));
+    const nb = neighboursOf(mesh);
     this.nbStart = nb.start; this.nb = nb.list;
     if (method === 'cor') { const c = cached(CENTRES, mesh.positions, `${sigma}|${this.K}`, () => centres(mesh, sigma)); this.cor = c.cor; this.hasCor = c.has; }
     if (seam) {
@@ -153,17 +154,6 @@ export class Skinner {
       for (let k = 0; k < 3; k++) out[i * 3 + k] = R[o + k * 3] * x + R[o + k * 3 + 1] * y + R[o + k * 3 + 2] * z + T[c * 3 + k] + d[i * 3 + k];
     }
   }
-}
-
-// each vertex's neighbours over the mesh (CSR)
-function neighbours(mesh) {
-  const N = mesh.N, tris = mesh.triangles, sets = Array.from({ length: N }, () => new Set());
-  for (let t = 0; t < tris.length; t += 3) { const a = tris[t], b = tris[t + 1], c = tris[t + 2]; sets[a].add(b).add(c); sets[b].add(a).add(c); sets[c].add(a).add(b); }
-  const start = new Int32Array(N + 1); let n = 0;
-  for (let i = 0; i < N; i++) { start[i] = n; n += sets[i].size; }
-  start[N] = n; const list = new Int32Array(n); n = 0;
-  for (let i = 0; i < N; i++) for (const k of sets[i]) list[n++] = k;
-  return { start, list };
 }
 
 // the centres of rotation (Le & Hodgins 2016, eq. 3–4): for vertex i, the area-weighted mean of the triangles'

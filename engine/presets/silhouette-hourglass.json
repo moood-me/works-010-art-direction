@@ -1,0 +1,63 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "silhouette-hourglass",
+ "label": {
+  "ru": "силуэт: песочные часы",
+  "en": "silhouette: hourglass"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т5: узкая талия между широкими бёдрами и грудью",
+  "en": "Т5: a narrow waist between wide hips and chest"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    [
+     "knee",
+     1,
+     1,
+     0
+    ],
+    [
+     "crotch",
+     1.1,
+     1.05,
+     0
+    ],
+    [
+     "hips",
+     1.2,
+     1.1,
+     0
+    ],
+    [
+     "waist",
+     0.7,
+     0.85,
+     0
+    ],
+    [
+     "chest",
+     1.15,
+     1.08,
+     0
+    ],
+    [
+     "shoulders",
+     1.1,
+     1,
+     0
+    ],
+    [
+     "neck",
+     1,
+     1,
+     0
+    ]
+   ]
+  }
+ ]
+}

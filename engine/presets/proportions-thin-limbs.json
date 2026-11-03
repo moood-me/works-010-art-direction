@@ -1,0 +1,33 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "proportions-thin-limbs",
+ "label": {
+  "ru": "пропорции: тонкие руки и ноги",
+  "en": "proportions: thin limbs"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "arm": {
+     "width": 0.72
+    },
+    "fore": {
+     "width": 0.72
+    },
+    "thigh": {
+     "width": 0.78
+    },
+    "shin": {
+     "width": 0.75
+    }
+   }
+  }
+ ]
+}

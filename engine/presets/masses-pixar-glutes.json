@@ -1,0 +1,42 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "masses-pixar-glutes",
+ "label": {
+  "ru": "массы: ягодицы (Pixar)",
+  "en": "masses: buttocks (Pixar)"
+ },
+ "group": "masses",
+ "about": {
+  "ru": "ягодицы как у Pixar в Т7",
+  "en": "the buttocks as Pixar in Т7"
+ },
+ "changes": [
+  {
+   "kind": "masses",
+   "items": [
+    {
+     "shape": "ellipsoid",
+     "unit": "torso",
+     "mirror": true,
+     "at": {
+      "from": "Hips",
+      "to": "Neck1",
+      "t": -0.02,
+      "offset": [
+       0.42,
+       0,
+       -0.3
+      ]
+     },
+     "radii": [
+      0.45,
+      0.42,
+      0.36
+     ],
+     "blend": 0.14
+    }
+   ]
+  }
+ ]
+}

@@ -58,3 +58,20 @@ export function normalsOf(pos, tris, out, used) {
   if (used) for (let k = 0; k < used.length; k++) norm(used[k] * 3); else for (let i = 0; i < out.length; i += 3) norm(i);
   return out;
 }
+
+// each vertex's neighbours over the mesh's triangles (CSR: start N+1, list) — kept per triangle list, so every
+// figure, skinner and deformer of the same topology shares one
+const NEIGHBOURS = new WeakMap();
+export function neighboursOf(mesh) {
+  let byN = NEIGHBOURS.get(mesh.triangles); if (!byN) NEIGHBOURS.set(mesh.triangles, byN = new Map());
+  if (byN.has(mesh.N)) return byN.get(mesh.N);
+  const N = mesh.N, tris = mesh.triangles, sets = Array.from({ length: N }, () => new Set());
+  for (let t = 0; t < tris.length; t += 3) { const a = tris[t], b = tris[t + 1], c = tris[t + 2]; sets[a].add(b).add(c); sets[b].add(a).add(c); sets[c].add(a).add(b); }
+  const start = new Int32Array(N + 1); let n = 0;
+  for (let i = 0; i < N; i++) { start[i] = n; n += sets[i].size; }
+  start[N] = n; const list = new Int32Array(n); n = 0;
+  for (let i = 0; i < N; i++) for (const k of sets[i]) list[n++] = k;
+  const nb = { start, list };
+  byN.set(N, nb);
+  return nb;
+}

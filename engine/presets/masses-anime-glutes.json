@@ -1,0 +1,42 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "masses-anime-glutes",
+ "label": {
+  "ru": "массы: ягодицы (аниме)",
+  "en": "masses: buttocks (anime)"
+ },
+ "group": "masses",
+ "about": {
+  "ru": "ягодицы как у аниме в Т7",
+  "en": "the buttocks as anime in Т7"
+ },
+ "changes": [
+  {
+   "kind": "masses",
+   "items": [
+    {
+     "shape": "ellipsoid",
+     "unit": "torso",
+     "mirror": true,
+     "at": {
+      "from": "Hips",
+      "to": "Neck1",
+      "t": -0.02,
+      "offset": [
+       0.38,
+       0,
+       -0.26
+      ]
+     },
+     "radii": [
+      0.34,
+      0.34,
+      0.27
+     ],
+     "blend": 0.1
+    }
+   ]
+  }
+ ]
+}

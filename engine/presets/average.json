@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "average",
+ "label": {
+  "ru": "ближе к среднему",
+  "en": "towards the average"
+ },
+ "group": "caricature",
+ "about": {
+  "ru": "Т1: своё отличие от среднего тела, ослабленное",
+  "en": "Т1: the body's own difference from the average, taken back"
+ },
+ "changes": [
+  {
+   "kind": "caricature",
+   "strength": -0.5
+  }
+ ]
+}

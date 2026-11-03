@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "anatomy-defined",
+ "label": {
+  "ru": "анатомия чётче",
+  "en": "anatomy drawn out"
+ },
+ "group": "surface",
+ "about": {
+  "ru": "Т1: мелкие формы тела выявлены",
+  "en": "Т1: the body's small forms drawn out"
+ },
+ "changes": [
+  {
+   "kind": "anatomy",
+   "amount": 0.7
+  }
+ ]
+}

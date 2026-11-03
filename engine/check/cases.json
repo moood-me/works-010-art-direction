@@ -440,6 +440,252 @@
    "t": 360,
    "view": "three",
    "picture": true
+  },
+  {
+   "name": "squash-rest",
+   "char": "boy",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "over": {
+    "rest": [
+     {
+      "kind": "squash",
+      "stretch": -0.25,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "straightArc-walk30",
+   "char": "man",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "limbs-straight-curved@073ffbb995b4b999",
+      "strength": 1,
+      "frames": "keep"
+     },
+     {
+      "kind": "preset",
+      "id": "limbs-arcs@53b8e35fdbbd2190",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "caricature-rest",
+   "char": "woman",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "caricature@e702ee0e5816d556",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "lineTurn-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "line-side-c-forward@7aa5752a37d49578",
+      "strength": 1,
+      "frames": "turn"
+     }
+    ]
+   }
+  },
+  {
+   "name": "silhouetteKeep-run20",
+   "char": "woman",
+   "clip": "run",
+   "t": 20,
+   "view": "three",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "silhouette-hourglass@96645fdf013abb07",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "linePose-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "linePoseUpright-lie170",
+   "char": "woman",
+   "clip": "lie",
+   "t": 170,
+   "view": "three",
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08,
+      "space": "upright"
+     }
+    ]
+   },
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "linePosePelvis-lie170",
+   "char": "woman",
+   "clip": "lie",
+   "t": 170,
+   "view": "three",
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08,
+      "space": "pelvis"
+     }
+    ]
+   },
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "linePosePlaced-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "place": {
+    "position": [
+     2,
+     0,
+     1
+    ],
+    "heading": 1.9
+   },
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08
+     }
+    ]
+   }
+  },
+  {
+   "name": "squashPose-jump40",
+   "char": "child",
+   "clip": "jump",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "squash",
+      "stretch": -0.3,
+      "space": "upright"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "smoothPose-walk30",
+   "char": "man",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "pose": [
+     {
+      "kind": "preset",
+      "id": "smooth-8cm@f2bcefb61aaa854b",
+      "strength": 0.7
+     }
+    ]
+   }
+  },
+  {
+   "name": "contourHalf-sit100",
+   "char": "girl",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "contour-anime@9d98fd11029624fd",
+      "strength": 0.5,
+      "frames": "keep"
+     },
+     {
+      "kind": "preset",
+      "id": "masses-shoulders@e60b51b54a10b979",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "newBody-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "body": "anny-m-heavy@ceb1bd55596bb1a5"
+   },
+   "picture": true
   }
  ]
 }

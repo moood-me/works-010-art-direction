@@ -1,0 +1,852 @@
+{
+ "format": "engine/presets",
+ "version": 1,
+ "about": "Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: \"preset\", id: \"<pin>\", strength, frames | space}. Written by engine/tools/characters.mjs presets.",
+ "groups": [
+  "silhouette",
+  "line",
+  "squash",
+  "contrapposto",
+  "limbs",
+  "proportions",
+  "caricature",
+  "surface",
+  "contour",
+  "masses",
+  "pictogram"
+ ],
+ "presets": [
+  {
+   "id": "silhouette-bean",
+   "pin": "silhouette-bean@c9ac73c4dc3e5d7f",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: фасолина",
+    "en": "silhouette: bean"
+   },
+   "about": {
+    "ru": "Т5 и Т6: живот вперёд, спина назад — изгиб фасолины сбоку",
+    "en": "Т5 and Т6: the belly forwards, the back curved — a bean seen from the side"
+   }
+  },
+  {
+   "id": "silhouette-column",
+   "pin": "silhouette-column@9512d70b41100584",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: колонна",
+    "en": "silhouette: column"
+   },
+   "about": {
+    "ru": "Т6: ровный столб от ног до груди, полная талия",
+    "en": "Т6: an even column from the legs to the chest, a full waist"
+   }
+  },
+  {
+   "id": "silhouette-diamond",
+   "pin": "silhouette-diamond@716c1a8125b9f0ed",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: ромб",
+    "en": "silhouette: diamond"
+   },
+   "about": {
+    "ru": "Т5: широкое — бёдра и талия, узко — стопы и плечи",
+    "en": "Т5: wide at the hips and waist, narrow at the feet and shoulders"
+   }
+  },
+  {
+   "id": "silhouette-egg",
+   "pin": "silhouette-egg@efbc5d48671c66cd",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: яйцо",
+    "en": "silhouette: egg"
+   },
+   "about": {
+    "ru": "Т5 и Т6: самое широкое — живот, к ногам и плечам уже",
+    "en": "Т5 and Т6: widest at the belly, narrower to the feet and the shoulders"
+   }
+  },
+  {
+   "id": "silhouette-hourglass",
+   "pin": "silhouette-hourglass@96645fdf013abb07",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: песочные часы",
+    "en": "silhouette: hourglass"
+   },
+   "about": {
+    "ru": "Т5: узкая талия между широкими бёдрами и грудью",
+    "en": "Т5: a narrow waist between wide hips and chest"
+   }
+  },
+  {
+   "id": "silhouette-inverted-trapezoid",
+   "pin": "silhouette-inverted-trapezoid@2c41393060cd8eb0",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: перевёрнутая трапеция",
+    "en": "silhouette: inverted trapezoid"
+   },
+   "about": {
+    "ru": "Т5: шире кверху",
+    "en": "Т5: wider towards the shoulders"
+   }
+  },
+  {
+   "id": "silhouette-mass-on-legs",
+   "pin": "silhouette-mass-on-legs@245464596b5861cf",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: масса на ножках",
+    "en": "silhouette: mass on legs"
+   },
+   "about": {
+    "ru": "Т6: тяжёлое туловище на тонких ногах",
+    "en": "Т6: a heavy trunk on thin legs"
+   }
+  },
+  {
+   "id": "silhouette-pear",
+   "pin": "silhouette-pear@1b2a606cda6986c1",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: груша",
+    "en": "silhouette: pear"
+   },
+   "about": {
+    "ru": "Т5: вес низко — широкие бёдра, узкие плечи",
+    "en": "Т5: the weight low — wide hips, narrow shoulders"
+   }
+  },
+  {
+   "id": "silhouette-rectangle",
+   "pin": "silhouette-rectangle@5b765de862b079f3",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: прямоугольник",
+    "en": "silhouette: rectangle"
+   },
+   "about": {
+    "ru": "Т5: прямые бока — талия заполнена до бёдер и груди",
+    "en": "Т5: straight sides — the waist filled out to the hips and the chest"
+   }
+  },
+  {
+   "id": "silhouette-reed",
+   "pin": "silhouette-reed@2a60cdffcfb08b6a",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: тростинка",
+    "en": "silhouette: reed"
+   },
+   "about": {
+    "ru": "Т6: всё тоньше, кроме головы и плеч",
+    "en": "Т6: everything slimmer but the head and the shoulders"
+   }
+  },
+  {
+   "id": "silhouette-trapezoid",
+   "pin": "silhouette-trapezoid@aa5f552207942e30",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: трапеция",
+    "en": "silhouette: trapezoid"
+   },
+   "about": {
+    "ru": "Т5: шире книзу",
+    "en": "Т5: wider towards the feet"
+   }
+  },
+  {
+   "id": "silhouette-triangle",
+   "pin": "silhouette-triangle@dd27c50d1c455843",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: треугольник",
+    "en": "silhouette: triangle"
+   },
+   "about": {
+    "ru": "Т5: от узких плеч к широкому низу",
+    "en": "Т5: from narrow shoulders to a wide base"
+   }
+  },
+  {
+   "id": "silhouette-v",
+   "pin": "silhouette-v@4229dc9629396ee2",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: V",
+    "en": "silhouette: V"
+   },
+   "about": {
+    "ru": "Т5: широкие плечи и грудь, узкие бёдра и ноги",
+    "en": "Т5: broad shoulders and chest, narrow hips and legs"
+   }
+  },
+  {
+   "id": "silhouette-wedge",
+   "pin": "silhouette-wedge@38a852a86c931f36",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: клин",
+    "en": "silhouette: wedge"
+   },
+   "about": {
+    "ru": "Т6: грудь и плечи широкие, ниже — уже",
+    "en": "Т6: a wide chest and shoulders, narrower below"
+   }
+  },
+  {
+   "id": "line-front-c",
+   "pin": "line-front-c@713f4c803c48290d",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: спереди C",
+    "en": "line of action: front C"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-front-s",
+   "pin": "line-front-s@6f0175931d417d71",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: спереди S",
+    "en": "line of action: front S"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-c-back",
+   "pin": "line-side-c-back@373c2462d3d9e3e3",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку C назад",
+    "en": "line of action: side C back"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-c-forward",
+   "pin": "line-side-c-forward@7aa5752a37d49578",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку C вперёд",
+    "en": "line of action: side C forwards"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-s",
+   "pin": "line-side-s@22db9ae77ad3163d",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку S",
+    "en": "line of action: side S"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-s-reverse",
+   "pin": "line-side-s-reverse@138146b11b7677ea",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку обратная S",
+    "en": "line of action: side reversed S"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "squash",
+   "pin": "squash@b64ac18c318d1d88",
+   "group": "squash",
+   "label": {
+    "ru": "сжатие",
+    "en": "squash"
+   },
+   "about": {
+    "ru": "Т5: ниже и шире, объём тот же",
+    "en": "Т5: lower and wider, the volume kept"
+   }
+  },
+  {
+   "id": "stretch",
+   "pin": "stretch@33a494363190d61c",
+   "group": "squash",
+   "label": {
+    "ru": "растяжение",
+    "en": "stretch"
+   },
+   "about": {
+    "ru": "Т5: выше и тоньше, объём тот же",
+    "en": "Т5: taller and slimmer, the volume kept"
+   }
+  },
+  {
+   "id": "contrapposto",
+   "pin": "contrapposto@b34915668d077379",
+   "group": "contrapposto",
+   "label": {
+    "ru": "контрапост",
+    "en": "contrapposto"
+   },
+   "about": {
+    "ru": "Т5: таз в одну сторону, плечи в другую",
+    "en": "Т5: the pelvis tilted one way, the shoulders the other"
+   }
+  },
+  {
+   "id": "limbs-arcs",
+   "pin": "limbs-arcs@53b8e35fdbbd2190",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: дугой",
+    "en": "limbs: in arcs"
+   },
+   "about": {
+    "ru": "Т5: руки и ноги одной дугой",
+    "en": "Т5: arms and legs as one arc each"
+   }
+  },
+  {
+   "id": "limbs-legs-bowed-in",
+   "pin": "limbs-legs-bowed-in@cc72a97e00d2bcc2",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: ноги дугой внутрь",
+    "en": "limbs: legs bowed in"
+   },
+   "about": {
+    "ru": "Т5: ноги дугой внутрь (колени вместе)",
+    "en": "Т5: legs bowed inwards (knees together)"
+   }
+  },
+  {
+   "id": "limbs-straight-curved",
+   "pin": "limbs-straight-curved@073ffbb995b4b999",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: прямое против кривого",
+    "en": "limbs: straight against curved"
+   },
+   "about": {
+    "ru": "Т5: одна сторона конечности прямая, другая выпуклая",
+    "en": "Т5: one side of each limb straight, the other swelling"
+   }
+  },
+  {
+   "id": "limbs-taper",
+   "pin": "limbs-taper@7897e91fc64c99d8",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: сужение к концам",
+    "en": "limbs: taper"
+   },
+   "about": {
+    "ru": "Т5: толще у корня, тоньше к концу",
+    "en": "Т5: thick at the root, thin at the end"
+   }
+  },
+  {
+   "id": "limbs-taper-reverse",
+   "pin": "limbs-taper-reverse@0b94895425954a5c",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: обратное сужение",
+    "en": "limbs: reverse taper"
+   },
+   "about": {
+    "ru": "Т5: тоньше у корня, толще к концу",
+    "en": "Т5: thin at the root, thick at the end"
+   }
+  },
+  {
+   "id": "proportions-big-hands-feet",
+   "pin": "proportions-big-hands-feet@bcbab46e545738e5",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: большие кисти и стопы",
+    "en": "proportions: big hands and feet"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-big-head",
+   "pin": "proportions-big-head@8bd2a87ada5e0506",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: большая голова",
+    "en": "proportions: a big head"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-broad-shoulders",
+   "pin": "proportions-broad-shoulders@7b03ff578f6a1523",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: широкие плечи",
+    "en": "proportions: broad shoulders"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-long-arms",
+   "pin": "proportions-long-arms@bf346ebf96cd4629",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинные руки",
+    "en": "proportions: long arms"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-long-legs",
+   "pin": "proportions-long-legs@44121dc744d405da",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинные ноги",
+    "en": "proportions: long legs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-long-neck",
+   "pin": "proportions-long-neck@1fd371948b4d9179",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинная шея",
+    "en": "proportions: a long neck"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-long-torso",
+   "pin": "proportions-long-torso@90ea9d7f5e5025ef",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинное туловище",
+    "en": "proportions: a long torso"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-narrow-shoulders",
+   "pin": "proportions-narrow-shoulders@f580b278960a697f",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: узкие плечи",
+    "en": "proportions: narrow shoulders"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-short-legs",
+   "pin": "proportions-short-legs@2888d47d19068f2b",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: короткие ноги",
+    "en": "proportions: short legs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-short-neck",
+   "pin": "proportions-short-neck@5a09051779792246",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: короткая шея",
+    "en": "proportions: a short neck"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-slim-torso",
+   "pin": "proportions-slim-torso@dacd4e961e745fb6",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: узкое туловище",
+    "en": "proportions: a slim torso"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-small-hands-feet",
+   "pin": "proportions-small-hands-feet@b03c8a07277d955a",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: маленькие кисти и стопы",
+    "en": "proportions: small hands and feet"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-small-head",
+   "pin": "proportions-small-head@87d8006b29f2f305",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: маленькая голова",
+    "en": "proportions: a small head"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-thick-limbs",
+   "pin": "proportions-thick-limbs@cc26dcd92c9c6578",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: толстые руки и ноги",
+    "en": "proportions: thick limbs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-thin-limbs",
+   "pin": "proportions-thin-limbs@8e418f2a212606e2",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: тонкие руки и ноги",
+    "en": "proportions: thin limbs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "average",
+   "pin": "average@c8a04f40c2a18efd",
+   "group": "caricature",
+   "label": {
+    "ru": "ближе к среднему",
+    "en": "towards the average"
+   },
+   "about": {
+    "ru": "Т1: своё отличие от среднего тела, ослабленное",
+    "en": "Т1: the body's own difference from the average, taken back"
+   }
+  },
+  {
+   "id": "caricature",
+   "pin": "caricature@e702ee0e5816d556",
+   "group": "caricature",
+   "label": {
+    "ru": "шарж",
+    "en": "caricature"
+   },
+   "about": {
+    "ru": "Т1: своё отличие от среднего тела семи тел moood, усиленное",
+    "en": "Т1: the body's own difference from the average of moood's seven bodies, drawn out"
+   }
+  },
+  {
+   "id": "anatomy-defined",
+   "pin": "anatomy-defined@b25cf191e79a1375",
+   "group": "surface",
+   "label": {
+    "ru": "анатомия чётче",
+    "en": "anatomy drawn out"
+   },
+   "about": {
+    "ru": "Т1: мелкие формы тела выявлены",
+    "en": "Т1: the body's small forms drawn out"
+   }
+  },
+  {
+   "id": "anatomy-soft",
+   "pin": "anatomy-soft@bfe60d3b98c4a00b",
+   "group": "surface",
+   "label": {
+    "ru": "анатомия мягче",
+    "en": "anatomy softened"
+   },
+   "about": {
+    "ru": "Т1: мелкие формы тела сглажены",
+    "en": "Т1: the body's small forms softened"
+   }
+  },
+  {
+   "id": "smooth-2cm",
+   "pin": "smooth-2cm@d4921cd5e2520198",
+   "group": "surface",
+   "label": {
+    "ru": "сглаживание 2 см",
+    "en": "smoothing 2 cm"
+   },
+   "about": {
+    "ru": "Т9: мелкие формы в пределах 2 см уходят, руки и ноги не худеют; голова и пальцы свои",
+    "en": "Т9: the small forms within 2 cm go, the limbs keep their girth; the head and fingers keep theirs"
+   }
+  },
+  {
+   "id": "smooth-4cm",
+   "pin": "smooth-4cm@09e7654817b456c0",
+   "group": "surface",
+   "label": {
+    "ru": "сглаживание 4 см",
+    "en": "smoothing 4 cm"
+   },
+   "about": {
+    "ru": "Т9: мелкие формы в пределах 4 см уходят, руки и ноги не худеют; голова и пальцы свои",
+    "en": "Т9: the small forms within 4 cm go, the limbs keep their girth; the head and fingers keep theirs"
+   }
+  },
+  {
+   "id": "smooth-8cm",
+   "pin": "smooth-8cm@f2bcefb61aaa854b",
+   "group": "surface",
+   "label": {
+    "ru": "сглаживание 8 см",
+    "en": "smoothing 8 cm"
+   },
+   "about": {
+    "ru": "Т9: мелкие формы в пределах 8 см уходят, руки и ноги не худеют; голова и пальцы свои",
+    "en": "Т9: the small forms within 8 cm go, the limbs keep their girth; the head and fingers keep theirs"
+   }
+  },
+  {
+   "id": "contour-anime",
+   "pin": "contour-anime@9d98fd11029624fd",
+   "group": "contour",
+   "label": {
+    "ru": "контур: аниме",
+    "en": "contour: anime"
+   },
+   "about": {
+    "ru": "девушка аниме: прямые тонкие линии, едва колено, лёгкая икра, маленькая грудь — рисунок весь длина и покой (Т7)",
+    "en": "anime's girl: straight slender lines, hardly a knee, a slight calf, a small chest — the drawing all length and calm (Т7)"
+   }
+  },
+  {
+   "id": "contour-disney",
+   "pin": "contour-disney@35de0af94e03f212",
+   "group": "contour",
+   "label": {
+    "ru": "контур: Дисней",
+    "en": "contour: Disney"
+   },
+   "about": {
+    "ru": "героиня Диснея: длинная, сужается к концам, узкая талия между круглыми бёдрами и маленькой высокой грудью; икра снаружи высоко, внутри низко (Т7)",
+    "en": "Disney's heroine: long, tapering, a narrow waist between round hips and a small high bust; the outer calf high, the inner low (Т7)"
+   }
+  },
+  {
+   "id": "contour-pixar",
+   "pin": "contour-pixar@1cb80a889dbafaa6",
+   "group": "contour",
+   "label": {
+    "ru": "контур: Pixar",
+    "en": "contour: Pixar"
+   },
+   "about": {
+    "ru": "мама Pixar: мягкая и полная, груша — вес низко и кругло, всё сужается к маленьким кистям и стопам (Т7)",
+    "en": "Pixar's mother: soft and full, a pear — the weight low and round, everything tapering to small hands and feet (Т7)"
+   }
+  },
+  {
+   "id": "masses-anime-bust",
+   "pin": "masses-anime-bust@010983dcd98f0278",
+   "group": "masses",
+   "label": {
+    "ru": "массы: грудь (аниме)",
+    "en": "masses: bust (anime)"
+   },
+   "about": {
+    "ru": "грудь как у аниме в Т7: мягкий шар, вплавленный в торс",
+    "en": "the bust as anime in Т7: a soft ball melted into the torso"
+   }
+  },
+  {
+   "id": "masses-anime-glutes",
+   "pin": "masses-anime-glutes@85dc41c7b08c8f35",
+   "group": "masses",
+   "label": {
+    "ru": "массы: ягодицы (аниме)",
+    "en": "masses: buttocks (anime)"
+   },
+   "about": {
+    "ru": "ягодицы как у аниме в Т7",
+    "en": "the buttocks as anime in Т7"
+   }
+  },
+  {
+   "id": "masses-disney-bust",
+   "pin": "masses-disney-bust@3efeac4914792497",
+   "group": "masses",
+   "label": {
+    "ru": "массы: грудь (Дисней)",
+    "en": "masses: bust (Disney)"
+   },
+   "about": {
+    "ru": "грудь как у Дисней в Т7: мягкий шар, вплавленный в торс",
+    "en": "the bust as Disney in Т7: a soft ball melted into the torso"
+   }
+  },
+  {
+   "id": "masses-disney-glutes",
+   "pin": "masses-disney-glutes@40b4e2378425a9c8",
+   "group": "masses",
+   "label": {
+    "ru": "массы: ягодицы (Дисней)",
+    "en": "masses: buttocks (Disney)"
+   },
+   "about": {
+    "ru": "ягодицы как у Дисней в Т7",
+    "en": "the buttocks as Disney in Т7"
+   }
+  },
+  {
+   "id": "masses-pixar-bust",
+   "pin": "masses-pixar-bust@5fe42ad312532fbe",
+   "group": "masses",
+   "label": {
+    "ru": "массы: грудь (Pixar)",
+    "en": "masses: bust (Pixar)"
+   },
+   "about": {
+    "ru": "грудь как у Pixar в Т7: мягкий шар, вплавленный в торс",
+    "en": "the bust as Pixar in Т7: a soft ball melted into the torso"
+   }
+  },
+  {
+   "id": "masses-pixar-glutes",
+   "pin": "masses-pixar-glutes@329df44f781bb8d8",
+   "group": "masses",
+   "label": {
+    "ru": "массы: ягодицы (Pixar)",
+    "en": "masses: buttocks (Pixar)"
+   },
+   "about": {
+    "ru": "ягодицы как у Pixar в Т7",
+    "en": "the buttocks as Pixar in Т7"
+   }
+  },
+  {
+   "id": "masses-shoulders",
+   "pin": "masses-shoulders@e60b51b54a10b979",
+   "group": "masses",
+   "label": {
+    "ru": "массы: плечо — шапка и скат от шеи",
+    "en": "masses: the shoulder — its cap and the slope from the neck"
+   },
+   "about": {
+    "ru": "Т7: одна круглая шапка над корнем руки и ровный скат к ней от шеи — без полки и без ямки под ней",
+    "en": "Т7: one round cap over the arm's root, reached from the neck by a plain slope — no shelf, no hollow under it"
+   }
+  },
+  {
+   "id": "pictogram-inverted",
+   "pin": "pictogram-inverted@a22565e920149c19",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: перевёрнутая трапеция",
+    "en": "pictogram: inverted trapezoid"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  },
+  {
+   "id": "pictogram-oval",
+   "pin": "pictogram-oval@ba7da4de0faf88ac",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: овал",
+    "en": "pictogram: oval"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  },
+  {
+   "id": "pictogram-rectangle",
+   "pin": "pictogram-rectangle@0c01989c821af94d",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: прямоугольник",
+    "en": "pictogram: rectangle"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  },
+  {
+   "id": "pictogram-trapezoid",
+   "pin": "pictogram-trapezoid@108144f5812e5e5d",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: трапеция",
+    "en": "pictogram: trapezoid"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  }
+ ]
+}

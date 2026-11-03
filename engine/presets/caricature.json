@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "caricature",
+ "label": {
+  "ru": "шарж",
+  "en": "caricature"
+ },
+ "group": "caricature",
+ "about": {
+  "ru": "Т1: своё отличие от среднего тела семи тел moood, усиленное",
+  "en": "Т1: the body's own difference from the average of moood's seven bodies, drawn out"
+ },
+ "changes": [
+  {
+   "kind": "caricature",
+   "strength": 0.6
+  }
+ ]
+}

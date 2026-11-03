@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "proportions-slim-torso",
+ "label": {
+  "ru": "пропорции: узкое туловище",
+  "en": "proportions: a slim torso"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "torso": {
+     "width": 0.82
+    }
+   }
+  }
+ ]
+}

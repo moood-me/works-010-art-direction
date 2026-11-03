@@ -1,0 +1,641 @@
+{
+ "format": "engine/bodies",
+ "version": 1,
+ "about": "Every body (data/bodies/<id>.json), by group, pinned. Written by engine/tools/characters.mjs bodies.",
+ "groups": [
+  {
+   "id": "moood",
+   "label": {
+    "ru": "тела moood",
+    "en": "moood's bodies"
+   }
+  },
+  {
+   "id": "t8",
+   "label": {
+    "ru": "Т8: Anny своими настройками",
+    "en": "Т8: Anny's own settings"
+   }
+  },
+  {
+   "id": "t8-head",
+   "label": {
+    "ru": "Т8: голова другого возраста",
+    "en": "Т8: a head of another age"
+   }
+  },
+  {
+   "id": "age",
+   "label": {
+    "ru": "Anny: возраст",
+    "en": "Anny: age"
+   }
+  },
+  {
+   "id": "build",
+   "label": {
+    "ru": "Anny: сложение",
+    "en": "Anny: build"
+   }
+  },
+  {
+   "id": "origin",
+   "label": {
+    "ru": "Anny: происхождение",
+    "en": "Anny: origin"
+   }
+  }
+ ],
+ "bodies": [
+  {
+   "id": "moood-boy",
+   "pin": "moood-boy@4c7e09025ff44441",
+   "group": "moood",
+   "label": {
+    "ru": "Подросток",
+    "en": "Teenage boy"
+   },
+   "height": 1.657
+  },
+  {
+   "id": "moood-child",
+   "pin": "moood-child@5c187b05e70b6a54",
+   "group": "moood",
+   "label": {
+    "ru": "Ребёнок",
+    "en": "Child"
+   },
+   "height": 1.309
+  },
+  {
+   "id": "moood-girl",
+   "pin": "moood-girl@a2f190bc6fd1cf0e",
+   "group": "moood",
+   "label": {
+    "ru": "Девочка",
+    "en": "Girl"
+   },
+   "height": 1.511
+  },
+  {
+   "id": "moood-man",
+   "pin": "moood-man@ae2fe31d3d61c6e7",
+   "group": "moood",
+   "label": {
+    "ru": "Мужчина",
+    "en": "Man"
+   },
+   "height": 1.768
+  },
+  {
+   "id": "moood-oldman",
+   "pin": "moood-oldman@4cc8baf71d85269e",
+   "group": "moood",
+   "label": {
+    "ru": "Старик",
+    "en": "Old man"
+   },
+   "height": 1.74
+  },
+  {
+   "id": "moood-oldwoman",
+   "pin": "moood-oldwoman@ba4150ce719fe12f",
+   "group": "moood",
+   "label": {
+    "ru": "Старушка",
+    "en": "Old woman"
+   },
+   "height": 1.549
+  },
+  {
+   "id": "moood-woman",
+   "pin": "moood-woman@271c46992b9495aa",
+   "group": "moood",
+   "label": {
+    "ru": "Женщина",
+    "en": "Woman"
+   },
+   "height": 1.585
+  },
+  {
+   "id": "anny-C-andro",
+   "pin": "anny-C-andro@91631e762b90a842",
+   "group": "t8",
+   "label": {
+    "ru": "андрогин",
+    "en": "C-andro"
+   },
+   "height": 1.639
+  },
+  {
+   "id": "anny-C-bean",
+   "pin": "anny-C-bean@e171af2356670de2",
+   "group": "t8",
+   "label": {
+    "ru": "фасолина",
+    "en": "C-bean"
+   },
+   "height": 1.403
+  },
+  {
+   "id": "anny-C-burton",
+   "pin": "anny-C-burton@4cabc23adfc32379",
+   "group": "t8",
+   "label": {
+    "ru": "Бёртон",
+    "en": "C-burton"
+   },
+   "height": 2.854
+  },
+  {
+   "id": "anny-C-chibi",
+   "pin": "anny-C-chibi@9a5e06aa74327252",
+   "group": "t8",
+   "label": {
+    "ru": "чиби",
+    "en": "C-chibi"
+   },
+   "height": 1.414
+  },
+  {
+   "id": "anny-C-elf",
+   "pin": "anny-C-elf@85ac3d063932c900",
+   "group": "t8",
+   "label": {
+    "ru": "эльф",
+    "en": "C-elf"
+   },
+   "height": 2.312
+  },
+  {
+   "id": "anny-C-hero",
+   "pin": "anny-C-hero@c0cd495bd6b84292",
+   "group": "t8",
+   "label": {
+    "ru": "герой",
+    "en": "C-hero"
+   },
+   "height": 1.706
+  },
+  {
+   "id": "anny-C-old",
+   "pin": "anny-C-old@67747bb4f25c1abb",
+   "group": "t8",
+   "label": {
+    "ru": "старая",
+    "en": "C-old"
+   },
+   "height": 1.474
+  },
+  {
+   "id": "anny-C-pear",
+   "pin": "anny-C-pear@5e8ac6958c0bf052",
+   "group": "t8",
+   "label": {
+    "ru": "груша",
+    "en": "C-pear"
+   },
+   "height": 1.486
+  },
+  {
+   "id": "anny-C-princess",
+   "pin": "anny-C-princess@d351f5dda87f7189",
+   "group": "t8",
+   "label": {
+    "ru": "принцесса",
+    "en": "C-princess"
+   },
+   "height": 1.768
+  },
+  {
+   "id": "anny-C-square",
+   "pin": "anny-C-square@45de24f189d7bc0f",
+   "group": "t8",
+   "label": {
+    "ru": "квадрат",
+    "en": "C-square"
+   },
+   "height": 1.407
+  },
+  {
+   "id": "anny-W",
+   "pin": "anny-W@0dd274361dcb6c75",
+   "group": "t8",
+   "label": {
+    "ru": "женщина moood (Anny)",
+    "en": "W"
+   },
+   "height": 1.55
+  },
+  {
+   "id": "anny-T-W-H2-25",
+   "pin": "anny-T-W-H2-25@668a8517aff688f4",
+   "group": "t8-head",
+   "label": {
+    "ru": "женщина + своя голова ×2.5",
+    "en": "T-W-H2-25"
+   },
+   "height": 1.562
+  },
+  {
+   "id": "anny-T-W-child12",
+   "pin": "anny-T-W-child12@0e606abb1dbb9626",
+   "group": "t8-head",
+   "label": {
+    "ru": "женщина + голова ребёнка",
+    "en": "T-W-child12"
+   },
+   "height": 1.586
+  },
+  {
+   "id": "anny-T-W-tod13",
+   "pin": "anny-T-W-tod13@a6319f315cbb28de",
+   "group": "t8-head",
+   "label": {
+    "ru": "женщина + голова малыша",
+    "en": "T-W-tod13"
+   },
+   "height": 1.598
+  },
+  {
+   "id": "anny-T-burton-tod16",
+   "pin": "anny-T-burton-tod16@666f84f0641ecaed",
+   "group": "t8-head",
+   "label": {
+    "ru": "Бёртон + голова малыша",
+    "en": "T-burton-tod16"
+   },
+   "height": 2.918
+  },
+  {
+   "id": "anny-T-chibi-baby17",
+   "pin": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+   "group": "t8-head",
+   "label": {
+    "ru": "чиби + голова младенца",
+    "en": "T-chibi-baby17"
+   },
+   "height": 1.306
+  },
+  {
+   "id": "anny-T-girl-baby12",
+   "pin": "anny-T-girl-baby12@a77a73f66dd5f242",
+   "group": "t8-head",
+   "label": {
+    "ru": "девочка + голова младенца",
+    "en": "T-girl-baby12"
+   },
+   "height": 1.323
+  },
+  {
+   "id": "anny-T-hero-child09",
+   "pin": "anny-T-hero-child09@ebf4ff092c8d2fa3",
+   "group": "t8-head",
+   "label": {
+    "ru": "герой + голова ребёнка",
+    "en": "T-hero-child09"
+   },
+   "height": 1.708
+  },
+  {
+   "id": "anny-T-kid-baby14",
+   "pin": "anny-T-kid-baby14@abea8c847633c96e",
+   "group": "t8-head",
+   "label": {
+    "ru": "ребёнок + голова младенца",
+    "en": "T-kid-baby14"
+   },
+   "height": 1.277
+  },
+  {
+   "id": "anny-T-man-stocky-baby15",
+   "pin": "anny-T-man-stocky-baby15@667af91849242a00",
+   "group": "t8-head",
+   "label": {
+    "ru": "коренастый + голова младенца",
+    "en": "T-man-stocky-baby15"
+   },
+   "height": 1.842
+  },
+  {
+   "id": "anny-T-man-tod13",
+   "pin": "anny-T-man-tod13@4f05635ea499cd8f",
+   "group": "t8-head",
+   "label": {
+    "ru": "мужчина + голова малыша",
+    "en": "T-man-tod13"
+   },
+   "height": 1.965
+  },
+  {
+   "id": "anny-T-old-H2",
+   "pin": "anny-T-old-H2@4b3d30d628aee528",
+   "group": "t8-head",
+   "label": {
+    "ru": "старая + своя голова",
+    "en": "T-old-H2"
+   },
+   "height": 1.455
+  },
+  {
+   "id": "anny-T-princ-tod125",
+   "pin": "anny-T-princ-tod125@05af589e5765c40f",
+   "group": "t8-head",
+   "label": {
+    "ru": "принцесса + голова малыша",
+    "en": "T-princ-tod125"
+   },
+   "height": 1.763
+  },
+  {
+   "id": "anny-T-teen-tod14",
+   "pin": "anny-T-teen-tod14@eafd4072221e8858",
+   "group": "t8-head",
+   "label": {
+    "ru": "девушка + голова малыша",
+    "en": "T-teen-tod14"
+   },
+   "height": 1.477
+  },
+  {
+   "id": "anny-f-adult",
+   "pin": "anny-f-adult@eb61565a9dacf706",
+   "group": "age",
+   "label": {
+    "ru": "Anny: женщина, взрослый",
+    "en": "Anny: woman, adult"
+   },
+   "height": 1.682
+  },
+  {
+   "id": "anny-f-child",
+   "pin": "anny-f-child@9fe4e8511d5b0340",
+   "group": "age",
+   "label": {
+    "ru": "Anny: ребёнок (девочка)",
+    "en": "Anny: child (girl)"
+   },
+   "height": 0.975
+  },
+  {
+   "id": "anny-f-middle",
+   "pin": "anny-f-middle@1f4e520743b95726",
+   "group": "age",
+   "label": {
+    "ru": "Anny: женщина, средних лет",
+    "en": "Anny: woman, middle-aged"
+   },
+   "height": 1.758
+  },
+  {
+   "id": "anny-f-old",
+   "pin": "anny-f-old@537cb7aba60b38bd",
+   "group": "age",
+   "label": {
+    "ru": "Anny: женщина, пожилой",
+    "en": "Anny: woman, old"
+   },
+   "height": 1.752
+  },
+  {
+   "id": "anny-f-teen",
+   "pin": "anny-f-teen@1caeb5e45045a69a",
+   "group": "age",
+   "label": {
+    "ru": "Anny: подросток (девочка)",
+    "en": "Anny: teenager (girl)"
+   },
+   "height": 1.434
+  },
+  {
+   "id": "anny-f-toddler",
+   "pin": "anny-f-toddler@740a50f9059193e4",
+   "group": "age",
+   "label": {
+    "ru": "Anny: малыш (девочка)",
+    "en": "Anny: toddler (girl)"
+   },
+   "height": 0.774
+  },
+  {
+   "id": "anny-m-adult",
+   "pin": "anny-m-adult@3321690bdd5a8c7f",
+   "group": "age",
+   "label": {
+    "ru": "Anny: мужчина, взрослый",
+    "en": "Anny: man, adult"
+   },
+   "height": 1.822
+  },
+  {
+   "id": "anny-m-child",
+   "pin": "anny-m-child@f0bcc4f24942faf8",
+   "group": "age",
+   "label": {
+    "ru": "Anny: ребёнок (мальчик)",
+    "en": "Anny: child (boy)"
+   },
+   "height": 1.03
+  },
+  {
+   "id": "anny-m-middle",
+   "pin": "anny-m-middle@6f3034f436c55ca4",
+   "group": "age",
+   "label": {
+    "ru": "Anny: мужчина, средних лет",
+    "en": "Anny: man, middle-aged"
+   },
+   "height": 1.894
+  },
+  {
+   "id": "anny-m-old",
+   "pin": "anny-m-old@9acd9e391166c93e",
+   "group": "age",
+   "label": {
+    "ru": "Anny: мужчина, пожилой",
+    "en": "Anny: man, old"
+   },
+   "height": 1.877
+  },
+  {
+   "id": "anny-m-teen",
+   "pin": "anny-m-teen@5b41c675d87a98b2",
+   "group": "age",
+   "label": {
+    "ru": "Anny: подросток (мальчик)",
+    "en": "Anny: teenager (boy)"
+   },
+   "height": 1.564
+  },
+  {
+   "id": "anny-m-toddler",
+   "pin": "anny-m-toddler@6880e231028faf8e",
+   "group": "age",
+   "label": {
+    "ru": "Anny: малыш (мальчик)",
+    "en": "Anny: toddler (boy)"
+   },
+   "height": 0.791
+  },
+  {
+   "id": "anny-f-heavy",
+   "pin": "anny-f-heavy@fb6825aaf6b9fd6a",
+   "group": "build",
+   "label": {
+    "ru": "Anny: женщина полная",
+    "en": "Anny: woman, heavy"
+   },
+   "height": 1.685
+  },
+  {
+   "id": "anny-f-muscular",
+   "pin": "anny-f-muscular@8b0d71b953f9a19b",
+   "group": "build",
+   "label": {
+    "ru": "Anny: женщина мускулистая",
+    "en": "Anny: woman, muscular"
+   },
+   "height": 1.68
+  },
+  {
+   "id": "anny-f-short",
+   "pin": "anny-f-short@d583ad2c3e21b32f",
+   "group": "build",
+   "label": {
+    "ru": "Anny: женщина невысокая",
+    "en": "Anny: woman, short"
+   },
+   "height": 1.368
+  },
+  {
+   "id": "anny-f-tall",
+   "pin": "anny-f-tall@ab200b59bc92261f",
+   "group": "build",
+   "label": {
+    "ru": "Anny: женщина высокая",
+    "en": "Anny: woman, tall"
+   },
+   "height": 1.893
+  },
+  {
+   "id": "anny-f-thin",
+   "pin": "anny-f-thin@95dc781d2013f4c1",
+   "group": "build",
+   "label": {
+    "ru": "Anny: женщина худая",
+    "en": "Anny: woman, thin"
+   },
+   "height": 1.685
+  },
+  {
+   "id": "anny-m-heavy",
+   "pin": "anny-m-heavy@ceb1bd55596bb1a5",
+   "group": "build",
+   "label": {
+    "ru": "Anny: мужчина полный",
+    "en": "Anny: man, heavy"
+   },
+   "height": 1.826
+  },
+  {
+   "id": "anny-m-muscular",
+   "pin": "anny-m-muscular@17d8e85d11cfc63f",
+   "group": "build",
+   "label": {
+    "ru": "Anny: мужчина мускулистый",
+    "en": "Anny: man, muscular"
+   },
+   "height": 1.822
+  },
+  {
+   "id": "anny-m-short",
+   "pin": "anny-m-short@e1ebf9647d3fb59b",
+   "group": "build",
+   "label": {
+    "ru": "Anny: мужчина невысокий",
+    "en": "Anny: man, short"
+   },
+   "height": 1.505
+  },
+  {
+   "id": "anny-m-tall",
+   "pin": "anny-m-tall@40e936309a8fd744",
+   "group": "build",
+   "label": {
+    "ru": "Anny: мужчина высокий",
+    "en": "Anny: man, tall"
+   },
+   "height": 2.033
+  },
+  {
+   "id": "anny-m-thin",
+   "pin": "anny-m-thin@e3eb80afedeb6544",
+   "group": "build",
+   "label": {
+    "ru": "Anny: мужчина худой",
+    "en": "Anny: man, thin"
+   },
+   "height": 1.825
+  },
+  {
+   "id": "anny-f-african",
+   "pin": "anny-f-african@0cb281b3f8de2a39",
+   "group": "origin",
+   "label": {
+    "ru": "Anny: женщина, ползунок происхождения «африканский»",
+    "en": "Anny: woman, origin slider \"african\""
+   },
+   "height": 1.754
+  },
+  {
+   "id": "anny-f-asian",
+   "pin": "anny-f-asian@2d8df957a579fc52",
+   "group": "origin",
+   "label": {
+    "ru": "Anny: женщина, ползунок происхождения «азиатский»",
+    "en": "Anny: woman, origin slider \"asian\""
+   },
+   "height": 1.598
+  },
+  {
+   "id": "anny-f-caucasian",
+   "pin": "anny-f-caucasian@e9f33e264b53b15d",
+   "group": "origin",
+   "label": {
+    "ru": "Anny: женщина, ползунок происхождения «европеоидный»",
+    "en": "Anny: woman, origin slider \"caucasian\""
+   },
+   "height": 1.696
+  },
+  {
+   "id": "anny-m-african",
+   "pin": "anny-m-african@fc938e736d78efe0",
+   "group": "origin",
+   "label": {
+    "ru": "Anny: мужчина, ползунок происхождения «африканский»",
+    "en": "Anny: man, origin slider \"african\""
+   },
+   "height": 1.9
+  },
+  {
+   "id": "anny-m-asian",
+   "pin": "anny-m-asian@30c675acd7fa0542",
+   "group": "origin",
+   "label": {
+    "ru": "Anny: мужчина, ползунок происхождения «азиатский»",
+    "en": "Anny: man, origin slider \"asian\""
+   },
+   "height": 1.733
+  },
+  {
+   "id": "anny-m-caucasian",
+   "pin": "anny-m-caucasian@9af127e84db04e07",
+   "group": "origin",
+   "label": {
+    "ru": "Anny: мужчина, ползунок происхождения «европеоидный»",
+    "en": "Anny: man, origin slider \"caucasian\""
+   },
+   "height": 1.835
+  }
+ ]
+}

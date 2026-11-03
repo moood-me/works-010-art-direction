@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "smooth-2cm",
+ "label": {
+  "ru": "сглаживание 2 см",
+  "en": "smoothing 2 cm"
+ },
+ "group": "surface",
+ "about": {
+  "ru": "Т9: мелкие формы в пределах 2 см уходят, руки и ноги не худеют; голова и пальцы свои",
+  "en": "Т9: the small forms within 2 cm go, the limbs keep their girth; the head and fingers keep theirs"
+ },
+ "changes": [
+  {
+   "kind": "smooth",
+   "cm": 2
+  }
+ ]
+}

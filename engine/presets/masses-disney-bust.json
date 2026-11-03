@@ -1,0 +1,42 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "masses-disney-bust",
+ "label": {
+  "ru": "массы: грудь (Дисней)",
+  "en": "masses: bust (Disney)"
+ },
+ "group": "masses",
+ "about": {
+  "ru": "грудь как у Дисней в Т7: мягкий шар, вплавленный в торс",
+  "en": "the bust as Disney in Т7: a soft ball melted into the torso"
+ },
+ "changes": [
+  {
+   "kind": "masses",
+   "items": [
+    {
+     "shape": "ellipsoid",
+     "unit": "torso",
+     "mirror": true,
+     "at": {
+      "from": "Hips",
+      "to": "Neck1",
+      "t": 0.58,
+      "offset": [
+       0.3,
+       0,
+       0.3
+      ]
+     },
+     "radii": [
+      0.28,
+      0.24,
+      0.22
+     ],
+     "blend": 0.16
+    }
+   ]
+  }
+ ]
+}

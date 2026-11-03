@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "silhouette-egg",
+ "label": {
+  "ru": "силуэт: яйцо",
+  "en": "silhouette: egg"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т5 и Т6: самое широкое — живот, к ногам и плечам уже",
+  "en": "Т5 and Т6: widest at the belly, narrower to the feet and the shoulders"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    [
+     "ankle",
+     0.8,
+     0.85,
+     0
+    ],
+    [
+     "knee",
+     0.95,
+     0.95,
+     0
+    ],
+    [
+     "crotch",
+     1.15,
+     1.1,
+     0
+    ],
+    [
+     "hips",
+     1.32,
+     1.3,
+     0.005
+    ],
+    [
+     "waist",
+     1.42,
+     1.38,
+     0.01
+    ],
+    [
+     "chest",
+     1.22,
+     1.16,
+     0
+    ],
+    [
+     "shoulders",
+     0.92,
+     1,
+     0
+    ],
+    [
+     "neck",
+     1,
+     1,
+     0
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "pictogram-inverted",
+ "label": {
+  "ru": "пиктограмма: перевёрнутая трапеция",
+  "en": "pictogram: inverted trapezoid"
+ },
+ "group": "pictogram",
+ "about": {
+  "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+  "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+ },
+ "changes": [
+  {
+   "kind": "smooth",
+   "cm": 6
+  },
+  {
+   "kind": "sign",
+   "figure": "inverted",
+   "gap": 0.6
+  }
+ ]
+}

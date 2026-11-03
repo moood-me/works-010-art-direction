@@ -1,0 +1,42 @@
+{
+ "format": "engine/character",
+ "version": 2,
+ "id": "egg-baby",
+ "label": {
+  "ru": "Яйцо: малыш",
+  "en": "Egg: a baby"
+ },
+ "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "smooth-4cm@09e7654817b456c0",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "silhouette-egg@efbc5d48671c66cd",
+   "strength": 0.6,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-short-legs@2888d47d19068f2b",
+   "strength": 0.5,
+   "frames": "keep"
+  }
+ ],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#f0c7aa",
+  "roughness": 0.65
+ }
+}

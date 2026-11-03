@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 1,
+ "id": "proportions-long-legs",
+ "label": {
+  "ru": "пропорции: длинные ноги",
+  "en": "proportions: long legs"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "thigh": {
+     "length": 1.18
+    },
+    "shin": {
+     "length": 1.18
+    }
+   }
+  }
+ ]
+}
