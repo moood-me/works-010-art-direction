@@ -11,7 +11,8 @@
 //     limb        each vertex's share of the five limbs — 0 body, 1 left arm, 2 right arm, 3 left leg, 4 right leg —
 //                 smoothed over the surface so a change of a limb fades into the body (N×5)
 //     jlimb       each joint's limb
-//     head, fingers, ends   each vertex's share of the head, the fingers, the hands and feet (smoothed)
+//     head, fingers, toes, ends   each vertex's share of the head, the fingers, the toes, the hands and feet
+//                 (the head's and the ends' smoothed)
 //     levels      landmarks by height (metres): floor, ankle, knee, crotch, hips, waist, chest, armpit, shoulders,
 //                 neck, head, top
 //     height      top − floor
@@ -19,6 +20,7 @@
 // What depends only on the skin's weights and triangles (shares, limbs) is kept per topology; what depends on the rest
 // (frames, levels) per rest.
 import { neighboursOf } from './mesh.js';
+import { sst } from './math.js';
 
 export const LIMBS = ['body', 'armLeft', 'armRight', 'legLeft', 'legRight'];
 
@@ -70,7 +72,7 @@ function sharesOf(mesh, sk) {
   if (SHARES.has(mesh.skin.joints)) return SHARES.get(mesh.skin.joints);
   const { segs, jseg } = segmentsOf(sk), N = mesh.N, K = mesh.skin.K, SJ = mesh.skin.joints, SW = mesh.skin.weights;
   const seg = new Int32Array(N * 2), sw = new Float32Array(N * 2), acc = new Float64Array(segs.length);
-  const limb = new Float32Array(N * 5), head = new Float32Array(N), fingers = new Float32Array(N), ends = new Float32Array(N);
+  const limb = new Float32Array(N * 5), head = new Float32Array(N), fingers = new Float32Array(N), toes = new Float32Array(N), ends = new Float32Array(N);
   const HEAD = new Set(['Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'].map(n => sk.index[n]));
   for (let i = 0; i < N; i++) {
     acc.fill(0);
@@ -79,6 +81,7 @@ function sharesOf(mesh, sk) {
       acc[jseg[j]] += w; limb[i * 5 + limbOfSeg(s)] += w;
       if (HEAD.has(j)) head[i] += w;
       if (sk.part[j] === 'finger') fingers[i] += w;
+      if (sk.part[j] === 'toe') toes[i] += w;
       if (s.kind === 'hand' || s.kind === 'foot') ends[i] += w;
     }
     let s1 = -1, s2 = -1;
@@ -88,7 +91,7 @@ function sharesOf(mesh, sk) {
   }
   const nb = neighboursOf(mesh);
   smoothField(limb, 5, nb, 6);
-  const out = { seg, sw, limb, head: smoothField(head, 1, nb, 4), fingers, ends: smoothField(Float32Array.from(ends, v => sst(Math.min(1, v * 1.3))), 1, nb, 10) };
+  const out = { seg, sw, limb, head: smoothField(head, 1, nb, 4), fingers, toes, ends: smoothField(Float32Array.from(ends, v => sst(Math.min(1, v * 1.3))), 1, nb, 10) };
   SHARES.set(mesh.skin.joints, out);
   return out;
 }
@@ -140,9 +143,6 @@ export function limbsOfMesh(mesh, sk) {
 }
 
 // —— small tools on a mesh ——
-export const sst = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
-export const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
-export const lerp = (a, b, t) => a + (b - a) * t;
 
 // a field of C values per vertex smoothed over the surface: each step half its own, half its neighbours' mean
 export function smoothField(f, C, nb, iters, only = null) {
@@ -173,15 +173,36 @@ export function taubin(pos, nb, amount, iters, mu = -0.53) {
   }
   return p;
 }
-// vertex normals (area-weighted) of any positions on the mesh's triangles
-export function normalsAt(pos, tris) {
-  const n = new Float32Array(pos.length);
-  for (let t = 0; t < tris.length; t += 3) {
-    const a = tris[t] * 3, b = tris[t + 1] * 3, c = tris[t + 2] * 3;
-    const ux = pos[b] - pos[a], uy = pos[b + 1] - pos[a + 1], uz = pos[b + 2] - pos[a + 2], vx = pos[c] - pos[a], vy = pos[c + 1] - pos[a + 1], vz = pos[c + 2] - pos[a + 2];
-    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
-    for (const k of [a, b, c]) { n[k] += nx; n[k + 1] += ny; n[k + 2] += nz; }
+
+// triangles that a change turned over (their normal against the one they had): a mark per triangle, and how many
+export function turnedOver(tris, from, to, used = null) {
+  const T = tris.length / 3, bad = new Uint8Array(T); let n = 0;
+  for (let t = 0; t < T; t++) {
+    const a = tris[t * 3] * 3, b = tris[t * 3 + 1] * 3, c = tris[t * 3 + 2] * 3;
+    if (used && !used[tris[t * 3]]) continue;
+    const n0 = cross3(from, a, b, c), n1 = cross3(to, a, b, c);
+    if (n0[0] * n1[0] + n0[1] * n1[1] + n0[2] * n1[2] < 0) { bad[t] = 1; n++; }
   }
-  for (let i = 0; i < n.length; i += 3) { const l = Math.hypot(n[i], n[i + 1], n[i + 2]) || 1; n[i] /= l; n[i + 1] /= l; n[i + 2] /= l; }
-  return n;
+  return { bad, n };
+}
+const cross3 = (P, a, b, c) => {
+  const ux = P[b] - P[a], uy = P[b + 1] - P[a + 1], uz = P[b + 2] - P[a + 2], vx = P[c] - P[a], vy = P[c + 1] - P[a + 1], vz = P[c + 2] - P[a + 2];
+  return [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx];
+};
+// a change of the rest relaxed where it turns triangles over: around every triangle the move from `from` to `to`
+// turned over (and two rings about it) the move is smoothed over the surface, again until none is turned over (at most
+// `rounds` times) — the large move (a head lowered, a limb thinned) stays, the fold it made in the small goes
+export function unfold(R, from, to, rounds = 24) {
+  const tris = R.mesh.triangles, N = R.mesh.N, nb = R.nb, out = Float32Array.from(to), d = new Float32Array(N * 3);
+  for (let r = 0; r < rounds; r++) {
+    const { bad, n } = turnedOver(tris, from, out, R.mesh.isUsed);
+    if (!n) break;
+    let hit = new Uint8Array(N);
+    for (let t = 0; t < bad.length; t++) if (bad[t]) for (let e = 0; e < 3; e++) hit[tris[t * 3 + e]] = 1;
+    for (let ring = 0; ring < 2 + (r >> 2); ring++) { const g = Uint8Array.from(hit); for (let i = 0; i < N; i++) if (hit[i]) for (let q = nb.start[i]; q < nb.start[i + 1]; q++) g[nb.list[q]] = 1; hit = g; }
+    for (let i = 0; i < N * 3; i++) d[i] = out[i] - from[i];
+    smoothField(d, 3, nb, 4, hit);
+    for (const i of R.mesh.used) if (hit[i]) for (let c = 0; c < 3; c++) out[i * 3 + c] = from[i * 3 + c] + d[i * 3 + c];
+  }
+  return out;
 }

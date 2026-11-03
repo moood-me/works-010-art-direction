@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-reed",
  "label": {
   "ru": "силуэт: тростинка",
@@ -15,36 +15,36 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     0,
-     0.8,
-     0.82,
-     0
-    ],
-    [
-     0.5,
-     0.8,
-     0.82,
-     0
-    ],
-    [
-     0.75,
-     0.82,
-     0.84,
-     0
-    ],
-    [
-     0.88,
-     0.95,
-     0.96,
-     0
-    ],
-    [
-     1,
-     1,
-     1,
-     0
-    ]
+    {
+     "at": 0,
+     "width": 0.8,
+     "depth": 0.82,
+     "forward": 0
+    },
+    {
+     "at": 0.5,
+     "width": 0.8,
+     "depth": 0.82,
+     "forward": 0
+    },
+    {
+     "at": 0.75,
+     "width": 0.82,
+     "depth": 0.84,
+     "forward": 0
+    },
+    {
+     "at": 0.88,
+     "width": 0.95,
+     "depth": 0.96,
+     "forward": 0
+    },
+    {
+     "at": 1,
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

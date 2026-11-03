@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-pear",
  "label": {
   "ru": "силуэт: груша",
@@ -15,54 +15,54 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     "ankle",
-     1,
-     1,
-     0
-    ],
-    [
-     "knee",
-     1.15,
-     1.075,
-     0
-    ],
-    [
-     "crotch",
-     1.4,
-     1.2,
-     0
-    ],
-    [
-     "hips",
-     1.35,
-     1.175,
-     0
-    ],
-    [
-     "waist",
-     1.05,
-     1.025,
-     0
-    ],
-    [
-     "chest",
-     0.85,
-     0.925,
-     0
-    ],
-    [
-     "shoulders",
-     0.8,
-     0.9,
-     0
-    ],
-    [
-     "neck",
-     1,
-     1,
-     0
-    ]
+    {
+     "at": "ankle",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "knee",
+     "width": 1.15,
+     "depth": 1.075,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 1.4,
+     "depth": 1.2,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 1.35,
+     "depth": 1.175,
+     "forward": 0
+    },
+    {
+     "at": "waist",
+     "width": 1.05,
+     "depth": 1.025,
+     "forward": 0
+    },
+    {
+     "at": "chest",
+     "width": 0.85,
+     "depth": 0.925,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 0.8,
+     "depth": 0.9,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

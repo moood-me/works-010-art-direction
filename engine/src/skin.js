@@ -31,7 +31,7 @@ export class Skinner {
     this.R = new Float64Array(this.J * 9); this.T = new Float64Array(this.J * 3); this.D = new Float64Array(this.J * 4);
     const nb = neighboursOf(mesh);
     this.nbStart = nb.start; this.nb = nb.list;
-    if (method === 'cor') { const c = cached(CENTRES, mesh.positions, `${sigma}|${this.K}`, () => centres(mesh, sigma)); this.cor = c.cor; this.hasCor = c.has; }
+    if (method === 'cor') { const c = centresOf(mesh, sigma); this.cor = c.cor; this.hasCor = c.has; }
     if (seam) {
       const m = cached(MASKS, mesh.positions, seam.rings, () => seamMask(mesh, rig, nb, seam.rings));
       this.mask = m.mask; this.active = m.active; this.near = m.near;
@@ -39,9 +39,10 @@ export class Skinner {
     }
   }
 
-  // each joint's transform now: x ↦ R x + T (R from the pose's turn; T so the joint's rest place goes to its place now)
-  transforms(pose) {
-    const r = this.rig.joints, R = this.R, T = this.T;
+  // each joint's transform now: x ↦ R x + T (R from the pose's turn; T so the joint's rest place goes to its place now;
+  // rest: the rest places this frame — the rig's, or as pose layers that change the rest make them)
+  transforms(pose, rest = this.rig.joints) {
+    const r = rest, R = this.R, T = this.T;
     for (let j = 0; j < this.J; j++) {
       const x = pose.Q[j * 4], y = pose.Q[j * 4 + 1], z = pose.Q[j * 4 + 2], w = pose.Q[j * 4 + 3], o = j * 9;
       R[o] = 1 - 2 * (y * y + z * z); R[o + 1] = 2 * (x * y - z * w); R[o + 2] = 2 * (x * z + y * w);
@@ -59,9 +60,11 @@ export class Skinner {
     return [R[o], R[o + 1], R[o + 2], T[j * 3], R[o + 3], R[o + 4], R[o + 5], T[j * 3 + 1], R[o + 6], R[o + 7], R[o + 8], T[j * 3 + 2]];
   }
 
-  // the mesh's vertices in the pose, into out (Float32Array N×3); rest: the rest to skin (the mesh's, or morphed)
-  skin(pose, out, rest = this.mesh.positions) {
-    this.transforms(pose);
+  // the mesh's vertices in the pose, into out (Float32Array N×3); rest: the rest to skin (the mesh's, or morphed);
+  // joints: the joints' rest places this frame; cor: the centres of rotation this frame (both changed by pose layers
+  // that change the rest, src/figure.js)
+  skin(pose, out, rest = this.mesh.positions, joints = this.rig.joints, cor = this.cor) {
+    this.transforms(pose, joints);
     const { R, T, K, idx } = this, P = rest, JS = this.mesh.skin.joints, WS = this.mesh.skin.weights, Q = pose.Q;
     if (this.method === 'lbs') {
       for (let n = 0; n < idx.length; n++) {
@@ -76,7 +79,7 @@ export class Skinner {
         out[i * 3] = X; out[i * 3 + 1] = Y; out[i * 3 + 2] = Z;
       }
     } else if (this.method === 'cor') {
-      const C = this.cor, has = this.hasCor;
+      const C = cor, has = this.hasCor;
       for (let n = 0; n < idx.length; n++) {
         const i = idx[n], x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
         // a vertex of one joint: its turn about any centre is the same — linear blending of the vertex itself
@@ -155,6 +158,9 @@ export class Skinner {
     }
   }
 }
+
+// a mesh's centres of rotation at its rest (kept per rest and sigma)
+export function centresOf(mesh, sigma = 0.1) { return cached(CENTRES, mesh.positions, `${sigma}|${mesh.skin.K}`, () => centres(mesh, sigma)); }
 
 // the centres of rotation (Le & Hodgins 2016, eq. 3–4): for vertex i, the area-weighted mean of the triangles'
 // centroids, each by how alike its weights are to i's — s(wᵢ, w_t) = Σ_{j<k} wᵢⱼ wᵢₖ w_tⱼ w_tₖ exp(−((wᵢⱼ w_tₖ − wᵢₖ w_tⱼ)/σ)²)

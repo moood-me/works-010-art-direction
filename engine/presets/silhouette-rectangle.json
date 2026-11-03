@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-rectangle",
  "label": {
   "ru": "силуэт: прямоугольник",
@@ -15,54 +15,54 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     "ankle",
-     1.1,
-     1.05,
-     0
-    ],
-    [
-     "knee",
-     1.05,
-     1.025,
-     0
-    ],
-    [
-     "crotch",
-     0.95,
-     0.975,
-     0
-    ],
-    [
-     "hips",
-     0.97,
-     0.985,
-     0
-    ],
-    [
-     "waist",
-     1.25,
-     1.125,
-     0
-    ],
-    [
-     "chest",
-     1,
-     1,
-     0
-    ],
-    [
-     "shoulders",
-     0.95,
-     0.975,
-     0
-    ],
-    [
-     "neck",
-     1,
-     1,
-     0
-    ]
+    {
+     "at": "ankle",
+     "width": 1.1,
+     "depth": 1.05,
+     "forward": 0
+    },
+    {
+     "at": "knee",
+     "width": 1.05,
+     "depth": 1.025,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 0.95,
+     "depth": 0.975,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 0.97,
+     "depth": 0.985,
+     "forward": 0
+    },
+    {
+     "at": "waist",
+     "width": 1.25,
+     "depth": 1.125,
+     "forward": 0
+    },
+    {
+     "at": "chest",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 0.95,
+     "depth": 0.975,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

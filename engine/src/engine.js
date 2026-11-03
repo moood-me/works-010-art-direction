@@ -14,8 +14,7 @@ import { readJSON, defaultRead } from './pack.js';
 import { pinned, checkPin, canonical, hashOf } from './hash.js';
 import { resolve, checkPreset } from './character.js';
 import { turnAtRest, morphAtRest } from './changes.js';
-import { DEFORMERS, deformAtRest, deformAsMorph, meshLayer } from './deform.js';
-import { makeMesh } from './mesh.js';
+import { DEFORMERS, deformAtRest, layerOf, turnLayer, restLayer } from './deform.js';
 import { Figure } from './figure.js';
 
 export async function createEngine({ root = new URL('../', import.meta.url), read = defaultRead } = {}) {
@@ -31,7 +30,11 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
     soma: () => once('soma', () => loadSoma(new URL('data/soma/soma.bin', root), read)),
     characters: () => once('ci', () => readJSON(new URL('characters/index.json', root), read)),
     description: id => once('d:' + id, () => readJSON(new URL(`characters/${id}.json`, root), read)),
-    character: async id => E.expand(resolve(await E.description(id), skeleton)),
+    character: async id => E.expand(await E.resolve(await E.description(id))),
+    // a description resolved (src/character.js), with the character it starts from (`base`) resolved first
+    resolve: async d => d.base ? resolve(d, skeleton, await E.resolve(await E.base(d.base))) : resolve(d, skeleton),
+    // a character's description pinned by its content (what a `base` names): refused if it changed under the pin
+    base: ref => pinnedLoad('character ', ref, id => async () => { const d = await E.description(id); return { ...d, hash: hashOf([d]) }; }).then(d => { const o = { ...d }; delete o.hash; return o; }),
     bodies: () => once('bi', () => readJSON(new URL('data/bodies/index.json', root), read)),
     // presets (presets/<id>.json, presets/index.json): checked, pinned like bodies
     presets: () => once('pi', () => readJSON(new URL('presets/index.json', root), read)),
@@ -44,8 +47,8 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
           if (c.kind !== 'preset') { out.push(c); continue; }
           if (depth > 8) throw new Error(`preset ${c.id}: presets nested deeper than 8 (a cycle?)`);
           const p = await E.preset(c.id), k = c.strength ?? 1;
-          const inner = p.changes.map(x => ({ ...x, strength: (x.strength ?? 1) * k, ...(x.kind === 'preset' ? (mode === 'rest' ? { frames: c.frames } : c.space ? { space: c.space } : {}) : mode === 'rest' ? { frames: c.frames } : DEFORMERS[x.kind].of === 'figure' && c.space ? { space: c.space } : {}) }));
-          if (mode === 'pose') for (const x of inner) if (x.kind !== 'preset' && DEFORMERS[x.kind].joints) throw new Error(`preset ${c.id}: ${x.kind} moves joints — a change of the rest only, not a pose layer`);
+          const inner = p.changes.map(x => ({ ...x, strength: (x.strength ?? 1) * k, ...(mode === 'rest' ? { frames: c.frames } : c.space && (x.kind === 'preset' || layerOf(x.kind) === 'turns') ? { space: c.space } : {}) }));
+          if (mode === 'pose') for (const x of inner) if (x.kind !== 'preset' && !layerOf(x.kind)) throw new Error(`preset ${c.id}: ${x.kind} gives its own skin weights — a change of the rest only, not a pose layer`);
           out.push(...await open(inner, mode, depth + 1));
         }
         return out;
@@ -76,27 +79,35 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
     },
     // a character (by id, or a resolved description) as a figure. layers: the character's code, after its own pose
     // layers ({kind: 'code', apply(pose, ctx)}); meshes: more meshes off its pose ([{mesh, name?, skinning?}])
-    // Pose layers go in two stages, each in the order listed: the pose's (turns, the corrections, morphs, the code's)
-    // before skinning; deformers of the figure after it (src/deform.js: meshLayer). A deformer of the surface as a
-    // layer is its rest change carried as a morph of the body, weighed by its strength.
+    // Pose layers run in the order listed (src/figure.js). A deformer as a layer is a change of the pose (its turns:
+    // src/deform.js turnLayer) or its rest change weighed in each frame (restLayer: named "<its place in the list>:<kind>"
+    // for ctx.weights), made on the body with the changes of the rest before it in the list.
     async figure(c, { place, layers = [], meshes = [] } = {}) {
       const spec = typeof c === 'string' ? await E.character(c) : c.pose.some(l => l.kind === 'preset') || c.rest.some(l => l.kind === 'preset') ? await E.expand(c) : c;
-      const body = await E.restBody(spec);
-      const poseLayers = [], meshLayers = [], morphs = {};
+      const body = await E.restBody(spec), list = [];
+      let from = body, chain = [];
       for (const [k, l] of spec.pose.entries()) {
-        const d = DEFORMERS[l.kind];
-        if (!d) poseLayers.push(l);
-        else if (d.of === 'figure') meshLayers.push(meshLayer(l, body));
-        else { const name = `deform${k}${l.kind}`; morphs[name] = await E.layerMorph(spec, k, body); poseLayers.push({ kind: 'morph', name, weight: l.strength ?? 1 }); }
+        if (!DEFORMERS[l.kind]) { list.push(l); continue; }
+        const how = layerOf(l.kind);
+        if (how === 'turns') { list.push(turnLayer(l, body)); continue; }
+        if (!how) throw new Error(`${l.kind} gives its own skin weights: it is a change of the rest only (rest: [{kind: "${l.kind}", …, frames}])`);
+        chain = [...chain, l];
+        const to = await E.layerBody(spec, chain);
+        list.push(restLayer(`${k}:${l.kind}`, l, from, to, spec.skinning.sigma));
+        from = to;
       }
-      const mesh = Object.keys(morphs).length ? makeMesh({ ...body.mesh, morphs: { ...body.mesh.morphs, ...morphs } }) : body.mesh;
       return new Figure({
-        rig: body.rig, body, place, floor: spec.motion.floor, layers: [...poseLayers, ...layers], meshLayers,
-        meshes: [{ mesh, name: 'body', skinning: spec.skinning }, ...meshes],
+        rig: body.rig, body, place, floor: spec.motion.floor, layers: [...list, ...layers],
+        meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...meshes],
       });
     },
-    // a surface deformer's pose layer as a morph of the character's rest body (kept)
-    layerMorph(spec, k, body) { return once('lm:' + spec.body + canonical(spec.rest) + canonical(spec.pose[k]), () => deformAsMorph(body, spec.pose[k], E)); },
+    // the character's rest with the changes of the rest among its pose layers made, up to the last of `chain` (kept)
+    layerBody(spec, chain) {
+      return once('lb:' + spec.body + canonical(spec.rest) + canonical(chain), async () => {
+        const from = chain.length > 1 ? await E.layerBody(spec, chain.slice(0, -1)) : await E.restBody(spec);
+        return deformAtRest(from, { ...chain[chain.length - 1], frames: 'keep' }, E);
+      });
+    },
   };
   return E;
 }

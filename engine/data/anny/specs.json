@@ -259,7 +259,7 @@
    "group": "build",
    "ph": {
     "muscle": 0.4,
-    "weight": 1.7,
+    "weight": 1.2,
     "height": 0.5,
     "proportions": 0.5,
     "cupsize": 0.5,
@@ -267,7 +267,17 @@
     "gender": 1,
     "age": 0.6
    },
-   "lc": {}
+   "lc": {
+    "upperarm-fat-incr": 1.0,
+    "lowerarm-fat-incr": 0.8,
+    "upperleg-fat-incr": 1.0,
+    "lowerleg-fat-incr": 0.7,
+    "neck-double-incr": 0.8,
+    "head-fat-incr": 0.5,
+    "stomach-pregnant-incr": 0.5,
+    "measure-waist-circ-incr": 0.9,
+    "measure-hips-circ-incr": 0.7
+   }
   },
   {
    "id": "anny-f-muscular",
@@ -354,7 +364,7 @@
    "group": "build",
    "ph": {
     "muscle": 0.4,
-    "weight": 1.7,
+    "weight": 1.2,
     "height": 0.5,
     "proportions": 0.5,
     "cupsize": 0.5,
@@ -362,7 +372,17 @@
     "gender": 0,
     "age": 0.6
    },
-   "lc": {}
+   "lc": {
+    "upperarm-fat-incr": 1.0,
+    "lowerarm-fat-incr": 0.8,
+    "upperleg-fat-incr": 1.0,
+    "lowerleg-fat-incr": 0.7,
+    "neck-double-incr": 0.8,
+    "head-fat-incr": 0.5,
+    "stomach-pregnant-incr": 0.5,
+    "measure-waist-circ-incr": 0.9,
+    "measure-hips-circ-incr": 0.7
+   }
   },
   {
    "id": "anny-m-muscular",

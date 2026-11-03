@@ -34,7 +34,7 @@ await test('a description: unknown keys and values refused', async () => {
 await test('a description of an earlier version: refused with the way to upgrade; the upgrade gives the stored preset', async () => {
   const v1 = { format: 'engine/character', version: 1, id: 'woman', label: woman.label, body: 'moood-woman',
     skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} }, look: woman.look };
-  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 2/);
+  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 3/);
   const up = upgrade(v1, { bodyPin: woman.body });
   ok(JSON.stringify(resolve(up, E.skeleton)) === JSON.stringify(resolve(woman, E.skeleton)), 'the upgraded woman is not the preset');
   const v1c = { ...v1, skinning: { method: 'dqs', clavicleShare: 1 / 3 }, motion: { corrections: { armsOff: { degrees: 5 }, dampHeadSpine: { on: false } } } };
@@ -143,23 +143,25 @@ await test('the collision shape: capsules on the body, moving with the pose', as
 await test('deformers in a description: unknown parameters refused; a deformer that moves joints is a rest change only', async () => {
   await refuses(() => resolve(desc({ rest: [{ kind: 'line', bend: 0.1 }] }), E.skeleton), /"frames" is missing/);
   await refuses(() => resolve(desc({ rest: [{ kind: 'line', bnd: 0.1, frames: 'keep' }] }), E.skeleton), /unknown key "bnd"/);
-  await refuses(() => resolve(desc({ rest: [{ kind: 'silhouette', keys: [['belly', 1, 1, 0]], frames: 'keep' }] }), E.skeleton), /none of the allowed forms/);
-  await refuses(() => resolve(desc({ pose: [{ kind: 'proportions', parts: { head: { size: 1.2 } } }] }), E.skeleton), /kind "proportions" is not one of/);
+  await refuses(() => resolve(desc({ rest: [{ kind: 'silhouette', keys: [{ at: 'belly', width: 1 }], frames: 'keep' }] }), E.skeleton), /none of the allowed forms/);
+  await refuses(() => resolve(desc({ rest: [{ kind: 'silhouette', keys: [['waist', 1, 1, 0]], frames: 'keep' }] }), E.skeleton), /must be an object/);
+  await refuses(() => resolve(desc({ pose: [{ kind: 'sign' }] }), E.skeleton), /kind "sign" is not one of/);
   await refuses(() => resolve(desc({ pose: [{ kind: 'smooth', cm: 4, space: 'pelvis' }] }), E.skeleton), /unknown key "space"/);
-  const big = (await E.presets()).presets.find(p => p.id === 'proportions-big-head');
-  await refuses(() => E.figure(resolve(desc({ pose: [{ kind: 'preset', id: big.pin }] }), E.skeleton)), /a change of the rest only/);
+  await refuses(() => resolve(desc({ pose: [{ kind: 'squash', space: 'upright' }] }), E.skeleton), /unknown key "space"/);
+  const sign = (await E.presets()).presets.find(p => p.id === 'pictogram-rectangle');
+  await refuses(() => E.figure(resolve(desc({ pose: [{ kind: 'preset', id: sign.pin }] }), E.skeleton)), /a change of the rest only/);
   await refuses(() => E.figure(resolve(desc({ rest: [{ kind: 'preset', id: 'silhouette-pear@0123456789abcdef', frames: 'keep' }] }), E.skeleton)), /changed under what pinned it/);
 });
 await test('every deformer at strength 0 leaves the body as it is (at rest, and as a pose layer)', async () => {
   const b = await E.body(woman.body), clip = await E.clip('walk'), plain = await E.figure('woman'); plain.frame(clip, 30, plain.pose);
-  const P = { line: {}, squash: {}, contrapposto: {}, taper: {}, straight: {}, arc: {}, silhouette: { keys: [['waist', 0.7, 0.8, 0.02]] }, proportions: { parts: { head: { size: 1.4 }, thigh: { length: 1.3 } } },
+  const P = { line: {}, squash: {}, contrapposto: {}, taper: {}, straight: {}, arc: {}, silhouette: { keys: [{ at: 'waist', width: 0.7, depth: 0.8, forward: 0.02 }] }, proportions: { parts: { head: { size: 1.4 }, thigh: { length: 1.3 } } },
     caricature: {}, anatomy: {}, smooth: {}, contour: { edits: [{ part: 'legs', dir: 'outer', keys: [[0, 1.5], [1, 1]] }] }, masses: { items: [{ shape: 'ellipsoid', at: { from: 'Hips' }, radii: [1, 1, 1] }] }, sign: {} };
   for (const kind of Object.keys(DEFORMERS)) {
     ok(kind in P, `no case for the deformer ${kind}`);
     const spec = resolve(desc({ rest: [{ kind, ...P[kind], strength: 0, frames: 'keep' }] }), E.skeleton), r = await E.restBody(spec);
     const d = maxApart(r.mesh.positions, b.mesh.positions, b.mesh.used), dj = maxApart(r.rig.joints, b.rig.joints, all(77));
     ok(d < 2e-5 && dj < 2e-5, `${kind} at strength 0 moved the rest ${d} m, joints ${dj} m`);
-    if (kind === 'proportions' || kind === 'caricature') continue;
+    if (kind === 'sign') continue;
     const f = await E.figure(resolve(desc({ pose: [{ kind, ...P[kind], strength: 0 }] }), E.skeleton)); f.frame(clip, 30, f.pose);
     ok(maxApart(f.positions, plain.positions, b.mesh.used) < 2e-5, `${kind} at strength 0 as a pose layer moved the figure`);
   }
@@ -199,6 +201,20 @@ await test('every preset makes a body, and its index and every character pin it 
     ok(!bad && (p.group === 'masses' || maxApart(r.mesh.positions, b.mesh.positions, b.mesh.used) > 1e-4), `preset ${p.id}: ${bad ? bad + ' non-numbers' : 'changed nothing'}`);
   }
   for (const c of (await E.characters()).characters) await E.character(c.id);
+});
+await test('a character that starts from another (a full-body preset as a part): its body, rest and pose, then its own; a base whose content changed is refused', async () => {
+  const princess = await E.description('disney-princess'), base = await E.base(`disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`);
+  ok(base.id === 'disney-princess', 'the base was not read');
+  const pin = `disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`;
+  const mine = { format: 'engine/character', version: 3, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
+    rest: [{ kind: 'squash', stretch: 0.1, frames: 'keep' }], pose: [{ kind: 'armsOff', degrees: 5 }], look: { skin: '#aa8877' } };
+  const spec = await E.resolve(mine), p = await E.resolve(princess);
+  ok(spec.body === p.body && spec.rest.length === p.rest.length + 1 && spec.rest.at(-1).kind === 'squash' && spec.pose.at(-1).kind === 'armsOff', 'not the base and then its own');
+  ok(spec.look.skin === '#aa8877' && spec.skinning.method === p.skinning.method, 'look or skinning not over the base');
+  const f = await E.figure(spec); f.frame(await E.clip('walk'), 30, f.pose);
+  await refuses(() => E.resolve({ ...mine, base: 'disney-princess@0123456789abcdef' }), /changed under what pinned it/);
+  const { base: _b, ...alone } = mine;
+  await refuses(() => resolve(alone, E.skeleton), /"body" is missing/);
 });
 await test('regions: landmarks in order on every body; parts and limbs of every vertex', async () => {
   for (const id of ['moood-woman', 'moood-child', 'anny-f-toddler', 'anny-m-tall', 'anny-T-chibi-baby17']) {

@@ -5,19 +5,23 @@
 // description of an earlier version into the current one (tools/characters.mjs upgrade). Whether an engine change
 // alters a character is what the checks see (check/numbers.mjs, check/pictures.mjs).
 //
-//   {format: "engine/character", version: 2, id, label: {ru, en},
-//    body: "<body id>@<hash>",
+//   {format: "engine/character", version: 3, id, label: {ru, en},
+//    base?: "<character id>@<hash>"   another character this one starts from (a full-body preset): its body, rest, pose,
+//                        skinning, motion and look, with this one's over them — its body if it names one, its rest
+//                        changes and pose layers after the base's, its skinning, motion and look keys over the base's
+//    body: "<body id>@<hash>"   (required without a base),
 //    rest: [change…]     changes of the body's rest, in order (src/changes.js):
 //                        {kind: "turn", joint, axis: [x, y, z] (in the joint's own frame), degrees, frames: "keep" | "turn"}
 //                        {kind: "morph", name, weight}
 //                        {kind: <a deformer>, …its parameters, strength, frames} (src/deform.js, src/deformers/)
 //                        {kind: "preset", id: "<preset>@<hash>", strength, frames} (presets/: its changes, each × strength)
-//    pose: [layer…]      pose layers on every frame, in order (src/layers.js): {kind: "armsOff", degrees?},
+//    pose: [layer…]      pose layers on every frame, in order (src/layers.js): {kind: "armsOff", degrees?, clear?},
 //                        {kind: "armsOutOfHead", margin?}, {kind: "amplifyLimbs", factor?, parts?},
 //                        {kind: "dampHeadSpine", spine?, head?}, {kind: "clavicleShare", share?},
 //                        {kind: "turn", joint, axis, degrees}, {kind: "morph", name, weight},
-//                        {kind: <a deformer that moves no joints>, …, strength, space?: "pelvis" | "upright"},
-//                        {kind: "preset", id, strength, space?}
+//                        {kind: <a deformer>, …, strength} (src/deform.js: a change of the pose — the line, contrapposto,
+//                        with space?: "pelvis" | "upright" — or a change of the form, its rest change weighed in; the
+//                        sign is a change of the rest only), {kind: "preset", id, strength, space?}
 //    skinning: {method: "cor" | "dqs" | "lbs", sigma (the centres' likeness, cor), seam: null | {iterations, rings}},
 //    motion: {floor: "lowest" | "pelvis"},
 //    look: {skin: "#rrggbb", roughness}}
@@ -25,10 +29,10 @@
 // (scaled): standing on its feet, lying on its back, nothing in the floor; "pelvis" — only the pelvis's height scaled.
 import { validate } from './schema.js';
 import { pinned } from './hash.js';
-import { DEFORMERS } from './deform.js';
+import { DEFORMERS, layerOf } from './deform.js';
 import './deformers/index.js';
 
-export const FORMAT = 'engine/character', VERSION = 2;
+export const FORMAT = 'engine/character', VERSION = 3;
 
 const PARTS = ['pelvis', 'spine', 'neck', 'head', 'eye', 'clavicle', 'upperArm', 'foreArm', 'hand', 'finger', 'thigh', 'shin', 'foot', 'toe'];
 // the defaults, the one place they are kept: a missing key takes these
@@ -38,7 +42,7 @@ export const DEFAULTS = {
   motion: { floor: 'lowest' },
   look: { skin: '#d9b49a', roughness: 0.65 },
   layers: {
-    armsOff: { degrees: 7 }, armsOutOfHead: { margin: 0.02 }, amplifyLimbs: { factor: 1.3, parts: ['upperArm', 'foreArm', 'thigh', 'shin'] },
+    armsOff: { degrees: 7, clear: 0 }, armsOutOfHead: { margin: 0.02 }, amplifyLimbs: { factor: 1.3, parts: ['upperArm', 'foreArm', 'thigh', 'shin'] },
     dampHeadSpine: { spine: 0.7, head: 0.7 }, clavicleShare: { share: 1 / 3 },
   },
 };
@@ -56,24 +60,25 @@ export function schemaOf(skeleton) {
   // a preset (presets/<id>.json): its changes, each one's strength times this one
   const preset = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
   return {
-    type: 'object', required: ['format', 'version', 'id', 'label', 'body'],
+    type: 'object', required: ['format', 'version', 'id', 'label'],
     props: {
       format: { const: FORMAT }, version: { const: VERSION },
       id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*$/ },
       label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
+      base: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ },
       body: { type: 'string', pattern: /^[A-Za-z0-9_.-]+@[0-9a-f]{12,64}$/ },
       rest: { type: 'array', items: { type: 'union', key: 'kind', cases: {
         turn: { ...turn, props: { ...turn.props, frames }, required: [...turn.required, 'frames'] },
         morph, preset: { ...preset, props: { ...preset.props, frames }, required: [...preset.required, 'frames'] },
         ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, deformer(d, { frames }, ['frames'])])) } } },
       pose: { type: 'array', items: { type: 'union', key: 'kind', cases: {
-        armsOff: layer('armsOff', { degrees: num(-45, 45) }),
+        armsOff: layer('armsOff', { degrees: num(-45, 45), clear: num(0, 0.1) }),
         armsOutOfHead: layer('armsOutOfHead', { margin: num(0, 0.2) }),
         amplifyLimbs: layer('amplifyLimbs', { factor: num(0, 3), parts: { type: 'array', items: { type: 'string', enum: PARTS }, min: 1 } }),
         dampHeadSpine: layer('dampHeadSpine', { spine: num(0, 2), head: num(0, 2) }),
         clavicleShare: layer('clavicleShare', { share: num(0, 1) }),
         turn, morph, preset: { ...preset, props: { ...preset.props, space } },
-        ...Object.fromEntries(Object.values(DEFORMERS).filter(d => !d.joints).map(d => [d.kind, deformer(d, d.of === 'figure' ? { space } : {}, [])])) } } },
+        ...Object.fromEntries(Object.values(DEFORMERS).filter(d => layerOf(d.kind)).map(d => [d.kind, deformer(d, layerOf(d.kind) === 'turns' ? { space } : {}, [])])) } } },
       skinning: { type: 'object', props: {
         method: { type: 'string', enum: ['cor', 'dqs', 'lbs'] }, sigma: num(0.01, 1),
         seam: { anyOf: [{ type: 'null' }, { type: 'object', props: { iterations: { type: 'integer', min: 1, max: 200 }, rings: { type: 'integer', min: 0, max: 20 } } }] } } },
@@ -87,8 +92,10 @@ export function schemaOf(skeleton) {
 // presets — that a character takes into its rest or its pose layers ({kind: "preset", id: "<id>@<hash>", strength,
 // frames | space}); each of its changes' strength is multiplied by the reference's, the reference says how they go on
 // the rest (frames) or as a layer (space). Plain data an author can read, copy and change.
-//   {format: "engine/preset", version: 1, id, label: {ru, en}, group, about: {ru, en}, changes: [change…]}
-export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 1;
+//   {format: "engine/preset", version: 2, id, label: {ru, en}, group, about: {ru, en}, changes: [change…]}
+// (version 2: a silhouette's keys are {at, width, depth, forward}; version 1 had [at, width, depth, forward] —
+// upgradePreset, run by tools/characters.mjs presets)
+export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 2;
 export function presetSchemaOf() {
   const num = (min, max) => ({ type: 'number', min, max });
   const ref = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
@@ -106,28 +113,45 @@ export function presetSchemaOf() {
   };
 }
 export function checkPreset(p) {
+  if (p?.format === PRESET_FORMAT && p.version < PRESET_VERSION) throw new Error(`${p.id}: a preset of version ${p.version} — upgrade it to ${PRESET_VERSION} (node engine/tools/characters.mjs presets)`);
   if (p?.format !== PRESET_FORMAT || p.version !== PRESET_VERSION) throw new Error(`${p?.id ?? '?'}: not a preset of version ${PRESET_VERSION}`);
   validate(p, presetSchemaOf(), 'preset ' + p.id);
   return p;
 }
 
-// a description checked and completed by the defaults: what the engine builds a figure from
-export function resolve(desc, skeleton) {
+// a preset of an earlier version as the current one
+export function upgradePreset(p) {
+  const d = structuredClone(p);
+  if (d.format !== PRESET_FORMAT) throw new Error(`${d.id ?? '?'}: not a preset`);
+  if (d.version === 1) { d.changes = d.changes.map(namedKeys); d.version = 2; }
+  if (d.version !== PRESET_VERSION) throw new Error(`${d.id}: no way from preset version ${d.version} to ${PRESET_VERSION}`);
+  return d;
+}
+const namedKeys = c => c.kind === 'silhouette' && c.keys.some(Array.isArray) ? { ...c, keys: c.keys.map(([at, width, depth, forward]) => ({ at, width, depth, forward })) } : c;
+
+// a description checked and completed by the defaults: what the engine builds a figure from. base: the resolved
+// character it starts from (when it names one: engine.js reads it)
+export function resolve(desc, skeleton, base = null) {
   if (desc?.format !== FORMAT) throw new Error(`${desc?.id ?? '?'}: not a character`);
   if (desc.version !== VERSION) {
     if (desc.version < VERSION) throw new Error(`${desc.id}: a character of version ${desc.version} — upgrade it to ${VERSION} (node engine/tools/characters.mjs upgrade ${desc.id})`);
     throw new Error(`${desc.id}: character version ${desc.version} is newer than this engine knows (${VERSION})`);
   }
   validate(desc, schemaOf(skeleton), desc.id);
-  const sk = { ...DEFAULTS.skinning, ...(desc.skinning || {}) };
+  if (desc.base && !base) throw new Error(`${desc.id}: starts from ${desc.base} — resolved by the engine (E.character, E.resolve)`);
+  if (!desc.base && base) throw new Error(`${desc.id}: names no base`);
+  if (!desc.body && !base) throw new Error(`${desc.id}: "body" is missing (a character names its body, or a base it starts from)`);
+  const b = base ?? { rest: [], pose: [], skinning: DEFAULTS.skinning, motion: DEFAULTS.motion, look: DEFAULTS.look };
+  const sk = { ...b.skinning, ...(desc.skinning || {}) };
   if (sk.seam) sk.seam = { ...DEFAULTS.seam, ...sk.seam };
+  const body = desc.body ?? base.body;
   return {
-    id: desc.id, label: desc.label, version: desc.version, body: desc.body, bodyId: pinned(desc.body).id,
-    rest: (desc.rest || []).map(c => ({ ...c })),
-    pose: (desc.pose || []).map(l => ({ ...(DEFAULTS.layers[l.kind] || {}), ...l })),
+    id: desc.id, label: desc.label, version: desc.version, base: desc.base ?? null, body, bodyId: pinned(body).id,
+    rest: [...b.rest, ...(desc.rest || []).map(c => ({ ...c }))],
+    pose: [...b.pose, ...(desc.pose || []).map(l => ({ ...(DEFAULTS.layers[l.kind] || {}), ...l }))],
     skinning: sk,
-    motion: { ...DEFAULTS.motion, ...(desc.motion || {}) },
-    look: { ...DEFAULTS.look, ...(desc.look || {}) },
+    motion: { ...b.motion, ...(desc.motion || {}) },
+    look: { ...b.look, ...(desc.look || {}) },
   };
 }
 
@@ -152,6 +176,13 @@ export function upgrade(desc, { bodyPin }) {
     const motion = { ...(d.motion || {}) }; delete motion.corrections;
     d = { format: FORMAT, version: 2, id: d.id, label: d.label, body: bodyPin, rest: [], pose, skinning, motion, look: d.look };
     for (const k of ['skinning', 'motion', 'look']) if (d[k] === undefined) delete d[k];
+  }
+  if (d.version === 2) {
+    // version 2 → 3: a silhouette's keys named ({at, width, depth, forward}); `space` only on the layers that are turns
+    // (the line, contrapposto, presets) — a change of the form as a layer is its rest change, in no space
+    d.rest = (d.rest || []).map(namedKeys);
+    d.pose = (d.pose || []).map(l => { l = namedKeys(l); if (l.space && DEFORMERS[l.kind] && layerOf(l.kind) !== 'turns') { l = { ...l }; delete l.space; } return l; });
+    d.version = 3;
   }
   if (d.version !== VERSION) throw new Error(`${d.id}: no way from version ${d.version} to ${VERSION}`);
   return d;

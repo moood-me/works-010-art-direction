@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 2,
+ "version": 3,
  "id": "hero",
  "label": {
   "ru": "Т8: герой",

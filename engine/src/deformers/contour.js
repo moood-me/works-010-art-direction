@@ -21,7 +21,8 @@
 //   own     how much of the body's own small forms ride on the new sections: 1 all of them (the default), 0 none —
 //           every point on the drawn radius, the drawn form itself
 import { register } from '../deform.js';
-import { local, clamp, lerp, smoothField } from '../regions.js';
+import { local, smoothField } from '../regions.js';
+import { clamp, lerp } from '../math.js';
 import { curve } from './curves.js';
 
 const num = (min, max) => ({ type: 'number', min, max });
@@ -98,6 +99,8 @@ export function ownContours(R) {
     }
     if (pts.length < 8) return null;
     const ts = pts.map(q => q[0]).sort((a, b) => a - b), lo = ts[Math.floor(ts.length * 0.03)], hi = ts[Math.floor(ts.length * 0.97)];
+    // a direction no point of the part lies in takes the part's own median radius
+    const fallback = (() => { const r = pts.map(([, x, z]) => Math.hypot(x, z)).sort((a, b) => a - b); return r[r.length >> 1]; })();
     const bins = Array.from({ length: TB * 8 }, () => []);
     for (const [t, x, z] of pts) {
       const b = Math.round((t - lo) / (hi - lo) * (TB - 1)); if (b < 0 || b >= TB) continue;
@@ -107,7 +110,7 @@ export function ownContours(R) {
     const raw = Float64Array.from(bins, v => { v.sort((a, c) => a - c); return v.length ? v[Math.floor(v.length * 0.7)] : NaN; });
     for (let q = 0; q < 8; q++) for (let i = 0; i < TB; i++) if (Number.isNaN(raw[q * TB + i])) {
       let v = NaN; for (let j = 1; j < TB && Number.isNaN(v); j++) { if (i - j >= 0 && !Number.isNaN(raw[q * TB + i - j])) v = raw[q * TB + i - j]; else if (i + j < TB && !Number.isNaN(raw[q * TB + i + j])) v = raw[q * TB + i + j]; }
-      raw[q * TB + i] = Number.isNaN(v) ? 0.03 : v;
+      raw[q * TB + i] = Number.isNaN(v) ? fallback : v;
     }
     // smoothed along the bone (as Т7's construct reads its seven keys off the bins)
     const sm = new Float64Array(TB * 8);

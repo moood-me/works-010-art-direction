@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 2,
+ "version": 3,
  "id": "child",
  "label": {
   "ru": "Ребёнок",

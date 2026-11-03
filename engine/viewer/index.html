@@ -28,6 +28,10 @@
   #vpPanel input[type=range] { flex: 1; min-width: 120px; }
   #vpPanel .hint { color: var(--muted); font-size: 12px; }
   #vpPanel .sep { border-top: 1px solid var(--line); margin: 2px 0; }
+  #vpPanel details { display: grid; gap: 7px; }
+  #vpPanel details[open] > summary { margin-bottom: 7px; }
+  #vpPanel summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  #vpPanel #figs button { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #msg { position: fixed; inset: 0; display: grid; place-items: center; font: italic 20px Georgia, serif; color: #4a4640; pointer-events: none; z-index: 3; }
   @media (max-width: 520px) { #vpPanel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 45vh; } }
 </style>

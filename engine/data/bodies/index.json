@@ -479,13 +479,13 @@
   },
   {
    "id": "anny-f-heavy",
-   "pin": "anny-f-heavy@fb6825aaf6b9fd6a",
+   "pin": "anny-f-heavy@80d224959f85b4f4",
    "group": "build",
    "label": {
     "ru": "Anny: женщина полная",
     "en": "Anny: woman, heavy"
    },
-   "height": 1.685
+   "height": 1.683
   },
   {
    "id": "anny-f-muscular",
@@ -529,13 +529,13 @@
   },
   {
    "id": "anny-m-heavy",
-   "pin": "anny-m-heavy@ceb1bd55596bb1a5",
+   "pin": "anny-m-heavy@213d83e01027934d",
    "group": "build",
    "label": {
     "ru": "Anny: мужчина полный",
     "en": "Anny: man, heavy"
    },
-   "height": 1.826
+   "height": 1.823
   },
   {
    "id": "anny-m-muscular",

@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "limbs-arcs",
  "label": {
   "ru": "конечности: дугой",

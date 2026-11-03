@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "line-side-s-reverse",
  "label": {
   "ru": "линия действия: сбоку обратная S",

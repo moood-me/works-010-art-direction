@@ -1,6 +1,5 @@
 // The checks' cases (cases.json) as jobs, and a job's figure at its moment — the same in node (numbers.mjs) and in a
 // page (render.html, for pictures.mjs).
-import { resolve } from '../src/character.js';
 
 export function jobsOf(cases, characters, only) {
   const ids = characters.map(c => c.id);
@@ -19,7 +18,7 @@ export function jobsOf(cases, characters, only) {
 export async function figureOf(E, job) {
   const d = structuredClone(await E.description(job.char));
   for (const [k, v] of Object.entries(job.over || {})) d[k] = v;
-  const spec = resolve(d, E.skeleton);
+  const spec = await E.resolve(d);
   const fig = await E.figure(spec, { place: job.place });
   const clip = job.clip ? await E.clip(job.clip) : null;
   fig.frame(clip, job.t, fig.pose);

@@ -346,7 +346,7 @@
      0.3,
      -2
     ],
-    "heading": 2.0
+    "heading": 2
    },
    "picture": true
   },
@@ -468,13 +468,13 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "limbs-straight-curved@073ffbb995b4b999",
+      "id": "limbs-straight-curved@cc60a757dc61ddae",
       "strength": 1,
       "frames": "keep"
      },
      {
       "kind": "preset",
-      "id": "limbs-arcs@53b8e35fdbbd2190",
+      "id": "limbs-arcs@5383c4a0261099ef",
       "strength": 1,
       "frames": "keep"
      }
@@ -492,7 +492,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "caricature@e702ee0e5816d556",
+      "id": "caricature@7f94850304ea81b9",
       "strength": 1,
       "frames": "keep"
      }
@@ -510,7 +510,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "line-side-c-forward@7aa5752a37d49578",
+      "id": "line-side-c-forward@1ea64b683c50c894",
       "strength": 1,
       "frames": "turn"
      }
@@ -527,7 +527,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "silhouette-hourglass@96645fdf013abb07",
+      "id": "silhouette-hourglass@96e972703af7d85d",
       "strength": 1,
       "frames": "keep"
      }
@@ -629,8 +629,7 @@
     "pose": [
      {
       "kind": "squash",
-      "stretch": -0.3,
-      "space": "upright"
+      "stretch": -0.3
      }
     ]
    },
@@ -646,7 +645,7 @@
     "pose": [
      {
       "kind": "preset",
-      "id": "smooth-8cm@f2bcefb61aaa854b",
+      "id": "smooth-8cm@cdbc5fd832a246fc",
       "strength": 0.7
      }
     ]
@@ -662,13 +661,13 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "contour-anime@9d98fd11029624fd",
+      "id": "contour-anime@3ac1a771c67569da",
       "strength": 0.5,
       "frames": "keep"
      },
      {
       "kind": "preset",
-      "id": "masses-shoulders@e60b51b54a10b979",
+      "id": "masses-shoulders@7b55ef833e7041f2",
       "strength": 1,
       "frames": "keep"
      }
@@ -683,7 +682,7 @@
    "t": 30,
    "view": "three",
    "over": {
-    "body": "anny-m-heavy@ceb1bd55596bb1a5"
+    "body": "anny-m-heavy@213d83e01027934d"
    },
    "picture": true
   }

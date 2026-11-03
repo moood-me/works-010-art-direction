@@ -7,7 +7,9 @@
 //   C.capsules: [{joint, child, a: [3], b: [3], ra, rb}] — now (after update); C.rest: the same at rest
 // `inset` (metres) shrinks every radius (the skin is soft: cloth may rest a little into it), `fit` the share of the
 // skin's distances the radius covers (0.5: the median).
-const CACHE = new WeakMap();
+import { qRot3 } from './math.js';
+
+const CACHE = new WeakMap(), tmp = [0, 0, 0];
 
 export function makeCollider(rig, mesh, { inset = 0, fit = 0.5, minVertices = 30 } = {}) {
   const key = `${inset}|${fit}|${minVertices}`; let byRig = CACHE.get(mesh.positions); if (!byRig) CACHE.set(mesh.positions, byRig = new WeakMap());
@@ -20,7 +22,7 @@ export function makeCollider(rig, mesh, { inset = 0, fit = 0.5, minVertices = 30
       for (let n = 0; n < rest.length; n++) {
         const c = rest[n], j = c.joint, q = [pose.Q[j * 4], pose.Q[j * 4 + 1], pose.Q[j * 4 + 2], pose.Q[j * 4 + 3]];
         for (const [from, to] of [[c.a, now[n].a], [c.b, now[n].b]]) {
-          const v = rot(q, [from[0] - rig.joints[j * 3], from[1] - rig.joints[j * 3 + 1], from[2] - rig.joints[j * 3 + 2]]);
+          const v = qRot3(q, from[0] - rig.joints[j * 3], from[1] - rig.joints[j * 3 + 1], from[2] - rig.joints[j * 3 + 2], tmp);
           to[0] = pose.P[j * 3] + v[0]; to[1] = pose.P[j * 3 + 1] + v[1]; to[2] = pose.P[j * 3 + 2] + v[2];
         }
       }
@@ -71,7 +73,3 @@ function fitCapsules(rig, mesh, inset, fit, minVertices) {
   return out;
 }
 
-function rot(q, v) {
-  const [x, y, z, w] = q, tx = 2 * (y * v[2] - z * v[1]), ty = 2 * (z * v[0] - x * v[2]), tz = 2 * (x * v[1] - y * v[0]);
-  return [v[0] + w * tx + y * tz - z * ty, v[1] + w * ty + z * tx - x * tz, v[2] + w * tz + x * ty - y * tx];
-}

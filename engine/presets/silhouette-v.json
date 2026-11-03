@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-v",
  "label": {
   "ru": "силуэт: V",
@@ -15,54 +15,54 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     "ankle",
-     0.65,
-     0.825,
-     0
-    ],
-    [
-     "knee",
-     0.7,
-     0.85,
-     0
-    ],
-    [
-     "crotch",
-     0.8,
-     0.9,
-     0
-    ],
-    [
-     "hips",
-     0.85,
-     0.925,
-     0
-    ],
-    [
-     "waist",
-     1,
-     1,
-     0
-    ],
-    [
-     "chest",
-     1.35,
-     1.175,
-     0
-    ],
-    [
-     "shoulders",
-     1.5,
-     1.25,
-     0
-    ],
-    [
-     "neck",
-     1,
-     1,
-     0
-    ]
+    {
+     "at": "ankle",
+     "width": 0.65,
+     "depth": 0.825,
+     "forward": 0
+    },
+    {
+     "at": "knee",
+     "width": 0.7,
+     "depth": 0.85,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 0.8,
+     "depth": 0.9,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 0.85,
+     "depth": 0.925,
+     "forward": 0
+    },
+    {
+     "at": "waist",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "chest",
+     "width": 1.35,
+     "depth": 1.175,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 1.5,
+     "depth": 1.25,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

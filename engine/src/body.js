@@ -52,10 +52,11 @@ export function makeBody(o) {
     const p = b.parts.names.indexOf(name); if (p < 0) throw new Error(`no part ${name}`);
     const P = b.parts.names.length; return Float32Array.from({ length: b.N }, (_, i) => b.parts.weights[i * P + p] / 255);
   };
-  // the same body with another rest: new vertices and joints; frames as given (src/changes.js makes them)
-  b.withRest = ({ positions, joints, frames, label }) => makeBody({
+  // the same body with another rest: new vertices and joints, its own skin weights if a change gives them; frames as
+  // given (src/changes.js makes them)
+  b.withRest = ({ positions, joints, frames, skin, label }) => makeBody({
     ...o, label: label ?? o.label, hash: null,   // a changed body is not the stored one: it has no pin of its own
-    mesh: makeMesh({ ...mesh, positions: positions ?? mesh.positions }),
+    mesh: makeMesh({ ...mesh, positions: positions ?? mesh.positions, skin: skin ? { ...skin, K: skin.K ?? mesh.skin.K } : mesh.skin }),
     joints: joints ?? rig.joints, frames: frames ?? rig.frames,
   });
   return b;

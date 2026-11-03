@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "proportions-long-neck",
  "label": {
   "ru": "пропорции: длинная шея",
@@ -8,16 +8,16 @@
  },
  "group": "proportions",
  "about": {
-  "ru": "Т1: длина и ширина частей, суставы идут с ними",
-  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+  "ru": "Т1: шея длиннее той же толщины — голова поднята, не вперёд",
+  "en": "Т1: a longer neck of the same girth — the head lifted, not pushed forwards"
  },
  "changes": [
   {
    "kind": "proportions",
    "parts": {
     "neck": {
-     "length": 1.6,
-     "width": 0.85
+     "length": 1.45,
+     "width": 1
     }
    }
   }

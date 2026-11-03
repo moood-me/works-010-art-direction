@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-hourglass",
  "label": {
   "ru": "силуэт: песочные часы",
@@ -15,48 +15,48 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     "knee",
-     1,
-     1,
-     0
-    ],
-    [
-     "crotch",
-     1.1,
-     1.05,
-     0
-    ],
-    [
-     "hips",
-     1.2,
-     1.1,
-     0
-    ],
-    [
-     "waist",
-     0.7,
-     0.85,
-     0
-    ],
-    [
-     "chest",
-     1.15,
-     1.08,
-     0
-    ],
-    [
-     "shoulders",
-     1.1,
-     1,
-     0
-    ],
-    [
-     "neck",
-     1,
-     1,
-     0
-    ]
+    {
+     "at": "knee",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 1.1,
+     "depth": 1.05,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 1.2,
+     "depth": 1.1,
+     "forward": 0
+    },
+    {
+     "at": "waist",
+     "width": 0.7,
+     "depth": 0.85,
+     "forward": 0
+    },
+    {
+     "at": "chest",
+     "width": 1.15,
+     "depth": 1.08,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 1.1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

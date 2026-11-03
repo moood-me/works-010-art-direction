@@ -18,7 +18,7 @@
  "presets": [
   {
    "id": "silhouette-bean",
-   "pin": "silhouette-bean@c9ac73c4dc3e5d7f",
+   "pin": "silhouette-bean@9f651a73cd03e188",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: фасолина",
@@ -31,7 +31,7 @@
   },
   {
    "id": "silhouette-column",
-   "pin": "silhouette-column@9512d70b41100584",
+   "pin": "silhouette-column@8b6ed83fc1f4693c",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: колонна",
@@ -44,7 +44,7 @@
   },
   {
    "id": "silhouette-diamond",
-   "pin": "silhouette-diamond@716c1a8125b9f0ed",
+   "pin": "silhouette-diamond@26b6427209624be4",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: ромб",
@@ -57,7 +57,7 @@
   },
   {
    "id": "silhouette-egg",
-   "pin": "silhouette-egg@efbc5d48671c66cd",
+   "pin": "silhouette-egg@2f16552dcdfbb19a",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: яйцо",
@@ -70,7 +70,7 @@
   },
   {
    "id": "silhouette-hourglass",
-   "pin": "silhouette-hourglass@96645fdf013abb07",
+   "pin": "silhouette-hourglass@96e972703af7d85d",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: песочные часы",
@@ -83,7 +83,7 @@
   },
   {
    "id": "silhouette-inverted-trapezoid",
-   "pin": "silhouette-inverted-trapezoid@2c41393060cd8eb0",
+   "pin": "silhouette-inverted-trapezoid@5ffab3a4d4b5e8f9",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: перевёрнутая трапеция",
@@ -96,7 +96,7 @@
   },
   {
    "id": "silhouette-mass-on-legs",
-   "pin": "silhouette-mass-on-legs@245464596b5861cf",
+   "pin": "silhouette-mass-on-legs@7c095ba9ee81b963",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: масса на ножках",
@@ -109,7 +109,7 @@
   },
   {
    "id": "silhouette-pear",
-   "pin": "silhouette-pear@1b2a606cda6986c1",
+   "pin": "silhouette-pear@0803d051fb4d15e3",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: груша",
@@ -122,7 +122,7 @@
   },
   {
    "id": "silhouette-rectangle",
-   "pin": "silhouette-rectangle@5b765de862b079f3",
+   "pin": "silhouette-rectangle@4142fadfe65bd25f",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: прямоугольник",
@@ -135,7 +135,7 @@
   },
   {
    "id": "silhouette-reed",
-   "pin": "silhouette-reed@2a60cdffcfb08b6a",
+   "pin": "silhouette-reed@25e9313a9a319fc2",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: тростинка",
@@ -148,7 +148,7 @@
   },
   {
    "id": "silhouette-trapezoid",
-   "pin": "silhouette-trapezoid@aa5f552207942e30",
+   "pin": "silhouette-trapezoid@701057e1708f101c",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: трапеция",
@@ -161,7 +161,7 @@
   },
   {
    "id": "silhouette-triangle",
-   "pin": "silhouette-triangle@dd27c50d1c455843",
+   "pin": "silhouette-triangle@ffb16b190bdb79da",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: треугольник",
@@ -174,7 +174,7 @@
   },
   {
    "id": "silhouette-v",
-   "pin": "silhouette-v@4229dc9629396ee2",
+   "pin": "silhouette-v@8aa12ec5aa82aa69",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: V",
@@ -187,7 +187,7 @@
   },
   {
    "id": "silhouette-wedge",
-   "pin": "silhouette-wedge@38a852a86c931f36",
+   "pin": "silhouette-wedge@00da3c283ad8f6b8",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: клин",
@@ -200,7 +200,7 @@
   },
   {
    "id": "line-front-c",
-   "pin": "line-front-c@713f4c803c48290d",
+   "pin": "line-front-c@51207785acd20d34",
    "group": "line",
    "label": {
     "ru": "линия действия: спереди C",
@@ -213,7 +213,7 @@
   },
   {
    "id": "line-front-s",
-   "pin": "line-front-s@6f0175931d417d71",
+   "pin": "line-front-s@b33599c2063e4af9",
    "group": "line",
    "label": {
     "ru": "линия действия: спереди S",
@@ -226,7 +226,7 @@
   },
   {
    "id": "line-side-c-back",
-   "pin": "line-side-c-back@373c2462d3d9e3e3",
+   "pin": "line-side-c-back@55c01b69f403b2a2",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку C назад",
@@ -239,7 +239,7 @@
   },
   {
    "id": "line-side-c-forward",
-   "pin": "line-side-c-forward@7aa5752a37d49578",
+   "pin": "line-side-c-forward@1ea64b683c50c894",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку C вперёд",
@@ -252,7 +252,7 @@
   },
   {
    "id": "line-side-s",
-   "pin": "line-side-s@22db9ae77ad3163d",
+   "pin": "line-side-s@ed4083a707d1108f",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку S",
@@ -265,7 +265,7 @@
   },
   {
    "id": "line-side-s-reverse",
-   "pin": "line-side-s-reverse@138146b11b7677ea",
+   "pin": "line-side-s-reverse@cb237de94d27c8b3",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку обратная S",
@@ -278,7 +278,7 @@
   },
   {
    "id": "squash",
-   "pin": "squash@b64ac18c318d1d88",
+   "pin": "squash@77528475926eea71",
    "group": "squash",
    "label": {
     "ru": "сжатие",
@@ -291,7 +291,7 @@
   },
   {
    "id": "stretch",
-   "pin": "stretch@33a494363190d61c",
+   "pin": "stretch@0d36de94e4c530a6",
    "group": "squash",
    "label": {
     "ru": "растяжение",
@@ -304,7 +304,7 @@
   },
   {
    "id": "contrapposto",
-   "pin": "contrapposto@b34915668d077379",
+   "pin": "contrapposto@1b72c4da79eadcfe",
    "group": "contrapposto",
    "label": {
     "ru": "контрапост",
@@ -317,7 +317,7 @@
   },
   {
    "id": "limbs-arcs",
-   "pin": "limbs-arcs@53b8e35fdbbd2190",
+   "pin": "limbs-arcs@5383c4a0261099ef",
    "group": "limbs",
    "label": {
     "ru": "конечности: дугой",
@@ -330,7 +330,7 @@
   },
   {
    "id": "limbs-legs-bowed-in",
-   "pin": "limbs-legs-bowed-in@cc72a97e00d2bcc2",
+   "pin": "limbs-legs-bowed-in@fa24b4c531810dd4",
    "group": "limbs",
    "label": {
     "ru": "конечности: ноги дугой внутрь",
@@ -343,7 +343,7 @@
   },
   {
    "id": "limbs-straight-curved",
-   "pin": "limbs-straight-curved@073ffbb995b4b999",
+   "pin": "limbs-straight-curved@cc60a757dc61ddae",
    "group": "limbs",
    "label": {
     "ru": "конечности: прямое против кривого",
@@ -356,7 +356,7 @@
   },
   {
    "id": "limbs-taper",
-   "pin": "limbs-taper@7897e91fc64c99d8",
+   "pin": "limbs-taper@3870dd0a894582a8",
    "group": "limbs",
    "label": {
     "ru": "конечности: сужение к концам",
@@ -369,7 +369,7 @@
   },
   {
    "id": "limbs-taper-reverse",
-   "pin": "limbs-taper-reverse@0b94895425954a5c",
+   "pin": "limbs-taper-reverse@9340d0c5b946e836",
    "group": "limbs",
    "label": {
     "ru": "конечности: обратное сужение",
@@ -382,7 +382,7 @@
   },
   {
    "id": "proportions-big-hands-feet",
-   "pin": "proportions-big-hands-feet@bcbab46e545738e5",
+   "pin": "proportions-big-hands-feet@0513d6cccc549d95",
    "group": "proportions",
    "label": {
     "ru": "пропорции: большие кисти и стопы",
@@ -395,7 +395,7 @@
   },
   {
    "id": "proportions-big-head",
-   "pin": "proportions-big-head@8bd2a87ada5e0506",
+   "pin": "proportions-big-head@5e66a593dca07ae6",
    "group": "proportions",
    "label": {
     "ru": "пропорции: большая голова",
@@ -408,20 +408,20 @@
   },
   {
    "id": "proportions-broad-shoulders",
-   "pin": "proportions-broad-shoulders@7b03ff578f6a1523",
+   "pin": "proportions-broad-shoulders@bfa5c64be8298ee3",
    "group": "proportions",
    "label": {
     "ru": "пропорции: широкие плечи",
     "en": "proportions: broad shoulders"
    },
    "about": {
-    "ru": "Т1: длина и ширина частей, суставы идут с ними",
-    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+    "ru": "Т1: ключицы длиннее (руки дальше от шеи), плечо чуть полнее; Т7: шапка плеча и скат от шеи — плечо круглое, без угла",
+    "en": "Т1: longer collarbones (the arms farther from the neck), a slightly fuller upper arm; Т7: the shoulder's cap and its slope from the neck — a round shoulder, no corner"
    }
   },
   {
    "id": "proportions-long-arms",
-   "pin": "proportions-long-arms@bf346ebf96cd4629",
+   "pin": "proportions-long-arms@c9a2c13632983aba",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинные руки",
@@ -434,7 +434,7 @@
   },
   {
    "id": "proportions-long-legs",
-   "pin": "proportions-long-legs@44121dc744d405da",
+   "pin": "proportions-long-legs@e116a8db3bcaf909",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинные ноги",
@@ -447,20 +447,20 @@
   },
   {
    "id": "proportions-long-neck",
-   "pin": "proportions-long-neck@1fd371948b4d9179",
+   "pin": "proportions-long-neck@8d89b53b9d64b6cf",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинная шея",
     "en": "proportions: a long neck"
    },
    "about": {
-    "ru": "Т1: длина и ширина частей, суставы идут с ними",
-    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+    "ru": "Т1: шея длиннее той же толщины — голова поднята, не вперёд",
+    "en": "Т1: a longer neck of the same girth — the head lifted, not pushed forwards"
    }
   },
   {
    "id": "proportions-long-torso",
-   "pin": "proportions-long-torso@90ea9d7f5e5025ef",
+   "pin": "proportions-long-torso@9a44b5ef2c93585a",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинное туловище",
@@ -473,7 +473,7 @@
   },
   {
    "id": "proportions-narrow-shoulders",
-   "pin": "proportions-narrow-shoulders@f580b278960a697f",
+   "pin": "proportions-narrow-shoulders@6048e1c4d321809d",
    "group": "proportions",
    "label": {
     "ru": "пропорции: узкие плечи",
@@ -486,7 +486,7 @@
   },
   {
    "id": "proportions-short-legs",
-   "pin": "proportions-short-legs@2888d47d19068f2b",
+   "pin": "proportions-short-legs@366817a64b57f52b",
    "group": "proportions",
    "label": {
     "ru": "пропорции: короткие ноги",
@@ -499,7 +499,7 @@
   },
   {
    "id": "proportions-short-neck",
-   "pin": "proportions-short-neck@5a09051779792246",
+   "pin": "proportions-short-neck@6c2efe4ad20e4d52",
    "group": "proportions",
    "label": {
     "ru": "пропорции: короткая шея",
@@ -512,7 +512,7 @@
   },
   {
    "id": "proportions-slim-torso",
-   "pin": "proportions-slim-torso@dacd4e961e745fb6",
+   "pin": "proportions-slim-torso@d612ba801393294b",
    "group": "proportions",
    "label": {
     "ru": "пропорции: узкое туловище",
@@ -525,7 +525,7 @@
   },
   {
    "id": "proportions-small-hands-feet",
-   "pin": "proportions-small-hands-feet@b03c8a07277d955a",
+   "pin": "proportions-small-hands-feet@57bde87cecd7cc12",
    "group": "proportions",
    "label": {
     "ru": "пропорции: маленькие кисти и стопы",
@@ -538,7 +538,7 @@
   },
   {
    "id": "proportions-small-head",
-   "pin": "proportions-small-head@87d8006b29f2f305",
+   "pin": "proportions-small-head@7e9e5b0cfadd1860",
    "group": "proportions",
    "label": {
     "ru": "пропорции: маленькая голова",
@@ -551,7 +551,7 @@
   },
   {
    "id": "proportions-thick-limbs",
-   "pin": "proportions-thick-limbs@cc26dcd92c9c6578",
+   "pin": "proportions-thick-limbs@83cc0a03d2d817a8",
    "group": "proportions",
    "label": {
     "ru": "пропорции: толстые руки и ноги",
@@ -564,7 +564,7 @@
   },
   {
    "id": "proportions-thin-limbs",
-   "pin": "proportions-thin-limbs@8e418f2a212606e2",
+   "pin": "proportions-thin-limbs@2b59bce56e2861e7",
    "group": "proportions",
    "label": {
     "ru": "пропорции: тонкие руки и ноги",
@@ -577,7 +577,7 @@
   },
   {
    "id": "average",
-   "pin": "average@c8a04f40c2a18efd",
+   "pin": "average@cecdc8618715e469",
    "group": "caricature",
    "label": {
     "ru": "ближе к среднему",
@@ -590,7 +590,7 @@
   },
   {
    "id": "caricature",
-   "pin": "caricature@e702ee0e5816d556",
+   "pin": "caricature@7f94850304ea81b9",
    "group": "caricature",
    "label": {
     "ru": "шарж",
@@ -603,7 +603,7 @@
   },
   {
    "id": "anatomy-defined",
-   "pin": "anatomy-defined@b25cf191e79a1375",
+   "pin": "anatomy-defined@18ed8655f89a49f4",
    "group": "surface",
    "label": {
     "ru": "анатомия чётче",
@@ -616,7 +616,7 @@
   },
   {
    "id": "anatomy-soft",
-   "pin": "anatomy-soft@bfe60d3b98c4a00b",
+   "pin": "anatomy-soft@75d22fd11c262ecc",
    "group": "surface",
    "label": {
     "ru": "анатомия мягче",
@@ -629,7 +629,7 @@
   },
   {
    "id": "smooth-2cm",
-   "pin": "smooth-2cm@d4921cd5e2520198",
+   "pin": "smooth-2cm@97ccac20c86b8b15",
    "group": "surface",
    "label": {
     "ru": "сглаживание 2 см",
@@ -642,7 +642,7 @@
   },
   {
    "id": "smooth-4cm",
-   "pin": "smooth-4cm@09e7654817b456c0",
+   "pin": "smooth-4cm@f054330aa1f702fd",
    "group": "surface",
    "label": {
     "ru": "сглаживание 4 см",
@@ -655,7 +655,7 @@
   },
   {
    "id": "smooth-8cm",
-   "pin": "smooth-8cm@f2bcefb61aaa854b",
+   "pin": "smooth-8cm@cdbc5fd832a246fc",
    "group": "surface",
    "label": {
     "ru": "сглаживание 8 см",
@@ -668,7 +668,7 @@
   },
   {
    "id": "contour-anime",
-   "pin": "contour-anime@9d98fd11029624fd",
+   "pin": "contour-anime@3ac1a771c67569da",
    "group": "contour",
    "label": {
     "ru": "контур: аниме",
@@ -681,7 +681,7 @@
   },
   {
    "id": "contour-disney",
-   "pin": "contour-disney@35de0af94e03f212",
+   "pin": "contour-disney@8797d4cfbdea6fbb",
    "group": "contour",
    "label": {
     "ru": "контур: Дисней",
@@ -694,7 +694,7 @@
   },
   {
    "id": "contour-pixar",
-   "pin": "contour-pixar@1cb80a889dbafaa6",
+   "pin": "contour-pixar@f0e1d703b99c367a",
    "group": "contour",
    "label": {
     "ru": "контур: Pixar",
@@ -707,7 +707,7 @@
   },
   {
    "id": "masses-anime-bust",
-   "pin": "masses-anime-bust@010983dcd98f0278",
+   "pin": "masses-anime-bust@747a8a1cadf22df7",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (аниме)",
@@ -720,7 +720,7 @@
   },
   {
    "id": "masses-anime-glutes",
-   "pin": "masses-anime-glutes@85dc41c7b08c8f35",
+   "pin": "masses-anime-glutes@116ff8e34c02fc08",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (аниме)",
@@ -733,7 +733,7 @@
   },
   {
    "id": "masses-disney-bust",
-   "pin": "masses-disney-bust@3efeac4914792497",
+   "pin": "masses-disney-bust@ddb1ca08d01f8a3a",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (Дисней)",
@@ -746,7 +746,7 @@
   },
   {
    "id": "masses-disney-glutes",
-   "pin": "masses-disney-glutes@40b4e2378425a9c8",
+   "pin": "masses-disney-glutes@e2279bb72ade1587",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (Дисней)",
@@ -759,7 +759,7 @@
   },
   {
    "id": "masses-pixar-bust",
-   "pin": "masses-pixar-bust@5fe42ad312532fbe",
+   "pin": "masses-pixar-bust@a4946fe1218f4b26",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (Pixar)",
@@ -772,7 +772,7 @@
   },
   {
    "id": "masses-pixar-glutes",
-   "pin": "masses-pixar-glutes@329df44f781bb8d8",
+   "pin": "masses-pixar-glutes@ddf57573420ef982",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (Pixar)",
@@ -785,7 +785,7 @@
   },
   {
    "id": "masses-shoulders",
-   "pin": "masses-shoulders@e60b51b54a10b979",
+   "pin": "masses-shoulders@7b55ef833e7041f2",
    "group": "masses",
    "label": {
     "ru": "массы: плечо — шапка и скат от шеи",
@@ -798,7 +798,7 @@
   },
   {
    "id": "pictogram-inverted",
-   "pin": "pictogram-inverted@a22565e920149c19",
+   "pin": "pictogram-inverted@998c20c04b5928c5",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: перевёрнутая трапеция",
@@ -811,7 +811,7 @@
   },
   {
    "id": "pictogram-oval",
-   "pin": "pictogram-oval@ba7da4de0faf88ac",
+   "pin": "pictogram-oval@ac543bb4da5d3287",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: овал",
@@ -824,7 +824,7 @@
   },
   {
    "id": "pictogram-rectangle",
-   "pin": "pictogram-rectangle@0c01989c821af94d",
+   "pin": "pictogram-rectangle@4e12836de896a550",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: прямоугольник",
@@ -837,7 +837,7 @@
   },
   {
    "id": "pictogram-trapezoid",
-   "pin": "pictogram-trapezoid@108144f5812e5e5d",
+   "pin": "pictogram-trapezoid@3ccf7c6549171c83",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: трапеция",

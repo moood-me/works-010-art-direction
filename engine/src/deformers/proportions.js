@@ -4,10 +4,12 @@
 //                {length, width}}} (head: `size`, both at once). Each part is laid along its bone in its own frame;
 //                a longer bone carries everything below it along (its children start where it now ends), a wider part
 //                is wider about its bone; a point between two parts goes by its share of each — so the joints move
-//                with the skin. The neck grows upwards. The strength scales each factor (1 + (k − 1)·strength).
+//                with the skin. The neck grows along the torso's own line (up the body),
+//                so a longer neck lifts the head rather than pushing it forwards. The strength scales each factor (1 + (k − 1)·strength).
 //   caricature   the body's own difference from an average body, drawn out (strength > 0) or taken back (< 0): every
 //                point and joint moved by strength × (it − the average), the average made of `of` (moood's seven by
-//                default) each scaled to this body's height about its floor. On bodies of one topology only.
+//                default) each scaled to this body's height about its own pelvis's line and its floor, set on this
+//                one's. On bodies of one topology only.
 import { register } from '../deform.js';
 import { local, smoothField } from '../regions.js';
 
@@ -16,7 +18,7 @@ const KINDS = ['torso', 'neck', 'head', 'clav', 'arm', 'fore', 'hand', 'thigh', 
 const part = { type: 'object', props: { length: num(0.2, 4), width: num(0.2, 4), size: num(0.2, 4) } };
 
 register({
-  kind: 'proportions', of: 'skin', joints: true,
+  kind: 'proportions', of: 'skin',
   params: { parts: { type: 'object', props: Object.fromEntries(KINDS.map(k => [k, part])) } },
   defaults: { parts: {} },
   rest(p, R) {
@@ -25,11 +27,11 @@ register({
       const q = p.parts[g.kind] || {};
       return g.kind === 'head' ? { len: k(q.size ?? q.length), wid: k(q.size ?? q.width) } : { len: k(q.length), wid: k(q.width) };
     });
-    const J = R.rig.joints, at = j => [J[j * 3], J[j * 3 + 1], J[j * 3 + 2]], F = R.frames, newA = [];
+    const J = R.rig.joints, at = j => [J[j * 3], J[j * 3 + 1], J[j * 3 + 2]], F = R.frames, newA = [], up = F[R.index.torso].e;
     const placeIn = (si, x, y, z, out) => {
       const f = F[si], [t, u, w] = local(f, x, y, z), pr = PR[si], o = newA[si];
       const L = t * f.L, neck = R.segs[si].kind === 'neck';
-      for (let c = 0; c < 3; c++) out[c] = o[c] + (neck ? f.e[c] * L + (c === 1 ? L * (pr.len - 1) : 0) : f.e[c] * L * pr.len) + f.u[c] * u * pr.wid + f.w[c] * w * pr.wid;
+      for (let c = 0; c < 3; c++) out[c] = o[c] + (neck ? f.e[c] * L + up[c] * L * (pr.len - 1) : f.e[c] * L * pr.len) + f.u[c] * u * pr.wid + f.w[c] * w * pr.wid;
       return out;
     };
     R.segs.forEach((g, i) => { const a = at(g.a); newA[i] = g.parentIndex >= 0 ? placeIn(g.parentIndex, a[0], a[1], a[2], [0, 0, 0]) : a; });
@@ -49,8 +51,11 @@ register({
     }
     // where two parts meet (an armpit between the trunk and a longer collarbone) their placements differ: the move,
     // smoothed a little over the surface, so no pinch is left there
-    const disp = Float32Array.from(out, (v, i) => v - P[i]);
-    smoothField(disp, 3, R.nb, 6);
+    // (only there: inside a part the move is its part's own similarity, which smoothing over a fine mesh — a finger, a
+    // toe — would only spoil)
+    const disp = Float32Array.from(out, (v, i) => v - P[i]), seam = new Uint8Array(R.mesh.N);
+    for (const i of R.mesh.used) if (R.seg[i * 2] !== R.seg[i * 2 + 1] && R.sw[i * 2 + 1] > 0.02) seam[i] = 1;
+    smoothField(disp, 3, R.nb, 6, grow(seam, R.nb, 4));
     for (const i of R.mesh.used) for (let c = 0; c < 3; c++) out[i * 3 + c] = P[i * 3 + c] + disp[i * 3 + c];
     return { positions: out, joints };
   },
@@ -58,7 +63,7 @@ register({
 
 const MOOOD = ['moood-woman', 'moood-man', 'moood-girl', 'moood-boy', 'moood-child', 'moood-oldwoman', 'moood-oldman'];
 register({
-  kind: 'caricature', of: 'skin', joints: true,
+  kind: 'caricature', of: 'skin',
   params: { of: { type: 'array', min: 1, items: { type: 'string', pattern: /^[A-Za-z0-9_.-]+(@[0-9a-f]{12,64})?$/ } } },
   defaults: { of: MOOOD },
   async prepare(p, E, body) {
@@ -67,14 +72,21 @@ register({
     return bodies;
   },
   rest(p, R, { data }) {
-    const N = R.mesh.N, P = R.mesh.positions, J = R.rig.joints, H = R.height, y0 = R.levels.floor;
-    const avgP = new Float64Array(N * 3), avgJ = new Float64Array(J.length);
+    const N = R.mesh.N, P = R.mesh.positions, J = R.rig.joints, H = R.height, y0 = R.levels.floor, h = R.skeleton.index.Hips;
+    const avgP = new Float64Array(N * 3), avgJ = new Float64Array(J.length), o = [J[h * 3], y0, J[h * 3 + 2]];
+    // each body scaled to this one's height about its own pelvis's line and floor, set on this one's
     for (const b of data) {
-      const m = b.measures, k = H / m.height, f = m.floor, bp = b.mesh.positions, bj = b.rig.joints;
-      for (let i = 0; i < N * 3; i++) avgP[i] += ((i % 3 === 1) ? y0 + (bp[i] - f) * k : bp[i] * k) / data.length;
-      for (let i = 0; i < J.length; i++) avgJ[i] += ((i % 3 === 1) ? y0 + (bj[i] - f) * k : bj[i] * k) / data.length;
+      const m = b.measures, k = H / m.height, bp = b.mesh.positions, bj = b.rig.joints, bo = [bj[h * 3], m.floor, bj[h * 3 + 2]];
+      for (let i = 0; i < N * 3; i++) avgP[i] += (o[i % 3] + (bp[i] - bo[i % 3]) * k) / data.length;
+      for (let i = 0; i < J.length; i++) avgJ[i] += (o[i % 3] + (bj[i] - bo[i % 3]) * k) / data.length;
     }
-    const s = p.strength;
-    return { positions: Float32Array.from(P, (v, i) => v + s * (v - avgP[i])), joints: Float64Array.from(J, (v, i) => v + s * (v - avgJ[i])) };
+    const s = p.strength, out = Float32Array.from(P, (v, i) => v + s * (v - avgP[i]));
+    return { positions: out, joints: Float64Array.from(J, (v, i) => v + s * (v - avgJ[i])) };
   },
 });
+
+// a mask grown over the surface by some rings
+function grow(m, nb, rings) {
+  for (let r = 0; r < rings; r++) { const g = Uint8Array.from(m); for (let i = 0; i < m.length; i++) if (m[i]) for (let q = nb.start[i]; q < nb.start[i + 1]; q++) g[nb.list[q]] = 1; m = g; }
+  return m;
+}

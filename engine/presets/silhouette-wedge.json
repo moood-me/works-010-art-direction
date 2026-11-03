@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-wedge",
  "label": {
   "ru": "силуэт: клин",
@@ -15,48 +15,48 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     0,
-     0.94,
-     1,
-     0
-    ],
-    [
-     0.3,
-     0.92,
-     0.98,
-     0
-    ],
-    [
-     0.5,
-     0.88,
-     0.95,
-     0
-    ],
-    [
-     0.62,
-     1.02,
-     1.05,
-     0
-    ],
-    [
-     0.78,
-     1.32,
-     1.16,
-     0
-    ],
-    [
-     0.9,
-     1.04,
-     1,
-     0
-    ],
-    [
-     1,
-     1,
-     1,
-     0
-    ]
+    {
+     "at": 0,
+     "width": 0.94,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": 0.3,
+     "width": 0.92,
+     "depth": 0.98,
+     "forward": 0
+    },
+    {
+     "at": 0.5,
+     "width": 0.88,
+     "depth": 0.95,
+     "forward": 0
+    },
+    {
+     "at": 0.62,
+     "width": 1.02,
+     "depth": 1.05,
+     "forward": 0
+    },
+    {
+     "at": 0.78,
+     "width": 1.32,
+     "depth": 1.16,
+     "forward": 0
+    },
+    {
+     "at": 0.9,
+     "width": 1.04,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": 1,
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

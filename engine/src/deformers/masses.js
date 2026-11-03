@@ -8,7 +8,9 @@
 //   place   {from: joint, to?: joint, t?: a share of the way from → to, along?: units along it, offset?: [x, y, z]
 //            in units} — the units: the hips' half-width (torso), the upper arm's or the thigh's radius
 import { register } from '../deform.js';
-import { normalsAt, smoothField } from '../regions.js';
+import { smoothField } from '../regions.js';
+import { normalsOf } from '../mesh.js';
+import { smin } from '../math.js';
 import { ownContours } from './contour.js';
 
 const num = (min, max) => ({ type: 'number', min, max }), v3 = { type: 'array', min: 3, max: 3, items: num(-10, 10) };
@@ -47,14 +49,16 @@ register({
         solids.push({ k, f: cone(c, e, it.r[0] * U, it.r[1] * U), c: c.map((v, i) => (v + e[i]) / 2), reach: Math.hypot(e[0] - c[0], e[1] - c[1], e[2] - c[2]) / 2 + Math.max(...it.r) * U + 2 * k });
       }
     }
-    const P = R.mesh.positions, n = normalsAt(P, R.mesh.triangles), N = R.mesh.N, disp = new Float32Array(N * 3), s = p.strength;
+    const P = R.mesh.positions, n = normalsOf(P, R.mesh.triangles), N = R.mesh.N, disp = new Float32Array(N * 3), s = p.strength;
+    const reach = Math.max(...solids.map(m => m.reach));
     for (const i of R.mesh.used) {
       const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2], nx = n[i * 3], ny = n[i * 3 + 1], nz = n[i * 3 + 2];
       const near = solids.filter(m => Math.hypot(x - m.c[0], y - m.c[1], z - m.c[2]) < m.reach); if (!near.length) continue;
       // the union along the normal: the body is h away at p + h·n; find where smin(h, solid) crosses zero
       const F = h => { let d = h; for (const m of near) d = smin(d, m.f(x + nx * h, y + ny * h, z + nz * h), m.k); return d; };
       if (F(0) >= 0) continue;
-      let a = 0, b = 0.02; while (F(b) < 0 && b < 0.5) b *= 2;
+      // out along the normal until outside the union (no farther than the largest mass reaches), then halved to it
+      let a = 0, b = 0.01 * R.height; while (F(b) < 0 && b < reach) b *= 2;
       for (let it = 0; it < 30; it++) { const c = (a + b) / 2; if (F(c) < 0) a = c; else b = c; }
       const h = (a + b) / 2 * s * (1 - R.head[i]);
       disp[i * 3] = nx * h; disp[i * 3 + 1] = ny * h; disp[i * 3 + 2] = nz * h;
@@ -64,7 +68,6 @@ register({
   },
 });
 
-function smin(a, b, k) { if (k <= 0) return Math.min(a, b); const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; }
 // the distance to a cone between two balls (Т7's `cone`, after Inigo Quilez)
 export function cone(a, b, r1, r2) {
   const bax = b[0] - a[0], bay = b[1] - a[1], baz = b[2] - a[2];

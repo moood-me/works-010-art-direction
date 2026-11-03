@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "line-side-c-back",
  "label": {
   "ru": "линия действия: сбоку C назад",

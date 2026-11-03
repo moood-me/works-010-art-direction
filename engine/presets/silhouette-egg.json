@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-egg",
  "label": {
   "ru": "силуэт: яйцо",
@@ -15,54 +15,54 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     "ankle",
-     0.8,
-     0.85,
-     0
-    ],
-    [
-     "knee",
-     0.95,
-     0.95,
-     0
-    ],
-    [
-     "crotch",
-     1.15,
-     1.1,
-     0
-    ],
-    [
-     "hips",
-     1.32,
-     1.3,
-     0.005
-    ],
-    [
-     "waist",
-     1.42,
-     1.38,
-     0.01
-    ],
-    [
-     "chest",
-     1.22,
-     1.16,
-     0
-    ],
-    [
-     "shoulders",
-     0.92,
-     1,
-     0
-    ],
-    [
-     "neck",
-     1,
-     1,
-     0
-    ]
+    {
+     "at": "ankle",
+     "width": 0.8,
+     "depth": 0.85,
+     "forward": 0
+    },
+    {
+     "at": "knee",
+     "width": 0.95,
+     "depth": 0.95,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 1.15,
+     "depth": 1.1,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 1.32,
+     "depth": 1.3,
+     "forward": 0.005
+    },
+    {
+     "at": "waist",
+     "width": 1.42,
+     "depth": 1.38,
+     "forward": 0.01
+    },
+    {
+     "at": "chest",
+     "width": 1.22,
+     "depth": 1.16,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 0.92,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

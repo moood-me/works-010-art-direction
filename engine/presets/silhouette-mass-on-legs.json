@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "silhouette-mass-on-legs",
  "label": {
   "ru": "силуэт: масса на ножках",
@@ -15,42 +15,42 @@
   {
    "kind": "silhouette",
    "keys": [
-    [
-     0,
-     0.74,
-     0.8,
-     0
-    ],
-    [
-     0.36,
-     0.74,
-     0.8,
-     0
-    ],
-    [
-     0.52,
-     1.36,
-     1.3,
-     0
-    ],
-    [
-     0.72,
-     1.42,
-     1.3,
-     0
-    ],
-    [
-     0.86,
-     1.02,
-     1,
-     0
-    ],
-    [
-     1,
-     1,
-     1,
-     0
-    ]
+    {
+     "at": 0,
+     "width": 0.74,
+     "depth": 0.8,
+     "forward": 0
+    },
+    {
+     "at": 0.36,
+     "width": 0.74,
+     "depth": 0.8,
+     "forward": 0
+    },
+    {
+     "at": 0.52,
+     "width": 1.36,
+     "depth": 1.3,
+     "forward": 0
+    },
+    {
+     "at": 0.72,
+     "width": 1.42,
+     "depth": 1.3,
+     "forward": 0
+    },
+    {
+     "at": 0.86,
+     "width": 1.02,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": 1,
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
    ]
   }
  ]

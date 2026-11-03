@@ -6,31 +6,41 @@
 //            cotangent Laplacian: (M + t·L) x = M x₀ in one implicit step, solved by conjugate gradients — Anny's mesh
 //            is twenty times finer at a nipple, a navel or a toe than on the back); what that takes from a limb's girth
 //            is measured along the normal and smoothed again over twice the reach, so the even loss comes back and a
-//            navel doesn't. `keep`: how much of their forms the head and the fingers keep (1 all of them)
+//            navel doesn't. `keep`: how much of their forms the head, the fingers and the toes keep (1 all of them; the
+//            toes and fingers are thin and finely meshed: smoothed over centimetres they fold over)
 // Both are changes of the surface: on the rest, or as a pose layer by a morph.
 import { register } from '../deform.js';
-import { taubin, normalsAt, lerp } from '../regions.js';
+import { taubin } from '../regions.js';
+import { normalsOf } from '../mesh.js';
+import { lerp } from '../math.js';
 
 const num = (min, max) => ({ type: 'number', min, max });
+const KEEP = { head: 1, fingers: 1, toes: 1 };
 
 register({
   kind: 'anatomy', of: 'skin',
   params: { amount: num(-3, 3) },
   defaults: { amount: 0.5 },
   rest(p, R) {
-    const P = R.mesh.positions, a = p.amount * p.strength, sm = taubin(P, R.nb, () => 1, 6), out = Float32Array.from(P);
-    for (const i of R.mesh.used) for (let c = 0; c < 3; c++) out[i * 3 + c] += a * (P[i * 3 + c] - sm[i * 3 + c]) * (a > 0 ? 1.6 : 1);
+    const P = R.mesh.positions, a = p.amount * p.strength, sm = taubin(P, R.nb, () => 1, 6), out = Float32Array.from(P), L = edgeOf(R);
+    for (const i of R.mesh.used) {
+      // the move no longer than a third of the mesh's own size there: where the mesh is fine (fingers, toes) its small
+      // forms are drawn out as far as they can be without folding
+      const k = a * (a > 0 ? 1.6 : 1), dx = (P[i * 3] - sm[i * 3]) * k, dy = (P[i * 3 + 1] - sm[i * 3 + 1]) * k, dz = (P[i * 3 + 2] - sm[i * 3 + 2]) * k;
+      const l = Math.hypot(dx, dy, dz), lim = 0.33 * L[i], f = l > lim ? lim / l : 1;
+      out[i * 3] += dx * f; out[i * 3 + 1] += dy * f; out[i * 3 + 2] += dz * f;
+    }
     return { positions: out };
   },
 });
 
 register({
   kind: 'smooth', of: 'skin',
-  params: { cm: num(0, 20), keep: { type: 'object', props: { head: num(0, 1), fingers: num(0, 1) } } },
-  defaults: { cm: 4, keep: { head: 1, fingers: 0.75 } },
+  params: { cm: num(0, 20), keep: { type: 'object', props: { head: num(0, 1), fingers: num(0, 1), toes: num(0, 1) } } },
+  defaults: { cm: 4, keep: KEEP },
   rest(p, R) {
-    const keep = { head: 1, fingers: 0.75, ...p.keep }, s = p.strength;
-    const amount = i => s * (1 - keep.fingers * R.fingers[i]) * (1 - keep.head * R.head[i]);
+    const keep = { ...KEEP, ...p.keep }, s = p.strength;
+    const amount = i => s * (1 - keep.fingers * R.fingers[i]) * (1 - keep.toes * R.toes[i]) * (1 - keep.head * R.head[i]);
     return { positions: curvSmooth(R, R.mesh.positions, p.cm / 100, amount) };
   },
 });
@@ -79,9 +89,20 @@ function heat(R, L, b, t) {
 export function curvSmooth(R, pos, reach, amount) {
   const N = R.mesh.N, L = cotan(R, pos), S = new Float32Array(pos.length);
   for (let c = 0; c < 3; c++) { const x = heat(R, L, Float64Array.from({ length: N }, (_, i) => pos[i * 3 + c]), reach * reach); for (let i = 0; i < N; i++) S[i * 3 + c] = x[i]; }
-  const n = normalsAt(S, R.mesh.triangles), d = new Float64Array(N);
+  const n = normalsOf(S, R.mesh.triangles), d = new Float64Array(N);
   for (let i = 0; i < N; i++) d[i] = (pos[i * 3] - S[i * 3]) * n[i * 3] + (pos[i * 3 + 1] - S[i * 3 + 1]) * n[i * 3 + 1] + (pos[i * 3 + 2] - S[i * 3 + 2]) * n[i * 3 + 2];
   const ds = heat(R, L, d, 4 * reach * reach), out = Float32Array.from(pos);
   for (const i of R.mesh.used) { const w = amount(i); for (let c = 0; c < 3; c++) out[i * 3 + c] = lerp(pos[i * 3 + c], S[i * 3 + c] + ds[i] * n[i * 3 + c], w); }
   return out;
+}
+
+// each vertex's mean edge length at the rest
+function edgeOf(R) {
+  const P = R.mesh.positions, nb = R.nb, L = new Float32Array(R.mesh.N);
+  for (const i of R.mesh.used) {
+    let s = 0; const a = nb.start[i], b = nb.start[i + 1];
+    for (let q = a; q < b; q++) { const j = nb.list[q]; s += Math.hypot(P[i * 3] - P[j * 3], P[i * 3 + 1] - P[j * 3 + 1], P[i * 3 + 2] - P[j * 3 + 2]); }
+    L[i] = b > a ? s / (b - a) : 0;
+  }
+  return L;
 }

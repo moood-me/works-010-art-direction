@@ -44,8 +44,14 @@ export function morphed(mesh, weights, out = new Float32Array(mesh.positions.len
   return out;
 }
 
-// vertex normals (area-weighted) over the used vertices, into out
-export function normalsOf(pos, tris, out, used) {
+// vertices no triangle uses are never skinned, drawn or changed: they keep the mesh's rest (in P, in place)
+export function keepUnused(mesh, P) {
+  for (let i = 0; i < mesh.N; i++) if (!mesh.isUsed[i]) for (let c = 0; c < 3; c++) P[i * 3 + c] = mesh.positions[i * 3 + c];
+  return P;
+}
+
+// vertex normals (area-weighted) over the used vertices, into out (a new array if none is given)
+export function normalsOf(pos, tris, out = new Float32Array(pos.length), used = null) {
   out.fill(0);
   for (let t = 0; t < tris.length; t += 3) {
     const a = tris[t] * 3, b = tris[t + 1] * 3, c = tris[t + 2] * 3;

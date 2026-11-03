@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 1,
+ "version": 2,
  "id": "pictogram-rectangle",
  "label": {
   "ru": "пиктограмма: прямоугольник",
@@ -14,7 +14,11 @@
  "changes": [
   {
    "kind": "smooth",
-   "cm": 6
+   "cm": 6,
+   "keep": {
+    "fingers": 0,
+    "toes": 0
+   }
   },
   {
    "kind": "sign",

@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 2,
+ "version": 3,
  "id": "pear-old-woman",
  "label": {
   "ru": "Груша: старушка",
@@ -10,25 +10,25 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "smooth-4cm@09e7654817b456c0",
+   "id": "smooth-4cm@f054330aa1f702fd",
    "strength": 0.7,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "silhouette-pear@1b2a606cda6986c1",
+   "id": "silhouette-pear@0803d051fb4d15e3",
    "strength": 0.6,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "line-side-c-forward@7aa5752a37d49578",
+   "id": "line-side-c-forward@1ea64b683c50c894",
    "strength": 0.4,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-short-legs@2888d47d19068f2b",
+   "id": "proportions-short-legs@366817a64b57f52b",
    "strength": 0.5,
    "frames": "keep"
   }
@@ -36,7 +36,8 @@
  "pose": [
   {
    "kind": "armsOff",
-   "degrees": 12
+   "degrees": 6,
+   "clear": 0.008
   }
  ],
  "skinning": {

@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 2,
+ "version": 3,
  "id": "egg-baby",
  "label": {
   "ru": "Яйцо: малыш",
@@ -10,19 +10,19 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "smooth-4cm@09e7654817b456c0",
+   "id": "smooth-4cm@f054330aa1f702fd",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "silhouette-egg@efbc5d48671c66cd",
+   "id": "silhouette-egg@2f16552dcdfbb19a",
    "strength": 0.6,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-short-legs@2888d47d19068f2b",
+   "id": "proportions-short-legs@366817a64b57f52b",
    "strength": 0.5,
    "frames": "keep"
   }

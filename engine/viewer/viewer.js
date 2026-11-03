@@ -8,7 +8,6 @@
 import * as THREE from 'three';
 import { createEngine } from '../src/engine.js';
 import { makeStage, figureView, joinBounds } from '../src/view3d.js';
-import { resolve } from '../src/character.js';
 
 const q = new URLSearchParams(location.search);
 const msg = document.getElementById('msg'), canvas = document.getElementById('cv');
@@ -18,8 +17,8 @@ const BODIES = q.has('bodies');
 if (BODIES) document.body.classList.add('bodies');
 const [bodyIndex, presetIndex] = BODIES ? await Promise.all([E.bodies(), E.presets()]) : [null, null];
 const presetOf = ref => presetIndex.presets.find(p => p.id === ref.split('@')[0]);
-// presets whose changes move joints are changes of the rest only
-const REST_ONLY = new Set(['proportions', 'caricature']);
+// presets whose changes give their own skin weights (the pictograms) are changes of the rest only
+const REST_ONLY = new Set(['pictogram']);
 const stage = makeStage(THREE, canvas, { pixelRatio: Math.min(devicePixelRatio || 1, 2) });
 // the figures in the middle of what the panel leaves free (on a wide screen)
 const fit = () => { const p = document.getElementById('vpPanel'), w = p && innerWidth > 760 ? p.offsetWidth + 12 : 0; stage.size(innerWidth, innerHeight, w / 2); };
@@ -46,16 +45,17 @@ let clip = null;
 const panel = document.createElement('div'); panel.id = 'vpPanel';
 panel.innerHTML = `
   <div class="row"><span class="lab">Фигуры</span><span class="mv" id="figs"></span><button id="add" title="ещё фигура рядом">＋</button><button id="del" title="убрать выбранную">✕</button></div>
-  <div class="row"><span class="lab">Тело</span><select id="char" aria-label="Тело"></select></div>
+  <div class="row"><span class="lab">Персонаж</span><select id="char" aria-label="Персонаж" title="описание персонажа (characters/): тело, его изменения, слои позы, вид"></select></div>
   <div class="row"><span class="lab">Движение</span></div><div class="mv" id="moves"></div>
   <div class="row"><button id="play" aria-label="Пауза">❚❚</button><input id="time" type="range" min="0" max="0" step="0.01" value="0" aria-label="Время"><span id="flab"></span></div>
   <div class="row"><span class="lab">Камера</span><button id="follow">следует</button><button data-view="front">спереди</button><button data-view="side">сбоку</button><button id="joints">суставы</button><button id="capsules">капсулы</button></div>
-  <div class="sep"></div>
+  <details id="skin"${BODIES ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
   <div class="row"><span class="lab">Скиннинг</span><button data-method="cor">центры вращения</button><button data-method="dqs">двойные кватернионы</button><button data-method="lbs">линейный</button></div>
   <div class="row"><span class="lab">Т7</span><button id="clav">ключица ⅓</button><button id="seam">шов сглажен</button></div>
   <div class="row"><span class="lab">Слои позы</span><span class="mv" id="layers"></span></div>
+  </details>
   ${BODIES ? `<div class="sep"></div>
-  <div class="row"><span class="lab">Основа</span><select id="base" aria-label="Основа тела"></select></div>
+  <div class="row"><span class="lab">Тело-основа</span><select id="base" aria-label="Тело-основа" title="тело Anny, с которого персонаж начинается (data/bodies/)"></select></div>
   <div class="row"><span class="lab">Деформеры</span><span class="hint">по порядку; сила, покой или слой позы</span></div>
   <div id="defs" style="display:grid;gap:4px"></div>
   <div class="row"><select id="addDef" aria-label="Добавить деформер"></select></div>` : ''}
@@ -99,7 +99,7 @@ async function describe(f) {
     d.rest = o.rows.filter(r => r.where === 'rest').map(r => ({ ...r.c, frames: r.frames }));
     d.pose = [...(d.pose || []).filter(l => !isDeform(l)), ...o.rows.filter(r => r.where === 'pose').map(r => { const c = { ...r.c }; delete c.frames; return c; })];
   }
-  return resolve(d, E.skeleton);
+  return E.resolve(d);
 }
 const isDeform = l => l.kind === 'preset' || !['armsOff', 'armsOutOfHead', 'amplifyLimbs', 'dampHeadSpine', 'clavicleShare', 'turn', 'morph'].includes(l.kind);
 // the figure's deformers as the panel's rows: its rest's, then its pose layers' that are deformers
@@ -115,7 +115,7 @@ async function showRows() {
   box.innerHTML = '';
   rows.forEach((r, k) => {
     const el = document.createElement('div'); el.className = 'row';
-    const g = r.c.kind === 'preset' ? presetOf(r.c.id)?.group : null, restOnly = REST_ONLY.has(g) || ['proportions', 'caricature', 'turn', 'morph'].includes(r.c.kind);
+    const g = r.c.kind === 'preset' ? presetOf(r.c.id)?.group : null, restOnly = REST_ONLY.has(g) || ['sign', 'turn', 'morph'].includes(r.c.kind);
     el.innerHTML = `<span title="${r.c.kind === 'preset' ? (presetOf(r.c.id)?.about?.ru ?? '') : ''}">${rowLabel(r.c)}</span><input type="range" min="0" max="2" step="0.05" value="${r.c.strength ?? 1}" aria-label="сила"><span class="s">${(r.c.strength ?? 1).toFixed(2)}</span>
       <button class="w" title="на покое или слоем позы"${restOnly ? ' disabled' : ''}>${r.where === 'rest' ? 'покой' : 'слой'}</button>${r.where === 'rest' ? `<button class="fr" title="кадры суставов: держать (форма едет в движении) или повернуть (анатомия)">${r.frames === 'keep' ? 'держать' : 'повернуть'}</button>` : ''}<button class="x" title="убрать">✕</button>`;
     const range = el.querySelector('input');

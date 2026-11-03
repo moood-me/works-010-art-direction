@@ -4,15 +4,17 @@
 //   node engine/tools/characters.mjs pin [ids…]       pin each character's body anew, as it is now — after its data
 //                                                      changed and the checks were looked at
 //   node engine/tools/characters.mjs chains           pin the motions of motions/index.json's chains as they are now
-//   node engine/tools/characters.mjs presets          check every preset (presets/*.json), pin the presets they take,
-//                                                      write presets/index.json (by group, each pinned)
+//   node engine/tools/characters.mjs presets          upgrade every preset (presets/*.json) of an earlier version,
+//                                                      check it, pin the presets it takes, write presets/index.json
+//                                                      (by group, each pinned)
 //   node engine/tools/characters.mjs bodies           write data/bodies/index.json (every body, its group, pinned)
-// `pin` also pins the presets a character takes as they are now.
+// `pin` also pins the presets a character takes, and the character it starts from (`base`), as they are now.
 // No ids: every character of characters/index.json.
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createEngine } from '../src/engine.js';
-import { upgrade, resolve, VERSION, checkPreset } from '../src/character.js';
+import { upgrade, VERSION, checkPreset, upgradePreset, PRESET_VERSION } from '../src/character.js';
+import { hashOf } from '../src/hash.js';
 import { pinned, pinOf } from '../src/hash.js';
 import { read } from '../check/node-read.mjs';
 
@@ -27,12 +29,16 @@ const repin = list => Promise.all(list.map(async c => c.kind === 'preset' ? { ..
 if (what === 'upgrade' || what === 'pin') {
   for (const id of await all()) {
     let d = JSON.parse(await readFile(file(id), 'utf8'));
-    const bodyId = d.version === 1 ? d.body : pinned(d.body).id, body = await E.body(bodyId), pin = pinOf(bodyId, body.hash);
+    const bodyId = !d.body ? null : d.version === 1 ? d.body : pinned(d.body).id, pin = bodyId && pinOf(bodyId, (await E.body(bodyId)).hash);
     if (what === 'upgrade') { if (d.version === VERSION) { console.log(`${id}: already version ${VERSION}`); continue; } d = upgrade(d, { bodyPin: pin }); }
-    else { d.body = pin; for (const k of ['rest', 'pose']) d[k] = await repin(d[k] || []); }
-    resolve(d, E.skeleton);
+    else {
+      if (pin) d.body = pin;
+      if (d.base) { const b = pinned(d.base).id; d.base = pinOf(b, hashOf([JSON.parse(await readFile(file(b), 'utf8'))])); }
+      for (const k of ['rest', 'pose']) d[k] = await repin(d[k] || []);
+    }
+    await E.resolve(d);
     await save(file(id), d);
-    console.log(`${id}: ${what === 'upgrade' ? `version ${d.version}, ` : ''}body ${pin}`);
+    console.log(`${id}: ${what === 'upgrade' ? `version ${d.version}, ` : ''}${pin ? 'body ' + pin : 'base ' + d.base}`);
   }
 } else if (what === 'chains') {
   const path = fileURLToPath(new URL('motions/index.json', ROOT)), index = JSON.parse(await readFile(path, 'utf8'));
@@ -46,6 +52,7 @@ if (what === 'upgrade' || what === 'pin') {
   const dir = fileURLToPath(new URL('presets/', ROOT)), files = (await readdir(dir)).filter(f => f.endsWith('.json') && f !== 'index.json');
   // presets that take presets: those first pinned anew (in the order they depend)
   const list = [];
+  for (const f of files) { const p = JSON.parse(await readFile(dir + f, 'utf8')); if (p.version < PRESET_VERSION) await save(dir + f, upgradePreset(p)); }
   for (const f of files) { const p = JSON.parse(await readFile(dir + f, 'utf8')); p.changes = await repin(p.changes); checkPreset(p); await save(dir + f, p); }
   for (const f of files) { const id = f.slice(0, -5), p = await E.preset(id); list.push({ id, pin: pinOf(id, p.hash), group: p.group, label: p.label, about: p.about }); }
   const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram'];

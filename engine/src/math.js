@@ -20,6 +20,13 @@ export function qRot(q, v, out = [0, 0, 0]) {
   out[0] = vx + w * tx + y * tz - z * ty; out[1] = vy + w * ty + z * tx - x * tz; out[2] = vz + w * tz + x * ty - y * tx;
   return out;
 }
+// the same on a vector given by its parts (nothing allocated)
+export function qRot3(q, vx, vy, vz, out) {
+  const x = q[0], y = q[1], z = q[2], w = q[3];
+  const tx = 2 * (y * vz - z * vy), ty = 2 * (z * vx - x * vz), tz = 2 * (x * vy - y * vx);
+  out[0] = vx + w * tx + y * tz - z * ty; out[1] = vy + w * ty + z * tx - x * tz; out[2] = vz + w * tz + x * ty - y * tx;
+  return out;
+}
 export function qAxisAngle(axis, a) { const l = Math.hypot(...axis) || 1, s = Math.sin(a / 2) / l; return [axis[0] * s, axis[1] * s, axis[2] * s, Math.cos(a / 2)]; }
 // the smallest turn carrying unit direction a to unit direction b
 export function qBetween(a, b) {
@@ -62,6 +69,10 @@ export const len = a => Math.hypot(a[0], a[1], a[2]);
 export const normalize = a => { const l = len(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
+// smoothstep on 0..1
+export const sst = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
+// the smooth minimum of two distances over k (Inigo Quilez's polynomial; k ≤ 0: the plain minimum)
+export function smin(a, b, k) { if (k <= 0) return Math.min(a, b); const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; }
 
 // typed-array access: the j-th quaternion or vector
 export const getQ = (A, j) => [A[j * 4], A[j * 4 + 1], A[j * 4 + 2], A[j * 4 + 3]];
