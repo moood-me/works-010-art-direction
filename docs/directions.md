@@ -192,3 +192,12 @@ written findings on beauty; its faces and generator dropped. Collision with the 
 simplification as a separate path is not needed (П1 and П2 cover simple and symbolic characters); smoothing in
 centimetres stays as a deformer and the pictogram Т4 as a preset. Hair В1 is one path; on designed heads (Г1, Г3) and
 on characters not from Anny (П1, П2) it hasn't been tried.
+
+The plan's shape (Pavel, 2026-11-03): the engine is code; presets are code. A new branch in the gallery's menu with
+sub-branches — kinds of bodies, with such and such heads, and so on. Clothes, hair, Kimodo motions, wind, face
+expressions, simplification of clothes — for all, where applicable. Build it so we can iterate on any aspect for long,
+make many new versions (also for particular games), without breaking the characters. Next after the engine:
+smooth transitions between motions, smooth and combined facial expressions, mouth shapes for speech, a jaw that moves
+when speaking (else just the mouth), brows and face during speech, a gaze that follows, blinking and small eye
+movements by themselves, speed of cloth and hair for several characters. Not now: breathing and idle life (Kimodo's
+job), hands and fingers, feet on the ground, contacts with the world, turning to a target, cartoon timing.
