@@ -537,6 +537,9 @@ class Hair:
         lx, ly = LIGHT
         dx, dy = -lx * 5 * hd.s, -ly * 5 * hd.s
         g = [f'<g clip-path="url(#{k})" opacity="0.6">']
+        if self.cap:
+            g.append(f'<path d="{self.cap_path(hd)}" fill="{col}" transform="translate({f(dx)},{f(dy)})" '
+                     f'filter="url(#{cv.blur(3 * hd.s)})"/>')
         for z, pts, c2, L in self._locks:
             if z >= L.get("split", 0):
                 g.append(f'<path d="{smooth_path(pts)}" fill="{col}" transform="translate({f(dx)},{f(dy)})" '
@@ -544,12 +547,10 @@ class Hair:
         g.append('</g>')
         cv.add("".join(g))
 
-    def draw_cap(self, cv, hd):
-        """one smooth mass over the scalp above the hairline (sleek hair), with strands toward the bun"""
+    def cap_path(self, hd):
         sh = Shell(hd, **self.shell_kw)
         hl = self.hairline
         k = self.cap.get("k", 1.04)
-        # the visible half of the shell is lon in [-90 - yaw, 90 - yaw]; its edge meridians are the silhouette
         yaw = math.degrees(hd.yaw)
         L, R = -90 - yaw, 90 - yaw
         pts = []
@@ -563,7 +564,14 @@ class Hair:
         for i in range(1, 16):
             la = 90 - (90 - hl(L)) * i / 15
             pts.append(hd.proj(sh.pt(la, L, k))[0])
-        d = smooth_path(pts)
+        return smooth_path(pts)
+
+    def draw_cap(self, cv, hd):
+        """one smooth mass over the scalp above the hairline (sleek hair), with strands toward the bun"""
+        sh = Shell(hd, **self.shell_kw)
+        hl = self.hairline
+        k = self.cap.get("k", 1.04)
+        d = self.cap_path(hd)
         paint_volume(cv, d, self.base, self.dark, 70 * hd.s, lift=0.12, soft=0.1)
         kk = cv.clip(d)
         g = [f'<g clip-path="url(#{kk})">']
@@ -586,8 +594,12 @@ class Hair:
                     seg.append(hd.proj(p3)[0])
             if len(seg) > 2:
                 g.append(f'<path d="{smooth_path(seg, closed=False)}" fill="none" stroke="{self.light if i % 2 else self.dark}" '
-                         f'stroke-width="{f(hd.s * 0.6)}" opacity="0.4"/>')
-        # sheen band
+                         f'stroke-width="{f(hd.s * 0.5)}" opacity="0.12"/>')
+        # sheen band across the crown, toward the light
+        band = [hd.proj(sh.pt(la, lo, k))[0] for la, lo in [(58, -60), (66, -20), (68, 20), (62, 60)]]
+        lx, ly = LIGHT
+        g.append(f'<path d="{smooth_path(band, closed=False)}" fill="none" stroke="{self.light}" stroke-width="{f(hd.s * 7)}" '
+                 f'stroke-linecap="round" opacity="0.35" filter="url(#{cv.blur(hd.s * 3)})"/>')
         g.append('</g>')
         cv.add("".join(g))
 

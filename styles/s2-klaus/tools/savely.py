@@ -46,7 +46,7 @@ def head34(d, out, expr='calm'):
     fx.append(d.tone('M194,248 C200,242 214,244 220,254 C216,268 202,268 196,262Z', '#7a3048', 0.35, 4))
     # ruddy cheeks
     fx.append(d.tone('M256,292 C270,280 304,284 310,304 C304,322 270,324 258,312Z', ROSE, 0.5, 8))
-    out.append(d.form(face, SKIN, shift=30, soft=9, s=0.5, extra='\n'.join(fx)))
+    out.append(d.form(face, SKIN, shift=30, soft=9, s=0.5, rim=2.4, rimcol='#ffb48a', rimop=0.6, extra='\n'.join(fx)))
     out.append(d.form(ear, SKIN, shift=8, soft=3, s=0.55, extra=ex))
     # wrinkles: few, as lines that follow the forms
     wl = mix(SKIN, '#5a2030', 0.5)
@@ -172,7 +172,5 @@ def figure(d, out, expr='calm'):
     out.append(d.form(arm, SHIRT, shift=14, soft=4, s=0.55, extra=d.tone('M310,330 C334,370 340,430 320,476 L350,476 L350,320Z', sh, 0.55, 4)))
     out.append(d.form('M288,456 L310,464 L306,480 L284,472Z', mix(SHIRT, '#5a4a40', 0.3), shift=3, soft=1.5))
     # neck and head, pushed forward
-    out.append(d.form('M206,290 C212,276 240,268 270,276 L284,312 C260,320 228,318 210,312Z', SKIN, shift=4, soft=2, s=0.65,
-                      extra=d.tone('M200,280 L290,280 L290,320 L200,320Z', mix(SKIN, '#4a1838', 0.6), 0.7, 3)))
     out.append(d.form('M204,300 C224,290 262,288 284,300 L278,318 C256,310 226,312 210,320Z', SHIRT, shift=4, soft=2))
     place(d, out, head34, 'savely', (206, 318), 0.56, rot=-4, expr=expr)

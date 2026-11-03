@@ -9,7 +9,7 @@ sc = bpy.context.scene
 sc.render.engine = 'BLENDER_WORKBENCH'; sh = sc.display.shading
 sh.light = 'STUDIO'; sh.color_type = cfg.get('color', 'MATERIAL'); sh.single_color = (0.80, 0.78, 0.76)
 sh.show_cavity = False; sh.show_shadows = False; sh.show_specular_highlight = True
-sc.display.render_aa = '16'; sc.render.film_transparent = False; sc.view_settings.view_transform = 'Standard'
+sc.display.render_aa = '16'; sc.render.film_transparent = False; sc.view_settings.view_transform = 'Standard'; sc.render.image_settings.file_format = 'PNG'
 w = bpy.data.worlds.new('neutral'); w.color = (0.85, 0.84, 0.82); sc.world = w
 cd = bpy.data.cameras.new('c'); cd.sensor_fit = 'VERTICAL'; cd.sensor_height = 36
 cam = bpy.data.objects.new('c', cd); sc.collection.objects.link(cam); sc.camera = cam

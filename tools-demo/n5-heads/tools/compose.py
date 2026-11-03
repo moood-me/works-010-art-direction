@@ -7,6 +7,7 @@ F = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 22)
 BG = (235, 234, 230)
 
 def sheet(name, rows, cw=420, ch=None):
+    rows = [[((c[0].replace('.png', '.jpg') if c and c[0] and not os.path.exists(os.path.join(R, c[0])) and os.path.exists(os.path.join(R, c[0].replace('.png', '.jpg'))) else c[0]), c[1]) if c else c for c in row] for row in rows]
     """rows: list of rows; each row a list of (path, label) or None."""
     rows = [[(c if c and c[0] and os.path.exists(os.path.join(R, c[0])) else ((print('MISSING', c[0]) if c and c[0] else None) or (None, None))) for c in row] for row in rows]
     ims = [[(Image.open(os.path.join(R, p)).convert('RGB'), l) if p else None for p, l in row] for row in rows]

@@ -39,7 +39,7 @@ def head34(d, out, expr='calm'):
     # under the cheekbone: a long hollow plane
     fx.append(d.tone('M196,300 C208,318 220,336 236,346 C222,330 210,312 204,296Z', '#7a3a50', 0.35, 4))
     fx.append(d.tone('M256,296 C270,288 296,292 300,306 C294,318 268,318 258,308Z', ROSE, 0.3, 7))
-    out.append(d.form(face, SKIN, shift=30, soft=8, s=0.5, extra='\n'.join(fx)))
+    out.append(d.form(face, SKIN, shift=30, soft=8, s=0.5, rim=2.4, rimcol='#ffb48a', rimop=0.6, extra='\n'.join(fx)))
     # small ear, the hair pulled back behind it
     ear = 'M318,252 C330,238 348,246 346,268 C344,290 334,304 322,304 C316,300 316,290 318,282 C312,272 312,262 318,252Z'
     out.append(d.form(ear, SKIN, shift=6, soft=2.5, s=0.55, extra=d.tone('M326,262 C336,256 342,266 338,282 C334,292 328,292 326,284 C330,276 330,268 326,262Z', sk, 0.8, 1.5)))
@@ -143,6 +143,5 @@ def figure(d, out, expr='calm'):
     out.append(d.form('M226,206 C238,200 262,200 274,206 L270,222 L250,214 L230,222Z', COLLAR, shift=4, soft=2))
     out.append(d.form('M246,214 C249,210 254,210 256,214 C256,219 252,222 250,222 C248,222 245,219 246,214Z', '#8a3040', shift=2, soft=1))
     # neck and the head, held high
-    out.append(d.form('M240,170 L262,170 L264,208 L238,208Z', SKIN, shift=3, soft=1.5, extra=d.tone('M236,166 L266,166 L266,206 L236,206Z', mix(SKIN, '#3a1838', 0.6), 0.75, 3)))
     out.append(d.form('M234,190 C244,184 262,184 270,190 L272,208 L232,208Z', D, shift=4, soft=1.5, k=0.12))
     place(d, out, head34, 'vera', (246, 192), 0.47, rot=-2, expr=expr)

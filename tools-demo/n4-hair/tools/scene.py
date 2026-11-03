@@ -76,7 +76,7 @@ def scalp(R, c, r, line, region=None, name='scalp'):
     ob = mesh(name, P[used], remap[keep])
     me = ob.data
     cc = Vector(bl(c))
-    for v in me.vertices: v.co += (v.co - cc).normalized() * 0.001   # (out from the skull: the triangles' winding is three's)
+    for v in me.vertices: v.co += (v.co - cc).normalized() * 0.002   # (out from the skull: the triangles' winding is three's)
     me.uv_layers.new(name='UVMap')
     bpy.context.view_layer.objects.active = ob; ob.select_set(True)
     bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
@@ -171,7 +171,7 @@ def stage(res=(440, 520), samples=48):
     s.cycles_curves.shape = 'THICK'; s.cycles_curves.subdivisions = 2
     s.view_settings.view_transform = 'Standard'
     w = bpy.data.worlds.new('w'); s.world = w; w.use_nodes = True
-    bg = w.node_tree.nodes['Background']; bg.inputs['Color'].default_value = (*srgb(0xd8d2c8), 1); bg.inputs['Strength'].default_value = 0.75
+    bg = w.node_tree.nodes['Background']; bg.inputs['Color'].default_value = (*srgb(0xd8d2c8), 1); bg.inputs['Strength'].default_value = 1.0
     def sun(name, energy, color, d):
         L = bpy.data.lights.new(name, 'SUN'); L.energy = energy; L.color = color; L.angle = 0.12
         o = bpy.data.objects.new(name, L); s.collection.objects.link(o)

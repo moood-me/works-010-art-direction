@@ -674,7 +674,8 @@ def draw_cloth(doc, view, surf, base, pieces, shadow='#8f7c8c', hi='#fff3e0', ri
         g += path(poly_path(R['hi']), hi, op=0.25, extra=' filter="url(#soft2)"')
     if rim and not R['rim'].is_empty:
         g += path(poly_path(R['rim']), rim, op=0.6, extra=' filter="url(#edge)"')
-    return s + '<g clip-path="url(#%s)">' % cid + g + '</g>'
+    edge = path(sil, 'none', mix(base, '#000000', 0.55), max(1.0, 1.1 * view.s), 0.5)
+    return s + '<g clip-path="url(#%s)">' % cid + g + '</g>' + edge
 
 
 def background(doc, w, h, c1, c2, c3, seed=1, x=0, y=0):

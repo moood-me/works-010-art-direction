@@ -512,3 +512,63 @@ def taper(pts, w0, w1=0.0, wmid=None, k=0.5):
 
 def lin(d, stroke, sw, op=None):
     return path(d, 'none', stroke, sw, op)
+
+
+class Tube(Surf):
+    """A tube swept along a smooth 3D curve: points [(x, y, z)], radii [r] (or (rx, rz) for flattened sections)."""
+    u0, u1, v0, v1 = -math.pi, math.pi, 0.0, 1.0
+    nu, nv = 60, 90
+
+    def __init__(self, pts, radii, flat=1.0):
+        P = np.array(pts, float)
+        # dense catmull-rom resample of the centre line
+        t = np.linspace(0, 1, len(P))
+        n = 200
+        tt = np.linspace(0, 1, n)
+        C = []
+        for k in range(3):
+            C.append(np.interp(tt, t, P[:, k]))
+        C = np.stack(C, -1)
+        for _ in range(6):
+            C[1:-1] = (C[:-2] + 2 * C[1:-1] + C[2:]) / 4
+        self.C = C
+        self.tt = tt
+        R = np.array(radii, float)
+        self.R = np.interp(tt, np.linspace(0, 1, len(R)), R)
+        self.flat = flat
+        T = np.gradient(C, axis=0)
+        T /= np.linalg.norm(T, axis=-1, keepdims=True) + 1e-9
+        up = np.array([0.0, 0.0, 1.0])
+        N = np.cross(T, up)
+        bad = np.linalg.norm(N, axis=-1) < 1e-3
+        N[bad] = np.cross(T[bad], np.array([1.0, 0, 0]))
+        N /= np.linalg.norm(N, axis=-1, keepdims=True) + 1e-9
+        B = np.cross(T, N)
+        self.N, self.B = N, B
+
+    def _at(self, v):
+        i = np.clip(v, 0, 1) * (len(self.tt) - 1)
+        i0 = np.floor(i).astype(int)
+        i1 = np.minimum(i0 + 1, len(self.tt) - 1)
+        f = (i - i0)[..., None]
+        C = self.C[i0] * (1 - f) + self.C[i1] * f
+        N = self.N[i0] * (1 - f) + self.N[i1] * f
+        B = self.B[i0] * (1 - f) + self.B[i1] * f
+        R = self.R[i0] * (1 - f[..., 0]) + self.R[i1] * f[..., 0]
+        return C, N, B, R
+
+    def pos(self, u, v):
+        C, N, B, R = self._at(v)
+        cu, su = np.cos(u)[..., None], np.sin(u)[..., None]
+        P = C + R[..., None] * (cu * N * self.flat + su * B)
+        return P[..., 0], P[..., 1], P[..., 2]
+
+    def outward(self, X, Y, Z):
+        return None
+
+    def normals(self, U, V):
+        P, n = Surf.normals(self, U, V)
+        C, _, _, _ = self._at(V)
+        d = (P[..., 0] - C[..., 0]) * n[..., 0] + (P[..., 1] - C[..., 1]) * n[..., 1] + (P[..., 2] - C[..., 2]) * n[..., 2]
+        n = np.where((d < 0)[..., None], -n, n)
+        return P, n

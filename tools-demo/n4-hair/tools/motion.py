@@ -86,7 +86,7 @@ def resample(A, k):
     d = np.r_[0, np.cumsum(np.linalg.norm(np.diff(A, axis=0), axis=1))]; t = np.linspace(0, d[-1], k)
     return np.stack([np.interp(t, d, A[:, c]) for c in range(3)], -1)
 
-co = S.stage(res=(400, 470), samples=samples)
+co = S.stage(res=(360, 420), samples=samples)
 # the hair's node groups only in the render (they follow the deforming body and scalp, so the viewport would rebuild
 # the whole hairstyle every simulated frame)
 for o in bpy.data.objects:

@@ -61,7 +61,7 @@ def kpony(c, r, ey):
     side = lambda th, ph: abs(abs(th) - 1.25) < 0.22 and ph < 0.45
     G = []
     rng = np.random.default_rng(5)
-    for th, ph in grid(line, 5, 24, keep=lambda th, ph: not side(th, ph)):
+    for th, ph in grid(line, 5, 24):
         a0 = (sph(c, r, th, ph) - c) / r; a1 = (T - c) / r / 1.12; a0 /= np.linalg.norm(a0); a1 /= np.linalg.norm(a1)
         w = math.acos(max(-1, min(1, a0 @ a1))); pts = []
         for i in range(14):   # over the skull to the tie, slerp on the skull
@@ -76,7 +76,7 @@ def kpony(c, r, ey):
     locks = [strand(c, r, th, ph, 0.0, ey - 0.13, lift=0.03, flare=0.012, curl=0.006, n=18)
              for th, ph in grid(line, 2, 20, keep=side)]
     return dict(skin=0xf3cdb8, line=line, melanin=(0.08, 0.2, 0xd23a5a), scalp=0x5a1020, dist=1.8 * 1.3, ty=-0.1,
-                parts=[dict(region=lambda th, ph: not side(th, ph), guides=G, clump=0.03, clump_shape=0.6, tip_spread=0.004, guides_k=3),
+                parts=[dict(guides=G, clump=0.03, clump_shape=0.6, tip_spread=0.004, guides_k=3),
                        dict(region=side, guides=locks, clump=0.02, density=900000)],
                 tie=T, tie_dir=back * 0.4 + np.array([0, -1, 0]))
 
@@ -86,10 +86,10 @@ def marco(c, r, ey):
     G = []
     for th, ph in grid(line, 4, 30):
         a = abs(th) / math.pi
-        tip = ey + 0.03 - 0.07 * min(1, a * 2.2) - 0.02 * max(0, a - 0.5) * 2
+        tip = ey + 0.055 - 0.09 * min(1, a * 2.2) - 0.02 * max(0, a - 0.5) * 2
         leave = 0.42 if a < 0.2 else 0.15
         G.append(strand(c, r, th, ph, leave, tip, lift=0.12, flare=0.018, curl=0.012, n=20))
-    return dict(skin=0xf0c8a6, line=line, melanin=(0.82, 0.5), scalp=0x1a0e08, dist=1.15 * 1.3,
+    return dict(skin=0xf0c8a6, line=line, melanin=(0.7, 0.55), scalp=0x2a1810, dist=1.15 * 1.3,
                 parts=[dict(guides=G)], clump=0.03, clump_shape=0.5, tip_spread=0.002)
 
 STYLES = {'gwen': gwen, 'alva': alva, 'kpony': kpony, 'marco': marco}

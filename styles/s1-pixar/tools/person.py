@@ -154,7 +154,7 @@ def draw_person(cv, P, cx, cy, s, yaw=0.0, ex=None, pose=None, head_yaw=None, he
     if shadow:
         ground_shadow(cv, *rig.P((0, P["shoe"]["floor"], 0)), P.get("shadow_w", 70) * s, 12 * s)
     order = sorted((-1, 1), key=lambda sd: rig.depth(J["sh"][sd]))
-    near = [sd for sd in order if rig.depth(J["sh"][sd]) > -10]
+    near = [sd for sd in order if rig.depth(J["sh"][sd]) > 12]
     far = [sd for sd in order if sd not in near]
     hair = c.get("hair")
     hcx, hcy = rig.P(hp)

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300">
+<defs>
+<linearGradient id="lg1013" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c2744"/><stop offset="1" stop-color="#4c3150"/></linearGradient>
+<clipPath id="c1014"><path d="M248,246.75 C248,229.2 284,227.6 284,245.25 C284,263.6 248,262.8 248,246.75Z"/></clipPath>
+<filter id="b1015" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2"/></filter>
+<filter id="b1016" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.5"/></filter>
+<filter id="b1017" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter>
+<filter id="g1018" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 0.12"/></feComponentTransfer></filter>
+<filter id="g1019" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="3" seed="9"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 0.16"/></feComponentTransfer></filter>
+<radialGradient id="v1020" cx="0.5" cy="0.45" r="0.75"><stop offset="0.6" stop-color="#140c20" stop-opacity="0"/><stop offset="1" stop-color="#140c20" stop-opacity="0.45"/></radialGradient>
+</defs>
+<rect width="600" height="300" fill="url(#lg1013)"/>
+<rect x="0" y="0" width="600" height="300" fill="#ecb497"/>
+<g transform="translate(-551,-627) scale(3.2)">
+<path d="M150,200 L300,200 L300,300 L150,300Z" fill="#000" opacity="0"/>
+<g clip-path="url(#c1014)">
+<path d="M248,246.75 C248,229.2 284,227.6 284,245.25 C284,263.6 248,262.8 248,246.75Z" fill="#f3ebe3"/>
+<path d="M248,247.6 C266,265.2 284,250.8 284,263.6 L284,266 L248,266Z" fill="#a898b0" opacity="0.5" filter="url(#b1015)"/>
+<circle cx="260.2" cy="244.1" r="14.4" fill="#7a4424"/>
+<path d="M245.84,244.08 a14.4,14.4 0 0,0 28.8,0 a17.28,8.64 0 0,1 -28.8,0Z" fill="#a97b55" opacity="0.6" filter="url(#b1016)"/>
+<circle cx="260.2" cy="244.1" r="7.2" fill="#120a0a"/>
+<path d="M244,220 L288,220 L288,245.25 C275.0,241.85999999999999 257.0,242.46 244,246.75Z" fill="#2a1830" opacity="0.6" filter="url(#b1017)"/>
+<path d="M244,220 L288,220 L288,245.25 C275.0,241.85999999999999 257.0,242.46 244,246.75Z" fill="#edb596"/>
+
+<circle cx="254.8" cy="246.8" r="2.9" fill="#fff"/>
+</g>
+<path d="M246.5,247.75 C257.0,241.46 275.0,240.85999999999999 285,245.25 L293.0,239.25 C275.0,238.26 257.0,238.86 246.5,245.25Z" fill="#2a1a1c"/>
+<path d="M257.0,261.68 C266,263.6 276.8,261.2 284,250.05" fill="none" stroke="#956f60" stroke-width="1.3" stroke-linecap="round" opacity="0.5"/>
+<path d="M249.8,228 C260.6,220.0 276.8,220.8 285.8,236.45" fill="none" stroke="#9e7666" stroke-width="1.4" stroke-linecap="round" opacity="0.66"/>
+<path d="M244,217.9 Q268,205.48 298,220 Q268,210.52 244,222.1Z" fill="#6f3d26" stroke="#6f3d26" stroke-width="1" stroke-linejoin="round"/>
+</g>
+<rect width="600" height="300" filter="url(#g1019)" style="mix-blend-mode:soft-light"/>
+<rect width="600" height="300" filter="url(#g1018)" style="mix-blend-mode:multiply"/>
+<rect width="600" height="300" fill="url(#v1020)"/>
+</svg>

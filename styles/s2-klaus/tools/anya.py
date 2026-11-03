@@ -14,7 +14,7 @@ ROSE = '#d8706a'
 
 EXPR = {
     'calm':     dict(lid=0.38, brow=-2, mouth='smile', look=(-0.32, -0.12)),
-    'joy':      dict(lid=0.30, brow=-4, mouth='open_smile', look=(-0.25, 0.0), low=0.35),
+    'joy':      dict(lid=0.12, brow=-9, mouth='open_smile', look=(-0.2, -0.05), low=0.5),
     'surprise': dict(lid=0.05, brow=-12, mouth='o', look=(-0.2, -0.05)),
     'sad':      dict(lid=0.55, brow=6, mouth='sad', look=(-0.1, 0.35), sad=True),
     'anger':    dict(lid=0.38, brow=8, mouth='angry', look=(-0.35, 0.0), angry=True),
@@ -57,12 +57,12 @@ def head34(d, out, expr='calm'):
                      '#8a3a3a', 0.28, 7))
     fx.append(d.tone('M186,170 C196,200 200,250 196,300 L184,300 L180,170Z', '#5a2038', 0.55, 4))
     fx.append(d.tone('M196,180 C226,150 262,140 300,140 L300,128 L196,150Z', '#5a2038', 0.5, 4))
-    out.append(d.form(face, SKIN, shift=34, soft=10, s=0.5, extra='\n'.join(fx)))
+    out.append(d.form(face, SKIN, shift=34, soft=10, s=0.5, rim=2.4, rimcol='#ffb48a', rimop=0.6, extra='\n'.join(fx)))
     # --- eyes
     lid, look = e['lid'], e['look']
-    out.append(eye(d, 266, 246, 18, 16, irr=0.9, lid=lid, look=look, tilt=1.5, skin=SKIN, iris='#7a4424',
+    out.append(eye(d, 266, 246, 19.5, 17, irr=0.9, lid=lid, look=look, tilt=1.5, skin=SKIN, iris='#7a4424',
                    low_lid=e.get('low', 0), crease=0.3))
-    out.append(eye(d, 208, 245, 10.5, 15, irr=0.9, lid=lid, look=look, tilt=-1, skin=SKIN, iris='#7a4424', wing=-0.4,
+    out.append(eye(d, 208, 245, 11, 16, irr=0.9, lid=lid, look=look, tilt=-1, skin=SKIN, iris='#7a4424', wing=-0.4,
                    low_lid=e.get('low', 0), crease=0.0, lower=0.3))
     # --- brows: thin, set far above the eyes; they carry the expression
     b = e['brow']
@@ -254,7 +254,7 @@ def head_front(d, out, expr='calm'):
           d.tone('M254,262 C262,282 268,300 262,312 L250,312Z', sk, 0.3, 3),
           d.tone('M236,338 C244,334 256,334 264,338 C258,346 242,346 236,338Z', sk, 0.25, 3),
           d.tone('M180,160 C220,200 280,200 320,160 L320,120 L180,120Z', '#8a3a3a', 0.25, 6)]
-    out.append(d.form(face, SKIN, shift=22, soft=7, s=0.5, extra='\n'.join(fx)))
+    out.append(d.form(face, SKIN, shift=22, soft=7, s=0.5, rim=2.4, rimcol='#ffb48a', rimop=0.6, extra='\n'.join(fx)))
     e = EXPR[expr]
     out.append(eye(d, 218, 248, 16, 15, lid=e['lid'], look=(0.0, -0.1), tilt=1.5, skin=SKIN, iris='#7a4424', wing=-1, crease=0.3, irr=0.9))
     out.append(eye(d, 282, 248, 16, 15, lid=e['lid'], look=(0.0, -0.1), tilt=1.5, skin=SKIN, iris='#7a4424', wing=1, crease=0.3, irr=0.9))
@@ -304,7 +304,7 @@ def head_side(d, out, expr='calm'):
           d.tone('M220,276 C236,266 262,270 268,288 C262,302 236,302 222,292Z', ROSE, 0.4, 7),
           d.tone('M196,336 C204,342 214,344 222,342 C216,352 204,352 196,346Z', sk, 0.3, 2),
           d.tone('M200,140 C240,180 280,200 330,190 L330,110 L200,110Z', '#8a3a3a', 0.25, 6)]
-    out.append(d.form(face, SKIN, shift=20, soft=7, s=0.5, extra='\n'.join(fx)))
+    out.append(d.form(face, SKIN, shift=20, soft=7, s=0.5, rim=2.4, rimcol='#ffb48a', rimop=0.6, extra='\n'.join(fx)))
     out.append(d.tone('M170,288 C174,285 178,285 181,287 C178,289 173,290 170,288Z', '#fff4e0', 0.7, 0.8))
     out.append(f'<path d="M184,298 C188,296 192,298 192,302" fill="none" stroke="{mix(SKIN, INK, 0.5)}" stroke-width="1.5" stroke-linecap="round"/>')
     # lips and the mouth corner

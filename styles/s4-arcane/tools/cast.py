@@ -345,3 +345,176 @@ def vera():
         return s
     P.bust = bust
     return P
+
+
+from body import *
+
+
+def cloth_lines_vertical(xs, y0, y1, col, w=0.9, op=0.35, bend=0.0):
+    return [([(x, y0), (x * (1 + bend), (y0 + y1) / 2), (x * (1 + bend * 1.6), y1)], col, w, op) for x in xs]
+
+
+def folds(y0, y1, amp, k=9, ph=0.6):
+    return lambda u, v: amp * np.clip((v - y0) / (y1 - y0), 0, 1) ** 1.3 * np.sin(k * u + ph + 0.002 * v)
+
+
+def arm_tube(sd, pts, radii, flat=1.0):
+    return Tube([(sd * x, y, z) for x, y, z in pts], radii, flat)
+
+
+def anya_body(P):
+    skin = P.pal['neck']
+    green, green_d = '#6d8a5c', '#4d6443'
+    T = Loft(a=[(118, 28), (138, 44), (150, 70), (160, 88), (176, 94), (205, 90), (260, 84), (330, 74), (420, 64), (500, 78), (560, 88)],
+             bf=[(118, 30), (150, 40), (200, 54), (250, 58), (300, 50), (420, 40), (560, 50)],
+             bb=[(118, 30), (150, 40), (200, 48), (300, 44), (420, 38), (560, 48)], p=2.4,
+             z0=[(118, -22), (150, -18), (300, -10), (560, -6)])
+    blouse = [(-13, 124), (13, 124), (22, 170), (26, 300), (26, 420), (-26, 420), (-26, 300), (-22, 170)]
+    skirt_top = [(-30, 420), (30, 420), (40, 560), (-40, 560)]
+    collar_r = [(0, 126), (14, 122), (30, 132), (34, 148), (22, 156), (6, 146)]
+    band_r = [(24, 160), (36, 168), (42, 300), (46, 560), (34, 560), (30, 300), (27, 175)]
+    torso = Part(T, green, pieces=[(blouse, '#efe2cc'), (skirt_top, '#9a4a32'), (collar_r, '#f6ecdc'), (mirror(collar_r), '#f6ecdc'),
+                                   (band_r, '#5f7a52'), (mirror(band_r), '#5f7a52')],
+                 lines=cloth_lines_vertical([-70, -50, 50, 70], 180, 560, green_d, 0.8, 0.3) + [([(0, 150), (0, 420)], '#b7a58c', 0.8, 0.6)],
+                 shadow='#857a90', center=(0, 300, 0))
+    S = Loft(a=[(415, 66), (520, 90), (640, 100), (900, 112), (1240, 124)],
+             bf=[(415, 42), (520, 56), (900, 72), (1240, 84)], bb=[(415, 40), (520, 54), (900, 70), (1240, 80)], p=2.2,
+             z0=[(415, -6), (1240, -4)], extra=folds(560, 1240, 9, 9))
+    skirt = Part(S, '#9a4a32', shadow='#86707e', center=(0, 800, 0), bias=-12)
+    parts = [torso, skirt]
+    # arms bent, the hands holding a book in front at the waist
+    for sd in (1, -1):
+        A = arm_tube(sd, [(92, 180, -12), (104, 260, -14), (108, 340, -10), (104, 410, 0), (80, 450, 26), (46, 468, 52)], [28, 25, 21, 18, 16, 13])
+        parts.append(Part(A, green, shadow='#857a90', center=(sd * 96, 380, 20)))
+        H = Tube([(sd * 48, 466, 52), (sd * 38, 474, 64), (sd * 30, 482, 70)], [12, 12, 9], flat=0.55)
+        parts.append(Part(H, None, kind='skin', pal=skin, center=(sd * 40, 476, 80)))
+    parts.append(BoxPart((0, 478, 72), (34, 46, 7), yaw=0, tilt=-12, bias=-4,
+                         cols={'front': '#6a2a2e', 'side': '#efe4cc', 'top': '#efe4cc', 'left': '#5a2226', 'right': '#efe4cc'},
+                         deco=lambda view, Pf: book_deco(view, Pf)))
+    # legs: weight on the right leg, the left knee a little forward
+    legs = [(-1, [(-38, 1180, 0), (-37, 1360, 0), (-36, 1530, 0)]), (1, [(40, 1180, 4), (45, 1350, 14), (40, 1530, -2)])]
+    for sd, pts in legs:
+        Lg = Tube(pts, [28, 26, 22, 18, 15])
+        parts.append(Part(Lg, '#3a2c30', shadow='#6a6078', center=(sd * 40, 1350, -2), bias=-30))
+        x = pts[-1][0]
+        B = limb(1460, 1560, [(1460, x), (1560, x)], [(1460, pts[-1][2]), (1560, pts[-1][2])], [(1460, 19), (1560, 20)])
+        parts.append(Part(B, '#4a3024', shadow='#6e5a6a', center=(x, 1500, 0), bias=-28))
+        F = shoe(x, 1540, 1592, 52, 19, '#4a3024', z=pts[-1][2] + 2)
+        parts.append(Part(F, '#4a3024', shadow='#6e5a6a', center=(x, 1570, 20), bias=-27))
+    return parts
+
+
+def book_deco(view, Pf):
+    pts = [Pf(-0.6 * 34, -0.55 * 46, 7.2), Pf(0.6 * 34, -0.55 * 46, 7.2), Pf(0.6 * 34, 0.55 * 46, 7.2), Pf(-0.6 * 34, 0.55 * 46, 7.2)]
+    q = [view.proj(np.array([a[0]]), np.array([a[1]]), np.array([a[2]])) for a in pts]
+    d = 'M' + 'L'.join('%s,%s' % (fmt(p[0][0]), fmt(p[1][0])) for p in q) + 'Z'
+    return path(d, 'none', '#d8b060', 1.0 * view.s, 0.8)
+
+
+def savely_body(P):
+    skin = P.pal['neck']
+    vest, shirt, trou = '#3d5244', '#d6d2c6', '#5a4636'
+    T = Loft(a=[(118, 32), (136, 48), (148, 80), (160, 102), (176, 108), (205, 104), (260, 98), (330, 96), (420, 96), (500, 98), (560, 98)],
+             bf=[(118, 32), (150, 44), (200, 54), (300, 62), (420, 64), (560, 56)],
+             bb=[(118, 32), (150, 46), (200, 58), (300, 58), (420, 54), (560, 52)], p=2.5,
+             z0=[(118, -26), (160, -30), (300, -20), (560, -14)])
+    shirt_v = [(-16, 120), (16, 120), (26, 170), (0, 230), (-26, 170)]
+    shirt_v = [(-18, 118), (18, 118), (40, 160), (0, 236), (-40, 160)]
+    collar_r = [(0, 128), (16, 118), (24, 124), (26, 146), (12, 152), (3, 140)]
+    tie = [(-7, 136), (7, 136), (9, 146), (-9, 146)]
+    torso = Part(T, vest, pieces=[(shirt_v, shirt), (collar_r, '#e4e0d6'), (mirror(collar_r), '#e4e0d6'), (tie, '#7a2f2a'), ([(-80, 545), (80, 545), (80, 570), (-80, 570)], trou)],
+                 lines=[([(16, 300), (40, 330), (72, 318)], '#c79a4a', 1.6, 0.95), ([(0, 230), (0, 556)], '#26342b', 1.2, 0.8)],
+                 shadow='#7d7088', center=(0, 300, 0))
+    parts = [torso]
+    for sd in (1, -1):
+        # hands clasped behind the back
+        A = arm_tube(sd, [(98, 182, -34), (108, 270, -40), (110, 360, -44), (96, 440, -66), (60, 480, -88)], [30, 27, 23, 20, 16])
+        parts.append(Part(A, shirt, shadow='#7d7088', center=(sd * 100, 330, -20)))
+        Cf = arm_tube(sd, [(109, 330, -42), (110, 362, -46)], [24, 24])
+        parts.append(Part(Cf, '#c9c4b6', shadow='#7d7088', center=(sd * 100, 345, -15)))
+        Lg = Tube([(sd * 48, 500, -14), (sd * 44, 900, -12), (sd * 42, 1440, -10)], [52, 38, 31, 27])
+        parts.append(Part(Lg, trou, shadow='#6e6070', center=(sd * 44, 900, -14), bias=-30))
+        F = shoe(sd * 42, 1430, 1500, 58, 20, '#2a1e18', z=-6)
+        parts.append(Part(F, '#2a1e18', shadow='#6e5a6a', center=(sd * 42, 1470, 20), bias=-27))
+    return parts
+
+
+def tim_body(P):
+    skin = P.pal['neck']
+    hood, hood_d = '#d9a038', '#a87420'
+    T = Loft(a=[(108, 24), (124, 36), (134, 58), (146, 72), (160, 78), (200, 76), (260, 72), (330, 72), (420, 76)],
+             bf=[(108, 26), (130, 32), (200, 42), (300, 44), (420, 42)],
+             bb=[(108, 26), (130, 32), (200, 40), (300, 40), (420, 40)], p=2.4, z0=[(108, -18), (420, -8)])
+    pocket = [(-46, 300), (46, 300), (54, 390), (-54, 390)]
+    neckband = [(-24, 112), (24, 112), (30, 126), (0, 134), (-30, 126)]
+    torso = Part(T, hood, pieces=[(pocket, '#c98f2e'), (neckband, '#b07a22')],
+                 lines=[([(8, 126), (10, 160), (7, 196)], '#efe4d0', 1.8, 0.95), ([(-8, 126), (-10, 160), (-6, 192)], '#efe4d0', 1.8, 0.95),
+                        ([(-46, 300), (46, 300)], hood_d, 1.2, 0.7), ([(0, 404), (0, 420)], hood_d, 1, 0.3)],
+                 shadow='#8c7896', center=(0, 260, 0))
+    Hd = Loft(a=[(70, 0), (86, 34), (110, 46), (134, 40), (146, 0)], bf=[(70, 0), (86, 18), (110, 26), (134, 22), (146, 0)],
+              bb=[(70, 0), (86, 18), (110, 26), (134, 22), (146, 0)], p=2.2, z0=[(70, -54), (146, -50)])
+    parts = [torso, Part(Hd, hood, shadow='#8c7896', center=(0, 110, -60), bias=-60)]
+    for sd in (1, -1):
+        A = arm_tube(sd, [(70, 146, -8), (80, 220, -10), (84, 290, -4), (64, 340, 22), (40, 356, 40)], [21, 19, 16, 15, 14])
+        parts.append(Part(A, hood, shadow='#8c7896', center=(sd * 70, 270, 6)))
+        Sh = Tube([(sd * 34, 400, 0), (sd * 36, 520, 2), (sd * 37, 610, 4)], [34, 31, 28])
+        parts.append(Part(Sh, '#2f4a66', shadow='#6a6478', center=(sd * 36, 500, 0), bias=-20))
+        Lg = Tube([(sd * 37, 600, 4), (sd * 37, 780, 8), (sd * 36, 1000, 0)], [25, 20, 22, 15])
+        parts.append(Part(Lg, None, kind='skin', pal=skin, center=(sd * 37, 780, 0), bias=-30))
+        So = limb(960, 1030, [(960, sd * 36), (1030, sd * 36)], [(960, 0), (1030, 0)], [(960, 16), (1030, 17)])
+        parts.append(Part(So, '#efeae0', shadow='#7a7488', center=(sd * 36, 950, 0), bias=-29))
+        F = shoe(sd * 36, 1015, 1080, 52, 20, '#c23a2e', z=2)
+        parts.append(Part(F, '#c23a2e', shadow='#7a5a6a', center=(sd * 36, 1010, 20), bias=-27,
+                          lines=[]))
+    return parts
+
+
+def vera_body(P):
+    skin = P.pal['neck']
+    coat, coat_d = '#33404f', '#1e2732'
+    T = Loft(a=[(118, 28), (138, 46), (150, 74), (160, 92), (176, 98), (205, 94), (260, 88), (330, 78), (420, 72)],
+             bf=[(118, 30), (150, 42), (200, 56), (250, 60), (300, 54), (420, 46)],
+             bb=[(118, 30), (150, 42), (200, 50), (300, 46), (420, 42)], p=2.5, z0=[(118, -22), (150, -18), (300, -10), (420, -6)])
+    collar_r = [(4, 112), (24, 108), (40, 118), (44, 150), (30, 170), (10, 160)]
+    shirt = [(-12, 130), (12, 130), (18, 175), (-18, 175)]
+    lapel_r = [(12, 160), (30, 168), (54, 200), (28, 320), (6, 420), (2, 260)]
+    torso = Part(T, coat, pieces=[(shirt, '#e8e2da'), (lapel_r, '#26303d'), (mirror(lapel_r), '#26303d'), (collar_r, '#3a4757'), (mirror(collar_r), '#3a4757')],
+                 lines=[([(0, 175), (0, 420)], '#141a22', 1.2, 0.8), ([(-60, 360), (-20, 372)], coat_d, 1.2, 0.6)], shadow='#7c7690', center=(0, 300, 0))
+    S = Loft(a=[(410, 72), (520, 90), (700, 94), (1000, 96), (1210, 97)],
+             bf=[(410, 46), (520, 56), (1000, 64), (1210, 70)], bb=[(410, 42), (520, 54), (1000, 62), (1210, 66)], p=2.3,
+             z0=[(410, -6), (1210, -4)], extra=folds(520, 1210, 5, 7, 1.2))
+    skirt = Part(S, coat, lines=[([(0, 420), (0, 1210)], '#141a22', 1.2, 0.8), ([(-30, 430), (30, 430)], coat_d, 3, 0.6)], shadow='#7c7690', center=(0, 800, 0), bias=-12)
+    parts = [torso, skirt]
+    # left arm holds a folder against the chest; right arm hangs
+    A = arm_tube(1, [(92, 180, -10), (106, 290, -8), (100, 380, 8), (66, 330, 46), (34, 300, 60)], [27, 24, 20, 17, 14])
+    parts.append(Part(A, '#3e4c5e', shadow='#7c7690', center=(96, 320, 30)))
+    Hn = Tube([(34, 300, 60), (22, 292, 66), (12, 286, 68)], [12, 11, 8], flat=0.55)
+    parts.append(Part(Hn, None, kind='skin', pal=skin, center=(20, 290, 80)))
+    parts.append(BoxPart((34, 300, 62), (32, 44, 3), yaw=-8, tilt=-6, bias=-6, cols={'front': '#b8a27a', 'side': '#efe8da', 'top': '#efe8da', 'left': '#efe8da', 'right': '#efe8da'}))
+    A2 = arm_tube(-1, [(92, 180, -10), (106, 330, -8), (104, 470, 4), (100, 600, 12)], [27, 24, 19, 15])
+    parts.append(Part(A2, '#3e4c5e', shadow='#7c7690', center=(-96, 400, 6)))
+    H2 = hand(-100, 594, 700, 14, 8, 12, curl=6)
+    parts.append(Part(H2, None, kind='skin', pal=skin, center=(-100, 650, 8)))
+    for sd in (1, -1):
+        Lg = Tube([(sd * 34, 1150, -2), (sd * 33, 1400, -2), (sd * 32, 1600, -2)], [28, 24, 20])
+        parts.append(Part(Lg, '#2a2a30', shadow='#6a6478', center=(sd * 34, 1400, -2), bias=-30))
+        F = shoe(sd * 32, 1590, 1656, 54, 17, '#16141a', z=0)
+        parts.append(Part(F, '#16141a', shadow='#6a6478', center=(sd * 32, 1620, 20), bias=-27))
+    return parts
+
+
+CAST = dict(
+    anya=dict(make=anya, body=anya_body, feet=1592, name='Аня', bg=('#e8b77a', '#8a5a44', '#2c2430'), rim='#ffd9a8',
+              neutral=dict(lid=-0.22, gy=-1.2, smile=0.3)),
+    savely=dict(make=savely, body=savely_body, feet=1500, name='Савелий Петрович', bg=('#d7a45a', '#5a4a3a', '#1f2324'), rim='#9fd0d8',
+                neutral=dict(knit=0.6, brow_in=-0.3, sad=0.35, lid=-0.15)),
+    tim=dict(make=tim, body=tim_body, feet=1080, name='Тим', bg=('#bfd6a0', '#5e7a64', '#1e2a2a'), rim='#fff0b0',
+             neutral=dict(smile=(1.0, 0.15), brow_in=(0.2, 0.7), brow_out=(0.2, 0.9), gx=-1.5)),
+    vera=dict(make=vera, body=vera_body, feet=1656, name='Вера', bg=('#9fb4c8', '#4a5668', '#191c24'), rim='#c8e0ff',
+              neutral=dict(lid=-0.28, knit=0.25, sad=0.1)),
+)
+
+EXPR = [('Радость', dict(smile=1.2, open=4.5, teeth=1, low=0.7, brow_in=0.5, brow_out=0.3, lid=0.05)),
+        ('Удивление', dict(brow_in=1.3, brow_out=1.1, lid=0.8, open=8, low=-0.2)),
+        ('Грусть', dict(brow_in=1.2, brow_out=-0.7, knit=0.3, lid=-0.35, sad=1.0, gy=2.2, low=0.2)),
+        ('Гнев', dict(knit=1.3, brow_in=-0.9, brow_out=0.5, lid=0.1, squint=0.5, sad=0.4, open=3.5, teeth=1, snarl=1))]

@@ -43,6 +43,7 @@ class Doc:
         self.defs = []
         self.body = []
         self._blur = {}
+        self.flat = False  # True: only the flat colour pass, no light (for the rules diagram)
 
     def blur(self, sd):
         if sd not in self._blur:
@@ -66,6 +67,8 @@ class Doc:
         """A volumetric form. shift: how far the lit area reaches toward the far edge (width of the core shadow);
         rim: width of the rim light on the far edge; extra: more SVG drawn inside the form's clip."""
         L = light or self.light
+        if self.flat:
+            return f'<path d="{d}" fill="{base}"/>'
         lit, sh, rm = L.colours(base, k, s, r)
         if rimcol:
             rm = rimcol
@@ -96,14 +99,26 @@ class Doc:
         return f'<path d="{d}" fill="{fill}" opacity="{op}"{f}{m}/>'
 
     def grain(self, op=0.10):
-        i = uid('g')
+        """Film-like finish: a fine grain, a broad mottled 'paint' texture and a soft vignette."""
+        i, j, v = uid('g'), uid('g'), uid('v')
         self.defs.append(
             f'<filter id="{i}" x="0" y="0" width="100%" height="100%">'
-            f'<feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/>'
+            f'<feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4"/>'
             f'<feColorMatrix type="saturate" values="0"/>'
             f'<feComponentTransfer><feFuncA type="table" tableValues="0 {op}"/></feComponentTransfer>'
             f'</filter>')
+        self.defs.append(
+            f'<filter id="{j}" x="0" y="0" width="100%" height="100%">'
+            f'<feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="3" seed="9"/>'
+            f'<feColorMatrix type="saturate" values="0"/>'
+            f'<feComponentTransfer><feFuncA type="table" tableValues="0 0.16"/></feComponentTransfer>'
+            f'</filter>')
+        self.defs.append(f'<radialGradient id="{v}" cx="0.5" cy="0.45" r="0.75">'
+                         f'<stop offset="0.6" stop-color="#140c20" stop-opacity="0"/>'
+                         f'<stop offset="1" stop-color="#140c20" stop-opacity="0.45"/></radialGradient>')
+        self.add(f'<rect width="{self.w}" height="{self.h}" filter="url(#{j})" style="mix-blend-mode:soft-light"/>')
         self.add(f'<rect width="{self.w}" height="{self.h}" filter="url(#{i})" style="mix-blend-mode:multiply"/>')
+        self.add(f'<rect width="{self.w}" height="{self.h}" fill="url(#{v})"/>')
 
     def svg(self):
         return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{self.w}" height="{self.h}" '
