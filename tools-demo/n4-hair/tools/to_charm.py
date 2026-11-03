@@ -36,3 +36,4 @@ rec = np.zeros(len(X), dt); rec['p'] = np.c_[X, n]; rec['c'] = 128
 hdr = f'ply\nformat binary_little_endian 1.0\nelement vertex {len(X)}\n' + ''.join(f'property double {a}\n' for a in ['x', 'y', 'z', 'nx', 'ny', 'nz']) + \
       ''.join(f'property uchar {a}\n' for a in ['red', 'green', 'blue']) + 'end_header\n'
 open(out, 'wb').write(hdr.encode() + rec.tobytes())
+json.dump(dict(c=list(map(float, c)), k=float(k), o=list(map(float, o)), style=name), open(out[:-4] + '.json', 'w'))
