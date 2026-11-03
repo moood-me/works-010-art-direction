@@ -26,6 +26,9 @@ narrow what is here without asking him.
 - Where it will live later is not thought about now; we work in this repository and move things later. Don't bring
   up moood's engine or its tools until Pavel does.
 
+- Keep everything we made: the experiment pages, their code and the current gallery stay as they are, running, so
+  Pavel can return to them, show them and talk about them. The engine is built beside them, not in their place.
+
 ## Motion
 
 - The body moves through the scene only by Kimodo and only along the coordinates Kimodo gives. Never carried
