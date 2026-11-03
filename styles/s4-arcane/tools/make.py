@@ -119,37 +119,6 @@ def together():
     save(d, 'cast')
 
 
-if __name__ == '__main__':
-    what = sys.argv[1:] or ['portraits', 'turns', 'expr', 'figures', 'cast']
-    for w in what:
-        if w == 'portraits':
-            for k in CAST:
-                portrait(k)
-        elif w == 'turns':
-            for k in CAST:
-                turnaround(k)
-        elif w == 'expr':
-            expressions('anya')
-            expressions('tim')
-        elif w == 'figures':
-            for k in CAST:
-                figure(k)
-            figure('anya', (0, 40, 88), 'figure-turn-anya')
-            figure('savely', (0, 40, 88), 'figure-turn-savely')
-        elif w == 'cast':
-            together()
-        elif w == 'construction':
-            construction()
-        elif w.startswith('portrait-'):
-            portrait(w[9:])
-        elif w.startswith('turn-'):
-            turnaround(w[5:])
-        elif w.startswith('expr-'):
-            expressions(w[5:])
-        elif w.startswith('figure-'):
-            figure(w[7:])
-
-
 def construction():
     """How a head is built: form, light and shadow, features, hair and texture."""
     c = CAST['anya']
@@ -179,3 +148,34 @@ def construction():
         else:
             d.add(draw_head(d, P, v, c['neutral'], bust=False))
     save(d, 'construction')
+
+
+if __name__ == '__main__':
+    what = sys.argv[1:] or ['portraits', 'turns', 'expr', 'figures', 'cast']
+    for w in what:
+        if w == 'portraits':
+            for k in CAST:
+                portrait(k)
+        elif w == 'turns':
+            for k in CAST:
+                turnaround(k)
+        elif w == 'expr':
+            expressions('anya')
+            expressions('tim')
+        elif w == 'figures':
+            for k in CAST:
+                figure(k)
+            figure('anya', (0, 40, 88), 'figure-turn-anya')
+            figure('savely', (0, 40, 88), 'figure-turn-savely')
+        elif w == 'cast':
+            together()
+        elif w == 'construction':
+            construction()
+        elif w.startswith('portrait-'):
+            portrait(w[9:])
+        elif w.startswith('turn-'):
+            turnaround(w[5:])
+        elif w.startswith('expr-'):
+            expressions(w[5:])
+        elif w.startswith('figure-'):
+            figure(w[7:])

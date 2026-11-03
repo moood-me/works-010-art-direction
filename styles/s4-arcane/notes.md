@@ -32,11 +32,12 @@ The style is near-real 3D form with painted, graphic light — so the drawing is
   texture on the backdrop and a fine grain over all.
 - `tools/cast.py` — the four people: head tables, features, palettes, hair, clothes and poses. `tools/body.py` —
   figure parts (tubes, shoes, hands, a box for a book or a folder) drawn back to front.
-- `tools/make.py` — builds every picture into `svg/` and renders it with headless Chrome into `pics/`.
+- `tools/make.py` — builds every picture: the SVG is kept gzipped in `svg/*.svgz` (to keep the folder small; `gunzip -c`
+  or open in a browser served with gzip), a plain copy goes to `/home/user/cache/styles-s4-arcane/render/`, where
+  headless Chrome renders it to PNG, then it is saved as JPEG in `pics/`.
 
-Repeat: `pip install numpy shapely scikit-image`, then `cd tools && python3 make.py` (or `make.py portraits turns expr
-figures cast construction`, or one item like `portrait-anya`). PNGs are then converted to JPEG for the page
-(`convert x.png -quality 86 x.jpg`).
+Repeat: `pip install numpy shapely scikit-image`, then `cd tools && python3 make.py` (or `make.py portraits turns expr figures cast
+construction`, or one item like `portrait-anya`); rendering everything takes several minutes.
 
 ## Sources
 
@@ -55,3 +56,12 @@ Arcane © Riot Games / Fortiche; images from the Arcane wiki (arcane.fandom.com)
 - `refs/illustrated-semireal.jpg` — Pavel's reference `docs/pictures/references/illustrated-semireal.png`
 
 Downloads and scratch: `/home/user/cache/styles-s4-arcane/`.
+
+## What is weak (seen by eye)
+
+- Faces read as a painted mannequin: the form is right, the delicacy of Arcane's features is not.
+- Skin inside the light is almost flat; half-tones are only soft blurs.
+- Hair is ribbons with strand lines, not painted masses; Аня's top reads a bit like a helmet.
+- Figures are stiff (lofts and tubes), cloth does not fold except a skirt's sine folds, hands are mittens.
+- Тим's lower face is too long and heavy for a child; in profile his neck shows in front of the hood.
+- Савелий's legs read too long against a short waistcoat.

@@ -16,3 +16,5 @@ cfg = {'name': 'einar', 'head': 'GEO-einar_head', 'out': '/home/user/cache/n5-he
 subprocess.run(['/home/user/cache/blender/blender', '-b', '/home/user/cache/n5-heads/einar/einar_release_v1.blend', '-P', '/home/user/works-010-art-direction/tools-demo/n5-heads/tools/render_any.py', '--', json.dumps(cfg)])
 PY
 python3 $(dirname "$0")/run_parts.py
+# Rain's «oo» again: the corner control's in/out axis is not mirrored on the right side
+cd /home/user/cache/n5-heads && /home/user/cache/blender/blender -b "rain/Rain v3.3/rain_v3.2.blend" -P $T/render.py -- "$(python3 $T/job.py rain WB_MAT r/expr2/m front oo 600)"
