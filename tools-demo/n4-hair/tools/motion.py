@@ -55,7 +55,7 @@ for o in followers: o.parent = head; o.matrix_parent_inverse = Matrix()
 sc = bpy.context.scene; sc.frame_start, sc.frame_end = 1, F; sc.render.fps = 30
 dyn = []
 if mode == 'dyn':
-    for o in objs[:2]:  # the body and the T-shirt: what the hair meets
+    for o in (objs[:2] if not os.environ.get('NOCOLL') else []):  # the body and the T-shirt: what the hair meets
         o.modifiers.new('collision', 'COLLISION'); o.collision.thickness_outer = 0.006; o.collision.cloth_friction = 5
     for hair in [o for o in bpy.data.objects if o.name.startswith('hair-')]:
         scalp = hair.data.surface
