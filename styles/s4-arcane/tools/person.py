@@ -269,6 +269,37 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
             return c
         ws = [w * view.s for w in L['w']]
         d_, C = ribbon_screen(sp, ws)
+        if not is_back:
+            # keep only the part of the lock that faces us; the rest goes behind the head
+            kk = len(C)
+            tt = np.linspace(0, 1, kk)
+            nzs = np.interp(tt, np.linspace(0, 1, len(nz)), nz)
+            vis = nzs > -0.08
+            if not vis.all():
+                best, cur, start, bs = 0, 0, 0, (0, 0)
+                for i_, v_ in enumerate(vis):
+                    if v_:
+                        if cur == 0:
+                            start = i_
+                        cur += 1
+                        if cur > best:
+                            best, bs = cur, (start, i_ + 1)
+                    else:
+                        cur = 0
+                a_, b_ = bs
+                if b_ - a_ < 4:
+                    return ''
+                wv = np.interp(tt, np.linspace(0, 1, len(ws)), ws)
+                Cv = C[a_:b_]
+                dC = np.gradient(Cv, axis=0)
+                ln = np.hypot(dC[:, 0], dC[:, 1]) + 1e-9
+                nr = np.stack([-dC[:, 1] / ln, dC[:, 0] / ln], -1)
+                Lp = Cv + nr * wv[a_:b_, None] / 2
+                Rp = (Cv - nr * wv[a_:b_, None] / 2)[::-1]
+                pts2 = list(map(tuple, Lp)) + list(map(tuple, Rp))
+                d_ = 'M' + 'L'.join('%s,%s' % (fmt(x), fmt(y)) for x, y in pts2) + 'Z'
+                C = Cv
+                ws = list(wv[a_:b_])
         gid = doc.uid('h')
         stops = ''.join('<stop offset="%s" stop-color="%s"/>' % (fmt(i / max(1, len(sp) - 1)), col_at(i)) for i in range(len(sp)))
         doc.defs.append('<linearGradient id="%s" gradientUnits="userSpaceOnUse" x1="%s" y1="%s" x2="%s" y2="%s">%s</linearGradient>'
@@ -690,8 +721,7 @@ def skin_strokes(surf, view, sp, seed=1, n=170, mask=None):
             col, op = sp['shadow'], rnd.uniform(0.10, 0.22)
             blend = ' style="mix-blend-mode:multiply"'
         elif dl > 0.6:
-            col, op = sp['hi'], rnd.uniform(0.05, 0.12)
-            blend = ''
+            continue
         else:
             col, op = sp['warm'], rnd.uniform(0.06, 0.14)
             blend = ' style="mix-blend-mode:multiply"'
