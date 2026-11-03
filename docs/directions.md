@@ -201,3 +201,11 @@ smooth transitions between motions, smooth and combined facial expressions, mout
 when speaking (else just the mouth), brows and face during speech, a gaze that follows, blinking and small eye
 movements by themselves, speed of cloth and hair for several characters. Not now: breathing and idle life (Kimodo's
 job), hands and fingers, feet on the ground, contacts with the world, turning to a target, cartoon timing.
+
+Motion requirements (Pavel): transitions between Kimodo motions without jerks — each next motion made by Kimodo to
+start from the end of the previous one (its first frames set from the previous one's last); contacts with objects
+can go the same way, through Kimodo's constraints. A person is never carried sideways or walking on the spot: the body
+moves through the scene only by Kimodo and only along the coordinates Kimodo gives — no motion by formulas, of the
+body, the neck, the arms, anything. Grips of objects later (Kimodo has none). Today's viewers break this: the
+retargeting (gallery/player-core.js, the root keeps its rest x and z, only the pelvis height follows) plays walking
+and running on the spot.
