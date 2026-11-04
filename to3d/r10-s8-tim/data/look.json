@@ -1,0 +1,192 @@
+{
+ "format": "tim8/look",
+ "version": 1,
+ "pieces": [
+  {
+   "name": "head",
+   "mat": "skin"
+  },
+  {
+   "name": "eyeL",
+   "mat": "eye"
+  },
+  {
+   "name": "eyeR",
+   "mat": "eye"
+  },
+  {
+   "name": "lipU",
+   "mat": "lip"
+  },
+  {
+   "name": "lipL",
+   "mat": "lip"
+  },
+  {
+   "name": "cav",
+   "mat": "mouth"
+  },
+  {
+   "name": "teethU",
+   "mat": "teeth"
+  },
+  {
+   "name": "teethL",
+   "mat": "teeth"
+  },
+  {
+   "name": "brows",
+   "mat": "brow"
+  },
+  {
+   "name": "lashes",
+   "mat": "lash"
+  },
+  {
+   "name": "hair",
+   "mat": "hair"
+  },
+  {
+   "name": "neck",
+   "mat": "skin"
+  },
+  {
+   "name": "sweater",
+   "mat": "sweater"
+  },
+  {
+   "name": "neckband",
+   "mat": "cuff"
+  },
+  {
+   "name": "cuffL",
+   "mat": "cuff"
+  },
+  {
+   "name": "hem",
+   "mat": "cuff"
+  },
+  {
+   "name": "cuffR",
+   "mat": "cuff"
+  },
+  {
+   "name": "shorts",
+   "mat": "shorts"
+  },
+  {
+   "name": "shorthemL",
+   "mat": "shorts"
+  },
+  {
+   "name": "shorthemR",
+   "mat": "shorts"
+  },
+  {
+   "name": "skin",
+   "mat": "skin"
+  },
+  {
+   "name": "socks",
+   "mat": "sock"
+  },
+  {
+   "name": "shoeL",
+   "mat": "shoe"
+  },
+  {
+   "name": "soleL",
+   "mat": "sole"
+  },
+  {
+   "name": "shoeR",
+   "mat": "shoe"
+  },
+  {
+   "name": "soleR",
+   "mat": "sole"
+  }
+ ],
+ "counts": [
+  10303,
+  3200,
+  3200,
+  150,
+  150,
+  150,
+  150,
+  150,
+  120,
+  266,
+  18989,
+  768,
+  2808,
+  480,
+  215,
+  460,
+  215,
+  750,
+  200,
+  200,
+  4080,
+  582,
+  596,
+  576,
+  596,
+  576
+ ],
+ "tris": [
+  20450,
+  6240,
+  6240,
+  240,
+  240,
+  240,
+  240,
+  240,
+  176,
+  348,
+  37670,
+  1472,
+  5346,
+  768,
+  344,
+  736,
+  344,
+  1336,
+  320,
+  320,
+  7916,
+  954,
+  1025,
+  985,
+  1025,
+  985
+ ],
+ "bin": "look.bin",
+ "arrays": {
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    49930,
+    2
+   ],
+   "offset": 0
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    49930,
+    3
+   ],
+   "offset": 399440
+  },
+  "tint": {
+   "dtype": "float32",
+   "shape": [
+    49930
+   ],
+   "offset": 998600
+  }
+ }
+}

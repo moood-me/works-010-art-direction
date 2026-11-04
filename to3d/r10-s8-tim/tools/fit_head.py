@@ -25,7 +25,8 @@ from common import CACHE, vertex_normals
 P = drawing.P
 R_EYE = P['eye_r'] * 1.05          # the drawing draws the ball 5 % bigger than eye_r
 LID_R = 1.03            # the lid margin's distance from the eye's centre, in eyeball radii
-K_NOSE, K_LIPS, K_FACE, K_EAR = 0.8, 0.0, 0.3, 1.0
+K_NOSE, K_LIPS, K_FACE, K_EAR = 0.7, 0.0, 0.3, 1.0
+OPEN_K = 1.14
 LOWZ = None
 
 
@@ -207,10 +208,10 @@ def fix_ears(V, ear, adj):
         u0 = outer - root; u0[1] = 0; u0 /= np.linalg.norm(u0)
         pts, droot, du = drawing.ear_plate(side)
         du = du.copy(); du[1] = 0; du /= np.linalg.norm(du)
-        ang = math.atan2(du[0], du[2]) - math.atan2(u0[0], u0[2])
+        ang = math.atan2(du[0], du[2]) - math.atan2(u0[0], u0[2]) + side * math.radians(12)
         c, s = math.cos(ang), math.sin(ang)
         Rm = np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
-        sc = np.ptp(pts[:, 1]) / np.ptp(E[:, 1]) * 1.12
+        sc = np.ptp(pts[:, 1]) / np.ptp(E[:, 1]) * 1.3
         ctr_d = pts.mean(0); ctr_b = E.mean(0)
         moved = droot + sc * (Rm @ (V - root).T).T
         # keep the ear's middle where the drawing's is (height), the root on the skull
@@ -230,7 +231,7 @@ def onto_ball(C, side, r=None):
     d = C - c
     lat = d - (d @ n)[:, None] * n
     L = np.linalg.norm(lat, axis=1, keepdims=True)
-    lat = np.where(L > 0.97 * r, lat / L * 0.97 * r, lat)
+    lat = np.where(L > 0.985 * r, lat / L * 0.985 * r, lat)
     h = np.sqrt(np.maximum(r * r - (lat * lat).sum(1), 0))
     return c + lat + h[:, None] * n
 
@@ -244,7 +245,11 @@ def fix_eyes(V, Q, margins, adj):
     for side in (1, -1):
         c = drawing.eye_centre(side)
         mb = margins[side]
-        Cd, _ = drawing.eye_opening(side, drawing.EXPR['calm'], n=80)
+        # the drawing's opening, a little rounder (no lean of the arc toward the outer corner, a fuller lower lid,
+        # a little taller): on a glass ball a leaning lid reads as a frown
+        Cd, _ = drawing.eye_opening(side, drawing.EXPR['calm'], n=80, peak=0.0, lower_pow=0.8, tall=1.12)
+        # a glass ball shows less than a flat painted eye of the same outline: the opening a little larger
+        cc = Cd.mean(0); Cd = cc + (Cd - cc) * OPEN_K
         Cd = onto_ball(Cd, side)
         tgt = match_by_angle(V[mb], Cd)
         r = np.linalg.norm(V - c, axis=1)

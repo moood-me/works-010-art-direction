@@ -280,7 +280,8 @@ sv = v.copy()
 # the drawing's shoulders are high and round (the barrel closes up to the neck at 0.56 head): the trunk's top is lifted
 SH0 = 0.66
 lift = (sv[:, 1] > SH0) & (aw_s < 0.5)
-sv[lift, 1] = SH0 + (sv[lift, 1] - SH0) * 1.45
+kx = 1 + 0.45 * np.clip((np.abs(sv[:, 0]) - 0.035) / 0.05, 0, 1)        # the shoulders, not round the neck
+sv[lift, 1] = SH0 + (sv[lift, 1] - SH0) * kx[lift]
 # trunk part → the barrel (radially from the trunk's axis, at every height)
 A_, FR_, BK_ = torso_at(sv[:, 1])
 cz = (FR_ + BK_) / 2; hz = (FR_ - BK_) / 2
@@ -501,6 +502,7 @@ def write_face():
         for k in keys: arrays[f'{part}.{k}'] = W(F[f'{part}_{k}']).astype(np.float32)
     shapes['brows'] = fj['faces']
     for k in fj['faces']: arrays[f'brows.{k}'] = W(F['brow_' + k]).astype(np.float32)
+    arrays['lash.w'] = F['lash_w'].astype(np.float32)
     lids = {}
     h0 = info['head'][0]
     for k in ('L', 'R'):
@@ -522,3 +524,25 @@ def write_face():
 
 
 write_face()
+
+
+def write_viewer_data():
+    """the viewer's copy, in the folder (data/): the body and its topology, the face rig, the paint coordinates and
+    which piece is which (look.json)"""
+    import shutil
+    D = os.path.join(FOLDER, 'data')
+    os.makedirs(D, exist_ok=True)
+    for sub, name, to in (('engine/data/bodies', 'tim8', 'bodies'), ('engine/data/topology', 'tim8', 'topology'), ('engine', 'face', '')):
+        os.makedirs(os.path.join(D, to), exist_ok=True)
+        for ext in ('json', 'bin'):
+            shutil.copy(os.path.join(CACHE, sub, f'{name}.{ext}'), os.path.join(D, to, f'{name}.{ext}'))
+    info = [dict(name=p['name'], mat=p['mat']) for p in PIECES]
+    pack.write(os.path.join(D, 'look.json'), dict(format='tim8/look', version=1, pieces=info,
+               counts=[len(p['V']) for p in PIECES], tris=[len(p['T']) for p in PIECES]),
+               dict(uv=np.vstack([p['uv'] for p in PIECES]).astype(np.float32),
+                    pat=np.vstack([p['pat'] for p in PIECES]).astype(np.float32),
+                    tint=np.concatenate([p['tint'] for p in PIECES]).astype(np.float32)))
+    print('viewer data in', D)
+
+
+write_viewer_data()

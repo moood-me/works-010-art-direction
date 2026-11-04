@@ -47,13 +47,17 @@ let life = null;
 if (job.life) {
   const smp = newSample(sk.J);
   const head = s => clip ? headFacing(fig.retarget.pose(clip.sample(Math.min(clip.frames - 1, s * fps), smp)), HI, qRot) : { yaw: 0, pitch: 0 };
-  life = lifeTrack(head, { seconds: clip ? clip.frames / fps : 1, ...job.life });
+  const secs = Math.max(clip ? clip.frames / fps : 1, job.clockFps ? times.length / job.clockFps : 0);
+  life = lifeTrack(head, { seconds: secs, ...job.life });
 }
 const N = fig.body.N, chunks = [], hips = [], heads = [], params = [];
-for (const t of times) {
+for (const [k, t] of times.entries()) {
   fig.frame(clip, t);
-  if (job.head) {   // a turn of the head on top (stills): yaw about the world's up, pitch, roll about an axis given
-    const P = fig.pose, a = (job.head.yaw || 0) * Math.PI / 180, b = (job.head.pitch || 0) * Math.PI / 180;
+  if (job.head) {   // a turn of the head on top (stills): yaw about the world's up, pitch, roll about an axis given;
+    // level: first the head's own pitch in the pose taken out (the drawing's heads look straight ahead)
+    const P = fig.pose;
+    let a = (job.head.yaw || 0) * Math.PI / 180, b = (job.head.pitch || 0) * Math.PI / 180;
+    if (job.head.level) { const f = headFacing(P, HI, qRot); b -= f.pitch * Math.PI / 180; a -= f.yaw * Math.PI / 180; }
     const r = (job.head.roll || 0) * Math.PI / 180, ra = job.head.rollAxis || [0, 0, 1];
     const share = [['Neck1', 0.3], ['Neck2', 0.3], ['Head', 0.4]];
     for (const [nm, h] of share) {
@@ -70,7 +74,9 @@ for (const t of times) {
       const sh = P.floor - lo; for (let i = 1; i < fig.positions.length; i += 3) fig.positions[i] += sh;
     }
   }
-  const st = job.face || (life ? life.at(t / fps) : { e: { calm: 1 } });
+  if (job.debug) console.log('head facing', JSON.stringify(headFacing(fig.pose, HI, qRot)));
+  // the face's clock: the clip's time, or (a still pose filmed, clockFps) the k-th picture's
+  const st = job.face || (life ? life.at(job.clockFps ? k / job.clockFps : t / fps) : { e: { calm: 1 } });
   params.push(st);
   face.apply(st, rest, disp);
   face.onto(fig.positions, rest, disp, fig.skinner.matrix(fig.pose, HI));

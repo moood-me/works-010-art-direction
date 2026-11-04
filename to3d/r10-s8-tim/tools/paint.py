@@ -65,12 +65,12 @@ def face(size=1024):
         side = -1 if i % 2 else 1
         phi = side * (0.08 + r.random() * 0.45)
         y = P['eye_y'] + 0.06 + r.random() * 0.07
-        rr = 0.004 + r.random() * 0.003
-        al = 0.35 + r.random() * 0.3
+        rr = (0.004 + r.random() * 0.003) * 0.7
+        al = (0.35 + r.random() * 0.3) * 0.55
         x, yy, _ = H0.surf(phi, y)
         cx, cy = px(x, yy)
         d.ellipse([cx - rr * S, cy - rr * S, cx + rr * S, cy + rr * S], fill=(*col.astype(int), int(al * 255)))
-    im = im.filter(ImageFilter.GaussianBlur(0.8))
+    im = im.filter(ImageFilter.GaussianBlur(0.5))
     im.save(os.path.join(OUT, 'face.png'))
 
 

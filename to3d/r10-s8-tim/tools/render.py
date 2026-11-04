@@ -60,8 +60,8 @@ sc.cycles.caustics_refractive = False
 sc.cycles.blur_glossy = 1.0
 sc.render.threads_mode = 'FIXED'
 sc.render.threads = job.get('threads', 4)
-sc.view_settings.view_transform = 'AgX'
-sc.view_settings.look = 'AgX - Medium High Contrast'
+sc.view_settings.view_transform = job.get('view', 'Filmic')
+sc.view_settings.look = job.get('look', 'Medium High Contrast')
 sc.view_settings.exposure = job.get('exposure', 0.25)
 sc.render.film_transparent = False
 world = bpy.data.worlds.new('w'); sc.world = world; world.use_nodes = True

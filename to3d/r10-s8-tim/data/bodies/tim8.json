@@ -1,0 +1,39 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "tim8",
+ "label": {
+  "ru": "Тим",
+  "en": "Tim"
+ },
+ "source": "to3d/r10-s8-tim: Anny (moood-child) fitted to the С8 drawing, HBM stylised head",
+ "topology": "tim8",
+ "skeleton": "soma77",
+ "bin": "tim8.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    49930,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 599160
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 600084
+  }
+ }
+}

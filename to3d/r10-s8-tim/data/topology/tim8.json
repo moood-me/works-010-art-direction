@@ -1,0 +1,65 @@
+{
+ "format": "engine/topology",
+ "version": 1,
+ "id": "tim8",
+ "about": "Тим (С8): every piece in one mesh",
+ "source": "to3d/r10-s8-tim",
+ "skeleton": "soma77",
+ "vertices": 49930,
+ "triangles": 96200,
+ "parts": [
+  "pelvis",
+  "spine",
+  "neck",
+  "head",
+  "Lclavicle",
+  "Rclavicle",
+  "LupperArm",
+  "RupperArm",
+  "LforeArm",
+  "RforeArm",
+  "Lhand",
+  "Rhand",
+  "Lthigh",
+  "Rthigh",
+  "Lshin",
+  "Rshin",
+  "Lfoot",
+  "Rfoot"
+ ],
+ "bin": "tim8.bin",
+ "arrays": {
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    96200,
+    3
+   ],
+   "offset": 0
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    49930,
+    4
+   ],
+   "offset": 1154400
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    49930,
+    4
+   ],
+   "offset": 1354120
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    49930,
+    18
+   ],
+   "offset": 2153000
+  }
+ }
+}

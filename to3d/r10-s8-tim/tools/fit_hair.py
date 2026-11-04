@@ -12,6 +12,9 @@ from common import CACHE, hu
 
 
 
+FRINGE_UP = 0.07
+
+
 def smooth_path(p, n=28):
     p = np.asarray(p, float)
     # resample by arc length, then a light smoothing (as the drawing's geom: resample + smooth)
@@ -26,6 +29,11 @@ def smooth_path(p, n=28):
 def lock_mesh(L, centre, nu=28, nv=14, flat=0.42, grooves=2):
     """one lock: rings of nv points along the path"""
     c = smooth_path(hu(np.array(L.path3)), nu)
+    if c[0, 2] > 0.1 and c[-1, 2] > 0.25:
+        # the fringe: its falling ends held a little higher than drawn, so the brows show under it (in the drawing
+        # they are painted over the hair's shadow; in 3D the clumps stand off the forehead and come lower)
+        t = np.linspace(0, 1, len(c))
+        c[:, 1] += FRINGE_UP * t ** 2
     tg = np.gradient(c, axis=0); tg /= np.linalg.norm(tg, axis=1, keepdims=True)
     V, UV = [], []
     for i in range(nu):
@@ -87,7 +95,7 @@ def cap_mesh(line, k, rows=40, cols=144, thick=0.03):
     HN = vertex_normals(HV, HT)
     _, I, C = igl.point_mesh_squared_distance(Vo, HV, HT)
     Nf = HN[HT[I]].mean(1); Nf /= np.linalg.norm(Nf, axis=1, keepdims=True)
-    Vo = C + Nf * 0.022; Vi = C - Nf * 0.01
+    Vo = C + Nf * 0.02; Vi = C - Nf * 0.004
     n = len(Vo)
     last = np.arange((rows - 1) * cols, rows * cols); nxt = np.roll(last, -1)
     W = np.r_[np.stack([last, last + n, nxt], 1), np.stack([nxt, last + n, nxt + n], 1)]

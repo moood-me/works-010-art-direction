@@ -10,8 +10,8 @@ PK = '/works-010-art-direction/to3d/r9-s7-anya/data/anya.json'
 STAND = dict(pose='stand')
 HEAD = dict(mode='ortho', h=0.42, yaw=-0.38, pitch=0.05, target=[0, 1.47, 0])
 # the camera follows the pelvis, near, so she is big in the frame
-FULL = lambda yaw, d=3.9: dict(mode='persp', dist=d, fov=24, yaw=yaw, pitch=0.08, cy=0.86, follow=True)
-NEAR = lambda yaw: dict(mode='persp', dist=1.45, fov=22, yaw=yaw, pitch=0.03, focus='Head', up=0.0, follow=False)
+FULL = lambda yaw, d=4.1: dict(mode='persp', dist=d, fov=24, yaw=yaw, pitch=0.08, cy=0.83, follow=True)
+NEAR = lambda yaw: dict(mode='persp', dist=1.45, fov=22, yaw=yaw, pitch=0.03, focus='Head', up=0.07, follow=False)
 
 FILMS = {
     'face-live': dict(w=480, h=540, fps=30, set=dict(STAND, clip=None, cam=HEAD, talk=True, talkFrom=2.0, talkTo=5.0,

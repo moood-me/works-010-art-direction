@@ -89,7 +89,7 @@ if on('walk', 'films'):
                                 cam=dict(mode='persp', fov=22, dist=4.4, cy=0.86, follow=True, yaw=0.9, pitch=0.05)), 0, 117.5, 2.5)
 if on('talk', 'films'):
     film('talk', 480, 540, dict(STAND, still=False, clip='idle', talk=True, talkFrom=0.4, exprTrack=[[0, 'calm'], [2.6, 'joy'], [3.8, 'calm']],
-                                cam=dict(mode='persp', fov=22, dist=1.7, follow=False, focus='Head', up=-0.04, yaw=0.7, pitch=0.03)), 0, 147.5, 2.5)
+                                cam=dict(mode='persp', fov=22, dist=1.6, follow=False, focus='Head', up=0.05, yaw=0.7, pitch=0.03)), 0, 147.5, 2.5)
 if on('wave', 'films'):
     film('wave', 540, 800, dict(STAND, still=False, clip='wave', exprTrack=[[0, 'calm'], [0.6, 'joy']],
                                 cam=dict(mode='persp', fov=22, dist=4.4, cy=0.9, follow=True, yaw=0.5, pitch=0.05)), 0, 87.5, 2.5)

@@ -308,8 +308,6 @@ over_lo = loft_of(rings_max((torso, over_s['ease']), (top_lo, over_s['ease'] - t
 w0, w1 = over_s['open'][:2]
 y_top = y_neck - 0.5
 NC = 84
-def over_cols(v_unused=None):
-    return np.linspace(0, 1, NC)
 OG = np.zeros((60, NC, 3))
 for r, v in enumerate(np.linspace(0, 1, 60)):
     y = over_s['hem'] + (y_top - over_s['hem']) * v

@@ -79,11 +79,11 @@ export class Face {
     }
     // the lash line goes with the upper lid of its eye (the nearer eye)
     {
-      const [s, n] = h.pieces.lashes;
+      const [s, n] = h.pieces.lashes, lw = a['lash.w'];
       for (let i = s; i < s + n; i++) {
         const k = rest[i * 3] >= 0 ? 'L' : 'R', e = h.lids[k];
         const v = [rest[i * 3] - e.c[0], rest[i * 3 + 1] - e.c[1], rest[i * 3 + 2] - e.c[2]];
-        const r = rot(v, e.ax, L.up);
+        const r = rot(v, e.ax, L.up * lw[i - s]);
         out[i * 3] = e.c[0] + r[0]; out[i * 3 + 1] = e.c[1] + r[1]; out[i * 3 + 2] = e.c[2] + r[2];
       }
     }

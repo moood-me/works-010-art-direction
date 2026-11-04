@@ -47,13 +47,7 @@ def solid(G, closed, th, out_ref):
         edges.append([r * C + 0 for r in range(R)])
         edges.append([r * C + C - 1 for r in range(R)][::-1])
     for e in edges:
-        q = rim(e)
-        # orient each rim outward (away from the strip's middle)
-        Vt = np.vstack([V0, Vi])
-        nn = np.cross(Vt[q[:, 1]] - Vt[q[:, 0]], Vt[q[:, 2]] - Vt[q[:, 0]])
-        mid = Vt[q].mean(1)
-        cen = (V0.mean(0))
-        T.append(q)
+        T.append(rim(e))          # oriented afterwards with the rest (fix_rims)
     T = np.vstack(T)
     V = np.vstack([V0, Vi])
     outer = np.r_[np.ones(N, bool), np.zeros(N, bool)]

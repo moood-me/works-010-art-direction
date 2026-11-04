@@ -31,7 +31,7 @@ export function ui(A, stage) {
   let playing = true, t = 0, last = performance.now(), frames = 0, fps = 30, lastDraw = 0;
   const t0 = performance.now(), clock = () => (performance.now() - t0) / 1000;
   const far = { mode: 'persp', dist: 5.6, fov: 22, cy: 0.86, follow: true, focus: null, yaw: 0.5, pitch: 0.05 };
-  const near = { mode: 'persp', dist: 1.7, fov: 22, follow: false, focus: 'Head', up: -0.03, pitch: 0.03 };
+  const near = { mode: 'persp', dist: 1.6, fov: 22, follow: false, focus: 'Head', up: 0.05, pitch: 0.03 };
   A.set({ liveClock: true, cam: far, pose: 'stand', poseOpts: { out: 0.06 }, anchorGrain: true });
   async function motion(id) {
     await A.set({ clip: id || null, t: 0, time: clock() });

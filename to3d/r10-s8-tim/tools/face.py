@@ -30,6 +30,8 @@ VISEMES = {
     'M': dict(mopen=0.0, wide=0.95),
     'F': dict(mopen=0.1, wide=1.0),
 }
+BROW_UP = 0.035
+LID_K = 0.6          # the sheet's lids turn this much: a lid over a glass ball covers more than a painted one
 FACES = ['calm', 'dream', 'joy', 'surprise', 'sad', 'anger', 'grin']
 
 
@@ -102,8 +104,10 @@ def mouth(ex):
 
 def brow(side, ex, n=12, R=5):
     phi = side * P['eye_phi']
-    yb = P['eye_y'] - P['brow_gap']
-    w, th = P['brow_w'], P['brow_th']
+    # a little higher than drawn and standing proud: in 3D the lid over the glass ball bulges up to where the drawing
+    # paints the brows
+    yb = P['eye_y'] - P['brow_gap'] - BROW_UP
+    w, th = P['brow_w'], P['brow_th'] * 1.35
     li, lo = ex.get('brow_in', 0.0), ex.get('brow_out', 0.0)
     ix, ox = (-w * 0.95, w * 1.1) if side > 0 else (w * 0.95, -w * 1.1)
     arch = P.get('brow_arch', 0.012); taper = P.get('brow_taper', 0.75)
@@ -113,7 +117,7 @@ def brow(side, ex, n=12, R=5):
     thick = th * (1 - taper * t ** 1.3) * (0.8 + 0.2 * np.sin(np.pi * np.minimum(1, t * 2)))
     r = np.linspace(0, 1, R)[:, None]
     yy = (y - thick * 0.6) + thick * r
-    h = 0.007 * np.sin(np.pi * (0.05 + 0.9 * r)) ** 0.6 * (1 - 0.5 * t)
+    h = 0.012 * np.sin(np.pi * (0.05 + 0.9 * r)) ** 0.6 * (1 - 0.4 * t)
     return laid(np.tile(x, (R, 1)), yy, phi, yb, h)
 
 
@@ -127,7 +131,6 @@ def lids():
         phi, ye = side * P['eye_phi'], P['eye_y']
         n = drawing.surf(phi, ye, 0.01) - drawing.surf(phi, ye, 0.0); n /= np.linalg.norm(n)
         up = np.array([0, 1.0, 0]); up -= (up @ n) * n; up /= np.linalg.norm(up)
-        ax = np.cross(up, n)                       # the eye's horizontal axis (the lids turn about it)
         # rings from the margin
         dist = np.full(len(HV), 99); dist[mb] = 0
         frontier = set(mb.tolist())
@@ -138,9 +141,17 @@ def lids():
         fall = np.clip(1 - dist / 8.0, 0, 1) ** 1.5
         d = HV - c
         el = (d @ up) / np.maximum(np.linalg.norm(d, axis=1), 1e-9)
-        wU = fall * np.clip((el + 0.15) / 0.3, 0, 1)
-        wL = fall * np.clip((0.15 - el) / 0.3, 0, 1)
-        out[key] = dict(c=c, n=n, up=up, ax=ax, wU=wU, wL=wL, margin=mb)
+        # the lids turn about an axis through the ball's centre along the opening's chord (corner to corner), and
+        # less toward the corners — the lid sweeps as a drawn lid does, the corners stay
+        lat = (HV[mb] - c) @ np.array([1.0, 0, 0]) * side
+        inner, outer = HV[mb[lat.argmin()]], HV[mb[lat.argmax()]]
+        ax = (outer - inner) / np.linalg.norm(outer - inner) * side
+        if ax[0] < 0: ax = -ax
+        s = np.clip(((HV - inner) @ (outer - inner)) / ((outer - inner) @ (outer - inner)), 0, 1)
+        mid = np.sin(np.pi * s) ** 0.6
+        wU = fall * np.clip((el + 0.15) / 0.3, 0, 1) * mid
+        wL = fall * np.clip((0.15 - el) / 0.3, 0, 1) * mid
+        out[key] = dict(c=c, n=n, up=up, ax=ax, wU=wU, wL=wL, margin=mb, mid=mid)
     return out
 
 
@@ -165,7 +176,7 @@ def lash(L, side):
     tang = np.gradient(Pm, axis=0); tang /= np.linalg.norm(tang, axis=1, keepdims=True)
     upd = np.cross(tang, rad) * side
     upd *= np.sign((upd @ up).mean())
-    rows = [Pm + rad * 0.004, Pm + rad * 0.011 + upd * width * 0.6, Pm + rad * 0.007 + upd * width * 1.3]
+    rows = [Pm + rad * 0.0015, Pm + rad * 0.006 + upd * width * 0.5, Pm + rad * 0.003 + upd * width * 1.1]
     V = np.concatenate(rows)
     m = len(ids)
     T = grid_tris(3, m)
@@ -174,7 +185,8 @@ def lash(L, side):
     wing_tip = wing_base + L['ax'] * side * 0.018 * P.get('wing', 1.0) + up * 0.012 * P.get('wing', 1.0) + rad[-1] * 0.004
     V = np.r_[V, [wing_tip]]
     T = np.r_[T, [[m - 1, 2 * m - 1, len(V) - 1], [2 * m - 1, 3 * m - 1, len(V) - 1]]]
-    return V, T, ids
+    w = np.r_[np.tile(L['mid'][ids], 3), [L['mid'][ids[-1]]]]          # it turns as much as its piece of margin
+    return V, T, w
 
 
 def expr_numbers(ex):
@@ -188,7 +200,7 @@ def expr_numbers(ex):
     top = R * P['lid_top'] * op * (1 + ex.get('lid_up', 0.0))
     bot = R * P['lid_bot'] * op * (1 - ex.get('lid_lo', 0.0))
     g = ex.get('gaze', (0.0, 0.0))
-    return dict(up=ang(top0) - ang(top), lo=ang(bot0) - ang(bot), gaze=[g[0], -g[1]], pupil=ex.get('pupil', 0.38))
+    return dict(up=LID_K * (ang(top0) - ang(top)), lo=LID_K * (ang(bot0) - ang(bot)), gaze=[g[0], -g[1]], pupil=ex.get('pupil', 0.38))
 
 
 def main():
@@ -210,10 +222,10 @@ def main():
     bt = grid_tris(5, 12)
     res['brow_T'] = np.r_[bt, grid_tris(5, 12, True) + 60]
     for k in FACES: res['brow_' + k] = brows[k]
-    off = 0; LV, LT, LI = [], [], []
-    for V, T, ids in lashes:
-        LV.append(V); LT.append(T + off); off += len(V)
-    res['lash_V'] = np.concatenate(LV); res['lash_T'] = np.concatenate(LT)
+    off = 0; LV, LT, LW = [], [], []
+    for V, T, w in lashes:
+        LV.append(V); LT.append(T + off); LW.append(w); off += len(V)
+    res['lash_V'] = np.concatenate(LV); res['lash_T'] = np.concatenate(LT); res['lash_w'] = np.concatenate(LW)
     # the lash follows the upper lid fully
     for k in ('L', 'R'):
         for a in ('c', 'n', 'up', 'ax', 'wU', 'wL'):

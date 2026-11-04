@@ -50,10 +50,10 @@ def run(sheet, samples=48):
     frames, views = [], []
     pw = W // len(panels)
     for k, (cx, cy, S, vy, hy, mot, fr, face, roll) in enumerate(panels):
-        gaze = [vy - (vy + hy), 0.0]           # the eyes on the camera (the drawing's at_camera)
+        gaze = [vy - hy, 0.0]                  # the eyes on the camera (the drawing's at_camera)
         fy = math.radians(vy)
         mj = dict(out=f'{OUT}/{sheet}{k}.bin', motion=mot, frames=[fr],
-                  head=dict(yaw=hy, roll=-roll, rollAxis=[-math.sin(fy), 0, math.cos(fy)]),
+                  head=dict(yaw=hy, roll=-roll, rollAxis=[-math.sin(fy), 0, math.cos(fy)], level=True),
                   face=dict(e=face, gaze=gaze))
         json.dump(mj, open(f'{OUT}/job-{sheet}{k}.json', 'w'))
         subprocess.run(['node', os.path.join(HERE, 'move.mjs'), f'{OUT}/job-{sheet}{k}.json'], check=True)

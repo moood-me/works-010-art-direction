@@ -55,7 +55,7 @@ def eye_centre(side):
 EYE_R = P['eye_r'] * 1.05          # the ball as the drawing draws it (head.eye: r = eye_r · 1.05)
 
 
-def eye_opening(side, ex=None, n=24):
+def eye_opening(side, ex=None, n=24, peak=0.18, lower_pow=1.1, tall=1.0):
     """the lid opening as a closed 3D curve on the head's surface (the drawing's `eye()` shape, laid by (phi, y))"""
     ex = ex or {}
     phi0 = side * P['eye_phi']; ye = P['eye_y']; R = P['eye_r']; w = P['eye_w']
@@ -69,9 +69,9 @@ def eye_opening(side, ex=None, n=24):
         t = i / n
         x = inn + (outer - inn) * t
         s = math.sin(math.pi * t) ** 0.8
-        peak = 1 + 0.18 * math.sin(math.pi * (t - 0.15))
-        up_pts.append((x, -top_h * s * peak * 0.95))
-        lo_pts.append((x, bot_h * math.sin(math.pi * t) ** 1.1))
+        pk = 1 + peak * math.sin(math.pi * (t - 0.15))
+        up_pts.append((x, -top_h * tall * s * pk * 0.95))
+        lo_pts.append((x, bot_h * tall * math.sin(math.pi * t) ** lower_pow))
     loc = up_pts + lo_pts[::-1][1:-1]
     return np.array([surf(phi0 + x / a, ye + y) for x, y in loc]), len(up_pts)
 
