@@ -1,0 +1,163 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "anya-klaus",
+ "label": {
+  "ru": "Аня (Клаус)"
+ },
+ "topology": "anya-klaus",
+ "skeleton": "soma",
+ "source": "to3d/r5-s2-anya/tools/build.py",
+ "faces": "faces",
+ "skinning": "cor",
+ "floor": -3.573530510050968e-21,
+ "materials": [
+  "skin",
+  "hair",
+  "cardi",
+  "blouse",
+  "scarf",
+  "skirt",
+  "tights",
+  "shoe"
+ ],
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    26505,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    49594,
+    3
+   ],
+   "offset": 318064
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    26505,
+    4
+   ],
+   "offset": 913192
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    26505,
+    4
+   ],
+   "offset": 1019216
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    231
+   ],
+   "offset": 1443296
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    308
+   ],
+   "offset": 1444224
+  },
+  "col": {
+   "dtype": "uint8",
+   "shape": [
+    26505,
+    3
+   ],
+   "offset": 1445456
+  },
+  "shd": {
+   "dtype": "uint8",
+   "shape": [
+    26505,
+    3
+   ],
+   "offset": 1524976
+  },
+  "rim": {
+   "dtype": "uint8",
+   "shape": [
+    26505,
+    3
+   ],
+   "offset": 1604496
+  },
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    26505,
+    2
+   ],
+   "offset": 1684016
+  },
+  "tw": {
+   "dtype": "uint8",
+   "shape": [
+    26505
+   ],
+   "offset": 1896056
+  },
+  "pn": {
+   "dtype": "float32",
+   "shape": [
+    26505,
+    3
+   ],
+   "offset": 1922568
+  },
+  "pw": {
+   "dtype": "uint8",
+   "shape": [
+    26505
+   ],
+   "offset": 2240632
+  },
+  "pj": {
+   "dtype": "uint8",
+   "shape": [
+    26505
+   ],
+   "offset": 2267144
+  },
+  "two": {
+   "dtype": "uint8",
+   "shape": [
+    26505
+   ],
+   "offset": 2293656
+  },
+  "hair": {
+   "dtype": "uint8",
+   "shape": [
+    26505
+   ],
+   "offset": 2320168
+  },
+  "cardi": {
+   "dtype": "uint8",
+   "shape": [
+    26505
+   ],
+   "offset": 2346680
+  },
+  "rp": {
+   "dtype": "float32",
+   "shape": [
+    26505,
+    3
+   ],
+   "offset": 2373192
+  }
+ },
+ "bin": "anya.bin"
+}

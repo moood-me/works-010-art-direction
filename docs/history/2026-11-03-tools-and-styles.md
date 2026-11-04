@@ -42,3 +42,16 @@ short, with auto-sleep and a pause afterwards — `tools-demo/n8-stdgen/` (its n
 all sides; the models are rough. A try on a white background with other seeds improved Anya, not Tim (his cap is taken
 for hair), so, as Pavel said, the remaining styles were not run. Н3 (cloth in motion) and Н4 (hair) pages came too:
 neither Blender nor HOOD beats our О3; HairDeck looks right for us but its main path needs a GPU and two gated models.
+
+**Drawings to 3D (`to3d/`, 2026-11-04).** Talking about how to get a good 3D character, Pavel and I agreed to try
+not a neural picture-to-3D but building from good ready bases fitted to our drawing (the brief is in each page's
+`notes.md`): the body Anny on SOMA (Kimodo through the engine), the head from a good artist-made base (Blender's
+Human Base Meshes, CC0) fitted by points to the drawing's front and profile, the face and colour from our own SVG
+code, clothes and hair shaped from the drawing's views, a material per style, judged by overlaying on the drawing.
+Five characters, one agent each: Р1 Аня (graphic), Р2 Савелий (ligne claire), Р3 Тим (mid-century), Р4 Вера (indie —
+on our indie constructor, since 3 heads tall doesn't come from a human body), Р5 Аня (Klaus, the hard one). Р1–Р4
+came out close to the drawings; Pavel asked to make the good ones alive and see them in motion, so their agents added
+a live face (blinks at uneven intervals, saccades with the gaze leading the head, mouth shapes for speech, blended
+expressions — timings from real faces, no sines), several Kimodo motions with it, and a browser viewer each; the site
+shows pictures by default and the viewer in a «3D» tab. Р5 stayed middling (blotches on the face, a rough figure) and
+was not animated. A root `index.html` links the gallery and the three new sites.

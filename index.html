@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art direction</title>
+<style>
+  :root { --bg: #f4f1ec; --card: #fffdf9; --ink: #26231f; --muted: #75706a; --line: #e2ddd5; --accent: #b4532a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; } }
+  :root[data-theme="dark"] { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 26px; margin: 0 0 6px; } p.sub { color: var(--muted); margin: 0 0 24px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  a.card { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; color: inherit; text-decoration: none; }
+  a.card:hover { border-color: var(--accent); }
+  a.card img { display: block; width: 100%; height: 190px; object-fit: cover; background: #d9d4cb; }
+  a.card div { padding: 10px 12px 14px; } a.card b { color: var(--accent); display: block; font-size: 16px; margin-bottom: 2px; }
+  a.card span { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body><main>
+<h1>Art direction</h1>
+<p class="sub">Красивые персонажи для игр moood: всё, что сделано, по разделам.</p>
+<div class="grid">
+  <a class="card" href="gallery/"><img src="docs/pictures/indie/motion/gif-dance.gif" alt="" onerror="this.style.visibility='hidden'"><div><b>Галерея путей</b><span>Все пути поиска: тела, головы, волосы, одежда, персонажи, движок.</span></div></a>
+  <a class="card" href="tools-demo/"><img src="tools-demo/n5-heads/pics/heads-angles.webp" alt=""><div><b>Чужие инструменты</b><span>Готовые открытые инструменты против того, что у нас: деформации, одежда, ткань, волосы, головы, свет, 3D из картинки.</span></div></a>
+  <a class="card" href="styles/"><img src="styles/s9-midcentury/pics/cast.webp" alt=""><div><b>Стили персонажей</b><span>Двенадцать стилей из настоящих работ: образцы, правила и одни и те же четверо, нарисованные по ним.</span></div></a>
+  <a class="card" href="to3d/"><img src="to3d/r1-s3-anya/pics/compare-side.webp" alt=""><div><b>Рисунок в 3D</b><span>Наши рисунки как 3D-персонажи на скелете, с движениями Kimodo и живым лицом; вкладка «3D» — крутить и переключать.</span></div></a>
+</div>
+</main></body>
+</html>
