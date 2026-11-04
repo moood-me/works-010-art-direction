@@ -86,7 +86,8 @@ movements by themselves; speed of cloth and hair for several characters.
 ## After the engine is finished (Pavel, 2026-11-03, going to sleep)
 
 Pavel, 2026-11-04: the two items below (contacts; two people) are not started automatically — only when he asks,
-a little later. Now: the engine (hair, clothes) and the characters not from Anny.
+a little later. Now: the engine (hair, clothes). The characters not from Anny (П1 and П2 in one constructor) are not
+started automatically either — only when Pavel asks (2026-11-04).
 
 - Motions that come to the right places — a common task. A person walks up to a table and leans on it: the hands
   touch the table; we tell the model, say, a second before the stop the hands must be here, and at the last frame
