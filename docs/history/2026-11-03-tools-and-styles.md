@@ -55,3 +55,7 @@ a live face (blinks at uneven intervals, saccades with the gaze leading the head
 expressions — timings from real faces, no sines), several Kimodo motions with it, and a browser viewer each; the site
 shows pictures by default and the viewer in a «3D» tab. Р5 stayed middling (blotches on the face, a rough figure) and
 was not animated. A root `index.html` links the gallery and the three new sites.
+
+**Findings and briefs kept (2026-11-04).** Pavel asked to keep in the repository what may help the next agents:
+the three briefs the page agents worked from went to `docs/briefs/` (tools, styles, to3d) and a summary of what was
+found to `docs/findings.md`, both listed in `docs/README.md`.
