@@ -27,13 +27,26 @@
 import { qRot3, qSlerp } from '../math.js';
 import { normalsOf } from '../mesh.js';
 
+// WIND: how much more the wind takes the hair than the air of its own motion does (the wind felt as a flow WIND times as
+// fast): with the air of its motion alone, a strong wind leaned long hair 24°; with that air made as strong (four, eight
+// times), running hair stood out in wings. Film directs the wind apart from the motion's air too.
+const WIND = 3;
 // G: gravity; H: the small step; PIN: points of a chain carried by the head; MU: friction against a solid (the share of
 // its motion along the solid taken away in a small step); AIR: how fast the air stills a point's own motion (1/s)
 const G = 9.81, H = 1 / 240, PIN = 2, MU = 0.35, AIR = 0.4;
 // ZIGZAG: how fast a point's velocity against its two neighbours' dies (1/s: 0.35 of it a small step); TOGETHER: how
 // fast a point's velocity against its neighbouring locks' (1/s); NEAR: how near at rest a point of another lock is a
 // neighbour; FLOOR: the floor's friction (a share a small step)
-const ZIGZAG = 103, TOGETHER = 40, NEAR = 0.02, FLOOR = 0.6;
+const ZIGZAG = 103, TOGETHER = 40, NEAR = 0.035, FLOOR = 0.6;
+// LINK: how much farther apart than at rest two neighbouring locks may part (a share of their gap); LINK_RATE: how fast
+// beyond it they are drawn back (1/s)
+const LINK = 0.3, LINK_RATE = 120;
+// LIE: how near the skin a lock lies on it (it lies on it as it lay at rest: framesOf)
+const LIE = 0.03;
+// TWIST: how much faster a lock's turn about itself may change from one segment to the next (framesOf)
+const TWIST = 12 * Math.PI / 180;
+// NEAR_SKIN: a chain this near the skin has its surfaces laid on it (onSkin): a lock's half width and more
+const NEAR_SKIN = 0.04;
 // SETTLE: small steps a reset lets the hair settle in its pose without speed; the groom: GROOM_FIT times let hang and
 // moved up by the sag (each move at most GROOM_STEP), DRAPE: the bend while it settles on the body, SETTLED: still
 // enough (m) to be the rest
@@ -53,7 +66,7 @@ export function windAt(o, x, y, z, t, seed, out) {
 }
 
 export class HairSim {
-  constructor(figure, { guides, meshes, physics = {} }) {
+  constructor(figure, { guides, meshes, physics = {}, grows = null }) {
     this.figure = figure; this.solids = figure.solids(); this.wind = null; this.meshes = meshes; this.outputs = meshes.map(m => m.output);
     const k = this.k = { hold: 1, bend: 1, drag: 1, wind: 1, friction: 1, damping: 1, together: 1, ...physics };
     const chains = this.chains = [], f = s => s * H * H / (1 + s * H * H);
@@ -61,7 +74,7 @@ export class HairSim {
     for (const [gi, g] of guides.entries()) {
       const n = g.points.length, c = { n, at: N, head: !!g.head, seed: gi * 1.618, gain: 0.8 + 0.4 * ((gi * 0.618) % 1) };
       // (each stiffness's share of a pass in a small step)
-      if (!g.head) Object.assign(c, { rooted: g.rooted, rad: g.rad, hold: g.hold.map(v => f(v * k.hold)), bend: g.bend.map(v => f(v * k.bend)), drag: g.drag * k.drag, inner: g.inner * k.damping, stretch: g.stretch });
+      if (!g.head) Object.assign(c, { rooted: g.rooted, depth: g.depth ?? null, rad: g.rad, hold: g.hold.map(v => f(v * k.hold)), bend: g.bend.map(v => f(v * k.bend)), drag: g.drag * k.drag, inner: g.inner * k.damping, stretch: g.stretch });
       chains.push(c); N += n;
     }
     this.N = N;
@@ -71,7 +84,7 @@ export class HairSim {
     // the hair hangs at rest; NX, NR: each node's place and frame now (for the surfaces); D: the points as drawn
     this.X0 = F(); guides.forEach((g, gi) => g.points.forEach((p, k) => this.X0.set(p, (chains[gi].at + k) * 3)));
     this.T0 = Float64Array.from(this.X0); this.R0 = null;
-    this.NX = F(); this.NR = new Float64Array(N * 9); this.D = F();
+    this.NX = F(); this.NR = new Float64Array(N * 9); this.D = F(); this.under = new Float64Array(N).fill(Infinity); this.underN = F(); this.underM = F();
     for (const c of chains) {
       if (c.head) continue;
       c.L = []; c.d0 = [];
@@ -88,20 +101,44 @@ export class HairSim {
     const head = S.head, l = [0, 0, 0], mr = this.m.rest, at = this.q.at;
     for (const c of chains) if (!c.head) {
       c.allow = Array.from({ length: c.n }, (_, k) => { if (!head) return 0; for (let j = 0; j < 3; j++) l[j] = this.X0[(c.at + k) * 3 + j]; return Math.min(c.rad[k], head.distance(l) - 0.001); });
-      c.allowSkin = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3; return Math.min(c.rad[k], S.skin(mr, this.X0[i], this.X0[i + 1], this.X0[i + 2], at) - 0.001); });
+      // (in the head's skin — a head without a designed form — as deep as it lay at rest, roots under the scalp; out of
+      // the body's by its own half-thickness, however the design lay on the neutral head's small shoulders)
+      c.allowSkin = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3, d = S.skin(mr, this.X0[i], this.X0[i + 1], this.X0[i + 2], at); return at.head > 0.5 ? Math.min(c.rad[k], d - 0.001) : c.rad[k]; });
     }
-    this.drape = 1;
+    // the inner layers: their edges, and how far each point's are stretched now (output.parted: src/hair/shade.js hides
+    // the inner layer where it is stretched past PARTED — where locks part it does not stretch into a web between them)
+    for (const M of meshes) if (M.output.mesh.hair?.layer === 'inner') { M.edges = edgesOf(M.output.mesh.triangles); M.output.parted = new Float32Array(M.output.mesh.N); }
+    this.drape = 1; this.headRest = Float64Array.from(S.headRest);
     this.groom();
     this.neighbours();
+    // where each lock lies on the body at rest (the skin's normal at each segment, how near: src/hair/sim.js framesOf)
+    for (const c of chains) if (!c.head) c.lay = c.d0.map((_, k) => { const i = (c.at + k) * 3, R = this.R0, d = S.skin(mr, (R[i] + R[i + 3]) / 2, (R[i + 1] + R[i + 4]) / 2, (R[i + 2] + R[i + 5]) / 2, at), w = 1 - Math.min(1, Math.max(0, d) / LIE); return w > 0 && Number.isFinite(d) ? { n: at.n.slice(), w } : null; });
+    // the changes of the rest as pose layers (a bigger head): each moves the guides' rest as it moves the hairstyle
+    // fitted onto the changed body (grows(from, to): per guide its points' deltas); their weights this frame
+    this.growth = grows ? figure.restLayers.map(l => { const D = new Float64Array(N * 3); grows(l.bodies.from, l.bodies.to).forEach((d, gi) => { if (d) for (let k = 0; k < d.indices.length; k++) for (let c = 0; c < 3; c++) D[(chains[gi].at + d.indices[k]) * 3 + c] = d.deltas[k * 3 + c]; }); return D; }) : [];
+    this.base = this.growth.length ? { X0: Float64Array.from(this.X0), T0: Float64Array.from(this.T0), R0: Float64Array.from(this.R0) } : null;
+    this.weights = new Float64Array(this.growth.length);
     this.time = 0; this.left = 0; this.started = false;
   }
 
-  // ———— the head carrying the hairstyle: x' = R (x − J) + P, at a moment of the solids ————
-  carry(m, x, y, z, o) { const t = this.solids.carrier(m), r = this.solids.headRest; qRot3(t.q, x - r[0], y - r[1], z - r[2], o); o[0] += t.p[0]; o[1] += t.p[1]; o[2] += t.p[2]; return o; }
+  // ———— the head carrying the hairstyle: x' = R (x − J) + P, at a moment of the solids (J: the Head joint's rest place
+  // this frame) ————
+  carry(m, x, y, z, o) { const t = this.solids.carrier(m), r = this.headRest; qRot3(t.q, x - r[0], y - r[1], z - r[2], o); o[0] += t.p[0]; o[1] += t.p[1]; o[2] += t.p[2]; return o; }
 
+  // the hair's rest this frame: the guides' rest, where the groom pulls and where it hangs, each moved by the changes of
+  // the rest as they are weighed in this frame; the Head joint's rest place
+  grown() {
+    const ctx = this.figure.ctx, H = this.figure.rig.skeleton.index.Head;
+    for (let k = 0; k < 3; k++) this.headRest[k] = ctx.rest[H * 3 + k];
+    if (!this.base) return;
+    const w = ctx.applied; let same = true; for (let l = 0; l < w.length; l++) if (w[l] !== this.weights[l]) same = false; if (same) return;
+    this.weights.set(w);
+    for (const [name, A] of Object.entries(this.base)) { const X = this[name]; X.set(A); this.growth.forEach((D, l) => { if (w[l]) for (let i = 0; i < X.length; i++) X[i] += w[l] * D[i]; }); }
+  }
   // the figure's step: {pose, previous, dt, reset, jump, t}
   step({ dt, reset, jump, t }) {
     const S = this.solids, m = this.m;
+    this.grown();
     // (a reset — the first step, a new clip, a scrub — finds the hair as it hangs on the body in this pose: from where
     // it hangs at rest, carried by the head, let settle without speed, so a body unlike the rest's doesn't fling it)
     if (reset || !this.started) {
@@ -151,7 +188,7 @@ export class HairSim {
       for (let k = PIN; k < ch.n; k++) {
         const i = (a0 + k) * 3;
         if (wind && !settle) windAt(wind, x[i], x[i + 1], x[i + 2], this.time, ch.seed, w); else w[0] = w[1] = w[2] = 0;
-        const gain = wind ? ch.gain * kw : 1;
+        const gain = wind ? ch.gain * kw * WIND : 1;
         let rx = w[0] * gain - v[i], ry = w[1] * gain - v[i + 1], rz = w[2] * gain - v[i + 2];
         const j = i - 3, dx = x[i] - x[j], dy = x[i + 1] - x[j + 1], dz = x[i + 2] - x[j + 2], dl = Math.hypot(dx, dy, dz) || 1, ra = (rx * dx + ry * dy + rz * dz) / dl * 0.7;
         rx -= ra * dx / dl; ry -= ra * dy / dl; rz -= ra * dz / dl;
@@ -180,6 +217,13 @@ export class HairSim {
           turnOn(Q, r, dx / dl, dy / dl, dz / dl, B);
         }
       }
+    }
+    // the locks held together where they lie together (each pair of neighbouring points no farther apart than LINK
+    // past their rest's gap): hair is a mass, its locks part a little, not into ribbons
+    if (this.links) this.link();
+    for (const ch of this.chains) {
+      if (ch.head) continue;
+      const a0 = ch.at;
       this.ct.fill(0, a0, a0 + ch.n);
       this.collide(ch, mw, mn, true);
       // lengths: follow the leader, from the root out; the solids again; the lengths again, last (exact, so a lock never
@@ -203,6 +247,15 @@ export class HairSim {
       if (settle) v.fill(0, a0 * 3, (a0 + ch.n) * 3);
     }
     if (!settle) this.together(h);
+  }
+  // neighbouring points of two locks kept within LINK of their gap at rest (beyond it, each pulled half the way back)
+  link() {
+    const { x, links: K } = this, a = K.a, b = K.b, d0 = K.d0, k = 1 - Math.exp(-LINK_RATE * this.k.together * H);
+    for (let e = 0; e < a.length; e++) {
+      const i = a[e] * 3, j = b[e] * 3, dx = x[j] - x[i], dy = x[j + 1] - x[i + 1], dz = x[j + 2] - x[i + 2], d = Math.hypot(dx, dy, dz), far = d0[e] * (1 + LINK);
+      if (d <= far) continue;
+      const f = (d - far) / d * 0.5 * k; x[i] += dx * f; x[i + 1] += dy * f; x[i + 2] += dz * f; x[j] -= dx * f; x[j + 1] -= dy * f; x[j + 2] -= dz * f;
+    }
   }
   // hair against hair: each point's velocity drawn toward its neighbours' in the other locks (their weighed mean)
   together(h) {
@@ -228,6 +281,10 @@ export class HairSim {
       if (wi.length > start[start.length - 1]) { of.push(p); start.push(wi.length); }
     }
     this.nb = of.length ? { of: Int32Array.from(of), start: Int32Array.from(start), with: Int32Array.from(wi), w: Float64Array.from(ww) } : null;
+    // (each pair once, for the links)
+    const la = [], lb = [], ld = [];
+    for (let p = 0; p < of.length; p++) for (let e = start[p]; e < start[p + 1]; e++) if (wi[e] > of[p]) { la.push(of[p]); lb.push(wi[e]); ld.push(Math.hypot(R[of[p] * 3] - R[wi[e] * 3], R[of[p] * 3 + 1] - R[wi[e] * 3 + 1], R[of[p] * 3 + 2] - R[wi[e] * 3 + 2])); }
+    this.links = la.length ? { a: Int32Array.from(la), b: Int32Array.from(lb), d0: Float64Array.from(ld) } : null;
     this.vs = new Float64Array(this.v.length);
   }
   // the head (in its rest space, each point allowed as deep as it lay at rest), the body's skin, the floor; with
@@ -342,11 +399,35 @@ export class HairSim {
     for (const c of this.chains) {
       // (the head's chain: the Head joint's place and turn; a surface on it is offset from the joint's rest place)
       if (c.head) { for (let k = 0; k < c.n; k++) { const i = (c.at + k) * 3; NX[i] = hp[0]; NX[i + 1] = hp[1]; NX[i + 2] = hp[2]; NR.set(M, (c.at + k) * 9); } continue; }
+      // each segment's frame carried down the chain without twist; the skin under it (its plane, for the surfaces:
+      // onSkin); and where the lock lies on the body as it lay on it at rest, how far it would turn about itself to lie
+      // on the skin as it lay then (flat on the back stays flat on it, not edge-on), as much as it lies on it now and lay
+      // on it then
+      const tw = this.q.tw ??= new Float64Array(64); tw.fill(0, 0, c.n);
       for (let j = 0; j < 4; j++) Q[j] = hq[j];
       for (let k = 0; k < c.n - 1; k++) {
         const i = (c.at + k) * 3, d0 = c.d0[k]; qRot3(Q, d0[0], d0[1], d0[2], r);
         const dx = x[i + 3] - x[i], dy = x[i + 4] - x[i + 1], dz = x[i + 5] - x[i + 2], dl = Math.hypot(dx, dy, dz) || 1;
         turnOn(Q, r, dx / dl, dy / dl, dz / dl, B); Qs.set(Q, (c.at + k) * 4);
+        const lay = c.lay[k], mx = (x[i] + x[i + 3]) / 2, my = (x[i + 1] + x[i + 4]) / 2, mz = (x[i + 2] + x[i + 5]) / 2, at = this.q.at, d = this.solids.skin(end, mx, my, mz, at), s3 = (c.at + k) * 3;
+        this.under[c.at + k] = d; this.underN[s3] = at.n[0]; this.underN[s3 + 1] = at.n[1]; this.underN[s3 + 2] = at.n[2]; this.underM[s3] = mx; this.underM[s3 + 1] = my; this.underM[s3 + 2] = mz;
+        const w = lay ? Math.min(lay.w, 1 - Math.min(1, Math.max(0, d) / LIE)) : 0;
+        if (w > 0) {
+          const tx = dx / dl, ty = dy / dl, tz = dz / dl, n = lay.n; qRot3(Q, n[0], n[1], n[2], r);
+          const pa = r[0] * tx + r[1] * ty + r[2] * tz, ax = r[0] - pa * tx, ay = r[1] - pa * ty, az = r[2] - pa * tz;
+          const pb = at.n[0] * tx + at.n[1] * ty + at.n[2] * tz, bx = at.n[0] - pb * tx, by = at.n[1] - pb * ty, bz = at.n[2] - pb * tz;
+          tw[k] = Math.atan2((ay * bz - az * by) * tx + (az * bx - ax * bz) * ty + (ax * by - ay * bx) * tz, ax * bx + ay * by + az * bz) * w;
+        }
+      }
+      // (the turn changing no faster than TWIST a segment, from the root on — a sudden turn tears the surface between)
+      tw[0] = 0; for (let k = 1; k < c.n - 1; k++) tw[k] = Math.max(tw[k - 1] - TWIST, Math.min(tw[k - 1] + TWIST, tw[k]));
+      for (let k = c.n - 3; k >= 0; k--) tw[k] = Math.max(tw[k + 1] - TWIST, Math.min(tw[k + 1] + TWIST, tw[k]));
+      for (let k = 0; k < c.n - 1; k++) {
+        if (!tw[k]) continue;
+        const i = (c.at + k) * 3, q = (c.at + k) * 4, dx = x[i + 3] - x[i], dy = x[i + 4] - x[i + 1], dz = x[i + 5] - x[i + 2], dl = Math.hypot(dx, dy, dz) || 1, sn = Math.sin(tw[k] / 2);
+        B[0] = dx / dl * sn; B[1] = dy / dl * sn; B[2] = dz / dl * sn; B[3] = Math.cos(tw[k] / 2);
+        const q0 = Qs[q], q1 = Qs[q + 1], q2 = Qs[q + 2], q3 = Qs[q + 3];
+        Qs[q] = B[3] * q0 + B[0] * q3 + B[1] * q2 - B[2] * q1; Qs[q + 1] = B[3] * q1 - B[0] * q2 + B[1] * q3 + B[2] * q0; Qs[q + 2] = B[3] * q2 + B[0] * q1 - B[1] * q0 + B[2] * q3; Qs[q + 3] = B[3] * q3 - B[0] * q0 - B[1] * q1 - B[2] * q2;
       }
       for (let k = 0; k < c.n; k++) {
         const i = (c.at + k) * 3, a = (c.at + Math.min(k, c.n - 2)) * 4, b = (c.at + Math.max(0, k - 1)) * 4;
@@ -361,9 +442,9 @@ export class HairSim {
   write() {
     this.solids.moment(1, this.m.end);
     this.framesOf(this.drawn());
-    const { NX, NR, X0, chains } = this, hr = this.solids.headRest;
+    const { NX, NR, X0, chains } = this, hr = this.headRest;
     for (const M of this.meshes) {
-      const o = M.output, m = o.mesh, { c: bc, u: bu, w: bw } = M.bind, P0 = m.positions, N0 = M.normals === 'design' ? m.shading.normals : null, T0 = m.shading?.tangents ?? null;
+      const o = M.output, m = o.mesh, { c: bc, u: bu, w: bw } = M.bind, P0 = o.rest && o.moved ? o.rest : m.positions, N0 = M.normals === 'design' ? m.shading.normals : null, T0 = m.shading?.tangents ?? null;
       const pos = o.positions, nor = o.normals, tan = o.tangents;
       for (const v of m.used) {
         let X = 0, Y = 0, Z = 0, nx = 0, ny = 0, nz = 0, tx = 0, ty = 0, tz = 0;
@@ -384,8 +465,51 @@ export class HairSim {
         if (N0) { const l = Math.hypot(nx, ny, nz) || 1; nor[v * 3] = nx / l; nor[v * 3 + 1] = ny / l; nor[v * 3 + 2] = nz / l; }
         if (T0) { const l = Math.hypot(tx, ty, tz) || 1; tan[v * 3] = tx / l; tan[v * 3 + 1] = ty / l; tan[v * 3 + 2] = tz / l; }
       }
+      this.onSkin(M, pos, bc, bu, bw);
       if (!N0) normalsOf(pos, m.triangles, nor, m.used);
+      if (M.edges) partedOf(M, P0, pos, o.parted);
     }
+  }
+  // the surface lies on the skin, not in it: where a chain lies near the skin, what of its surface went under the skin
+  // there (its plane under the segment, the nearer the better) deeper than it lay under it at rest is laid on it — a
+  // lock's width over a round shoulder, its side tilted into an arm (the chains themselves are kept out by the solids;
+  // these are their surfaces beside them). At rest it may lie as deep in the head's skin as designed, in the body's not.
+  onSkin(M, pos, bc, bu, bw) {
+    if (this.noBody) return;
+    const { chains, under, underN: UN, underM: UM } = this, u = M.output.mesh.used;
+    // (each point's segment, and how far under that segment's skin it lies at rest — 0 where the skin is the body's)
+    const seg = M.seg ??= Int32Array.from({ length: M.output.mesh.N }, (_, v) => { const c = chains[bc[v * 3]]; return c.head || !bw[v * 3] ? -1 : c.at + Math.min(c.n - 2, Math.floor(bu[v * 3])); });
+    const rest = M.restDepth ??= this.restDepth(M, seg);
+    for (const v of u) {
+      const g = seg[v]; if (g < 0 || !(under[g] < NEAR_SKIN)) continue;
+      // (the skin's plane holds only near where it was found: no farther from its foot than NEAR_SKIN)
+      const g3 = g * 3, ex = pos[v * 3] - UM[g3], ey = pos[v * 3 + 1] - UM[g3 + 1], ez = pos[v * 3 + 2] - UM[g3 + 2], h = ex * UN[g3] + ey * UN[g3 + 1] + ez * UN[g3 + 2], d = h + under[g] - rest[v];
+      if (d < 0 && ex * ex + ey * ey + ez * ez - h * h < NEAR_SKIN * NEAR_SKIN) { pos[v * 3] -= UN[g3] * d; pos[v * 3 + 1] -= UN[g3 + 1] * d; pos[v * 3 + 2] -= UN[g3 + 2] * d; }
+    }
+  }
+  // how far each point of a surface lies under the skin at rest (0 where it is out, or where the skin is the body's)
+  restDepth(M, seg) {
+    const S = this.solids, mr = this.m.rest, at = this.q.at, P = M.output.mesh.positions, D = new Float32Array(M.output.mesh.N);
+    for (const v of M.output.mesh.used) if (seg[v] >= 0) { const d = S.skin(mr, P[v * 3], P[v * 3 + 1], P[v * 3 + 2], at); if (d < 0 && at.head > 0.5) D[v] = d; }
+    return D;
+  }
+}
+// a surface's edges, each once (pairs of vertices)
+function edgesOf(T) {
+  const seen = new Set(), out = [];
+  for (let t = 0; t < T.length; t += 3) for (let e = 0; e < 3; e++) { const a = T[t + e], b = T[t + (e + 1) % 3], k = a < b ? a * 4194304 + b : b * 4194304 + a; if (!seen.has(k)) { seen.add(k); out.push(a, b); } }
+  return Uint32Array.from(out);
+}
+// how stretched each point's edges are now against their rest (the most of them; the rest's lengths kept while the rest
+// is the same)
+function partedOf(M, R, P, out) {
+  const E = M.edges;
+  if (M.restOf !== R || R !== M.output.mesh.positions) { M.restOf = R; M.l0 = Float32Array.from({ length: E.length / 2 }, (_, k) => { const a = E[k * 2] * 3, b = E[k * 2 + 1] * 3; return Math.hypot(R[a] - R[b], R[a + 1] - R[b + 1], R[a + 2] - R[b + 2]); }); }
+  const L0 = M.l0; out.fill(1);
+  for (let e = 0; e < E.length; e += 2) {
+    const a = E[e] * 3, b = E[e + 1] * 3, l0 = L0[e >> 1]; if (l0 < 1e-6) continue;
+    const r = Math.hypot(P[a] - P[b], P[a + 1] - P[b + 1], P[a + 2] - P[b + 2]) / l0;
+    if (r > out[E[e]]) out[E[e]] = r; if (r > out[E[e + 1]]) out[E[e + 1]] = r;
   }
 }
 // Q turned on by the smallest turn taking r to the unit direction (dx, dy, dz): Q ← between(r, d) · Q (B: scratch)

@@ -4,7 +4,7 @@
 // The camera is framed by a box (fit): what is seen is the figures, whatever the page around them is.
 import { paintFace } from './head/paint.js';
 import { paintState } from './head/expressions.js';
-import { hairMaterial, hairInk } from './hair/shade.js';
+import { hairMaterial, hairInk, hairDepth } from './hair/shade.js';
 
 export function makeStage(THREE, canvas, { background = '#cfc8bd', pixelRatio = 1 } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
@@ -106,6 +106,8 @@ export function figureView(THREE, figure, look) {
       g.setAttribute('hairT', new THREE.BufferAttribute(o.tangents, 3)); g.setAttribute('hairUV', new THREE.BufferAttribute(m.hair.uv, 2));
       g.setAttribute('seed', new THREE.BufferAttribute(m.hair.seed, 1)); g.setAttribute('ao', new THREE.BufferAttribute(m.hair.ao, 1));
       const mesh = new THREE.Mesh(g, hairMaterial(THREE, m.hair)); mesh.castShadow = true; mesh.frustumCulled = false;
+      // (the inner layer hidden where the hair in motion stretches it: src/hair/shade.js, and its shadow with it)
+      if (m.hair.layer === 'inner') { g.setAttribute('parted', new THREE.BufferAttribute(o.parted ?? new Float32Array(m.N).fill(1), 1)); mesh.customDepthMaterial = hairDepth(THREE); }
       group.add(mesh); parts.push({ o, g, mesh, hair: true });
       if (m.hair.layer === 'locks' && m.hair.shading.ink > 0) {
         g.setAttribute('inkw', new THREE.BufferAttribute(Float32Array.from(m.hair.width, w => w * m.hair.shading.ink), 1));
@@ -137,7 +139,7 @@ export function figureView(THREE, figure, look) {
   return {
     group, dots, caps, parts,
     update() {
-      for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; if (p.hair) p.g.attributes.hairT.needsUpdate = true; }
+      for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; if (p.hair) p.g.attributes.hairT.needsUpdate = true; if (p.g.attributes.parted) p.g.attributes.parted.needsUpdate = true; }
       if (face) face.paint(figure.ctx.expressions);
       const P = figure.pose.P;
       if (dots.visible) { for (let j = 0; j < J; j++) dots.setMatrixAt(j, m.makeTranslation(P[j * 3], P[j * 3 + 1], P[j * 3 + 2])); dots.instanceMatrix.needsUpdate = true; }

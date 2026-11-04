@@ -5,7 +5,7 @@
 // - the body's own skin (but a designed head's, which its form is) as the frames drew it, between the previous frame
 //   and this one: a distance from it by moving least squares over the nearest skin points' normals (smooth where the
 //   nearest point changes), how fast the skin there moves (friction), and — deeper in than the skin's points reach — a
-//   coarse inside: the bones' capsules shrunk inside the skin, which say which way is out.
+//   coarse inside: the bones' capsules inside the skin, which say which way is out.
 // Tried and dropped as the contact surface: capsules (round a collarbone one stands over the shoulder like a shelf);
 // each bone's skin carried rigidly by its bone (neighbours disagreed where the skin bends between them).
 // It is updated once a frame by the figure's step (figure.step), before its simulations, and only read by them: what a
@@ -19,28 +19,34 @@
 //   S.head: null | {local(m, x, out), world(m, l, out), turn(m, v, out), distance(l), normal(l, out)}
 //                                                     (l: a point in the head's rest space)
 //   S.skin(m, x, y, z, out) → distance (metres, negative inside; the skin itself, a reader keeps its own thickness);
-//                             out = {n: [3], v: [3]}: which way is out, and the skin's velocity there (m/s)
+//                             out = {n: [3], v: [3], head}: which way is out, the skin's velocity there (m/s), how much
+//                             of the skin there is head (0–1)
 //   S.carrier(m) → the Head joint's {q, p} at that moment; S.headRest: its rest place; S.jumped: its {q, p} before a jump
 //   S.capsules(m) → the inner capsules at that moment [{a, b, ra, rb}] (for drawing)
 import { qRot3, qSlerp, clamp, sst } from './math.js';
-import { headShares } from './head/frame.js';
+import { headShares, HEAD_JOINTS } from './head/frame.js';
 import { normalsOf } from './mesh.js';
 import { fitCapsules } from './capsules.js';
 
 // the skin's points are looked up in cells of 3 cm; a point farther than that from every skin point is not near the
 // skin, and is asked of the capsules (inside, deep, or out)
 const CELL = 0.03, REACH = CELL * CELL, KN = 8;
-// the capsules inside the skin (src/capsules.js): each bone's at the skin's median distance round it, less this (so it
-// never stands out of the skin, where the skin is thinner than its median — round a collarbone)
-const CORE = 0.012;
+// the capsules inside the skin (src/capsules.js): each bone's at the nearest tenth of the skin round it, less CORE — so it
+// stands out of the skin nowhere (at the median, round a collarbone one stood 3 cm over the shoulder, and pushed hair
+// off it in flaps); only what lies farther in than the skin's points reach is asked of them
+const SHARE = 0.1, CORE = 0.005;
 
 export function makeSolids(figure) {
   // (a head without a designed form is met as its skin: a ball fitted to it is too coarse for hair to lie on)
   const rig = figure.rig, sk = rig.skeleton, J = rig.joints, given = figure.body?.head?.shape ?? null, shape = given && !given.ball ? given : null, body = figure.outputs[0], mesh = body.mesh;
   const H = sk.index.Head, JW = sk.index.Jaw;
   const { omega } = headShares(mesh, sk), idx = Uint32Array.from(Array.from(mesh.used).filter(i => !shape || omega[i] < 0.5));
-  const caps = fitCapsules(rig, mesh, { inset: CORE }).map(c => ({ ...c, bound: Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]) / 2 + Math.max(c.ra, c.rb) }));
-  const now = stateOf(idx, caps, [H, JW]), rest = stateOf(idx, caps, [H, JW]);
+  // (where the head is its designed form, its own shape is its inside: the head's bones' capsules are not the skin's)
+  const headBones = new Set(HEAD_JOINTS.map(n => sk.index[n]));
+  const caps = fitCapsules(rig, mesh, { fit: SHARE, inset: CORE }).filter(c => !shape || !headBones.has(c.joint)).map(c => ({ ...c, bound: Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]) / 2 + Math.max(c.ra, c.rb) }));
+  // (how much of each skin point is head: a reader may lie in the head's skin as deep as it lay at rest — roots under
+  // the scalp — but not in the body's)
+  const headOfPoint = Float32Array.from(idx, i => omega[i]), now = stateOf(idx, caps, [H, JW], headOfPoint), rest = stateOf(idx, caps, [H, JW], headOfPoint);
   const head = shape ? headOf(shape, J, H, JW) : null, restNormals = normalsOf(mesh.positions, mesh.triangles, undefined, mesh.used);
   rest.set(null, null, mesh.positions, restNormals, mesh.positions, restNormals, J, 0);
   const S = {
@@ -66,7 +72,7 @@ export function makeSolids(figure) {
 // the solids between two frames: the joints the head rides, the skin's points and normals, the capsules — at both
 // ends. A moment (made and kept by its reader) holds the joints at its share u of the frame, and — once the skin is
 // asked of it — the skin's points there in a hash of 3 cm cells
-function stateOf(idx, caps, joints) {
+function stateOf(idx, caps, joints, HP) {
   const n = idx.length, P0 = new Float32Array(n * 3), P1 = new Float32Array(n * 3), N0 = new Float32Array(n * 3), N1 = new Float32Array(n * 3), V = new Float32Array(n * 3);
   const ends = joints.map(() => [tr(), tr()]), C = caps.map(c => ({ ...c, a0: [0, 0, 0], b0: [0, 0, 0], a1: [0, 0, 0], b1: [0, 0, 0] }));
   let version = 0;
@@ -94,52 +100,34 @@ function stateOf(idx, caps, joints) {
       for (let e = 0; e < joints.length; e++) { const [a, b] = ends[e], o = m.joints[e]; qSlerp(a.q, b.q, u, o.q); o.qi[0] = -o.q[0]; o.qi[1] = -o.q[1]; o.qi[2] = -o.q[2]; o.qi[3] = o.q[3]; for (let k = 0; k < 3; k++) o.p[k] = a.p[k] + (b.p[k] - a.p[k]) * u; }
       return m;
     },
-    // the skin's points and normals at m's moment, in its hash
+    // the skin's points and normals at m's moment, in its hash; the capsules there (each its ends, its middle)
     skinAt(m) {
       if (m.skinOf === version) return;
-      const u = m.u, P = m.P ??= new Float32Array(n * 3), N = m.N ??= new Float32Array(n * 3);
+      const u = m.u, P = m.P ??= new Float32Array(n * 3), N = m.N ??= new Float32Array(n * 3), K = m.C ??= new Float64Array(C.length * 9);
       for (let i = 0; i < n * 3; i++) { P[i] = P0[i] + (P1[i] - P0[i]) * u; N[i] = N0[i] + (N1[i] - N0[i]) * u; }
       (m.hash ??= cellHash()).build(n, P);
+      C.forEach((c, k) => { for (let j = 0; j < 3; j++) { const a = c.a0[j] + (c.a1[j] - c.a0[j]) * u, b = c.b0[j] + (c.b1[j] - c.b0[j]) * u; K[k * 9 + j] = a; K[k * 9 + 3 + j] = b; K[k * 9 + 6 + j] = (a + b) / 2; } });
       m.skinOf = version;
     },
     skin(m, x, y, z, out) {
       st.skinAt(m);
-      const P = m.P, N = m.N, hash = m.hash, items = hash.items, start = hash.start;
-      const bi = out.bi ??= new Int32Array(KN), bd = out.bd ??= new Float64Array(KN);
-      bi.fill(-1); bd.fill(Infinity);
-      const cx = Math.floor(x / CELL), cy = Math.floor(y / CELL), cz = Math.floor(z / CELL);
-      for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
-        const h = bucket(cx + a, cy + b, cz + c);
-        for (let e = start[h], end = start[h + 1]; e < end; e++) {
-          const k3 = items[e] * 3, d = (P[k3] - x) ** 2 + (P[k3 + 1] - y) ** 2 + (P[k3 + 2] - z) ** 2; if (d >= bd[KN - 1] || d > REACH) continue;
-          let q = KN - 1; while (q > 0 && bd[q - 1] > d) { bd[q] = bd[q - 1]; bi[q] = bi[q - 1]; q--; } bd[q] = d; bi[q] = items[e];
-        }
-      }
-      if (bi[0] < 0) return st.deep(m.u, x, y, z, out);
-      const h2 = Math.max(bd[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0, nx = 0, ny = 0, nz = 0, vx = 0, vy = 0, vz = 0;
-      for (let q = 0; q < KN; q++) {
-        const k = bi[q]; if (k < 0) break; const k3 = k * 3, w = Math.exp(-bd[q] / h2);
-        sw += w; sd += w * ((x - P[k3]) * N[k3] + (y - P[k3 + 1]) * N[k3 + 1] + (z - P[k3 + 2]) * N[k3 + 2]);
-        nx += w * N[k3]; ny += w * N[k3 + 1]; nz += w * N[k3 + 2]; vx += w * V[k3]; vy += w * V[k3 + 1]; vz += w * V[k3 + 2];
-      }
-      const l = Math.hypot(nx, ny, nz) || 1; out.n[0] = nx / l; out.n[1] = ny / l; out.n[2] = nz / l; out.v[0] = vx / sw; out.v[1] = vy / sw; out.v[2] = vz / sw;
-      return sd / sw;
+      const d = nearest(m.P, m.N, V, m.hash, x, y, z, out, HP);
+      return d === Infinity ? st.deep(m.C, x, y, z, out) : d;
     },
     // farther than the skin's points reach: inside a capsule (deep in the body: as deep as the capsule's surface lies
-    // under the point, plus the reach — at least that far in), else out of reach (Infinity)
-    deep(u, x, y, z, out) {
-      let best = Infinity, bc = null;
-      for (const c of C) {
-        const ax = c.a0[0] + (c.a1[0] - c.a0[0]) * u, ay = c.a0[1] + (c.a1[1] - c.a0[1]) * u, az = c.a0[2] + (c.a1[2] - c.a0[2]) * u;
-        const bx = c.b0[0] + (c.b1[0] - c.b0[0]) * u, by = c.b0[1] + (c.b1[1] - c.b0[1]) * u, bz = c.b0[2] + (c.b1[2] - c.b0[2]) * u;
+    // under the point, plus the reach — at least that far in), else out of reach (Infinity); K: the capsules at the moment
+    deep(K, x, y, z, out) {
+      let best = Infinity;
+      for (let k = 0; k < C.length; k++) {
+        const c = C[k], o = k * 9, mx = K[o + 6] - x, my = K[o + 7] - y, mz = K[o + 8] - z;
         // (its bounding sphere first)
-        const mx = (ax + bx) / 2 - x, my = (ay + by) / 2 - y, mz = (az + bz) / 2 - z; if (mx * mx + my * my + mz * mz > c.bound * c.bound) continue;
-        const ex = bx - ax, ey = by - ay, ez = bz - az, L2 = ex * ex + ey * ey + ez * ez || 1e-12, t = clamp(((x - ax) * ex + (y - ay) * ey + (z - az) * ez) / L2, 0, 1);
+        if (mx * mx + my * my + mz * mz > c.bound * c.bound) continue;
+        const ax = K[o], ay = K[o + 1], az = K[o + 2], ex = K[o + 3] - ax, ey = K[o + 4] - ay, ez = K[o + 5] - az, L2 = ex * ex + ey * ey + ez * ez || 1e-12, t = clamp(((x - ax) * ex + (y - ay) * ey + (z - az) * ez) / L2, 0, 1);
         const px = x - ax - ex * t, py = y - ay - ey * t, pz = z - az - ez * t, l = Math.hypot(px, py, pz), d = l - (c.ra + (c.rb - c.ra) * t);
-        if (d < best) { best = d; bc = c; if (l > 1e-9) { out.n[0] = px / l; out.n[1] = py / l; out.n[2] = pz / l; } else { out.n[0] = 0; out.n[1] = 1; out.n[2] = 0; } }
+        if (d < best) { best = d; if (l > 1e-9) { out.n[0] = px / l; out.n[1] = py / l; out.n[2] = pz / l; } else { out.n[0] = 0; out.n[1] = 1; out.n[2] = 0; } }
       }
       if (best >= 0) return Infinity;
-      out.v[0] = out.v[1] = out.v[2] = 0;
+      out.v[0] = out.v[1] = out.v[2] = 0; out.head = 0;
       return best - Math.sqrt(REACH);
     },
     capsulesAt(u) { return C.map(c => ({ joint: c.joint, ra: c.ra, rb: c.rb, a: c.a0.map((v, k) => v + (c.a1[k] - v) * u), b: c.b0.map((v, k) => v + (c.b1[k] - v) * u) })); },
@@ -157,6 +145,40 @@ function carried(pose, c, x, out, J) {
   if (!pose) { out[0] = x[0]; out[1] = x[1]; out[2] = x[2]; return; }
   const j = c.joint, q = [pose.Q[j * 4], pose.Q[j * 4 + 1], pose.Q[j * 4 + 2], pose.Q[j * 4 + 3]];
   qRot3(q, x[0] - J[j * 3], x[1] - J[j * 3 + 1], x[2] - J[j * 3 + 2], out); out[0] += pose.P[j * 3]; out[1] += pose.P[j * 3 + 1]; out[2] += pose.P[j * 3 + 2];
+}
+
+// the distance from a skin given by its points and normals (P, N; V their velocities, or null), in its hash: moving least
+// squares over the nearest KN points' planes, weighed by nearness (smooth where the nearest point changes); beyond REACH
+// of every point, Infinity. out: {n, v} which way is out, how fast the skin moves there
+function nearest(P, N, V, hash, x, y, z, out, HP = null) {
+  const items = hash.items, start = hash.start, bi = out.bi ??= new Int32Array(KN), bd = out.bd ??= new Float64Array(KN);
+  bi.fill(-1); bd.fill(Infinity);
+  // (the cells round the point's own, but those farther than the reach from it)
+  const cx = Math.floor(x / CELL), cy = Math.floor(y / CELL), cz = Math.floor(z / CELL), fx = x / CELL - cx, fy = y / CELL - cy, fz = z / CELL - cz;
+  const gap = (f, a) => a < 0 ? f : a > 0 ? 1 - f : 0;
+  for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+    if ((gap(fx, a) ** 2 + gap(fy, b) ** 2 + gap(fz, c) ** 2) * CELL * CELL > REACH) continue;
+    const h = bucket(cx + a, cy + b, cz + c);
+    for (let e = start[h], end = start[h + 1]; e < end; e++) {
+      const k3 = items[e] * 3, d = (P[k3] - x) ** 2 + (P[k3 + 1] - y) ** 2 + (P[k3 + 2] - z) ** 2; if (d >= bd[KN - 1] || d > REACH) continue;
+      let q = KN - 1; while (q > 0 && bd[q - 1] > d) { bd[q] = bd[q - 1]; bi[q] = bi[q - 1]; q--; } bd[q] = d; bi[q] = items[e];
+    }
+  }
+  if (bi[0] < 0) { out.head = 0; return Infinity; }
+  out.head = HP ? HP[bi[0]] : 0;
+  const h2 = Math.max(bd[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0, nx = 0, ny = 0, nz = 0, vx = 0, vy = 0, vz = 0;
+  for (let q = 0; q < KN; q++) {
+    const k = bi[q]; if (k < 0) break; const k3 = k * 3, w = Math.exp(-bd[q] / h2);
+    sw += w; sd += w * ((x - P[k3]) * N[k3] + (y - P[k3 + 1]) * N[k3 + 1] + (z - P[k3 + 2]) * N[k3 + 2]);
+    nx += w * N[k3]; ny += w * N[k3 + 1]; nz += w * N[k3 + 2]; if (V) { vx += w * V[k3]; vy += w * V[k3 + 1]; vz += w * V[k3 + 2]; }
+  }
+  const l = Math.hypot(nx, ny, nz) || 1; out.n[0] = nx / l; out.n[1] = ny / l; out.n[2] = nz / l; out.v[0] = vx / sw; out.v[1] = vy / sw; out.v[2] = vz / sw;
+  return sd / sw;
+}
+// a still surface's distance (points and normals, n×3): (x, y, z) → metres, negative inside; Infinity beyond 3 cm of it
+export function surfaceDistance(P, N) {
+  const hash = cellHash(), out = { n: [0, 0, 0], v: [0, 0, 0] }; hash.build(P.length / 3, P);
+  return (x, y, z) => nearest(P, N, null, hash, x, y, z, out);
 }
 
 // a hash of cells: each skin point in the cell it lies in (counting sort into flat arrays, kept and grown — nothing made

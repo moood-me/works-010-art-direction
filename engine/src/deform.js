@@ -94,8 +94,8 @@ export function turnLayer(change, body) {
   return { kind: 'code', name: change.kind, apply: d.turns(p, regionsOf(body.mesh, body.rig)) };
 }
 // a change of the form: what it does to the rest `from` (the body with the layers before it made at their weight 1),
-// giving `to` — {kind: 'rest', name, joints (J×3 deltas), body: {indices, deltas, centres}, forMesh(mesh, rest, cor,
-// skeleton) → the same for another mesh or null}. The body's own
+// giving `to` — {kind: 'rest', name, joints (J×3 deltas), body: {indices, deltas, centres}, bodies: {from, to}, forMesh(mesh,
+// rest, cor, skeleton) → the same for another mesh or null}. The body's own
 // mesh moves as `to` has it, its centres of rotation as `to`'s are; another skinned mesh (clothes) by the same
 // field, if the deformer is one of the figure (a change of the surface is the body's own).
 export function restLayer(name, change, from, to, sigma) {
@@ -106,7 +106,7 @@ export function restLayer(name, change, from, to, sigma) {
   // the body's mesh: the vertices and centres as the changed rest has them
   const c0 = centresOf(from.mesh, sigma), c1 = centresOf(to.mesh, sigma);
   const body = { ...sparse(from.mesh, from.mesh.positions, to.mesh.positions), centres: Float64Array.from(c1.cor, (v, i) => v - c0.cor[i]) };
-  const layer = { kind: 'rest', name, deformer: change.kind, joints: dJ, body, meshes: new WeakMap() };
+  const layer = { kind: 'rest', name, deformer: change.kind, joints: dJ, body, bodies: { from, to }, meshes: new WeakMap() };
   // another mesh: moved by the field at its rest (the vertices, and its centres where it has them)
   layer.forMesh = (mesh, rest, cor, sk) => {
     if (layer.meshes.has(mesh)) return layer.meshes.get(mesh);

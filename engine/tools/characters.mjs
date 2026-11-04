@@ -27,7 +27,7 @@ import { jobsOf } from '../check/cases.mjs';
 import { complete } from '../src/deform.js';
 import { wrapKey, wrapHead } from '../src/head/wrap.js';
 import { packOf } from '../src/pack.js';
-import { buildStyle, styleKey } from '../src/hair/hair.js';
+import { buildStyle, styleKey, BUILD_SOURCES } from '../src/hair/hair.js';
 
 const ROOT = new URL('../', import.meta.url), E = await createEngine({ root: ROOT, read });
 const [what, ...ids] = process.argv.slice(2);
@@ -99,16 +99,25 @@ if (what === 'upgrade' || what === 'pin') {
   const pieces = (await E.presets()).presets.filter(p => p.group === 'hair').map(p => p.id);
   const list = [...(await Promise.all(pieces.map(async id => (await E.preset(id)).pieces))).flat()];
   for (const d of descs) { const spec = await E.expand(await E.resolve(d)); if (spec.head) list.push(...spec.head.pieces); }
+  // (the code that builds them changed since they were stored: each stored one built again — one that comes out
+  // otherwise means what it builds changed, and its version must go up)
+  const source = hashOf(await Promise.all(BUILD_SOURCES.map(f => readFile(fileURLToPath(new URL(f, ROOT)), 'utf8')))).slice(0, 16), again = index.source !== source;
+  const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
   const keys = new Set();
   for (const p of list.filter(p => p.kind === 'style')) {
     const key = styleKey(p); if (keys.has(key)) continue; keys.add(key);
+    if (index.keys.includes(key) && again) {
+      const stored = await E.stored('hair', key), made = buildStyle(p).arrays;
+      for (const [k, v] of Object.entries(made)) if (!stored.arrays[k] || !same(stored.arrays[k], v.array)) throw new Error(`${p.style}: built now it is not what is stored (${k}) — what hair builds changed: raise HEAD_BUILD.hair (src/head/version.js)`);
+      console.log(`${p.style}: built again, as stored`);
+    }
     if (index.keys.includes(key)) continue;
     const t = Date.now(), { header, arrays } = buildStyle(p), { json, bin } = packOf({ ...header, about: `${p.style}: built in its design space (src/hair/hair.js), by styleKey` }, arrays, key + '.bin');
     await writeFile(dir + key + '.json', json); await writeFile(dir + key + '.bin', bin);
     console.log(`${p.style}${p.off?.length ? ' without ' + p.off.join(', ') : ''}${p.only ? ' only ' + p.only.join(', ') : ''}: built and stored as ${key} (${((Date.now() - t) / 1000).toFixed(1)} s)`);
   }
   for (const key of index.keys) if (!keys.has(key)) { await rm(dir + key + '.json'); await rm(dir + key + '.bin'); console.log(`${key}: nothing takes it now — dropped`); }
-  await save(dir + 'index.json', { ...index, keys: [...keys].sort() });
+  await save(dir + 'index.json', { ...index, source, keys: [...keys].sort() });
   console.log(`${keys.size} hairstyles stored`);
 } else if (what === 'chains') {
   const path = fileURLToPath(new URL('motions/index.json', ROOT)), index = JSON.parse(await readFile(path, 'utf8'));

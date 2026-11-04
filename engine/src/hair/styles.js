@@ -4,7 +4,8 @@
 // colour one. The helpers build the items: `fall` (locks from the crown round the head, with a rhythm of big and small
 // clumps, varied lengths and hooks), `fringe`, `under` (the under-layer of long hair), `sweep` (sleek hair combed to a
 // band or bun), `tail`, `braid` (three locks crossing, one chain), `bun`, `ringlet` (a lock wound round its guide).
-// All in the design space round the neutral head (src/hair/build.js).
+// All in the design space round the neutral head (src/hair/build.js). Their source is here now (experiments/hair keeps
+// В1's own copy, as it was, for its page).
 import { lock, clump, ell, torus, scalpMass, scalp, hairline, CRANIUM } from './build.js';
 const hash = x => { const v = Math.sin(x * 12.9898) * 43758.5453; return v - Math.floor(v); };
 // smaller locks breaking off a clump's end: one on alternate sides, a second on some, each its own length

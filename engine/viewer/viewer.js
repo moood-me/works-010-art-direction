@@ -283,11 +283,14 @@ function framed() {
   const v = qRot([pose.Q[H * 4], pose.Q[H * 4 + 1], pose.Q[H * 4 + 2], pose.Q[H * 4 + 3]], F.toW(0, HAIR ? -0.9 : -0.35, HAIR ? 0 : 0.4).map((x, k) => x - J[H * 3 + k])), c = v.map((x, k) => x + pose.P[H * 3 + k]), h = (HAIR ? 3 : 1.8) * F.R;   // (hair: the head and what hangs from it)
   return { center: c, min: c.map(x => x - h), max: c.map(x => x + h), size: [2 * h, 2 * h, 2 * h] };
 }
-function draw(snap, loop = false) {
+// (the camera follows the figures over FOLLOW seconds — by time, not by frames: on a slow screen it would fall behind a
+// runner and lose it; a scrub or a change goes straight to them)
+const FOLLOW = 0.1;
+function draw(snap, loop = false, dt = Infinity) {
   for (const f of figs) { f.fig.step(clip, S.t, { loop }); f.view.update(); }
-  const b = framed();
+  const b = framed(), k = snap ? 1 : 1 - Math.exp(-dt / FOLLOW);
   if (snap) cam.dist = stage.fit(b, cam).dist * 1.15;
-  if (S.follow || snap) for (let k = 0; k < 3; k++) cam.target[k] = snap ? b.center[k] : cam.target[k] + (b.center[k] - cam.target[k]) * 0.15;
+  if (S.follow || snap) for (let c = 0; c < 3; c++) cam.target[c] += (b.center[c] - cam.target[c]) * k;
   stage.light(bounds());
   $('#time').value = S.t; $('#flab').textContent = clip ? `${Math.floor(S.t)}/${clip.frames - 1}` + (clip.joins.length ? ` · стык ${clip.joins.map(j => j.at).join(', ')}` : '') : '';
 }
@@ -379,7 +382,7 @@ let last = performance.now();
 (function loop(now) {
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
   // (across the clip's end it begins again, the time going on: the hair carries on from where it was on the head)
-  if (clip && S.playing) { S.t += dt * clip.fps; const wrap = S.t > clip.frames - 1; if (wrap) S.t -= clip.frames - 1; draw(wrap, wrap); }
+  if (clip && S.playing) { S.t += dt * clip.fps; const wrap = S.t > clip.frames - 1; if (wrap) S.t -= clip.frames - 1; draw(wrap, wrap, dt); }
   stage.look(cam.target, cam); stage.render();
   requestAnimationFrame(loop);
 })(last);

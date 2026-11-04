@@ -5,8 +5,12 @@
 // lock reads as many strands, not as a smooth body), a two-lobe highlight band along the strands — the first narrow and
 // near white, shifted toward the tip, the second broader, tinted by the hair and broken by the strands —, light
 // coming through the thin edges against the light, and the colour richer where the light is weaker.
-//   hairMaterial(THREE, hair, {inner}) — hair: the mesh's `hair` (shading: spec, spec2, shift, inner, strands)
+//   hairMaterial(THREE, hair) — hair: the mesh's `hair` (layer: locks or inner; shading: spec, spec2, shift, inner, strands)
 //   hairInk(THREE, width) — the outline: back faces pushed out by each point's own width (thinner where a lock thins)
+//   hairDepth(THREE) — the inner layer's shadow, hidden where it is
+// The inner layer is hidden where the hair in motion stretches it past PARTED (its points' attribute `parted`, written by
+// src/hair/sim.js): where locks part, what is under them shows, not a web drawn out between them.
+export const PARTED = 1.8;
 export function hairMaterial(THREE, hair) {
   const s = hair.shading, inner = hair.layer === 'inner';
   const m = new THREE.ShaderMaterial({
@@ -16,8 +20,10 @@ export function hairMaterial(THREE, hair) {
     }]),
     vertexShader: `
 attribute vec3 hairT; attribute vec2 hairUV; attribute float seed; attribute float ao; attribute vec3 color;
+${inner ? 'attribute float parted; varying float vParted;' : ''}
 varying vec3 vN; varying vec3 vT; varying vec3 vP; varying vec2 vUV; varying float vSeed; varying float vAO; varying vec3 vCol;
 void main() {
+  ${inner ? 'vParted = parted;' : ''}
   vec4 wp = modelMatrix * vec4(position, 1.0); vP = wp.xyz;
   vN = normalize(mat3(modelMatrix) * normal); vT = normalize(mat3(modelMatrix) * hairT);
   vUV = hairUV; vSeed = seed; vAO = ao; vCol = color;
@@ -28,11 +34,13 @@ void main() {
 #include <lights_pars_begin>
 uniform float inner; uniform float spec1; uniform float spec2; uniform float shift; uniform float strands;
 varying vec3 vN; varying vec3 vT; varying vec3 vP; varying vec2 vUV; varying float vSeed; varying float vAO; varying vec3 vCol;
+${inner ? 'varying float vParted;' : ''}
 float h1(float x) { return fract(sin(x * 127.1) * 43758.5453); }
 float n1(float x) { float i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f); return mix(h1(i), h1(i + 1.0), f); }
 // a strand's highlight: how near the half vector lies to the plane across the strand
 float kk(vec3 T, vec3 H, float e) { float t = dot(T, H); return pow(max(0.0, sqrt(max(0.0, 1.0 - t * t))), e); }
 void main() {
+  ${inner ? `if (vParted > ${PARTED.toFixed(2)}) discard;` : ''}
   vec3 N = normalize(vN); if (!gl_FrontFacing) N = -N;
   vec3 T = vT - N * dot(vT, N); T = length(T) > 1e-4 ? normalize(T) : vec3(0.0, -1.0, 0.0);
   vec3 V = normalize(cameraPosition - vP);
@@ -56,7 +64,7 @@ void main() {
   #if NUM_HEMI_LIGHTS > 0
   irr = mix(hemisphereLights[0].groundColor, hemisphereLights[0].skyColor, 0.5 * N.y + 0.5) * mix(0.35, 1.0, ao);
   #endif
-  col += mix(rich, alb, ao) * irr / 3.14159 * 3.14159 * 0.32;
+  col += mix(rich, alb, ao) * irr * 0.32;
   float sh = (str - 0.5) * 0.6;
   vec3 tint = mix(vec3(1.0), vCol / max(max(vCol.r, vCol.g), max(vCol.b, 0.02)), 0.4);
   #pragma unroll_loop_start
@@ -65,7 +73,7 @@ void main() {
     float nl = dot(N, L), tl = dot(T, L);
     // diffuse: half the lock's own face, half a strand's side (Kajiya-Kay), wrapped a little
     float dif = mix(clamp((nl + 0.3) / 1.3, 0.0, 1.0), sqrt(max(0.0, 1.0 - tl * tl)) * clamp(nl + 0.6, 0.0, 1.0), 0.45);
-    col += mix(rich, alb, smoothstep(0.0, 0.6, dif)) * C * dif * mix(0.5, 1.0, ao) / 3.14159 * 3.14159 * 0.36;
+    col += mix(rich, alb, smoothstep(0.0, 0.6, dif)) * C * dif * mix(0.5, 1.0, ao) * 0.36;
     // the two highlights along the strands
     vec3 H = normalize(L + V);
     float b1 = kk(normalize(T + N * (shift + sh)), H, 140.0);
@@ -90,5 +98,13 @@ export function hairInk(THREE, color = '#24161a') {
     // (where the width has gone to nothing, no outline: it would only fight with the surface)
     fragmentShader: 'uniform vec3 ink; varying float vk; void main() { if (vk < 1.5e-4) discard; gl_FragColor = vec4(ink, 1.0); }' });
   m.toneMapped = false;
+  return m;
+}
+export function hairDepth(THREE) {
+  const m = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'attribute float parted; varying float vParted;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  vParted = parted;');
+    sh.fragmentShader = 'varying float vParted;\n' + sh.fragmentShader.replace('void main() {', `void main() {\n  if (vParted > ${PARTED.toFixed(2)}) discard;`);
+  };
   return m;
 }

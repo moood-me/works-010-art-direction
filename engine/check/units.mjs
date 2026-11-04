@@ -12,7 +12,8 @@ import { DEFORMERS, complete } from '../src/deform.js';
 import { regionsOf } from '../src/regions.js';
 import { headShares } from '../src/head/frame.js';
 import { wrapKey, wrapHead } from '../src/head/wrap.js';
-import { buildStyle, styleKey } from '../src/hair/hair.js';
+import { buildStyle, styleKey, BUILD_SOURCES } from '../src/hair/hair.js';
+import { hashOf } from '../src/hash.js';
 
 const E = await createEngine({ read });
 let failed = 0, passed = 0;
@@ -329,8 +330,12 @@ await test('hair: every hairstyle preset makes hair on a head; what is stored is
     const pre = await E.preset(p.pin);
     for (const piece of pre.pieces) if (piece.kind === 'style') ok(await E.stored('hair', styleKey(piece)), `${p.id}: its hairstyle is not stored (node engine/tools/characters.mjs hair)`);
   }
+  // (one built again here; every one is built again by the tool whenever the code they are built by changed — its hash
+  // is kept beside them)
   const piece = { kind: 'style', style: 'nimona' }, stored = (await E.stored('hair', styleKey(piece))).arrays, made = buildStyle(piece).arrays;
   for (const [k, v] of Object.entries(made)) ok(apart(stored[k], v.array) === 0, `${k}: the stored hairstyle is not what is built now — its version (src/head/version.js: hair) was not raised`);
+  const { readFile } = await import('node:fs/promises'), source = hashOf(await Promise.all(BUILD_SOURCES.map(f => readFile(new URL('../' + f, import.meta.url), 'utf8')))).slice(0, 16);
+  ok(JSON.parse(await readFile(new URL('../data/hair/index.json', import.meta.url), 'utf8')).source === source, 'the code the hairstyles are built by changed since they were stored: node engine/tools/characters.mjs hair (it builds them again and says whether their version must go up)');
 });
 await test('hair: a hairstyle changed by its groups, colour and physics; refused where it has no such group', async () => {
   const gwen = await hairPin('hair-v1-gwen');
@@ -353,15 +358,15 @@ await test('hair: the step — a scrub back is a fresh start; a loop goes on fro
   for (let t = 1; t <= 20; t++) f.step(clip, t);
   ok(apart(at20, sim.x) < 1e-9, 'played again, the hair is not where it was');
   // a loop: across the clip's end the hair goes on as it was on the head (carried by the head's jump, swinging on as it
-  // swung on it) — on the head it moves, on the whole, no more than in a frame of the motion, where starting afresh
-  // would set it anew (a wave: its body jumps little against the head across the end)
+  // swung on it) — on the head it moves, on the whole, a tenth of what starting afresh would, and no more than twice a
+  // frame of the motion (a wave: across its end the body itself jumps 4 cm against the head, and pushes it a little)
   const wave = await E.clip('wave'), H = E.skeleton.index.Head, free = sim.chains.filter(c => !c.head).flatMap(c => Array.from({ length: c.n }, (_, k) => (c.at + k) * 3));
   const inHead = fig => { const Q = fig.pose.Q, P = fig.pose.P, q = [-Q[H * 4], -Q[H * 4 + 1], -Q[H * 4 + 2], Q[H * 4 + 3]], o = [0, 0, 0], x = fig.simulations[0].x, out = new Float64Array(x.length); for (const i of free) { qRot3(q, x[i] - P[H * 3], x[i + 1] - P[H * 3 + 1], x[i + 2] - P[H * 3 + 2], o); out.set(o, i); } return out; };
   const mean = (a, b) => free.reduce((s, i) => s + Math.hypot(a[i] - b[i], a[i + 1] - b[i + 1], a[i + 2] - b[i + 2]), 0) / free.length;
   let frame = 0, prev = null;
   for (let t = 0; t < wave.frames; t++) { f.step(wave, t); const now = inHead(f); if (t > 10) frame = Math.max(frame, mean(prev, now)); prev = now; }
   f.step(wave, 1, { loop: true }); const pop = mean(prev, inHead(f)); f.step(wave, 0); const fresh = mean(prev, inHead(f));
-  ok(pop <= frame && pop < fresh, `across the loop the hair moved ${(pop * 1000).toFixed(1)} mm on the head (the mean); in a frame of the wave at most ${(frame * 1000).toFixed(1)}, set anew ${(fresh * 1000).toFixed(1)}`);
+  ok(pop <= 2 * frame && pop < fresh / 10, `across the loop the hair moved ${(pop * 1000).toFixed(1)} mm on the head (the mean); in a frame of the wave at most ${(frame * 1000).toFixed(1)}, set anew ${(fresh * 1000).toFixed(1)}`);
   const o = f.outputs.find(o => o.mesh.sim), before2 = Float32Array.from(o.positions); f.frame(clip, 5); ok(apart(before2, o.positions) > 0, 'frame did not draw the hair (at rest on the head)');
 });
 await test('hair: a ready head\'s hair as it was (rigid) unless it moves; moving, at rest it keeps its look', async () => {

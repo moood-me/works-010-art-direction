@@ -1,4 +1,4 @@
-// A hairstyle's geometry (В1, experiments/hair: hair.js, carried here as it was): built round a neutral head — the
+// A hairstyle's geometry: built round a neutral head — the
 // design space (metres, the head's centre near the origin, y up, z forward) — then fitted onto a body's head
 // (src/hair/fit.js). A hairstyle is parts, each a surface of its own; a part is groups of items (a scalp mass over the
 // skull up to a drawn hairline, big locks swept along guide curves, buns, bands), each group named so a hairstyle can be
@@ -9,14 +9,15 @@
 // - merged with the part's other items into one surface drawn a little inside the locks: the darker inner layer that
 //   fills the gaps and that light falls into between clumps.
 // Every lock keeps its guide curve: in motion it is a chain of points rooted on the head (src/hair/sim.js) and the
-// surfaces ride the chains (bindOf, below: each point bound to the chain where it lies).
+// surfaces ride the chains (guidesOf, below: each point bound to the chain where it lies).
+// Its source is here now: В1's hair.js (experiments/hair) was carried over as it was and has changed here since (the
+// inner layer made simpler, quick and slow parts apart, the guides' air); experiments/hair keeps В1's own, as it was,
+// for its page.
 import { smin } from '../math.js';
 import { smax } from '../head/shapes.js';
+import { decimate } from '../decimate.js';
 
 const len = (x, y, z) => Math.hypot(x, y, z);
-// how thick a lock is against В1's (its section's depth): В1's locks were thick lenses with round rims, and read as
-// clay; a lock of hair is a sheet, its rim thin
-const THIN = 0.6;
 const ellip = (x, y, z, rx, ry, rz) => { const k = len(x / rx, y / ry, z / rz); return (k - 1) * Math.min(rx, ry, rz); };
 const capsule = (px, py, pz, a, b, r) => {
   const bx = b[0] - a[0], by = b[1] - a[1], bz = b[2] - a[2], qx = px - a[0], qy = py - a[1], qz = pz - a[2];
@@ -99,7 +100,7 @@ export function frames(o, n) {
     // the tip thins to a point: the strands of a clump gather and end at different lengths
     if (s > 1 - tip && o.point !== false) { const u = (1 - s) / tip; w *= Math.pow(1 - (1 - u) * (1 - u), Math.max(o.sharp ?? 1.3, 1.25) * 1.2); }   // eased in, so the taper starts without a corner
     if (s < (o.root ?? 0)) w *= 0.6 + 0.4 * s / o.root;
-    const th = (o.t !== undefined ? lerpArr(o.t, s) * (w / Math.max(lerpArr(o.w, s), 1e-6)) : w * (o.flat ?? 0.42)) * THIN;
+    const th = (o.t !== undefined ? lerpArr(o.t, s) * (w / Math.max(lerpArr(o.w, s), 1e-6)) : w * (o.flat ?? 0.42));
     S.push({ s, p, T, B, N, w, t: th, lens: o.lens ?? 0.6 });
   }
   // a hooked tip: the end bends sideways, so one edge runs on and the other curves in to the point
@@ -256,8 +257,12 @@ export function scalpMass(cap, under = 0) {
 // Each part is drawn twice: its merged volume, a little shrunk, is the inner layer (darker, it fills the gaps and is
 // what light falls into between clumps); over it every lock is its own swept surface with a true pointed tip.
 // Every point carries the strand direction, across/along coordinates, a per-lock seed and an occlusion term.
-export function buildHair(S, head) {
-  const parts = S.parts.map(part => {
+// What is slow is built once and stored (src/hair/hair.js): the inner layer (a surface out of the part's volume, made
+// simpler where it is flat — src/decimate.js —, its strands, how it is bound to the guides) and the occlusion of both
+// layers (innerOf, occlusionOf). What is quick is made wherever the hairstyle is used: the parts (partsOf), the locks'
+// surfaces (locksOf), the guides and how the locks ride them (guidesOf).
+export function partsOf(S) {
+  return S.parts.map(part => {
     const flat = itemsOf(part), hasLocks = flat.some(it => it.isLock) && part.strands !== false;
     const items = flat.map(it => it.isCap && hasLocks ? { ...it.under(part.under ?? 0.012), k: it.k } : it), k = part.k ?? 0.012;
     const bmin = [1e9, 1e9, 1e9], bmax = [-1e9, -1e9, -1e9];
@@ -274,66 +279,78 @@ export function buildHair(S, head) {
       for (const cu of cuts) d = smax(d, -cu.sdf(x, y, z), cu.k ?? 0.004);
       return d;
     };
-    return { part, items, sdf, bmin, bmax, locks: items.filter(it => it.isLock && part.strands !== false) };
+    const locks = items.filter(it => it.isLock && part.strands !== false);
+    // (the inner layer a little inside the locks: deeper than the merge's swell)
+    const inset = part.inset ?? (locks.length ? Math.max(0.0025, 0.3 * Math.max(part.k ?? 0.012, ...items.map(it => it.k ?? 0))) : 0);
+    return { part, items, sdf, bmin, bmax, locks, inset, palette: paletteOf(part, items), plain: !!part.fabric, crown: S.crown || [0, 0.13, -0.03] };
   });
-  // everything that can shade a point: the hair's volumes and the head
-  const all = (x, y, z) => { let d = head ? head(x, y, z) : 1e9; for (const P of parts) d = Math.min(d, P.sdf(x, y, z)); return d; };
-  const occl = (m, off = 0) => {
-    const ao = new Float32Array(m.pos.length / 3), H = [0.004, 0.012, 0.028];
-    for (let v = 0; v < ao.length; v++) {
-      const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2], nx = m.nor[v * 3], ny = m.nor[v * 3 + 1], nz = m.nor[v * 3 + 2];
-      let o = 0; for (const h of H) o += Math.max(0, h - Math.max(0, all(x + nx * (h + off), y + ny * (h + off), z + nz * (h + off)))) / h;
-      ao[v] = Math.max(0, 1 - o / H.length * 1.25);
+}
+// the surface of a part's volume (a little inside its locks), made simpler where flat (no farther than SIMPLER from
+// where it was, no edge longer than LONGEST; the seams where it is bound to another guide or takes another colour
+// kept), each point bound to the guides (guidesOf), with its strands, colour and occlusion
+const SIMPLER = 0.0004, LONGEST = 0.012;
+export function innerOf(P, parts, head, G) {
+  const { part, items, locks, palette, inset } = P;
+  const full = surfaceNets((x, y, z) => P.sdf(x, y, z) + inset, P.bmin, P.bmax, part.h || (locks.length ? 0.0034 : 0.0028));   // under locks it is only the inner layer: a little coarser
+  const nv0 = full.pos.length / 3, ci0 = new Uint8Array(nv0);
+  // the nearest item's colour (a streak or a band keeps its own): its place in the part's palette
+  if (palette.length > 1) for (let v = 0; v < nv0; v++) { let bd = 1e9; for (const it of items) { const d = it.sdf(full.pos[v * 3], full.pos[v * 3 + 1], full.pos[v * 3 + 2]); if (d < bd) { bd = d; ci0[v] = palette.indexOf(it.color ?? part.color); } } }
+  const bind0 = P.plain ? null : G.bindInner(P, full.pos);
+  const { keep, triangles } = decimate(full.pos, full.idx, { error: SIMPLER, longest: LONGEST, same: (u, v) => ci0[u] === ci0[v] && (!bind0 || bind0.c[u * 3] === bind0.c[v * 3]) });
+  const nv = keep.length, pick = (A, w) => { const o = new A.constructor(nv * w); for (let k = 0; k < nv; k++) for (let j = 0; j < w; j++) o[k * w + j] = A[keep[k] * w + j]; return o; };
+  const m = { pos: pick(full.pos, 3), nor: pick(full.nor, 3), idx: triangles, ci: pick(ci0, 1) };
+  m.bind = bind0 ? { c: pick(bind0.c, 3), u: pick(bind0.u, 3), w: pick(bind0.w, 3) } : { c: new Uint16Array(nv * 3), u: new Float32Array(nv * 3), w: Float32Array.from({ length: nv * 3 }, (_, i) => i % 3 ? 0 : 1) };
+  if (P.plain) return m;
+  m.tan = new Float32Array(nv * 3); m.uv = new Float32Array(nv * 2); m.seed = new Float32Array(nv);
+  const crown = P.crown, info = {};
+  for (let v = 0; v < nv; v++) {
+    const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2], nx = m.nor[v * 3], ny = m.nor[v * 3 + 1], nz = m.nor[v * 3 + 2];
+    // strand direction: from the locks around, weighted by nearness; far from any lock, down from the crown
+    let T = [x - crown[0], y - crown[1], z - crown[2]], tw = 0.02, best = 1e9, near = null;
+    const tl0 = len(...T) || 1; T = T.map(q => q / tl0 * tw);
+    for (const L of locks) {
+      const ox = Math.max(L.bb[0][0] - x, 0, x - L.bb[1][0]), oy = Math.max(L.bb[0][1] - y, 0, y - L.bb[1][1]), oz = Math.max(L.bb[0][2] - z, 0, z - L.bb[1][2]);
+      if (ox + oy + oz > 0.03) continue;
+      const d = L.sdf(x, y, z, info); if (d > 0.03) continue;
+      const wgt = 1 / (Math.max(d, 0) + 0.003) ** 2 * 1e-4;
+      T[0] += info.T[0] * wgt; T[1] += info.T[1] * wgt; T[2] += info.T[2] * wgt;
+      if (d < best) { best = d; near = { L, a: info.a, s: info.s }; }
     }
-    return ao;
-  };
-  const out = [];
-  for (const P of parts) {
-    const { part, items, locks } = P, palette = paletteOf(part, items), inset = part.inset ?? (locks.length ? Math.max(0.0025, 0.3 * Math.max(part.k ?? 0.012, ...items.map(it => it.k ?? 0))) : 0);   // deeper than the merge's swell
-    const m = surfaceNets((x, y, z) => P.sdf(x, y, z) + inset, P.bmin, P.bmax, part.h || (locks.length ? 0.0034 : 0.0028));   // under locks it is only the inner layer: a little coarser
-    const nv = m.pos.length / 3;
-    m.tan = new Float32Array(nv * 3); m.uv = new Float32Array(nv * 2); m.seed = new Float32Array(nv); m.ci = new Uint8Array(nv);
-    const crown = S.crown || [0, 0.13, -0.03], info = {};
-    for (let v = 0; v < nv; v++) {
-      const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2], nx = m.nor[v * 3], ny = m.nor[v * 3 + 1], nz = m.nor[v * 3 + 2];
-      // strand direction: from the locks around, weighted by nearness; far from any lock, down from the crown
-      let T = [x - crown[0], y - crown[1], z - crown[2]], tw = 0.02, best = 1e9, near = null;
-      const tl0 = len(...T) || 1; T = T.map(q => q / tl0 * tw);
-      for (const L of locks) {
-        const ox = Math.max(L.bb[0][0] - x, 0, x - L.bb[1][0]), oy = Math.max(L.bb[0][1] - y, 0, y - L.bb[1][1]), oz = Math.max(L.bb[0][2] - z, 0, z - L.bb[1][2]);
-        if (ox + oy + oz > 0.03) continue;
-        const d = L.sdf(x, y, z, info); if (d > 0.03) continue;
-        const wgt = 1 / (Math.max(d, 0) + 0.003) ** 2 * 1e-4;
-        T[0] += info.T[0] * wgt; T[1] += info.T[1] * wgt; T[2] += info.T[2] * wgt;
-        if (d < best) { best = d; near = { L, a: info.a, s: info.s }; }
-      }
-      const tn = T[0] * nx + T[1] * ny + T[2] * nz; T = [T[0] - tn * nx, T[1] - tn * ny, T[2] - tn * nz];
-      const tl = len(...T) || 1; m.tan.set(T.map(q => q / tl), v * 3);
-      // the nearest item's colour (a streak or a band keeps its own): its place in the part's palette
-      if (palette.length > 1) { let bd = 1e9; for (const it of items) { const d = it.sdf(x, y, z); if (d < bd) { bd = d; m.ci[v] = palette.indexOf(it.color ?? part.color); } } }
-      // the inner layer takes its strands from the lock it lies under; away from locks they run out from the crown
-      if (near && best < 0.012) { m.uv[v * 2] = near.a; m.uv[v * 2 + 1] = near.s; m.seed[v] = (locks.indexOf(near.L) * 0.618) % 1; }
-      else { m.uv[v * 2] = Math.atan2(x - crown[0], z - crown[2]) * 0.06; m.uv[v * 2 + 1] = 0.3; m.seed[v] = 0.5; }
-    }
-    m.ao = occl(m, inset);
-    out.push({ mesh: m, inner: !!locks.length, rough: part.rough, ink: part.ink, plain: !!part.fabric, palette, part, items, locks });
-    if (!locks.length) continue;
-    // the locks: one geometry for the part
-    const ms = locks.map(L => { const q = lockMesh(L); q.L = L; return q; });
-    const nT = ms.reduce((a, q) => a + q.pos.length / 3, 0), G = { pos: new Float32Array(nT * 3), nor: new Float32Array(nT * 3), tan: new Float32Array(nT * 3), uv: new Float32Array(nT * 2), wd: new Float32Array(nT), seed: new Float32Array(nT), ci: new Uint8Array(nT), idx: [], lockOf: new Uint16Array(nT) };
-    let off = 0;
-    for (const q of ms) {
-      const c = palette.indexOf(q.L.color ?? part.color), n = q.pos.length / 3;
-      G.pos.set(q.pos, off * 3); G.nor.set(q.nor, off * 3); G.tan.set(q.tan, off * 3); G.uv.set(q.uv, off * 2); G.wd.set(q.wd, off);
-      const li = locks.indexOf(q.L);
-      for (let v = 0; v < n; v++) { G.seed[off + v] = (li * 0.618) % 1; G.ci[off + v] = c; G.lockOf[off + v] = li; }
-      for (const i of q.idx) G.idx.push(i + off);
-      off += n;
-    }
-    G.ao = occl(G);
-    out.push({ mesh: G, lockLayer: true, rough: part.rough, ink: part.ink, palette, part, items, locks });
+    const tn = T[0] * nx + T[1] * ny + T[2] * nz; T = [T[0] - tn * nx, T[1] - tn * ny, T[2] - tn * nz];
+    const tl = len(...T) || 1; m.tan.set(T.map(q => q / tl), v * 3);
+    // the inner layer takes its strands from the lock it lies under; away from locks they run out from the crown
+    if (near && best < 0.012) { m.uv[v * 2] = near.a; m.uv[v * 2 + 1] = near.s; m.seed[v] = (locks.indexOf(near.L) * 0.618) % 1; }
+    else { m.uv[v * 2] = Math.atan2(x - crown[0], z - crown[2]) * 0.06; m.uv[v * 2 + 1] = 0.3; m.seed[v] = 0.5; }
   }
-  return out;
+  m.ao = occlusionOf(parts, head, m, inset);
+  return m;
+}
+// how much of the light round a surface's points the hair's own volume and the head hide (grooves and inner layers dark)
+export function occlusionOf(parts, head, m, off = 0) {
+  const all = (x, y, z) => { let d = head ? head(x, y, z) : 1e9; for (const P of parts) d = Math.min(d, P.sdf(x, y, z)); return d; };
+  const ao = new Float32Array(m.pos.length / 3), H = [0.004, 0.012, 0.028];
+  for (let v = 0; v < ao.length; v++) {
+    const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2], nx = m.nor[v * 3], ny = m.nor[v * 3 + 1], nz = m.nor[v * 3 + 2];
+    let o = 0; for (const h of H) o += Math.max(0, h - Math.max(0, all(x + nx * (h + off), y + ny * (h + off), z + nz * (h + off)))) / h;
+    ao[v] = Math.max(0, 1 - o / H.length * 1.25);
+  }
+  return ao;
+}
+// a part's locks as one surface (each lock its own sweep), bound to the guides (G: guidesOf)
+export function locksOf(P, G) {
+  const { part, locks, palette } = P, ms = locks.map(L => { const q = lockMesh(L); q.L = L; return q; });
+  const nT = ms.reduce((a, q) => a + q.pos.length / 3, 0), M = { pos: new Float32Array(nT * 3), nor: new Float32Array(nT * 3), tan: new Float32Array(nT * 3), uv: new Float32Array(nT * 2), wd: new Float32Array(nT), seed: new Float32Array(nT), ci: new Uint8Array(nT), idx: [] };
+  M.bind = { c: new Uint16Array(nT * 3), u: new Float32Array(nT * 3), w: new Float32Array(nT * 3) };
+  let off = 0;
+  for (const q of ms) {
+    const c = palette.indexOf(q.L.color ?? part.color), n = q.pos.length / 3, li = locks.indexOf(q.L), ch = G.chainOf(q.L);
+    M.pos.set(q.pos, off * 3); M.nor.set(q.nor, off * 3); M.tan.set(q.tan, off * 3); M.uv.set(q.uv, off * 2); M.wd.set(q.wd, off);
+    for (let v = 0; v < n; v++) { const i = off + v; M.seed[i] = (li * 0.618) % 1; M.ci[i] = c; M.bind.c[i * 3] = ch; M.bind.u[i * 3] = ch ? G.placeOn(q.L, ch, q.pos[v * 3], q.pos[v * 3 + 1], q.pos[v * 3 + 2], q.uv[v * 2 + 1]) : 0; M.bind.w[i * 3] = 1; }
+    for (const i of q.idx) M.idx.push(i + off);
+    off += n;
+  }
+  M.idx = Uint32Array.from(M.idx);
+  return M;
 }
 function vertexNormals(P, idx) {
   const N = new Float32Array(P.length);
@@ -428,8 +445,8 @@ export function surfaceNets(sdf, bmin, bmax, h) {
 // head (firm where the lock lies on the skull, fading down the free part); `bend` turns each segment back toward its
 // designed angle against the one above (stiff at the root, softer toward the tip). Short hair holds its shape all
 // along, long hair swings; heavy hair (tails, braids) swings slower and the air holds it less.
-// → {guides: [{points (n×3), s (its lock's parameter at each), rad, hold, bend, drag, inner, stretch, heavy}],
-//    binds: per surface {c, u, w} (each vertex's three chains, the place on each — node index and fraction — and weights)}
+// a guide: {points (n×3), s (its lock's parameter at each), rad, hold, bend, drag, inner, stretch, heavy, rooted}; a
+// binding: {c, u, w} (each vertex's three chains, the place on each — node index and fraction — and weights)
 // a guide from a curve ({p, s, t, w}: its points, its lock's parameter, depth and width there): a chain of points every 2 cm
 // or so, with how stiff each is; onSkull(p): whether a point lies on the skull (from the root, while it does, held firmly)
 export function guideOf(curve, dyn, coil, onSkull) {
@@ -457,11 +474,20 @@ export function guideOf(curve, dyn, coil, onSkull) {
   return { points, s, rad, hold, bend, drag: dyn.drag ?? (heavy ? 0.1 : 0.21), inner: heavy ? 2.5 : 3, stretch: coil ? 0.18 : 0, heavy, rooted: onSkull(points[0]) };
 }
 
-export function bindOf(built) {
+// the guides of a hairstyle's parts — every lock's own (in the parts' order: the same wherever they are made), each
+// braid's (`rig`) — and how a point rides them:
+//   chainOf(item) — the chain an item rides (0: the head); placeOn(lock, chain, x, y, z, s) — where on it (node index and
+//   fraction); bindInner(part, positions) — the inner layer bound to what it lies under, the nearest few blended by
+//   nearness, sharply, so where locks part it parts with them rather than stretching into a web between them
+export function guidesOf(parts) {
   const guides = [{ head: true, points: [[0, 0, 0], [0, 0, 0]] }];
   const onSkull = p => { const c = CRANIUM.c, r = CRANIUM.r, qx = (p[0] - c[0]) / r[0], qy = (p[1] - c[1]) / r[1], qz = (p[2] - c[2]) / r[2], k0 = Math.hypot(qx, qy, qz) || 1e-6, k1 = Math.hypot(qx / r[0], qy / r[1], qz / r[2]) || 1e-6; return k0 * (k0 - 1) / k1 < 0.03; };
   const chainOf = (curve, dyn, coil) => { guides.push(guideOf(curve, dyn, coil, onSkull)); return guides.length - 1; };
   const own = new Map(), groups = new Map();
+  const groupChain = g => {
+    if (!groups.has(g)) groups.set(g, chainOf(frames({ pts: g.guide, w: 0.03, t: 0.012 }, 64).map(e => ({ p: e.p, s: e.s, t: 0.016, w: 0.03 })), g.dyn || {}, false));
+    return groups.get(g);
+  };
   const lockChain = L => {
     if (L.rig === 'head') return 0;
     if (L.rig) return groupChain(L.rig);
@@ -469,10 +495,7 @@ export function bindOf(built) {
     if (!own.has(L)) own.set(L, chainOf(frames({ ...L.o, coil: undefined }, 64).map(e => ({ p: e.p, s: e.s, t: e.t, w: e.w })), L.o.dyn || {}, !!L.o.coil));
     return own.get(L);
   };
-  const groupChain = g => {
-    if (!groups.has(g)) groups.set(g, chainOf(frames({ pts: g.guide, w: 0.03, t: 0.012 }, 64).map(e => ({ p: e.p, s: e.s, t: 0.016, w: 0.03 })), g.dyn || {}, false));
-    return groups.get(g);
-  };
+  for (const P of parts) for (const it of P.items) if (it.isLock) lockChain(it); else if (it.rig && it.rig !== 'head') groupChain(it.rig);
   // the chain's parameter where its lock's parameter s lies; the nearest place on a chain to a point
   const paramOfS = (g, s) => { const S = g.s; let i = 0; while (i < S.length - 2 && S[i + 1] < s) i++; return i + Math.min(1, Math.max(0, (s - S[i]) / Math.max(1e-9, S[i + 1] - S[i]))); };
   const project = (g, x, y, z) => {
@@ -484,40 +507,32 @@ export function bindOf(built) {
     }
     return u;
   };
-  const placeOn = (L, c, P, v, s) => own.get(L) === c ? paramOfS(guides[c], s) : project(guides[c], P[v * 3], P[v * 3 + 1], P[v * 3 + 2]);
-  const binds = built.map(e => {
-    const m = e.mesh, nv = m.pos.length / 3, c = new Uint16Array(nv * 3), u = new Float32Array(nv * 3), w = new Float32Array(nv * 3);
+  const placeOn = (L, c, x, y, z, s) => own.get(L) === c ? paramOfS(guides[c], s) : project(guides[c], x, y, z);
+  const bindInner = (P, pos) => {
+    const nv = pos.length / 3, c = new Uint16Array(nv * 3), u = new Float32Array(nv * 3), w = new Float32Array(nv * 3), info = {}, cand = [];
     const set = (v, k, ci, ui, wi) => { c[v * 3 + k] = ci; u[v * 3 + k] = ui; w[v * 3 + k] = wi; };
-    if (e.lockLayer) {
-      for (let v = 0; v < nv; v++) { const L = e.locks[m.lockOf[v]], ch = lockChain(L); set(v, 0, ch, ch ? placeOn(L, ch, m.pos, v, m.uv[v * 2 + 1]) : 0, 1); }
-    } else if (!e.locks?.length) {
-      for (let v = 0; v < nv; v++) set(v, 0, 0, 0, 1);
-    } else {
-      // the inner layer: bound to what it lies under, the nearest few blended by nearness — sharply, so where locks part
-      // it parts with them rather than stretching into a web between them
-      const info = {}, cand = [];
-      for (let v = 0; v < nv; v++) {
-        const x = m.pos[v * 3], y = m.pos[v * 3 + 1], z = m.pos[v * 3 + 2]; cand.length = 0; let dmin = 1e9;
-        for (const it of e.items) {
-          const ox = Math.max(it.bb[0][0] - x, 0, x - it.bb[1][0]), oy = Math.max(it.bb[0][1] - y, 0, y - it.bb[1][1]), oz = Math.max(it.bb[0][2] - z, 0, z - it.bb[1][2]);
-          if (ox + oy + oz > Math.min(dmin + 0.01, 0.04)) continue;
-          const d = it.isLock ? it.sdf(x, y, z, info) : it.sdf(x, y, z); if (d > dmin + 0.01) continue;
-          dmin = Math.min(dmin, d); cand.push({ it, d, s: it.isLock ? info.s : 0 });
-        }
-        const acc = new Map();
-        for (const q of cand) {
-          if (q.d > dmin + 0.003) continue;
-          const wt = Math.exp(-(q.d - dmin) / 0.0007); let ch = 0, uu = 0;
-          if (q.it.isLock) { ch = lockChain(q.it); if (ch) uu = placeOn(q.it, ch, m.pos, v, q.s); }
-          else if (q.it.rig && q.it.rig !== 'head') { ch = groupChain(q.it.rig); uu = project(guides[ch], x, y, z); }
-          const a = acc.get(ch) || { w: 0, u: 0 }; a.w += wt; a.u += uu * wt; acc.set(ch, a);
-        }
-        const best = [...acc.entries()].sort((a, b) => b[1].w - a[1].w).slice(0, 3), ws = best.reduce((t, b) => t + b[1].w, 0) || 1;
-        if (!best.length) set(v, 0, 0, 0, 1);
-        best.forEach(([ch, a], k) => set(v, k, ch, a.u / a.w, a.w / ws));
+    if (!P.locks.length) { for (let v = 0; v < nv; v++) set(v, 0, 0, 0, 1); return { c, u, w }; }
+    for (let v = 0; v < nv; v++) {
+      const x = pos[v * 3], y = pos[v * 3 + 1], z = pos[v * 3 + 2]; cand.length = 0; let dmin = 1e9;
+      for (const it of P.items) {
+        const ox = Math.max(it.bb[0][0] - x, 0, x - it.bb[1][0]), oy = Math.max(it.bb[0][1] - y, 0, y - it.bb[1][1]), oz = Math.max(it.bb[0][2] - z, 0, z - it.bb[1][2]);
+        if (ox + oy + oz > Math.min(dmin + 0.01, 0.04)) continue;
+        const d = it.isLock ? it.sdf(x, y, z, info) : it.sdf(x, y, z); if (d > dmin + 0.01) continue;
+        dmin = Math.min(dmin, d); cand.push({ it, d, s: it.isLock ? info.s : 0 });
       }
+      const acc = new Map();
+      for (const q of cand) {
+        if (q.d > dmin + 0.003) continue;
+        const wt = Math.exp(-(q.d - dmin) / 0.0007); let ch = 0, uu = 0;
+        if (q.it.isLock) { ch = lockChain(q.it); if (ch) uu = placeOn(q.it, ch, x, y, z, q.s); }
+        else if (q.it.rig && q.it.rig !== 'head') { ch = groupChain(q.it.rig); uu = project(guides[ch], x, y, z); }
+        const a = acc.get(ch) || { w: 0, u: 0 }; a.w += wt; a.u += uu * wt; acc.set(ch, a);
+      }
+      const best = [...acc.entries()].sort((a, b) => b[1].w - a[1].w).slice(0, 3), ws = best.reduce((t, b) => t + b[1].w, 0) || 1;
+      if (!best.length) set(v, 0, 0, 0, 1);
+      best.forEach(([ch, a], k) => set(v, k, ch, a.u / a.w, a.w / ws));
     }
     return { c, u, w };
-  });
-  return { guides, binds };
+  };
+  return { guides, chainOf: lockChain, placeOn, bindInner };
 }

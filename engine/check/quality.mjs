@@ -18,13 +18,13 @@
 //              on the skin's eyes and the drawn mouth's parting where the lips part (mm); reliefs not stretched; pieces on
 //              the skin in motion and when a layer grows the head
 //   hair       every character whose hair moves: at rest it keeps the rest its groom found (sagging from its design no
-//              more than 2 cm, leaving it no more than 12 mm in 8 s, no jitter past 1 mm a frame), its roots on the scalp
-//              (within 16 mm of 6 mm under it: В1 lays them 9–12 mm under its designed scalp);
-//              in every motion and chain the engine has, and in a strong wind: no point not a number, every lock's length
-//              kept (1 %; ringlets give 35 %), no point faster than 20 m/s, the hair no deeper in the body than at rest
-//              (the 1 % deepest of its surfaces: 20 mm; more than 1 cm in it: 3 % of them — limits set from what the hair
-//              measures: the chains keep their points out, a lock's surface between them dips into the skin where arms
-//              pass through long hair and where it is pressed under a rolling body; 9–18 mm in rolls, lying, jumps)
+//              more than 2 cm, leaving it no more than 12 mm in 8 s, no jitter past 1 mm a frame), its roots as deep under
+//              the scalp as designed (3 mm); in every motion and chain the engine has, whole, and in a strong wind: no point
+//              not a number, every lock's length kept (1 %; ringlets give 35 %), no point faster than 10 m/s, no shimmer
+//              more than the head's that carries it and 1 mm (the 99.9th), the hair no deeper in the body than at rest (its surfaces' 1 % deepest: 5 mm; more
+//              than 1 cm in: 0.3 %), no lock torn (edges past 2×: 0.2 %), the inner layer hidden where locks part (a
+//              quarter at most); walking at 20, 60, 144 frames a second as at 30 (5 mm on the whole, 3 cm at most); long
+//              locks leaning in the wind as the presets say (light 12–30°, strong 45–75°) — each limit says why
 //   node engine/check/quality.mjs [--only skin,bones,feet,order,heads,hair] [--print]   (--print: every measure, not only failures)
 import { createEngine } from '../src/engine.js';
 import { read } from './node-read.mjs';
@@ -33,8 +33,10 @@ import { turnedOver } from '../src/regions.js';
 import { headShares } from '../src/head/frame.js';
 import { formOnBody } from '../src/head/wrap.js';
 import { gradOf, projectOn } from '../src/head/shapes.js';
-import { cross } from '../src/math.js';
+import { cross, clamp } from '../src/math.js';
 import { neighboursOf, normalsOf } from '../src/mesh.js';
+import { surfaceDistance } from '../src/solids.js';
+import { PARTED } from '../src/hair/shade.js';
 import { landmarksOf } from '../src/head/face.js';
 import { SPAN, CY, mouthLines, grinLines, along } from '../src/head/paint.js';
 
@@ -56,6 +58,12 @@ const check = (name, value, limit, unit = '') => {
   const ok = value <= limit;
   if (!ok) failed++; else passed++;
   if (!ok || PRINT) console.log(`${ok ? '  ' : '✗ '}${name}: ${value.toFixed(3)}${unit} (limit ${limit}${unit})`);
+};
+// a measure between two limits
+const within = (name, value, lo, hi, unit = '') => {
+  const ok = value >= lo && value <= hi;
+  if (!ok) failed++; else passed++;
+  if (!ok || PRINT) console.log(`${ok ? '  ' : '✗ '}${name}: ${value.toFixed(3)}${unit} (limits ${lo}–${hi}${unit})`);
 };
 const woman = await E.description('woman');
 const on = async (body, o) => E.figure(await E.expand(resolve({ ...structuredClone(woman), body, ...o }, sk)));
@@ -113,6 +121,15 @@ function pieceGap(piece, skin, body, only) {
   const R = piece.mesh.positions, S = body.mesh.positions, near = [];
   for (const i of piece.mesh.used) { let b = -1, d = Infinity; for (let j = 0; j < body.mesh.N; j += 1) { if (!body.mesh.isUsed[j] || !only(j)) continue; const e = Math.hypot(R[i * 3] - S[j * 3], R[i * 3 + 1] - S[j * 3 + 1], R[i * 3 + 2] - S[j * 3 + 2]); if (e < d) { d = e; b = j; } } if (d < 0.004) near.push([i, b, d]); if (near.length > 40) break; }
   let worst = 0; for (const [i, j, d0] of near) { const p = piece.positions, q = skin.positions; worst = Math.max(worst, Math.hypot(p[i * 3] - q[j * 3], p[i * 3 + 1] - q[j * 3 + 1], p[i * 3 + 2] - q[j * 3 + 2]) - d0); }
+  return worst * 1000;
+}
+// how much farther from (or nearer to) the skin's surface than at rest (mm) a piece's points lie that lie within 4 mm of
+// it at rest (plain: the figure at rest; the skin: the head's, `only`)
+function surfaceGap(piece, skin, plain, only) {
+  const of = (o, P) => { const N = normalsOf(P, o.mesh.triangles, undefined, o.mesh.used), a = [], b = []; for (const i of o.mesh.used) if (only(i)) { a.push(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); b.push(N[i * 3], N[i * 3 + 1], N[i * 3 + 2]); } return surfaceDistance(Float32Array.from(a), Float32Array.from(b)); };
+  const rest = plain.outputs.find(o => o.name === piece.name).positions, s0 = of(plain.outputs[0], plain.outputs[0].positions), s1 = of(skin, skin.positions);
+  let worst = 0;
+  for (const v of piece.mesh.used) { const a = s0(rest[v * 3], rest[v * 3 + 1], rest[v * 3 + 2]); if (!(Math.abs(a) < 0.004)) continue; const b = s1(piece.positions[v * 3], piece.positions[v * 3 + 1], piece.positions[v * 3 + 2]); worst = Math.max(worst, Number.isFinite(b) ? Math.abs(b - a) : Infinity); }
   return worst * 1000;
 }
 // the sharpest angle (degrees) between two triangles that share an edge, among triangles `inside(t)`
@@ -268,7 +285,11 @@ if (!only || only.includes('heads')) {
     if (body.head && spec.head.pieces.length) {
       const big = await E.figure(await E.expand(await E.resolve({ ...structuredClone(await E.description(c)), pose: [layer('proportions-big-head', null)] }))); big.frame(null, 0, big.pose);
       // (headwear is left to the clothes stage, where it becomes a garment)
-      for (const o of big.outputs.filter(o => o.mesh.piece && !WEAR.includes(o.name))) check(`${c}: its ${o.name} on the head grown by a layer, off the skin beyond its rest`, pieceGap(o, big.outputs[0], body, ofHead), 5, ' mm');   // (carried as one by the change of the skin under it, a piece can't follow the head's own unevenness: a bigger head grows its cranium more than its face)
+      // (carried as one by the change of the skin under it, a piece can't follow the head's own unevenness: a bigger head
+      // grows its cranium more than its face; a hairstyle is fitted onto the grown head — it grows with the cranium and
+      // slides over the skin as it grows, so it is measured off the skin's surface, not off the skin's points under it)
+      const plain = await E.figure(c); plain.frame(null, 0, plain.pose);
+      for (const o of big.outputs.filter(o => o.mesh.piece && !WEAR.includes(o.name))) check(`${c}: its ${o.name} on the head grown by a layer, off the skin beyond its rest`, o.mesh.grows ? surfaceGap(o, big.outputs[0], plain, ofHead) : pieceGap(o, big.outputs[0], body, ofHead), 5, ' mm');
     }
     // in the expressions: no edge stretched more than 2.5× (an open jaw: the lips between what the jaw carries and what it
     // doesn't — Anny's mouth is closed skin, there it opens)
@@ -315,55 +336,100 @@ if (!only || only.includes('heads')) {
   }
 }
 
-// ———— hair (src/hair/): every character whose hair moves, in every motion the engine has (and in the wind) ————
+// ———— hair (src/hair/): every character whose hair moves, in every motion the engine has (whole), and in the wind ————
+// The limits say what looks right, not what the hair measures now (each says why).
 if (!only || only.includes('hair')) {
   const HAIR = [];
   for (const c of chars) { const f = await E.figure(c.id); if (f.simulations.length) HAIR.push(c.id); }
   const index = await E.motions(), CLIPS = [...index.motions.filter(m => !m.after).map(m => m.id), ...index.chains.map(c => c.id)];
-  const strong = (await E.preset(pinOf('wind-strong'))).wind;
-  // how deep a point lies in the body's solids now (0 outside): the head's shape, the skin as the frame drew it
-  const depth = (S, x) => {
-    const l = [0, 0, 0], out = { n: [0, 0, 0], v: [0, 0, 0] };
-    let d = S.skin(x[0], x[1], x[2], out); if (S.head) { S.head.local(x, l); d = Math.min(d, S.head.distance(l)); }
-    return Math.max(0, -d);
-  };
-  // the hair's surfaces (every 7th vertex): how much deeper in the body than at the rest, the most over a share of them
-  const surfaces = (fig, sim) => sim.outputs.flatMap(o => Array.from(o.mesh.used).filter((_, k) => k % 7 === 0).map(v => [o, v]));
-  const deepest = (fig, sim, pts, rest) => { const S = sim.solids, out = pts.map(([o, v], k) => depth(S, [o.positions[v * 3], o.positions[v * 3 + 1], o.positions[v * 3 + 2]]) - rest[k]); out.sort((a, b) => b - a); return out; };
+  const wind = async id => (await E.preset(pinOf(id))).wind, strong = await wind('wind-strong'), light = await wind('wind-light');
+  const at = { n: [0, 0, 0], v: [0, 0, 0] }, l = [0, 0, 0];
+  // how deep a point lies in the body's solids at a moment (0 outside): the head's shape, the skin (deep inside too)
+  const depth = (S, m, x, y, z) => { let d = S.skin(m, x, y, z, at); if (S.head) d = Math.min(d, S.head.distance(S.head.local(m, [x, y, z], l))); return Math.max(0, -d); };
+  // the hair's surfaces (every 7th vertex), how much deeper in the body than at rest — the most over a share of them
+  const surfaces = sim => sim.outputs.flatMap(o => Array.from(o.mesh.used).filter((_, k) => k % 7 === 0).map(v => [o, v]));
+  const deepest = (sim, pts, rest) => { const S = sim.solids, m = S.moment(1), out = pts.map(([o, v], k) => depth(S, m, o.positions[v * 3], o.positions[v * 3 + 1], o.positions[v * 3 + 2]) - rest[k]); out.sort((a, b) => b - a); return out; };
+  // each lock's drawn edges stretched past 2× (a share of them): a lock torn into a wedge
+  const torn = sim => { let n = 0, bad = 0; for (const o of sim.outputs) { if (o.mesh.hair?.layer !== 'locks') continue; const T = o.mesh.triangles, P = o.positions, R = o.mesh.positions; for (let t = 0; t < T.length; t += 9) for (let e = 0; e < 3; e++) { const a = T[t + e] * 3, b = T[t + (e + 1) % 3] * 3, l0 = Math.hypot(R[a] - R[b], R[a + 1] - R[b + 1], R[a + 2] - R[b + 2]); if (l0 < 5e-4) continue; n++; if (Math.hypot(P[a] - P[b], P[a + 1] - P[b + 1], P[a + 2] - P[b + 2]) > 2 * l0) bad++; } } return n ? bad / n : 0; };
+  // the inner layer hidden where it parts (src/hair/shade.js PARTED): a share of its points
+  const parted = sim => { let n = 0, hid = 0; for (const o of sim.outputs) if (o.parted) for (const v of o.mesh.used) { n++; if (o.parted[v] > PARTED) hid++; } return n ? hid / n : 0; };
+  // the free points as drawn, and where the head carries their rest (what the head itself does there)
+  const drawn = (sim, out, carried) => { const o = [0, 0, 0], m = sim.solids.moment(1); out.set(sim.D); for (const c of sim.chains) if (!c.head) for (let k = 2; k < c.n; k++) { const i = (c.at + k) * 3; sim.carry(m, sim.R0[i], sim.R0[i + 1], sim.R0[i + 2], o); carried[i] = o[0]; carried[i + 1] = o[1]; carried[i + 2] = o[2]; } };
+  // a shimmer at a point: its motion turning back and forth two frames running (its second differences, three in a row,
+  // each against the last), as much as the least of them — a quarter of it (a point shimmering by ε a frame gives ε; a
+  // swing, an impact, a turn, nothing)
+  const shimmer = (A, i) => { const a = [0, 1, 2], d = (s, c) => A[s][i + c] - 2 * A[s + 1][i + c] + A[s + 2][i + c], u = a.map(c => d(0, c)), v = a.map(c => d(1, c)), w = a.map(c => d(2, c)), dot = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2]; return dot(u, v) < 0 && dot(v, w) < 0 ? Math.min(Math.hypot(...u), Math.hypot(...v), Math.hypot(...w)) / 4 : 0; };
   for (const id of HAIR) {
     const fig = await E.figure(id), sim = fig.simulations[0], S = sim.solids;
-    // at rest: the rest kept (it hangs where its groom found it, and stays), roots on the scalp, no jitter
-    fig.step(null, 0); const R = Float64Array.from(sim.x), pts = surfaces(fig, sim), rest = pts.map(([o, v]) => depth(S, [o.positions[v * 3], o.positions[v * 3 + 1], o.positions[v * 3 + 2]]));
+    const free = sim.chains.filter(c => !c.head).flatMap(c => Array.from({ length: c.n - 2 }, (_, k) => (c.at + k + 2) * 3));
+    // at rest: the rest kept (it hangs where its groom found it, and stays), no jitter
+    fig.step(null, 0); const R = Float64Array.from(sim.x), pts = surfaces(sim), m0 = S.moment(1), rest = pts.map(([o, v]) => depth(S, m0, o.positions[v * 3], o.positions[v * 3 + 1], o.positions[v * 3 + 2]));
     let prev = null, jitter = 0;
     for (let t = 1; t <= 240; t++) { fig.step(null, t); if (t > 120) { for (let i = 0; i < sim.x.length; i += 3) jitter = Math.max(jitter, Math.hypot(sim.x[i] - prev[i], sim.x[i + 1] - prev[i + 1], sim.x[i + 2] - prev[i + 2])); } prev = Float64Array.from(sim.x); }
     let kept = 0; for (let i = 0; i < R.length; i += 3) kept = Math.max(kept, Math.hypot(sim.x[i] - R[i], sim.x[i + 1] - R[i + 1], sim.x[i + 2] - R[i + 2]));
+    // (2 cm: a hairstyle that hangs lower than drawn is another hairstyle; 12 mm in 8 s and 1 mm a frame: hair standing
+    // still that creeps or shimmers is seen at once)
     check(`${id}: hanging at rest, it sags from its design`, sim.rested.sag * 1000, 20, ' mm');
     check(`${id}: standing still 8 s, it leaves its rest`, kept * 1000, 12, ' mm');
     check(`${id}: standing still, it moves in a frame (jitter)`, jitter * 1000, 1, ' mm');
-    // roots: each guide that grows from the scalp has its root on the head's surface — its designed form, else its skin
-    // (its design lays it a little under the scalp); the guides at rest are in the head's rest space as they are
-    let root = 0; const l = [0, 0, 0], at = { n: [0, 0, 0], v: [0, 0, 0] };
-    S.rest();
-    for (const c of sim.chains) if (c.rooted) { for (let j = 0; j < 3; j++) l[j] = sim.X0[c.at * 3 + j]; const d = S.head ? S.head.distance(l) : S.skin(l[0], l[1], l[2], at); root = Math.max(root, Math.abs(d + 0.006)); }
-    check(`${id}: a root off the scalp`, root * 1000, 16, ' mm');
-    for (const [clip, wind] of [...CLIPS.map(c => [c, null]), ['idle', strong]]) {
-      const C = await E.clip(clip); sim.wind = wind; fig.reset();
-      let len = 0, speed = 0, bad = 0, deep = 0, share = 0;
-      for (let t = 0; t < Math.min(C.frames, 240); t++) {
+    // roots: each root as deep under the head's surface (its form, else its skin) as its design has it under the designed
+    // head, grown with the head (3 mm: under the scalp mass, thicker than that, it doesn't show)
+    let root = 0, roots = 0; const mr = S.rest.moment(0);
+    for (const c of sim.chains) if (c.rooted && c.depth !== null) { const i = c.at * 3, d = S.head ? S.head.distance(S.head.local(mr, [sim.X0[i], sim.X0[i + 1], sim.X0[i + 2]], l)) : S.skin(mr, sim.X0[i], sim.X0[i + 1], sim.X0[i + 2], at); root = Math.max(root, Math.abs(d - c.depth)); roots++; }
+    if (roots) check(`${id}: a root off its designed depth under the scalp`, root * 1000, 3, ' mm');
+    for (const [clip, w] of [...CLIPS.map(c => [c, null]), ['idle', strong]]) {
+      const C = await E.clip(clip); sim.wind = w; fig.reset();
+      let len = 0, speed = 0, bad = 0, deep = 0, share = 0, tear = 0, hide = 0, flick = [], shook = [];
+      const h = [0, 1, 2, 3, 4].map(() => new Float64Array(sim.x.length)), g = [0, 1, 2, 3, 4].map(() => new Float64Array(sim.x.length));
+      for (let t = 0; t < C.frames; t++) {
         fig.step(C, t);
         for (const c of sim.chains) if (!c.head) for (let k = 0; k < c.n - 1; k++) { const i = (c.at + k) * 3, d = Math.hypot(sim.x[i + 3] - sim.x[i], sim.x[i + 4] - sim.x[i + 1], sim.x[i + 5] - sim.x[i + 2]); len = Math.max(len, Math.abs(d / c.L[k] - 1) - (c.stretch ? 0.35 : 0)); }
         for (let i = 0; i < sim.v.length; i++) { if (!Number.isFinite(sim.x[i])) bad++; }
         for (let i = 0; i < sim.v.length; i += 3) speed = Math.max(speed, Math.hypot(sim.v[i], sim.v[i + 1], sim.v[i + 2]));
-        if (t % 6 === 0) { const d = deepest(fig, sim, pts, rest); deep = Math.max(deep, d[Math.floor(d.length * 0.01)]); share = Math.max(share, d.filter(x => x > 0.01).length / d.length); }
+        // the hair's shimmer, and its head's: where the head carries the hair's rest (Kimodo's run shakes the head so,
+        // 7 mm at the hair's tips)
+        h.push(h.shift()); g.push(g.shift()); drawn(sim, h[4], g[4]);
+        if (t >= 4) for (const i of free) { flick.push(shimmer(h, i)); shook.push(shimmer(g, i)); }
+        if (t % 6 === 0) { const d = deepest(sim, pts, rest); deep = Math.max(deep, d[Math.floor(d.length * 0.01)]); share = Math.max(share, d.filter(x => x > 0.01).length / d.length); tear = Math.max(tear, torn(sim)); hide = Math.max(hide, parted(sim)); }
       }
-      const what = `${id} in ${clip}${wind ? ' in a strong wind' : ''}`;
+      flick.sort((a, b) => a - b); shook.sort((a, b) => a - b);
+      const what = `${id} in ${clip}${w ? ' in a strong wind' : ''}`;
       check(`${what}: points not numbers`, bad, 0);
       check(`${what}: a lock's segment longer or shorter (share)`, len, 0.01);
-      check(`${what}: the fastest point (m/s)`, speed, 20);
-      check(`${what}: the hair through the body, deeper than at rest (the 1% deepest)`, deep * 1000, 20, ' mm');
-      check(`${what}: the share of the hair more than 1 cm in the body`, share * 100, 3, ' %');
+      // (10 m/s: hair is whipped by a head that turns and a body that runs at most so fast; faster, it has flown off)
+      check(`${what}: the fastest point (m/s)`, speed, 10);
+      // (the hair shimmers no more than the head that carries it does there, and a millimetre — a pixel at the size a
+      // figure is shown — more; the 99.9th of every point in every frame)
+      check(`${what}: the hair shimmers beyond its head (the 99.9th's, against the head's)`, (flick[Math.floor(flick.length * 0.999)] - shook[Math.floor(shook.length * 0.999)]) * 1000, 1, ' mm');
+      // (the hair's surfaces between its chains may dip into the skin where they lie on it: by 5 mm a lock lying on the
+      // skin still reads as lying on it; deeper it goes through. 1% of them at most, and more than 1 cm in it: none to speak of)
+      check(`${what}: the hair through the body, deeper than at rest (the 1% deepest)`, deep * 1000, 5, ' mm');
+      check(`${what}: the share of the hair more than 1 cm in the body`, share * 100, 0.3, ' %');
+      // (a lock's edge drawn out past twice its length is a wedge torn in it: 0.2% of them at most)
+      check(`${what}: a lock torn (its edges past 2×, share)`, tear * 100, 0.2, ' %');
+      // (the inner layer hidden where locks part: where most of it is hidden the hair has fallen apart — a quarter at most)
+      check(`${what}: the inner layer hidden where locks part (share)`, hide * 100, 25, ' %');
     }
     sim.wind = null;
+    // the same at any frame rate: walking 2 s at 20, 60 and 144 frames a second against 30 (5 mm on the whole and 3 cm
+    // at most: a lock's swing a little earlier or later, not another motion)
+    const walk = await E.clip('walk'), at30 = (fps => { fig.reset(); const st = 30 / fps, n = Math.round(60 / st); for (let k = 0; k <= n; k++) fig.step(walk, k * st); return Float64Array.from(sim.D); });
+    const ref = at30(30);
+    for (const fps of [20, 60, 144]) {
+      const x = at30(fps); let most = 0, sum = 0; for (const i of free) { const d = Math.hypot(x[i] - ref[i], x[i + 1] - ref[i + 1], x[i + 2] - ref[i + 2]); most = Math.max(most, d); sum += d; }
+      check(`${id}: walking 2 s at ${fps} frames a second against 30, the hair apart (mean)`, sum / free.length * 1000, 5, ' mm');
+      check(`${id}: walking 2 s at ${fps} frames a second against 30, the hair apart (most)`, most * 1000, 30, ' mm');
+    }
+    // the wind: long locks (root to tip more than 30 cm: a bob's are stiff, short hair holds its shape) lean from where
+    // they hang still as the presets say — some 20° in a light wind, some 60° in a strong one (12–30°, 45–75°)
+    const long = sim.chains.filter(c => !c.head && c.L.reduce((a, b) => a + b, 0) > 0.3);
+    if (long.length >= 3) {
+      const dirs = () => long.map(c => { const r = c.at * 3, t = (c.at + c.n - 1) * 3, v = [0, 1, 2].map(k => sim.x[t + k] - sim.x[r + k]), q = Math.hypot(...v); return v.map(x => x / q); });
+      const leanIn = w => { sim.wind = w; fig.reset(); for (let t = 0; t < 150; t++) fig.step(null, t); const out = []; for (let t = 150; t < 180; t++) { fig.step(null, t); out.push(dirs()); } return out; };
+      const still = leanIn(null)[0], lean = w => { const D = leanIn(w); let s = 0, n = 0; for (const f of D) f.forEach((v, k) => { s += Math.acos(clamp(v[0] * still[k][0] + v[1] * still[k][1] + v[2] * still[k][2], -1, 1)) * 180 / Math.PI; n++; }); return s / n; };
+      const a = lean(light), b = lean(strong); sim.wind = null;
+      within(`${id}: a light wind leans its long locks`, a, 12, 30, '°'); within(`${id}: a strong wind leans its long locks`, b, 45, 75, '°');
+    }
   }
 }
 

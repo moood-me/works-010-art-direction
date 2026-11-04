@@ -70,9 +70,10 @@ export class Figure {
       o.skinner = new Skinner(mesh, this.rig, skinning);
       // what each change of the rest does to this mesh: the body's own as the change made it, another's by its field
       const sk = this.rig.skeleton, rest = Float32Array.from(mesh.positions), cor = o.skinner.cor ? Float32Array.from(o.skinner.cor) : null;
-      // (a mesh that follows its host's rest takes the changes of the rest as the host's vertices it is bound to do)
+      // (a mesh that follows its host's rest takes the changes of the rest as the host's vertices it is bound to do; a
+      // mesh that is fitted onto its body — hair — is fitted onto the changed one: mesh.grows(from, to))
       o.changes = mesh.follow ? [] : this.restLayers.map(l => {
-        const m = name === 'body' ? l.body : l.forMesh(mesh, rest, cor, sk);
+        const m = name === 'body' ? l.body : mesh.grows ? mesh.grows(l.bodies.from, l.bodies.to) : l.forMesh(mesh, rest, cor, sk);
         if (m) for (let k = 0; k < m.indices.length; k++) for (let c = 0; c < 3; c++) rest[m.indices[k] * 3 + c] += m.deltas[k * 3 + c];
         if (m?.centres && cor) for (let i = 0; i < cor.length; i++) cor[i] += m.centres[i];
         return m;
@@ -121,7 +122,9 @@ export class Figure {
     this.poseAt(clip, t, pose);
     const { morphs, rest, applied } = this.ctx;
     for (const o of this.outputs) {
-      const m = o.mesh; if (skip?.has(o)) continue;
+      const m = o.mesh;
+      // (what a simulation writes takes its rest this frame from here: the changes of the rest weighed in)
+      if (skip?.has(o)) { if (o.rest && !m.follow) restOf(o, morphs[o.name] || {}, applied); continue; }
       if (m.kind === 'skinned') o.skinner.skin(pose, o.positions, m.follow ? followed(o) : o.rest ? restOf(o, morphs[o.name] || {}, applied) : m.positions, rest, o.cor ? centresOf(o, applied) : o.skinner.cor);
       else if (m.kind === 'rigid') rigid(o, pose, this.rig);
       else if (m.build) m.build(pose, this.rig, o.positions);

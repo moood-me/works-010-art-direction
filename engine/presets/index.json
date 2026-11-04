@@ -1599,7 +1599,7 @@
   },
   {
    "id": "hair-v1-alva",
-   "pin": "hair-v1-alva@f0b01bbc541ee122",
+   "pin": "hair-v1-alva@8ed63fc8370380cb",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Альва: шторка",
@@ -1612,7 +1612,7 @@
   },
   {
    "id": "hair-v1-anime",
-   "pin": "hair-v1-anime@9155fe8f49e7d1e3",
+   "pin": "hair-v1-anime@23ee45c08f7dd9ea",
    "group": "hair",
    "label": {
     "ru": "причёска В1: аниме: чёлка и длинные",
@@ -1625,7 +1625,7 @@
   },
   {
    "id": "hair-v1-ariel",
-   "pin": "hair-v1-ariel@244dee768b1be50a",
+   "pin": "hair-v1-ariel@0623ded28ef2929c",
    "group": "hair",
    "label": {
     "ru": "причёска В1: рыжая девушка: длинные волны",
@@ -1638,7 +1638,7 @@
   },
   {
    "id": "hair-v1-doll",
-   "pin": "hair-v1-doll@aa9d2620ffcc6904",
+   "pin": "hair-v1-doll@611225a6d5739a62",
    "group": "hair",
    "label": {
     "ru": "причёска В1: девочка-кукла: фиолетовые",
@@ -1651,7 +1651,7 @@
   },
   {
    "id": "hair-v1-ginger",
-   "pin": "hair-v1-ginger@ee8470c796b01110",
+   "pin": "hair-v1-ginger@2c1cb71c88133578",
    "group": "hair",
    "label": {
     "ru": "причёска В1: рыжий мальчик: начёс",
@@ -1664,7 +1664,7 @@
   },
   {
    "id": "hair-v1-giulia",
-   "pin": "hair-v1-giulia@08e8d3af256ce97b",
+   "pin": "hair-v1-giulia@4e5b8f09282c4fa2",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Джулия: кудри под шапкой",
@@ -1677,7 +1677,7 @@
   },
   {
    "id": "hair-v1-gogo",
-   "pin": "hair-v1-gogo@e9f53816f4862ea1",
+   "pin": "hair-v1-gogo@636a6cd23ee86e24",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Гоу-Гоу: тёмное каре с прядью",
@@ -1690,7 +1690,7 @@
   },
   {
    "id": "hair-v1-gwen",
-   "pin": "hair-v1-gwen@773f3e2b671d4505",
+   "pin": "hair-v1-gwen@27aa954e4949faf8",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Гвен: каре с косым пробором",
@@ -1703,7 +1703,7 @@
   },
   {
    "id": "hair-v1-jack",
-   "pin": "hair-v1-jack@c2f97ca0cc890873",
+   "pin": "hair-v1-jack@94daf18d97039dc1",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Джек: растрёпанные белые",
@@ -1716,7 +1716,7 @@
   },
   {
    "id": "hair-v1-kbraid",
-   "pin": "hair-v1-kbraid@d84434032150690c",
+   "pin": "hair-v1-kbraid@6067589d7912a37c",
    "group": "hair",
    "label": {
     "ru": "причёска В1: K-pop: коса",
@@ -1729,7 +1729,7 @@
   },
   {
    "id": "hair-v1-kbuns",
-   "pin": "hair-v1-kbuns@8c9da72e4cf9a032",
+   "pin": "hair-v1-kbuns@501ac18d0ef67b05",
    "group": "hair",
    "label": {
     "ru": "причёска В1: K-pop: два пучка",
@@ -1742,7 +1742,7 @@
   },
   {
    "id": "hair-v1-kpony",
-   "pin": "hair-v1-kpony@00a22bce66635a12",
+   "pin": "hair-v1-kpony@3c5e37c02d077568",
    "group": "hair",
    "label": {
     "ru": "причёска В1: K-pop: высокий хвост",
@@ -1755,7 +1755,7 @@
   },
   {
    "id": "hair-v1-marco",
-   "pin": "hair-v1-marco@e4b46afd057da2a1",
+   "pin": "hair-v1-marco@6d857f7e983c3e8f",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Марко: чёлка набок",
@@ -1768,7 +1768,7 @@
   },
   {
    "id": "hair-v1-nimona",
-   "pin": "hair-v1-nimona@9c8d7928deb7d9d5",
+   "pin": "hair-v1-nimona@8f640e0f565a253d",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Нимона: вихры, бок выбрит",

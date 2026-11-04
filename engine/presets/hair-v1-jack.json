@@ -15,13 +15,7 @@
   {
    "id": "hair",
    "kind": "style",
-   "style": "jack",
-   "physics": {
-    "hold": 1,
-    "bend": 1,
-    "drag": 1,
-    "wind": 1
-   }
+   "style": "jack"
   }
  ]
 }

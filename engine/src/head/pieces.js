@@ -38,12 +38,14 @@ export function piecesOf(list, ctx) {
 // a piece on the head: carried by the Head joint (skinned to it alone: every skinning method moves it the same, so the
 // cheapest, linear, does), and following the head's skin — bound to the skin of the head nearest it, so whatever changes
 // the head's rest in a frame (an expression's morph, a change of the form as a pose layer: a bigger head) moves it too
-// (positions in metres, on the body's rest)
+// (positions in metres, on the body's rest) — or, a hairstyle, fitted anew onto a changed head (o.grows: src/hair/hair.js)
+const ON_HEAD = new WeakMap();
 function onHead(ctx, name, m, o) {
-  const P = m.positions, n = P.length / 3, { omega } = headShares(ctx.body.mesh, ctx.sk);
+  const P = m.positions, n = P.length / 3, B = ctx.body.mesh;
+  const only = ON_HEAD.get(B) ?? ON_HEAD.set(B, Uint8Array.from(headShares(B, ctx.sk).omega, w => w > 0.5 ? 1 : 0)).get(B);
   return { kind: 'skinned', id: name, positions: P, triangles: m.triangles, floor: false, piece: true, skinning: { method: 'lbs' },
     skin: { K: 1, joints: new Uint8Array(n).fill(ctx.sk.index.Head), weights: new Float32Array(n).fill(1) },
-    follow: followOf('body', ctx.body.mesh, ctx.body.mesh.positions, P, Uint8Array.from(omega, w => w > 0.5 ? 1 : 0)), ...o };
+    follow: o.grows ? null : followOf('body', B, B.positions, P, only), ...o };
 }
 const toWorld = (P, F) => { const out = new Float32Array(P.length); for (let i = 0; i < P.length; i += 3) { const w = F.toW(P[i], P[i + 1], P[i + 2]); out[i] = w[0]; out[i + 1] = w[1]; out[i + 2] = w[2]; } return out; };
 
