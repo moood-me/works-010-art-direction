@@ -43,6 +43,37 @@ walk through the engine.
 
 Neural models were not used; StdGEN's results were not needed.
 
+## Second round: alive (asked by Pavel through the orchestrator)
+
+Asked: the face alive in its own way (blinks, saccades, gaze leading head turns, speech mouth shapes, smooth
+transitions and mixes of the sheet's expressions — timing from real faces, not sines); a few Kimodo motions with the
+live face; cheap right fixes of hands, socks and the skirt in a wide step; the viewer able to show all of it.
+
+- **The live face** (`tools/web/face.js`): the drawing's face parts ported to canvas (`eye`, `brow`, `closed_eye` of
+  `styles/s3-graphic/tools/face.py`, the mouths of `faces.py` turned into one mouth of a few numbers: width, opening,
+  smile, round, box, teeth) and drawn every frame into the head's painted layer (premultiplied, so no dark rim where
+  the paint ends). Expressions are weights of the five, mixed parameter by parameter; a change settles as a critically
+  damped spring (brows a little faster than the rest). Blinks: log-normal intervals (median 2.8 s), 12 % doubles,
+  close 70 ms / hold 30 ms / open 150 ms. Saccades: log-normal fixations (median 0.55 s), 22 ms + 2.7 ms/deg, fast
+  start, slower landing. Gaze lead: the head's yaw/pitch over the clip at 100 Hz (`headTrack` in `anya.js`); the eyes
+  jump toward where the head will be in 0.25 s and come back smoothly as it follows; most big jumps take a blink.
+  Speech: syllables (consonant + vowel visemes: closed, f/v, e/i, a, o, u), words and phrase pauses from a seeded
+  generator; the mouth follows them as a spring (co-articulation); the lower face is on the Jaw joint (new weights in
+  `build.py`) and opens a little with the mouth. Everything is a function of time from seeded schedules, so a film is
+  the same every time and the viewer can scrub. `still: true` turns blinks and saccades off for pictures.
+- **Hands**: Anny's spread fingers replaced by mittens as drawn (fingers together, a small thumb), rigid on the hand
+  joint (`build.py`, HANDS). Kimodo's finger turns are not used.
+- **Socks and shoes**: the legs carry their rest height per vertex (`band`); the shader cuts shoe (below 0.06 m) and
+  sock (below 0.134 m, the drawn sock top) per pixel — clean edges instead of colours smeared over big triangles.
+- **Skirt in a step**: the thighs' share at the hem lowered to 55 % (less of a trouser leg), and after skinning every
+  skirt point below mid-thigh that is inside a leg's capsule (lower thigh r 6 cm, shin r 4.8 cm) is put on its surface
+  (`pushSkirt` in `anya.js`) — the shin no longer shows through the hem. Not cloth: no swing, no folds.
+- **Motions** (`tools/make_live.py`): idle (looking round), walk, wave (talking), sit, stomp, all Kimodo's from
+  `engine/motions` through the engine's retargeting and skinning (`anya.js` does what `Figure.frame` does, plus the
+  jaw and the skirt push), and two close films of the face.
+- **Viewer** (`tools/web/view.html` → `ui.js`): drag to turn, wheel nearer, motion select, play/pause, scrub,
+  expression buttons and five mix sliders, talk on/off, face close, front view.
+
 ## Repeat
 
 ```
@@ -56,7 +87,8 @@ python3 build.py /home/user/cache/to3d-r1-s3-anya/out          # the pack: anya.
 cp /home/user/cache/to3d-r1-s3-anya/faces/face-*.png /home/user/cache/to3d-r1-s3-anya/out/
 python3 bases.py /home/user/cache/to3d-r1-s3-anya/out          # the bases as they come, for the steps
 NODE_PATH=/opt/node-tools/node_modules python3 compare.py /cache/to3d-r1-s3-anya/out/anya.json /home/user/cache/to3d-r1-s3-anya/cmp
-NODE_PATH=/opt/node-tools/node_modules python3 make_pics.py    # ../pics: pictures and mp4s (~6 min)
+NODE_PATH=/opt/node-tools/node_modules python3 make_pics.py    # ../pics: pictures and the turn (~5 min)
+python3 make_live.py                                           # ../pics: the live face and motions (~15 min; reads ../data)
 cp /home/user/cache/to3d-r1-s3-anya/out/anya.* /home/user/cache/to3d-r1-s3-anya/out/face-*.png ../data/
 ```
 
@@ -81,11 +113,10 @@ width), `uv`/`tex` (the face layer), `pn`/`pw`/`pj` (smoothed normals for the sh
 
 ## Honest state, what is weak
 
-- The eye is a painted sign (no ball, no lids): exact to the drawing, but no blinking or gaze yet.
-- Hands are Anny's (splayed fingers, more real than the drawn mitten hands); not fitted.
-- Socks and shoes are colour on the leg and foot; the sock's edge is blurred (big triangles); shoes are smoothed feet.
-- In a wide step the skirt follows the thigh like a trouser leg, and from the front the shin can show through the
-  front of the hem: skinning, not cloth.
+- The eye is a painted sign (no ball, no lids): exact to the drawing; it blinks and looks, drawn.
+- Hands are mittens: no fingers, so no grip or gesture of fingers.
+- Shoes are smoothed feet coloured; their shape is still Anny's foot.
+- The skirt is skinned and pushed off the legs, not cloth: it does not swing or fold.
 - Hair is rigid (Head, with the ends on the chest); no inertia.
 - The profile shows more cheek and an ear in the drawing; the 3D follows the front view there (the two drawings
   disagree a little).

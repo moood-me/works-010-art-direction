@@ -452,7 +452,7 @@ function poseFromMotion(I, M, f, travel, look = 0, offset = [0, 0], upright = fa
   }
   // upright: the clip's average stoop taken out (the whole upper body turned back about the waist), its movement kept
   if (upright && M.lean) {
-    const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(W.Hips), fix = new THREE.Quaternion().setFromAxisAngle(ax, M.lean * Math.PI / 180);
+    const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(W.Hips), fix = new THREE.Quaternion().setFromAxisAngle(ax, 0.85 * M.lean * Math.PI / 180);
     for (const b of UPPER) W[b].premultiply(fix);
   }
   if (I.free) {
@@ -544,7 +544,7 @@ function update(I, t, dt) {
     const lk = I.look ? lookAt(t % (n / M.fps)) : 0;
     poseFromMotion(I, M, f, I.travel, lk, off, I.clip.upright);
     const fa = Math.min(f + 0.3 * M.fps, n - 1), y0 = M.hyaw[0];
-    const up = I.clip.upright ? -M.lean : 0;
+    const up = I.clip.upright ? -0.85 * M.lean : 0;
     headYaw = atF(M.hyaw, f, n) - y0 + lk; headPitch = atF(M.hpitch, f, n) + up;
     aheadYaw = atF(M.hyaw, fa, n) - y0 + (I.look ? lookAt((t + 0.3) % (n / M.fps)) : 0); aheadPitch = atF(M.hpitch, fa, n) + up;
   } else {
