@@ -105,6 +105,8 @@ The job files are kept in `tools/jobs/`.
 - Expressions: joy and anger are milder than in the drawing's sheet; the open mouth has no teeth; at the mouth's
   corners the painted lips and the 3D slit don't always meet exactly (a small dark stitch).
 - Hair is one shell with painted strands — no separate locks, no loose strands at the temples (drawn in the drawing).
+- A deep bow (Kimodo's `bow`) breaks the skirt open (the legs show): left out of the page and the viewer.
+- Kimodo's `idle` stoops and drops the head (the motion's own).
 - The folder in motions simply rides in the left hand; hands and fingers are Anny's (realistic).
 
 ## Licences

@@ -6,7 +6,7 @@ await import('./vera.js');
 const A = window.A;
 document.getElementById('msg')?.remove();
 if (!q.has('shots')) {
-  const MOTIONS = [['stand', 'стоит'], ['walk', 'идёт'], ['idle', 'ждёт'], ['wave', 'машет'], ['bow', 'кланяется']];
+  const MOTIONS = [['stand', 'стоит'], ['walk', 'идёт'], ['idle', 'ждёт'], ['wave', 'машет']];
   const EXPR = [['calm', 'спокойна'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']];
   const ui = document.createElement('div'); ui.id = 'ui'; document.body.appendChild(ui);
   const el = (tag, props = {}, parent = ui) => { const e = Object.assign(document.createElement(tag), props); parent.appendChild(e); return e; };
