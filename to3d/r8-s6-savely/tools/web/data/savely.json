@@ -1,0 +1,82 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "savely-s6",
+ "label": {
+  "ru": "Савелий Петрович (С6)"
+ },
+ "source": "styles/s6-symbolic cast.savely solids on SOMA (to3d/r8-s6-savely/tools/build.py)",
+ "skeleton": "soma77",
+ "topology": "savely-s6",
+ "parts": [
+  "leg",
+  "shoe",
+  "neck",
+  "arm",
+  "hand",
+  "loupe",
+  "coat",
+  "head",
+  "moustache",
+  "cap"
+ ],
+ "vertices": 14262,
+ "bin": "savely.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    14262,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    28128,
+    3
+   ],
+   "offset": 171144
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    14262,
+    4
+   ],
+   "offset": 508680
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    14262,
+    4
+   ],
+   "offset": 565728
+  },
+  "part": {
+   "dtype": "uint8",
+   "shape": [
+    14262
+   ],
+   "offset": 793920
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 808184
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 809108
+  }
+ }
+}
