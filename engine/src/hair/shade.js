@@ -43,10 +43,12 @@ void main() {
   float fine = mix(n1(g * 1400.0 + vSeed * 91.0 + s * 2.0), 0.5, clamp(fw * 1400.0 - 1.0, 0.0, 1.0));
   float mid = mix(n1(g * 520.0 + vSeed * 37.0 + s * 1.2), 0.5, clamp(fw * 520.0 - 1.0, 0.0, 1.0));
   float big = mix(n1(g * 140.0 + vSeed * 13.0), 0.5, clamp(fw * 140.0 - 1.0, 0.0, 1.0));
-  float str = mix(0.5, fine * 0.45 + mid * 0.35 + big * 0.2, strands);
+  // bundles a centimetre or two across, with dark partings between them: a lock reads as many strands gathered
+  float bundle = mix(smoothstep(0.15, 0.85, n1(g * 55.0 + vSeed * 7.0 + s * 0.6)), 0.5, clamp(fw * 55.0 - 1.0, 0.0, 1.0));
+  float str = mix(0.5, fine * 0.3 + mid * 0.25 + big * 0.2 + bundle * 0.25, strands);
   float ao = vAO, deep = smoothstep(0.35, 0.95, ao);
   // the colour: darker at the root and inside, each lock its own shade, the strands' value broken
-  vec3 alb = vCol * mix(0.55, 1.0, smoothstep(0.0, 0.45, s)) * (0.8 + 0.4 * str) * (0.88 + 0.24 * h1(vSeed * 71.0 + 3.0)) * mix(inner, 1.0, deep);
+  vec3 alb = vCol * mix(0.55, 1.0, smoothstep(0.0, 0.45, s)) * (0.62 + 0.76 * str) * (0.84 + 0.32 * h1(vSeed * 71.0 + 3.0)) * mix(inner, 1.0, deep);
   // where little light reaches, the colour is richer (light scattered through hair takes its colour)
   vec3 rich = pow(max(alb, vec3(1e-4)), vec3(1.25)) * 1.25;
   vec3 col = vec3(0.0);
@@ -69,7 +71,7 @@ void main() {
     float b1 = kk(normalize(T + N * (shift + sh)), H, 140.0);
     float b2 = kk(normalize(T + N * (shift - 0.24 + sh)), H, 26.0) * smoothstep(0.3, 0.75, mid);
     float lit = smoothstep(-0.1, 0.35, nl) * ao * ao;
-    col += C * (b1 * spec1 * tint * (0.45 + 0.9 * fine) * 0.22 + b2 * spec2 * vCol * 0.55) * lit * inner;
+    col += C * (b1 * spec1 * tint * (0.2 + 0.9 * fine) * (0.25 + 1.1 * bundle) * 0.24 + b2 * spec2 * vCol * 0.55 * (0.4 + 0.9 * bundle)) * lit * inner;
     // light through the thin edges, against the light
     float back = pow(clamp(dot(-V, L), 0.0, 1.0), 4.0) * pow(1.0 - abs(dot(N, V)), 2.0);
     col += C * vCol * back * 0.35 * ao;

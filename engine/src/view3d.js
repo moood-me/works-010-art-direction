@@ -109,7 +109,7 @@ export function figureView(THREE, figure, look) {
       group.add(mesh); parts.push({ o, g, mesh, hair: true });
       if (m.hair.layer === 'locks' && m.hair.shading.ink > 0) {
         g.setAttribute('inkw', new THREE.BufferAttribute(Float32Array.from(m.hair.width, w => w * m.hair.shading.ink), 1));
-        const om = new THREE.Mesh(g, hairInk(THREE, m.ink?.color)); om.frustumCulled = false; group.add(om); parts.push({ o, g, mesh: om, ink: true });
+        const om = new THREE.Mesh(g, hairInk(THREE, new THREE.Color(m.color).multiplyScalar(0.28))); om.frustumCulled = false; group.add(om); parts.push({ o, g, mesh: om, ink: true });
       }
       continue;
     }

@@ -14,6 +14,9 @@ import { smin } from '../math.js';
 import { smax } from '../head/shapes.js';
 
 const len = (x, y, z) => Math.hypot(x, y, z);
+// how thick a lock is against В1's (its section's depth): В1's locks were thick lenses with round rims, and read as
+// clay; a lock of hair is a sheet, its rim thin
+const THIN = 0.6;
 const ellip = (x, y, z, rx, ry, rz) => { const k = len(x / rx, y / ry, z / rz); return (k - 1) * Math.min(rx, ry, rz); };
 const capsule = (px, py, pz, a, b, r) => {
   const bx = b[0] - a[0], by = b[1] - a[1], bz = b[2] - a[2], qx = px - a[0], qy = py - a[1], qz = pz - a[2];
@@ -96,7 +99,7 @@ export function frames(o, n) {
     // the tip thins to a point: the strands of a clump gather and end at different lengths
     if (s > 1 - tip && o.point !== false) { const u = (1 - s) / tip; w *= Math.pow(1 - (1 - u) * (1 - u), Math.max(o.sharp ?? 1.3, 1.25) * 1.2); }   // eased in, so the taper starts without a corner
     if (s < (o.root ?? 0)) w *= 0.6 + 0.4 * s / o.root;
-    const th = o.t !== undefined ? lerpArr(o.t, s) * (w / Math.max(lerpArr(o.w, s), 1e-6)) : w * (o.flat ?? 0.42);
+    const th = (o.t !== undefined ? lerpArr(o.t, s) * (w / Math.max(lerpArr(o.w, s), 1e-6)) : w * (o.flat ?? 0.42)) * THIN;
     S.push({ s, p, T, B, N, w, t: th, lens: o.lens ?? 0.6 });
   }
   // a hooked tip: the end bends sideways, so one edge runs on and the other curves in to the point

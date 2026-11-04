@@ -23,7 +23,7 @@
 import { qRot3, qMul, qBetween, qSlerp, qNorm } from '../math.js';
 import { normalsOf } from '../mesh.js';
 
-const G = 9.81, MAX_H = 1 / 240, PIN = 2, MU = 0.35;
+const G = 9.81, MAX_H = 1 / 240, PIN = 2, MU = 0.35, SETTLE = 60;
 
 // the wind at a point: a steady flow, gusts going through it, and a turbulence of its own round every lock
 export function windAt(o, x, y, z, t, seed, out) {
@@ -49,7 +49,7 @@ export class HairSim {
       chains.push(c); N += n;
     }
     this.N = N;
-    this.x = new Float64Array(N * 3); this.xp = new Float64Array(N * 3); this.v = new Float64Array(N * 3); this.corr = new Float64Array(N * 3);
+    this.x = new Float64Array(N * 3); this.cn = new Float64Array(N * 3); this.ct = new Uint8Array(N); this.xp = new Float64Array(N * 3); this.v = new Float64Array(N * 3); this.corr = new Float64Array(N * 3);
     // X0: the guides at rest (the body's rest space); T0: where the groom pulls (moved against the weight); R0: where
     // the hair hangs at rest; NX, NR: each node's place and frame now (for the surfaces)
     this.X0 = new Float64Array(N * 3); guides.forEach((g, gi) => g.points.forEach((p, k) => this.X0.set(p, (chains[gi].at + k) * 3)));
@@ -84,7 +84,9 @@ export class HairSim {
   // the figure's step: {pose, previous, dt, reset, t}
   step({ pose, previous, dt, reset, t }) {
     const S = this.solids;
-    if (reset || !this.started) { S.set(pose, pose); this.nearCaps(); this.place(S.carrier.now); this.started = true; this.time = t / (this.figure.state?.clip?.fps ?? 30); this.write(); return; }
+    // (a reset — the first step, a loop, a scrub — finds the hair as it hangs on the body in this pose: from where it
+    // hangs at rest, carried by the head, let settle without speed, so a body unlike the rest's doesn't fling it)
+    if (reset || !this.started) { S.set(pose, pose); this.nearCaps(); this.place(S.carrier.now); for (let k = 0; k < SETTLE; k++) this.substep(1 / 240, null, true); this.v.fill(0); this.started = true; this.time = t / (this.figure.state?.clip?.fps ?? 30); this.write(); return; }
     const n = Math.max(1, Math.ceil(dt / MAX_H - 1e-6)), h = dt / n;
     S.set(previous, pose); this.nearCaps();
     for (let s = 1; s <= n; s++) { S.at(s / n); this.substep(h, this.wind, false); this.time += h; }
@@ -143,6 +145,7 @@ export class HairSim {
           Q = qMul(qBetween(r, [dx / dl, dy / dl, dz / dl]), Q);
         }
       }
+      this.ct.fill(0, a0, a0 + ch.n);
       this.collide(ch, true);
       // lengths: follow the leader, from the root out (ringlets give like a spring, within limits)
       for (let k = PIN; k < ch.n; k++) {
@@ -160,7 +163,10 @@ export class HairSim {
       for (let k = PIN; k < ch.n; k++) {
         const i = (a0 + k) * 3, nx = k + 1 < ch.n ? i + 3 : -1;
         this.carry(H, T0[i], T0[i + 1], T0[i + 2], o); this.carry(Hw, T0[i], T0[i + 1], T0[i + 2], pp);
+        const vt3 = [(o[0] - pp[0]) / h, (o[1] - pp[1]) / h, (o[2] - pp[2]) / h];
         for (let d = 0; d < 3; d++) { const vv = (x[i + d] - xp[i + d]) / h - (nx >= 0 ? 0.9 * corr[nx + d] / h : 0), vt = (o[d] - pp[d]) / h; v[i + d] = vv - (vv - vt) * fr; }
+        // a point a solid pushed out leaves it without the push's speed (no bounce: hair lies on what it meets)
+        if (this.ct[a0 + k]) { const c = this.cn, j = (a0 + k) * 3, vn = (v[i] - vt3[0]) * c[j] + (v[i + 1] - vt3[1]) * c[j + 1] + (v[i + 2] - vt3[2]) * c[j + 2]; if (vn > 0) for (let d = 0; d < 3; d++) v[i + d] -= c[j + d] * vn; }
       }
       // a zigzag along the chain (one point against its neighbours) dies at once: real hair bends in curves
       for (let k = PIN; k < ch.n - 1; k++) { const i = (a0 + k) * 3; for (let d = 0; d < 3; d++) v[i + d] += ((v[i - 3 + d] + v[i + 3 + d]) * 0.5 - v[i + d]) * 0.35; }
@@ -184,11 +190,13 @@ export class HairSim {
         for (let j = 0; j < 3; j++) l[j] += n[j] * (limit - d);
         if (friction) { q[0] = xp[i]; q[1] = xp[i + 1]; q[2] = xp[i + 2]; part.was(q, lp); const dx = l[0] - lp[0], dy = l[1] - lp[1], dz = l[2] - lp[2], dn = dx * n[0] + dy * n[1] + dz * n[2]; l[0] -= (dx - dn * n[0]) * MU; l[1] -= (dy - dn * n[1]) * MU; l[2] -= (dz - dn * n[2]) * MU; }
         part.world(l, o); x[i] = o[0]; x[i + 1] = o[1]; x[i + 2] = o[2];
+        this.contact(ch.at + k, part.turn(n, q));
       }
       if (!this.noBody) for (const c of this.near) {
         if ((x[i] - c.m[0]) ** 2 + (x[i + 1] - c.m[1]) ** 2 + (x[i + 2] - c.m[2]) ** 2 > (c.reach + rad) ** 2) continue;
         const d = S.capsule(c, x[i], x[i + 1], x[i + 2], n) - rad; if (d >= 0) continue;
         x[i] -= n[0] * d; x[i + 1] -= n[1] * d; x[i + 2] -= n[2] * d;
+        this.contact(ch.at + k, n);
         if (friction) {
           const t = n.t, mx = c.a[0] + (c.b[0] - c.a[0]) * t - (c.a0[0] + (c.b0[0] - c.a0[0]) * t), my = c.a[1] + (c.b[1] - c.a[1]) * t - (c.a0[1] + (c.b0[1] - c.a0[1]) * t), mz = c.a[2] + (c.b[2] - c.a[2]) * t - (c.a0[2] + (c.b0[2] - c.a0[2]) * t);
           const ux = x[i] - xp[i] - mx, uy = x[i + 1] - xp[i + 1] - my, uz = x[i + 2] - xp[i + 2] - mz, un = ux * n[0] + uy * n[1] + uz * n[2];
@@ -199,11 +207,14 @@ export class HairSim {
     }
   }
 
+  // a point in contact this small step, and the solid's normal there (world)
+  contact(p, n) { this.ct[p] = 1; this.cn[p * 3] = n[0]; this.cn[p * 3 + 1] = n[1]; this.cn[p * 3 + 2] = n[2]; }
+
   // ———— the rest it hangs in ————
   // where the chains are, in the head's rest space (the solids at rest: that is the body's rest space)
-  settled(frames) {
-    this.place(this.solids.carrier.now);
-    for (let f = 0; f < frames; f++) for (let s = 0; s < 4; s++) this.substep(1 / 120, null, true);
+  settled(frames, from = true) {
+    if (from) this.place(this.solids.carrier.now);
+    for (let f = 0; f < frames; f++) for (let s = 0; s < 8; s++) this.substep(MAX_H, null, true);
     return Float64Array.from(this.x);
   }
   dirs() {
@@ -222,9 +233,15 @@ export class HairSim {
     }
     X = this.settled(30);
     this.noBody = false;
-    this.drape = 0.05; const Y = this.settled(90); this.drape = 1;
-    for (const i of free) for (let d = 0; d < 3; d++) this.T0[i + d] += Y[i + d] - X[i + d];
-    this.dirs(); this.v.fill(0); this.R0 = Y;
+    // on the body: first draped over it (the locks' bend eased, so they lie over the shoulders rather than stand off
+    // them), then let settle as they are, stiff again — where that leaves them is the rest. The pull toward the design
+    // takes the body's settling in; the bend keeps the shape it hangs in free (a lock draped round a shoulder at rest
+    // does not keep that curve once the shoulder has moved from under it)
+    this.drape = 0.05; const Y0 = this.settled(90); this.drape = 1;
+    for (const i of free) for (let d = 0; d < 3; d++) this.T0[i + d] += Y0[i + d] - X[i + d];
+    const Y = this.settled(150, false);
+    for (const i of free) for (let d = 0; d < 3; d++) this.T0[i + d] += Y[i + d] - Y0[i + d];
+    this.v.fill(0); this.R0 = Y;
     // how far the hanging hair stays from its design, and how far the body moved it (for the checks)
     let sag = 0, body = 0; for (const i of free) { sag = Math.max(sag, Math.hypot(X[i] - D[i], X[i + 1] - D[i + 1], X[i + 2] - D[i + 2])); body = Math.max(body, Math.hypot(Y[i] - X[i], Y[i + 1] - X[i + 1], Y[i + 2] - X[i + 2])); }
     this.rested = { sag, body };

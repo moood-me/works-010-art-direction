@@ -92,6 +92,7 @@ function partOf(grid, J, j, t, into = null) {
     place() { const st = t.now, m = grid.mid; qRot3(st.q, m[0] - J[j * 3], m[1] - J[j * 3 + 1], m[2] - J[j * 3 + 2], this.c); for (let k = 0; k < 3; k++) this.c[k] += st.p[k]; },
     local: into ? (x, out) => into(t.now, x, out) : (x, out) => back(t.now, x, out),
     was: into ? (x, out) => into(t.was, x, out) : (x, out) => back(t.was, x, out),
+    turn: (v, out) => qRot3(t.now.q, v[0], v[1], v[2], out),
     world: (l, out) => { const st = t.now; qRot3(st.q, l[0] - J[j * 3], l[1] - J[j * 3 + 1], l[2] - J[j * 3 + 2], out); out[0] += st.p[0]; out[1] += st.p[1]; out[2] += st.p[2]; return out; },
     distance: l => grid.at(l[0], l[1], l[2]),
     normal: (l, out) => grid.normal(l[0], l[1], l[2], out),
@@ -122,23 +123,36 @@ function skinParts(mesh, rig, joints, T) {
   const P = mesh.positions, K = mesh.skin.K, SJ = mesh.skin.joints, SW = mesh.skin.weights, J = rig.joints;
   const all = cached(mesh, () => {
     const N = normalsOf(P, mesh.triangles, undefined, mesh.used), out = new Map();
+    // the whole skin, so each part's distance is the skin's own (no wall where a part's own skin ends)
+    const cell = 0.03, hash = new Map(), key = (a, b, c) => `${a},${b},${c}`;
+    for (const i of mesh.used) { const k = key(Math.floor(P[i * 3] / cell), Math.floor(P[i * 3 + 1] / cell), Math.floor(P[i * 3 + 2] / cell)); if (!hash.has(k)) hash.set(k, []); hash.get(k).push(i); }
     for (const j of joints) {
       const vs = [];
       for (const i of mesh.used) { let w = 0, top = 0, tj = -1; for (let k = 0; k < K; k++) { const a = SW[i * K + k]; if (SJ[i * K + k] === j) w += a; if (a > top) { top = a; tj = SJ[i * K + k]; } } if (tj === j || w >= 0.33) vs.push(i); }
       if (vs.length < 30) continue;
       const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
       for (const i of vs) for (let c = 0; c < 3; c++) { lo[c] = Math.min(lo[c], P[i * 3 + c] - 0.04); hi[c] = Math.max(hi[c], P[i * 3 + c] + 0.04); }
-      const cell = 0.03, hash = new Map(), key = (a, b, c) => `${a},${b},${c}`;
-      for (const i of vs) { const k = key(Math.floor(P[i * 3] / cell), Math.floor(P[i * 3 + 1] / cell), Math.floor(P[i * 3 + 2] / cell)); if (!hash.has(k)) hash.set(k, []); hash.get(k).push(i); }
+      const mine = new Uint8Array(mesh.N); for (const i of vs) mine[i] = 1;
+      // (the distance along the normals of the nearest few, weighed by nearness: a smooth surface through the skin's
+      // points — implicit moving least squares — not one that jumps where the nearest point changes)
+      const KN = 8, bi = new Int32Array(KN), bd = new Float64Array(KN);
       const f = (x, y, z) => {
-        const cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell); let best = Infinity, bi = -1;
-        for (let r = 0; r <= 3 && bi < 0 || r <= 1; r++) for (let a = -r; a <= r; a++) for (let b = -r; b <= r; b++) for (let c = -r; c <= r; c++) {
-          if (Math.max(Math.abs(a), Math.abs(b), Math.abs(c)) !== r) continue;
-          for (const i of hash.get(key(cx + a, cy + b, cz + c)) ?? []) { const d = (P[i * 3] - x) ** 2 + (P[i * 3 + 1] - y) ** 2 + (P[i * 3 + 2] - z) ** 2; if (d < best) { best = d; bi = i; } }
+        const cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell); bd.fill(Infinity); bi.fill(-1);
+        for (let r = 0; r <= 3; r++) {
+          for (let a = -r; a <= r; a++) for (let b = -r; b <= r; b++) for (let c = -r; c <= r; c++) {
+            if (Math.max(Math.abs(a), Math.abs(b), Math.abs(c)) !== r) continue;
+            for (const i of hash.get(key(cx + a, cy + b, cz + c)) ?? []) {
+              const d = (P[i * 3] - x) ** 2 + (P[i * 3 + 1] - y) ** 2 + (P[i * 3 + 2] - z) ** 2; if (d >= bd[KN - 1]) continue;
+              let k = KN - 1; while (k > 0 && bd[k - 1] > d) { bd[k] = bd[k - 1]; bi[k] = bi[k - 1]; k--; } bd[k] = d; bi[k] = i;
+            }
+          }
+          if (bi[KN - 1] >= 0 && Math.sqrt(bd[KN - 1]) <= r * cell) break;
         }
-        if (bi < 0) return 0.09;
-        const dx = x - P[bi * 3], dy = y - P[bi * 3 + 1], dz = z - P[bi * 3 + 2], along = dx * N[bi * 3] + dy * N[bi * 3 + 1] + dz * N[bi * 3 + 2], d = Math.sqrt(best);
-        return d < 0.02 ? along : Math.sign(along) * d;
+        // (where the skin nearest is not this bone's, the part is not there: another carries it)
+        if (bi[0] < 0 || !mine[bi[0]]) return FAR;
+        const h2 = Math.max(bd[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0;
+        for (let k = 0; k < KN; k++) { const i = bi[k]; if (i < 0) break; const w = Math.exp(-bd[k] / h2); sw += w; sd += w * ((x - P[i * 3]) * N[i * 3] + (y - P[i * 3 + 1]) * N[i * 3 + 1] + (z - P[i * 3 + 2]) * N[i * 3 + 2]); }
+        return sd / sw;
       };
       out.set(j, gridOf(f, lo, hi, 0.008 * Math.cbrt(rig.hipHeight / 0.9)));
     }
@@ -147,7 +161,7 @@ function skinParts(mesh, rig, joints, T) {
   return [...all.entries()].map(([j, grid]) => partOf(grid, J, j, T[j]));
 }
 
-const CACHE = new WeakMap(), cached = (key, make) => { if (!CACHE.has(key)) CACHE.set(key, make()); return CACHE.get(key); };
+const FAR = 0.09, CACHE = new WeakMap(), cached = (key, make) => { if (!CACHE.has(key)) CACHE.set(key, make()); return CACHE.get(key); };
 // a distance f(x, y, z) (metres) on a grid from lo to hi, h apart: coarse everywhere, exact near the surface; outside
 // the grid at least as far as its edge
 function gridOf(f, lo, hi, h) {
