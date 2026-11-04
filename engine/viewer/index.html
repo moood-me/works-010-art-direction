@@ -14,6 +14,13 @@
   #vpPanel { grid-template-columns: minmax(0, 1fr); }
   body.bodies #vpPanel { width: min(450px, calc(100vw - 48px)); }
   body.heads #vpPanel, body.hair #vpPanel { width: min(450px, calc(100vw - 48px)); }
+  body.clothes #vpPanel { width: min(520px, calc(100vw - 48px)); }
+  #garments .row { flex-wrap: nowrap; gap: 4px; font-size: 12px; }
+  #garments .row > span:first-child { flex: 0 0 96px; min-width: 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; }
+  #garments select { flex: 1 1 0; min-width: 0; padding: 2px 4px; font-size: 12px; }
+  #garments input[type=range] { flex: 0 0 56px; min-width: 0; }
+  #garments .s { width: 28px; color: var(--muted); }
+  #garments button { padding: 2px 6px; font-size: 12px; }
   #vpPanel #hairs { max-width: 100%; flex: 1; min-width: 0; }
   #defs .row, #hforms .row { flex-wrap: nowrap; gap: 4px; font-size: 12px; }
   #defs .row > span:first-child, #hforms .row > span:first-child { flex: 1; min-width: 0; line-height: 1.2; }
@@ -38,7 +45,7 @@
   #msg { position: fixed; inset: 0; display: grid; place-items: center; font: italic 20px Georgia, serif; color: #4a4640; pointer-events: none; z-index: 3; }
   #vpPanel .box { display: grid; gap: 7px; }
   /* a narrow screen: the panel over the top, what the page is for (the heads') first */
-  @media (max-width: 520px) { #vpPanel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 45vh; } #headsBox, #hairBox { order: -1; } }
+  @media (max-width: 520px) { #vpPanel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 45vh; } #headsBox, #hairBox, #clothesBox { order: -1; } }
 </style>
 <script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>

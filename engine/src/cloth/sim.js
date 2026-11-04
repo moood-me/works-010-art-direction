@@ -8,8 +8,8 @@
 // - gravity, the fabric's own damping, and the air (the wind — the hair's presets, src/wind.js — less the cloth's own
 //   velocity, pressing on each point as its surface faces the flow: light fabrics fly, heavy ones barely move);
 // - lengths: each edge holds against stretching with the fabric's stretch (N/m) and gives way more easily when pushed
-//   together (its compress share), so the cloth folds rather than shrinks; solved before and after bending, or bending
-//   would stretch it;
+//   together (its compress share), so the cloth folds rather than shrinks; solved twice before bending and once after
+//   (or bending would stretch it), the edges in the order of their distance from where the garment hangs;
 // - bending: the angle at each inner edge held toward flat with the fabric's bending rigidity B (N·m, Kawabata's; per
 //   hinge k = 3·B·e/(h₁+h₂)) — chiffon's bending length is about a centimetre, denim's three, tweed's four;
 // - what holds it on: its waistband or neckline (and a long sleeve's cuff, lightly) pulled to where the skin carries it,
@@ -37,7 +37,7 @@ import { stenciled } from './patterns.js';
 // H: the small step; G: gravity; SPEED: no point of cloth faster than this (m/s — the fastest a hand moves is some 10;
 // a point flung faster by a contact is a contact's error, not motion); RHO: the air's density; DRAG: pressure on a
 // surface facing the flow; SKIN_DRAG: the air along it
-const H = 1 / (+(globalThis.process?.env?.CLOTH_HZ) || 240), G = 9.81, SPEED = 12, RHO = 1.2, DRAG = 1.2, SKIN_DRAG = 0.03;
+const H = 1 / 240, G = 9.81, SPEED = 12, RHO = 1.2, DRAG = 1.2, SKIN_DRAG = 0.03;
 // HOLD_TIME: how fast a held point goes where the skin carries it (seconds to close the gap, at hold 1); TETHER: how much
 // longer than the cloth between them a point may be from its held point; SHAPE_K: the designed form's pull at strength
 // 1 (1/s²: a point a centimetre off it pulled as hard as gravity pulls it at 2000 × 0.005… — at 2000 the cloth sags 5 mm
@@ -131,7 +131,7 @@ export class ClothSim {
     for (const [k, g] of this.garments.entries()) {
       g.u = u;
       g.integrate(wind, this.time, this.w);
-      for (let it = 0; it < (+(globalThis.process?.env?.CLOTH_IT) || 1); it++) g.stretch(); g.bend(); g.stretch(); g.held(); g.pull(); g.tethers();
+      g.stretch(); g.stretch(); g.bend(); g.stretch(); g.held(); g.pull(); g.tethers();
       if (g.self && (g.tick & 1)) g.apart();
       this.collide(g, k, mw, mn, true);
       // (its normals for the air every other small step, and as the surface the garments over it meet)
@@ -165,6 +165,17 @@ export class ClothSim {
         const tx = x[i3] - p[i3], tz = x[i3 + 2] - p[i3 + 2], tl = Math.hypot(tx, tz);
         if (tl > 1e-12) { const f = tl < FLOOR_MU * pen ? 1 : FLOOR_MU * pen / tl; x[i3] -= tx * f; x[i3 + 2] -= tz * f; }
       }
+    }
+    // between its points: each triangle's middle out of the skin too, its three points moved together (a knee pressed
+    // into a skirt goes between points two or three centimetres apart, and through, though every point keeps out) —
+    // asked of the skin points its first point keeps (it lies within a few centimetres of them)
+    const T = g.tris, C = g.clear, KN = S.KN;
+    for (let t = 0; t < T.length; t += 3) {
+      const a = T[t], b = T[t + 1], c = T[t + 2]; if (C[a] > REACH && C[b] > REACH && C[c] > REACH) continue;
+      const a3 = a * 3, b3 = b * 3, c3 = c * 3, mx = (x[a3] + x[b3] + x[c3]) / 3, my = (x[a3 + 1] + x[b3 + 1] + x[c3 + 1]) / 3, mz = (x[a3 + 2] + x[b3 + 2] + x[c3 + 2]) / 3;
+      const d = S.kept(mn, mx, my, mz, at, g.near, a * KN, false); if (!(d < thick)) continue;
+      const pen = thick - d, N = at.n;
+      for (const i3 of [a3, b3, c3]) { x[i3] += N[0] * pen; x[i3 + 1] += N[1] * pen; x[i3 + 2] += N[2] * pen; }
     }
     for (const [j, u] of under.entries()) if (g.masks?.[j]) g.against(u, g.masks[j]);
   }

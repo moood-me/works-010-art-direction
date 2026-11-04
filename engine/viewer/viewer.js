@@ -11,21 +11,27 @@
 // &x=<expression>:<weight>&face (the close-up).
 // ?hair adds the hair's panel (stage 3): the chosen figure's hairstyle (a preset of group hair, its own, or none),
 // whether it moves, how firmly it holds its shape, the wind; &hs=<hair preset>|none&hm=0|1&hh=<hold>&w=<wind preset>.
+// ?clothes adds the clothes' panel (stage 4): what the chosen figure wears — each garment's fabric, its silhouette and
+// how firmly the cloth holds it, taken away, a garment added — and the wind;
+// &g=<pattern>:<fabric>[:<silhouette>[:<strength>]],… (presets by id: fabric-…, shape-…; "-" no silhouette)
+// dresses the first figure in these alone.
 import * as THREE from 'three';
 import { createEngine } from '../src/engine.js';
 import { makeStage, figureView, joinBounds } from '../src/view3d.js';
 import { headFrame } from '../src/head/frame.js';
 import { qRot } from '../src/math.js';
+import { PATTERNS } from '../src/cloth/patterns.js';
 
 const q = new URLSearchParams(location.search);
 const msg = document.getElementById('msg'), canvas = document.getElementById('cv');
 const E = await createEngine();
 const [chars, motions] = await Promise.all([E.characters(), E.motions()]);
-const BODIES = q.has('bodies'), HEADS = q.has('heads'), HAIR = q.has('hair');
+const BODIES = q.has('bodies'), HEADS = q.has('heads'), HAIR = q.has('hair'), CLOTHES = q.has('clothes');
+if (CLOTHES) document.body.classList.add('clothes');
 if (BODIES) document.body.classList.add('bodies');
 if (HEADS) document.body.classList.add('heads');
 if (HAIR) document.body.classList.add('hair');
-const [bodyIndex, presetIndex] = BODIES || HEADS || HAIR ? await Promise.all([E.bodies(), E.presets()]) : [null, null];
+const [bodyIndex, presetIndex] = BODIES || HEADS || HAIR || CLOTHES ? await Promise.all([E.bodies(), E.presets()]) : [null, null];
 const ofGroup = g => presetIndex.presets.filter(p => p.group === g);
 const presetOf = ref => presetIndex.presets.find(p => p.id === ref.split('@')[0]);
 // presets whose changes give their own skin weights (the pictograms) are changes of the rest only
@@ -54,12 +60,18 @@ if (HEADS) {
 }
 // the wind every figure stands in (a preset of group wind, or none)
 let wind = null;
+const pinOfPreset = id => { const p = presetIndex.presets.find(p => p.id === id); if (!p) throw new Error(`no preset ${id}`); return p.pin; };
+if (HAIR || CLOTHES) { if (q.get('w')) wind = { id: q.get('w'), wind: (await E.preset(pinOfPreset(q.get('w')))).wind }; }
+// the clothes the URL dresses the first figure in (each garment: its pattern, fabric, silhouette and strength)
+const PATTERN_LIST = Object.entries(PATTERNS).map(([id, p]) => ({ id, label: p.label, moves: !p.rides }));
+const COLORS = ['#3d5f8c', '#a8574a', '#e9e4dc', '#4b4a42', '#7a4a6a', '#5a7a4a', '#d9a441', '#2b6b6b'];
+if (CLOTHES && q.has('g')) figs[0].over.clothes = q.get('g').split(',').filter(Boolean).map((s, k) => { const [pattern, fabric, shape, strength] = s.split(':');
+  return { id: `${pattern}-${k}`, kind: 'garment', pattern, fabric: pinOfPreset(fabric), color: COLORS[k % COLORS.length], ...(shape && shape !== '-' ? { shape: pinOfPreset(shape), strength: +(strength ?? 1) } : {}) }; });
 if (HAIR) {
-  const pin = id => { const p = presetIndex.presets.find(p => p.id === id); if (!p) throw new Error(`no preset ${id}`); return p.pin; };
+  const pin = pinOfPreset;
   if (q.has('hs')) figs[0].over.hair = q.get('hs') === 'none' ? '' : pin(q.get('hs'));
   if (q.has('hm')) figs[0].over.moves = q.get('hm') !== '0';
   if (q.has('hh')) figs[0].over.hold = +q.get('hh');
-  if (q.get('w')) wind = { id: q.get('w'), wind: (await E.preset(pin(q.get('w')))).wind };
 }
 if (BODIES && q.has('d')) figs[0].over.rows = q.get('d').split(',').filter(Boolean).map(s => {
   const [id, k = '1', where = 'rest'] = s.split(':'), p = presetIndex.presets.find(p => p.id === id); if (!p) throw new Error(`no preset ${id}`);
@@ -76,7 +88,7 @@ panel.innerHTML = `
   <div class="row"><span class="lab">Движение</span></div><div class="mv" id="moves"></div>
   <div class="row"><button id="play" aria-label="Пауза">❚❚</button><input id="time" type="range" min="0" max="0" step="0.01" value="0" aria-label="Время"><span id="flab"></span></div>
   <div class="row"><span class="lab">Камера</span><button id="follow">следует</button><button data-view="front">спереди</button><button data-view="side">сбоку</button><button id="joints">суставы</button><button id="capsules">капсулы</button></div>
-  <details id="skin"${BODIES || HEADS || HAIR ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
+  <details id="skin"${BODIES || HEADS || HAIR || CLOTHES ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
   <div class="row"><span class="lab">Скиннинг</span><button data-method="cor">центры вращения</button><button data-method="dqs">двойные кватернионы</button><button data-method="lbs">линейный</button></div>
   <div class="row"><span class="lab">Т7</span><button id="clav">ключица ⅓</button><button id="seam">шов сглажен</button></div>
   <div class="row"><span class="lab">Слои позы</span><span class="mv" id="layers"></span></div>
@@ -99,7 +111,12 @@ panel.innerHTML = `
   ${HAIR ? `<div class="sep"></div><div id="hairBox" class="box">
   <div class="row"><span class="lab">Причёска</span><select id="hairs" aria-label="Причёска" title="причёска (пресет группы hair): В1 — пряди вдоль направляющих; Г1 и Г3 — волосы готовых голов"></select><button id="hface" title="камера на голову">крупно</button></div>
   <div class="row"><span class="lab">Движение</span><button id="hmoves" title="волосы движутся (инерция, ветер, столкновения) или держатся на голове как нарисованы">движутся</button><span class="hint">держат форму</span><input id="hhold" type="range" min="0.2" max="3" step="0.1" value="1" aria-label="как держат форму"><span id="hholdl" class="hint"></span></div>
-  <div class="row"><span class="lab">Ветер</span><span class="mv" id="winds"></span></div></div>` : ''}
+  </div>` : ''}
+  ${CLOTHES ? `<div class="sep"></div><div id="clothesBox" class="box">
+  <div class="row"><span class="lab">Одежда</span><span class="hint">ткань, силуэт и как его держит ткань (0 — висит свободно, 1 — держит, как жёсткий подъюбник)</span></div>
+  <div id="garments" style="display:grid;gap:4px"></div>
+  <div class="row"><select id="addGarment" aria-label="Добавить вещь"></select></div></div>` : ''}
+  ${HAIR || CLOTHES ? `<div class="row"><span class="lab">Ветер</span><span class="mv" id="winds"></span></div>` : ''}
   <div class="hint">мышь: вращать · колесо: ближе · Shift или правая кнопка: сдвинуть</div>`;
 const $ = s => panel.querySelector(s);
 fit();   // (the panel's size now known)
@@ -114,7 +131,7 @@ const label = id => chars.characters.find(c => c.id === id)?.label.ru ?? id;
 function press() {
   const f = cur(), spec = f.spec;
   $('#figs').innerHTML = '';
-  figs.forEach((g, i) => { const b = addBtn($('#figs'), String(i), `${i + 1}. ${label(g.char)}`, () => { S.cur = i; press(); showRows(); showHead(); }); b.setAttribute('aria-pressed', String(i === S.cur)); });
+  figs.forEach((g, i) => { const b = addBtn($('#figs'), String(i), `${i + 1}. ${label(g.char)}`, () => { S.cur = i; press(); showRows(); showHead(); showClothes(); }); b.setAttribute('aria-pressed', String(i === S.cur)); });
   $('#del').disabled = figs.length < 2;
   panel.querySelectorAll('#moves button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === S.clip)));
   panel.querySelectorAll('[data-method]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.method === spec.skinning.method)));
@@ -161,6 +178,12 @@ async function describe(f) {
     const hairLeft = o.hair !== undefined ? !!o.hair : has;
     if (hairLeft && (o.moves != null || o.hold != null)) pieces.push({ id: 'hair', ...(o.moves != null ? { moves: o.moves } : {}), ...(o.hold != null ? { physics: { hold: o.hold } } : {}) });
     d.head.pieces = pieces;
+  }
+  if (CLOTHES && o.clothes) {
+    // the clothes as the panel has them, in place of the description's own and its base's (each of those taken away)
+    const r = await E.resolve(structuredClone(await E.description(f.char))), base = r.clothes?.under ? await E.clothesOf(r.clothes.under, { contents: false }) : [];
+    const now = new Set(o.clothes.map(g => g.id));
+    d.clothes = [...base.filter(g => !now.has(g.id)).map(g => ({ kind: 'off', id: g.id })), ...o.clothes];
   }
   if (o.rows) {
     d.rest = o.rows.filter(r => r.where === 'rest').map(r => ({ ...r.c, frames: r.frames }));
@@ -238,8 +261,36 @@ function showHair() {
   const moves = hair ? hair.moves ?? hair.kind === 'style' : false;
   $('#hmoves').setAttribute('aria-pressed', String(moves)); $('#hmoves').disabled = !hair;
   $('#hhold').value = hair?.physics?.hold ?? 1; $('#hholdl').textContent = (+$('#hhold').value).toFixed(1); $('#hhold').disabled = !moves;
-  panel.querySelectorAll('#winds button').forEach(b => b.setAttribute('aria-pressed', String((wind?.id ?? '') === b.dataset.id)));
   $('#hface').setAttribute('aria-pressed', String(S.face));
+}
+const showWind = () => panel.querySelectorAll('#winds button').forEach(b => b.setAttribute('aria-pressed', String((wind?.id ?? '') === b.dataset.id)));
+// the clothes' panel: what the chosen figure wears, as the panel changes it (its garments as written: fabrics and shapes
+// as the presets they name)
+async function clothesOf(f) {
+  if (f.over.clothes) return f.over.clothes;
+  const r = await E.resolve(structuredClone(await E.description(f.char)));
+  return (f.over.clothes = r.clothes ? (await E.clothesOf(r.clothes, { contents: false })).map(g => ({ ...g })) : []);
+}
+const optionsOf = (sel, group, none) => { sel.innerHTML = none ? `<option value="">${none}</option>` : ''; for (const p of ofGroup(group)) { const o = document.createElement('option'); o.value = p.pin; o.textContent = p.label.ru.replace(/^[^:]+: /, ''); o.title = p.about?.ru ?? ''; sel.appendChild(o); } };
+async function showClothes() {
+  if (!CLOTHES) return;
+  const f = cur(), list = await clothesOf(f), box = $('#garments'); box.innerHTML = '';
+  list.forEach((g, k) => {
+    const el = document.createElement('div'); el.className = 'row';
+    const P = PATTERN_LIST.find(p => p.id === g.pattern);
+    el.innerHTML = `<span title="${g.pattern}">${P.label.ru}</span><select class="fab" aria-label="ткань"></select><select class="sh" aria-label="силуэт"${P.moves ? '' : ' disabled'}></select><input type="range" min="0" max="1.5" step="0.05" aria-label="как держит силуэт"><span class="s"></span><button class="x" title="снять">✕</button>`;
+    const fab = el.querySelector('.fab'), sh = el.querySelector('.sh'), r = el.querySelector('input'), lab = el.querySelector('.s');
+    optionsOf(fab, 'fabric'); optionsOf(sh, 'garment-shape', 'как скроено');
+    if (typeof g.fabric === 'string') fab.value = g.fabric; else fab.insertAdjacentHTML('afterbegin', '<option value="" selected>своя</option>');
+    if (typeof g.shape === 'string') sh.value = g.shape; else if (g.shape) sh.insertAdjacentHTML('afterbegin', '<option value="own" selected>свой</option>'); else sh.value = '';
+    r.value = g.strength ?? (g.shape ? 1 : 0); lab.textContent = (+r.value).toFixed(2); r.disabled = !P.moves;
+    fab.onchange = () => { if (fab.value) { g.fabric = fab.value; rebuild([S.cur]); } };
+    sh.onchange = () => { if (sh.value === 'own') return; if (sh.value) { g.shape = sh.value; g.strength ??= 1; } else delete g.shape; rebuild([S.cur]); };
+    r.oninput = () => { lab.textContent = (+r.value).toFixed(2); };
+    r.onchange = () => { g.strength = +r.value; rebuild([S.cur]); };
+    el.querySelector('.x').onclick = () => { list.splice(k, 1); rebuild([S.cur]); };
+    box.appendChild(el);
+  });
 }
 async function build(f, i) {
   f.spec = await E.expand(await describe(f));
@@ -255,7 +306,7 @@ async function rebuild(which = figs.map((_, i) => i)) {
   try { for (const i of which) await build(figs[i], i); }
   catch (e) { msg.textContent = 'не собралось: ' + e.message; throw e; }
   await setClip(S.clip, true);
-  await showRows(); await showHead(); showHair();
+  await showRows(); await showHead(); showHair(); await showClothes(); if (HAIR || CLOTHES) showWind();
   msg.style.display = 'none';
 }
 function toggleLayer(kind) {
@@ -334,11 +385,21 @@ if (HAIR) {
   $('#hmoves').onclick = () => { const f = cur(), hair = f.spec.head?.pieces.find(p => (p.id ?? p.kind) === 'hair'); f.over.moves = !(hair.moves ?? hair.kind === 'style'); rebuild([S.cur]); };
   $('#hhold').oninput = () => { $('#hholdl').textContent = (+$('#hhold').value).toFixed(1); };
   $('#hhold').onchange = () => { cur().over.hold = +$('#hhold').value; rebuild([S.cur]); };
+  $('#hface').onclick = () => { S.face = !S.face; showHair(); draw(true); };
+}
+if (HAIR || CLOTHES) {
   const ws = $('#winds');
-  const setWind = async id => { wind = id ? { id, wind: (await E.preset(presetIndex.presets.find(p => p.id === id).pin)).wind } : null; for (const g of figs) { for (const sim of g.fig.simulations) sim.wind = wind?.wind ?? null; g.fig.reset(); } showHair(); };
+  const setWind = async id => { wind = id ? { id, wind: (await E.preset(presetIndex.presets.find(p => p.id === id).pin)).wind } : null; for (const g of figs) { for (const sim of g.fig.simulations) sim.wind = wind?.wind ?? null; g.fig.reset(); } showWind(); };
   addBtn(ws, '', 'нет', () => setWind(''));
   for (const p of ofGroup('wind')) addBtn(ws, p.id, p.label.ru.replace(/^ветер: /, ''), () => setWind(p.id)).title = p.about?.ru ?? '';
-  $('#hface').onclick = () => { S.face = !S.face; showHair(); draw(true); };
+}
+if (CLOTHES) {
+  const add = $('#addGarment'); add.innerHTML = '<option value="">＋ надеть вещь…</option>';
+  for (const p of PATTERN_LIST) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label.ru; add.appendChild(o); }
+  add.onchange = async () => {
+    if (!add.value) return; const f = cur(), list = await clothesOf(f), k = list.length;
+    list.push({ id: `${add.value}-${Date.now() % 100000}`, kind: 'garment', pattern: add.value, fabric: pinOfPreset('fabric-jersey'), color: COLORS[k % COLORS.length] }); add.value = ''; rebuild([S.cur]);
+  };
 }
 $('#add').onclick = () => { figs.push({ char: cur().char, over: {} }); S.cur = figs.length - 1; rebuild([S.cur]); };
 $('#del').onclick = () => {

@@ -1,0 +1,30 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-disney",
+ "label": {
+  "ru": "Одежда: принцесса Диснея в пышном платье",
+  "en": "Clothes: the Disney princess in a full dress"
+ },
+ "base": "disney-princess@0cfef6742d9158f2",
+ "clothes": [
+  {
+   "id": "dress",
+   "kind": "garment",
+   "pattern": "mh-dress",
+   "fabric": "fabric-silk@8dee0e65301326ad",
+   "color": "#2b6b6b",
+   "shape": "shape-full-skirt@6f6541c3b97e4588",
+   "strength": 0.8
+  },
+  {
+   "id": "shoes",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2a2230"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

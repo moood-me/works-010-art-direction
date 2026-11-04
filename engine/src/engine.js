@@ -106,13 +106,16 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       };
     },
     // a character's clothes with what they start from (its base's) under them, its outfits taken in (src/parts.js), each
-    // garment's fabric and shape as their keys (a preset's, or its own): [garment…] (src/cloth/clothes.js)
-    async clothesOf(c, depth = 0) {
+    // garment's fabric and shape as their keys (a preset's, or its own): [garment…] (src/cloth/clothes.js); contents:
+    // false keeps the presets they name
+    async clothesOf(c, { contents = true } = {}, depth = 0) {
       if (depth > 8) throw new Error('clothes nested deeper than 8 (a cycle?)');
-      const under = c.under ? await E.clothesOf(c.under, depth + 1) : [];
+      const under = c.under ? await E.clothesOf(c.under, { contents: false }, depth + 1) : [];
       const own = (await Promise.all(c.list.map(async g => g.kind === 'preset' ? (await E.preset(g.id)).clothes ?? (() => { throw new Error(`preset ${g.id} holds no clothes`); })() : [g]))).flat();
       const content = async (ref, key) => typeof ref === 'string' ? (await E.preset(ref))[key] ?? (() => { throw new Error(`preset ${ref} is not a ${key}`); })() : ref;
-      return Promise.all(overParts(under, own, garmentId, GARMENT_SCHEMA, 'garment').map(async g => ({ ...g, id: garmentId(g), fabric: await content(g.fabric, 'fabric'), shape: g.shape ? await content(g.shape, 'shape') : null })));
+      const list = overParts(under, own, garmentId, GARMENT_SCHEMA, 'garment').map(g => ({ ...g, id: garmentId(g) }));
+      // (contents: false — the garments as written, their fabrics and shapes as presets where they name one)
+      return contents ? Promise.all(list.map(async g => ({ ...g, fabric: await content(g.fabric, 'fabric'), shape: g.shape ? await content(g.shape, 'shape') : null }))) : list;
     },
     // a head preset's head (presets/ of group "head"), pinned
     headPreset: async ref => { const p = await E.preset(ref); if (!p.head) throw new Error(`preset ${ref} is not a head`); return p.head; },

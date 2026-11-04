@@ -1,0 +1,41 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-heavy",
+ "label": {
+  "ru": "Одежда: полный мужчина в оверсайзе",
+  "en": "Clothes: a heavy man in an oversized top"
+ },
+ "body": "anny-m-heavy@213d83e01027934d",
+ "look": {
+  "skin": "#d8a585",
+  "roughness": 0.65
+ },
+ "clothes": [
+  {
+   "id": "top",
+   "kind": "garment",
+   "pattern": "mh-oversized",
+   "fabric": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "color": "#4b4a42",
+   "shape": "shape-block@2a359016b2b3bfa2",
+   "strength": 0.5
+  },
+  {
+   "id": "trousers",
+   "kind": "garment",
+   "pattern": "mh-vikingpants",
+   "fabric": "fabric-linen@904bf4c72f9721b5",
+   "color": "#8a7a5a"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2e231c"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

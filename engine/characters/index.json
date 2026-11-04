@@ -302,6 +302,76 @@
     "ru": "Волосы: рыжая девушка с волнами (В1)",
     "en": "Hair: the red-haired girl with waves (В1)"
    }
+  },
+  {
+   "id": "clothes-dress",
+   "label": {
+    "ru": "Одежда: платье-колокол",
+    "en": "Clothes: a bell dress"
+   }
+  },
+  {
+   "id": "clothes-jeans",
+   "label": {
+    "ru": "Одежда: футболка и джинсы",
+    "en": "Clothes: a T-shirt and jeans"
+   }
+  },
+  {
+   "id": "clothes-child",
+   "label": {
+    "ru": "Одежда: ребёнок в футболке и шортах",
+    "en": "Clothes: a child in a T-shirt and shorts"
+   }
+  },
+  {
+   "id": "clothes-granny",
+   "label": {
+    "ru": "Одежда: свитер и юбка в складку",
+    "en": "Clothes: a sweater and a pleated skirt"
+   }
+  },
+  {
+   "id": "clothes-jacket",
+   "label": {
+    "ru": "Одежда: куртка, футболка, широкие брюки",
+    "en": "Clothes: a jacket, a T-shirt, wide trousers"
+   }
+  },
+  {
+   "id": "clothes-wind",
+   "label": {
+    "ru": "Одежда: кардиган, платье и шарф",
+    "en": "Clothes: a cardigan, a dress and a scarf"
+   }
+  },
+  {
+   "id": "clothes-disney",
+   "label": {
+    "ru": "Одежда: принцесса Диснея в пышном платье",
+    "en": "Clothes: the Disney princess in a full dress"
+   }
+  },
+  {
+   "id": "clothes-hero",
+   "label": {
+    "ru": "Одежда: V-герой в поло и брюках",
+    "en": "Clothes: the V hero in a polo and trousers"
+   }
+  },
+  {
+   "id": "clothes-heavy",
+   "label": {
+    "ru": "Одежда: полный мужчина в оверсайзе",
+    "en": "Clothes: a heavy man in an oversized top"
+   }
+  },
+  {
+   "id": "clothes-hair",
+   "label": {
+    "ru": "Одежда и волосы: блузка и юбка-трапеция",
+    "en": "Clothes and hair: a blouse and a flared skirt"
+   }
   }
  ]
 }

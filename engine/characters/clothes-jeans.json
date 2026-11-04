@@ -1,0 +1,35 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-jeans",
+ "label": {
+  "ru": "Одежда: футболка и джинсы",
+  "en": "Clothes: a T-shirt and jeans"
+ },
+ "base": "man@0b3359cb680a7242",
+ "clothes": [
+  {
+   "id": "tshirt",
+   "kind": "garment",
+   "pattern": "mh-tshirt",
+   "fabric": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "color": "#7a8a5a"
+  },
+  {
+   "id": "jeans",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-denim@08106be05917918a",
+   "color": "#3e5578"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2e231c"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

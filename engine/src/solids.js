@@ -23,7 +23,8 @@
 //                             (m/s), how much of the skin there is head (0–1), the limb of the skin nearest (src/regions.js
 //                             LIMBS: 0 the body, 1 2 the arms, 3 4 the legs); limb: the skin of that limb alone, near it
 //                             (a sleeve round its own arm where the body's side is nearer: src/cloth/sim.js), else Infinity
-//   S.kept(m, x, y, z, out, ids, at, fresh) → the same, over the skin points it found nearest before (a reader keeps them:
+//   S.kept(m, x, y, z, out, ids, at, fresh) → the same, over the skin points it found nearest before, of the nearest one's
+//                             limb (a reader keeps them:
 //                             ids, an Int32Array, KN of them from `at`, −2 where none was looked for), looked for anew when
 //                             fresh: the points move with the skin, so they stay the nearest while the reader does not
 //                             slide far along it (cloth, which lies on the skin: src/cloth/sim.js); S.FAR: no skin point
@@ -149,7 +150,15 @@ function stateOf(idx, caps, joints, HP, LP) {
     kept(m, x, y, z, out, ids, at, fresh) {
       st.skinAt(m);
       let d;
-      if (fresh || ids[at] < -1) { d = nearest(m.P, m.N, V, st.hashAt(m), x, y, z, out, HP, LP, -1); const bi = out.bi; for (let q = 0; q < KN; q++) ids[at + q] = bi[q]; if (bi[0] < 0) ids[at] = -1; }
+      if (fresh || ids[at] < -1) {
+        // (only the limb's of the nearest: between two legs, or an arm and the side, the nearest one's skin alone says
+        // which way is out — both together would push sideways, through one of them)
+        nearest(m.P, m.N, V, st.hashAt(m), x, y, z, out, HP, LP, -1);
+        const bi = out.bi, l = bi[0] >= 0 ? LP[bi[0]] : -1; let k = 0;
+        for (let q = 0; q < KN; q++) if (bi[q] >= 0 && LP[bi[q]] === l) ids[at + k++] = bi[q];
+        for (; k < KN; k++) ids[at + k] = -1;
+        d = ids[at] < 0 ? Infinity : nearOf(m.P, m.N, V, ids, at, x, y, z, out, HP, LP);
+      }
       else if (ids[at] < 0) d = Infinity;
       else d = nearOf(m.P, m.N, V, ids, at, x, y, z, out, HP, LP);
       return d === Infinity ? st.deep(m.C, x, y, z, out) : d;

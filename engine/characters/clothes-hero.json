@@ -1,0 +1,37 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-hero",
+ "label": {
+  "ru": "Одежда: V-герой в поло и брюках",
+  "en": "Clothes: the V hero in a polo and trousers"
+ },
+ "base": "v-hero@35e68ca47fab5fc9",
+ "clothes": [
+  {
+   "id": "polo",
+   "kind": "garment",
+   "pattern": "mh-polo",
+   "fabric": "fabric-jersey@fbeb796abdcdb8ec",
+   "color": "#a8574a"
+  },
+  {
+   "id": "trousers",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2f3c58",
+   "shape": "shape-straight-leg@88e6de992128d032",
+   "strength": 0.3
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2e231c"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

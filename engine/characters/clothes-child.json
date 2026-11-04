@@ -1,0 +1,35 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-child",
+ "label": {
+  "ru": "Одежда: ребёнок в футболке и шортах",
+  "en": "Clothes: a child in a T-shirt and shorts"
+ },
+ "base": "child@01a9d4b63ec1b603",
+ "clothes": [
+  {
+   "id": "tshirt",
+   "kind": "garment",
+   "pattern": "mh-tshirt",
+   "fabric": "fabric-jersey@fbeb796abdcdb8ec",
+   "color": "#d1b36a"
+  },
+  {
+   "id": "shorts",
+   "kind": "garment",
+   "pattern": "mh-shorts",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#4b5a6e"
+  },
+  {
+   "id": "shoes",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#3a2c25"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

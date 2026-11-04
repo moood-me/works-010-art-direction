@@ -1,0 +1,42 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-wind",
+ "label": {
+  "ru": "Одежда: кардиган, платье и шарф",
+  "en": "Clothes: a cardigan, a dress and a scarf"
+ },
+ "base": "woman@689d8b42269acb03",
+ "clothes": [
+  {
+   "id": "dress",
+   "kind": "garment",
+   "pattern": "mh-dress",
+   "fabric": "fabric-chiffon@f305643886762bd4",
+   "color": "#9a4a52"
+  },
+  {
+   "id": "cardigan",
+   "kind": "garment",
+   "pattern": "cardigan",
+   "fabric": "fabric-woolknit@27bad4928d150dc3",
+   "color": "#b8865a"
+  },
+  {
+   "id": "scarf",
+   "kind": "garment",
+   "pattern": "scarf",
+   "fabric": "fabric-silk@8dee0e65301326ad",
+   "color": "#d9b77a"
+  },
+  {
+   "id": "shoes",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b211d"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

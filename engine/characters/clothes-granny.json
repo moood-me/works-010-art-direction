@@ -1,0 +1,37 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-granny",
+ "label": {
+  "ru": "Одежда: свитер и юбка в складку",
+  "en": "Clothes: a sweater and a pleated skirt"
+ },
+ "base": "oldwoman@db6f1fd824e54856",
+ "clothes": [
+  {
+   "id": "sweater",
+   "kind": "garment",
+   "pattern": "mh-sweater",
+   "fabric": "fabric-fineknit@3f0b9dbffafbc738",
+   "color": "#7a4a6a"
+  },
+  {
+   "id": "skirt",
+   "kind": "garment",
+   "pattern": "mh-skirt",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#4b4a42",
+   "shape": "shape-pleated@53c8fc2c03626702",
+   "strength": 0.6
+  },
+  {
+   "id": "shoes",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b211d"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

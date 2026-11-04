@@ -1,0 +1,30 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-dress",
+ "label": {
+  "ru": "Одежда: платье-колокол",
+  "en": "Clothes: a bell dress"
+ },
+ "base": "woman@689d8b42269acb03",
+ "clothes": [
+  {
+   "id": "dress",
+   "kind": "garment",
+   "pattern": "mh-dress",
+   "fabric": "fabric-poplin@d20ecf344a94963e",
+   "color": "#3d5f8c",
+   "shape": "shape-bell@3ec8e4c677e97227",
+   "strength": 1
+  },
+  {
+   "id": "shoes",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2a2230"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}
