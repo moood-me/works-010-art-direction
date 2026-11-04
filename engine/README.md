@@ -780,11 +780,12 @@ a top over trousers), not buttons or pockets. Cloth lies on the fingers as on a 
 and is not carried by the hand. The hood is cloth round the head and over its rigid hair, which it does not meet; hair
 lies over the clothes but clothes don't feel the hair. О1's ladder down to the sign is not carried (the pictogram Т4
 has the sign); О1's "the form recomputed round the axes each frame" is not either (the cloth is the form's rest).
-Standing still, most cloth keeps within a millimetre or two a frame, but not all: the heavy man's sweater and trousers
-(between his thighs, which touch: no room; on his back, where the cloth stands about 3 cm off the skin) tremble by
-1–3 cm, an oversized
-sweater standing off the body and a trouser hem at the ankle (over a rigid boot the cloth does not meet) by up to 9 mm
-at a few points. Hair lying over clothes is not right yet: over a dress (Г3's red-haired girl, Г1's Alva, Ariel) it
+In a forward roll loose trousers (MakeHuman's pants: the jeans, head-tails', head-semi's) come off one leg: upside down
+the trouser leg slides toward the hip and bunches, the leg slips out of it, and the figure stands up with a bare leg —
+not solved (the cloth's lengths keep it from stretching, nothing keeps it from bunching off a limb). Standing still the cloth is not quite still: 2–4.5 mm a frame at a few points on most dressed characters (a held edge
+where its hold and the skin meet), 7–9 mm on some (a trouser hem over a rigid boot the cloth does not meet, an
+oversized sweater standing off the body, the princess's dress), and 1–3 cm on the heavy man (between his thighs,
+which touch: no room; on his back, where the cloth stands about 3 cm off the skin), whose clothes also creep 24 mm in 8 s. Hair lying over clothes is not right yet: over a dress (Г3's red-haired girl, Г1's Alva, Ariel) it
 shimmers by 1–3 mm a frame in motion and up to 13 mm standing, where a lock goes under the dress's edge and out again;
 over a blouse (clothes-hair) by 5–8 mm jumping, dancing, sitting, with locks drawn out past twice their length (3 %);
 the hair's own checks fail on these four characters (all hair without clothes passes them). Gloves, belts, buttons and openings that close are not made. A frame of a dressed figure costs 24–126 ms in node:

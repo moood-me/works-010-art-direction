@@ -224,7 +224,7 @@
       "look": "d-bell",
       "motion": "walk",
       "t": 30,
-      "dist": 2.4
+      "dist": 4.6
      },
      "engine": {
       "char": "woman",
@@ -254,7 +254,7 @@
       "look": "d-aline",
       "motion": "jump",
       "t": 40,
-      "dist": 2.4
+      "dist": 4.6
      },
      "engine": {
       "char": "woman",
@@ -284,7 +284,7 @@
       "look": "d-bell",
       "motion": "sit",
       "t": 80,
-      "dist": 2.4
+      "dist": 4.6
      },
      "engine": {
       "char": "woman",
@@ -314,7 +314,7 @@
       "look": "d-tulip",
       "motion": "walk",
       "t": 30,
-      "dist": 2.4
+      "dist": 4.6
      },
      "engine": {
       "char": "woman",

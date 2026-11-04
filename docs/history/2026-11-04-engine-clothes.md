@@ -60,20 +60,21 @@ checks, the gallery, the pictures); the ways below were decided by me.
 
 **Checks.** `units.mjs`: all 35 hold (the bell's wider hem measured on its designed form: hanging at strength 0 the extra cloth falls in folds). `quality.mjs` skin, bones, feet, order: hold (the feet check now takes the lowest
 point of every mesh standing on the floor — shoes lift a dressed figure by their soles). `quality.mjs --only clothes`
-(24 dressed characters, every motion and chain whole, two winds): 2389 of 2401 hold — the cloth through the body, its
-speed, its tears, the loop, a scrub back, other frame rates all hold everywhere; broken: standing still, cloth moving
-more than 2 mm a frame on 9 characters (the heavy man 22 mm and creeping 24 mm in 8 s — his thighs touch, and on his
-back the cloth stands at the skin's reach; trouser hems over rigid boots and oversized sweaters 6–10 mm at a few points;
-others 2.3–4.4 mm), the jacket across the walk's loop (302 mm against 292), the blouse in a strong wind drawn out past
-1.5× at 9 % (7). `quality.mjs --only hair`: all hair without clothes holds; 47 of 1315 broken, all on the four with hair
+(24 dressed characters, every motion and chain whole, two winds): 2384 of 2401 hold — the cloth through the body, its
+speed, the loop, a scrub back, other frame rates hold everywhere; broken: standing still, cloth moving more than 2 mm a
+frame on 15 characters (2–4.5 mm on eight; 7–9 mm on six — trouser hems over rigid boots, oversized sweaters, the
+princess's dress; the heavy man 26 mm and creeping 24 mm in 8 s — his thighs touch, and on his back the cloth stands at
+the skin's reach), the blouse in a strong wind drawn out past 1.5× at 9 % (7). `quality.mjs --only heads`: all 890 hold. `quality.mjs --only hair` (run with the planes' fade dropped below; without it hair without clothes is exactly as stored before this stage): all hair without clothes holds; 47 of 1315 broken, all on the four with hair
 over clothes (Г3's girl, Г1's Alva, Ariel over a dress; the blouse of clothes-hair): a shimmer of 1–8 mm in motion, 13
-mm standing, a few locks torn — hair lying over the cloth is not right yet. Tried for it and dropped: the hair meeting
+mm standing, a few locks torn — hair lying over the cloth is not right yet. Seen in the pictures, not by the checks: in
+a forward roll MakeHuman's loose trousers come off one leg (clothes-jeans, head-tails, head-semi; the other trousers
+keep on) — not solved. Tried for it and dropped: the hair meeting
 the cloth as drawn (finer), not as simulated; a point beside the cloth's edge not over it; hair as near the cloth as at
 rest — none changed it. Cost of a frame of a dressed figure's whole step in node: 24–126 ms. Stored numbers and
 pictures changed only for the characters with clothes, heads and hair (`clothes-*`, `head-*`, `hair-*` cases): the
-heads and the hair characters on them are dressed now (their outfits as cloth), and the skin's planes now fade to
-nothing at their reach (src/solids.js), which moves undressed hair by 2–3 mm (Alva's long hair by up to 16 cm where
-locks lie differently; its checks hold). Nothing else moved.
+heads and the hair characters on them are dressed now (their outfits as cloth). Nothing else moved. Tried and dropped:
+the skin's planes fading to nothing at their reach (an oversized sweater's flicker 9 → 3 mm), as it moved hair fitted on
+a grown head off the skin (Alva, 8 mm against 5).
 
 **Pictures** (docs/pictures/engine/clothes/): bodies.png (garments on eight bodies, front/¾/side), motion.png (Kimodo's
 motions and chains), fabrics.png (one dress in eight fabrics, walking and in a strong wind), strengths.png (the
