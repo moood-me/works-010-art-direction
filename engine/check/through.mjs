@@ -25,7 +25,9 @@ const MARGIN = 0.05, SAMPLE = 4, REACH = 0.4, BAND = 0.04, DRAWN = 3;
 // PAIRS: how many skin points two garments must both cover for their order to be counted (a few at a hem's edge, a share
 // of them is one point's turn); LONG: how many rings a limb's tube must have to be counted (a short sleeve or shorts
 // are one or two bands round the top of the limb, and crumple round a shoulder or hip as it turns)
-const PAIRS = 30, LONG = 4;
+const PAIRS = 30, LONG = 3;
+// JOINT: how far from a joint a tube's ring is counted (m)
+const JOINT = 0.06;
 const BONES = { 1: ['LeftArm', 'LeftForeArm', 'LeftHand'], 2: ['RightArm', 'RightForeArm', 'RightHand'], 3: ['LeftLeg', 'LeftShin', 'LeftFoot'], 4: ['RightLeg', 'RightShin', 'RightFoot'] };
 
 export function looker(fig, sim) {
@@ -63,7 +65,7 @@ export function looker(fig, sim) {
   const nearestSkin = (x, y, z) => { let b = 0, bd = Infinity; for (const v of used) { const d = (BP[v * 3] - x) ** 2 + (BP[v * 3 + 1] - y) ** 2 + (BP[v * 3 + 2] - z) ** 2; if (d < bd) { bd = d; b = v; } } return b; };
   const rings = gs.flatMap(G => G.g.pattern.tubes ? ringsOf(fig, G.g, Uint8Array.from({ length: G.g.n }, (_, i) => limbOf(nearestSkin(G.g.x[i * 3], G.g.x[i * 3 + 1], G.g.x[i * 3 + 2])))) : []);
   return {
-    covered: cover.reduce((s, c) => s + c.v.length, 0), rings: rings.length,
+    covered: cover.reduce((s, c) => s + c.v.length, 0), rings: rings.length, ringList: rings,
     frame() {
       build();
       // the cloth in the body
@@ -105,14 +107,15 @@ function ringsOf(fig, g, limbOf) {
         const k = Math.floor(f.t * len / BAND); if (!bands.has(k)) bands.set(k, []); bands.get(k).push(i);
       }
       for (const [k, pts] of bands) {
-        if (pts.length < 8) continue;
+        // (not within JOINT of either joint: there a band of the thigh goes round the shin as the knee bends)
+        if (pts.length < 8 || k * BAND < JOINT || (k + 1) * BAND > len - JOINT) continue;
         const t = (k + 0.5) * BAND / len, ang = pts.map(i => angleAt(P(), a, b, t, x, i));
         const order = pts.map((i, j) => [ang[j], i]).sort((p, q) => p[0] - q[0]);
         let gap = 0; for (let j = 0; j < order.length; j++) gap = Math.max(gap, (order[(j + 1) % order.length][0] - order[j][0] + 2 * Math.PI) % (2 * Math.PI) || 0);
         if (gap > Math.PI / 3) continue;
         const ids = order.map(o => o[1]);
         const winding = () => { let w = 0, prev = angleAt(P(), a, b, t, x, ids[ids.length - 1]); for (const i of ids) { const c = angleAt(P(), a, b, t, x, i); let d = c - prev; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; w += d; prev = c; } return w / (2 * Math.PI); };
-        if (Math.abs(winding()) > 0.5) out.push({ limb: LIMBS[limb], winding });
+        if (Math.abs(winding()) > 0.5) out.push({ limb: LIMBS[limb], bone: s, band: k, winding });
       }
     }
   }

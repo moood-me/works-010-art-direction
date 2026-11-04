@@ -10,8 +10,7 @@ browser and in node (`src/` has no three.js except `view3d.js`, which is given i
 
 The viewer: `viewer/index.html` (in the gallery: Д1). Several figures side by side (＋, ✕; the panel edits the chosen
 one); a motion or a chain; pause, scrub; the camera follows the box around all of them; front and side from where the
-chosen one faces; skinning methods, Т7's fixes and pose layers as toggles; the joints and the collision capsules
-shown. `?c=woman,man&m=walk&t=40&paused`. With `?bodies` (in the gallery: Д2–Д4) the bodies' panel: the chosen figure's
+chosen one faces; skinning methods, Т7's fixes and pose layers as toggles; the joints shown. `?c=woman,man&m=walk&t=40&paused`. With `?bodies` (in the gallery: Д2–Д4) the bodies' panel: the chosen figure's
 base body (any of `data/bodies/index.json`) and its deformers — presets added from `presets/index.json`, each with its
 strength, on the rest (frames kept or turned) or as a pose layer, taken away; `&b=<body>&d=<preset>:<strength>[:pose],…`.
 With `?heads` (Д5–Д7) the heads' panel: the chosen figure's head (a head preset, or none), its form's ways with their
@@ -64,7 +63,8 @@ src/       engine.js      the entry: createEngine({root?, read?}) → body(ref),
            solids.js      the body as hair and clothes meet it — the one collision a figure offers: the head's shape
                           with its jaw, the body's skin between two frames, its inside deep in; updated once a step,
                           read by any number of simulations
-           capsules.js    capsules round a body's bones at rest (the solids' coarse inside, a layer's arms kept clear)
+           capsules.js    capsules round a body's bones at rest (what a layer's arms keep clear of)
+           cells.js       a spatial hash of points: the one the skin, cloth and a garment laid on the body are searched by
            decimate.js    a surface made simpler (quadric error metrics, half-edge collapses)
            skin.js        skinning (centres of rotation / dual quaternions / linear), Т7's seam fix
            figure.js      a rig with its meshes: pose → layers (turns, changes of the rest, morphs) → place → meshes →
@@ -460,15 +460,17 @@ masses' clumps hang on guides of the same simulation, the cap, buns and ties rid
   `friction` (against the body), `damping` (its own motion against the head, its zigzags), `together` (hair against
   hair). The wind: a preset (`sim.wind`), the viewer's «Ветер».
 - *The solids* (`src/solids.js`, `figure.solids()` — the one collision the body offers, for clothes too): updated once
-  a figure step (`S.update(previous, pose, how, dt)`, before its simulations), then only read — a reader keeps its own
-  moments (`S.moment(u)`: the solids at a share of the frame, made at each of its small steps), so hair and clothes
-  read it at once and none changes what another sees. The head's shape (the designed form, `head.shape`) carried by the
-  Head joint and, below the mouth, the Jaw joint, baked into a grid per head (trilinear); the body's own skin (but a
-  designed head's) between the previous frame and this one, at the moment asked: a distance from it by moving least
-  squares over its nearest points' normals (in a hash of 3 cm cells, made at a moment the first time it is asked), how
-  fast it moves there (friction); and, farther in than the skin's points reach, a coarse inside — the bones' capsules
-  (`src/capsules.js`) shrunk inside the skin — which says how deep and which way is out (the first take had nothing
-  past 3 cm, and took the end of the frame's skin for every small step: a hand at 5 m/s jumped 17 cm). The answer is the
+  a figure step (`S.update(previous, pose, how, dt)`, before its simulations), then only read; the figure's step goes
+  through its small steps once for all its simulations, each small step at one moment of the solids (`S.moment(u)`: the
+  solids at a share of the frame) made once and read by all of them. The head's shape (the designed form, `head.shape`)
+  carried by the Head joint and, below the mouth, the Jaw joint, baked into a grid per head (trilinear); the body's own
+  skin (but a designed head's) between the previous frame and this one, at the moment asked: a distance from it by
+  moving least squares over its nearest points' normals (in a hash of 3 cm cells, `src/cells.js`, made at a moment the
+  first time it is asked), how fast it moves there (friction) — as far from the skin as a reader asks (hair 3 cm: past
+  its own thickness it is clear; cloth 15 cm), outside or deep inside alike (the first take had nothing past 3 cm, and
+  took the end of the frame's skin for every small step: a hand at 5 m/s jumped 17 cm; the second, the bones' capsules
+  as the inside deeper in — fitted to the skin round each bone, they stood out of it where a limb is not round, a heavy
+  trunk's by 6 cm, and between them and the skin's reach was a band they could not see: dropped). The answer is the
   skin itself; a reader keeps its own thickness (hair: half a lock's depth, and as deep as it lay at rest). Tried first
   and dropped as the contact surface: the engine's capsules (round a collarbone one stands over the shoulder like a
   shelf, and long hair stood off it in flaps); each bone's skin carried rigidly by its bone (neighbours disagree where
@@ -595,9 +597,9 @@ takes 1.5 ms (skinning 0.75 ms with centres of rotation, 0.9 dual quaternions, 0
 already seen is made in under a millisecond (the first: 0.27 s for the centres).
 
 **Capsules round the bones** (`src/capsules.js`): a tapered capsule along each bone that carries enough skin, its radius
-at each end a share of the skin's distances round it at rest (`fit`: 0.5 the median; `inset` shrinks it). The body's
-solids take them, shrunk inside the skin, as its coarse inside (below, Hair: the solids); a layer (`armsOff`) as what
-the arms keep clear of; the viewer's «капсулы» draws the solids' ones as the step left them.
+at each end a share of the skin's distances round it at rest (`fit`: 0.5 the median); a layer (`armsOff`) takes them as
+what the arms keep clear of. (The solids took them as the body's coarse inside, and the viewer's «капсулы» drew those,
+until the clothes' review: the skin is asked at any depth now.)
 
 **Characters as data** (`src/character.js`). A description is checked against its schema: an unknown key, an unknown
 value, a joint that isn't there, a number out of range is refused with where it is. Its body is pinned by content
@@ -809,5 +811,5 @@ several characters at once (the GPU) are the later task.
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole
 (no foot contacts); the arm can press into the chest's side at the armpit when it hangs close (Anny's weights;
 `armsOff` is for it); skinning is on the CPU (fast enough for a few figures; on the GPU when many are needed);
-the collision shape is capsules only (no distance field); the rest stands at the body's own origin, so switching from
+the rest stands at the body's own origin, so switching from
 rest to a motion still jumps by where that motion's frame 0 puts the pelvis (a few centimetres; each motion differs).
