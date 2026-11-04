@@ -48,11 +48,11 @@ bo = mesh_obj('body', B[0], btris); cache(bo, B, 'body')
 bo.modifiers.new('col', 'COLLISION')
 bo.collision.thickness_outer = 0.004; bo.collision.cloth_friction = 5; bo.collision.damping = 0.1
 
-# fabric -> Blender settings: stiffness from Blender's own cloth presets nearest each fabric (Silk, Cotton, Denim,
-# Leather): tension/compression, shear, bending, air damping. Blender's mass is per point (kg), and the presets' masses
-# are for coarse meshes (a few hundred points): on these garments (5–9 thousand points) they make a blouse weigh over a
-# tonne, so it sags and stretches and no air moves it. The mass per point is the fabric's weight (kg/m², ours) times
-# the garment's area over its points.
+# fabric -> Blender settings: Blender's own cloth presets nearest each fabric (Silk, Cotton, Denim, Leather), as an
+# artist would set them: mass per point, tension/compression, shear, bending, air damping. (Blender's mass is per point
+# and the presets are for coarse meshes, so on 5–9 thousand points a garment is far too heavy — it sags and stretches
+# a little. The physical mass — the fabric's kg/m² times the area over the points — was tried too: with the same
+# stiffness and 10 steps a frame the blouse became unstable mid-walk, the sleeves torn into strings; pics/blender-light-mass.webp.)
 PRESET = {'silk': (0.15, 5, 5, 0.05, 1), 'chiffon': (0.15, 5, 5, 0.05, 1), 'jersey': (0.3, 15, 5, 0.5, 1),
   'heavyjersey': (0.3, 15, 5, 0.5, 1), 'suiting': (0.4, 40, 40, 5, 1), 'denim': (1, 40, 40, 10, 1), 'twill': (1, 40, 40, 10, 1)}
 
@@ -81,9 +81,8 @@ for li, g in enumerate(info['garments']):
     for i in range(n):
         if hold[i] > 0: vg.add([i], float(min(1, hold[i])), 'REPLACE')
     cm = ob.modifiers.new('cloth', 'CLOTH'); s = cm.settings; cs = cm.collision_settings
-    _, t, sh, bd, air = PRESET[g['fabric']]
-    area = 0.5 * np.linalg.norm(np.cross(rest[tris[:, 1]] - rest[tris[:, 0]], rest[tris[:, 2]] - rest[tris[:, 0]]), axis=1).sum()
-    s.mass = g['F']['density'] * area / n
+    mass, t, sh, bd, air = PRESET[g['fabric']]
+    s.mass = mass
     s.tension_stiffness = s.compression_stiffness = t; s.shear_stiffness = sh; s.bending_stiffness = bd
     s.air_damping = air; s.quality = 10; s.vertex_group_mass = 'hold'; s.pin_stiffness = 1
     s.use_dynamic_mesh = False
@@ -97,7 +96,7 @@ for li, g in enumerate(info['garments']):
         for o in under.objects: nxt.objects.link(o)
         nxt.objects.link(ob); under = nxt
     garms.append((g, ob, s))
-    print(name, n, g['fabric'], PRESET[g['fabric']], 'area', round(float(area), 3), 'mass/pt', s.mass)
+    print(name, n, g['fabric'], PRESET[g['fabric']])
 
 # simulate: step through the frames, read the cloth back
 outs = {g['name']: np.zeros((F, g['n'], 3), np.float32) for g, _, _ in garms}

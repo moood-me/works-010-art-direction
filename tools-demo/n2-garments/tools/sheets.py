@@ -6,7 +6,7 @@ GC = Path('/home/user/cache/n2-garments'); R = GC / 'renders'
 OUT = Path(__file__).resolve().parent.parent / 'pics'
 F = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 22)
 BG = (214, 206, 194)
-def fig(name, yaw=20, body='moood-woman', box=(95, 165, 505, 745)):
+def fig(name, yaw=20, body='moood-woman', box=(70, 170, 530, 740)):
     return Image.open(R / f'{body}-{name}-{yaw}.png').convert('RGB').crop(box)
 def sheet(out, cells, cols, cap_h=34):
     """cells: [(image, caption)]"""
