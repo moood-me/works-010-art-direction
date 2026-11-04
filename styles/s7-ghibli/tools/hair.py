@@ -115,7 +115,9 @@ class Hair:
         return out
 
     def build(self, view):
-        front, back, strands = [self.shell(view)], [], []
+        """→ (front, back, strands, mid): front hair goes over the face; back hair behind the body; `mid` locks
+        (a tail over the shoulder) over the body but under the face."""
+        front, back, strands, mid = [self.shell(view)], [], [], []
         for bl in self.P.get('balls', []):
             # a bun or a knot: a ball sitting on the shell
             t, y, r, out = bl
@@ -130,7 +132,10 @@ class Hair:
             (front if fz >= 0 else back).append(g)
         for L in self.locks:
             for g, c, w, fz in self.lock(view, L):
-                isback = L.get('back') or (fz < -0.002 and not L.get('front'))
+                isback = L.get('back') or (fz < -0.002 and not L.get('front') and not L.get('mid'))
+                if L.get('mid'):
+                    mid.append((g, c, w, L.get('line')))
+                    continue
                 (back if isback else front).append(g)
                 if isback:
                     continue
@@ -159,7 +164,12 @@ class Hair:
                 strands.append((np.array(run), None, 'flow'))
         F = smooth(unary_union(front), 0.8)
         B = smooth(unary_union(back), 0.8) if back else None
+        self.mid = mid
         return F, B, strands
+
+    def draw_mid(self, d, view, color):
+        for g, c, w, ln in getattr(self, 'mid', []):
+            self.draw(d, view, g, color, [(c, w, ln)] if ln else [])
 
     def draw(self, d, view, g, color, strands=(), light=(-1, -0.6), extra_shadow=None):
         k = view.s * self.h.k

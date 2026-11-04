@@ -213,6 +213,7 @@ def face_rule():
         Fh, Bh, st = hr.build(v)
         if Bh is not None:
             hr.draw(d, v, Bh, m.HAIR)
+        hr.draw_mid(d, v, m.HAIR)
         sk = h.draw_face(d, v, Expr(), m.SKIN, m.HAIR, m.IRIS, hair_front=Fh)
         hr.draw(d, v, Fh, m.HAIR, st)
     for y, t in marks:

@@ -254,6 +254,9 @@ class Mark:
 def draw_marks(marks, R, lw):
     out = []
     for m in marks:
+        if m.kind == 'glyph':
+            out += draw_glyph(m, R, lw)
+            continue
         vis, x, y = R.visible(m.pts[:, 0], m.pts[:, 1], m.pts[:, 2], m.tol)
         pts = list(zip(x, y))
         if m.kind == 'shape':
@@ -269,6 +272,32 @@ def draw_marks(marks, R, lw):
                 if len(run) >= 2:
                     out.append(lc.line([pts[i] for i in run], lw * m.w, stroke=m.stroke,
                                        corners=[c - run[0] for c in m.corners if run[0] <= c <= run[-1]]))
+    return out
+
+
+class Glyph(Mark):
+    """A drawn 2D shape (a hand) pinned to a 3D point: pts[0] is the anchor, pts[1] a point the glyph's +y axis
+    turns toward (on screen).  shapes: [(points, fill or None, width factor, closed)] in units where the glyph's
+    length is 100; length: that length in model units."""
+
+    def __init__(self, anchor, toward, shapes, length, flip=False, on=None, tol=10.0):
+        super().__init__(np.array([anchor, toward], float), kind='glyph', on=on, tol=tol)
+        self.shapes, self.length, self.flip = shapes, length, flip
+
+
+def draw_glyph(m, R, lw):
+    vis, x, y = R.visible(m.pts[:, 0], m.pts[:, 1], m.pts[:, 2], m.tol)
+    if not vis[0]:
+        return []
+    ang = math.degrees(math.atan2(-(x[1] - x[0]), y[1] - y[0]))
+    k = m.length / 100 * R.v.s
+    out = []
+    for pts, fill, w, closed in m.shapes:
+        P = lc.xf([((-px if m.flip else px), py) for px, py in pts], x[0], y[0], k, ang)
+        if closed:
+            out.append(lc.shape(P, fill, lw * w))
+        else:
+            out.append(lc.line(P, lw * w))
     return out
 
 

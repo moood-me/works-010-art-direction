@@ -114,12 +114,12 @@ def box(name, material, c, size, res, rot=(0, 0, 0)):
     return r3.Part(name, material, P[:, 0], P[:, 1], P[:, 2])
 
 
-def hand(name, c, direction, res, size=1.0, material='skin', rot=0.0, fist=False, side=1):
-    """A simple hand: a flattened palm, the fingers as one mitten, a thumb.  direction: where the fingers point
-    (3D vector); rot turns the palm about it; side mirrors the thumb (1: right hand, -1: left)."""
+def hand(name, c, direction, res, size=1.0, material='skin', rot=0.0, fist=False, side=1, spread=0.0):
+    """A hand as the style draws it: a flat palm, the four fingers as one mitten split by three short lines, a
+    thumb.  direction: where the fingers point; rot turns the palm about it; side: 1 right hand, -1 left.
+    Returns (parts, marks)."""
     d = np.asarray(direction, float)
     d /= np.linalg.norm(d)
-    # palm frame: d (fingers), w (across the palm), n (palm normal)
     up = np.array([0, 0, 1.0]) if abs(d[2]) < 0.9 else np.array([1.0, 0, 0])
     w = np.cross(d, up); w /= np.linalg.norm(w)
     n = np.cross(w, d)
@@ -127,20 +127,31 @@ def hand(name, c, direction, res, size=1.0, material='skin', rot=0.0, fist=False
     w, n = w * ca + n * sa, -w * sa + n * ca
     s = size
     c = np.asarray(c, float)
-    ps = []
-    palm = _ellipsoid_pts((0, 0, 0), (9 * s, 11 * s, 4 * s), res, frame=(w, d, n)) + c
-    ps.append(palm)
+    palm = _ellipsoid_pts((0, 0, 0), (9.5 * s, 10 * s, 3.6 * s), res, frame=(w, d, n)) + c
     if fist:
-        f = _ellipsoid_pts((0, 0, 0), (9 * s, 7 * s, 6.5 * s), res, frame=(w, d, n)) + c + d * 10 * s + n * 3 * s
+        fing = _ellipsoid_pts((0, 0, 0), (9.5 * s, 6.5 * s, 6 * s), res, frame=(w, d, n)) + c + d * 9 * s + n * 3 * s
     else:
-        f = _ellipsoid_pts((0, 0, 0), (8.5 * s, 11 * s, 3.4 * s), res, frame=(w, d, n)) + c + d * 15 * s
-    ps.append(f)
-    P = np.vstack(ps)
-    out = [r3.Part(name, material, P[:, 0], P[:, 1], P[:, 2])]
-    th = [c + w * side * 7 * s - d * 2 * s, c + w * side * 12 * s + d * 6 * s + n * 3 * s,
-          c + w * side * 11 * s + d * 13 * s + n * 4 * s]
-    out.append(tube(name + 'T', material, th, [3.6 * s, 3.2 * s, 2.6 * s], res))
-    return out
+        # fingers: a mitten a little narrower than the palm, slightly curled toward the palm
+        fing = _ellipsoid_pts((0, 0, 0), (9 * s, 10.5 * s, 3.0 * s), res, frame=(w, d, n)) + c + d * 15 * s - n * 1.5 * s
+    P = np.vstack([palm, fing])
+    parts = [r3.Part(name, material, P[:, 0], P[:, 1], P[:, 2])]
+    th = [c + w * side * 6 * s - d * 4 * s, c + w * side * (11 + spread) * s + d * 3 * s + n * 2.5 * s,
+          c + w * side * (12 + spread) * s + d * 10 * s + n * 3.5 * s]
+    parts.append(tube(name + 'T', material, th, [3.6 * s, 3.1 * s, 2.5 * s], res))
+    marks = []
+    if not fist:
+        for k in (-1, 0, 1):
+            a0 = c + d * 15 * s + w * k * 3.2 * s - n * 1.5 * s
+            seg = [a0 + d * 2 * s + n * 3.1 * s, a0 + d * 9 * s + n * 2.6 * s]
+            segb = [a0 + d * 2 * s - n * 3.1 * s, a0 + d * 9 * s - n * 2.6 * s]
+            marks.append(Mark(np.array(seg), w=0.55, on=material, tol=2.5 * s))
+            marks.append(Mark(np.array(segb), w=0.55, on=material, tol=2.5 * s))
+    else:
+        for k in (-1, 0, 1):
+            a0 = c + d * 12 * s + w * k * 3.2 * s + n * 3 * s
+            marks.append(Mark(np.array([a0 - d * 4 * s + n * 6 * s, a0 + n * 6.2 * s, a0 + d * 4 * s + n * 4 * s]),
+                              w=0.55, on=material, tol=2.5 * s))
+    return parts, marks
 
 
 def ring_mark(center, axis, r, w=0.7, on=None, n=48, flat=1.0, arc=(0, 360)):

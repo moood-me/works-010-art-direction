@@ -45,7 +45,7 @@ HAIRDEF = dict(
         dict(root=(-160, -0.2), to=[(-0.05, -0.35, -0.10), (0.10, -0.55, -0.05)], w=0.55, prof=1.0, back=True),
         # the tail over the left shoulder, in front
         dict(root=(-160, -0.45), to=[(-0.40, -0.30, 0.05), (-0.58, -0.95, 0.45), (-0.48, -1.70, 0.72), (-0.34, -2.40, 0.72)],
-             w=0.36, prof=0.9, line='r', front=True),
+             w=0.36, prof=0.9, line='r', mid=True),
     ],
 )
 

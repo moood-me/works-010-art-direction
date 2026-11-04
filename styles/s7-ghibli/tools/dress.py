@@ -370,6 +370,7 @@ def head_drawer(head, hair, skin, hair_c, iris_c, E, head_c=None, extra=None):
             if Bh is not None:
                 hair.draw(d, view, Bh, hair_c)
             return
+        hair.draw_mid(d, view, hair_c)
         sk = head.draw_face(d, view, E, skin, hair_c, iris_c, hair_front=Fh)
         if Fh is not None:
             hair.draw(d, view, Fh, hair_c, st)
