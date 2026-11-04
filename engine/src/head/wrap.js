@@ -114,9 +114,9 @@ export function wrapHead(body, form, marks, neckSlim, onto) {
   const MW = M.wide ? 0.8 * M.w : Math.max(M.w / 2 * 1.05, 0.14), grin = M.wide ? grinLines({ y: M.y, w: M.w, crooked: M.crooked }) : null;
   const part = x => grin ? (along(grin.teeth, x) + along(grin.bot, x)) / 2 : M.y - (M.sag ?? 0) * (1 - (x / MW) ** 2);
   const jaw = jt('Jaw'), chest = jt('Chest'), neck2 = jt('Neck2'), eL = jt('LeftEye'), L = landmarksOf(body);
-  // pinned: the points the warp is made through; held: of them, a grin's parting, which the easing of folds leaves where
-  // it is (carried a few millimetres up, it would cut the teeth; a drawn mouth is set on where its lips part after,
-  // src/head/head.js — holding them there leaves pleats round its corners)
+  // pinned: the points the warp is made through; held: of them, what the easing of folds leaves where it is — the eyes'
+  // middles (the drawn eyes are on them) and a grin's parting (carried a few millimetres up, it would cut the teeth; a
+  // drawn mouth is set on where its lips part after, src/head/head.js — holding them leaves pleats round its corners)
   const src = [], dst = [], pinned = new Uint8Array(N), held = new Uint8Array(N);
   const add = (i, t) => { pinned[i] = 1; src.push([at[i * 3], at[i * 3 + 1], at[i * 3 + 2]]); dst.push(toW(...t)); };
   const X = i => at[i * 3], Y = i => at[i * 3 + 1], Z = i => at[i * 3 + 2], tipI = L.noseTip, mC = L.mouth;
@@ -124,6 +124,7 @@ export function wrapHead(body, form, marks, neckSlim, onto) {
   // bottom; the mouth's corners (the lips' seam keeps room to open, however small the drawn mouth) and middle; the ears
   for (const [s, e] of [[1, 'L'], [-1, 'R']]) {
     for (const [n, ux, uy] of [['eye', 0, 0], ['eyeIn', -0.5, 0], ['eyeOut', 0.5, 0], ['eyeUp', 0, 0.5], ['eyeDown', 0, -0.5]]) { const x = s * (E.x + ux * E.w), y = E.y + uy * E.h; add(L[n + e], [x, y, surfZ(x, y)]); }
+    held[L['eye' + e]] = 1;
     add(L['mouth' + e], [s * MW, part(s * MW), surfZ(s * MW, part(s * MW))]);
     add(L['ear' + e], [s * (ears.x + 0.08), ears.y, ears.z]);
   }
@@ -191,7 +192,7 @@ export function wrapHead(body, form, marks, neckSlim, onto) {
       for (let c = 0; c < 3; c++) disp[i * 3 + c] = -g[c] * k / gl * omega[i] ** 2;
     }
     smoothField(disp, 3, nbr, its, keepOut);
-    for (let i = 0; i < N * 3; i++) wrapped[i] += disp[i] * 0.9;
+    for (let i = 0; i < N; i++) if (!held[i]) for (let c = 0; c < 3; c++) wrapped[i * 3 + c] += disp[i * 3 + c] * 0.9;   // (what is held stays where the warp laid it, on the form)
   }
   // last: exactly onto the form along the normal, the spacing evened along it, the join with the neck eased
   {

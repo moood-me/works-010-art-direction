@@ -21,6 +21,7 @@ import { piecesOf } from './pieces.js';
 import { mouthLines, along } from './paint.js';
 import { gradOf } from './shapes.js';
 import { normalsOf } from '../mesh.js';
+import { clamp, sst } from '../math.js';
 import { num, flag, color } from '../schema.js';
 
 export const LIGHT_SCHEMA = { type: 'object', props: {
@@ -69,15 +70,18 @@ export function buildHead({ pre, laid, drawn, post }, head) {
     }
     shading = { normals, weight };
   }
-  // the face's own shadows: which vertices are face (no cast shadows there, as an option) — as far as it shows the picture
-  const face = light.faceShadows ? null : paintMask;
+  // the face's own shadows: which vertices are face (no cast shadows there, as an option) — all of the head's front, under
+  // the chin too, fading round the sides and down the neck
+  const face = light.faceShadows ? null : Float32Array.from(omega, (w, i) => sst(clamp((w - 0.3) / 0.5, 0, 1)) * sst(clamp((frame.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2])[2] + 0.4) / 0.4, 0, 1)));
   // (the jaw's part of it: below the mouth, in front of the ears — src/figure.js headShape)
   const shape = { ...(G ? { sdf: G.full } : ballOf(P, post.mesh, frame, omega)), frame, jaw: { y: mouth?.y ?? -0.8, z: G?.ears?.z ?? -0.12 } };
   const info = { frame, light, features, expressions: Object.fromEntries(head.expressions.map(x => [x.name, x])), skin: head.skin, shape };
   const body = post.withRest({ mesh: { morphs, uv, paintMask, paint: { features, skin: head.skin }, shading, noShadow: face } });
   body.head = info;
   const cranium = wrap?.form.kind === 'curves' ? { w: 1, h: 1, d: 1.05, ...wrap.form.cranium } : { w: 1, h: 1, d: 1.05 };
-  const meshes = [...piecesOf(head.pieces, { form: G, frame, body, sk, skin: head.skin, features, cranium }), ...reliefsOf(features, { drawn, frame: drawnFrame, pic, omega })];
+  // (a piece on the face, a nose, takes no cast shadows when the face doesn't)
+  const pieces = piecesOf(head.pieces, { form: G, frame, body, sk, skin: head.skin, features, cranium }).map(m => m.onFace && face ? { ...m, noShadow: new Float32Array(m.positions.length / 3).fill(1) } : m);
+  const meshes = [...pieces, ...reliefsOf(features, { drawn, frame: drawnFrame, pic, omega })];
   return { body, meshes };
 }
 

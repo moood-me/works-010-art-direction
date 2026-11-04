@@ -61,7 +61,7 @@ function nose(p, ctx) {
   }
   const rosy = p.rosy ?? (ball ? 0.25 : 0), base = mixed(rgb(ctx.skin), rgb(ROSY), rosy), w = washes(ctx.features), cl = new Float32Array(m.positions.length);
   for (let v = 0; v < m.positions.length / 3; v++) cl.set(washedAt(w, base, m.positions[v * 3], m.positions[v * 3 + 1]).map(linear), v * 3);
-  return [onHead(ctx, 'nose', m, { color: ctx.skin, colors: cl, ink: { width: p.ink ?? (ball ? 0.0014 : 0.0008), color: p.inkColor ?? (ball ? '#7a4a2a' : '#a07882') }, toon: true, ...(ball ? { shine: p.shine ?? 0.85 } : { shadows: false }) })];
+  return [onHead(ctx, 'nose', m, { onFace: true, color: ctx.skin, colors: cl, ink: { width: p.ink ?? (ball ? 0.0014 : 0.0008), color: p.inkColor ?? (ball ? '#7a4a2a' : '#a07882') }, toon: true, ...(ball ? { shine: p.shine ?? 0.85 } : { shadows: false }) })];
 }
 const ROSY = '#f0a088';
 

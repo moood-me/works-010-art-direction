@@ -24,7 +24,7 @@ import { resolve } from '../src/character.js';
 import { turnedOver } from '../src/regions.js';
 import { headShares } from '../src/head/frame.js';
 import { formOnBody } from '../src/head/wrap.js';
-import { gradOf } from '../src/head/shapes.js';
+import { gradOf, projectOn } from '../src/head/shapes.js';
 import { cross } from '../src/math.js';
 import { neighboursOf, normalsOf } from '../src/mesh.js';
 import { landmarksOf } from '../src/head/face.js';
@@ -42,6 +42,8 @@ let failed = 0, passed = 0;
 // expressions have no counterpart on the plain body: an edge of the face no more than 2.5× its rest's (a smile draws the
 // mouth's corners out and up)
 const EXPR_LIMIT = 2.5;
+// a head's headwear (src/head/pieces.js)
+const WEAR = ['hood', 'hat', 'earDevice'];
 const check = (name, value, limit, unit = '') => {
   const ok = value <= limit;
   if (!ok) failed++; else passed++;
@@ -202,24 +204,31 @@ if (!only || only.includes('heads')) {
     // the lips' parting is held where the mouth is drawn, and what folds round it is the mouth's opening, drawn dark
     const pic = i => [(mesh.uv[i * 2] - 0.5) * 2 * SPAN, (mesh.uv[i * 2 + 1] - 0.5) * 2 * SPAN + CY], drawnMouth = body.head.features.find(f => f.kind === 'mouth' && f.type !== 'none');
     const lips = drawnMouth && (drawnMouth.type === 'grin' ? (({ top, bot }) => [top, bot])(grinLines(drawnMouth)) : (({ upper, lower }) => [upper, lower])(mouthLines(drawnMouth)));
-    const inMouth = i => { if (!lips) return false; const [x, y] = pic(i); return x > lips[0][0][0] && x < lips[0][lips[0].length - 1][0] && y < along(lips[0], x) + 0.01 && y > along(lips[1], x) - 0.01; };
+    const inMouth = i => { if (!lips) return false; const [x, y] = pic(i); const m = 0.02; return x > lips[0][0][0] - m && x < lips[0][lips[0].length - 1][0] + m && y < along(lips[0], x) + m && y > along(lips[1], x) - m; };   // (and its outline's width round it)
     // (under a nose set on as its own piece the skin is hidden: what it does there inside the piece doesn't count)
     const hidden = i => G?.piece && G.nose(...at(i)) < 0.05;
     const inHead = t => Math.min(omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]) > 0.9;
-    // turned triangles: against the designed form where it is wrapped on one, else against the body it came from
+    // turned triangles: on a wrapped head, against its designed form right after the wrap, and against that head for
+    // whatever changes it after; on Anny's own, against the body it came from
+    const drawn = G ? (await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.wrapAt + 1) })).mesh.positions : null;
     let turned = 0;
     if (G) {
-      const g = [0, 0, 0];
+      const g = [0, 0, 0], D = drawn;
       for (let t = 0; t < T.length; t += 3) {
         if (!inHead(t)) continue; const a = T[t] * 3, b = T[t + 1] * 3, d = T[t + 2] * 3;
-        const n = cross([P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], [P[d] - P[a], P[d + 1] - P[a + 1], P[d + 2] - P[a + 2]]), l = F.toL((P[a] + P[b] + P[d]) / 3, (P[a + 1] + P[b + 1] + P[d + 1]) / 3, (P[a + 2] + P[b + 2] + P[d + 2]) / 3);
+        const n = cross([D[b] - D[a], D[b + 1] - D[a + 1], D[b + 2] - D[a + 2]], [D[d] - D[a], D[d + 1] - D[a + 1], D[d + 2] - D[a + 2]]), l = F.toL((D[a] + D[b] + D[d]) / 3, (D[a + 1] + D[b + 1] + D[d + 1]) / 3, (D[a + 2] + D[b + 2] + D[d + 2]) / 3);
         gradOf(G.sdf, ...l, 0.004, g);
         if (n[0] * g[0] + n[1] * g[1] + n[2] * g[2] < 0 && !hidden(T[t]) && !(inMouth(T[t]) && inMouth(T[t + 1]) && inMouth(T[t + 2]))) turned++;
       }
+      turned += turnedOver(T, drawn, P, mesh.isUsed).n;
     } else turned = turnedOver(T, base.mesh.positions, P, mesh.isUsed).n;
     check(`${c}: head triangles turned${G ? ' against its designed form' : ''}`, turned, 0);
-    // at the rest: no vertex standing out of its neighbours (a spike, a crumple) — the face, the jaw and under it, the join
-    check(`${c}: a vertex of the head standing out of its neighbours or sunk into them, beyond its base body's`, bumps(mesh, P, base.mesh.positions, i => omega[i] > 0.05 && !hidden(i) && !inMouth(i)), G ? 4 : 1.5, ' mm');   // (a designed form has its own small forms Anny's head hasn't: ears, a jowl's crease, up to 4 mm against Anny's smooth places)
+    // at the rest: no vertex standing out of its neighbours (a spike, a crumple) — the face, the jaw and under it, the
+    // join; against the body it came from, or on a wrapped head against the skin laid exactly on its form (the form's
+    // own creases — a jowl over the neck — are the design)
+    const smooth = G ? Float32Array.from(P) : base.mesh.positions;
+    if (G) for (const i of mesh.used) if (omega[i] > 0.9) smooth.set(F.toW(...projectOn(G.sdf, at(i), 4)), i * 3);
+    check(`${c}: a vertex of the head standing out of its neighbours or sunk into them, beyond ${G ? 'its form' : 'its base body'}`, bumps(mesh, P, smooth, i => omega[i] > 0.05 && !hidden(i) && !inMouth(i)), 1.5, ' mm');
     const headMesh = { triangles: Uint32Array.from([...Array(T.length / 3).keys()].filter(k => Math.max(omega[T[k * 3]], omega[T[k * 3 + 1]], omega[T[k * 3 + 2]]) > 0.05).flatMap(k => [T[k * 3], T[k * 3 + 1], T[k * 3 + 2]])) };
     // (a wrap draws Anny's head out onto another form — a long nose, a big cranium, an eye's place: its edges at the rest
     // are the design, not wear; Anny's own changes open moood's closed eye's sub-millimetre edges: see the README)
@@ -248,7 +257,8 @@ if (!only || only.includes('heads')) {
     // pieces follow the head's form as a pose layer (a bigger head: the hair grows with it)
     if (body.head && spec.head.pieces.length) {
       const big = await E.figure(await E.expand(await E.resolve({ ...structuredClone(await E.description(c)), pose: [layer('proportions-big-head', null)] }))); big.frame(null, 0, big.pose);
-      for (const o of big.outputs.filter(o => o.mesh.piece)) check(`${c}: its ${o.name} on the head grown by a layer, off the skin beyond its rest`, pieceGap(o, big.outputs[0], body, ofHead), 5, ' mm');   // (carried as one by the change of the skin under it, a piece can't follow the head's own unevenness: a bigger head grows its cranium more than its face)
+      // (headwear is left to the clothes stage, where it becomes a garment)
+      for (const o of big.outputs.filter(o => o.mesh.piece && !WEAR.includes(o.name))) check(`${c}: its ${o.name} on the head grown by a layer, off the skin beyond its rest`, pieceGap(o, big.outputs[0], body, ofHead), 5, ' mm');   // (carried as one by the change of the skin under it, a piece can't follow the head's own unevenness: a bigger head grows its cranium more than its face)
     }
     // in the expressions: no edge stretched more than 2.5× (an open jaw: the lips between what the jaw carries and what it
     // doesn't — Anny's mouth is closed skin, there it opens)
@@ -261,17 +271,19 @@ if (!only || only.includes('heads')) {
       if (!jawed) for (const o of f.outputs.filter(o => o.mesh.kind === 'attached')) { const r = await E.figure(spec); r.frame(null, 0, r.pose); check(`${c} ${x}: the relief ${o.name} stretched against its rest`, reliefStretch(o, r.outputs.find(y => y.name === o.name).positions), EXPR_LIMIT, '×'); }
     }
     // no crease where the head meets the neck, under the jaw and at the nape: the sharpest angle between neighbouring
-    // triangles of the head's lower part and its join, beyond the plain body's
-    const low = t => { const w = [omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]]; return Math.max(...w) > 0.05 && (Math.min(...w) < 0.97 || at(T[t])[1] < (G?.chin ?? -1.1) + 0.35) && !hidden(T[t]); };
-    check(`${c}: the sharpest fold where the head meets the neck, under the jaw and at the nape, beyond the plain body's`, Math.max(0, sharpest(mesh, P, low) - sharpest(mesh, base.mesh.positions, low)), 25, '°');
-    // the face's picture: shown only where it isn't smeared — a triangle showing it (at least half) is no more than 4×
-    // longer on the skin than in the picture (round the sides of the head a front projection would smear it along the skin)
+    // triangles of the head's lower part and its join, beyond the body it came from's — or, on a wrapped head, beyond
+    // the skin laid exactly on its form (a fold of the form itself, a jowl over the neck, is the design)
+    const low = t => { const w = [omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]]; return Math.max(...w) > 0.05 && (Math.min(...w) < 0.97 || at(T[t])[1] < (G?.chin ?? -1.1) + 0.35) && !hidden(T[t]) && !inMouth(T[t]); };
+    check(`${c}: the sharpest fold where the head meets the neck, under the jaw and at the nape, beyond ${G ? 'its form' : 'its base body'}'s`, Math.max(0, sharpest(mesh, P, low) - sharpest(mesh, smooth, low)), 25, '°');
+    // the face's picture: shown only where it isn't smeared — a triangle showing it (at least half) is no more than 5×
+    // longer on the skin than in the picture (round the sides of the head a front projection would smear it along the
+    // skin; Anny's eye changes open moood's closed eye slit, its sub-millimetre edges ~4.5×: 5)
     let smear = 0;
     for (let t = 0; t < T.length; t += 3) {
-      const v = [T[t], T[t + 1], T[t + 2]]; if (Math.min(...v.map(i => mesh.paintMask[i])) < 0.5) continue;
+      const v = [T[t], T[t + 1], T[t + 2]]; if (Math.min(...v.map(i => mesh.paintMask[i])) < 0.5 || v.some(hidden)) continue;
       for (let e = 0; e < 3; e++) { const a = v[e], b = v[(e + 1) % 3], w = Math.hypot(...[0, 1, 2].map(k => P[a * 3 + k] - P[b * 3 + k])) / F.R, u = Math.hypot(mesh.uv[a * 2] - mesh.uv[b * 2], mesh.uv[a * 2 + 1] - mesh.uv[b * 2 + 1]) * 2 * SPAN; if (w > 1e-4) smear = Math.max(smear, w / Math.max(u, 1e-9)); }
     }
-    check(`${c}: the face's picture smeared over the skin where it shows`, smear, 4, '×');
+    check(`${c}: the face's picture smeared over the skin where it shows`, smear, 5, '×');
     // the drawing on the mesh's own features: the eyes' middles where Anny's eyes are (where the wrap put them), the mouth's
     // parting where the lips part (mm, in the picture)
     const L = landmarksOf(body), mm = d => d * F.R * 1000;

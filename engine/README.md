@@ -105,17 +105,26 @@ caricature, surface, contour, masses, pictogram) with their pins.
 
 Version 3 adds the head's parts: a preset holds one of `changes`, `head` (a whole head, as a character's), `features`,
 `expressions` or `light`; version 2 presets were upgraded by `tools/characters.mjs presets` (only their version changed).
-Groups of the head: `head`, `head-form`, `features`, `expressions`, `face-light`.
+Version 4 adds `pieces` (hair, headwear) as a preset's content, and a head's parts changed by their id or name (below,
+Character); version 3 presets were upgraded (only their version changed). Groups of the head: `head`, `head-form`,
+`features`, `hair`, `headwear`, `expressions`, `face-light`.
 
-**Face changes** `data/anny/face.json` (`engine/face-targets` 1, a pack on `anny-moood`): per change of Anny's (`nose-…`,
+**Face changes** `data/anny/face.json` (`engine/face-targets` 2, a pack on `anny-moood`): per change of Anny's (`nose-…`,
 `l-eye-…`, `mouth-…`, `chin-…`, `head-…`…) the vertices it moves and their moves at +1 and at −1 (int16 × `unit` m) —
-Anny's changes are not linear, so both signs are kept.
+Anny's changes are not linear, so both signs are kept — sampled through moood's head mapped onto Anny's skin fitted onto
+it (`fit`), with the vertices that still move unlike their neighbours let go (`spikes` per change and sign: how many;
+`tools/face_targets.py`).
+
+**Stored wraps** `data/wraps/<key>.json` (+ `.bin`, `engine/wrap` 1): a wrapped head's positions, stored by the key of
+everything it is made from (`src/head/wrap.js: wrapKey` — the wrap's version, its parameters but its strength, the body
+it is laid on); `data/wraps/index.json` lists the keys. Written by `tools/characters.mjs wraps` for every character and
+case; a wrap not stored (an author's new form) is made where it is needed.
 
 **Bodies' index** `data/bodies/index.json`: every body with its pin, group (moood, t8, t8-head, age, build, origin),
 label and height. **Anny's settings** `data/anny/specs.json`: per new body its phenotype (`ph`), local changes (`lc`)
 and an optional head of another age (`head: {ph, lc, r}`).
 
-**Character** `characters/<id>.json` (`engine/character` 4), checked against a schema (unknown keys and values refused):
+**Character** `characters/<id>.json` (`engine/character` 5), checked against a schema (unknown keys and values refused):
 `base?: "<character>@<hash>"`, `body: "<id>@<hash>"` (required without a base), `rest: [changes]`, `pose: [layers]`,
 `skinning: {method, sigma, seam}`, `motion: {floor}`, `look: {skin, roughness}` — the whole list in `src/character.js`;
 the defaults are kept there (`DEFAULTS`). Rest changes and pose layers include every deformer and presets. `base`
@@ -123,13 +132,17 @@ starts from another character (a full-body preset as a part): its body, rest and
 names one, its rest changes and pose layers after the base's, its skinning, motion and look keys over the base's; the
 base is pinned by its description's content (`E.resolve` reads it; `tools/characters.mjs pin` pins it anew). Version 3
 (upgraded from 2 by `tools/characters.mjs upgrade`): a silhouette's keys named; `space` only on layers that are turns.
-Version 4 adds `head` (a character without one is as it was): `{preset?, size?, form?, features?, expressions?,
-pieces?, light?, skin?, ref?}` — the head preset it starts from, its own form's changes (deformers or presets of them,
-made on the rest after the character's own, frames kept), features (painted or as volume; `{kind: "off", id}` takes
-one of the preset's away), expressions, pieces, light (or a preset of it), the face picture's skin colour, and the
-picture it was drawn after. Over its base character's head and its preset's: size, skin and light keys over theirs,
-form after theirs, features, expressions and pieces replacing theirs of the same id (name). Pose layers take
-`{kind: "expression", name, weight}`.
+Version 4 adds `head` (a character without one is as it was): `{preset?, strength?, size?, form?, features?,
+expressions?, pieces?, light?, skin?, ref?}` — the head preset it starts from, its own form's changes (deformers or
+presets of them, made on the rest after the character's own, frames kept), features (painted or as volume),
+expressions, pieces (or presets of each), light (or a preset of it), the face picture's skin colour, and the picture it
+was drawn after. Over its base character's head and its preset's: size, skin and light keys over theirs; its form's
+ways, features, expressions and pieces go over theirs by name (a form's way: its `name`, else a preset's id, else a
+deformer's kind; an expression's `name`) or id (features, pieces): `{kind: "off", id | name}` takes one away, one
+without a kind changes only the keys it gives (`{id: "eyes", as: "volume"}`, `{name: "form-red", strength: 0.5}`;
+then checked whole), a whole one takes the place of theirs, a new one comes after; `strength` weighs the whole form it
+starts from. Version 5 (upgraded from 4, only its version changed) added the changes by id and name and `strength`.
+Pose layers take `{kind: "expression", name, weight}`.
 
 ## How it works, and why so
 
@@ -259,7 +272,9 @@ joints, smoothed over the surface). A head is made in two steps:
   with its strength, in the author's order; they are deformers like the bodies' (`src/deform.js`), so each also goes as
   a pose layer and with every other deformer:
   `face` — Anny's own face settings: her 129 local changes of the head and face, made by people, at their value (each
-  sign its own move), on moood's mesh (`data/anny/face.json`; scaled to the head's size); `headOf` — a head of another
+  sign its own move), on moood's mesh (`data/anny/face.json`; scaled to the head's size; carried there through a map of
+  moood's head onto Anny's skin fitted onto it — her teeth, tongue and eyeballs left out — with the few vertices that
+  still move unlike their neighbours, where moood's face differs in kind, let go and filled in from around them); `headOf` — a head of another
   age (or of any body of the same mesh) laid in this head's place at its size, its joints going with it; `points` — the
   face by points: 24 landmarks found on the head's own skin (on the stored body it came from: so after a wrap they are
   the same points of the skin) moved by [dx, dy, dz], one biharmonic warp through them, the neck held, mirrored unless
@@ -268,20 +283,32 @@ joints, smoothed over the surface). A head is made in two steps:
   — a front outline and a side profile lofted on a domed cranium, a nose from its side curve or as a capsule with a
   ball, lips, cheeks and jowls as masses, ears) or a solid fitted to a picture (Г2's — rounded slices, the jaw's
   underside, masses, a capsule nose, lips, the eyeballs' bulge; its cranium laid on Anny's, her neck measured for it).
-  The wrap is Г3's: Anny's landmarks (eyes, mouth corners and middle, ears, chin, top, back) moved to where the form
-  has them (`marks`), her midline laid along the form's profile, her lips' seam along the drawn mouth, the neck held →
+  The wrap is Г3's: Anny's landmarks (`landmarksOf`: eyes, mouth corners and middle, ears, chin, top, back) moved to
+  where the form has them (`marks`), her midline laid along the form's profile, her lips' seam along the drawn mouth (a
+  drawn mouth's line; a grin's dark inside, midway between its teeth and its bottom), the neck held →
   one biharmonic warp → onto the form in rounds, each round's pull smoothed over the mesh → exactly onto it, the spacing
   evened, the join with the neck eased (`onto` says how far down: Г3's 0.35–0.95 of omega, Г2's 0.02–0.17) → folds
-  eased until none is left (Г3 stopped at 40 rounds and left a few three-deep pleats under the eyes; now up to 200). A
-  nose too long for the skin, or a ball of a nose, is drawn on as its own piece (`nose.piece`): the skin goes over the
-  nose pressed back, the piece is what of the form stands out of that.
-- *On that rest* (`head.js`): every vertex's place in the face's picture (front projection in head units) and how much
-  of the picture it shows (1 on the face's front, fading to the plain skin round the sides, behind and down the neck —
-  mixed in the shader, so nothing of the drawing shows behind the head and no triangle smears it); the expressions'
-  morphs of the skin; the shading normals of the designed form; which vertices are face (no cast shadows there);
-  the pieces (rigid on the Head joint: noses, Г1's hair as it was, hoods, hats); the features as volume; the head's
-  shape to collide with (`figure.headShape()`: the designed form, or a ball fitted to the head, moved by the Head joint
-  — for hair and hoods later).
+  eased until none is left (Г3 stopped at 40 rounds and left a few three-deep pleats under the eyes; now up to 200),
+  the eyes' middles and a grin's parting held where they were laid. A nose too long for the skin, or a ball of a nose,
+  is drawn on as its own piece (`nose.piece`): the skin goes over the nose pressed back, the piece is what of the form
+  stands out of that. A wrap takes 3–20 s: its result is stored by the key of what it is made from (`data/wraps/`) and
+  read, not made again, at every load (a head loads in 1–3 s).
+- *On that rest* (`head.js`): every vertex's place in the face's picture — on the head the face is drawn on: right
+  after its wrap (where the form's marks put Anny's eyes and mouth), or Anny's own head before its form, where features
+  are drawn on her eyes, brows and lips; so whatever changes the head after (a face by points, Anny's face, a head of
+  another age, a layer, an expression) carries the drawing with the skin — and how much of the picture it shows (1
+  where the head faces the front, fading as the skin turns away, down the neck and outside the picture — mixed in the
+  shader, so nothing of the drawing smears round the sides or shows behind the head); the mouth set on where the lips
+  part (a drawn mouth moved onto it, a grin's teeth ending above it: an open jaw opens in the mouth); the expressions'
+  morphs of the skin, placed by where the features are drawn; the shading normals of the designed form, weighed in as
+  far as the skin lies on it; which vertices are face (no cast shadows there); the pieces (noses, Г1's hair as it was,
+  coarse headwear): skinned to the Head joint and following the skin under them — each carried as one by the affine
+  change that best carries its skin's vertices this frame (`src/mesh.js: followOf`, `src/figure.js`), so an
+  expression moves a nose, a bigger head as a layer grows its hair; a nose piece takes the face's washes of colour (a
+  tint, the blush across it); the features as volume (a drawn mouth's lips each its own relief on its side of the lips'
+  parting); the head's shape to collide with (`figure.headShape(pose)`: the designed form, or a ball fitted to the head,
+  carried by the Head joint and, below the mouth, by the Jaw joint; distance and normal), and the neck's
+  (`figure.neckShape(pose)`: the body's neck capsules) — for hair, hoods and collars later.
 *Features* (`features.js`, `paint.js`), a layer of their own, per feature: an eye, a brow, a mouth (drawn from its own
 lines, or a grin), marks, blush, a tint, a mask — painted on the skin (Г1's and Г3's drawings, drawn into one picture
 the skin takes by its place at the rest, so the drawing follows the skin in every motion and expression), or as
@@ -293,15 +320,25 @@ pose layer `{kind: "expression", name, weight}`; what each asks of the painted f
 down) the picture redraws (`figure.ctx.expressions`). *Face light* (`head.light`, `view3d.js`) is an option: toon —
 three soft tones, not tone-mapped — with an outline (the back of a shell a little outside), shading from the designed
 form (its normals at each vertex's rest, turned each frame as the skin's joints turned them: `src/figure.js`), no cast
-shadows on the face; or the stage's own light. *For authors*: the overlay check (`tools/overlay.mjs`): the head seen at
-its picture's angle (or the angle that fits best), its landmarks carried onto the picture's by a similarity, the error
-in pixels, the picture with the head's outline and both sets of points.
+shadows on the face; the toon's cast shadows taken through its own tones (a shadowed point is lit as the side away
+from the light is; `shade`: its darkest tone) — three.js's multiplying of the light by the shadow map left grey blotches
+and stepped edges; a ball nose's shine drawn by the key light; a closed piece casts its shadow from its back faces (no
+acne on thin locks); or the stage's own light. On a head wrapped exactly onto its form the form's shading differs from
+the mesh's own only a little (the skin lies on the form): it shows where the skin leaves it, and on a toon head.
+*For authors*: the overlay check (`tools/overlay.mjs`): the head seen at its picture's angle (or the angle that fits
+best), its landmarks — the drawn eyes' and mouth's places on the skin, the nose's tip (a nose piece's), the chin —
+carried onto the picture's by a similarity, the error in pixels, the picture with the face's outline (without hair and
+headwear) and both sets of points. *How heads are built* is versioned (`src/head/version.js`: the wrap, the picture,
+the expressions, the pieces): what is stored is keyed by it, and the numbers check keeps it and each head's picture.
 *Presets* (`presets/`): 11 heads (Г3's four, Г1's seven — now wrapped with Anny's mesh; `tools/heads.mjs` writes them
-from the experiments' own data, with characters `head-*` wearing them on the moood body each was drawn on), the drawn
-face's expressions, four lights, eleven ways of the form (Anny's face: small nose, big eyes, soft chin, strong; a
-toddler's head; points: cute, long; cages: pear, tall cranium; warps; Г2's Giulia as a solid fitted to her picture), two sets of features (dot eyes;
-features as volume); and five characters that combine them (`head-anny-face`, `head-anny-age`, `head-points`,
-`head-cage`, `head-red-mine` — the red-haired girl taken as a part, her eyes as volume, a long face by points).
+from the experiments' own data, with characters `head-*` wearing them on the moood body each was drawn on), each taking
+its parts as presets of their own — its form (`form-*`, group head-form), features (`features-*`), hair (`hair-*`) and
+headwear (`wear-*`) — so a part of one head goes on another and a head taken as a part is changed by its parts' ids;
+the drawn face's expressions, four lights, eleven more ways of the form (Anny's face: small nose, big eyes, soft chin,
+strong; a toddler's head; points: cute, long; cages: pear, tall cranium; warps; Г2's Giulia as a solid fitted to her
+picture), two sets of features for Anny's own face (dot eyes; features as volume — on her eyes and lips); and five
+characters that combine them (`head-anny-face`, `head-anny-age`, `head-points`, `head-cage`, `head-red-mine` — the
+red-haired girl taken as a part, her eyes as volume, a long face by points).
 
 **Chains** (`clipOf`). A motion made with `make_motion(after: {key, frames})` begins with the other's last frames.
 Where it stands and which way it faces in the other's space is measured from those shared frames (the same pose in
@@ -365,11 +402,20 @@ change as a layer equal to it on the rest, and a weight set by a code layer (388
 or a wrong `--only`.
 Since stage 2: every head character in every moment, expressions, the face's light options, skinning methods,
 a body's deformer on the rest and as a layer with a head, placed and turned (numbers and pictures, close-ups of the
-face); `units.mjs`: every head preset makes a head, refusals, a head from a preset with its own changes, an expression
-at weight 0 and 1, a face deformer on the rest and as a layer, the head's shape following the Head joint; `quality.mjs
---only heads`: per head no triangle turned (against its designed form), edges at rest, in five motions (×1.3 of the
-plain body's) and in expressions (2.5×, the lips that open left out), no crease where the head meets the neck, painted
-features only on the face's front, reliefs at their lift in motion, a nose piece on the skin in motion.
+face; the numbers keep each head's picture places, how much of it each vertex shows, a hash of its drawing at that
+moment and how heads were built, and name what changed); `units.mjs`: every head preset makes a head, refusals, a head
+from a preset with its own changes, a head taken as a part — weakened, a way taken away, a feature changed by its id, a
+features preset — an expression at weight 0 and 1, a face deformer on the rest and as a layer, the head's and the neck's
+shapes in the pose they are given (the jaw's part with the jaw), every character's wrap stored and the stored wrap
+what the wrap makes now; `quality.mjs --only heads` — the plain body's own limits where a head has a counterpart: per
+head no triangle turned (on a wrapped head against its form, and after it against that head); no vertex standing out of
+its neighbours (a spike, a crumple: 1.5 mm against the base, or against the skin laid exactly on the form); edges at
+rest (3× as the bodies'; 5× on Anny's own changes — they open moood's closed eye slit; 8× on a wrap — its design); in
+seven motions, with every skinning method, on a body changed on the rest and as a layer, and smiling in a motion, no
+more stretched than the plain body (×1.2); in expressions 2.5× (the lips that open left out); no crease where the head
+meets the neck, under the jaw or at the nape; the picture not smeared where it shows (5×); the drawn eyes on the skin's
+eyes and the mouth's parting on the lips' (3 mm); reliefs no more stretched than the skin; a nose piece on the skin in
+motion, and every piece on a head grown by a layer (5 mm).
 `pictures.mjs --jobs jobs.json outdir` makes pictures of any moments (`focus` on a joint for a close-up).
 
 ## Adding things
