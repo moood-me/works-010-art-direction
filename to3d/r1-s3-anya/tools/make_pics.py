@@ -56,7 +56,7 @@ shots('anya.json', bw, bh, [dict(name='bk-' + v, set=dict(S, show=['body', 'head
       [dict(name='bb-' + v, set=dict(S, show=cl + ['hair'], flat=False, paint=True, cam=dict(cb, yaw=y, target=[0, 0.84, 0]))) for v, y in [('b', 3.1416), ('r', 1.5708), ('qb', 2.4)]], 'bk')
 strip(['bk-f', 'bk-q', 'bk-s'], 'step5-body-kept.webp', scale=0.8)
 strip(['bc-f', 'bc-q', 'bc-s'], 'step6-clothes.webp', scale=0.8)
-strip(['bf-f', 'bf-q', 'bf-s'], 'form-clay.webp', scale=0.8)
+# (the form alone, bf-*, is rendered but not shown: the folded eye sockets show in it)
 strip(['bb-qb', 'bb-b', 'bb-r'], 'back.webp', scale=0.8)
 
 # ---- the drawing and the 3D (compare.py's pictures)
