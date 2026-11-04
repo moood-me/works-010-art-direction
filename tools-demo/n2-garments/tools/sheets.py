@@ -27,8 +27,8 @@ def pattern(name, body='moood-woman', size=(520, 380)):
 what = sys.argv[1:] or ['all']
 def want(k): return 'all' in what or k in what
 if want('dresses'):
-    sheet('dresses.webp', [(fig('dress-bell'), 'колокол (круговая юбка)'), (fig('dress-aline-puff'), 'А-силуэт, рукав-фонарик'),
-                           (fig('dress-trapeze'), 'прямое свободное'), (fig('dress-bell', 160), 'колокол сзади'),
+    sheet('dresses.webp', [(fig('dress-bell16'), 'колокол (круговая юбка)'), (fig('dress-aline-puff'), 'А-силуэт, рукав-фонарик'),
+                           (fig('dress-trapeze'), 'прямое свободное'), (fig('dress-bell16', 160), 'колокол сзади'),
                            (fig('dress-aline-puff', 160), 'А-силуэт сзади'), (fig('dress-trapeze', 160), 'прямое сзади')], 3)
 if want('everyday'):
     sheet('everyday.webp', [(fig('outfit-shirt-skirt'), 'рубашка и юбка'), (fig('outfit-shirt-pants'), 'рубашка и брюки'),

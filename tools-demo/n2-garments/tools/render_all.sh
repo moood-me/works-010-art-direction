@@ -9,7 +9,8 @@ for d in $GC/runs/[!_]*/*_sim; do n=$(basename $d _sim); body=$(basename $(dirna
   case $body in moood-woman) bo=$GC/bodies/anny/moood-woman.obj; skin=d9a88a;; *) bo=$GC/bodies/gc/$body.obj; skin=8a8f99;; esac
   for yaw in 20 160; do png=$GC/renders/$body-$n-$yaw.png; [ -f $png ] && continue
     $B -b -P $T/render.py -- $png $bo $skin $o ${COL[$n]:-777777} --yaw $yaw --samples 32 >/dev/null 2>&1; echo $png; done
-  if [ $body = moood-woman ]; then
+  # not settled within the 50-minute cap: not given out
+  if [ $body = moood-woman ] && [ $n != dress-bell ] && [ $n != var-suns15-long ]; then
     awk '/^v /{printf "v %.6f %.6f %.6f\n",$2/100,$3/100,$4/100; next} /^(f|vt|vn) /' $o > $GC/out/$n.obj
     cp $d/${n}_specification.json $GC/out/$n.specification.json; cp $d/${n}_design_params.yaml $GC/out/$n.design.yaml
   fi

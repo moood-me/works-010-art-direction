@@ -46,10 +46,11 @@ Everything heavy is in `/home/user/cache/n2-garments/` (not in the repository).
    height 158.5, bust 82, waist 67, hips 95 cm, arms 47° down (`arm_pose_angle`).
 6. Drapes: `tools/jobs.sh` (each line a design: overrides of GarmentCode's `assets/design_params/default.yaml`,
    run through `tools/gc_run.py`, its `gui` sim settings — "mid-softness fabric"). On this shared CPU a drape takes
-   4–50 min; the bell dress at GarmentCode's resolution (27k cloth points) ran into the 50-min cap at frame 552 but
-   had settled. The rest: `RES=1.6` (coarser), except those with a short edge (cuffs, collars): at resolution > 1
+   4–50 min; the bell dress at GarmentCode's resolution (27k cloth points) ran into the 50-min cap at frame 552
+   while its skirt was still falling (it looked settled in GarmentCode's preview, but beside the same dress at 1.6 its
+   hem is visibly wider) — so the page and out/ use `dress-bell16`, the same design at 1.6. The rest: `RES=1.6` (coarser), except those with a short edge (cuffs, collars): at resolution > 1
    GarmentCode crashes on its own warning (`Edge` has no `name`) — those ran at 1.0.
-   Dropped: `var-suns15-long` (suns 1.5 to the ankles) had not settled within the 50-minute cap — still spread out
+   Dropped: `dress-bell` (above), `var-suns15-long` (suns 1.5 to the ankles) had not settled within the 50-minute cap — still spread out
    in the air; a sleeve variant of the bell (needs resolution 1.0, ~50 min). Replaced by a short full skirt and a V-neck.
 7. Pictures: `tools/render_all.sh` (Blender 4.5, Cycles CPU, 32 samples; `tools/render.py` — beige floor and
    backdrop like our clothes pictures), sheets by `tools/sheets.py`. GarmentCode's own preview renders
