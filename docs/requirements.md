@@ -102,6 +102,11 @@ movements by themselves; speed of cloth and hair for several characters.
 - Reaching to a place: not stretched by formulas afterwards — when we reach, the body leans in, the elbow turns, many
   muscles work. Ask Kimodo to make it right by giving it the right coordinates, as far as possible and easy. An
   idea of direction, not a hard requirement.
+- Two people are done for sure, not "if time is left": even what Pavel didn't think through is worked on. B touches
+  A's shoulder and A looks round (the hand possibly staying on the turning shoulder); one carries another (comes up,
+  bends, lifts, carries, maybe puts down; the carried one attached, posed by Kimodo); if Kimodo understands some
+  badly — similar ones (a handshake, a hug, leading by the hand). Checked by numbers (touches, no passing through)
+  and by eye; pictures and animations in the gallery; history.
 - Add what Pavel asks to this file, so it isn't lost.
 
 ## Not now
