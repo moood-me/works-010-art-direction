@@ -21,7 +21,7 @@ FILMS = {
     'jump': dict(motion='jump', life=dict(seed=9, expr=[[0, {'surprise': 1}], [1.4, {'joy': 1}]]), cam=(2.4, 0.7, -30, 50), size=(640, 720)),
     'face': dict(motion='idle', seconds=6.0, life=dict(talk=True, talkTo=2.4, seed=11,
                  expr=[[0, {'calm': 1}], [2.6, {'joy': 1}], [3.5, {'surprise': 1}], [4.3, {'sad': 1}], [5.1, {'anger': 1}]]),
-                 cam=(0.95, 'head', -20, 85), size=(560, 560)),
+                 head=dict(level='pitch', levelPitch=0.8), cam=(1.35, 'head', -20, 70), size=(560, 560)),
     'turn': dict(motion='bow', still=0, seconds=5.0, life=dict(seed=2, expr={'calm': 1}), cam=(2.0, 0.6, 'spin', 50),
                  size=(560, 720)),
 }
@@ -31,6 +31,7 @@ def main(name, samples=16):
     F = FILMS[name]
     out = os.path.join(CACHE, 'film-' + name); os.makedirs(out, exist_ok=True)
     mv = dict(out=f'{out}/frames.bin', motion=F['motion'], life=F['life'])
+    if 'head' in F: mv['head'] = F['head']
     with open(os.path.join(FOLDER, '../../engine/motions', F['motion'] + '.json')) as f:
         m = json.load(f)
     fps_m = m.get('fps', 30); nfr = m['frames']
@@ -56,11 +57,12 @@ def main(name, samples=16):
         c = sm[i].copy(); c[1] = 0
         if yaw == 'spin': a = math.radians(-360 * k / n)
         else: a = math.radians(yaw)
-        tgt = c + np.array([0, (head[i][1] + 0.12) if ty == 'head' else ty, 0])
-        if ty == 'head': tgt[0], tgt[2] = head[i][0], head[i][2]
+        tgt = c + np.array([0, (head[i][1] + 0.13) if ty == 'head' else ty, 0])
+        if ty == 'head': tgt[0], tgt[2] = head[i][0], head[i][2] + 0.03
         pos = tgt + np.array([math.sin(a) * d, 0.08 if ty == 'head' else 0.18, math.cos(a) * d])
         views.append(dict(name=f'f{k:04d}', W=F['size'][0], H=F['size'][1], frame=i,
-                          cam=dict(type='persp', pos=pos.tolist(), target=tgt.tolist(), lens=lens, fstop=1.2 if ty == 'head' else 0.8)))
+                          cam=dict(type='persp', pos=pos.tolist(), target=tgt.tolist(), lens=lens, fstop=2.0 if ty == 'head' else 0.8,
+                                   focus=float(np.linalg.norm(pos - tgt)) - (0.12 if ty == 'head' else 0.0))))
     job = dict(out=out, samples=samples, frames=f'{out}/frames.bin', views=views, noise=0.05)
     json.dump(job, open(f'{out}/render.json', 'w'))
     subprocess.run([BLENDER, '-b', '--python', os.path.join(HERE, 'render.py'), '--', f'{out}/render.json'],

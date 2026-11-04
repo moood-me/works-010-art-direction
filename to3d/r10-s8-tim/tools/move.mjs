@@ -57,7 +57,7 @@ for (const [k, t] of times.entries()) {
     // level: first the head's own pitch in the pose taken out (the drawing's heads look straight ahead)
     const P = fig.pose;
     let a = (job.head.yaw || 0) * Math.PI / 180, b = (job.head.pitch || 0) * Math.PI / 180;
-    if (job.head.level) { const f = headFacing(P, HI, qRot); b -= f.pitch * Math.PI / 180; a -= f.yaw * Math.PI / 180; }
+    if (job.head.level) { const f = headFacing(P, HI, qRot); b -= f.pitch * Math.PI / 180 * (job.head.levelPitch ?? 1); if (job.head.level !== 'pitch') a -= f.yaw * Math.PI / 180; }
     const r = (job.head.roll || 0) * Math.PI / 180, ra = job.head.rollAxis || [0, 0, 1];
     const share = [['Neck1', 0.3], ['Neck2', 0.3], ['Head', 0.4]];
     for (const [nm, h] of share) {

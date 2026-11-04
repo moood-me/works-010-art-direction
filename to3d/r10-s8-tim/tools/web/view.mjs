@@ -189,7 +189,7 @@ function placeCamera() {
   const hx = fig.pose ? fig.pose.P[HIPS * 3] : 0, hz = fig.pose ? fig.pose.P[HIPS * 3 + 2] : 0;
   const hy = fig.pose ? fig.pose.P[HI * 3 + 1] : 0.85;
   if (near) { const fx = fig.pose ? fig.pose.P[HI * 3] : hx, fz = fig.pose ? fig.pose.P[HI * 3 + 2] : hz;
-    controls.target.set(fx, hy + 0.14, fz); camera.position.set(fx - 0.3, hy + 0.17, fz + 1.05); }
+    controls.target.set(fx, hy + 0.1, fz); camera.position.set(fx - 0.45, hy + 0.16, fz + 1.55); }
   else { controls.target.set(hx, 0.62, hz); camera.position.set(hx - 0.9, 0.95, hz + 2.6); }
   controls.update();
 }
