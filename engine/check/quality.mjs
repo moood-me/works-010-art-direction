@@ -248,6 +248,8 @@ if (!only || only.includes('heads')) {
       ['walk', 30, { pose: [layer('squash', null)] }, { pose: [layer('squash', null)] }], ['walk', 30, { rest: [{ kind: 'preset', id: pinOf('silhouette-hourglass'), strength: 1, frames: 'keep' }] }, { rest: [{ kind: 'preset', id: pinOf('silhouette-hourglass'), strength: 1, frames: 'keep' }] }],
       ['look-around', 60, { pose: [{ kind: 'expression', name: 'smile', weight: 1 }] }, {}]];
     for (const [m, t, own, plainO] of moments) {
+      // (a head with no expressions — Anny's own, wearing only hair — has no smile to try)
+      if (own.pose?.[0].kind === 'expression' && !spec.head.expressions.some(x => x.name === own.pose[0].name)) continue;
       const figSpec = await E.expand(await E.resolve({ ...structuredClone(await E.description(c)), ...own, ...(own.pose && spec.pose.length ? { pose: [...spec.pose, ...own.pose] } : {}) }));
       const fig = await E.figure(figSpec), plain = await plainOf(plainO), clip = await E.clip(m);
       fig.frame(clip, t, fig.pose); plain.frame(clip, t, plain.pose);

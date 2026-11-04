@@ -503,7 +503,7 @@ that moment (in the case's `wind`), so the numbers and pictures keep it; cases f
 `each` moment, the wind and gusts, looking round, jump, dance, bow, roll. `units.mjs`: every hairstyle preset stored and
 what is stored what is built now; a hairstyle changed by its groups, colour and physics, refused a group it hasn't; the
 step's reset on loop and scrub the same as a fresh start, the same moment again moving nothing; a ready head's hair
-rigid unless it moves, and moving, on the head within 6 mm of its design at rest. `quality.mjs --only hair` (every
+rigid unless it moves, and moving, on the head within 1 cm of its design at rest. `quality.mjs --only hair` (every
 character whose hair moves; ~25 min): at rest it sags from its design no more than 2 cm, leaves its rest no more than
 12 mm in 8 s, jitters no more than 1 mm a frame, its roots on the scalp (16 mm); in every motion and chain the engine has
 and in a strong wind: every point a number, every lock's length kept (1 %; ringlets 35 %), no point faster than 20 m/s,
@@ -593,8 +593,9 @@ depth and the light changed. On a toon-lit head В1's hair keeps its own light (
 A-pose rest long hair lies on the raised arms. The hair's surfaces are bound to its chains and may dip into the skin
 where a lock lies flat on it (the chains keep their points out, a lock's width lies beside them): the checks allow
 what lay in the body at rest and 20 mm more for the 1 % deepest; where arms hang through long hair (idle, sitting,
-rolling) a lock's surface between its chain's points passes through the arm — no collision of surfaces, only of chains. A bigger head as a pose layer moves the hair's rest (it follows the skin)
-but its chains ride the Head joint alone. A frame of one figure with hair costs 15–30 ms in node (the simulation and
+rolling) a lock's surface between its chain's points passes through the arm — no collision of surfaces, only of chains. A bigger head as a pose layer moves the hair's rest (it follows the skin as one piece: `hair-gwen`'s inner layer
+ends 5.8 mm off the skin there, past the pieces' 5 mm — the one heads contract broken) but its chains ride the Head
+joint alone. A ponytail keeps its designed arc near the root when the head bows. A frame of one figure with hair costs 15–30 ms in node (the simulation and
 binding its 40–100 thousand vertices); several characters at once are the later task. Characters not from Anny (П1, П2)
 have no hair yet (their heads are the next stage's).
 

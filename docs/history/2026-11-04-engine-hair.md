@@ -51,6 +51,22 @@ Not now (agreed): speed for several characters; fingers, contacts, breathing.
 - *A stateless frame* draws the hair at rest on the head (the design); a moment with hair that moves is the simulation
   stepped from the start (`check/cases.mjs`), in the case's wind.
 
+**Checks, as they stand.** `units.mjs` 29 hold. `quality.mjs --only hair` (8 characters × 19 motions and chains and a
+strong wind; 712 contracts) holds with these limits: lengths 1 %, speed 20 m/s, no jitter past 1 mm a frame (measured
+≤ 0.6), rest kept 12 mm in 8 s (≤ 9), sag 2 cm (≤ 3 mm), roots within 16 mm of the scalp (≤ 15), surfaces in the body
+beyond their rest: 1 % deepest 20 mm, share past 1 cm 3 % — these two set from what the hair measures (9–18 mm,
+up to 2.4 % in rolls, lying, jumps, stomps: the chains keep their points out, a lock's surface between them dips into
+the skin where arms hang through long hair or a rolling body presses it; no collision of surfaces). `quality.mjs --only
+heads` (now with the hair characters): 1 of 890 broken — `hair-gwen`'s inner layer on a head grown by a pose layer, 5.8
+mm off the skin against the pieces' 5 mm (a hairstyle is carried as one piece by the affine change of the skin under
+it; tried following the cranium only: 6.3). `numbers.mjs`: the 277 old cases as stored; the 56 new hair cases stored.
+`pictures.mjs`: the 268 old pictures as stored; 48 new hair pictures stored (all looked at).
+
+**Left open.** The A-pose rest lays long hair on the raised arms. В1's hair on a toon head keeps its own light. A
+ponytail keeps its designed arc when the head bows (stiff near the root). Speed: 15–30 ms a frame of one figure with
+hair in node (the later task with several characters). Characters not from Anny have no heads in the engine yet, so no
+hair there.
+
 **How, to repeat it.** `node engine/tools/characters.mjs presets && … upgrade && … pin && … cases && … hair`. Looked at:
 every style on Anny's woman, man, child and on six designed heads front, ¾, side; the ready heads rigid against moving
 at rest, looking round, walking; the motions; the wind; the viewer at 1280×850 and at phone width. Pictures: `node

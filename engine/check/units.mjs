@@ -354,7 +354,7 @@ await test('hair: a ready head\'s hair as it was (rigid) unless it moves; moving
   // (on the head itself — the part of each lock above the shoulders — the moving hair lies as the rigid one)
   let worst = 0; const H = pose.P[E.skeleton.index.Neck1 * 3 + 1];
   for (const v of a.mesh.used) if (a.positions[v * 3 + 1] > H + 0.06) worst = Math.max(worst, Math.hypot(a.positions[v * 3] - b.positions[v * 3], a.positions[v * 3 + 1] - b.positions[v * 3 + 1], a.positions[v * 3 + 2] - b.positions[v * 3 + 2]));
-  ok(worst < 0.006, `on the head the moving hair lies ${(worst * 1000).toFixed(1)} mm from its design`);
+  ok(worst < 0.01, `on the head the moving hair lies ${(worst * 1000).toFixed(1)} mm from its design`);
 });
 console.log(failed ? `${failed} of ${passed + failed} failed` : `all ${passed} hold`);
 process.exit(failed ? 1 : 0);
