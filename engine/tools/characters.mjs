@@ -40,7 +40,7 @@ async function repinHead(h) {
   if (!h) return h;
   const o = { ...h };
   if (o.preset) o.preset = await pinRef(o.preset);
-  for (const k of ['form', 'features', 'expressions']) if (o[k]) o[k] = await repin(o[k]);
+  for (const k of ['form', 'features', 'expressions', 'pieces']) if (o[k]) o[k] = await repin(o[k]);
   if (o.light?.kind === 'preset') o.light = { ...o.light, id: await pinRef(o.light.id) };
   return o;
 }
@@ -112,7 +112,7 @@ if (what === 'upgrade' || what === 'pin') {
     checkPreset(p); await save(dir + id + '.json', p);
   }
   for (const f of files) { const id = f.slice(0, -5), p = await E.preset(id); list.push({ id, pin: pinOf(id, p.hash), group: p.group, label: p.label, about: p.about }); }
-  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram', 'head', 'head-form', 'features', 'expressions', 'face-light'];
+  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram', 'head', 'head-form', 'features', 'hair', 'headwear', 'expressions', 'face-light'];
   const rank = g => ORDER.includes(g) ? ORDER.indexOf(g) : ORDER.length;
   list.sort((a, b) => rank(a.group) - rank(b.group) || a.id.localeCompare(b.id));
   await save(dir + 'index.json', { format: 'engine/presets', version: 1, about: 'Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: "preset", id: "<pin>", strength, frames | space}; heads a character or another head takes by head.preset; a head\'s features, expressions and light. Written by engine/tools/characters.mjs presets.', groups: ORDER, presets: list });

@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "head-mask",
  "label": {
   "ru": "Голова: девушка в маске",
@@ -8,7 +8,7 @@
  },
  "body": "moood-woman@271c46992b9495aa",
  "head": {
-  "preset": "head-mask@0231effcd4c574af"
+  "preset": "head-mask@b89fa28204cc83de"
  },
  "look": {
   "skin": "#f1c6bd",

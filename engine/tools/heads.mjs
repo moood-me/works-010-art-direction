@@ -1,11 +1,15 @@
 // Our heads as the engine's head presets: Г1's and Г3's heads (experiments/heads-anime, experiments/heads-wrap) read
-// from their pages as they are, and one of Г2's solids fitted to a picture as a way of the form (chars.py), written as presets of parts (presets/head-*.json: a wrap onto the designed form,
-// the painted features, the expressions and light presets they take, their pieces) and characters wearing them
-// (characters/head-*.json, on the moood body each was drawn on). Run again after their pages change, then
-// `node engine/tools/characters.mjs presets` and `… pin head-…`.
+// from their pages as they are, and one of Г2's solids fitted to a picture as a way of the form (chars.py), written as
+// presets of parts — each head's form (form-<id>: a wrap onto its designed form), features (features-<id>), hair
+// (hair-<id>) and headwear (wear-<id>), the expressions and lights they share — and a head preset taking them
+// (head-<id>), with characters wearing them (characters/head-*.json, on the moood body each was drawn on). The pages'
+// data are read by running their own lines that define it, alone in a context of their own (node:vm: nothing of node or
+// of this tool reachable). Run again after their pages change, then `node engine/tools/characters.mjs presets` and
+// `… pin head-…`.
 //   node engine/tools/heads.mjs
 import { readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
+import { runInNewContext } from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { HEAD_SIZE } from '../src/head/frame.js';
 
@@ -16,8 +20,8 @@ const save = (url, d) => writeFile(url, JSON.stringify(d, null, 1) + '\n');
 const wrapPage = await page('experiments/heads-wrap/index.html'), animePage = await page('experiments/heads-anime/index.html');
 const from = (lines, start, stop) => { const a = lines.findIndex(l => l.startsWith(start)), b = lines.findIndex((l, i) => i > a && l.startsWith(stop)); return lines.slice(a, b).join('\n'); };
 const C = {}, C1 = {};
-new Function('C', from(wrapPage, 'const C = {};', '// ———— the head').replace('const C = {};', ''))(C);
-new Function('C', from(animePage, 'C.alva', 'const NRM'))(C1);
+runInNewContext(from(wrapPage, 'const C = {};', '// ———— the head').replace('const C = {};', ''), { C });
+runInNewContext(from(animePage, 'C.alva', 'const NRM'), { C: C1 });
 const WRAPPED = Object.keys(C);   // Г3 wrapped these with its own form (no jaw rise, no neck softness of their own)
 Object.assign(C, C1);
 
@@ -54,14 +58,10 @@ function featuresOf(CH) {
   if (F.noseTint) out.push({ id: 'tint', kind: 'tint', color: F.noseTint });
   return out;
 }
-function piecesOf(CH, piece) {
-  const out = [];
-  if (piece) out.push({ id: 'nose', kind: 'nose' });
-  out.push({ id: 'hair', kind: 'hair', color: CH.hairColor, ...(CH.hairInk ? { ink: CH.hairInk } : {}), parts: CH.hair });
-  // headwear stays with the head; garments (the turtleneck, the outfits) are the clothes' stage
-  for (const [kind, o] of CH.extras || []) if (kind !== 'turtleneck') out.push({ id: kind, kind, ...o });
-  return out;
-}
+const hairOf = CH => [{ id: 'hair', kind: 'hair', color: CH.hairColor, ...(CH.hairInk ? { ink: CH.hairInk } : {}), parts: CH.hair }];
+// headwear stays with the head (coarse, the clothes' stage makes garments of it); garments (the turtleneck, the outfits)
+// are the clothes' stage
+const wearOf = CH => (CH.extras || []).filter(([kind]) => kind !== 'turtleneck').map(([kind, o]) => ({ id: kind, kind, ...o }));
 
 // shared parts: the expressions every drawn head takes, and the lights
 const PRESETS = {
@@ -90,21 +90,26 @@ const PIN = '@000000000000';
 // the pictures heads were drawn after, with their landmarks marked on them (pixels; eL the person's left eye), for the
 // overlay check (tools/overlay.mjs)
 const REFS = { red: { image: 'cartoon-anatomical-2.png', points: { eL: [113, 79], eR: [83, 80], tip: [99, 95], mouth: [102, 105], mL: [107, 103], mR: [97, 104], chin: [102, 115] }, view: { yaw: -0.22, pitch: 0.18 } } };   // pinned by characters.mjs presets / pin
-for (const [id, p] of Object.entries(PRESETS)) await save(new URL(`presets/${id}.json`, EN), { format: 'engine/preset', version: 3, id, ...p });
+const preset = (id, group, ru, en, aboutRu, aboutEn, content) => save(new URL(`presets/${id}.json`, EN), { format: 'engine/preset', version: 4, id, group, label: { ru, en }, about: { ru: aboutRu, en: aboutEn }, ...content });
+for (const [id, p] of Object.entries(PRESETS)) await save(new URL(`presets/${id}.json`, EN), { format: 'engine/preset', version: 4, id, ...p });
 for (const [id, CH] of Object.entries(C)) {
   const { form, piece } = formOf(id, CH), [ru, en] = NAMES[id], mouth = CH.face.mouth;
   const marks = { eye: pick(CH.face.eye, ['x', 'y', 'w', 'h']), mouth: mouth.type === 'none' ? { y: -0.8, w: 0.1 } : { y: mouth.y, w: mouth.w, ...(mouth.sag ? { sag: mouth.sag } : {}), ...(mouth.type === 'grin' ? { wide: true, ...(mouth.crooked ? { crooked: mouth.crooked } : {}) } : {}) } };
+  const was = WRAPPED.includes(id) && ['red', 'old', 'semi', 'hood'].includes(id) ? 'Г3' : 'Г1', wear = wearOf(CH);
+  await preset(`form-${id}`, 'head-form', `форма: ${ru}`, `form: ${en}`, `${was}: голова Anny, обтянутая на придуманную форму из кривых рисунка`, `${was}: Anny's head wrapped onto a form designed from the drawing's curves`, { changes: [{ kind: 'wrap', form, marks, ...(CH.neckSlim ? { neckSlim: CH.neckSlim } : {}) }] });
+  await preset(`features-${id}`, 'features', `черты: ${ru}`, `features: ${en}`, `${was}: глаза, брови, рот и пометки — нарисованы на коже`, `${was}: eyes, brows, mouth and marks — painted on the skin`, { features: featuresOf(CH) });
+  await preset(`hair-${id}`, 'hair', `волосы: ${ru}`, `hair: ${en}`, 'волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)', "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)", { pieces: hairOf(CH) });
+  if (wear.length) await preset(`wear-${id}`, 'headwear', `убор: ${ru}`, `headwear: ${en}`, 'головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)', 'the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)', { pieces: wear });
   const head = {
     size: CH.hs ?? HEAD_SIZE, skin: CH.skin,
-    form: [{ kind: 'wrap', form, marks, ...(CH.neckSlim ? { neckSlim: CH.neckSlim } : {}) }],
-    features: featuresOf(CH), expressions: [{ kind: 'preset', id: 'expressions-drawn' + PIN }], pieces: piecesOf(CH, piece),
+    form: [{ kind: 'preset', id: `form-${id}` + PIN }],
+    features: [{ kind: 'preset', id: `features-${id}` + PIN }], expressions: [{ kind: 'preset', id: 'expressions-drawn' + PIN }],
+    pieces: [...(piece ? [{ id: 'nose', kind: 'nose' }] : []), { kind: 'preset', id: `hair-${id}` + PIN }, ...(wear.length ? [{ kind: 'preset', id: `wear-${id}` + PIN }] : [])],
     light: { kind: 'preset', id: 'light-toon-form' + PIN },
     ...(REFS[id] ? { ref: REFS[id] } : {}),
   };
-  const was = WRAPPED.includes(id) && ['red', 'old', 'semi', 'hood'].includes(id) ? 'Г3' : 'Г1';
-  await save(new URL(`presets/head-${id}.json`, EN), { format: 'engine/preset', version: 3, id: `head-${id}`, group: 'head', label: { ru: `голова: ${ru}`, en: `head: ${en}` },
-    about: { ru: `${was}: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове`, en: `${was}: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head` }, head });
-  await save(new URL(`characters/head-${id}.json`, EN), { format: 'engine/character', version: 4, id: `head-${id}`, label: { ru: `Голова: ${ru}`, en: `Head: ${en}` },
+  await preset(`head-${id}`, 'head', `голова: ${ru}`, `head: ${en}`, `${was}: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове`, `${was}: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head`, { head });
+  await save(new URL(`characters/head-${id}.json`, EN), { format: 'engine/character', version: 5, id: `head-${id}`, label: { ru: `Голова: ${ru}`, en: `Head: ${en}` },
     body: BODY[CH.who] + PIN, head: { preset: `head-${id}` + PIN }, look: { skin: CH.skin, roughness: 0.65 } });
   console.log(`head-${id} (${was}, on ${BODY[CH.who]})`);
 }
@@ -120,7 +125,7 @@ const G2 = JSON.parse(execFileSync('python3', ['-c', 'import sys, json; sys.path
     masses: (P.masses || []).map(m => ({ at: m.c, r: m.r, ...(m.k != null ? { k: m.k } : {}), ...(m.pair ? { mirror: true } : {}) })), ear: P.ear, ...(P.kCF != null ? { kCF: P.kCF } : {}),
     ...(P.neckR || P.neckK ? { neck: { ...(P.neckR ? { r: P.neckR } : {}), ...(P.neckK ? { k: P.neckK } : {}) } } : {}) };
   const marks = { eye: { x: e.x, y: e.y, w: e.outX - e.inX, h: e.up + e.lo }, mouth: { y: L.y, w: 2 * L.w * (L.corner ?? 0.92) } };
-  await save(new URL('presets/form-solid-giulia.json', EN), { format: 'engine/preset', version: 3, id: 'form-solid-giulia', group: 'head-form', label: { ru: 'форма: тело по картинке (Джулия, Г2)', en: 'form: a solid fitted to a picture (Giulia, Г2)' },
+  await save(new URL('presets/form-solid-giulia.json', EN), { format: 'engine/preset', version: 4, id: 'form-solid-giulia', group: 'head-form', label: { ru: 'форма: тело по картинке (Джулия, Г2)', en: 'form: a solid fitted to a picture (Giulia, Г2)' },
     about: { ru: 'Г2: голова Anny, обтянутая на тело, подогнанное к картинке Джулии (её числа из картинки), без шеи тоньше; на горле остаётся складка — пример способа, не готовая голова', en: "Г2: Anny's head wrapped onto a solid fitted to Giulia's picture (its numbers read off the picture), the neck not slimmed; a crease stays at the throat — an example of the way, not a ready head" },
     changes: [{ kind: 'wrap', form, marks, neckSlim: 1, onto: [0.02, 0.17] }] });
   console.log('form-solid-giulia (Г2)');

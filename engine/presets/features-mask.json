@@ -1,0 +1,58 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "features-mask",
+ "group": "features",
+ "label": {
+  "ru": "черты: девушка в маске",
+  "en": "features: masked girl"
+ },
+ "about": {
+  "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.43,
+   "y": -0.3,
+   "w": 0.44,
+   "h": 0.2,
+   "tilt": -0.14,
+   "iris": [
+    "#7a2b1c",
+    "#c2603a"
+   ],
+   "lash": "#1d1418",
+   "lashW": 0.075,
+   "wing": 0.3,
+   "lower": 0.25,
+   "glints": 1,
+   "sharp": true,
+   "look": 0.45
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.12,
+   "x1": 0.74,
+   "y0": -0.13,
+   "y1": 0.02,
+   "arch": 0.08,
+   "peak": 0.55,
+   "w0": 0.075,
+   "w1": 0.018,
+   "color": "#2a1d1b"
+  },
+  {
+   "id": "mask",
+   "kind": "mask",
+   "color": "#c9c9d3",
+   "dark": "#74738a",
+   "top": -0.46
+  }
+ ]
+}

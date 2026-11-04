@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "head-anny-face",
  "label": {
   "ru": "Голова: лицо Anny её ползунками",
@@ -12,32 +12,32 @@
   "form": [
    {
     "kind": "preset",
-    "id": "face-anny-small-nose@3242209df8f4d62d"
+    "id": "face-anny-small-nose@6f8cdc48119f4e77"
    },
    {
     "kind": "preset",
-    "id": "face-anny-big-eyes@824bc4120ec57815"
+    "id": "face-anny-big-eyes@57e62e8bb92b9105"
    },
    {
     "kind": "preset",
-    "id": "face-anny-soft-chin@bf9f1e2d8efa5fe4"
+    "id": "face-anny-soft-chin@9ed28e85f8aa7bc2"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-dots@6aebe5da62d9eff7"
+    "id": "features-dots@8bf3b5a5ad6bc5d1"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@9dd44ade6ed9c94a"
+    "id": "expressions-drawn@1c90b27acf342e72"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-plain@6ab58cddbde93d2c"
+   "id": "light-plain@de004442016e11a6"
   }
  },
  "look": {

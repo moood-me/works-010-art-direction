@@ -10,9 +10,10 @@
 //               place in it, N×3), lift (how far out along the host's normal there, metres), triangles, floor?}
 //               laid on another mesh each frame, after it (a feature as volume on the skin: it follows the skin in
 //               motion, in its morphs and in every change of its rest)
-// A skinned mesh may follow another's rest (`follow`: {host (its name), K, idx (N×K of the host's vertices), w (their
-// weights)}, made by followOf): whatever moves the host's rest in a frame — its morphs, a change of the rest as a pose
-// layer — moves each of its vertices as it moves the host's vertices it is bound to (a head's piece on its skin).
+// A skinned mesh may follow another's rest (`follow`: {host (its name), idx (the host's vertices it is bound to), w
+// (their weights)}, made by followOf): whatever moves the host's rest in a frame — its morphs, a change of the rest as a
+// pose layer — moves it as one, as those vertices move (a head's piece on its skin: the affine change that carries
+// them best).
 // triangles: Uint32Array (or Uint16Array while N ≤ 65,536). `used`: the vertices the triangles use — only they are
 // skinned, drawn and counted for the floor. morphs: {name: {indices: Uint32Array, deltas: Float32Array (n×3)}} —
 // rest changes applied before skinning, each with a weight (src/figure.js: a rest change or a pose layer).
@@ -58,14 +59,15 @@ export function keepUnused(mesh, P) {
   return P;
 }
 
-// a mesh's vertices (P, N×3) bound to a host mesh's rest (hostP; `name`: what the figure calls the host), each to its K
-// nearest host vertices among `only` (a mask; all the used ones if null), weighed by inverse squared distance — see
-// `follow` above
+// a mesh bound to a host mesh's rest (hostP; `name`: what the figure calls the host): to the host's vertices nearest
+// it — each of its vertices' K nearest among `only` (a mask; all the used ones if null), weighed by inverse squared
+// distance and summed per host vertex — so it moves as they do, as one: by the affine change that best carries them
+// (src/figure.js), a piece kept whole however the skin under it bends
 export function followOf(name, host, hostP, P, only = null, K = 8) {
   const cell = 0.04, grid = new Map(), key = (a, b, c) => `${a},${b},${c}`, n = P.length / 3;
   for (const i of host.used) { if (only && !only[i]) continue; const k = key(Math.floor(hostP[i * 3] / cell), Math.floor(hostP[i * 3 + 1] / cell), Math.floor(hostP[i * 3 + 2] / cell)); let g = grid.get(k); if (!g) grid.set(k, g = []); g.push(i); }
   if (!grid.size) throw new Error(`${host.id}: nothing to bind to`);
-  const idx = new Uint32Array(n * K), w = new Float32Array(n * K), bi = new Int32Array(K), bd = new Float64Array(K);
+  const weight = new Map(), bi = new Int32Array(K), bd = new Float64Array(K);
   for (let v = 0; v < n; v++) {
     const x = P[v * 3], y = P[v * 3 + 1], z = P[v * 3 + 2], cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell);
     bd.fill(Infinity); bi.fill(-1);
@@ -81,10 +83,10 @@ export function followOf(name, host, hostP, P, only = null, K = 8) {
       if (bi[K - 1] >= 0 && Math.sqrt(bd[K - 1]) <= r * cell) break;   // nothing nearer can lie beyond this ring
       if (r > 1000) throw new Error(`${host.id}: fewer than ${K} vertices to bind to`);
     }
-    let s = 0; for (let k = 0; k < K; k++) { const q = 1 / (bd[k] + 1e-8); w[v * K + k] = q; s += q; idx[v * K + k] = bi[k]; }
-    for (let k = 0; k < K; k++) w[v * K + k] /= s;
+    let s = 0; for (let k = 0; k < K; k++) s += 1 / (bd[k] + 1e-8);
+    for (let k = 0; k < K; k++) weight.set(bi[k], (weight.get(bi[k]) ?? 0) + 1 / (bd[k] + 1e-8) / s);
   }
-  return { host: name, K, idx, w };
+  return { host: name, idx: Uint32Array.from(weight.keys()), w: Float32Array.from(weight.values()) };
 }
 
 // vertex normals (area-weighted) over the used vertices, into out (a new array if none is given)

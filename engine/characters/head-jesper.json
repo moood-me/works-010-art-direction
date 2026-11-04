@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "head-jesper",
  "label": {
   "ru": "Голова: Джеспер",
@@ -8,7 +8,7 @@
  },
  "body": "moood-man@ae2fe31d3d61c6e7",
  "head": {
-  "preset": "head-jesper@76b3cd4a1546a2db"
+  "preset": "head-jesper@4bc3bec563fac15d"
  },
  "look": {
   "skin": "#f0c4a8",

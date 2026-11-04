@@ -11,21 +11,44 @@
 <script type="module">
 // The overlay check's page (tools/overlay.mjs): a character's head seen at its picture's angle, its landmarks projected,
 // laid over the picture by the similarity that best carries them onto the picture's own landmarks; the error in the
-// picture's pixels. What is drawn: the picture, the head's outline over it (orange), the picture's points (blue) and
-// the head's (orange) joined by a line.
+// picture's pixels. The head's landmarks are what a person sees: the eyes' and the mouth's — where the drawn features
+// are on the skin (their places in the face's picture, found on the head's triangles), the nose's tip — of a nose piece
+// when it has one, the chin — of the skin. What is drawn: the picture, the face's outline without its pieces (hair,
+// headwear) over it (orange), the picture's points (blue) and the head's (orange) joined by a line.
 import * as THREE from 'three';
 import { createEngine } from '../src/engine.js';
 import { makeStage, figureView } from '../src/view3d.js';
 import { landmarksOf } from '../src/head/face.js';
+import { SPAN, CY, mouthLines, grinLines } from '../src/head/paint.js';
 const E = await createEngine(), S = 512, stage = makeStage(THREE, document.getElementById('cv'), { background: '#ffffff' });
 stage.floor.visible = false;
-const KEYS = ['eL', 'eR', 'tip', 'mouth', 'mL', 'mR', 'chin'], MARK = { eL: 'eyeL', eR: 'eyeR', tip: 'noseTip', mouth: 'mouth', mL: 'mouthL', mR: 'mouthR', chin: 'chin' };
+const KEYS = ['eL', 'eR', 'tip', 'mouth', 'mL', 'mR', 'chin'];
+// where (x, y) of the face's picture is on the skin (the front-most triangle showing it there), or null
+function onSkin(mesh, P, x, y) {
+  const T = mesh.triangles, u = 0.5 + x / (2 * SPAN), v = 0.5 + (y - CY) / (2 * SPAN), U = mesh.uv; let best = null;
+  for (let t = 0; t < T.length; t += 3) {
+    const a = T[t], b = T[t + 1], c = T[t + 2]; if (Math.min(mesh.paintMask[a], mesh.paintMask[b], mesh.paintMask[c]) < 0.05) continue;
+    const d = (U[b * 2 + 1] - U[c * 2 + 1]) * (U[a * 2] - U[c * 2]) + (U[c * 2] - U[b * 2]) * (U[a * 2 + 1] - U[c * 2 + 1]); if (Math.abs(d) < 1e-14) continue;
+    const w0 = ((U[b * 2 + 1] - U[c * 2 + 1]) * (u - U[c * 2]) + (U[c * 2] - U[b * 2]) * (v - U[c * 2 + 1])) / d, w1 = ((U[c * 2 + 1] - U[a * 2 + 1]) * (u - U[c * 2]) + (U[a * 2] - U[c * 2]) * (v - U[c * 2 + 1])) / d, w2 = 1 - w0 - w1;
+    if (w0 < 0 || w1 < 0 || w2 < 0) continue;
+    const p = [0, 1, 2].map(k => w0 * P[a * 3 + k] + w1 * P[b * 3 + k] + w2 * P[c * 3 + k]); if (!best || p[2] > best[2]) best = p;
+  }
+  return best;
+}
 window.overlay = async (char, fitView) => {
   const spec = await E.character(char), ref = spec.head?.ref; if (!ref?.points) throw new Error(`${char}: its head has no picture with landmarks (head.ref)`);
   const fig = await E.figure(spec); fig.frame(null, 0, fig.pose);
   const view = figureView(THREE, fig, spec.look); view.update(); stage.scene.add(view.group);
-  const L = landmarksOf(fig.body), P = fig.body.mesh.positions, keys = KEYS.filter(k => k in ref.points);
-  const at = k => { const i = L[MARK[k]]; return new THREE.Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); };
+  const L = landmarksOf(fig.body), mesh = fig.body.mesh, P = fig.outputs[0].positions, keys = KEYS.filter(k => k in ref.points);
+  const eye = fig.body.head.features.find(f => f.kind === 'eye'), mouth = fig.body.head.features.find(f => f.kind === 'mouth' && f.type !== 'none');
+  const ends = mouth ? (mouth.type === 'grin' ? (({ top }) => [top[0], top[top.length - 1]])(grinLines(mouth)) : (({ line }) => [line[0], line[line.length - 1]])(mouthLines(mouth))) : null;
+  const nose = fig.outputs.find(o => o.name === 'nose'), skin = i => [P[i * 3], P[i * 3 + 1], P[i * 3 + 2]];
+  let tip = skin(L.noseTip); if (nose) for (const i of nose.mesh.used) if (nose.positions[i * 3 + 2] > tip[2]) tip = [nose.positions[i * 3], nose.positions[i * 3 + 1], nose.positions[i * 3 + 2]];
+  const place = { eL: eye && onSkin(mesh, P, eye.x, eye.y), eR: eye && onSkin(mesh, P, -eye.x, eye.y), tip, mouth: mouth && onSkin(mesh, P, 0, mouth.y), mL: ends && onSkin(mesh, P, ...ends[1]), mR: ends && onSkin(mesh, P, ...ends[0]), chin: skin(L.chin) };
+  for (const k of keys) if (!place[k]) throw new Error(`${char}: no ${k} drawn on its face to lay on the picture's`);
+  const at = k => new THREE.Vector3(...place[k]);
+  // the face's outline: without its pieces
+  for (const p of view.parts) if (p.o?.mesh.piece) p.mesh.visible = false;
   const H = E.skeleton.index.Head, hh = fig.body.measures.headHeight, c = [fig.pose.P[H * 3], fig.pose.P[H * 3 + 1] + hh * 0.35, fig.pose.P[H * 3 + 2]];
   const box = { center: c, min: c.map(v => v - hh * 0.8), max: c.map(v => v + hh * 0.8), size: [1, 1, 1].map(() => hh * 1.6) };
   stage.size(S, S);

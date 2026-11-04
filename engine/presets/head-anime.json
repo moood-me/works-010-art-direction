@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 3,
+ "version": 4,
  "id": "head-anime",
  "group": "head",
  "label": {
@@ -16,262 +16,31 @@
   "skin": "#f9e3d8",
   "form": [
    {
-    "kind": "wrap",
-    "form": {
-     "kind": "curves",
-     "size": 1.18,
-     "face": {
-      "n": 2.4,
-      "W": [
-       [
-        0.4,
-        0.88
-       ],
-       [
-        -0.25,
-        0.84
-       ],
-       [
-        -0.45,
-        0.76
-       ],
-       [
-        -0.68,
-        0.54
-       ],
-       [
-        -0.86,
-        0.28
-       ],
-       [
-        -0.97,
-        0.1
-       ]
-      ],
-      "P": [
-       [
-        0.4,
-        0.8
-       ],
-       [
-        0,
-        0.88
-       ],
-       [
-        -0.3,
-        0.86
-       ],
-       [
-        -0.45,
-        0.86
-       ],
-       [
-        -0.62,
-        0.86
-       ],
-       [
-        -0.72,
-        0.85
-       ],
-       [
-        -0.84,
-        0.78
-       ],
-       [
-        -0.97,
-        0.6
-       ]
-      ],
-      "nose": {
-       "ridge": [
-        [
-         -0.4,
-         0.855
-        ],
-        [
-         -0.5,
-         0.905
-        ],
-        [
-         -0.575,
-         0.975
-        ]
-       ],
-       "under": [
-        [
-         -0.6,
-         0.93
-        ],
-        [
-         -0.625,
-         0.875
-        ]
-       ],
-       "w": [
-        0.008,
-        0.012,
-        0.03
-       ],
-       "k": 0.035
-      }
-     },
-     "ears": {
-      "x": 0.9,
-      "y": -0.38,
-      "z": -0.22,
-      "s": 1.05
-     },
-     "neck": {
-      "r": 0.32
-     }
-    },
-    "marks": {
-     "eye": {
-      "x": 0.4,
-      "y": -0.38,
-      "w": 0.38,
-      "h": 0.44
-     },
-     "mouth": {
-      "y": -0.745,
-      "w": 0.07,
-      "sag": 0.006
-     }
-    }
+    "kind": "preset",
+    "id": "form-anime@69589c400559253f"
    }
   ],
   "features": [
    {
-    "id": "eyes",
-    "kind": "eye",
-    "as": "paint",
-    "x": 0.4,
-    "y": -0.38,
-    "w": 0.38,
-    "h": 0.44,
-    "tilt": 0.04,
-    "iris": [
-     "#1d4f7a",
-     "#3fb4d8"
-    ],
-    "lash": "#3a2a2a",
-    "lashW": 0.07,
-    "wing": 0.2,
-    "lower": 0.35,
-    "glints": 3
-   },
-   {
-    "id": "brows",
-    "kind": "brow",
-    "as": "paint",
-    "x0": 0.16,
-    "x1": 0.62,
-    "y0": -0.02,
-    "y1": 0.02,
-    "arch": 0.04,
-    "peak": 0.45,
-    "w0": 0.022,
-    "w1": 0.008,
-    "color": "#7d8f9c"
-   },
-   {
-    "id": "mouth",
-    "kind": "mouth",
-    "as": "paint",
-    "type": "drawn",
-    "y": -0.745,
-    "w": 0.07,
-    "sag": 0.006,
-    "lineW": 0.012,
-    "line": "#a0625a"
-   },
-   {
-    "id": "marks",
-    "kind": "marks",
-    "lines": [
-     {
-      "pts": [
-       [
-        0.035,
-        -0.56
-       ],
-       [
-        0.045,
-        -0.585
-       ],
-       [
-        0.03,
-        -0.6
-       ]
-      ],
-      "w": 0.008,
-      "color": "#c99a90",
-      "alpha": 0.7
-     }
-    ]
-   },
-   {
-    "id": "blush",
-    "kind": "blush",
-    "amount": 0.5
+    "kind": "preset",
+    "id": "features-anime@053be2657555ac61"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@9dd44ade6ed9c94a"
+    "id": "expressions-drawn@1c90b27acf342e72"
    }
   ],
   "pieces": [
    {
-    "id": "hair",
-    "kind": "hair",
-    "color": "#b9cad6",
-    "parts": [
-     [
-      "cap",
-      {
-       "front": 0.32
-      }
-     ],
-     [
-      "bangsBlunt",
-      {
-       "n": 13,
-       "y": -0.18,
-       "spread": 1.15,
-       "w": 0.17
-      }
-     ],
-     [
-      "sides",
-      {
-       "n": 3,
-       "len": 2.4,
-       "w": 0.2,
-       "z": -0.35
-      }
-     ],
-     [
-      "back",
-      {
-       "n": 11,
-       "len": 3.6,
-       "w": 0.32
-      }
-     ],
-     [
-      "strays",
-      {
-       "n": 4
-      }
-     ]
-    ]
+    "kind": "preset",
+    "id": "hair-anime@6bc05466850c1ae1"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon-form@d8ab31c73412d70b"
+   "id": "light-toon-form@0835034fc0a470a6"
   }
  }
 }

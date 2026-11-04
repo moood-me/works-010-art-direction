@@ -1,0 +1,74 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "features-red",
+ "group": "features",
+ "label": {
+  "ru": "черты: рыжая девушка",
+  "en": "features: red-haired girl"
+ },
+ "about": {
+  "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.43,
+   "y": -0.34,
+   "w": 0.42,
+   "h": 0.44,
+   "tilt": 0.06,
+   "iris": [
+    "#1e6b52",
+    "#5ec29a"
+   ],
+   "lash": "#3a1a14",
+   "lashW": 0.065,
+   "wing": 0.12,
+   "lower": 0.3,
+   "glints": 2,
+   "lashes": 3,
+   "round": true,
+   "crease": true
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.18,
+   "x1": 0.68,
+   "y0": -0.04,
+   "y1": -0.02,
+   "arch": 0.1,
+   "peak": 0.6,
+   "w0": 0.03,
+   "w1": 0.008,
+   "color": "#a8382a"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.69,
+   "w": 0.12,
+   "sag": 0.003,
+   "upper": 0.028,
+   "bow": 0.012,
+   "lower": 0.042,
+   "open": 0.016,
+   "corners": -0.004,
+   "lip": "#e45a44",
+   "line": "#7a2a22",
+   "lineW": 0.011
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.55
+  }
+ ]
+}

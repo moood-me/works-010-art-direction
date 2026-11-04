@@ -1,0 +1,90 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "features-anime",
+ "group": "features",
+ "label": {
+  "ru": "черты: аниме-девушка",
+  "en": "features: anime girl"
+ },
+ "about": {
+  "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.4,
+   "y": -0.38,
+   "w": 0.38,
+   "h": 0.44,
+   "tilt": 0.04,
+   "iris": [
+    "#1d4f7a",
+    "#3fb4d8"
+   ],
+   "lash": "#3a2a2a",
+   "lashW": 0.07,
+   "wing": 0.2,
+   "lower": 0.35,
+   "glints": 3
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.16,
+   "x1": 0.62,
+   "y0": -0.02,
+   "y1": 0.02,
+   "arch": 0.04,
+   "peak": 0.45,
+   "w0": 0.022,
+   "w1": 0.008,
+   "color": "#7d8f9c"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.745,
+   "w": 0.07,
+   "sag": 0.006,
+   "lineW": 0.012,
+   "line": "#a0625a"
+  },
+  {
+   "id": "marks",
+   "kind": "marks",
+   "lines": [
+    {
+     "pts": [
+      [
+       0.035,
+       -0.56
+      ],
+      [
+       0.045,
+       -0.585
+      ],
+      [
+       0.03,
+       -0.6
+      ]
+     ],
+     "w": 0.008,
+     "color": "#c99a90",
+     "alpha": 0.7
+    }
+   ]
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.5
+  }
+ ]
+}

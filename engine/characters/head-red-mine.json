@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "head-red-mine",
  "label": {
   "ru": "Голова: рыжая девушка, своя",
@@ -8,11 +8,11 @@
  },
  "body": "moood-woman@271c46992b9495aa",
  "head": {
-  "preset": "head-red@8f69e32ec83f1ab1",
+  "preset": "head-red@29c67093a77c3aad",
   "form": [
    {
     "kind": "preset",
-    "id": "face-points-long@fc3fd456b884880a",
+    "id": "face-points-long@613a869c124b01a3",
     "strength": 0.35
    }
   ],
@@ -43,7 +43,7 @@
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon@21d01379abf7249c"
+   "id": "light-toon@50a33984fee7ce0d"
   }
  },
  "look": {

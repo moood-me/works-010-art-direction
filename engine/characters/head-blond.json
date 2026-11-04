@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "head-blond",
  "label": {
   "ru": "Голова: блондин",
@@ -8,7 +8,7 @@
  },
  "body": "moood-man@ae2fe31d3d61c6e7",
  "head": {
-  "preset": "head-blond@36d57baf10fb78c2"
+  "preset": "head-blond@50693d6248991c25"
  },
  "look": {
   "skin": "#eab6a6",

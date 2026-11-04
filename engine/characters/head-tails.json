@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "head-tails",
  "label": {
   "ru": "Голова: мальчик с хвостиками",
@@ -8,7 +8,7 @@
  },
  "body": "moood-man@ae2fe31d3d61c6e7",
  "head": {
-  "preset": "head-tails@c0a34baf08a6c6ec"
+  "preset": "head-tails@6653426ae856802d"
  },
  "look": {
   "skin": "#e9b8a8",

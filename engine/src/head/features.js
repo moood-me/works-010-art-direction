@@ -5,10 +5,11 @@
 // it (src/mesh.js: an attached mesh) and taking the same picture — it follows the skin the same way.
 //   FEATURE_SCHEMA            what a feature is ({kind: eye | brow | mouth | marks | blush | tint | mask, …})
 //   picturePlaces(drawn, frame) → each vertex's place in the picture (N×2)
-//   faceUV(pic, P, frame, omega) → {uv (N×2), mask (N)}
+//   faceUV(pic, N, omega) → {uv (N×2), mask (N)}
 //   reliefsOf(features, {drawn, frame, pic, omega}) → [attached mesh fields]   (drawn: the head the face is drawn on, frame its)
 import { SPAN, CY, browLines, mouthLines, grinLines } from './paint.js';
 import { clamp, lerp, sst } from '../math.js';
+import { headShares } from './frame.js';
 import { num, flag, color } from '../schema.js';
 
 const base = kind => ({ kind: { const: kind }, id: { type: 'string', pattern: /^[a-z][a-zA-Z0-9-]*$/ }, as: { type: 'string', enum: ['paint', 'volume'] }, lift: num(0, 0.2) });
@@ -41,15 +42,17 @@ export function picturePlaces(drawn, frame) {
   for (let i = 0; i < N; i++) { const l = frame.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); pic[i * 2] = l[0]; pic[i * 2 + 1] = l[1]; }
   return pic;
 }
-// the texture coordinates of the picture's places, and how much of the picture each vertex shows (mask: 1 on the face's
-// front, fading to 0 round the sides of the head and down the neck — there the plain skin): so the drawing never shows
-// behind the head and no triangle smears it. P: the head as it is (its front, its share of the head)
-export function faceUV(pic, P, frame, omega) {
-  const N = omega.length, uv = new Float32Array(N * 2), mask = new Float32Array(N);
-  for (let i = 0; i < N; i++) {
-    uv[i * 2] = clamp(0.5 + pic[i * 2] / (2 * SPAN), 0.002, 0.998); uv[i * 2 + 1] = clamp(0.5 + (pic[i * 2 + 1] - CY) / (2 * SPAN), 0.002, 0.998);
-    const z = frame.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2])[2];
-    mask[i] = sst(clamp((omega[i] - 0.2) / 0.2, 0, 1)) * sst(clamp((z + 0.15) / 0.3, 0, 1));
+// the texture coordinates of the picture's places, and how much of the picture each vertex shows (mask): 1 where the
+// head faces the front — a front projection there lays the picture on the skin as drawn — fading to 0 as the skin turns
+// away (round the sides, under the chin: there it would smear the picture along the skin), down the neck and outside
+// the picture; there the plain skin. N: the normals of the head the face is drawn on; omega: its share of the head
+export function faceUV(pic, N, omega) {
+  const n = omega.length, uv = new Float32Array(n * 2), mask = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const u = 0.5 + pic[i * 2] / (2 * SPAN), v = 0.5 + (pic[i * 2 + 1] - CY) / (2 * SPAN);
+    uv[i * 2] = clamp(u, 0.002, 0.998); uv[i * 2 + 1] = clamp(v, 0.002, 0.998);
+    const inside = sst(clamp(Math.min(u, 1 - u, v, 1 - v) / 0.03, 0, 1));
+    mask[i] = sst(clamp((omega[i] - 0.2) / 0.2, 0, 1)) * sst(clamp((N[i * 3 + 2] - 0.2) / 0.3, 0, 1)) * inside;
   }
   return { uv, mask };
 }
@@ -66,7 +69,9 @@ function outlines(f) {
     if (s < 0) { top.reverse(); bot.reverse(); }
     return { side: SIDE[s], top, bot };
   });
-  if (f.kind === 'mouth' && f.type === 'drawn') { const { upper, lower } = mouthLines(f); return [{ side: null, top: upper.map(([x, y]) => [x * 1.06, y + 0.012]), bot: lower.map(([x, y]) => [x * 1.06, y - 0.012]) }]; }
+  // a drawn mouth's lips, each its own relief on its own side of the lips' parting (the upper on what the jaw doesn't
+  // carry, the lower on what it does: so an open jaw parts them, stretching neither)
+  if (f.kind === 'mouth' && f.type === 'drawn') { const { upper, lower, line } = mouthLines(f); return [{ side: 'upper', jaw: false, top: upper.map(([x, y]) => [x * 1.06, y + 0.012]), bot: line.map(([x, y]) => [x * 1.06, y]) }, { side: 'lower', jaw: true, top: line.map(([x, y]) => [x * 1.06, y]), bot: lower.map(([x, y]) => [x * 1.06, y - 0.012]) }]; }
   if (f.kind === 'mouth' && f.type === 'grin') { const { top, bot } = grinLines(f, {}, 24); return [{ side: null, top: top.map(([x, y]) => [x * 1.04, y + 0.012]), bot: bot.map(([x, y]) => [x * 1.04, y - 0.03]) }]; }
   throw new Error(`a ${f.kind}${f.type ? ' (' + f.type + ')' : ''} has no volume: as paint only`);
 }
@@ -83,25 +88,32 @@ export function reliefsOf(features, { drawn, frame, pic, omega }) {
     const n = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx], out = n[0] * (L[a] + L[b] + L[c]) + n[1] * (L[a + 1] + L[b + 1] + L[c + 1] + 0.9) + n[2] * (L[a + 2] + L[b + 2] + L[c + 2]);
     if (n[2] * Math.sign(out) > 0) tris.push(t / 3);
   }
-  const hit = (x, y) => {
-    let best = null;
+  // where (x, y) of the picture is on the skin: the front-most triangle there (where the picture folds over), among those
+  // a side of the lips' parting allows (jaw: true — what the jaw carries, false — what it doesn't), or the nearest of them
+  const { jaw } = headShares(drawn.mesh, drawn.rig.skeleton), carried = t => jaw[T[t * 3]] + jaw[T[t * 3 + 1]] + jaw[T[t * 3 + 2]] > 1.5;
+  const hit = (x, y, side) => {
+    let best = null, near = null, nd = Infinity;
     for (const t of tris) {
+      if (side != null && carried(t) !== side) continue;
       const a = T[t * 3], b = T[t * 3 + 1], c = T[t * 3 + 2], ax = pic[a * 2], ay = pic[a * 2 + 1], bx = pic[b * 2], by = pic[b * 2 + 1], cx = pic[c * 2], cy = pic[c * 2 + 1];
       const d = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy); if (Math.abs(d) < 1e-12) continue;
       const w0 = ((by - cy) * (x - cx) + (cx - bx) * (y - cy)) / d, w1 = ((cy - ay) * (x - cx) + (ax - cx) * (y - cy)) / d, w2 = 1 - w0 - w1;
+      if (side != null) { const e = Math.hypot((ax + bx + cx) / 3 - x, (ay + by + cy) / 3 - y); if (e < nd) { nd = e; near = { t, w: [w0, w1, w2] }; } }
       if (w0 < -1e-6 || w1 < -1e-6 || w2 < -1e-6) continue;
       const z = w0 * L[a * 3 + 2] + w1 * L[b * 3 + 2] + w2 * L[c * 3 + 2];
-      if (!best || z > best.z) best = { t, z, w: [w0, w1, w2] };   // (the front-most, where the picture folds over)
+      if (!best || z > best.z) best = { t, z, w: [w0, w1, w2] };
     }
-    return best;
+    if (best || !near) return best;
+    const w = near.w.map(v => Math.max(0, v)), s = w[0] + w[1] + w[2];
+    return { t: near.t, w: w.map(v => v / s) };
   };
   for (const f of features) {
     if ((f.as ?? 'paint') !== 'volume') continue;
     const lift = (f.lift ?? LIFT[f.kind]) * frame.R, rows = 7;
-    for (const { side, top, bot } of outlines(f)) {
+    for (const { side, jaw: carriedSide, top, bot } of outlines(f)) {
       const n = top.length, tri = [], bary = [], lifts = [], uv = [], idx = [];
       for (let k = 0; k < n; k++) for (let r = 0; r <= rows; r++) {
-        const v = r / rows, x = lerp(top[k][0], bot[k][0], v), y = lerp(top[k][1], bot[k][1], v), h = hit(x, y);
+        const v = r / rows, x = lerp(top[k][0], bot[k][0], v), y = lerp(top[k][1], bot[k][1], v), h = hit(x, y, carriedSide);
         if (!h) throw new Error(`${featureId(f)}: its relief at (${x.toFixed(2)}, ${y.toFixed(2)}) is off the face`);
         tri.push(h.t); bary.push(...h.w);
         const e = k / (n - 1); lifts.push(lift * Math.sin(Math.PI * v) ** 0.5 * Math.sin(Math.PI * e) ** 0.35);

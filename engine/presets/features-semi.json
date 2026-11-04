@@ -1,0 +1,119 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "features-semi",
+ "group": "features",
+ "label": {
+  "ru": "черты: парень с длинным носом",
+  "en": "features: long-nosed man"
+ },
+ "about": {
+  "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.36,
+   "y": -0.32,
+   "w": 0.33,
+   "h": 0.3,
+   "tilt": 0.02,
+   "iris": [
+    "#6a6ad8",
+    "#b8b8ff"
+   ],
+   "lash": "#2a1f2c",
+   "lashW": 0.035,
+   "wing": 0.02,
+   "lower": 0.5,
+   "glints": 0,
+   "ringed": true,
+   "bags": "#8a5a6e",
+   "crease": true
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.13,
+   "x1": 0.66,
+   "y0": -0.03,
+   "y1": -0.05,
+   "arch": 0.035,
+   "peak": 0.35,
+   "w0": 0.045,
+   "w1": 0.012,
+   "color": "#2a1f2c"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.955,
+   "w": 0.15,
+   "sag": 0,
+   "corners": -0.012,
+   "upper": 0.012,
+   "bow": 0.007,
+   "lower": 0.032,
+   "lip": "#c98e98",
+   "line": "#6a3a4a",
+   "lineW": 0.012
+  },
+  {
+   "id": "marks",
+   "kind": "marks",
+   "lines": [
+    {
+     "mirror": true,
+     "pts": [
+      [
+       0.5,
+       -0.5
+      ],
+      [
+       0.46,
+       -0.66
+      ],
+      [
+       0.38,
+       -0.8
+      ]
+     ],
+     "w": 0.008,
+     "color": "#9a6a7a",
+     "alpha": 0.6
+    },
+    {
+     "mirror": true,
+     "pts": [
+      [
+       0.16,
+       -0.5
+      ],
+      [
+       0.3,
+       -0.56
+      ],
+      [
+       0.48,
+       -0.5
+      ]
+     ],
+     "w": 0.008,
+     "color": "#8a5a6e",
+     "alpha": 0.5
+    }
+   ]
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.1
+  }
+ ]
+}

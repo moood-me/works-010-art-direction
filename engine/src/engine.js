@@ -17,8 +17,14 @@ import { turnAtRest, morphAtRest } from './changes.js';
 import { DEFORMERS, deformAtRest, layerOf, turnLayer, restLayer, complete } from './deform.js';
 import { Figure } from './figure.js';
 import { buildHead, LIGHT_DEFAULTS } from './head/head.js';
-import { featureId } from './head/features.js';
+import { featureId, FEATURE_SCHEMA } from './head/features.js';
+import { EXPRESSION_SCHEMA } from './head/expressions.js';
+import { PIECE_SCHEMA } from './head/pieces.js';
+import { validate } from './schema.js';
 import { makeMesh } from './mesh.js';
+
+// a way of a head's form by its name: its own, or a preset's id, or a deformer's kind
+const wayName = c => c.name ?? (c.kind === 'preset' ? pinned(c.id).id : c.kind);
 
 export async function createEngine({ root = new URL('../', import.meta.url), read = defaultRead } = {}) {
   root = new URL(root);
@@ -76,20 +82,34 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       const w = form.findLastIndex(c => c.kind === 'wrap'), wrap = w < 0 ? null : complete(form[w]);
       return { ...spec, rest: [...rest, ...form], pose: await open(spec.pose, 'pose'), head: { ...head, formAt: rest.length, wrapAt: w < 0 ? null : rest.length + w, wrap }, expanded: true };
     },
-    // a head with what it starts from (its base's head, its preset, the preset's own) merged under it, and its
-    // presets of features, expressions and light taken in: {size, skin, form, features, expressions, pieces, light}
+    // a head with what it starts from (its base's head, its preset, the preset's own) merged under it, its presets of
+    // features, expressions, pieces and light taken in: {size, skin, form, features, expressions, pieces, light}. Its
+    // own parts go over theirs by id (features, pieces) or name (expressions, the form's ways: a preset's id, or a
+    // deformer's kind, unless it names itself): {kind: "off"} takes one away, one with no kind changes the keys it gives
+    // (then checked whole; an expression, which has no kind, is new when there is none of its name), a whole one takes
+    // the place of theirs, a new one comes after; `strength` weighs the form it starts from
     async headOf(h, look = {}, depth = 0) {
       if (depth > 8) throw new Error('heads nested deeper than 8 (a cycle?)');
       const under = h.under ? await E.headOf(h.under, look, depth + 1) : h.preset ? await E.headOf(await E.headPreset(h.preset), look, depth + 1) : { form: [], features: [], expressions: [], pieces: [], light: { ...LIGHT_DEFAULTS } };
       const inline = async (list, key) => (await Promise.all((list || []).map(async x => x.kind === 'preset' ? (await E.preset(x.id))[key] ?? (() => { throw new Error(`preset ${x.id} has no ${key}`); })() : [x]))).flat();
-      const byId = (base, own, id) => { const out = base.filter(x => !own.some(o => id(o) === id(x))); for (const o of own) if (o.kind !== 'off') out.push(o); return out; };
-      const light = h.light?.kind === 'preset' ? (await E.preset(h.light.id)).light : h.light;
+      const over = (base, own, id, schema, what) => {
+        const out = base.slice();
+        for (const o of own) {
+          const k = out.findIndex(x => id(x) === id(o));
+          if (o.kind === 'off') { if (k < 0) throw new Error(`${what} "${id(o)}" to take away: there is none`); out.splice(k, 1); continue; }
+          if (!o.kind && k >= 0) { out[k] = { ...out[k], ...o }; if (schema) validate(out[k], schema, `${what} ${id(o)}`); continue; }
+          if (!o.kind && schema !== EXPRESSION_SCHEMA) throw new Error(`${what} "${id(o)}" to change: there is none`);
+          if (k >= 0) out[k] = o; else out.push(o);
+        }
+        return out;
+      };
+      const light = h.light?.kind === 'preset' ? (await E.preset(h.light.id)).light : h.light, k = h.strength ?? 1;
       return {
         size: h.size ?? under.size, skin: h.skin ?? under.skin ?? look.skin, ref: h.ref ?? under.ref ?? null,
-        form: [...under.form, ...(h.form || [])],
-        features: byId(under.features, await inline(h.features, 'features'), featureId),
-        expressions: byId(under.expressions, await inline(h.expressions, 'expressions'), x => x.name),
-        pieces: byId(under.pieces, h.pieces || [], p => p.id ?? p.kind),
+        form: over(under.form.map(c => k === 1 ? c : { ...c, strength: (c.strength ?? 1) * k }), (h.form || []).map(c => ({ ...c, name: wayName(c) })), c => c.name, null, 'a way of the form'),
+        features: over(under.features, await inline(h.features, 'features'), featureId, FEATURE_SCHEMA, 'feature'),
+        expressions: over(under.expressions, await inline(h.expressions, 'expressions'), x => x.name, EXPRESSION_SCHEMA, 'expression'),
+        pieces: over(under.pieces, await inline(h.pieces, 'pieces'), p => p.id ?? p.kind, PIECE_SCHEMA, 'piece'),
         light: { ...under.light, ...(light || {}) },
       };
     },

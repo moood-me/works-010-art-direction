@@ -8,7 +8,10 @@
 import { clamp } from '../math.js';
 import { num } from '../schema.js';
 
-const EFFECT = { type: 'object', required: ['kind'], props: { kind: { type: 'string', enum: ['lids', 'corners', 'cheeks', 'brows'] }, amount: num(-3, 3) } };
+const EFFECT = { type: 'object', required: ['kind'], props: { kind: { type: 'string', enum: ['lids', 'corners', 'cheeks', 'brows'] }, amount: num(-3, 3), size: num(0, 0.3) } };
+// how far each effect moves the skin at amount 1 (head units; `size` says otherwise): a lid swells forward over the eye,
+// a cheek rises (and comes forward ×0.7), the skin over a brow lifts; the corners rise by a share of the mouth's width
+const SIZE = { lids: 0.035, cheeks: 0.035, brows: 0.05, corners: 0.6 };
 export const EXPRESSION_SCHEMA = { type: 'object', required: ['name'], props: {
   name: { type: 'string', pattern: /^[a-z][a-zA-Z0-9]*$/ }, label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
   jaw: num(-30, 30), mesh: { type: 'array', items: EFFECT },
@@ -28,14 +31,14 @@ export function expressionMorph(x, { pic, P, mesh, frame, omega, eye, mouth, bro
       const a = e.amount ?? 1;
       if (e.kind === 'lids' && eye && omega[i] > 0.9) for (const s of [-1, 1]) {
         const cx = s * eye.x, u = (lx - cx) / (eye.w / 2), v = ly - eye.y - (eye.tilt || 0) * s * (lx - cx), r = Math.hypot(u, v / eye.h * 2.2);
-        dz += a * 0.035 * Math.exp(-r * r * 1.6);
+        dz += a * (e.size ?? SIZE.lids) * Math.exp(-r * r * 1.6);
       }
       if (e.kind === 'corners') {
-        const up = clamp(0.6 * hw, 0.035, 0.08), ry = Math.max(0.1, hw * 0.5), u = Math.abs(lx) / hw, gx = u < 1 ? u * u : Math.exp(-(((u - 1) * hw / 0.1) ** 2)), f = gx * Math.exp(-(((ly - my) / ry) ** 2));
+        const up = clamp((e.size ?? SIZE.corners) * hw, 0.035, 0.08), ry = Math.max(0.1, hw * 0.5), u = Math.abs(lx) / hw, gx = u < 1 ? u * u : Math.exp(-(((u - 1) * hw / 0.1) ** 2)), f = gx * Math.exp(-(((ly - my) / ry) ** 2));
         dx += a * Math.sign(lx) * 0.18 * hw * f; dy += a * up * f; dz -= a * 0.02 * f;
       }
-      if (e.kind === 'cheeks') for (const s of [-1, 1]) { const rk = Math.hypot(lx - s * 0.42, ly - (my + 0.24)) / 0.24, fk = Math.exp(-rk * rk); dy += a * 0.035 * fk; dz += a * 0.025 * fk; }
-      if (e.kind === 'brows' && brow) for (const s of [-1, 1]) { const rb = Math.hypot(lx - s * (brow.x0 + brow.x1) / 2, ly - (brow.y0 + brow.y1) / 2 - 0.02) / 0.28; dy += a * 0.05 * Math.exp(-rb * rb); }
+      if (e.kind === 'cheeks') for (const s of [-1, 1]) { const rk = Math.hypot(lx - s * 0.42, ly - (my + 0.24)) / 0.24, fk = Math.exp(-rk * rk); const k = e.size ?? SIZE.cheeks; dy += a * k * fk; dz += a * k * 0.7 * fk; }
+      if (e.kind === 'brows' && brow) for (const s of [-1, 1]) { const rb = Math.hypot(lx - s * (brow.x0 + brow.x1) / 2, ly - (brow.y0 + brow.y1) / 2 - 0.02) / 0.28; dy += a * (e.size ?? SIZE.brows) * Math.exp(-rb * rb); }
     }
     const w = omega[i];
     if (Math.abs(dx) + Math.abs(dy) + Math.abs(dz) < 1e-6) continue;

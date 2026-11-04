@@ -1,0 +1,61 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "hair-anime",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: аниме-девушка",
+  "en": "hair: anime girl"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#b9cad6",
+   "parts": [
+    [
+     "cap",
+     {
+      "front": 0.32
+     }
+    ],
+    [
+     "bangsBlunt",
+     {
+      "n": 13,
+      "y": -0.18,
+      "spread": 1.15,
+      "w": 0.17
+     }
+    ],
+    [
+     "sides",
+     {
+      "n": 3,
+      "len": 2.4,
+      "w": 0.2,
+      "z": -0.35
+     }
+    ],
+    [
+     "back",
+     {
+      "n": 11,
+      "len": 3.6,
+      "w": 0.32
+     }
+    ],
+    [
+     "strays",
+     {
+      "n": 4
+     }
+    ]
+   ]
+  }
+ ]
+}

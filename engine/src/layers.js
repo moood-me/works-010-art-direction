@@ -110,7 +110,8 @@ export const LAYERS = {
     const x = ctx.body?.head?.expressions[name];
     if (!x) throw new Error(`expression "${name}": ${ctx.body?.head ? `the head has ${Object.keys(ctx.body.head.expressions).join(', ') || 'none'}` : 'the character has no head'}`);
     ctx.expressions[name] = (ctx.expressions[name] ?? 0) + weight;
-    if (x.mesh?.length) (ctx.morphs.body ??= {})[name] = weight;
+    // (the same expression twice: its morph and its asks of the drawing both by the weights' sum)
+    if (x.mesh?.length) { const m = (ctx.morphs.body ??= {}); m[name] = (m[name] ?? 0) + weight; }
     if (x.jaw) { const sk = ctx.rig.skeleton, j = sk.index.Jaw; turnUnder(pose, sk, j, qAxisAngle(qRot(getQ(pose.Q, j), [1, 0, 0]), x.jaw * weight * Math.PI / 180)); }
   },
 };

@@ -29,7 +29,7 @@ export function makeStage(THREE, canvas, { background = '#cfc8bd', pixelRatio = 
   const paths = new THREE.Group(); scene.add(paths);
   const KEY = norm([-2.2, 3.6, 2.6]), RIM = norm([2.4, 2.2, -2.8]);
   const stage = {
-    THREE, renderer, scene, camera, key, rim, floor, free: 1,
+    THREE, renderer, scene, camera, key, rim, floor, free: 1, freeY: 1,
     // the lights fitted to a box (src/figure.js bounds(), or several joined: joinBounds): the same light on every
     // figure, the shadow covering them all
     light(b) {
@@ -48,10 +48,11 @@ export function makeStage(THREE, canvas, { background = '#cfc8bd', pixelRatio = 
         for (const m of marks) { const d = new THREE.Mesh(new THREE.CircleGeometry(0.05, 24), new THREE.MeshBasicMaterial({ color: '#b4532a' })); d.rotation.x = -Math.PI / 2; d.position.set(m[0], 0.004, m[1]); paths.add(d); }
       }
     },
-    // the picture's size; shift: how many pixels the view's centre moves right (to keep clear of a panel on the left)
-    size(w, h, shift = 0) {
-      renderer.setSize(w, h, false); camera.aspect = w / h; stage.free = Math.max(0.2, 1 - 2 * shift / w);
-      if (shift) camera.setViewOffset(w, h, -shift, 0, w, h); else camera.clearViewOffset();
+    // the picture's size; shift, down: how many pixels the view's centre moves right and down (to keep clear of a panel
+    // on the left, or over the top of a narrow screen)
+    size(w, h, shift = 0, down = 0) {
+      renderer.setSize(w, h, false); camera.aspect = w / h; stage.free = Math.max(0.2, 1 - 2 * shift / w); stage.freeY = Math.max(0.2, 1 - 2 * down / h);
+      if (shift || down) camera.setViewOffset(w, h, -shift, -down, w, h); else camera.clearViewOffset();
       camera.updateProjectionMatrix();
     },
     // a camera around a point: yaw 0 looks from +z (the figure's front, before it turns), pitch up, distance
@@ -63,7 +64,7 @@ export function makeStage(THREE, canvas, { background = '#cfc8bd', pixelRatio = 
     // the target and distance that show the whole box from (yaw, pitch), with a margin (a share of the picture)
     fit(b, { yaw, pitch, margin = 0.08 }) {
       // (what the panel's shift leaves free on the narrower side)
-      const fy = Math.tan(camera.fov * Math.PI / 360) * (1 - 2 * margin), fx = fy * camera.aspect * stage.free;
+      const fy = Math.tan(camera.fov * Math.PI / 360) * (1 - 2 * margin) * stage.freeY, fx = Math.tan(camera.fov * Math.PI / 360) * (1 - 2 * margin) * camera.aspect * stage.free;
       const f = [-Math.sin(yaw) * Math.cos(pitch), -Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch)];   // looking along
       const rgt = norm([f[2], 0, -f[0]]).map(v => -v), up = cross(rgt, f);
       let dist = 0.3;
@@ -113,7 +114,7 @@ export function figureView(THREE, figure, look) {
     mesh.castShadow = m.shadows !== false; mesh.receiveShadow = m.shadows !== false; mesh.frustumCulled = false;
     group.add(mesh); parts.push({ o, g, mesh });
     const ink = o.name === 'body' ? (light?.outline ? { width: light.outline, color: light.outlineColor } : null) : light?.toon || light?.outline ? m.ink : null;
-    if (ink) { const om = new THREE.Mesh(g, outlineMaterial(THREE, ink)); om.frustumCulled = false; group.add(om); parts.push({ g, mesh: om, ink: true }); }
+    if (ink) { const om = new THREE.Mesh(g, outlineMaterial(THREE, ink)); om.frustumCulled = false; group.add(om); parts.push({ o, g, mesh: om, ink: true }); }
   }
   const J = figure.rig.J;
   const dots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.008, 10, 8), new THREE.MeshBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true }), J);
@@ -122,7 +123,7 @@ export function figureView(THREE, figure, look) {
   const m = new THREE.Matrix4(), capMat = new THREE.MeshBasicMaterial({ color: '#2a7ab4', wireframe: true, transparent: true, opacity: 0.35 });
   let collider = null;
   return {
-    group, dots, caps,
+    group, dots, caps, parts,
     update() {
       for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; }
       if (face) face.paint(figure.ctx.expressions);

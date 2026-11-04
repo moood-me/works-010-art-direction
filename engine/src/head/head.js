@@ -18,7 +18,9 @@ import { formOnBody } from './wrap.js';
 import { picturePlaces, faceUV, reliefsOf } from './features.js';
 import { expressionMorph } from './expressions.js';
 import { piecesOf } from './pieces.js';
+import { mouthLines, along } from './paint.js';
 import { gradOf } from './shapes.js';
+import { normalsOf } from '../mesh.js';
 import { num, flag, color } from '../schema.js';
 
 export const LIGHT_SCHEMA = { type: 'object', props: {
@@ -38,9 +40,16 @@ export function buildHead({ pre, laid, drawn, post }, head) {
   const light = { ...LIGHT_DEFAULTS, ...head.light };
   // the face's picture: every vertex's place in it (on the head the face is drawn on), how much of it shows
   const drawnFrame = headFrame(drawn.rig, size), pic = picturePlaces(drawn, drawnFrame);
-  const { uv, mask: paintMask } = faceUV(pic, P, frame, omega);
-  // a grin's teeth end where the skin parts (src/head/paint.js): an open jaw opens below them, into the dark
-  const features = head.features.map(f => f.kind === 'mouth' && f.type === 'grin' ? { ...f, parting: partingOf(post.mesh, sk, pic, omega, f) } : f);
+  const { uv, mask: paintMask } = faceUV(pic, normalsOf(drawn.mesh.positions, drawn.mesh.triangles, undefined, drawn.mesh.used), omega);
+  // the mouth on where the lips part, so an open jaw opens in it: a grin's teeth end there (src/head/paint.js); a drawn
+  // mouth is set on it — moved up or down as far as the parting lies from its line, on the whole (a wrap lays the
+  // parting along the line, the easing of its folds carries it a few millimetres; on Anny's own head it is her lips')
+  const features = head.features.map(f => {
+    if (f.kind !== 'mouth' || f.type === 'none') return f;
+    if (f.type === 'grin') return { ...f, parting: partingOf(post.mesh, sk, pic, omega, f.w, f.y) };
+    const line = mouthLines(f).line, d = partingOf(post.mesh, sk, pic, omega, f.w / 2, f.y).filter(([x]) => Math.abs(x) < 0.8 * f.w / 2).map(([x, y]) => y - along(line, x)).sort((a, b) => a - b);
+    return d.length ? { ...f, y: f.y + d[d.length >> 1] } : f;
+  });
   // expressions: morphs of the skin as it is now, placed by where the features are drawn on it
   const eye = features.find(f => f.kind === 'eye') ?? wrap?.marks.eye, mouthF = features.find(f => f.kind === 'mouth' && f.type !== 'none');
   const mouth = mouthF ? { y: mouthF.y, w: mouthF.w, wide: mouthF.type === 'grin' } : wrap?.marks.mouth, brow = features.find(f => f.kind === 'brow');
@@ -62,7 +71,8 @@ export function buildHead({ pre, laid, drawn, post }, head) {
   }
   // the face's own shadows: which vertices are face (no cast shadows there, as an option) — as far as it shows the picture
   const face = light.faceShadows ? null : paintMask;
-  const shape = G ? { sdf: G.full, frame } : ballOf(P, post.mesh, frame, omega);
+  // (the jaw's part of it: below the mouth, in front of the ears — src/figure.js headShape)
+  const shape = { ...(G ? { sdf: G.full } : ballOf(P, post.mesh, frame, omega)), frame, jaw: { y: mouth?.y ?? -0.8, z: G?.ears?.z ?? -0.12 } };
   const info = { frame, light, features, expressions: Object.fromEntries(head.expressions.map(x => [x.name, x])), skin: head.skin, shape };
   const body = post.withRest({ mesh: { morphs, uv, paintMask, paint: { features, skin: head.skin }, shading, noShadow: face } });
   body.head = info;
@@ -71,16 +81,17 @@ export function buildHead({ pre, laid, drawn, post }, head) {
   return { body, meshes };
 }
 
-// where the lips part, as it is in the picture under a grin (head units): the lowest of the upper lip's points where the
-// jaw's weight changes across a triangle, by its place along the grin — [x, y] from corner to corner
-function partingOf(mesh, sk, pic, omega, M) {
-  const { jaw } = headShares(mesh, sk), T = mesh.triangles, n = 24, low = new Float64Array(n + 1).fill(Infinity), bin = x => Math.round((x / M.w + 1) / 2 * n);
+// where the lips part, as it is in the picture under a mouth (head units; half: how far it reaches either side, y: its
+// height): the lowest of the upper lip's points where the jaw's weight changes across a triangle, by x — [x, y] from
+// corner to corner
+function partingOf(mesh, sk, pic, omega, half, my) {
+  const { jaw } = headShares(mesh, sk), T = mesh.triangles, n = 24, low = new Float64Array(n + 1).fill(Infinity), bin = x => Math.round((x / half + 1) / 2 * n);
   for (let t = 0; t < T.length; t += 3) {
     const v = [T[t], T[t + 1], T[t + 2]]; if (Math.max(...v.map(i => jaw[i])) - Math.min(...v.map(i => jaw[i])) < 0.5 || v.some(i => omega[i] < 0.9)) continue;
-    for (const i of v) { const x = pic[i * 2], y = pic[i * 2 + 1], k = bin(x); if (jaw[i] >= 0.5 || k < 0 || k > n || Math.abs(y - M.y) > M.w) continue; low[k] = Math.min(low[k], y); }
+    for (const i of v) { const x = pic[i * 2], y = pic[i * 2 + 1], k = bin(x); if (jaw[i] >= 0.5 || k < 0 || k > n || Math.abs(y - my) > Math.max(half, 0.15)) continue; low[k] = Math.min(low[k], y); }
   }
-  const out = []; for (let k = 0; k <= n; k++) if (low[k] < Infinity) out.push([(2 * k / n - 1) * M.w, low[k]]);
-  if (out.length < 2) throw new Error('a grin over a head whose lips part nowhere under it');
+  const out = []; for (let k = 0; k <= n; k++) if (low[k] < Infinity) out.push([(2 * k / n - 1) * half, low[k]]);
+  if (out.length < 2) throw new Error('a mouth over a head whose lips part nowhere under it');
   return out;
 }
 
@@ -91,5 +102,5 @@ function ballOf(P, mesh, frame, omega) {
   c = c.map(v => v / n); let r = 0;
   for (const i of mesh.used) if (omega[i] > 0.9) { const l = frame.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); r += Math.hypot(l[0] - c[0], l[1] - c[1], l[2] - c[2]); }
   r /= n;
-  return { sdf: (x, y, z) => Math.hypot(x - c[0], y - c[1], z - c[2]) - r, frame };
+  return { sdf: (x, y, z) => Math.hypot(x - c[0], y - c[1], z - c[2]) - r };
 }

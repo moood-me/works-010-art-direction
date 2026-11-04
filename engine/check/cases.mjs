@@ -1,5 +1,9 @@
 // The checks' cases (cases.json) as jobs, and a job's figure at its moment — the same in node (numbers.mjs) and in a
 // page (render.html, for pictures.mjs).
+import { HEAD_BUILD } from '../src/head/version.js';
+import { paintFace } from '../src/head/paint.js';
+import { paintState } from '../src/head/expressions.js';
+import { hashOf } from '../src/hash.js';
 
 export function jobsOf(cases, characters, only) {
   const ids = characters.map(c => c.id);
@@ -25,11 +29,25 @@ export async function figureOf(E, job) {
   return { fig, clip, spec, description: d };
 }
 
-// what the job's numbers depend on: the body, the motions, the description (their hashes)
-export async function sourcesOf(E, job, spec, clip) {
+// what the job's numbers depend on: the body, the motions (their hashes); for a head, how heads are built (their
+// versions: src/head/version.js) and its face's picture as drawn at that moment (the hash of the drawing's every stroke)
+export async function sourcesOf(E, job, spec, clip, fig) {
   const body = await E.body(spec.body), out = { body: `${spec.bodyId}@${body.hash.slice(0, 16)}` };
   if (clip) out.motions = await Promise.all(clip.motions.map(async id => `${id}@${(await E.motion(id)).hash.slice(0, 16)}`));
+  if (fig.body.head) { out.heads = HEAD_BUILD; out.picture = pictureHash(fig.body.head, fig.ctx.expressions); }
   return out;
+}
+
+// the face's picture as a hash of what drawing it does (src/head/paint.js on a context that keeps every call and every
+// setting, its numbers rounded to a millionth): in node, with no canvas, the drawing itself is what is compared
+export function pictureHash(head, expressions) {
+  const strokes = [], value = v => typeof v === 'number' ? Math.round(v * 1e6) / 1e6 : v;
+  const g = new Proxy({ canvas: { width: 1024, height: 1024 } }, {
+    get: (t, k) => k === 'canvas' ? t.canvas : (...a) => { strokes.push([k, ...a.map(value)]); if (/^create.*Gradient$/.test(k)) return { addColorStop: (...s) => strokes.push(['stop', ...s.map(value)]) }; },
+    set: (t, k, v) => { strokes.push(['=', k, typeof v === 'object' ? 'gradient' : value(v)]); return true; },
+  });
+  paintFace(g, 1024, head.features, head.skin, paintState(head, expressions));
+  return hashOf([strokes]).slice(0, 16);
 }
 
 export const parseArgs = argv => {

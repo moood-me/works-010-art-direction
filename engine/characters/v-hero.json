@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "v-hero",
  "label": {
   "ru": "V: герой",
@@ -10,25 +10,25 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "silhouette-v@6713be0ef0a92d0c",
+   "id": "silhouette-v@80d609ea923faec8",
    "strength": 0.6,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-small-head@f43484e1883a7139",
+   "id": "proportions-small-head@00953ae751f52147",
    "strength": 0.5,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-long-legs@aa12fde05d7de419",
+   "id": "proportions-long-legs@2a1f36e2d5e63421",
    "strength": 0.5,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "anatomy-defined@5c0e6dd09614acc1",
+   "id": "anatomy-defined@fa1ffaaaf722f9f5",
    "strength": 0.6,
    "frames": "keep"
   }
@@ -36,7 +36,7 @@
  "pose": [
   {
    "kind": "preset",
-   "id": "contrapposto@03b1f535a3fbacf8",
+   "id": "contrapposto@738f94eed6edaed5",
    "strength": 0.35,
    "space": "upright"
   }

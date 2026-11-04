@@ -1,0 +1,65 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "hair-blond",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: блондин",
+  "en": "hair: blond boy"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#fbe0a4",
+   "ink": "#7a4a2a",
+   "parts": [
+    [
+     "mass",
+     {
+      "n": 22,
+      "scale": 1.17,
+      "front": 0.25,
+      "bang": 0.85,
+      "bangEl": 0.35,
+      "len": 0.5,
+      "flick": 0.28,
+      "spread": 0.2,
+      "side": 0.2,
+      "r": 0.27,
+      "tufts": [
+       [
+        0.25,
+        1.15,
+        0.35,
+        0.05,
+        0.3,
+        0.26
+       ],
+       [
+        -0.35,
+        1.05,
+        0.35,
+        0,
+        0.3,
+        0.25
+       ],
+       [
+        2.6,
+        0.7,
+        0.45,
+        0.05,
+        -0.1,
+        0.24
+       ]
+      ]
+     }
+    ]
+   ]
+  }
+ ]
+}

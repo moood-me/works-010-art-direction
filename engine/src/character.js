@@ -49,7 +49,7 @@ import { EXPRESSION_SCHEMA } from './head/expressions.js';
 import { PIECE_SCHEMA } from './head/pieces.js';
 import { LIGHT_SCHEMA } from './head/head.js';
 
-export const FORMAT = 'engine/character', VERSION = 4;
+export const FORMAT = 'engine/character', VERSION = 5;
 
 const PARTS = ['pelvis', 'spine', 'neck', 'head', 'eye', 'clavicle', 'upperArm', 'foreArm', 'hand', 'finger', 'thigh', 'shin', 'foot', 'toe'];
 // the defaults, the one place they are kept: a missing key takes these
@@ -107,16 +107,27 @@ export function schemaOf(skeleton) {
     },
   };
 }
-// a head (a character's, or a head preset's): see the top
+// a head (a character's, or a head preset's): see the top. A list of the head's parts takes, besides whole parts: a
+// preset of them ({kind: "preset", id}), one of what it starts from taken away ({kind: "off", id | name}), and one of
+// those changed — only the keys that change, under its id (name): merged over it, then checked whole
 const REF = { type: 'object', props: { kind: { const: 'preset' }, id: pin }, required: ['kind', 'id'] };
 const OFF = { type: 'object', props: { kind: { const: 'off' }, id: { type: 'string' } }, required: ['kind', 'id'] };
+const OFF_NAMED = { type: 'object', props: { kind: { const: 'off' }, name: { type: 'string' } }, required: ['kind', 'name'] };
+// every key any case of a union has (but its kind), none required but `key`: a part changed by its id or name
+const partial = (cases, key) => ({ type: 'object', required: [key], props: Object.assign({}, ...Object.values(cases).map(s => s.props), { kind: undefined, [key]: { type: 'string' } }) });
+const own = props => Object.fromEntries(Object.entries(props).filter(([, v]) => v));
 export function headSchema(change) {
+  const named = { type: 'union', key: 'kind', cases: { ...Object.fromEntries(Object.entries(change.cases).map(([k, s]) => [k, { ...s, props: { ...s.props, name: { type: 'string' } } }])), off: OFF_NAMED } };
+  const formPartial = { type: 'object', required: ['name'], props: { name: { type: 'string' }, strength: num(-3, 3) } };
+  const feat = partial(FEATURE_SCHEMA.cases, 'id'), piece = partial(PIECE_SCHEMA.cases, 'id');
   return { type: 'object', props: {
     preset: pin, size: num(0.3, 3), skin: color,
-    form: { type: 'array', items: change },
-    features: { type: 'array', items: { type: 'union', key: 'kind', cases: { ...FEATURE_SCHEMA.cases, preset: REF, off: OFF } } },
-    expressions: { type: 'array', items: { anyOf: [REF, { type: 'object', props: { kind: { const: 'off' }, name: { type: 'string' } }, required: ['kind', 'name'] }, EXPRESSION_SCHEMA] } },
-    pieces: { type: 'array', items: { type: 'union', key: 'kind', cases: { ...PIECE_SCHEMA.cases, off: OFF } } },
+    // the form it starts from (its base's, its preset's) weighed by this
+    strength: num(0, 3),
+    form: { type: 'array', items: { anyOf: [named, formPartial] } },
+    features: { type: 'array', items: { anyOf: [{ type: 'union', key: 'kind', cases: { ...FEATURE_SCHEMA.cases, preset: REF, off: OFF } }, { ...feat, props: own(feat.props) }] } },
+    expressions: { type: 'array', items: { anyOf: [REF, OFF_NAMED, EXPRESSION_SCHEMA] } },
+    pieces: { type: 'array', items: { anyOf: [{ type: 'union', key: 'kind', cases: { ...PIECE_SCHEMA.cases, preset: REF, off: OFF } }, { ...piece, props: own(piece.props) }] } },
     light: { anyOf: [REF, LIGHT_SCHEMA] },
     // the picture it was drawn after, for the overlay check (tools/overlay.mjs): the image (docs/pictures/references/),
     // its landmarks in the picture's pixels, the angle it is seen at
@@ -139,8 +150,8 @@ export function headSchema(change) {
 //    light: {…}                  a head's light (src/head/head.js)}
 // (version 3: the head's parts; version 2: a silhouette's keys are {at, width, depth, forward}; version 1 had
 // [at, width, depth, forward] — upgradePreset, run by tools/characters.mjs presets)
-export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 3;
-export const PRESET_CONTENT = ['changes', 'head', 'features', 'expressions', 'light'];
+export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 4;
+export const PRESET_CONTENT = ['changes', 'head', 'features', 'expressions', 'pieces', 'light'];
 export function presetSchemaOf() {
   const ref = { type: 'object', props: { kind: { const: 'preset' }, id: pin, strength: num(-3, 3) }, required: ['kind', 'id'] };
   const change = { type: 'union', key: 'kind', cases: { preset: ref,
@@ -156,6 +167,7 @@ export function presetSchemaOf() {
       head: headSchema(change),
       features: { type: 'array', min: 1, items: FEATURE_SCHEMA },
       expressions: { type: 'array', min: 1, items: EXPRESSION_SCHEMA },
+      pieces: { type: 'array', min: 1, items: PIECE_SCHEMA },
       light: LIGHT_SCHEMA,
     },
   };
@@ -175,6 +187,7 @@ export function upgradePreset(p) {
   if (d.format !== PRESET_FORMAT) throw new Error(`${d.id ?? '?'}: not a preset`);
   if (d.version === 1) { d.changes = d.changes.map(namedKeys); d.version = 2; }
   if (d.version === 2) d.version = 3;   // 2 → 3 added the head's parts: a preset of changes is as it was
+  if (d.version === 3) d.version = 4;   // 3 → 4 added pieces as a preset's content, and a head's parts changed by their id or name: as it was
   if (d.version !== PRESET_VERSION) throw new Error(`${d.id}: no way from preset version ${d.version} to ${PRESET_VERSION}`);
   return d;
 }
@@ -238,6 +251,7 @@ export function upgrade(desc, { bodyPin }) {
     d.version = 3;
   }
   if (d.version === 3) d.version = 4;   // 3 → 4 added the head: a character without one is as it was
+  if (d.version === 4) d.version = 5;   // 4 → 5: a head's parts changed by their id or name, its form's strength: as it was
   if (d.version !== VERSION) throw new Error(`${d.id}: no way from version ${d.version} to ${VERSION}`);
   return d;
 }

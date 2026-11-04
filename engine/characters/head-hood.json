@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "head-hood",
  "label": {
   "ru": "Голова: женщина в капюшоне",
@@ -8,7 +8,7 @@
  },
  "body": "moood-woman@271c46992b9495aa",
  "head": {
-  "preset": "head-hood@ae66fb6b724156a6"
+  "preset": "head-hood@42a2db0bc82c3b1c"
  },
  "look": {
   "skin": "#ecbcc4",

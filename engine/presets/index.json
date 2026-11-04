@@ -17,13 +17,15 @@
   "head",
   "head-form",
   "features",
+  "hair",
+  "headwear",
   "expressions",
   "face-light"
  ],
  "presets": [
   {
    "id": "silhouette-bean",
-   "pin": "silhouette-bean@4379a4df7a706283",
+   "pin": "silhouette-bean@6a849e9ddd4b5596",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: фасолина",
@@ -36,7 +38,7 @@
   },
   {
    "id": "silhouette-column",
-   "pin": "silhouette-column@4c6ac3ddc3765684",
+   "pin": "silhouette-column@312df5ede4684f94",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: колонна",
@@ -49,7 +51,7 @@
   },
   {
    "id": "silhouette-diamond",
-   "pin": "silhouette-diamond@035825a6cea2a182",
+   "pin": "silhouette-diamond@3b15afa8a651bbf2",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: ромб",
@@ -62,7 +64,7 @@
   },
   {
    "id": "silhouette-egg",
-   "pin": "silhouette-egg@35dc9dd0efed6af7",
+   "pin": "silhouette-egg@5711602a61de0e24",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: яйцо",
@@ -75,7 +77,7 @@
   },
   {
    "id": "silhouette-hourglass",
-   "pin": "silhouette-hourglass@565ed08bea30f798",
+   "pin": "silhouette-hourglass@c8a2f729903dd811",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: песочные часы",
@@ -88,7 +90,7 @@
   },
   {
    "id": "silhouette-inverted-trapezoid",
-   "pin": "silhouette-inverted-trapezoid@8525da71e13b0f37",
+   "pin": "silhouette-inverted-trapezoid@0addcd4e329cd487",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: перевёрнутая трапеция",
@@ -101,7 +103,7 @@
   },
   {
    "id": "silhouette-mass-on-legs",
-   "pin": "silhouette-mass-on-legs@301792fa04c99d20",
+   "pin": "silhouette-mass-on-legs@f45f5eaefc1d0073",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: масса на ножках",
@@ -114,7 +116,7 @@
   },
   {
    "id": "silhouette-pear",
-   "pin": "silhouette-pear@1ba9215247d348b8",
+   "pin": "silhouette-pear@8495f0e78ab870ca",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: груша",
@@ -127,7 +129,7 @@
   },
   {
    "id": "silhouette-rectangle",
-   "pin": "silhouette-rectangle@1fb524e9fe544333",
+   "pin": "silhouette-rectangle@9a7b5f86bace6eeb",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: прямоугольник",
@@ -140,7 +142,7 @@
   },
   {
    "id": "silhouette-reed",
-   "pin": "silhouette-reed@236a28bfbc591bb8",
+   "pin": "silhouette-reed@5c422f21717a6e82",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: тростинка",
@@ -153,7 +155,7 @@
   },
   {
    "id": "silhouette-trapezoid",
-   "pin": "silhouette-trapezoid@f8e412ce9db4f09e",
+   "pin": "silhouette-trapezoid@9605e1e908deb70c",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: трапеция",
@@ -166,7 +168,7 @@
   },
   {
    "id": "silhouette-triangle",
-   "pin": "silhouette-triangle@eed0532d94d70021",
+   "pin": "silhouette-triangle@2cb595af91b00b24",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: треугольник",
@@ -179,7 +181,7 @@
   },
   {
    "id": "silhouette-v",
-   "pin": "silhouette-v@6713be0ef0a92d0c",
+   "pin": "silhouette-v@80d609ea923faec8",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: V",
@@ -192,7 +194,7 @@
   },
   {
    "id": "silhouette-wedge",
-   "pin": "silhouette-wedge@a28fe786a8b50074",
+   "pin": "silhouette-wedge@a932aa7e9553927c",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: клин",
@@ -205,7 +207,7 @@
   },
   {
    "id": "line-front-c",
-   "pin": "line-front-c@02ff0e8706f32e9b",
+   "pin": "line-front-c@b7d8ec92bdcd6dd5",
    "group": "line",
    "label": {
     "ru": "линия действия: спереди C",
@@ -218,7 +220,7 @@
   },
   {
    "id": "line-front-s",
-   "pin": "line-front-s@7b3ae1a2da1fd1d7",
+   "pin": "line-front-s@2bdcc23bb618388f",
    "group": "line",
    "label": {
     "ru": "линия действия: спереди S",
@@ -231,7 +233,7 @@
   },
   {
    "id": "line-side-c-back",
-   "pin": "line-side-c-back@d7843a9f7b4282bb",
+   "pin": "line-side-c-back@6d2736fd3077dd55",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку C назад",
@@ -244,7 +246,7 @@
   },
   {
    "id": "line-side-c-forward",
-   "pin": "line-side-c-forward@f1464ef46c2e791d",
+   "pin": "line-side-c-forward@485645cb22f0da25",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку C вперёд",
@@ -257,7 +259,7 @@
   },
   {
    "id": "line-side-s",
-   "pin": "line-side-s@c68fae76fc4829a1",
+   "pin": "line-side-s@c51583b0d28dbfe0",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку S",
@@ -270,7 +272,7 @@
   },
   {
    "id": "line-side-s-reverse",
-   "pin": "line-side-s-reverse@fc31a00b981c483e",
+   "pin": "line-side-s-reverse@33f932352094c600",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку обратная S",
@@ -283,7 +285,7 @@
   },
   {
    "id": "squash",
-   "pin": "squash@6666b99941ab1500",
+   "pin": "squash@52498b98b6a2df68",
    "group": "squash",
    "label": {
     "ru": "сжатие",
@@ -296,7 +298,7 @@
   },
   {
    "id": "stretch",
-   "pin": "stretch@54a1108e11e47bea",
+   "pin": "stretch@8d208bbaab5e7cf6",
    "group": "squash",
    "label": {
     "ru": "растяжение",
@@ -309,7 +311,7 @@
   },
   {
    "id": "contrapposto",
-   "pin": "contrapposto@03b1f535a3fbacf8",
+   "pin": "contrapposto@738f94eed6edaed5",
    "group": "contrapposto",
    "label": {
     "ru": "контрапост",
@@ -322,7 +324,7 @@
   },
   {
    "id": "limbs-arcs",
-   "pin": "limbs-arcs@25e8e7e69db2f6fd",
+   "pin": "limbs-arcs@269268ce04c00d50",
    "group": "limbs",
    "label": {
     "ru": "конечности: дугой",
@@ -335,7 +337,7 @@
   },
   {
    "id": "limbs-legs-bowed-in",
-   "pin": "limbs-legs-bowed-in@9bd5160dda5081cf",
+   "pin": "limbs-legs-bowed-in@9cd3eea0402853f4",
    "group": "limbs",
    "label": {
     "ru": "конечности: ноги дугой внутрь",
@@ -348,7 +350,7 @@
   },
   {
    "id": "limbs-straight-curved",
-   "pin": "limbs-straight-curved@ddab0daca59bfc93",
+   "pin": "limbs-straight-curved@2a58e668cd7b83f9",
    "group": "limbs",
    "label": {
     "ru": "конечности: прямое против кривого",
@@ -361,7 +363,7 @@
   },
   {
    "id": "limbs-taper",
-   "pin": "limbs-taper@4e32e55658962947",
+   "pin": "limbs-taper@c0ca9ffd3c47ed4a",
    "group": "limbs",
    "label": {
     "ru": "конечности: сужение к концам",
@@ -374,7 +376,7 @@
   },
   {
    "id": "limbs-taper-reverse",
-   "pin": "limbs-taper-reverse@f5b49a749888e3a3",
+   "pin": "limbs-taper-reverse@980a5e9acd7ed953",
    "group": "limbs",
    "label": {
     "ru": "конечности: обратное сужение",
@@ -387,7 +389,7 @@
   },
   {
    "id": "proportions-big-hands-feet",
-   "pin": "proportions-big-hands-feet@39add39ee2e22113",
+   "pin": "proportions-big-hands-feet@9df68c57b130281b",
    "group": "proportions",
    "label": {
     "ru": "пропорции: большие кисти и стопы",
@@ -400,7 +402,7 @@
   },
   {
    "id": "proportions-big-head",
-   "pin": "proportions-big-head@55fd0ddeaf4f76ba",
+   "pin": "proportions-big-head@27deaf79db2a08fa",
    "group": "proportions",
    "label": {
     "ru": "пропорции: большая голова",
@@ -413,7 +415,7 @@
   },
   {
    "id": "proportions-broad-shoulders",
-   "pin": "proportions-broad-shoulders@21e3544974cca140",
+   "pin": "proportions-broad-shoulders@8f3b144d75c627c8",
    "group": "proportions",
    "label": {
     "ru": "пропорции: широкие плечи",
@@ -426,7 +428,7 @@
   },
   {
    "id": "proportions-long-arms",
-   "pin": "proportions-long-arms@1daab7bb98b6c30a",
+   "pin": "proportions-long-arms@3164d048803bffef",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинные руки",
@@ -439,7 +441,7 @@
   },
   {
    "id": "proportions-long-legs",
-   "pin": "proportions-long-legs@aa12fde05d7de419",
+   "pin": "proportions-long-legs@2a1f36e2d5e63421",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинные ноги",
@@ -452,7 +454,7 @@
   },
   {
    "id": "proportions-long-neck",
-   "pin": "proportions-long-neck@8765812144b073fa",
+   "pin": "proportions-long-neck@f95dd8f4daf0026b",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинная шея",
@@ -465,7 +467,7 @@
   },
   {
    "id": "proportions-long-torso",
-   "pin": "proportions-long-torso@46de58de72c602e2",
+   "pin": "proportions-long-torso@17b3e28076359938",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинное туловище",
@@ -478,7 +480,7 @@
   },
   {
    "id": "proportions-narrow-shoulders",
-   "pin": "proportions-narrow-shoulders@6802289b361a4b10",
+   "pin": "proportions-narrow-shoulders@d953636eb320dd98",
    "group": "proportions",
    "label": {
     "ru": "пропорции: узкие плечи",
@@ -491,7 +493,7 @@
   },
   {
    "id": "proportions-short-legs",
-   "pin": "proportions-short-legs@34ab1f8e4780404e",
+   "pin": "proportions-short-legs@72d320f3731cce66",
    "group": "proportions",
    "label": {
     "ru": "пропорции: короткие ноги",
@@ -504,7 +506,7 @@
   },
   {
    "id": "proportions-short-neck",
-   "pin": "proportions-short-neck@87a3237a96f19869",
+   "pin": "proportions-short-neck@d6a1ff9aeefe4eac",
    "group": "proportions",
    "label": {
     "ru": "пропорции: короткая шея",
@@ -517,7 +519,7 @@
   },
   {
    "id": "proportions-slim-torso",
-   "pin": "proportions-slim-torso@3328aaa9beccdd09",
+   "pin": "proportions-slim-torso@dd65f07574e52279",
    "group": "proportions",
    "label": {
     "ru": "пропорции: узкое туловище",
@@ -530,7 +532,7 @@
   },
   {
    "id": "proportions-small-hands-feet",
-   "pin": "proportions-small-hands-feet@e6a02502687f9fb9",
+   "pin": "proportions-small-hands-feet@f596744cc7bec954",
    "group": "proportions",
    "label": {
     "ru": "пропорции: маленькие кисти и стопы",
@@ -543,7 +545,7 @@
   },
   {
    "id": "proportions-small-head",
-   "pin": "proportions-small-head@f43484e1883a7139",
+   "pin": "proportions-small-head@00953ae751f52147",
    "group": "proportions",
    "label": {
     "ru": "пропорции: маленькая голова",
@@ -556,7 +558,7 @@
   },
   {
    "id": "proportions-thick-limbs",
-   "pin": "proportions-thick-limbs@b021825fd4a2df79",
+   "pin": "proportions-thick-limbs@26ec140b466d36bc",
    "group": "proportions",
    "label": {
     "ru": "пропорции: толстые руки и ноги",
@@ -569,7 +571,7 @@
   },
   {
    "id": "proportions-thin-limbs",
-   "pin": "proportions-thin-limbs@be99c9a27a999b10",
+   "pin": "proportions-thin-limbs@80db8396d1d77515",
    "group": "proportions",
    "label": {
     "ru": "пропорции: тонкие руки и ноги",
@@ -582,7 +584,7 @@
   },
   {
    "id": "average",
-   "pin": "average@a5a6092881f6b0ab",
+   "pin": "average@d9de09caed8953d0",
    "group": "caricature",
    "label": {
     "ru": "ближе к среднему",
@@ -595,7 +597,7 @@
   },
   {
    "id": "caricature",
-   "pin": "caricature@527d601146cdede8",
+   "pin": "caricature@8e3e069eb82e157b",
    "group": "caricature",
    "label": {
     "ru": "шарж",
@@ -608,7 +610,7 @@
   },
   {
    "id": "anatomy-defined",
-   "pin": "anatomy-defined@5c0e6dd09614acc1",
+   "pin": "anatomy-defined@fa1ffaaaf722f9f5",
    "group": "surface",
    "label": {
     "ru": "анатомия чётче",
@@ -621,7 +623,7 @@
   },
   {
    "id": "anatomy-soft",
-   "pin": "anatomy-soft@5490a85cb5211868",
+   "pin": "anatomy-soft@43c3ed081f50a565",
    "group": "surface",
    "label": {
     "ru": "анатомия мягче",
@@ -634,7 +636,7 @@
   },
   {
    "id": "smooth-2cm",
-   "pin": "smooth-2cm@ed0a41f2295e768a",
+   "pin": "smooth-2cm@85ff086b925e3a00",
    "group": "surface",
    "label": {
     "ru": "сглаживание 2 см",
@@ -647,7 +649,7 @@
   },
   {
    "id": "smooth-4cm",
-   "pin": "smooth-4cm@aaffdc487d4b691c",
+   "pin": "smooth-4cm@b3d12d7799128442",
    "group": "surface",
    "label": {
     "ru": "сглаживание 4 см",
@@ -660,7 +662,7 @@
   },
   {
    "id": "smooth-8cm",
-   "pin": "smooth-8cm@d254230a59b49a36",
+   "pin": "smooth-8cm@85a43bd41d2e4934",
    "group": "surface",
    "label": {
     "ru": "сглаживание 8 см",
@@ -673,7 +675,7 @@
   },
   {
    "id": "contour-anime",
-   "pin": "contour-anime@3dff92a902fd4cd8",
+   "pin": "contour-anime@e5e800c71d29d6e8",
    "group": "contour",
    "label": {
     "ru": "контур: аниме",
@@ -686,7 +688,7 @@
   },
   {
    "id": "contour-disney",
-   "pin": "contour-disney@a0530dca6cb67487",
+   "pin": "contour-disney@9469fca7e00b0dcd",
    "group": "contour",
    "label": {
     "ru": "контур: Дисней",
@@ -699,7 +701,7 @@
   },
   {
    "id": "contour-pixar",
-   "pin": "contour-pixar@4b0e3a57f2b5448f",
+   "pin": "contour-pixar@9be7fdc1c7a2c9d7",
    "group": "contour",
    "label": {
     "ru": "контур: Pixar",
@@ -712,7 +714,7 @@
   },
   {
    "id": "masses-anime-bust",
-   "pin": "masses-anime-bust@7033091d9b9a620e",
+   "pin": "masses-anime-bust@0eec245aaf380aba",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (аниме)",
@@ -725,7 +727,7 @@
   },
   {
    "id": "masses-anime-glutes",
-   "pin": "masses-anime-glutes@d7320cc5400db2bf",
+   "pin": "masses-anime-glutes@009b3a9b4c18725b",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (аниме)",
@@ -738,7 +740,7 @@
   },
   {
    "id": "masses-disney-bust",
-   "pin": "masses-disney-bust@d9c96b93fa164c1d",
+   "pin": "masses-disney-bust@4e275a3ba39c9057",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (Дисней)",
@@ -751,7 +753,7 @@
   },
   {
    "id": "masses-disney-glutes",
-   "pin": "masses-disney-glutes@ce50ff2f10b82a85",
+   "pin": "masses-disney-glutes@aed5f07c63ace22d",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (Дисней)",
@@ -764,7 +766,7 @@
   },
   {
    "id": "masses-pixar-bust",
-   "pin": "masses-pixar-bust@82a60daaa6b0eb34",
+   "pin": "masses-pixar-bust@a5143062d1a77155",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (Pixar)",
@@ -777,7 +779,7 @@
   },
   {
    "id": "masses-pixar-glutes",
-   "pin": "masses-pixar-glutes@31241e2f232e9b92",
+   "pin": "masses-pixar-glutes@f51d3358459896eb",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (Pixar)",
@@ -790,7 +792,7 @@
   },
   {
    "id": "masses-shoulders",
-   "pin": "masses-shoulders@5bde23c62a0755e5",
+   "pin": "masses-shoulders@661987047cd5b54f",
    "group": "masses",
    "label": {
     "ru": "массы: плечо — шапка и скат от шеи",
@@ -803,7 +805,7 @@
   },
   {
    "id": "pictogram-inverted",
-   "pin": "pictogram-inverted@3e14add47034463f",
+   "pin": "pictogram-inverted@7cd5aca0226e296c",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: перевёрнутая трапеция",
@@ -816,7 +818,7 @@
   },
   {
    "id": "pictogram-oval",
-   "pin": "pictogram-oval@1f6ff02f734e9991",
+   "pin": "pictogram-oval@ef2fc8b535374d45",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: овал",
@@ -829,7 +831,7 @@
   },
   {
    "id": "pictogram-rectangle",
-   "pin": "pictogram-rectangle@a93e2240887b45f6",
+   "pin": "pictogram-rectangle@5ed22b796191b1a6",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: прямоугольник",
@@ -842,7 +844,7 @@
   },
   {
    "id": "pictogram-trapezoid",
-   "pin": "pictogram-trapezoid@440bddb5276beb8a",
+   "pin": "pictogram-trapezoid@3e9c44abacc15c56",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: трапеция",
@@ -855,7 +857,7 @@
   },
   {
    "id": "head-alva",
-   "pin": "head-alva@3fa1bdca11899849",
+   "pin": "head-alva@c4c30486794a606e",
    "group": "head",
    "label": {
     "ru": "голова: Альва",
@@ -868,7 +870,7 @@
   },
   {
    "id": "head-anime",
-   "pin": "head-anime@6670bc2912c99324",
+   "pin": "head-anime@46cf44f650f0d67d",
    "group": "head",
    "label": {
     "ru": "голова: аниме-девушка",
@@ -881,7 +883,7 @@
   },
   {
    "id": "head-blond",
-   "pin": "head-blond@36d57baf10fb78c2",
+   "pin": "head-blond@50693d6248991c25",
    "group": "head",
    "label": {
     "ru": "голова: блондин",
@@ -894,7 +896,7 @@
   },
   {
    "id": "head-boy7",
-   "pin": "head-boy7@2c52bc6916d4f608",
+   "pin": "head-boy7@d9e7e8b27cf248fa",
    "group": "head",
    "label": {
     "ru": "голова: мальчик с каре",
@@ -907,7 +909,7 @@
   },
   {
    "id": "head-hood",
-   "pin": "head-hood@ae66fb6b724156a6",
+   "pin": "head-hood@42a2db0bc82c3b1c",
    "group": "head",
    "label": {
     "ru": "голова: женщина в капюшоне",
@@ -920,7 +922,7 @@
   },
   {
    "id": "head-jesper",
-   "pin": "head-jesper@76b3cd4a1546a2db",
+   "pin": "head-jesper@4bc3bec563fac15d",
    "group": "head",
    "label": {
     "ru": "голова: Джеспер",
@@ -933,7 +935,7 @@
   },
   {
    "id": "head-mask",
-   "pin": "head-mask@0231effcd4c574af",
+   "pin": "head-mask@b89fa28204cc83de",
    "group": "head",
    "label": {
     "ru": "голова: девушка в маске",
@@ -946,7 +948,7 @@
   },
   {
    "id": "head-old",
-   "pin": "head-old@365915e99f1b6ce5",
+   "pin": "head-old@ea6f99a69f84e80b",
    "group": "head",
    "label": {
     "ru": "голова: старик",
@@ -959,7 +961,7 @@
   },
   {
    "id": "head-red",
-   "pin": "head-red@8f69e32ec83f1ab1",
+   "pin": "head-red@29c67093a77c3aad",
    "group": "head",
    "label": {
     "ru": "голова: рыжая девушка",
@@ -972,7 +974,7 @@
   },
   {
    "id": "head-semi",
-   "pin": "head-semi@364ebddd5129e434",
+   "pin": "head-semi@6d17cd3f73a9a5b1",
    "group": "head",
    "label": {
     "ru": "голова: парень с длинным носом",
@@ -985,7 +987,7 @@
   },
   {
    "id": "head-tails",
-   "pin": "head-tails@c0a34baf08a6c6ec",
+   "pin": "head-tails@6653426ae856802d",
    "group": "head",
    "label": {
     "ru": "голова: мальчик с хвостиками",
@@ -998,7 +1000,7 @@
   },
   {
    "id": "face-anny-big-eyes",
-   "pin": "face-anny-big-eyes@824bc4120ec57815",
+   "pin": "face-anny-big-eyes@57e62e8bb92b9105",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: большие глаза",
@@ -1011,7 +1013,7 @@
   },
   {
    "id": "face-anny-small-nose",
-   "pin": "face-anny-small-nose@3242209df8f4d62d",
+   "pin": "face-anny-small-nose@6f8cdc48119f4e77",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: маленький курносый нос",
@@ -1024,7 +1026,7 @@
   },
   {
    "id": "face-anny-soft-chin",
-   "pin": "face-anny-soft-chin@bf9f1e2d8efa5fe4",
+   "pin": "face-anny-soft-chin@9ed28e85f8aa7bc2",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: мягкий маленький подбородок",
@@ -1037,7 +1039,7 @@
   },
   {
    "id": "face-anny-strong",
-   "pin": "face-anny-strong@ebceeed027d6ad0c",
+   "pin": "face-anny-strong@52d3c01d18873a0d",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: сильное",
@@ -1050,7 +1052,7 @@
   },
   {
    "id": "face-points-cute",
-   "pin": "face-points-cute@bc4c178e2fa5d997",
+   "pin": "face-points-cute@4466635cff4ef8fd",
    "group": "head-form",
    "label": {
     "ru": "лицо по точкам: мило",
@@ -1063,7 +1065,7 @@
   },
   {
    "id": "face-points-long",
-   "pin": "face-points-long@fc3fd456b884880a",
+   "pin": "face-points-long@613a869c124b01a3",
    "group": "head-form",
    "label": {
     "ru": "лицо по точкам: длинное",
@@ -1075,8 +1077,138 @@
    }
   },
   {
+   "id": "form-alva",
+   "pin": "form-alva@04f0e0369c3554b2",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: Альва",
+    "en": "form: Alva"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-anime",
+   "pin": "form-anime@69589c400559253f",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: аниме-девушка",
+    "en": "form: anime girl"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-blond",
+   "pin": "form-blond@b79105433528d4c5",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: блондин",
+    "en": "form: blond boy"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-boy7",
+   "pin": "form-boy7@d121c6b7684f07ef",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: мальчик с каре",
+    "en": "form: boy with a bob"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-hood",
+   "pin": "form-hood@abb0a09a5e075ac4",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: женщина в капюшоне",
+    "en": "form: hooded woman"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-jesper",
+   "pin": "form-jesper@eec88fb2aaa44f76",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: Джеспер",
+    "en": "form: Jesper"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-mask",
+   "pin": "form-mask@c237e8a61e64c5b5",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: девушка в маске",
+    "en": "form: masked girl"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-old",
+   "pin": "form-old@5d1af9e0860d6b34",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: старик",
+    "en": "form: old man"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-red",
+   "pin": "form-red@514b659cf173e6a5",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: рыжая девушка",
+    "en": "form: red-haired girl"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-semi",
+   "pin": "form-semi@98174cbc3d970dc2",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: парень с длинным носом",
+    "en": "form: long-nosed man"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
    "id": "form-solid-giulia",
-   "pin": "form-solid-giulia@d5f75f0a4245c10a",
+   "pin": "form-solid-giulia@81398e72bb6ec6b4",
    "group": "head-form",
    "label": {
     "ru": "форма: тело по картинке (Джулия, Г2)",
@@ -1088,8 +1220,21 @@
    }
   },
   {
+   "id": "form-tails",
+   "pin": "form-tails@dab4feca2b5f4f22",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: мальчик с хвостиками",
+    "en": "form: boy with tails"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
    "id": "head-cage-pear",
-   "pin": "head-cage-pear@a06093c9ed06f320",
+   "pin": "head-cage-pear@370080800516249e",
    "group": "head-form",
    "label": {
     "ru": "каркас головы: груша",
@@ -1102,7 +1247,7 @@
   },
   {
    "id": "head-cage-tall",
-   "pin": "head-cage-tall@da8ef4d7d58d4abb",
+   "pin": "head-cage-tall@07a1bc69051c8d5c",
    "group": "head-form",
    "label": {
     "ru": "каркас головы: высокий череп",
@@ -1115,7 +1260,7 @@
   },
   {
    "id": "head-of-toddler",
-   "pin": "head-of-toddler@3452e4f06c1193ed",
+   "pin": "head-of-toddler@492def549955d0d1",
    "group": "head-form",
    "label": {
     "ru": "голова малыша",
@@ -1128,7 +1273,7 @@
   },
   {
    "id": "head-warps-cheeks",
-   "pin": "head-warps-cheeks@3bb57dc82ae60fb2",
+   "pin": "head-warps-cheeks@209d1972dd041bd1",
    "group": "head-form",
    "label": {
     "ru": "плавные сдвиги: щёки и затылок",
@@ -1140,8 +1285,60 @@
    }
   },
   {
+   "id": "features-alva",
+   "pin": "features-alva@671e46c8757a7cdb",
+   "group": "features",
+   "label": {
+    "ru": "черты: Альва",
+    "en": "features: Alva"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-anime",
+   "pin": "features-anime@053be2657555ac61",
+   "group": "features",
+   "label": {
+    "ru": "черты: аниме-девушка",
+    "en": "features: anime girl"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-blond",
+   "pin": "features-blond@220b0e89f5b2c44d",
+   "group": "features",
+   "label": {
+    "ru": "черты: блондин",
+    "en": "features: blond boy"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-boy7",
+   "pin": "features-boy7@8b63610d2b09544b",
+   "group": "features",
+   "label": {
+    "ru": "черты: мальчик с каре",
+    "en": "features: boy with a bob"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
    "id": "features-dots",
-   "pin": "features-dots@6aebe5da62d9eff7",
+   "pin": "features-dots@8bf3b5a5ad6bc5d1",
    "group": "features",
    "label": {
     "ru": "черты: глаза-точки",
@@ -1153,8 +1350,73 @@
    }
   },
   {
+   "id": "features-hood",
+   "pin": "features-hood@d6bf93c661a882e2",
+   "group": "features",
+   "label": {
+    "ru": "черты: женщина в капюшоне",
+    "en": "features: hooded woman"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-jesper",
+   "pin": "features-jesper@593e832f40f16c8b",
+   "group": "features",
+   "label": {
+    "ru": "черты: Джеспер",
+    "en": "features: Jesper"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-mask",
+   "pin": "features-mask@05a405d0d8b109c2",
+   "group": "features",
+   "label": {
+    "ru": "черты: девушка в маске",
+    "en": "features: masked girl"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-old",
+   "pin": "features-old@4532c7690b40aaa6",
+   "group": "features",
+   "label": {
+    "ru": "черты: старик",
+    "en": "features: old man"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-red",
+   "pin": "features-red@6d0fbeb972cff4b6",
+   "group": "features",
+   "label": {
+    "ru": "черты: рыжая девушка",
+    "en": "features: red-haired girl"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
    "id": "features-relief",
-   "pin": "features-relief@a2d89110e3b0fb37",
+   "pin": "features-relief@083a88e1ad611e98",
    "group": "features",
    "label": {
     "ru": "черты объёмом",
@@ -1166,8 +1428,229 @@
    }
   },
   {
+   "id": "features-semi",
+   "pin": "features-semi@99d65c6c30bfcabe",
+   "group": "features",
+   "label": {
+    "ru": "черты: парень с длинным носом",
+    "en": "features: long-nosed man"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-tails",
+   "pin": "features-tails@482d9bd4d893e2f6",
+   "group": "features",
+   "label": {
+    "ru": "черты: мальчик с хвостиками",
+    "en": "features: boy with tails"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "hair-alva",
+   "pin": "hair-alva@71fe2fe7e395039d",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: Альва",
+    "en": "hair: Alva"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-anime",
+   "pin": "hair-anime@6bc05466850c1ae1",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: аниме-девушка",
+    "en": "hair: anime girl"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-blond",
+   "pin": "hair-blond@31d3a3cc558b64e8",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: блондин",
+    "en": "hair: blond boy"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-boy7",
+   "pin": "hair-boy7@8119b4deaf46a663",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: мальчик с каре",
+    "en": "hair: boy with a bob"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-hood",
+   "pin": "hair-hood@745db734f2e09c01",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: женщина в капюшоне",
+    "en": "hair: hooded woman"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-jesper",
+   "pin": "hair-jesper@d61aad5329bb0509",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: Джеспер",
+    "en": "hair: Jesper"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-mask",
+   "pin": "hair-mask@a4c177d810db9b61",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: девушка в маске",
+    "en": "hair: masked girl"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-old",
+   "pin": "hair-old@67a9ba1067133d61",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: старик",
+    "en": "hair: old man"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-red",
+   "pin": "hair-red@67395b5ba65ac116",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: рыжая девушка",
+    "en": "hair: red-haired girl"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-semi",
+   "pin": "hair-semi@14c833f7231ee0af",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: парень с длинным носом",
+    "en": "hair: long-nosed man"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-tails",
+   "pin": "hair-tails@bb8d64bdb05e53bb",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: мальчик с хвостиками",
+    "en": "hair: boy with tails"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "wear-hood",
+   "pin": "wear-hood@9357d9a2c2f08253",
+   "group": "headwear",
+   "label": {
+    "ru": "убор: женщина в капюшоне",
+    "en": "headwear: hooded woman"
+   },
+   "about": {
+    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
+    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
+   }
+  },
+  {
+   "id": "wear-jesper",
+   "pin": "wear-jesper@857f890b7a32c42f",
+   "group": "headwear",
+   "label": {
+    "ru": "убор: Джеспер",
+    "en": "headwear: Jesper"
+   },
+   "about": {
+    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
+    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
+   }
+  },
+  {
+   "id": "wear-mask",
+   "pin": "wear-mask@d1f04d639e810062",
+   "group": "headwear",
+   "label": {
+    "ru": "убор: девушка в маске",
+    "en": "headwear: masked girl"
+   },
+   "about": {
+    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
+    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
+   }
+  },
+  {
+   "id": "wear-old",
+   "pin": "wear-old@7a239628501222bb",
+   "group": "headwear",
+   "label": {
+    "ru": "убор: старик",
+    "en": "headwear: old man"
+   },
+   "about": {
+    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
+    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
+   }
+  },
+  {
    "id": "expressions-drawn",
-   "pin": "expressions-drawn@9dd44ade6ed9c94a",
+   "pin": "expressions-drawn@1c90b27acf342e72",
    "group": "expressions",
    "label": {
     "ru": "выражения: нарисованное лицо",
@@ -1180,7 +1663,7 @@
   },
   {
    "id": "light-plain",
-   "pin": "light-plain@6ab58cddbde93d2c",
+   "pin": "light-plain@de004442016e11a6",
    "group": "face-light",
    "label": {
     "ru": "свет: обычный",
@@ -1193,7 +1676,7 @@
   },
   {
    "id": "light-soft-form",
-   "pin": "light-soft-form@acd10a62c2ad5b5e",
+   "pin": "light-soft-form@2985c00435177bfe",
    "group": "face-light",
    "label": {
     "ru": "свет: мягкий, по форме",
@@ -1206,7 +1689,7 @@
   },
   {
    "id": "light-toon",
-   "pin": "light-toon@21d01379abf7249c",
+   "pin": "light-toon@50a33984fee7ce0d",
    "group": "face-light",
    "label": {
     "ru": "свет: мультяшный",
@@ -1219,7 +1702,7 @@
   },
   {
    "id": "light-toon-form",
-   "pin": "light-toon-form@d8ab31c73412d70b",
+   "pin": "light-toon-form@0835034fc0a470a6",
    "group": "face-light",
    "label": {
     "ru": "свет: мультяшный, по форме",

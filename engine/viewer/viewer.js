@@ -12,6 +12,8 @@
 import * as THREE from 'three';
 import { createEngine } from '../src/engine.js';
 import { makeStage, figureView, joinBounds } from '../src/view3d.js';
+import { headFrame } from '../src/head/frame.js';
+import { qRot } from '../src/math.js';
 
 const q = new URLSearchParams(location.search);
 const msg = document.getElementById('msg'), canvas = document.getElementById('cv');
@@ -26,8 +28,8 @@ const presetOf = ref => presetIndex.presets.find(p => p.id === ref.split('@')[0]
 // presets whose changes give their own skin weights (the pictograms) are changes of the rest only
 const REST_ONLY = new Set(['pictogram']);
 const stage = makeStage(THREE, canvas, { pixelRatio: Math.min(devicePixelRatio || 1, 2) });
-// the figures in the middle of what the panel leaves free (on a wide screen)
-const fit = () => { const p = document.getElementById('vpPanel'), w = p && innerWidth > 760 ? p.offsetWidth + 12 : 0; stage.size(innerWidth, innerHeight, w / 2); };
+// the figures in the middle of what the panel leaves free: beside it on a wide screen, under it on a narrow one
+const fit = () => { const p = document.getElementById('vpPanel'), wide = innerWidth > 760, w = p && wide ? p.offsetWidth + 12 : 0, h = p && !wide ? p.offsetHeight + 8 : 0; stage.size(innerWidth, innerHeight, w / 2, h / 2); };
 addEventListener('resize', fit); fit();
 
 // what plays: a motion, or a chain (motions/index.json)
@@ -72,17 +74,19 @@ panel.innerHTML = `
   <div class="row"><span class="lab">Деформеры</span><span class="hint">по порядку; сила, покой или слой позы</span></div>
   <div id="defs" style="display:grid;gap:4px"></div>
   <div class="row"><select id="addDef" aria-label="Добавить деформер"></select></div>` : ''}
-  ${HEADS ? `<div class="sep"></div>
+  ${HEADS ? `<div class="sep"></div><div id="headsBox" class="box">
   <div class="row"><span class="lab">Голова</span><select id="head" aria-label="Голова" title="готовая голова (пресет группы head) — с неё голова начинается; или без своей"></select><button id="face" title="камера на лицо">лицо</button></div>
   <div class="row"><span class="lab">Форма</span><span class="hint">способы поверх головы, по порядку, с силой</span></div>
   <div id="hforms" style="display:grid;gap:4px"></div>
   <div class="row"><select id="addForm" aria-label="Добавить способ формы"></select></div>
-  <div class="row"><span class="lab">Черты</span><span class="mv" id="feats"></span></div>
+  <div class="row"><span class="lab">Черты</span><select id="fset" aria-label="Черты" title="набор черт (пресет группы features) вместо черт головы"></select></div>
+  <div class="row"><span class="lab"></span><span class="mv" id="feats"></span></div>
   <div class="row"><span class="lab">Свет лица</span><select id="light" aria-label="Свет лица"></select></div>
   <div class="row"><span class="lab">Выражение</span><span class="mv" id="exprs"></span></div>
-  <div class="row"><input id="xw" type="range" min="0" max="1" step="0.05" value="1" aria-label="сила выражения"><span id="xwl" class="hint"></span></div>` : ''}
+  <div class="row"><input id="xw" type="range" min="0" max="1" step="0.05" value="1" aria-label="сила выражения"><span id="xwl" class="hint"></span></div></div>` : ''}
   <div class="hint">мышь: вращать · колесо: ближе · Shift или правая кнопка: сдвинуть</div>`;
 const $ = s => panel.querySelector(s);
+fit();   // (the panel's size now known)
 for (const c of chars.characters) { const o = document.createElement('option'); o.value = c.id; o.textContent = c.label.ru; $('#char').appendChild(o); }
 const addBtn = (box, id, label, on) => { const b = document.createElement('button'); b.textContent = label; b.dataset.id = id; b.onclick = on; box.appendChild(b); return b; };
 addBtn($('#moves'), '', 'покой', () => setClip(''));
@@ -123,8 +127,10 @@ async function describe(f) {
     if (d.head) {
       if (o.hforms) d.head.form = o.hforms;
       if (o.light) d.head.light = { kind: 'preset', id: o.light };
-      if (o.featAs && f.spec?.head) d.head.features = [...(d.head.features || []).filter(x => !(x.id in o.featAs)),
-        ...f.spec.head.features.filter(x => (x.id ?? x.kind) in o.featAs).map(x => ({ ...x, as: o.featAs[x.id ?? x.kind] }))];
+      // features: a preset of them in place of the head's (each of the head's taken away, the preset's in), and each one
+      // painted or as volume (a change of its `as`, by its id)
+      if (o.feats) d.head.features = [...o.feats.off.map(id => ({ kind: 'off', id })), { kind: 'preset', id: o.feats.id }];
+      if (o.featAs) d.head.features = [...(d.head.features || []), ...Object.entries(o.featAs).map(([id, as]) => ({ id, as }))];
       if (o.expr) d.pose = [...(d.pose || []), { kind: 'expression', ...o.expr }];
     }
   }
@@ -141,7 +147,7 @@ async function rowsOf(f) {
   const d = await E.description(f.char);
   return (f.over.rows = [...(d.rest || []).map(c => ({ where: 'rest', c, frames: c.frames ?? 'keep' })), ...(d.pose || []).filter(isDeform).map(c => ({ where: 'pose', c, frames: 'keep' }))]);
 }
-const rowLabel = c => c.kind === 'preset' ? (presetOf(c.id)?.label.ru ?? c.id) : c.kind;
+const rowLabel = c => c.kind === 'preset' ? (presetOf(c.id)?.label.ru ?? c.id) : c.name ?? c.kind;
 async function showRows() {
   if (!BODIES) return;
   const f = cur(), rows = await rowsOf(f), box = $('#defs');
@@ -168,30 +174,33 @@ async function showHead() {
   const f = cur(), d = await E.description(f.char), h = f.spec.head, o = f.over;
   const preset = o.head ? o.head.preset : d.head?.preset ?? '';
   $('#head').value = preset ? pinnedId(preset) : '';
-  const forms = o.hforms ?? (o.hforms = (d.head?.form || []).map(x => ({ ...x })));
-  const box = $('#hforms'); box.innerHTML = '';
-  forms.forEach((r, k) => {
+  // the form's ways, the head's own and those it starts from (its preset's): each with its strength, taken away by ✕ —
+  // the head's own changed in place, one it starts from by its name (a change of its strength, or {kind: "off"})
+  const forms = o.hforms ?? (o.hforms = (d.head?.form || []).map(x => ({ ...x }))), box = $('#hforms'); box.innerHTML = '';
+  const mine = name => forms.findIndex(x => x.kind !== 'off' && (x.name ?? (x.kind === 'preset' ? pinnedId(x.id) : x.kind)) === name);
+  for (const r of h?.form || []) {
     const el = document.createElement('div'); el.className = 'row';
-    el.innerHTML = `<span title="${presetOf(r.id)?.about?.ru ?? ''}">${rowLabel(r)}</span><input type="range" min="0" max="1.5" step="0.05" value="${r.strength ?? 1}" aria-label="сила"><span class="s">${(r.strength ?? 1).toFixed(2)}</span><button class="x" title="убрать">✕</button>`;
+    el.innerHTML = `<span title="${r.kind === 'preset' ? presetOf(r.id)?.about?.ru ?? '' : ''}">${rowLabel(r)}</span><input type="range" min="0" max="1.5" step="0.05" value="${r.strength ?? 1}" aria-label="сила"><span class="s">${(r.strength ?? 1).toFixed(2)}</span><button class="x" title="убрать">✕</button>`;
     const range = el.querySelector('input');
     range.oninput = () => { el.querySelector('.s').textContent = (+range.value).toFixed(2); };
-    range.onchange = () => { forms[k] = { ...r, strength: +range.value }; rebuild([S.cur]); };
-    el.querySelector('.x').onclick = () => { forms.splice(k, 1); rebuild([S.cur]); };
+    range.onchange = () => { const k = mine(r.name); if (k >= 0) forms[k] = { ...forms[k], strength: +range.value }; else forms.push({ name: r.name, strength: +range.value }); rebuild([S.cur]); };
+    el.querySelector('.x').onclick = () => { const k = mine(r.name); if (k >= 0 && forms[k].kind) forms.splice(k, 1); else forms.push({ kind: 'off', name: r.name }); rebuild([S.cur]); };
     box.appendChild(el);
-  });
+  }
   const feats = $('#feats'); feats.innerHTML = '';
   for (const x of h?.features || []) {
     if (!['eye', 'brow', 'mouth'].includes(x.kind) || (x.kind === 'mouth' && x.type === 'none')) continue;
     const as = x.as ?? 'paint', name = { eye: 'глаза', brow: 'брови', mouth: 'рот' }[x.kind];
     addBtn(feats, x.id ?? x.kind, `${name}: ${as === 'paint' ? 'рисунок' : 'объём'}`, () => { o.featAs = { ...(o.featAs || {}), [x.id ?? x.kind]: as === 'paint' ? 'volume' : 'paint' }; rebuild([S.cur]); }).title = 'нарисованы на коже или объёмом на ней';
   }
+  $('#fset').value = o.feats ? pinnedId(o.feats.id) : '';
   const own = o.light ?? (d.head?.light?.kind === 'preset' ? d.head.light.id : null) ?? (preset ? (await E.headPreset(preset)).light?.id : null);
   $('#light').value = own ? pinnedId(own) : '';
   const ex = $('#exprs'); ex.innerHTML = '';
   addBtn(ex, '', 'нет', () => { o.expr = null; rebuild([S.cur]); }).setAttribute('aria-pressed', String(!o.expr));
   for (const [name, x] of Object.entries(f.fig.body.head?.expressions || {})) addBtn(ex, name, x.label?.ru ?? name, () => { o.expr = { name, weight: +$('#xw').value }; rebuild([S.cur]); }).setAttribute('aria-pressed', String(o.expr?.name === name));
   $('#xw').value = o.expr?.weight ?? 1; $('#xwl').textContent = o.expr ? (+$('#xw').value).toFixed(2) : '';
-  for (const id of ['head', 'addForm', 'light', 'xw', 'face']) $('#' + id).disabled = id !== 'head' && !h;
+  for (const id of ['head', 'addForm', 'fset', 'light', 'xw', 'face']) $('#' + id).disabled = id !== 'head' && !h;
 }
 async function build(f, i) {
   f.spec = await E.expand(await describe(f));
@@ -229,8 +238,10 @@ const bounds = () => joinBounds(figs.map(f => f.fig.bounds()));
 // what the camera frames: every figure, or the chosen one's face (a box round its head)
 function framed() {
   if (!S.face) return bounds();
-  const P = cur().fig.pose.P, H = E.skeleton.index.Head * 3, h = cur().fig.body.measures.headHeight * 0.8, c = [P[H], P[H + 1] + h * 0.6, P[H + 2]];
-  return { center: c, min: c.map(v => v - h), max: c.map(v => v + h), size: [2 * h, 2 * h, 2 * h] };
+  // the face: its middle in head units (src/head/frame.js; Anny's own head's when it has none), carried by the Head joint
+  const fig = cur().fig, pose = fig.pose, H = E.skeleton.index.Head, F = fig.body.head?.frame ?? headFrame(fig.rig), J = fig.rig.joints;
+  const v = qRot([pose.Q[H * 4], pose.Q[H * 4 + 1], pose.Q[H * 4 + 2], pose.Q[H * 4 + 3]], F.toW(0, -0.35, 0.4).map((x, k) => x - J[H * 3 + k])), c = v.map((x, k) => x + pose.P[H * 3 + k]), h = 1.8 * F.R;
+  return { center: c, min: c.map(x => x - h), max: c.map(x => x + h), size: [2 * h, 2 * h, 2 * h] };
 }
 function draw(snap) {
   for (const f of figs) { f.fig.step(clip, S.t); f.view.update(); }
@@ -259,10 +270,13 @@ if (BODIES) {
 if (HEADS) {
   const hs = $('#head'); hs.innerHTML = '<option value="">без своей головы</option>';
   for (const p of ofGroup('head')) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; hs.appendChild(o); }
-  hs.onchange = () => { const f = cur(); f.over = { ...f.over, head: { preset: hs.value ? presetIndex.presets.find(p => p.id === hs.value).pin : '' }, hforms: [], featAs: null, light: null, expr: null }; rebuild([S.cur]); };
+  hs.onchange = () => { const f = cur(); f.over = { ...f.over, head: { preset: hs.value ? presetIndex.presets.find(p => p.id === hs.value).pin : '' }, hforms: [], featAs: null, feats: null, light: null, expr: null }; rebuild([S.cur]); };
   const af = $('#addForm'); af.innerHTML = '<option value="">＋ добавить способ формы…</option>';
   for (const p of ofGroup('head-form')) { const o = document.createElement('option'); o.value = p.pin; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; af.appendChild(o); }
   af.onchange = async () => { if (!af.value) return; const f = cur(); await showHead(); f.over.hforms.push({ kind: 'preset', id: af.value, strength: 1 }); af.value = ''; rebuild([S.cur]); };
+  const fs = $('#fset'); fs.innerHTML = '<option value="">черты головы</option>';
+  for (const p of ofGroup('features')) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; fs.appendChild(o); }
+  fs.onchange = () => { const f = cur(), head = f.spec.head; f.over.featAs = null; f.over.feats = fs.value ? { id: presetIndex.presets.find(p => p.id === fs.value).pin, off: (f.over.feats?.off ?? head.features.map(x => x.id ?? x.kind)) } : null; rebuild([S.cur]); };
   const ls = $('#light'); ls.innerHTML = '<option value="" disabled>свой свет головы</option>';
   for (const p of ofGroup('face-light')) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; ls.appendChild(o); }
   ls.onchange = () => { cur().over.light = presetIndex.presets.find(p => p.id === ls.value).pin; rebuild([S.cur]); };

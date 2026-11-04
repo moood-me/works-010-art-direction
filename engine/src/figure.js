@@ -30,7 +30,7 @@ import { Pose, build, hipOf } from './pose.js';
 import { LAYERS, NO_REBUILD } from './layers.js';
 import { makeCollider } from './collision.js';
 import { newSample } from './motion.js';
-import { qRot } from './math.js';
+import { qRot, clamp, sst } from './math.js';
 
 export class Figure {
   // rig; meshes: [{mesh, name?, skinning?: {method, sigma, seam}}] (the first is the body's, named 'body'); layers: resolved pose layers;
@@ -150,15 +150,29 @@ export class Figure {
   }
   reset() { this.state = null; }
 
-  // the head to collide with (hair, a hood): its shape (src/head/head.js: the designed form, or a ball) moved by the
-  // Head joint of the current pose — distance(x, y, z) in metres, negative inside
-  headShape() {
+  // the head to collide with (hair, a hood) in a pose — the one a frame wrote (figure.frame(clip, t, pose)) or the step's
+  // (figure.pose): its shape (src/head/head.js: the designed form, or a ball fitted to the head) carried by the Head
+  // joint, and the jaw's part of it (below the mouth, in front of the ears) by the Jaw joint, so an open mouth opens it
+  // too. distance(x, y, z) in metres, negative inside; normal(x, y, z) outwards. (The expressions' morphs move the face's
+  // skin by millimetres and are not in it.)
+  headShape(pose) {
     const shape = this.body?.head?.shape; if (!shape) throw new Error('a figure without a head (its character has no "head")');
-    const sk = this.rig.skeleton, H = sk.index.Head, F = shape.frame, rig = this.rig;
-    return { distance: (x, y, z) => {
-      const P = this.pose, q = [-P.Q[H * 4], -P.Q[H * 4 + 1], -P.Q[H * 4 + 2], P.Q[H * 4 + 3]], v = qRot(q, [x - P.P[H * 3], y - P.P[H * 3 + 1], z - P.P[H * 3 + 2]]);
-      return shape.sdf(...F.toL(v[0] + rig.joints[H * 3], v[1] + rig.joints[H * 3 + 1], v[2] + rig.joints[H * 3 + 2])) * F.R;
-    } };
+    if (!pose) throw new Error('headShape(pose): the pose it is in (figure.pose after a step, or the one a frame was given)');
+    const sk = this.rig.skeleton, F = shape.frame, J = this.rig.joints, back = j => { const q = [-pose.Q[j * 4], -pose.Q[j * 4 + 1], -pose.Q[j * 4 + 2], pose.Q[j * 4 + 3]]; return (x, y, z) => { const v = qRot(q, [x - pose.P[j * 3], y - pose.P[j * 3 + 1], z - pose.P[j * 3 + 2]]); return F.toL(v[0] + J[j * 3], v[1] + J[j * 3 + 1], v[2] + J[j * 3 + 2]); }; };
+    const head = back(sk.index.Head), jaw = back(sk.index.Jaw), { y: jy, z: jz } = shape.jaw;
+    const distance = (x, y, z) => {
+      const h = head(x, y, z), w = sst(clamp((jy - h[1]) / 0.15, 0, 1)) * sst(clamp((h[2] - jz) / 0.3, 0, 1)); if (!w) return shape.sdf(...h) * F.R;
+      const j = jaw(x, y, z); return shape.sdf(h[0] + (j[0] - h[0]) * w, h[1] + (j[1] - h[1]) * w, h[2] + (j[2] - h[2]) * w) * F.R;
+    };
+    const e = 0.001;
+    return { distance, normal: (x, y, z) => { const n = [distance(x + e, y, z) - distance(x - e, y, z), distance(x, y + e, z) - distance(x, y - e, z), distance(x, y, z + e) - distance(x, y, z - e)], l = Math.hypot(...n) || 1; return n.map(v => v / l); } };
+  }
+  // the neck to collide with (a collar) in a pose: the body's capsules of its neck bones (src/collision.js) — distance(x,
+  // out?) in metres, negative inside, out.normal outwards
+  neckShape(pose) {
+    const sk = this.rig.skeleton, C = makeCollider(this.rig, this.body ? this.body.mesh : this.outputs[0].mesh), neck = new Set(['Neck1', 'Neck2'].map(n => sk.index[n]));
+    C.update(pose); const caps = C.capsules.filter(c => neck.has(c.joint)); if (!caps.length) throw new Error('a body without neck bones to collide with');
+    return { distance: (x, out) => { let best = Infinity; for (const c of caps) { const ab = [c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]], L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2, t = clamp(((x[0] - c.a[0]) * ab[0] + (x[1] - c.a[1]) * ab[1] + (x[2] - c.a[2]) * ab[2]) / (L2 || 1), 0, 1), p = [x[0] - c.a[0] - ab[0] * t, x[1] - c.a[1] - ab[1] * t, x[2] - c.a[2] - ab[2] * t], l = Math.hypot(...p), d = l - (c.ra + (c.rb - c.ra) * t); if (d < best) { best = d; if (out) out.normal = l > 1e-9 ? p.map(v => v / l) : [0, 1, 0]; } } return best; } };
   }
 
   // the box around everything drawn (the used vertices of every mesh)
@@ -188,14 +202,27 @@ function restOf(o, weights, applied) {
   }
   return P;
 }
-// a mesh that follows its host's rest: its rest moved as the host's bound vertices moved this frame (into o.rest)
+// a mesh that follows its host's rest: its rest carried by the affine change that best carries the host's vertices it
+// is bound to (weighed) from their rest to this frame's — their middle's move, and how they grew, narrowed or leaned
+// (a bigger head, a squashed one, an expression's morph under a nose) — so it stays whole and on them (into o.rest)
 function followed(o) {
-  const m = o.mesh, { K, idx, w } = m.follow, R = o.rest, P = m.positions; R.set(P);
+  const m = o.mesh, { idx, w } = m.follow, P = m.positions;
   if (!o.host.moved) return P;   // (the host's rest is its own this frame)
-  const H = o.host.rest;
-  const H0 = o.host.mesh.positions;
-  for (const i of m.used) for (let k = 0; k < K; k++) { const j = idx[i * K + k] * 3, a = w[i * K + k]; R[i * 3] += a * (H[j] - H0[j]); R[i * 3 + 1] += a * (H[j + 1] - H0[j + 1]); R[i * 3 + 2] += a * (H[j + 2] - H0[j + 2]); }
+  const H = o.host.rest, H0 = o.host.mesh.positions, f = o.fit ??= fitOf(idx, w, H0), c1 = [0, 0, 0], C = new Float64Array(9);
+  for (let k = 0; k < idx.length; k++) { const j = idx[k] * 3; for (let c = 0; c < 3; c++) c1[c] += w[k] * H[j + c] / f.s; }
+  for (let k = 0; k < idx.length; k++) { const j = idx[k] * 3; for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) C[r * 3 + c] += w[k] * (H[j + r] - c1[r]) * (H0[j + c] - f.c0[c]); }
+  const A = new Float64Array(9); for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) for (let k = 0; k < 3; k++) A[r * 3 + c] += C[r * 3 + k] * f.inv[k * 3 + c];
+  const R = o.rest;
+  for (const i of m.used) { const x = P[i * 3] - f.c0[0], y = P[i * 3 + 1] - f.c0[1], z = P[i * 3 + 2] - f.c0[2]; for (let r = 0; r < 3; r++) R[i * 3 + r] = c1[r] + A[r * 3] * x + A[r * 3 + 1] * y + A[r * 3 + 2] * z; }
   return R;
+}
+// what of the bound vertices' rest the fit needs: their weighed middle, the weights' sum, the inverse of their spread
+function fitOf(idx, w, H0) {
+  const c0 = [0, 0, 0]; let s = 0; for (let k = 0; k < idx.length; k++) { s += w[k]; for (let c = 0; c < 3; c++) c0[c] += w[k] * H0[idx[k] * 3 + c]; } for (let c = 0; c < 3; c++) c0[c] /= s;
+  const M = new Float64Array(9); for (let k = 0; k < idx.length; k++) { const j = idx[k] * 3; for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) M[r * 3 + c] += w[k] * (H0[j + r] - c0[r]) * (H0[j + c] - c0[c]); }
+  const [a, b, c, d, e, g, h, i, l] = M, det = a * (e * l - g * i) - b * (d * l - g * h) + c * (d * i - e * h);
+  const inv = Float64Array.from([e * l - g * i, c * i - b * l, b * g - c * e, g * h - d * l, a * l - c * h, c * d - a * g, d * i - e * h, b * h - a * i, a * e - b * d], v => v / det);
+  return { c0, s, inv };
 }
 // its centres of rotation this frame (into o.cor)
 function centresOf(o, applied) {

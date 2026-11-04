@@ -28,8 +28,11 @@ async function numbersOf(job) {
   const { fig, spec, clip } = await figureOf(E, job);
   const parts = [Float32Array.from(fig.pose.P)];
   for (const o of fig.outputs) { const u = o.mesh.used, a = new Float32Array(Math.ceil(u.length / STRIDE) * 3); for (let k = 0, n = 0; k < u.length; k += STRIDE, n++) for (let c = 0; c < 3; c++) a[n * 3 + c] = o.positions[u[k] * 3 + c]; parts.push(a); }
+  // a mesh with a face's picture: where its vertices are in it, and how much of it they show (u, v, mask — compared as
+  // the places are: a thousandth of the picture counts as a millimetre)
+  for (const o of fig.outputs) if (o.mesh.uv) { const u = o.mesh.used, a = new Float32Array(Math.ceil(u.length / STRIDE) * 3); for (let k = 0, n = 0; k < u.length; k += STRIDE, n++) { a[n * 3] = o.mesh.uv[u[k] * 2]; a[n * 3 + 1] = o.mesh.uv[u[k] * 2 + 1]; a[n * 3 + 2] = o.mesh.paintMask?.[u[k]] ?? 0; } parts.push(a); }
   const all = new Float32Array(parts.reduce((s, p) => s + p.length, 0)); let at = 0; for (const p of parts) { all.set(p, at); at += p.length; }
-  return { values: all, joints: fig.rig.J, sources: await sourcesOf(E, job, spec, clip) };
+  return { values: all, joints: fig.rig.J, sources: await sourcesOf(E, job, spec, clip, fig) };
 }
 
 const stored = existsSync(fileURLToPath(STORE)) ? await loadPack(STORE, read) : null;
@@ -56,7 +59,8 @@ let bad = 0;
 for (const j of jobs) {
   const m = stored.header.jobs[j.name], a = stored.arrays[j.name], b = now[j.name];
   if (!m) { console.log(`${j.name}: not stored`); bad++; continue; }
-  const changed = ['body', 'motions'].filter(k => JSON.stringify(m.sources[k]) !== JSON.stringify(b.sources[k]));
+  const changed = ['body', 'motions', 'heads'].filter(k => JSON.stringify(m.sources[k]) !== JSON.stringify(b.sources[k]));
+  if (m.sources.picture !== b.sources.picture) { console.log(`${j.name}: its face's picture is drawn otherwise (${m.sources.picture} → ${b.sources.picture})${changed.length ? ' — its ' + changed.join(', ') + ' changed' : ''}`); bad++; continue; }
   if (a.length !== b.values.length) { console.log(`${j.name}: another number of vertices (${a.length / 3} stored, ${b.values.length / 3} now)${changed.length ? ' — its ' + changed.join(', ') + ' changed' : ''}`); bad++; continue; }
   let worst = 0, at = 0;
   for (let i = 0; i < a.length; i += 3) { const e = Math.hypot(a[i] - b.values[i], a[i + 1] - b.values[i + 1], a[i + 2] - b.values[i + 2]); if (e > worst) { worst = e; at = i / 3; } }

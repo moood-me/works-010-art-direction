@@ -33,16 +33,16 @@ export const MARKS_SCHEMA = { type: 'object', required: ['eye', 'mouth'], props:
 
 // the form as it is laid on this body: the form, its distance with the body's neck, the frame
 export function formOnBody(form, body, neckSlim) {
-  const F = headFrame(body.rig, form.size ?? HEAD_SIZE), sh = headShares(body.mesh, body.rig.skeleton), P = body.mesh.positions, N = body.mesh.N;
+  const F = headFrame(body.rig, form.size ?? HEAD_SIZE), sh = headShares(body.mesh, body.rig.skeleton), P = body.mesh.positions, N = body.mesh.N, u = annyScale(body.rig);
   // the neck where it meets the head: the ring of skin half head, half neck (after the slimming)
   const slim = slimmed(P, body, sh, neckSlim);
   let cx = 0, cy = 0, cz = 0, n = 0;
   for (let i = 0; i < N; i++) { const w = sh.head[i] + sh.neck[i]; if (w > 0.4 && w < 0.7) { cx += slim[i * 3]; cy += slim[i * 3 + 1]; cz += slim[i * 3 + 2]; n++; } }
   cx /= n; cy /= n; cz /= n;
   let r = 0, m = 0;
-  for (let i = 0; i < N; i++) { const w = sh.head[i] + sh.neck[i]; if (w > 0.4 && w < 0.7 && Math.abs(slim[i * 3 + 1] - cy) < 0.02) { r += Math.hypot(slim[i * 3] - cx, slim[i * 3 + 2] - cz); m++; } }
+  for (let i = 0; i < N; i++) { const w = sh.head[i] + sh.neck[i]; if (w > 0.4 && w < 0.7 && Math.abs(slim[i * 3 + 1] - cy) < 0.02 * u) { r += Math.hypot(slim[i * 3] - cx, slim[i * 3 + 2] - cz); m++; } }
   r /= m;
-  const neck = { c: [(cx - F.O[0]) / F.R, (cy - 0.07 - F.O[1]) / F.R, (cz - F.O[2]) / F.R], r: r * 1.14 / F.R };
+  const neck = { c: [(cx - F.O[0]) / F.R, (cy - 0.07 * u - F.O[1]) / F.R, (cz - F.O[2]) / F.R], r: r * 1.14 / F.R };
   return { ...formOf(form, { neck, place: form.kind === 'solid' ? form.place ?? placeOnCranium(form, body, sh, F) : null }), frame: F, shares: sh, slim };
 }
 // a solid's marks are in its face units: in head units
@@ -54,9 +54,9 @@ function marksOnHead({ eye, mouth }, G) {
 // quadric fitted to her skin above the eyes), scaled by the cranium's width — as {at, scale} in head units — and her
 // neck measured for its underside to ease into
 function placeOnCranium(form, body, sh, F) {
-  const P = body.mesh.positions, sk = body.rig.skeleton, J = body.rig.joints, used = body.mesh.isUsed, N = body.mesh.N;
+  const P = body.mesh.positions, sk = body.rig.skeleton, J = body.rig.joints, used = body.mesh.isUsed, N = body.mesh.N, u = annyScale(body.rig);
   const ey = (J[sk.index.LeftEye * 3 + 1] + J[sk.index.RightEye * 3 + 1]) / 2;
-  let chinY = Infinity; for (let i = 0; i < N; i++) if (used[i] && sh.head[i] > 0.6 && Math.abs(P[i * 3]) < 0.006 && P[i * 3 + 2] > J[sk.index.Jaw * 3 + 2]) chinY = Math.min(chinY, P[i * 3 + 1]);
+  let chinY = Infinity; for (let i = 0; i < N; i++) if (used[i] && sh.head[i] > 0.6 && Math.abs(P[i * 3]) < 0.006 * u && P[i * 3 + 2] > J[sk.index.Jaw * 3 + 2]) chinY = Math.min(chinY, P[i * 3 + 1]);
   const U = ey - chinY, A = Array.from({ length: 5 }, () => new Float64Array(5)), b = new Float64Array(5);
   for (let i = 0; i < N; i++) {
     if (!used[i] || sh.head[i] <= 0.9 || P[i * 3 + 1] <= ey + 0.25 * U) continue;
@@ -69,7 +69,7 @@ function placeOnCranium(form, body, sh, F) {
   // her neck, measured (two sections below the chin), for the solid's underside to ease into: an elliptic capsule
   const sec = [chinY - 0.2 * U, chinY - 0.6 * U].map(yy => {
     let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
-    for (let i = 0; i < N; i++) if (used[i] && sh.head[i] < 0.5 && Math.abs(P[i * 3 + 1] - yy) < 0.04 * U && Math.abs(P[i * 3]) < 0.07 && P[i * 3 + 2] > J[sk.index.LeftEye * 3 + 2] - 0.2) { x0 = Math.min(x0, P[i * 3]); x1 = Math.max(x1, P[i * 3]); z0 = Math.min(z0, P[i * 3 + 2]); z1 = Math.max(z1, P[i * 3 + 2]); }
+    for (let i = 0; i < N; i++) if (used[i] && sh.head[i] < 0.5 && Math.abs(P[i * 3 + 1] - yy) < 0.04 * U && Math.abs(P[i * 3]) < 0.07 * u && P[i * 3 + 2] > J[sk.index.LeftEye * 3 + 2] - 0.2 * u) { x0 = Math.min(x0, P[i * 3]); x1 = Math.max(x1, P[i * 3]); z0 = Math.min(z0, P[i * 3 + 2]); z1 = Math.max(z1, P[i * 3 + 2]); }
     return { y: yy, z: (z0 + z1) / 2, rx: (x1 - x0) / 2, rz: (z1 - z0) / 2 };
   });
   const toH = (y, z) => [0, (y - F.O[1]) / F.R, (z - F.O[2]) / F.R], lo = toH(sec[1].y, sec[1].z), hi = toH(sec[0].y, sec[0].z), dn = [0, hi[1] - lo[1], hi[2] - lo[2]];
@@ -108,12 +108,16 @@ export function wrapHead(body, form, marks, neckSlim, onto) {
   const g = [0, 0, 0], grad = (x, y, z) => gradOf(hsdf, x, y, z, 0.004, g), surfZ = (x, y) => frontZ(hsdf, x, y);
   const { eye: E, mouth: M } = G.toHead ? marksOnHead(marks, G) : marks, yChin = G.chin, ears = G.ears ?? { x: 0.92, y: -0.32, z: -0.12 };   // (a solid's ears: src/head/forms.js)
   // the lips' parting as the mouth is drawn, from corner to corner (half its length MW): a drawn mouth's line, its middle
-  // sagging, its corners apart enough to open however small the mouth; a grin's upper teeth's lower edge, so an open jaw
-  // opens below the teeth (where the easing of folds leaves it, the grin's teeth end: src/head/head.js)
-  const MW = M.wide ? 0.8 * M.w : Math.max(M.w / 2 * 1.05, 0.14), teeth = M.wide ? grinLines({ y: M.y, w: M.w, crooked: M.crooked }).teeth : null;
-  const part = x => teeth ? along(teeth, x) : M.y - (M.sag ?? 0) * (1 - (x / MW) ** 2);
+  // sagging, its corners apart enough to open however small the mouth; a grin's dark inside, midway between its upper
+  // teeth and its bottom — an open jaw opens there, what it stretches (the folds round the parting, and the rows above it
+  // that Anny's weights let the jaw carry a little) dark, the teeth whole above
+  const MW = M.wide ? 0.8 * M.w : Math.max(M.w / 2 * 1.05, 0.14), grin = M.wide ? grinLines({ y: M.y, w: M.w, crooked: M.crooked }) : null;
+  const part = x => grin ? (along(grin.teeth, x) + along(grin.bot, x)) / 2 : M.y - (M.sag ?? 0) * (1 - (x / MW) ** 2);
   const jaw = jt('Jaw'), chest = jt('Chest'), neck2 = jt('Neck2'), eL = jt('LeftEye'), L = landmarksOf(body);
-  const src = [], dst = [], pinned = new Uint8Array(N);
+  // pinned: the points the warp is made through; held: of them, a grin's parting, which the easing of folds leaves where
+  // it is (carried a few millimetres up, it would cut the teeth; a drawn mouth is set on where its lips part after,
+  // src/head/head.js — holding them there leaves pleats round its corners)
+  const src = [], dst = [], pinned = new Uint8Array(N), held = new Uint8Array(N);
   const add = (i, t) => { pinned[i] = 1; src.push([at[i * 3], at[i * 3 + 1], at[i * 3 + 2]]); dst.push(toW(...t)); };
   const X = i => at[i * 3], Y = i => at[i * 3 + 1], Z = i => at[i * 3 + 2], tipI = L.noseTip, mC = L.mouth;
   // Anny's landmarks (src/head/face.js) to where the form has them: each eye's middle, inner and outer corner, top and
@@ -158,6 +162,7 @@ export function wrapHead(body, form, marks, neckSlim, onto) {
       if (v.some(i => !used[i] || headW[i] < 0.5 || Z(i) < Z(tipI) - 0.035 * u || Math.abs(Y(i) - Y(mC)) > 0.012 * u || Math.abs(X(i)) > 0.03 * u)) continue; v.forEach(i => S.add(i));
     }
     let xA = 0; for (const i of S) xA = Math.max(xA, Math.abs(X(i)));
+    if (M.wide) for (const i of S) held[i] = 1;
     for (const i of S) { if (pinned[i]) continue; const f = X(i) / xA, x = f * MW, y = part(x) + (jawW[i] > 0.5 ? -0.0015 : 0.0015); add(i, [x, y, surfZ(x, y) - 0.004 * (1 - f * f)]); }
   }
   // the neck stays Anny's: points well down the neck hold still
@@ -223,7 +228,7 @@ export function wrapHead(body, form, marks, neckSlim, onto) {
     if (!nb) break;
     let grow = bad;
     for (let r = 0; r < 2; r++) { const g2 = Uint8Array.from(grow); for (let i = 0; i < N; i++) if (grow[i]) for (let q = nbr.start[i]; q < nbr.start[i + 1]; q++) { const j = nbr.list[q]; if (omega[j] > 0.9) g2[j] = 1; } grow = g2; }
-    if (round < 6) for (let i = 0; i < N; i++) if (pinned[i]) grow[i] = 0;
+    for (let i = 0; i < N; i++) if (held[i] || (round < 6 && pinned[i])) grow[i] = 0;
     for (let it = 0; it < 6; it++) {
       const nx = Float32Array.from(at);
       for (let i = 0; i < N; i++) {

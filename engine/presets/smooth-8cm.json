@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 3,
+ "version": 4,
  "id": "smooth-8cm",
  "label": {
   "ru": "сглаживание 8 см",

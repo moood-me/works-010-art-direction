@@ -1,0 +1,72 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "features-hood",
+ "group": "features",
+ "label": {
+  "ru": "черты: женщина в капюшоне",
+  "en": "features: hooded woman"
+ },
+ "about": {
+  "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.4,
+   "y": -0.3,
+   "w": 0.38,
+   "h": 0.17,
+   "tilt": -0.1,
+   "iris": [
+    "#2b2236",
+    "#5a4a6a"
+   ],
+   "lash": "#160f16",
+   "lashW": 0.07,
+   "wing": 0.22,
+   "lower": 0.2,
+   "glints": 1,
+   "sharp": true,
+   "look": 0.55,
+   "crease": true
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.13,
+   "x1": 0.7,
+   "y0": -0.1,
+   "y1": 0,
+   "arch": 0.05,
+   "peak": 0.6,
+   "w0": 0.065,
+   "w1": 0.014,
+   "color": "#1e1a26"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.8,
+   "w": 0.11,
+   "sag": 0.004,
+   "cL": 0,
+   "cR": 0.022,
+   "lineW": 0.013,
+   "line": "#7a3a46",
+   "dimple": true,
+   "lowerLine": 0.3
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.15
+  }
+ ]
+}

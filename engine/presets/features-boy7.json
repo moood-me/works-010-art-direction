@@ -1,0 +1,70 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "features-boy7",
+ "group": "features",
+ "label": {
+  "ru": "черты: мальчик с каре",
+  "en": "features: boy with a bob"
+ },
+ "about": {
+  "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.4,
+   "y": -0.4,
+   "w": 0.3,
+   "h": 0.3,
+   "tilt": 0,
+   "iris": [
+    "#2a4f7a",
+    "#6aa0c8"
+   ],
+   "lash": "#3a2a24",
+   "lashW": 0.045,
+   "wing": 0.04,
+   "lower": 0.2,
+   "glints": 1,
+   "round": true
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.16,
+   "x1": 0.6,
+   "y0": -0.08,
+   "y1": -0.06,
+   "arch": 0.05,
+   "peak": 0.5,
+   "w0": 0.03,
+   "w1": 0.012,
+   "color": "#a8904a"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.8,
+   "w": 0.1,
+   "sag": 0.006,
+   "upper": 0.012,
+   "lower": 0.02,
+   "open": 0.022,
+   "lip": "#d88a7a",
+   "line": "#8a4a3a",
+   "lineW": 0.012
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.25
+  }
+ ]
+}

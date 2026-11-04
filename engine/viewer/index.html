@@ -35,7 +35,9 @@
   #vpPanel summary { cursor: pointer; color: var(--muted); font-size: 12px; }
   #vpPanel #figs button { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #msg { position: fixed; inset: 0; display: grid; place-items: center; font: italic 20px Georgia, serif; color: #4a4640; pointer-events: none; z-index: 3; }
-  @media (max-width: 520px) { #vpPanel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 45vh; } }
+  #vpPanel .box { display: grid; gap: 7px; }
+  /* a narrow screen: the panel over the top, what the page is for (the heads') first */
+  @media (max-width: 520px) { #vpPanel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 45vh; } #headsBox { order: -1; } }
 </style>
 <script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>

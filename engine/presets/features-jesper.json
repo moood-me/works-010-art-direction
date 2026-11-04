@@ -1,0 +1,76 @@
+{
+ "format": "engine/preset",
+ "version": 4,
+ "id": "features-jesper",
+ "group": "features",
+ "label": {
+  "ru": "черты: Джеспер",
+  "en": "features: Jesper"
+ },
+ "about": {
+  "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.42,
+   "y": -0.3,
+   "w": 0.34,
+   "h": 0.36,
+   "tilt": -0.02,
+   "iris": [
+    "#2a1e14",
+    "#5a3e28"
+   ],
+   "lash": "#2a1a14",
+   "lashW": 0.035,
+   "wing": 0,
+   "lower": 0.15,
+   "glints": 1,
+   "round": true,
+   "irisScale": 0.45
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.13,
+   "x1": 0.7,
+   "y0": 0.02,
+   "y1": 0.06,
+   "arch": 0.07,
+   "peak": 0.4,
+   "w0": 0.075,
+   "w1": 0.03,
+   "color": "#7a5226"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -1,
+   "w": 0.12,
+   "sag": -0.004,
+   "corners": -0.012,
+   "open": 0.024,
+   "lower": 0.018,
+   "lip": "#c8706a",
+   "line": "#6a2a26",
+   "lineW": 0.012
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.15
+  },
+  {
+   "id": "tint",
+   "kind": "tint",
+   "color": "#e98a74"
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 3,
+ "version": 4,
  "id": "head-red",
  "group": "head",
  "label": {
@@ -16,261 +16,31 @@
   "skin": "#fbe2d2",
   "form": [
    {
-    "kind": "wrap",
-    "form": {
-     "kind": "curves",
-     "size": 1.12,
-     "face": {
-      "n": 2.3,
-      "W": [
-       [
-        0.4,
-        0.92
-       ],
-       [
-        -0.28,
-        0.9
-       ],
-       [
-        -0.5,
-        0.76
-       ],
-       [
-        -0.74,
-        0.46
-       ],
-       [
-        -0.92,
-        0.18
-       ],
-       [
-        -1,
-        0.07
-       ]
-      ],
-      "P": [
-       [
-        0.4,
-        0.82
-       ],
-       [
-        0,
-        0.9
-       ],
-       [
-        -0.36,
-        0.88
-       ],
-       [
-        -0.6,
-        0.93
-       ],
-       [
-        -0.7,
-        0.95
-       ],
-       [
-        -0.8,
-        0.9
-       ],
-       [
-        -0.92,
-        0.82
-       ],
-       [
-        -1,
-        0.68
-       ]
-      ],
-      "nose": {
-       "ridge": [
-        [
-         -0.42,
-         0.875
-        ],
-        [
-         -0.5,
-         0.91
-        ],
-        [
-         -0.545,
-         0.95
-        ],
-        [
-         -0.56,
-         0.978
-        ]
-       ],
-       "under": [
-        [
-         -0.585,
-         0.95
-        ],
-        [
-         -0.605,
-         0.9
-        ]
-       ],
-       "w": [
-        0.01,
-        0.022,
-        0.042
-       ],
-       "k": 0.035,
-       "round": 0.025
-      },
-      "lips": [
-       {
-        "at": [
-         0,
-         -0.665,
-         0.92
-        ],
-        "r": [
-         0.075,
-         0.022,
-         0.04
-        ]
-       },
-       {
-        "at": [
-         0,
-         -0.72,
-         0.915
-        ],
-        "r": [
-         0.07,
-         0.03,
-         0.045
-        ]
-       }
-      ]
-     },
-     "ears": {
-      "x": 0.92,
-      "y": -0.34,
-      "z": -0.1,
-      "s": 0.95
-     },
-     "neck": {
-      "r": 0.3
-     }
-    },
-    "marks": {
-     "eye": {
-      "x": 0.43,
-      "y": -0.34,
-      "w": 0.42,
-      "h": 0.44
-     },
-     "mouth": {
-      "y": -0.69,
-      "w": 0.12,
-      "sag": 0.003
-     }
-    }
+    "kind": "preset",
+    "id": "form-red@514b659cf173e6a5"
    }
   ],
   "features": [
    {
-    "id": "eyes",
-    "kind": "eye",
-    "as": "paint",
-    "x": 0.43,
-    "y": -0.34,
-    "w": 0.42,
-    "h": 0.44,
-    "tilt": 0.06,
-    "iris": [
-     "#1e6b52",
-     "#5ec29a"
-    ],
-    "lash": "#3a1a14",
-    "lashW": 0.065,
-    "wing": 0.12,
-    "lower": 0.3,
-    "glints": 2,
-    "lashes": 3,
-    "round": true,
-    "crease": true
-   },
-   {
-    "id": "brows",
-    "kind": "brow",
-    "as": "paint",
-    "x0": 0.18,
-    "x1": 0.68,
-    "y0": -0.04,
-    "y1": -0.02,
-    "arch": 0.1,
-    "peak": 0.6,
-    "w0": 0.03,
-    "w1": 0.008,
-    "color": "#a8382a"
-   },
-   {
-    "id": "mouth",
-    "kind": "mouth",
-    "as": "paint",
-    "type": "drawn",
-    "y": -0.69,
-    "w": 0.12,
-    "sag": 0.003,
-    "upper": 0.028,
-    "bow": 0.012,
-    "lower": 0.042,
-    "open": 0.016,
-    "corners": -0.004,
-    "lip": "#e45a44",
-    "line": "#7a2a22",
-    "lineW": 0.011
-   },
-   {
-    "id": "blush",
-    "kind": "blush",
-    "amount": 0.55
+    "kind": "preset",
+    "id": "features-red@6d0fbeb972cff4b6"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@9dd44ade6ed9c94a"
+    "id": "expressions-drawn@1c90b27acf342e72"
    }
   ],
   "pieces": [
    {
-    "id": "hair",
-    "kind": "hair",
-    "color": "#d8352a",
-    "ink": "#6a1a14",
-    "parts": [
-     [
-      "cap",
-      {
-       "front": 0.36,
-       "part": 0.35
-      }
-     ],
-     [
-      "sidePart",
-      {}
-     ],
-     [
-      "back",
-      {
-       "n": 15,
-       "len": 5.2,
-       "w": 0.46,
-       "wave": 0.35,
-       "lift": 0.22
-      }
-     ]
-    ]
+    "kind": "preset",
+    "id": "hair-red@67395b5ba65ac116"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon-form@d8ab31c73412d70b"
+   "id": "light-toon-form@0835034fc0a470a6"
   },
   "ref": {
    "image": "cartoon-anatomical-2.png",

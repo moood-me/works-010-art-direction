@@ -10,11 +10,13 @@
 //   order      layers run in the order they are listed (two orders give two figures; a code layer before a change of
 //              the rest sets its weight); a change of the rest as a layer at weight 1 is the same change on the rest
 //   heads      every character with a head (src/head/): no triangle of the head turned (against its designed form where
-//              it is wrapped on one, else against the body it was made from); no edge of the head and neck stretched past
-//              its limit at the rest, and in motion and in expressions no more than the plain body's skinning stretches it;
-//              no crease where the head meets the neck (the angle between neighbouring triangles where the head's
-//              change fades out down the neck, no sharper than on the plain body); features stay on the skin (painted ones only on the face's front; reliefs at their
-//              lift over the skin in motion); pieces stay on the head in motion (a nose piece's root against the skin)
+//              it is wrapped on one, else against the body it was made from); no vertex standing out of its neighbours
+//              (a spike, a crumple); no edge of the head and neck stretched past its limit at the rest, and in motion (seven
+//              motions, every skinning method, a body's change on the rest and as a layer, a smile in a motion) no more
+//              than the plain body's skinning stretches it, in expressions no more than 2.5×; no crease where the head
+//              meets the neck, under the jaw or at the nape; the face's picture not smeared where it shows; the drawn eyes
+//              on the skin's eyes and the drawn mouth's parting where the lips part (mm); reliefs not stretched; pieces on
+//              the skin in motion and when a layer grows the head
 //   node engine/check/quality.mjs [--only skin,bones,feet,order,heads] [--print]   (--print: every measure, not only failures)
 import { createEngine } from '../src/engine.js';
 import { read } from './node-read.mjs';
@@ -24,7 +26,9 @@ import { headShares } from '../src/head/frame.js';
 import { formOnBody } from '../src/head/wrap.js';
 import { gradOf } from '../src/head/shapes.js';
 import { cross } from '../src/math.js';
-import { neighboursOf } from '../src/mesh.js';
+import { neighboursOf, normalsOf } from '../src/mesh.js';
+import { landmarksOf } from '../src/head/face.js';
+import { SPAN, CY, mouthLines, grinLines, along } from '../src/head/paint.js';
 
 const E = await createEngine({ read }), sk = E.skeleton;
 const argv = process.argv.slice(2), only = argv.includes('--only') ? argv[argv.indexOf('--only') + 1].split(',') : null, PRINT = argv.includes('--print');
@@ -35,6 +39,9 @@ const FULL = chars.filter(c => !['woman', 'man', 'girl', 'boy', 'child', 'oldwom
 const BODIES = ['moood-woman', 'moood-child', 'moood-oldman', 'anny-m-heavy', 'anny-T-chibi-baby17'];
 const MOMENTS = [['walk', 30], ['run', 20], ['sit', 100], ['jump', 45], ['dance', 60]];
 let failed = 0, passed = 0;
+// expressions have no counterpart on the plain body: an edge of the face no more than 2.5× its rest's (a smile draws the
+// mouth's corners out and up)
+const EXPR_LIMIT = 2.5;
 const check = (name, value, limit, unit = '') => {
   const ok = value <= limit;
   if (!ok) failed++; else passed++;
@@ -90,31 +97,31 @@ if (!only || only.includes('skin')) {
   }
 }
 
-// a piece's nearest points to the skin at the rest (within 4 mm): how much farther from the skin they are now (mm) —
-// the skin's nearest of the head's vertices, against the same at the rest
-function pieceGap(piece, skin, body) {
+// a piece's nearest points to the skin of the head at the rest (within 4 mm; `only`: which of the skin's vertices are
+// the head's): how much farther from the skin they are now (mm), against the same at the rest
+function pieceGap(piece, skin, body, only) {
   const R = piece.mesh.positions, S = body.mesh.positions, near = [];
-  for (const i of piece.mesh.used) { let b = -1, d = Infinity; for (let j = 0; j < body.mesh.N; j += 1) { if (!body.mesh.isUsed[j]) continue; const e = Math.hypot(R[i * 3] - S[j * 3], R[i * 3 + 1] - S[j * 3 + 1], R[i * 3 + 2] - S[j * 3 + 2]); if (e < d) { d = e; b = j; } } if (d < 0.004) near.push([i, b, d]); if (near.length > 40) break; }
+  for (const i of piece.mesh.used) { let b = -1, d = Infinity; for (let j = 0; j < body.mesh.N; j += 1) { if (!body.mesh.isUsed[j] || !only(j)) continue; const e = Math.hypot(R[i * 3] - S[j * 3], R[i * 3 + 1] - S[j * 3 + 1], R[i * 3 + 2] - S[j * 3 + 2]); if (e < d) { d = e; b = j; } } if (d < 0.004) near.push([i, b, d]); if (near.length > 40) break; }
   let worst = 0; for (const [i, j, d0] of near) { const p = piece.positions, q = skin.positions; worst = Math.max(worst, Math.hypot(p[i * 3] - q[j * 3], p[i * 3 + 1] - q[j * 3 + 1], p[i * 3 + 2] - q[j * 3 + 2]) - d0); }
   return worst * 1000;
 }
-// a relief: how far its points are from where their lift over the skin puts them (mm)
-function reliefGap(o, host) {
-  const m = o.mesh, T = host.mesh.triangles, P = host.positions; let worst = 0;
-  for (let v = 0; v < m.N; v++) {
-    const t = m.tri[v] * 3, [a, b, c] = [T[t] * 3, T[t + 1] * 3, T[t + 2] * 3], w = [m.bary[v * 3], m.bary[v * 3 + 1], m.bary[v * 3 + 2]];
-    const base = [0, 1, 2].map(k => w[0] * P[a + k] + w[1] * P[b + k] + w[2] * P[c + k]), d = Math.hypot(...[0, 1, 2].map(k => o.positions[v * 3 + k] - base[k]));
-    worst = Math.max(worst, Math.abs(d - m.lift[v]));
-  }
-  return worst * 1000;
-}
-// the sharpest angle (degrees) between two triangles that share an edge, among triangles `in(t)`
+// the sharpest angle (degrees) between two triangles that share an edge, among triangles `inside(t)`
 function sharpest(mesh, P, inside) {
   const T = mesh.triangles, byEdge = new Map(), nrm = t => { const a = T[t] * 3, b = T[t + 1] * 3, c = T[t + 2] * 3, n = cross([P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], [P[c] - P[a], P[c + 1] - P[a + 1], P[c + 2] - P[a + 2]]), l = Math.hypot(...n) || 1; return n.map(v => v / l); };
   let worst = 0;
   for (let t = 0; t < T.length; t += 3) { if (!inside(t)) continue; for (let e = 0; e < 3; e++) { const a = T[t + e], b = T[t + (e + 1) % 3], k = Math.min(a, b) + ',' + Math.max(a, b); if (byEdge.has(k)) { const n1 = nrm(byEdge.get(k)), n2 = nrm(t); worst = Math.max(worst, Math.acos(Math.max(-1, Math.min(1, n1[0] * n2[0] + n1[1] * n2[1] + n1[2] * n2[2]))) * 180 / Math.PI); } else byEdge.set(k, t); } }
   return worst;
 }
+// how far (mm) a vertex stands out of its neighbours or sinks into them — along its normal, the umbrella's reach — more
+// than the same vertex on `base` does (a spike, a crumple; a designed form's own curves are smooth): the most, over `only`
+function bumps(mesh, P, base, only) {
+  const nb = neighboursOf(mesh), NA = normalsOf(P, mesh.triangles, undefined, mesh.used), NB = normalsOf(base, mesh.triangles, undefined, mesh.used);
+  const reach = (Q, N, i) => { let x = 0, y = 0, z = 0; const a = nb.start[i], b = nb.start[i + 1]; for (let q = a; q < b; q++) { const j = nb.list[q]; x += Q[j * 3]; y += Q[j * 3 + 1]; z += Q[j * 3 + 2]; } const n = b - a; return Math.abs((Q[i * 3] - x / n) * N[i * 3] + (Q[i * 3 + 1] - y / n) * N[i * 3 + 1] + (Q[i * 3 + 2] - z / n) * N[i * 3 + 2]); };
+  let worst = 0; for (const i of mesh.used) if (only(i) && nb.start[i + 1] > nb.start[i]) worst = Math.max(worst, reach(P, NA, i) - reach(base, NB, i));
+  return worst * 1000;
+}
+// an attached mesh's (a relief's) edges in a moment against its own at the rest
+function reliefStretch(o, rest) { const T = o.mesh.triangles, P = o.positions; let worst = 0; for (let t = 0; t < T.length; t += 3) for (let e = 0; e < 3; e++) { const a = T[t + e] * 3, b = T[t + (e + 1) % 3] * 3, l0 = Math.hypot(rest[a] - rest[b], rest[a + 1] - rest[b + 1], rest[a + 2] - rest[b + 2]); if (l0 > 1e-6) worst = Math.max(worst, Math.hypot(P[a] - P[b], P[a + 1] - P[b + 1], P[a + 2] - P[b + 2]) / l0); } return worst; }
 
 // a figure's bones in a moment
 const bones = P => { const out = []; for (let j = 0; j < sk.J; j++) { const p = sk.parent[j]; if (p >= 0) out.push(Math.hypot(P[j * 3] - P[p * 3], P[j * 3 + 1] - P[p * 3 + 1], P[j * 3 + 2] - P[p * 3 + 2])); } return out; };
@@ -182,51 +189,107 @@ if (!only || only.includes('order')) {
 }
 
 if (!only || only.includes('heads')) {
-  const HM = [['walk', 30], ['run', 20], ['look-around', 60], ['dance', 60], ['sit', 100]], EXPR = ['blink', 'open', 'smile', 'browsUp'];
+  // the plain body's own limits where a head has a counterpart: in motion no more stretched than the plain body (×1.2,
+  // as the full-body presets), at the rest no more than 3× (as they); what has no counterpart says why its limit is what
+  // it is, beside it
+  const HM = [['walk', 30], ['run', 20], ['look-around', 60], ['dance', 60], ['sit', 100], ['jump', 45], ['bow', 45]], EXPR = ['blink', 'open', 'smile', 'browsUp'];
   for (const c of HEADS) {
     const spec = await E.character(c), base = await E.body(spec.body), { body } = await E.headBody(spec), mesh = body.mesh, P = mesh.positions, T = mesh.triangles;
-    const { omega } = headShares(mesh, sk), F = body.head.frame, wrap = spec.head.wrap;
-    const inHead = t => Math.min(omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]) > 0.9, band = t => { const w = [omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]]; return Math.max(...w) > 0.05 && Math.max(...w) < 0.7; };
-    // turned triangles
+    const { omega, jaw } = headShares(mesh, sk), F = body.head.frame, wrap = spec.head.wrap;
+    const G = wrap ? formOnBody(wrap.form, await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.wrapAt) }), wrap.neckSlim) : null;
+    const at = i => F.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]), ofHead = i => omega[i] > 0.5;
+    // the mouth's inside: where the skin is drawn as the mouth (between a drawn mouth's lips, in a grin's crescent) — there
+    // the lips' parting is held where the mouth is drawn, and what folds round it is the mouth's opening, drawn dark
+    const pic = i => [(mesh.uv[i * 2] - 0.5) * 2 * SPAN, (mesh.uv[i * 2 + 1] - 0.5) * 2 * SPAN + CY], drawnMouth = body.head.features.find(f => f.kind === 'mouth' && f.type !== 'none');
+    const lips = drawnMouth && (drawnMouth.type === 'grin' ? (({ top, bot }) => [top, bot])(grinLines(drawnMouth)) : (({ upper, lower }) => [upper, lower])(mouthLines(drawnMouth)));
+    const inMouth = i => { if (!lips) return false; const [x, y] = pic(i); return x > lips[0][0][0] && x < lips[0][lips[0].length - 1][0] && y < along(lips[0], x) + 0.01 && y > along(lips[1], x) - 0.01; };
+    // (under a nose set on as its own piece the skin is hidden: what it does there inside the piece doesn't count)
+    const hidden = i => G?.piece && G.nose(...at(i)) < 0.05;
+    const inHead = t => Math.min(omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]) > 0.9;
+    // turned triangles: against the designed form where it is wrapped on one, else against the body it came from
     let turned = 0;
-    if (wrap) {
-      const G = formOnBody(wrap.form, await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.formAt) }), wrap.neckSlim ?? 0.78), g = [0, 0, 0];
+    if (G) {
+      const g = [0, 0, 0];
       for (let t = 0; t < T.length; t += 3) {
         if (!inHead(t)) continue; const a = T[t] * 3, b = T[t + 1] * 3, d = T[t + 2] * 3;
-        const n = cross([P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], [P[d] - P[a], P[d + 1] - P[a + 1], P[d + 2] - P[a + 2]]);
-        gradOf(G.sdf, ...F.toL((P[a] + P[b] + P[d]) / 3, (P[a + 1] + P[b + 1] + P[d + 1]) / 3, (P[a + 2] + P[b + 2] + P[d + 2]) / 3), 0.004, g);
-        // (under a nose set on as its own piece the skin is hidden: what folds there inside the piece doesn't count)
-        const l = F.toL((P[a] + P[b] + P[d]) / 3, (P[a + 1] + P[b + 1] + P[d + 1]) / 3, (P[a + 2] + P[b + 2] + P[d + 2]) / 3);
-        if (n[0] * g[0] + n[1] * g[1] + n[2] * g[2] < 0 && !(G.piece && G.nose(...l) < 0.05)) turned++;
+        const n = cross([P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], [P[d] - P[a], P[d + 1] - P[a + 1], P[d + 2] - P[a + 2]]), l = F.toL((P[a] + P[b] + P[d]) / 3, (P[a + 1] + P[b + 1] + P[d + 1]) / 3, (P[a + 2] + P[b + 2] + P[d + 2]) / 3);
+        gradOf(G.sdf, ...l, 0.004, g);
+        if (n[0] * g[0] + n[1] * g[1] + n[2] * g[2] < 0 && !hidden(T[t]) && !(inMouth(T[t]) && inMouth(T[t + 1]) && inMouth(T[t + 2]))) turned++;
       }
     } else turned = turnedOver(T, base.mesh.positions, P, mesh.isUsed).n;
-    check(`${c}: head triangles turned${wrap ? ' against its designed form' : ''}`, turned, wrap ? 3 : 0);
-    // stretch: the head and neck at the rest against the base, and in motion against the plain body's skinning
+    check(`${c}: head triangles turned${G ? ' against its designed form' : ''}`, turned, 0);
+    // at the rest: no vertex standing out of its neighbours (a spike, a crumple) — the face, the jaw and under it, the join
+    check(`${c}: a vertex of the head standing out of its neighbours or sunk into them, beyond its base body's`, bumps(mesh, P, base.mesh.positions, i => omega[i] > 0.05 && !hidden(i) && !inMouth(i)), G ? 4 : 1.5, ' mm');   // (a designed form has its own small forms Anny's head hasn't: ears, a jowl's crease, up to 4 mm against Anny's smooth places)
     const headMesh = { triangles: Uint32Array.from([...Array(T.length / 3).keys()].filter(k => Math.max(omega[T[k * 3]], omega[T[k * 3 + 1]], omega[T[k * 3 + 2]]) > 0.05).flatMap(k => [T[k * 3], T[k * 3 + 1], T[k * 3 + 2]])) };
-    check(`${c} at rest: head edge stretch against its base body`, stretch(headMesh, base.mesh.positions, P), wrap ? 12 : 9, '×');   // (a wrap draws Anny's head out onto another form; Anny's own small nose and big eyes stretch her nostrils' and closed eye's own tiny edges up to 8×)
-    const fig = await E.figure(c), plain = await E.figure(resolve({ ...structuredClone(woman), body: spec.body }, sk));
-    for (const [m, t] of HM) {
-      const clip = await E.clip(m); fig.frame(clip, t, fig.pose); plain.frame(clip, t, plain.pose);
-      check(`${c} ${m}${t}: head edge stretch in motion against the plain body's`, stretch(headMesh, base.mesh.positions, fig.positions, P) / stretch(headMesh, base.mesh.positions, plain.positions), 1.3, '×');
-      // a piece's root against the skin: the nose piece's points nearest the skin at the rest stay as near
+    // (a wrap draws Anny's head out onto another form — a long nose, a big cranium, an eye's place: its edges at the rest
+    // are the design, not wear; Anny's own changes open moood's closed eye's sub-millimetre edges: see the README)
+    check(`${c} at rest: head edge stretch against its base body`, stretch(headMesh, base.mesh.positions, P), G ? 8 : 5, '×');
+    // in motion, with every skinning method, as a body's change of the form goes on the rest and as a layer, an expression
+    // in a motion: no more stretched than the plain body is there (against the base, or the head's own rest if longer)
+    const plainOf = o => E.figure(resolve({ ...structuredClone(woman), body: spec.body, ...o }, sk));
+    const moments = [...HM.map(([m, t]) => [m, t, {}, {}]), ['look-around', 60, { skinning: { method: 'dqs' } }, { skinning: { method: 'dqs' } }], ['look-around', 60, { skinning: { method: 'lbs' } }, { skinning: { method: 'lbs' } }],
+      ['walk', 30, { pose: [layer('squash', null)] }, { pose: [layer('squash', null)] }], ['walk', 30, { rest: [{ kind: 'preset', id: pinOf('silhouette-hourglass'), strength: 1, frames: 'keep' }] }, { rest: [{ kind: 'preset', id: pinOf('silhouette-hourglass'), strength: 1, frames: 'keep' }] }],
+      ['look-around', 60, { pose: [{ kind: 'expression', name: 'smile', weight: 1 }] }, {}]];
+    for (const [m, t, own, plainO] of moments) {
+      const figSpec = await E.expand(await E.resolve({ ...structuredClone(await E.description(c)), ...own, ...(own.pose && spec.pose.length ? { pose: [...spec.pose, ...own.pose] } : {}) }));
+      const fig = await E.figure(figSpec), plain = await plainOf(plainO), clip = await E.clip(m);
+      fig.frame(clip, t, fig.pose); plain.frame(clip, t, plain.pose);
+      // (each against the base body or its own rest, if longer: a change of the rest that shortened an edge doesn't
+      // make its length in motion a tear)
+      const figRest = (await E.headBody(figSpec)).body.mesh.positions, plainRest = plain.body.mesh.positions;
+      const what = `${m}${t}${own.skinning ? ' ' + own.skinning.method : ''}${own.rest ? ' on an hourglass' : ''}${own.pose ? ' with ' + (own.pose[0].kind === 'expression' ? 'a smile' : 'squash as a layer') : ''}`;
+      const lim = own.pose?.[0].kind === 'expression' ? EXPR_LIMIT : 1.2;
+      check(`${c} ${what}: head edge stretch in motion against the plain body's`, stretch(headMesh, base.mesh.positions, fig.positions, figRest) / stretch(headMesh, base.mesh.positions, plain.positions, plainRest), lim, '×');
       const nose = fig.outputs.find(o => o.name === 'nose');
-      if (nose) check(`${c} ${m}${t}: the nose piece off the skin, beyond its rest`, pieceGap(nose, fig.outputs[0], body), 3, ' mm');
-      for (const o of fig.outputs.filter(o => o.mesh.kind === 'attached')) check(`${c} ${m}${t}: the relief ${o.name} off its lift over the skin`, reliefGap(o, fig.outputs[0]), 0.1, ' mm');
+      if (nose) check(`${c} ${what}: the nose piece off the skin, beyond its rest`, pieceGap(nose, fig.outputs[0], body, ofHead), 2, ' mm');
+      // a relief no more stretched than the plain body is there (a smile's against its limit)
+      for (const o of fig.outputs.filter(o => o.mesh.kind === 'attached')) { const r = await E.figure(own.rest ? figSpec : spec); r.frame(null, 0, r.pose); check(`${c} ${what}: the relief ${o.name} stretched against its rest, against the plain body's`, reliefStretch(o, r.outputs.find(x => x.name === o.name).positions) / stretch(headMesh, base.mesh.positions, plain.positions, plainRest), lim, '×'); }
     }
-    // in the expressions: no edge stretched more than 2.5×
-    // (an open jaw: the lips between what the jaw carries and what it doesn't open — the skin there is the mouth's opening)
-    const { jaw } = headShares(mesh, sk), firm = (a, b) => (jaw[a] < 0.05 && jaw[b] < 0.05) || (jaw[a] > 0.95 && jaw[b] > 0.95);
+    // pieces follow the head's form as a pose layer (a bigger head: the hair grows with it)
+    if (body.head && spec.head.pieces.length) {
+      const big = await E.figure(await E.expand(await E.resolve({ ...structuredClone(await E.description(c)), pose: [layer('proportions-big-head', null)] }))); big.frame(null, 0, big.pose);
+      for (const o of big.outputs.filter(o => o.mesh.piece)) check(`${c}: its ${o.name} on the head grown by a layer, off the skin beyond its rest`, pieceGap(o, big.outputs[0], body, ofHead), 5, ' mm');   // (carried as one by the change of the skin under it, a piece can't follow the head's own unevenness: a bigger head grows its cranium more than its face)
+    }
+    // in the expressions: no edge stretched more than 2.5× (an open jaw: the lips between what the jaw carries and what it
+    // doesn't — Anny's mouth is closed skin, there it opens)
+    const firm = (a, b) => (jaw[a] < 0.05 && jaw[b] < 0.05) || (jaw[a] > 0.95 && jaw[b] > 0.95);
     for (const x of EXPR.filter(x => body.head.expressions[x])) {
       const f = await E.figure({ ...spec, pose: [{ kind: 'expression', name: x, weight: 1 }] }); f.frame(null, 0, f.pose);
       const jawed = !!body.head.expressions[x].jaw;
-      check(`${c} ${x}: head edge stretch in the expression${jawed ? ' (but the lips that open)' : ''}`, stretch(headMesh, P, f.positions, null, jawed ? firm : null), 2.5, '×');
+      check(`${c} ${x}: head edge stretch in the expression${jawed ? ' (but the lips that open)' : ''}`, stretch(headMesh, P, f.positions, null, jawed ? firm : null), EXPR_LIMIT, '×');
+      // (a relief of the lips in an open mouth: as the lips' skin, it opens)
+      if (!jawed) for (const o of f.outputs.filter(o => o.mesh.kind === 'attached')) { const r = await E.figure(spec); r.frame(null, 0, r.pose); check(`${c} ${x}: the relief ${o.name} stretched against its rest`, reliefStretch(o, r.outputs.find(y => y.name === o.name).positions), EXPR_LIMIT, '×'); }
     }
-    // no crease at the join: the sharpest angle between neighbouring triangles in the band between head and neck
-    // (the old man's jowls meet his neck in a shelf at the back, under his hood: Г3's form, left as it is)
-    check(`${c}: the sharpest fold where the head meets the neck, beyond the plain body's`, Math.max(0, sharpest(mesh, P, band) - sharpest(mesh, base.mesh.positions, band)), c === 'head-old' ? 60 : 25, '°');
-    // painted features only on the face's front: nothing behind the head (z < −0.15) or down the body shows the drawing
-    let off = 0; for (const i of mesh.used) { const l = F.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); if ((omega[i] <= 0.2 || l[2] <= -0.15) && mesh.paintMask[i] > 0) off++; }
-    check(`${c}: vertices behind the face or on the body that show the face's drawing`, off, 0);
+    // no crease where the head meets the neck, under the jaw and at the nape: the sharpest angle between neighbouring
+    // triangles of the head's lower part and its join, beyond the plain body's
+    const low = t => { const w = [omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]]; return Math.max(...w) > 0.05 && (Math.min(...w) < 0.97 || at(T[t])[1] < (G?.chin ?? -1.1) + 0.35) && !hidden(T[t]); };
+    check(`${c}: the sharpest fold where the head meets the neck, under the jaw and at the nape, beyond the plain body's`, Math.max(0, sharpest(mesh, P, low) - sharpest(mesh, base.mesh.positions, low)), 25, '°');
+    // the face's picture: shown only where it isn't smeared — a triangle showing it (at least half) is no more than 4×
+    // longer on the skin than in the picture (round the sides of the head a front projection would smear it along the skin)
+    let smear = 0;
+    for (let t = 0; t < T.length; t += 3) {
+      const v = [T[t], T[t + 1], T[t + 2]]; if (Math.min(...v.map(i => mesh.paintMask[i])) < 0.5) continue;
+      for (let e = 0; e < 3; e++) { const a = v[e], b = v[(e + 1) % 3], w = Math.hypot(...[0, 1, 2].map(k => P[a * 3 + k] - P[b * 3 + k])) / F.R, u = Math.hypot(mesh.uv[a * 2] - mesh.uv[b * 2], mesh.uv[a * 2 + 1] - mesh.uv[b * 2 + 1]) * 2 * SPAN; if (w > 1e-4) smear = Math.max(smear, w / Math.max(u, 1e-9)); }
+    }
+    check(`${c}: the face's picture smeared over the skin where it shows`, smear, 4, '×');
+    // the drawing on the mesh's own features: the eyes' middles where Anny's eyes are (where the wrap put them), the mouth's
+    // parting where the lips part (mm, in the picture)
+    const L = landmarksOf(body), mm = d => d * F.R * 1000;
+    const eye = body.head.features.find(f => f.kind === 'eye');
+    if (eye) for (const [s, n] of [[1, 'eyeL'], [-1, 'eyeR']]) { const p = pic(L[n]); check(`${c}: the drawn ${n === 'eyeL' ? 'left' : 'right'} eye's middle off the skin's eye`, mm(Math.hypot(p[0] - s * eye.x, p[1] - eye.y)), 3, ' mm'); }
+    const mouth = body.head.features.find(f => f.kind === 'mouth' && f.type !== 'none');
+    if (mouth) {
+      const line = mouth.type === 'grin' ? null : mouthLines(mouth).line, g = mouth.type === 'grin' ? grinLines(mouth) : null; let off = 0;
+      for (let t = 0; t < T.length; t += 3) {
+        const v = [T[t], T[t + 1], T[t + 2]]; if (Math.max(...v.map(i => jaw[i])) - Math.min(...v.map(i => jaw[i])) < 0.5 || v.some(i => omega[i] < 0.9)) continue;
+        for (const i of v) {
+          if (jaw[i] >= 0.5) continue; const [x, y] = pic(i), half = mouth.type === 'grin' ? mouth.w : mouth.w / 2; if (Math.abs(x) > 0.8 * half || Math.abs(y - mouth.y) > half) continue;
+          // a drawn mouth: its parting line; a grin: anywhere inside its crescent
+          off = Math.max(off, line ? Math.abs(y - along(line, x)) : Math.max(0, y - along(g.top, x), along(g.bot, x) - y));
+        }
+      }
+      check(`${c}: the lips' parting off the drawn mouth's`, mm(off), 3, ' mm');
+    }
   }
 }
 

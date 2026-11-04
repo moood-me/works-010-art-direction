@@ -468,13 +468,13 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "limbs-straight-curved@ddab0daca59bfc93",
+      "id": "limbs-straight-curved@2a58e668cd7b83f9",
       "strength": 1,
       "frames": "keep"
      },
      {
       "kind": "preset",
-      "id": "limbs-arcs@25e8e7e69db2f6fd",
+      "id": "limbs-arcs@269268ce04c00d50",
       "strength": 1,
       "frames": "keep"
      }
@@ -492,7 +492,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "caricature@527d601146cdede8",
+      "id": "caricature@8e3e069eb82e157b",
       "strength": 1,
       "frames": "keep"
      }
@@ -510,7 +510,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "line-side-c-forward@f1464ef46c2e791d",
+      "id": "line-side-c-forward@485645cb22f0da25",
       "strength": 1,
       "frames": "turn"
      }
@@ -527,7 +527,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "silhouette-hourglass@565ed08bea30f798",
+      "id": "silhouette-hourglass@c8a2f729903dd811",
       "strength": 1,
       "frames": "keep"
      }
@@ -645,7 +645,7 @@
     "pose": [
      {
       "kind": "preset",
-      "id": "smooth-8cm@d254230a59b49a36",
+      "id": "smooth-8cm@85a43bd41d2e4934",
       "strength": 0.7
      }
     ]
@@ -661,13 +661,13 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "contour-anime@3dff92a902fd4cd8",
+      "id": "contour-anime@e5e800c71d29d6e8",
       "strength": 0.5,
       "frames": "keep"
      },
      {
       "kind": "preset",
-      "id": "masses-shoulders@5bde23c62a0755e5",
+      "id": "masses-shoulders@661987047cd5b54f",
       "strength": 1,
       "frames": "keep"
      }
@@ -820,7 +820,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "silhouette-hourglass@565ed08bea30f798",
+      "id": "silhouette-hourglass@c8a2f729903dd811",
       "strength": 0.8,
       "frames": "keep"
      }
@@ -838,7 +838,7 @@
     "pose": [
      {
       "kind": "preset",
-      "id": "line-side-c-forward@f1464ef46c2e791d",
+      "id": "line-side-c-forward@485645cb22f0da25",
       "strength": 1,
       "space": "upright"
      }
@@ -871,10 +871,10 @@
    "picture": true,
    "over": {
     "head": {
-     "preset": "head-red@8f69e32ec83f1ab1",
+     "preset": "head-red@29c67093a77c3aad",
      "light": {
       "kind": "preset",
-      "id": "light-plain@6ab58cddbde93d2c"
+      "id": "light-plain@de004442016e11a6"
      }
     }
    }
@@ -890,10 +890,10 @@
    "picture": true,
    "over": {
     "head": {
-     "preset": "head-red@8f69e32ec83f1ab1",
+     "preset": "head-red@29c67093a77c3aad",
      "light": {
       "kind": "preset",
-      "id": "light-toon@21d01379abf7249c"
+      "id": "light-toon@50a33984fee7ce0d"
      }
     }
    }
@@ -909,10 +909,10 @@
    "picture": true,
    "over": {
     "head": {
-     "preset": "head-red@8f69e32ec83f1ab1",
+     "preset": "head-red@29c67093a77c3aad",
      "light": {
       "kind": "preset",
-      "id": "light-soft-form@acd10a62c2ad5b5e"
+      "id": "light-soft-form@2985c00435177bfe"
      }
     }
    }

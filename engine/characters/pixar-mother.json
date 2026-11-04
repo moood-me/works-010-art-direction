@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 4,
+ "version": 5,
  "id": "pixar-mother",
  "label": {
   "ru": "Pixar: мама",
@@ -10,37 +10,37 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "smooth-4cm@aaffdc487d4b691c",
+   "id": "smooth-4cm@b3d12d7799128442",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "contour-pixar@4b0e3a57f2b5448f",
+   "id": "contour-pixar@9be7fdc1c7a2c9d7",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "masses-pixar-bust@82a60daaa6b0eb34",
+   "id": "masses-pixar-bust@a5143062d1a77155",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "masses-pixar-glutes@31241e2f232e9b92",
+   "id": "masses-pixar-glutes@f51d3358459896eb",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "masses-shoulders@5bde23c62a0755e5",
+   "id": "masses-shoulders@661987047cd5b54f",
    "strength": 0.8,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-small-hands-feet@e6a02502687f9fb9",
+   "id": "proportions-small-hands-feet@f596744cc7bec954",
    "strength": 0.6,
    "frames": "keep"
   }

@@ -7,9 +7,10 @@ import { resolve, upgrade } from '../src/character.js';
 import { makeMesh } from '../src/mesh.js';
 import { Pose } from '../src/pose.js';
 import { withRest } from '../src/changes.js';
-import { DEFORMERS } from '../src/deform.js';
+import { DEFORMERS, complete } from '../src/deform.js';
 import { regionsOf } from '../src/regions.js';
 import { headShares } from '../src/head/frame.js';
+import { wrapKey, wrapHead } from '../src/head/wrap.js';
 
 const E = await createEngine({ read });
 let failed = 0, passed = 0;
@@ -21,7 +22,7 @@ const desc = o => ({ ...structuredClone(woman), ...o });
 const maxApart = (a, b, idx) => { let m = 0; for (const i of idx) m = Math.max(m, Math.hypot(a[i * 3] - b[i * 3], a[i * 3 + 1] - b[i * 3 + 1], a[i * 3 + 2] - b[i * 3 + 2])); return m; };
 const all = n => Array.from({ length: n }, (_, i) => i);
 // the head's deformers, each with what it needs (src/head/)
-const { kind: _wrap, ...wrapCase } = (await E.preset('head-red')).head.form[0];
+const { kind: _wrap, ...wrapCase } = (await E.preset('form-red')).changes[0];
 const HEAD_CASES = { wrap: wrapCase, face: { changes: { 'nose-scale-vert-incr': 1 } }, headOf: { body: `moood-child@${(await E.body('moood-child')).hash.slice(0, 16)}` },
   points: { moves: { noseTip: [0, 0, 0.2] } }, cage: { moves: [{ at: [1, 2, 2], by: [0, 0.2, 0] }] }, warps: { warps: [{ kind: 'push', at: [0, -0.6, 0.9], r: 0.3, by: [0, 0, 0.2] }] } };
 
@@ -39,7 +40,7 @@ await test('a description: unknown keys and values refused', async () => {
 await test('a description of an earlier version: refused with the way to upgrade; the upgrade gives the stored preset', async () => {
   const v1 = { format: 'engine/character', version: 1, id: 'woman', label: woman.label, body: 'moood-woman',
     skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} }, look: woman.look };
-  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 4/);
+  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 5/);
   const up = upgrade(v1, { bodyPin: woman.body });
   ok(JSON.stringify(resolve(up, E.skeleton)) === JSON.stringify(resolve(woman, E.skeleton)), 'the upgraded woman is not the preset');
   const v1c = { ...v1, skinning: { method: 'dqs', clavicleShare: 1 / 3 }, motion: { corrections: { armsOff: { degrees: 5 }, dampHeadSpine: { on: false } } } };
@@ -212,7 +213,7 @@ await test('a character that starts from another (a full-body preset as a part):
   const princess = await E.description('disney-princess'), base = await E.base(`disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`);
   ok(base.id === 'disney-princess', 'the base was not read');
   const pin = `disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`;
-  const mine = { format: 'engine/character', version: 4, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
+  const mine = { format: 'engine/character', version: 5, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
     rest: [{ kind: 'squash', stretch: 0.1, frames: 'keep' }], pose: [{ kind: 'armsOff', degrees: 5 }], look: { skin: '#aa8877' } };
   const spec = await E.resolve(mine), p = await E.resolve(princess);
   ok(spec.body === p.body && spec.rest.length === p.rest.length + 1 && spec.rest.at(-1).kind === 'squash' && spec.pose.at(-1).kind === 'armsOff', 'not the base and then its own');
@@ -272,13 +273,43 @@ await test('heads: a face deformer on the rest and as a pose layer is the same; 
   ok(maxApart(lay.positions, rest.positions, lay.outputs[0].mesh.used) < 0.004, 'the layer and the rest change differ');
   await refuses(() => E.restBody(resolve(desc({ rest: [{ kind: 'face', changes: { 'nose-long-incr': 1 }, frames: 'keep' }] }), E.skeleton)), /Anny has no face change "nose-long-incr"/);
 });
-await test('heads: the head to collide with moves with the Head joint', async () => {
-  const f = await E.figure('head-red'), clip = await E.clip('look-around'); f.step(clip, 0);
-  const shape = f.headShape(), H = E.skeleton.index.Head, P0 = [f.pose.P[H * 3], f.pose.P[H * 3 + 1] + 0.08, f.pose.P[H * 3 + 2]], d0 = shape.distance(...P0);
-  ok(d0 < 0, `a point in the head is outside its shape (${d0})`);
-  f.step(clip, 1); f.step(clip, 2);
-  const P1 = [f.pose.P[H * 3], f.pose.P[H * 3 + 1] + 0.08, f.pose.P[H * 3 + 2]];
-  ok(shape.distance(...P1) < 0, 'the shape did not go with the head');
+await test('heads: the head to collide with is in the pose it is given, its jaw with the Jaw joint; the neck to collide with', async () => {
+  const f = await E.figure('head-red'), clip = await E.clip('look-around'), H = E.skeleton.index.Head, p = new Pose(f.rig.J);
+  f.frame(clip, 60, p);
+  const inHead = [p.P[H * 3], p.P[H * 3 + 1] + 0.08, p.P[H * 3 + 2]], s = f.headShape(p);
+  ok(s.distance(...inHead) < 0, `a point in the head is outside its shape (${s.distance(...inHead)})`);
+  const n = s.normal(inHead[0], inHead[1] + 0.2, inHead[2]); ok(n[1] > 0.7, `the shape's normal above the head points ${n}`);
+  await refuses(async () => f.headShape(), /the pose it is in/);
+  // an open mouth: a point just under the chin at rest is inside the shape once the jaw opens
+  const shut = await E.figure('head-red'), open = await E.figure({ ...await E.character('head-red'), pose: [{ kind: 'expression', name: 'open', weight: 2 }] });
+  shut.frame(null, 0, shut.pose); open.frame(null, 0, open.pose);
+  const F = shut.body.head.frame, chin = F.toW(0, -1.12, 0.45), d0 = shut.headShape(shut.pose).distance(...chin), d1 = open.headShape(open.pose).distance(...chin);
+  ok(Math.abs(d1 - d0) > 0.002, `the jaw's part of the shape did not move with the jaw (${d0} → ${d1})`);
+  const neck = f.neckShape(p), N2 = E.skeleton.index.Neck2; ok(neck.distance([p.P[N2 * 3], p.P[N2 * 3 + 1], p.P[N2 * 3 + 2]]) < 0, 'the neck joint is outside the neck');
+});
+await test('heads: a wrapped head is stored for every character, and what is stored is what the wrap makes now', async () => {
+  for (const c of (await E.characters()).characters) {
+    const spec = await E.character(c.id); if (spec.head?.wrapAt == null) continue;
+    const body = await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.wrapAt) });
+    ok(await E.stored('wraps', wrapKey(complete(spec.head.wrap), body)), `${c.id}: its wrap is not stored (node engine/tools/characters.mjs wraps)`);
+  }
+  const spec = await E.character('head-mask'), w = complete(spec.head.wrap), body = await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.wrapAt) });
+  const stored = (await E.stored('wraps', wrapKey(w, body))).positions, made = wrapHead(body, w.form, w.marks, w.neckSlim, w.onto);
+  ok(maxApart(stored, made, body.mesh.used) < 1e-6, 'the stored wrap is not what the wrap makes now — its version (src/head/version.js) was not raised');
+});
+await test('heads: a head taken as a part — its form weakened, a way taken away, a feature changed by its id, features from a preset', async () => {
+  const red = await E.preset('head-red'), index = (await E.presets()).presets, pinOf = id => index.find(p => p.id === id).pin, redPin = pinOf('head-red');
+  const h = await E.headOf({ preset: redPin, strength: 0.5, features: [{ id: 'eyes', as: 'volume' }, { kind: 'off', id: 'brows' }], pieces: [{ kind: 'off', id: 'hair' }] });
+  ok(h.form[0].strength === 0.5 && h.form[0].name === 'form-red', `the form: ${JSON.stringify(h.form.map(c => [c.name, c.strength]))}`);
+  const eyes = h.features.find(f => f.id === 'eyes'), base = (await E.headOf(red.head)).features.find(f => f.id === 'eyes');
+  ok(eyes.as === 'volume' && eyes.iris.join() === base.iris.join(), 'the eyes not changed by their id alone');
+  ok(!h.features.some(f => f.id === 'brows') && !h.pieces.some(p => p.id === 'hair'), 'what was taken away is there');
+  const off = await E.headOf({ preset: redPin, form: [{ kind: 'off', name: 'form-red' }] });
+  ok(!off.form.length, 'the way was not taken away');
+  await refuses(() => E.headOf({ preset: redPin, features: [{ id: 'eyes', w: 7 }] }), /7 is above/);
+  await refuses(() => E.headOf({ features: [{ id: 'eyes', as: 'volume' }] }), /to change: there is none/);
+  const dots = await E.headOf({ preset: redPin, features: [{ kind: 'preset', id: pinOf('features-dots') }] });
+  ok(dots.features.find(f => f.id === 'eyes').irisScale === 2.2, 'a features preset did not take the place of the head\'s');
 });
 console.log(failed ? `${failed} of ${passed + failed} failed` : `all ${passed} hold`);
 process.exit(failed ? 1 : 0);
