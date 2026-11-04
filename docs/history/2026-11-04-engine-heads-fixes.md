@@ -91,3 +91,15 @@ toon light, the neck join in plain light, the old man's grin opening; the viewer
 `node engine/tools/sheets.mjs engine/tools/sheets/heads.json` (a new sheet `fixes`), `node engine/tools/overlay.mjs`.
 Checks: `units.mjs`, `quality.mjs`, `numbers.mjs`, `pictures.mjs` — stored numbers and pictures refreshed for the head
 characters only (every `head-*` case), after looking; bodies and every other character unchanged.
+
+**After the lead agent looked (same day).** Two things were raised on the heads without a wrap. The dark patch round the
+mouth and down the jaw on "Anny's face by her settings": this is shading, not a fault in the mesh. Her soft-chin preset
+(chin lower and drawn back) turns the skin under the mouth downward, away from the key light and into the floor's
+darker light. The patch stays the same with cast shadows off and with the features off, and it goes when the chin
+preset is left out. The dark band on the neck is the head's cast shadow, as on the plain body. Two fixes were tried and
+taken back. Easing the cast shadow where the skin turns from the light changed nothing. Smoothing the face changes over
+moood's mesh pulled the closed eye slit open, and the picture check failed. The open mouth on Anny's own head with lips
+as volume read as a square hole with a tongue. Her mouth is closed skin, so the jaw parts the two lip reliefs over
+stretched skin, and this can't be made to read well. So `head-points` and `head-anny-age` no longer take the open mouth
+(`{kind: "off", name: "open"}`; README). A painted mouth on her head (`head-cage`) opens as a small dark mouth, and the
+sheets show that one instead.

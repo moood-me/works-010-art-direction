@@ -483,7 +483,10 @@ the clothes' stage makes garments of it (stage 4), and no clothes are carried (t
 is carried as one (by the affine change of the skin under it): it can't follow the head's own unevenness — a bigger
 head grows its cranium more than its face, a piece's far side lags by a few millimetres. The old man's nape and jowls
 keep the ledge his Г3 form has (his cranium over a thick neck, jowls over it). A drawn mouth is set on where its lips
-part after the wrap's easing (up to ~5 mm from its design on the long-nosed man). Expressions are one at a time
+part after the wrap's easing (up to ~5 mm from its design on the long-nosed man). On Anny's own head, lips as volume don't open well:
+her mouth is closed skin, and an open jaw parts the two reliefs over a square gap of stretched, painted skin that reads
+as a hole with a tongue — the two plain heads with lips as volume (`head-points`, `head-anny-age`) take no open mouth
+(`{kind: "off", name: "open"}`); a painted mouth on her head opens as a small dark mouth. Expressions are one at a time
 (blending them, mouth shapes for speech, a gaze that follows: not now); a closing eye is drawn graded by its weight, a
 smile's happy eyes switch at half. Toon light on a head without a designed form (Anny's own, deformed) shows the mesh's
 small forms as hard tones.

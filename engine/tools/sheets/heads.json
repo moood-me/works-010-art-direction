@@ -913,8 +913,8 @@
      "focus": "Head",
      "size": 0.3,
      "view": "level",
-     "label": "объём черт: рот открыт",
-     "char": "head-points",
+     "label": "точки: рот открыт",
+     "char": "head-cage",
      "pose": [
       {
        "kind": "expression",
@@ -1632,8 +1632,8 @@
      "view": "level"
     },
     {
-     "label": "объём: рот открыт",
-     "char": "head-points",
+     "label": "точки: рот открыт",
+     "char": "head-cage",
      "focus": "Head",
      "size": 0.16,
      "view": "level",

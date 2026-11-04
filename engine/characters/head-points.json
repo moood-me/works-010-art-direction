@@ -25,6 +25,10 @@
    {
     "kind": "preset",
     "id": "expressions-drawn@1c90b27acf342e72"
+   },
+   {
+    "kind": "off",
+    "name": "open"
    }
   ],
   "light": {
