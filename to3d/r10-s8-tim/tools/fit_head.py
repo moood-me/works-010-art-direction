@@ -163,8 +163,9 @@ def main():
            for s in (1, -1)}
     # the lower face is the drawing's smooth mask (a puppet's cheeks): less of the base's folds there
     k = K_FACE * np.clip((V0[:, 1] + 0.16) / 0.12, 0, 1)
-    k = k + (K_NOSE - K_FACE) * smooth_mask(nose, adj, 6) + (K_LIPS - K_FACE) * np.minimum(1, 1.6 * smooth_mask(lips, adj, 8))
-    k = k + (K_EAR - K_FACE) * smooth_mask(ear[1] | ear[-1], adj, 3)
+    for mask, kk in ((smooth_mask(nose, adj, 6), K_NOSE), (np.minimum(1, 1.6 * smooth_mask(lips, adj, 8)), K_LIPS),
+                     (smooth_mask(ear[1] | ear[-1], adj, 3), K_EAR)):
+        k = k * (1 - mask) + kk * mask
     k = k * (1 - smooth_mask(underpatch, adj, 6))
     V = S1 + k[:, None] * (det[:, :1] * N1 + det[:, 1:2] * t1 + det[:, 2:] * b1)
     global LOWZ
