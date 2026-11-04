@@ -73,13 +73,13 @@ scene.background = backdrop();
 const camera = new THREE.PerspectiveCamera(26, 1, 0.05, 50);
 camera.position.set(-0.9, 0.95, 2.6);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0.62, 0); controls.enableDamping = true; controls.minDistance = 0.4; controls.maxDistance = 6; controls.update();
+controls.target.set(0, 0.62, 0); controls.enableDamping = !shots; controls.minDistance = 0.4; controls.maxDistance = 6; controls.update();
 
 const key = new THREE.DirectionalLight('#ffe2c2', 3.2); key.position.set(-1.6, 2.2, 1.6); key.castShadow = true;
 key.shadow.mapSize.set(2048, 2048); key.shadow.camera.left = -1; key.shadow.camera.right = 1; key.shadow.camera.top = 1.6;
 key.shadow.camera.bottom = -0.4; key.shadow.camera.near = 0.5; key.shadow.camera.far = 6; key.shadow.radius = 5; key.shadow.bias = -0.0004;
 key.shadow.normalBias = 0.01;
-const rim = new THREE.DirectionalLight('#a8c4ff', 2.0); rim.position.set(1.4, 1.4, -1.6);
+const rim = new THREE.DirectionalLight('#a8c4ff', 1.3); rim.position.set(1.4, 1.4, -1.6);
 const fill = new THREE.HemisphereLight('#c8c4d8', '#2a2018', 0.4);
 const rig = new THREE.Group(); rig.add(key, rim, key.target, rim.target); scene.add(rig, fill);
 
@@ -123,8 +123,7 @@ const knit = (base, stripe, rib) => sculpted(P({ color: base, roughness: 0.9, sh
                     diffuseColor.rgb *= 0.72 + 0.28 * abs(sin(vTuv.x / ${rib} * 3.14159));` : `diffuseColor.rgb *= 0.75 + 0.25 * abs(sin(vTuv.x / ${rib} * 3.14159));` });
 const MATS = {
   skin: P({ map: tex('face.png'), roughness: 0.48, clearcoat: 0.15, clearcoatRoughness: 0.4, sheen: 0.25, sheenColor: '#ff9a80', vertexColors: true }),
-  hair: sculpted(P({ color: '#6a3e24', roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.35 }),
-    { height: '0.0004 * sin(vTuv.x * 28.27)' }),
+  hair: P({ color: '#6a3e24', roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.35 }),
   eye: P({ map: tex('iris.png'), roughness: 0.25, clearcoat: 1.0, clearcoatRoughness: 0.02 }),
   sweater: knit('#2c4a72', '#f0e6d2', 0.013), cuff: knit('#24406a', null, 0.005), sock: knit('#e8e0d0', null, 0.006),
   shorts: P({ color: '#6a5a3a', roughness: 1.0, sheen: 0.9, sheenRoughness: 0.6, sheenColor: '#b0a080' }),
@@ -189,7 +188,8 @@ const follow = new THREE.Vector3();
 function placeCamera() {
   const hx = fig.pose ? fig.pose.P[HIPS * 3] : 0, hz = fig.pose ? fig.pose.P[HIPS * 3 + 2] : 0;
   const hy = fig.pose ? fig.pose.P[HI * 3 + 1] : 0.85;
-  if (near) { controls.target.set(hx, hy + 0.13, hz); camera.position.set(hx - 0.25, hy + 0.2, hz + 0.95); }
+  if (near) { const fx = fig.pose ? fig.pose.P[HI * 3] : hx, fz = fig.pose ? fig.pose.P[HI * 3 + 2] : hz;
+    controls.target.set(fx, hy + 0.14, fz); camera.position.set(fx - 0.3, hy + 0.17, fz + 1.05); }
   else { controls.target.set(hx, 0.62, hz); camera.position.set(hx - 0.9, 0.95, hz + 2.6); }
   controls.update();
 }

@@ -19,9 +19,9 @@ FILMS = {
                  cam=(2.2, 0.62, -38, 50), size=(640, 720)),
     'wave': dict(motion='wave', life=dict(talk=True, seed=5, expr={'grin': 1}), cam=(1.9, 0.66, -25, 50), size=(640, 720)),
     'jump': dict(motion='jump', life=dict(seed=9, expr=[[0, {'surprise': 1}], [1.4, {'joy': 1}]]), cam=(2.4, 0.7, -30, 50), size=(640, 720)),
-    'face': dict(motion='idle', seconds=7.0, life=dict(talk=True, talkTo=3.2, seed=11,
-                 expr=[[0, {'calm': 1}], [3.4, {'joy': 1}], [4.4, {'surprise': 1}], [5.2, {'sad': 1}], [6.0, {'anger': 1}]]),
-                 cam=(0.95, 'head', -20, 85), size=(640, 640)),
+    'face': dict(motion='idle', seconds=6.0, life=dict(talk=True, talkTo=2.4, seed=11,
+                 expr=[[0, {'calm': 1}], [2.6, {'joy': 1}], [3.5, {'surprise': 1}], [4.3, {'sad': 1}], [5.1, {'anger': 1}]]),
+                 cam=(0.95, 'head', -20, 85), size=(560, 560)),
     'turn': dict(motion='bow', still=0, seconds=5.0, life=dict(seed=2, expr={'calm': 1}), cam=(2.0, 0.6, 'spin', 50),
                  size=(560, 720)),
 }
