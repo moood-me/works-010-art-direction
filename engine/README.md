@@ -552,7 +552,7 @@ s to keep their lengths, 0.1–0.4 s a frame); cloth meeting the skin by one sea
 the cost: the points kept do it); hard tethers (they fought the body where cloth goes round it and threw it at 60 m/s);
 placing a reset straight in the pose; limiting how far an edge is shortened in a pass where it touches the body (against
 a knee drawn through the cloth: it tore a dress pressed on the legs by the wind instead). A frame of a dressed figure's
-whole step costs 24–115 ms in node (a dress 24–36, a T-shirt and trousers 65–78, three garments 100–115); several characters at once,
+whole step costs 24–126 ms in node (a dress 24–30, a T-shirt and trousers 65–77, three garments 98–126); several characters at once,
 on the GPU, are the later task — the step allocates nothing and works on flat arrays, garment by garment.
 
 **Chains** (`clipOf`). A motion made with `make_motion(after: {key, frames})` begins with the other's last frames.
@@ -784,7 +784,10 @@ Standing still, most cloth keeps within a millimetre or two a frame, but not all
 (between his thighs, which touch: no room; on his back, where the cloth stands about 3 cm off the skin) tremble by
 1–3 cm, an oversized
 sweater standing off the body and a trouser hem at the ankle (over a rigid boot the cloth does not meet) by up to 9 mm
-at a few points. Gloves, belts, buttons and openings that close are not made. A frame of a dressed figure costs 24–115 ms in node:
+at a few points. Hair lying over clothes is not right yet: over a dress (Г3's red-haired girl, Г1's Alva, Ariel) it
+shimmers by 1–3 mm a frame in motion and up to 13 mm standing, where a lock goes under the dress's edge and out again;
+over a blouse (clothes-hair) by 5–8 mm jumping, dancing, sitting, with locks drawn out past twice their length (3 %);
+the hair's own checks fail on these four characters (all hair without clothes passes them). Gloves, belts, buttons and openings that close are not made. A frame of a dressed figure costs 24–126 ms in node:
 several characters at once (the GPU) are the later task.
 
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole

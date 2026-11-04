@@ -245,6 +245,681 @@
     ]
    }
   },
+  "clothes-child-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-child-jump40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "jump@c8e333e5c41655fe"
+    ]
+   }
+  },
+  "clothes-child-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-child-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54"
+   }
+  },
+  "clothes-child-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-child-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-child-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-disney-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-disney-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-disney-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189"
+   }
+  },
+  "clothes-disney-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-disney-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-disney-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-dress-chiffon-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-denim-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-free-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-half-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-dress-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "clothes-dress-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-dress-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-dress-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-granny-bow50": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "bow@d9fabdc14e115150"
+    ]
+   }
+  },
+  "clothes-granny-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-granny-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-granny-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f"
+   }
+  },
+  "clothes-granny-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-granny-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-granny-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-hair-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-hair-walk40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-heavy-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-heavy-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-heavy-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d"
+   }
+  },
+  "clothes-heavy-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-heavy-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-heavy-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-hero-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-hero-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-hero-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "clothes-hero-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-hero-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-hero-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-jacket-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-jacket-dance60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "dance@b66768274b1b929c"
+    ]
+   }
+  },
+  "clothes-jacket-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-jacket-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e"
+   }
+  },
+  "clothes-jacket-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-jacket-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-jacket-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-jeans-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-jeans-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-jeans-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "clothes-jeans-roll40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "roll@e3a7828522e32b20"
+    ]
+   }
+  },
+  "clothes-jeans-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-jeans-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-jeans-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-wind-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-wind-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-wind-light-walk40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-wind-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "clothes-wind-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-wind-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-wind-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-wind-wind-idle90": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "idle@5a4c6299ee254153"
+    ]
+   }
+  },
   "disney-princess-chain186": {
    "joints": 77,
    "sources": {
@@ -498,7 +1173,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -515,7 +1190,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -529,7 +1204,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -546,7 +1221,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -563,7 +1238,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -580,7 +1255,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -597,7 +1272,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -615,7 +1290,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
@@ -632,7 +1307,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
@@ -649,7 +1324,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
@@ -663,7 +1338,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
@@ -680,7 +1355,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
@@ -697,7 +1372,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
@@ -714,7 +1389,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
@@ -732,7 +1407,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -749,7 +1424,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -766,7 +1441,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -780,7 +1455,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -797,7 +1472,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -814,7 +1489,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -831,7 +1506,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -849,7 +1524,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -866,7 +1541,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -883,7 +1558,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -897,7 +1572,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -914,7 +1589,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -931,7 +1606,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -948,7 +1623,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -966,7 +1641,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "742d398e88f40775"
@@ -983,7 +1658,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "742d398e88f40775"
@@ -997,7 +1672,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "742d398e88f40775"
@@ -1014,7 +1689,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "742d398e88f40775"
@@ -1031,7 +1706,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "742d398e88f40775"
@@ -1048,7 +1723,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "742d398e88f40775"
@@ -1065,7 +1740,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1083,7 +1758,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1100,7 +1775,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1117,7 +1792,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1131,7 +1806,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1148,7 +1823,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1165,7 +1840,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1182,7 +1857,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "b5aa51ca20f9a0eb"
@@ -1200,7 +1875,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "946a1c10642b06dc"
@@ -1217,7 +1892,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "946a1c10642b06dc"
@@ -1231,7 +1906,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "946a1c10642b06dc"
@@ -1248,7 +1923,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "946a1c10642b06dc"
@@ -1265,7 +1940,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "946a1c10642b06dc"
@@ -1282,7 +1957,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "946a1c10642b06dc"
@@ -1299,7 +1974,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "946a1c10642b06dc"
@@ -1317,7 +1992,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -1331,7 +2006,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -1348,7 +2023,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -1362,7 +2037,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -1379,7 +2054,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -1396,7 +2071,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -1413,7 +2088,7 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2,
+     "pieces": 3,
      "hair": 5
     },
     "picture": "cff960f7af83e3a3"
@@ -1431,7 +2106,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
    }
@@ -1447,7 +2123,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
    }
@@ -1460,7 +2137,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
    }
@@ -1476,7 +2154,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
    }
@@ -1492,7 +2171,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
    }
@@ -1508,7 +2188,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "6e8dec4ae7daf3a3"
    }
@@ -1525,7 +2206,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "b000c846d4a01f73"
    }
@@ -1541,7 +2223,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "b000c846d4a01f73"
    }
@@ -1554,7 +2237,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "b000c846d4a01f73"
    }
@@ -1570,7 +2254,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "b000c846d4a01f73"
    }
@@ -1586,7 +2271,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "b000c846d4a01f73"
    }
@@ -1602,7 +2288,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "b000c846d4a01f73"
    }
@@ -1833,7 +2520,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "3d12fc0fbf69b892"
    }
@@ -1849,7 +2537,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "3d12fc0fbf69b892"
    }
@@ -1862,7 +2551,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "3d12fc0fbf69b892"
    }
@@ -1878,7 +2568,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "3d12fc0fbf69b892"
    }
@@ -1894,7 +2585,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "3d12fc0fbf69b892"
    }
@@ -1910,7 +2602,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "3d12fc0fbf69b892"
    }
@@ -1927,7 +2620,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f3d8f979c8d333be"
    }
@@ -1943,7 +2637,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f3d8f979c8d333be"
    }
@@ -1956,7 +2651,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f3d8f979c8d333be"
    }
@@ -1972,7 +2668,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f3d8f979c8d333be"
    }
@@ -1988,7 +2685,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f3d8f979c8d333be"
    }
@@ -2004,7 +2702,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f3d8f979c8d333be"
    }
@@ -2128,7 +2827,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "d45ba8473c57c888"
    }
@@ -2144,7 +2844,25 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-hood-look60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "look-around@07f516ad42bf68ca"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "d45ba8473c57c888"
    }
@@ -2157,7 +2875,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "d45ba8473c57c888"
    }
@@ -2173,7 +2892,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "d45ba8473c57c888"
    }
@@ -2189,7 +2909,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "d45ba8473c57c888"
    }
@@ -2205,7 +2926,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "d45ba8473c57c888"
    }
@@ -2222,7 +2944,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "9725422c0e602368"
    }
@@ -2238,7 +2961,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "9725422c0e602368"
    }
@@ -2251,7 +2975,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "9725422c0e602368"
    }
@@ -2267,7 +2992,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "9725422c0e602368"
    }
@@ -2283,7 +3009,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "9725422c0e602368"
    }
@@ -2299,7 +3026,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "9725422c0e602368"
    }
@@ -2316,7 +3044,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "8d847deea7b6211f"
    }
@@ -2332,7 +3061,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "8d847deea7b6211f"
    }
@@ -2345,7 +3075,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "8d847deea7b6211f"
    }
@@ -2361,7 +3092,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "8d847deea7b6211f"
    }
@@ -2377,7 +3109,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "8d847deea7b6211f"
    }
@@ -2393,7 +3126,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "8d847deea7b6211f"
    }
@@ -2410,7 +3144,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2426,7 +3161,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2439,7 +3175,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2452,7 +3189,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2468,7 +3206,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2484,7 +3223,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2500,7 +3240,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2516,7 +3257,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "f9f1542a2926b433"
    }
@@ -2636,7 +3378,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "9db5ab3fae8a6fe2"
    }
@@ -2653,7 +3396,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2669,7 +3413,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2682,7 +3427,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2698,7 +3444,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "fe2b780fa0343560"
    }
@@ -2714,7 +3461,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2730,7 +3478,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2743,7 +3492,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2756,7 +3506,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2769,7 +3520,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2785,7 +3537,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2801,7 +3554,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2817,7 +3571,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "6589f9381bd63806"
    }
@@ -2966,7 +3721,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7ed3ef6bccaf062a"
    }
@@ -2982,7 +3738,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -2995,7 +3752,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -3011,7 +3769,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -3027,7 +3786,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -3040,7 +3800,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "5fb47d2c20790e1c"
    }
@@ -3056,7 +3817,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "cff960f7af83e3a3"
    }
@@ -3073,7 +3835,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7df17a32e3531532"
    }
@@ -3086,7 +3849,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7df17a32e3531532"
    }
@@ -3102,7 +3866,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7df17a32e3531532"
    }
@@ -3115,7 +3880,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7df17a32e3531532"
    }
@@ -3131,7 +3897,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7df17a32e3531532"
    }
@@ -3147,7 +3914,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7df17a32e3531532"
    }
@@ -3163,7 +3931,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "7df17a32e3531532"
    }
@@ -3180,7 +3949,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "228060a16277635f"
    }
@@ -3196,7 +3966,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "228060a16277635f"
    }
@@ -3209,7 +3980,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "228060a16277635f"
    }
@@ -3225,7 +3997,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "228060a16277635f"
    }
@@ -3241,7 +4014,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "228060a16277635f"
    }
@@ -3257,7 +4031,8 @@
      "wrap": 2,
      "picture": 2,
      "expressions": 2,
-     "pieces": 2
+     "pieces": 3,
+     "hair": 5
     },
     "picture": "228060a16277635f"
    }
@@ -4391,13 +5166,581 @@
    ],
    "offset": 1017684
   },
+  "clothes-child-chain186": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1055376
+  },
+  "clothes-child-jump40": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1124676
+  },
+  "clothes-child-lie170": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1193976
+  },
+  "clothes-child-rest": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1263276
+  },
+  "clothes-child-run20": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1332576
+  },
+  "clothes-child-sit100": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1401876
+  },
+  "clothes-child-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1471176
+  },
+  "clothes-disney-chain186": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1540476
+  },
+  "clothes-disney-lie170": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1605432
+  },
+  "clothes-disney-rest": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1670388
+  },
+  "clothes-disney-run20": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1735344
+  },
+  "clothes-disney-sit100": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1800300
+  },
+  "clothes-disney-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1865256
+  },
+  "clothes-dress-chain186": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1930212
+  },
+  "clothes-dress-chiffon-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1995168
+  },
+  "clothes-dress-denim-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2060124
+  },
+  "clothes-dress-free-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2125080
+  },
+  "clothes-dress-half-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2190036
+  },
+  "clothes-dress-lie170": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2254992
+  },
+  "clothes-dress-rest": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2319948
+  },
+  "clothes-dress-run20": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2384904
+  },
+  "clothes-dress-sit100": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2449860
+  },
+  "clothes-dress-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2514816
+  },
+  "clothes-granny-bow50": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2579772
+  },
+  "clothes-granny-chain186": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2679792
+  },
+  "clothes-granny-lie170": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2779812
+  },
+  "clothes-granny-rest": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2879832
+  },
+  "clothes-granny-run20": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2979852
+  },
+  "clothes-granny-sit100": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 3079872
+  },
+  "clothes-granny-walk30": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 3179892
+  },
+  "clothes-hair-chain186": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3279912
+  },
+  "clothes-hair-hair-walk40": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3470268
+  },
+  "clothes-hair-lie170": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3660624
+  },
+  "clothes-hair-rest": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3850980
+  },
+  "clothes-hair-run20": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 4041336
+  },
+  "clothes-hair-sit100": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 4231692
+  },
+  "clothes-hair-walk30": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 4422048
+  },
+  "clothes-heavy-chain186": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4612404
+  },
+  "clothes-heavy-lie170": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4703004
+  },
+  "clothes-heavy-rest": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4793604
+  },
+  "clothes-heavy-run20": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4884204
+  },
+  "clothes-heavy-sit100": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4974804
+  },
+  "clothes-heavy-walk30": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 5065404
+  },
+  "clothes-hero-chain186": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5156004
+  },
+  "clothes-hero-lie170": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5246484
+  },
+  "clothes-hero-rest": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5336964
+  },
+  "clothes-hero-run20": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5427444
+  },
+  "clothes-hero-sit100": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5517924
+  },
+  "clothes-hero-walk30": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5608404
+  },
+  "clothes-jacket-chain186": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5698884
+  },
+  "clothes-jacket-dance60": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5787492
+  },
+  "clothes-jacket-lie170": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5876100
+  },
+  "clothes-jacket-rest": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5964708
+  },
+  "clothes-jacket-run20": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 6053316
+  },
+  "clothes-jacket-sit100": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 6141924
+  },
+  "clothes-jacket-walk30": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 6230532
+  },
+  "clothes-jeans-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6319140
+  },
+  "clothes-jeans-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6400632
+  },
+  "clothes-jeans-rest": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6482124
+  },
+  "clothes-jeans-roll40": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6563616
+  },
+  "clothes-jeans-run20": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6645108
+  },
+  "clothes-jeans-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6726600
+  },
+  "clothes-jeans-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6808092
+  },
+  "clothes-wind-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 6889584
+  },
+  "clothes-wind-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 6965448
+  },
+  "clothes-wind-light-walk40": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7041312
+  },
+  "clothes-wind-rest": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7117176
+  },
+  "clothes-wind-run20": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7193040
+  },
+  "clothes-wind-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7268904
+  },
+  "clothes-wind-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7344768
+  },
+  "clothes-wind-wind-idle90": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7420632
+  },
   "disney-princess-chain186": {
    "dtype": "float32",
    "shape": [
     3141,
     3
    ],
-   "offset": 1055376
+   "offset": 7496496
   },
   "disney-princess-lie170": {
    "dtype": "float32",
@@ -4405,7 +5748,7 @@
     3141,
     3
    ],
-   "offset": 1093068
+   "offset": 7534188
   },
   "disney-princess-rest": {
    "dtype": "float32",
@@ -4413,7 +5756,7 @@
     3141,
     3
    ],
-   "offset": 1130760
+   "offset": 7571880
   },
   "disney-princess-run20": {
    "dtype": "float32",
@@ -4421,7 +5764,7 @@
     3141,
     3
    ],
-   "offset": 1168452
+   "offset": 7609572
   },
   "disney-princess-sit100": {
    "dtype": "float32",
@@ -4429,7 +5772,7 @@
     3141,
     3
    ],
-   "offset": 1206144
+   "offset": 7647264
   },
   "disney-princess-walk30": {
    "dtype": "float32",
@@ -4437,7 +5780,7 @@
     3141,
     3
    ],
-   "offset": 1243836
+   "offset": 7684956
   },
   "egg-baby-chain186": {
    "dtype": "float32",
@@ -4445,7 +5788,7 @@
     3141,
     3
    ],
-   "offset": 1281528
+   "offset": 7722648
   },
   "egg-baby-lie170": {
    "dtype": "float32",
@@ -4453,7 +5796,7 @@
     3141,
     3
    ],
-   "offset": 1319220
+   "offset": 7760340
   },
   "egg-baby-rest": {
    "dtype": "float32",
@@ -4461,7 +5804,7 @@
     3141,
     3
    ],
-   "offset": 1356912
+   "offset": 7798032
   },
   "egg-baby-run20": {
    "dtype": "float32",
@@ -4469,7 +5812,7 @@
     3141,
     3
    ],
-   "offset": 1394604
+   "offset": 7835724
   },
   "egg-baby-sit100": {
    "dtype": "float32",
@@ -4477,7 +5820,7 @@
     3141,
     3
    ],
-   "offset": 1432296
+   "offset": 7873416
   },
   "egg-baby-walk30": {
    "dtype": "float32",
@@ -4485,7 +5828,7 @@
     3141,
     3
    ],
-   "offset": 1469988
+   "offset": 7911108
   },
   "elf-chain186": {
    "dtype": "float32",
@@ -4493,7 +5836,7 @@
     3141,
     3
    ],
-   "offset": 1507680
+   "offset": 7948800
   },
   "elf-damp-bow45": {
    "dtype": "float32",
@@ -4501,7 +5844,7 @@
     3141,
     3
    ],
-   "offset": 1545372
+   "offset": 7986492
   },
   "elf-lie170": {
    "dtype": "float32",
@@ -4509,7 +5852,7 @@
     3141,
     3
    ],
-   "offset": 1583064
+   "offset": 8024184
   },
   "elf-rest": {
    "dtype": "float32",
@@ -4517,7 +5860,7 @@
     3141,
     3
    ],
-   "offset": 1620756
+   "offset": 8061876
   },
   "elf-run20": {
    "dtype": "float32",
@@ -4525,7 +5868,7 @@
     3141,
     3
    ],
-   "offset": 1658448
+   "offset": 8099568
   },
   "elf-sit100": {
    "dtype": "float32",
@@ -4533,7 +5876,7 @@
     3141,
     3
    ],
-   "offset": 1696140
+   "offset": 8137260
   },
   "elf-walk30": {
    "dtype": "float32",
@@ -4541,7 +5884,7 @@
     3141,
     3
    ],
-   "offset": 1733832
+   "offset": 8174952
   },
   "girl-chain186": {
    "dtype": "float32",
@@ -4549,7 +5892,7 @@
     3141,
     3
    ],
-   "offset": 1771524
+   "offset": 8212644
   },
   "girl-contourHalf-sit100": {
    "dtype": "float32",
@@ -4557,7 +5900,7 @@
     3141,
     3
    ],
-   "offset": 1809216
+   "offset": 8250336
   },
   "girl-lie170": {
    "dtype": "float32",
@@ -4565,7 +5908,7 @@
     3141,
     3
    ],
-   "offset": 1846908
+   "offset": 8288028
   },
   "girl-morphPose-wave40": {
    "dtype": "float32",
@@ -4573,7 +5916,7 @@
     3141,
     3
    ],
-   "offset": 1884600
+   "offset": 8325720
   },
   "girl-morphRest-rest": {
    "dtype": "float32",
@@ -4581,7 +5924,7 @@
     3141,
     3
    ],
-   "offset": 1922292
+   "offset": 8363412
   },
   "girl-rest": {
    "dtype": "float32",
@@ -4589,7 +5932,7 @@
     3141,
     3
    ],
-   "offset": 1959984
+   "offset": 8401104
   },
   "girl-run20": {
    "dtype": "float32",
@@ -4597,7 +5940,7 @@
     3141,
     3
    ],
-   "offset": 1997676
+   "offset": 8438796
   },
   "girl-sit100": {
    "dtype": "float32",
@@ -4605,7 +5948,7 @@
     3141,
     3
    ],
-   "offset": 2035368
+   "offset": 8476488
   },
   "girl-walk30": {
    "dtype": "float32",
@@ -4613,7 +5956,7 @@
     3141,
     3
    ],
-   "offset": 2073060
+   "offset": 8514180
   },
   "hair-alva-chain186": {
    "dtype": "float32",
@@ -4621,7 +5964,7 @@
     12367,
     3
    ],
-   "offset": 2110752
+   "offset": 8551872
   },
   "hair-alva-lie170": {
    "dtype": "float32",
@@ -4629,7 +5972,7 @@
     12367,
     3
    ],
-   "offset": 2259156
+   "offset": 8700276
   },
   "hair-alva-rest": {
    "dtype": "float32",
@@ -4637,7 +5980,7 @@
     12367,
     3
    ],
-   "offset": 2407560
+   "offset": 8848680
   },
   "hair-alva-run20": {
    "dtype": "float32",
@@ -4645,7 +5988,7 @@
     12367,
     3
    ],
-   "offset": 2555964
+   "offset": 8997084
   },
   "hair-alva-sit100": {
    "dtype": "float32",
@@ -4653,7 +5996,7 @@
     12367,
     3
    ],
-   "offset": 2704368
+   "offset": 9145488
   },
   "hair-alva-walk30": {
    "dtype": "float32",
@@ -4661,7 +6004,7 @@
     12367,
     3
    ],
-   "offset": 2852772
+   "offset": 9293892
   },
   "hair-alva-wind-idle90": {
    "dtype": "float32",
@@ -4669,119 +6012,119 @@
     12367,
     3
    ],
-   "offset": 3001176
+   "offset": 9442296
   },
   "hair-g1-alva-chain186": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 3149580
+   "offset": 9590700
   },
   "hair-g1-alva-dance60": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 3309804
+   "offset": 9778188
   },
   "hair-g1-alva-lie170": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 3470028
+   "offset": 9965676
   },
   "hair-g1-alva-rest": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 3630252
+   "offset": 10153164
   },
   "hair-g1-alva-run20": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 3790476
+   "offset": 10340652
   },
   "hair-g1-alva-sit100": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 3950700
+   "offset": 10528140
   },
   "hair-g1-alva-walk30": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 4110924
+   "offset": 10715628
   },
   "hair-g3-red-chain186": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 4271148
+   "offset": 10903116
   },
   "hair-g3-red-lie170": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 4414356
+   "offset": 11059392
   },
   "hair-g3-red-look60": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 4557564
+   "offset": 11215668
   },
   "hair-g3-red-rest": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 4700772
+   "offset": 11371944
   },
   "hair-g3-red-run20": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 4843980
+   "offset": 11528220
   },
   "hair-g3-red-sit100": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 4987188
+   "offset": 11684496
   },
   "hair-g3-red-walk30": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 5130396
+   "offset": 11840772
   },
   "hair-gwen-chain186": {
    "dtype": "float32",
@@ -4789,7 +6132,7 @@
     10855,
     3
    ],
-   "offset": 5273604
+   "offset": 11997048
   },
   "hair-gwen-jump40": {
    "dtype": "float32",
@@ -4797,7 +6140,7 @@
     10855,
     3
    ],
-   "offset": 5403864
+   "offset": 12127308
   },
   "hair-gwen-lie170": {
    "dtype": "float32",
@@ -4805,7 +6148,7 @@
     10855,
     3
    ],
-   "offset": 5534124
+   "offset": 12257568
   },
   "hair-gwen-rest": {
    "dtype": "float32",
@@ -4813,7 +6156,7 @@
     10855,
     3
    ],
-   "offset": 5664384
+   "offset": 12387828
   },
   "hair-gwen-run20": {
    "dtype": "float32",
@@ -4821,7 +6164,7 @@
     10855,
     3
    ],
-   "offset": 5794644
+   "offset": 12518088
   },
   "hair-gwen-sit100": {
    "dtype": "float32",
@@ -4829,7 +6172,7 @@
     10855,
     3
    ],
-   "offset": 5924904
+   "offset": 12648348
   },
   "hair-gwen-walk30": {
    "dtype": "float32",
@@ -4837,7 +6180,7 @@
     10855,
     3
    ],
-   "offset": 6055164
+   "offset": 12778608
   },
   "hair-jack-chain186": {
    "dtype": "float32",
@@ -4845,7 +6188,7 @@
     11721,
     3
    ],
-   "offset": 6185424
+   "offset": 12908868
   },
   "hair-jack-lie170": {
    "dtype": "float32",
@@ -4853,7 +6196,7 @@
     11721,
     3
    ],
-   "offset": 6326076
+   "offset": 13049520
   },
   "hair-jack-rest": {
    "dtype": "float32",
@@ -4861,7 +6204,7 @@
     11721,
     3
    ],
-   "offset": 6466728
+   "offset": 13190172
   },
   "hair-jack-run20": {
    "dtype": "float32",
@@ -4869,7 +6212,7 @@
     11721,
     3
    ],
-   "offset": 6607380
+   "offset": 13330824
   },
   "hair-jack-sit100": {
    "dtype": "float32",
@@ -4877,7 +6220,7 @@
     11721,
     3
    ],
-   "offset": 6748032
+   "offset": 13471476
   },
   "hair-jack-walk30": {
    "dtype": "float32",
@@ -4885,7 +6228,7 @@
     11721,
     3
    ],
-   "offset": 6888684
+   "offset": 13612128
   },
   "hair-kpony-bow50": {
    "dtype": "float32",
@@ -4893,7 +6236,7 @@
     13118,
     3
    ],
-   "offset": 7029336
+   "offset": 13752780
   },
   "hair-kpony-chain186": {
    "dtype": "float32",
@@ -4901,7 +6244,7 @@
     13118,
     3
    ],
-   "offset": 7186752
+   "offset": 13910196
   },
   "hair-kpony-gusts-idle90": {
    "dtype": "float32",
@@ -4909,7 +6252,7 @@
     13118,
     3
    ],
-   "offset": 7344168
+   "offset": 14067612
   },
   "hair-kpony-lie170": {
    "dtype": "float32",
@@ -4917,7 +6260,7 @@
     13118,
     3
    ],
-   "offset": 7501584
+   "offset": 14225028
   },
   "hair-kpony-rest": {
    "dtype": "float32",
@@ -4925,7 +6268,7 @@
     13118,
     3
    ],
-   "offset": 7659000
+   "offset": 14382444
   },
   "hair-kpony-run20": {
    "dtype": "float32",
@@ -4933,7 +6276,7 @@
     13118,
     3
    ],
-   "offset": 7816416
+   "offset": 14539860
   },
   "hair-kpony-sit100": {
    "dtype": "float32",
@@ -4941,7 +6284,7 @@
     13118,
     3
    ],
-   "offset": 7973832
+   "offset": 14697276
   },
   "hair-kpony-walk30": {
    "dtype": "float32",
@@ -4949,7 +6292,7 @@
     13118,
     3
    ],
-   "offset": 8131248
+   "offset": 14854692
   },
   "hair-marco-chain186": {
    "dtype": "float32",
@@ -4957,7 +6300,7 @@
     10320,
     3
    ],
-   "offset": 8288664
+   "offset": 15012108
   },
   "hair-marco-lie170": {
    "dtype": "float32",
@@ -4965,7 +6308,7 @@
     10320,
     3
    ],
-   "offset": 8412504
+   "offset": 15135948
   },
   "hair-marco-rest": {
    "dtype": "float32",
@@ -4973,7 +6316,7 @@
     10320,
     3
    ],
-   "offset": 8536344
+   "offset": 15259788
   },
   "hair-marco-roll40": {
    "dtype": "float32",
@@ -4981,7 +6324,7 @@
     10320,
     3
    ],
-   "offset": 8660184
+   "offset": 15383628
   },
   "hair-marco-run20": {
    "dtype": "float32",
@@ -4989,7 +6332,7 @@
     10320,
     3
    ],
-   "offset": 8784024
+   "offset": 15507468
   },
   "hair-marco-sit100": {
    "dtype": "float32",
@@ -4997,7 +6340,7 @@
     10320,
     3
    ],
-   "offset": 8907864
+   "offset": 15631308
   },
   "hair-marco-walk30": {
    "dtype": "float32",
@@ -5005,159 +6348,159 @@
     10320,
     3
    ],
-   "offset": 9031704
+   "offset": 15755148
   },
   "hair-red-ariel-chain186": {
    "dtype": "float32",
    "shape": [
-    14910,
+    15999,
     3
    ],
-   "offset": 9155544
+   "offset": 15878988
   },
   "hair-red-ariel-face": {
    "dtype": "float32",
    "shape": [
-    14910,
+    15999,
     3
    ],
-   "offset": 9334464
+   "offset": 16070976
   },
   "hair-red-ariel-lie170": {
    "dtype": "float32",
    "shape": [
-    14910,
+    15999,
     3
    ],
-   "offset": 9513384
+   "offset": 16262964
   },
   "hair-red-ariel-rest": {
    "dtype": "float32",
    "shape": [
-    14910,
+    15999,
     3
    ],
-   "offset": 9692304
+   "offset": 16454952
   },
   "hair-red-ariel-run20": {
    "dtype": "float32",
    "shape": [
-    14910,
+    15999,
     3
    ],
-   "offset": 9871224
+   "offset": 16646940
   },
   "hair-red-ariel-sit100": {
    "dtype": "float32",
    "shape": [
-    14910,
+    15999,
     3
    ],
-   "offset": 10050144
+   "offset": 16838928
   },
   "hair-red-ariel-walk30": {
    "dtype": "float32",
    "shape": [
-    14910,
+    15999,
     3
    ],
-   "offset": 10229064
+   "offset": 17030916
   },
   "head-alva-chain186": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 10407984
+   "offset": 17222904
   },
   "head-alva-lie170": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 10568208
+   "offset": 17410392
   },
   "head-alva-rest": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 10728432
+   "offset": 17597880
   },
   "head-alva-run20": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 10888656
+   "offset": 17785368
   },
   "head-alva-sit100": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 11048880
+   "offset": 17972856
   },
   "head-alva-walk30": {
    "dtype": "float32",
    "shape": [
-    13352,
+    15624,
     3
    ],
-   "offset": 11209104
+   "offset": 18160344
   },
   "head-anime-chain186": {
    "dtype": "float32",
    "shape": [
-    12235,
+    15541,
     3
    ],
-   "offset": 11369328
+   "offset": 18347832
   },
   "head-anime-lie170": {
    "dtype": "float32",
    "shape": [
-    12235,
+    15541,
     3
    ],
-   "offset": 11516148
+   "offset": 18534324
   },
   "head-anime-rest": {
    "dtype": "float32",
    "shape": [
-    12235,
+    15541,
     3
    ],
-   "offset": 11662968
+   "offset": 18720816
   },
   "head-anime-run20": {
    "dtype": "float32",
    "shape": [
-    12235,
+    15541,
     3
    ],
-   "offset": 11809788
+   "offset": 18907308
   },
   "head-anime-sit100": {
    "dtype": "float32",
    "shape": [
-    12235,
+    15541,
     3
    ],
-   "offset": 11956608
+   "offset": 19093800
   },
   "head-anime-walk30": {
    "dtype": "float32",
    "shape": [
-    12235,
+    15541,
     3
    ],
-   "offset": 12103428
+   "offset": 19280292
   },
   "head-anny-age-chain186": {
    "dtype": "float32",
@@ -5165,7 +6508,7 @@
     6741,
     3
    ],
-   "offset": 12250248
+   "offset": 19466784
   },
   "head-anny-age-face": {
    "dtype": "float32",
@@ -5173,7 +6516,7 @@
     6741,
     3
    ],
-   "offset": 12331140
+   "offset": 19547676
   },
   "head-anny-age-lie170": {
    "dtype": "float32",
@@ -5181,7 +6524,7 @@
     6741,
     3
    ],
-   "offset": 12412032
+   "offset": 19628568
   },
   "head-anny-age-rest": {
    "dtype": "float32",
@@ -5189,7 +6532,7 @@
     6741,
     3
    ],
-   "offset": 12492924
+   "offset": 19709460
   },
   "head-anny-age-run20": {
    "dtype": "float32",
@@ -5197,7 +6540,7 @@
     6741,
     3
    ],
-   "offset": 12573816
+   "offset": 19790352
   },
   "head-anny-age-sit100": {
    "dtype": "float32",
@@ -5205,7 +6548,7 @@
     6741,
     3
    ],
-   "offset": 12654708
+   "offset": 19871244
   },
   "head-anny-age-walk30": {
    "dtype": "float32",
@@ -5213,7 +6556,7 @@
     6741,
     3
    ],
-   "offset": 12735600
+   "offset": 19952136
   },
   "head-anny-face-chain186": {
    "dtype": "float32",
@@ -5221,7 +6564,7 @@
     6205,
     3
    ],
-   "offset": 12816492
+   "offset": 20033028
   },
   "head-anny-face-face": {
    "dtype": "float32",
@@ -5229,7 +6572,7 @@
     6205,
     3
    ],
-   "offset": 12890952
+   "offset": 20107488
   },
   "head-anny-face-lie170": {
    "dtype": "float32",
@@ -5237,7 +6580,7 @@
     6205,
     3
    ],
-   "offset": 12965412
+   "offset": 20181948
   },
   "head-anny-face-rest": {
    "dtype": "float32",
@@ -5245,7 +6588,7 @@
     6205,
     3
    ],
-   "offset": 13039872
+   "offset": 20256408
   },
   "head-anny-face-run20": {
    "dtype": "float32",
@@ -5253,7 +6596,7 @@
     6205,
     3
    ],
-   "offset": 13114332
+   "offset": 20330868
   },
   "head-anny-face-sit100": {
    "dtype": "float32",
@@ -5261,7 +6604,7 @@
     6205,
     3
    ],
-   "offset": 13188792
+   "offset": 20405328
   },
   "head-anny-face-walk30": {
    "dtype": "float32",
@@ -5269,103 +6612,103 @@
     6205,
     3
    ],
-   "offset": 13263252
+   "offset": 20479788
   },
   "head-blond-chain186": {
    "dtype": "float32",
    "shape": [
-    15199,
+    19598,
     3
    ],
-   "offset": 13337712
+   "offset": 20554248
   },
   "head-blond-lie170": {
    "dtype": "float32",
    "shape": [
-    15199,
+    19598,
     3
    ],
-   "offset": 13520100
+   "offset": 20789424
   },
   "head-blond-rest": {
    "dtype": "float32",
    "shape": [
-    15199,
+    19598,
     3
    ],
-   "offset": 13702488
+   "offset": 21024600
   },
   "head-blond-run20": {
    "dtype": "float32",
    "shape": [
-    15199,
+    19598,
     3
    ],
-   "offset": 13884876
+   "offset": 21259776
   },
   "head-blond-sit100": {
    "dtype": "float32",
    "shape": [
-    15199,
+    19598,
     3
    ],
-   "offset": 14067264
+   "offset": 21494952
   },
   "head-blond-walk30": {
    "dtype": "float32",
    "shape": [
-    15199,
+    19598,
     3
    ],
-   "offset": 14249652
+   "offset": 21730128
   },
   "head-boy7-chain186": {
    "dtype": "float32",
    "shape": [
-    12167,
+    15551,
     3
    ],
-   "offset": 14432040
+   "offset": 21965304
   },
   "head-boy7-lie170": {
    "dtype": "float32",
    "shape": [
-    12167,
+    15551,
     3
    ],
-   "offset": 14578044
+   "offset": 22151916
   },
   "head-boy7-rest": {
    "dtype": "float32",
    "shape": [
-    12167,
+    15551,
     3
    ],
-   "offset": 14724048
+   "offset": 22338528
   },
   "head-boy7-run20": {
    "dtype": "float32",
    "shape": [
-    12167,
+    15551,
     3
    ],
-   "offset": 14870052
+   "offset": 22525140
   },
   "head-boy7-sit100": {
    "dtype": "float32",
    "shape": [
-    12167,
+    15551,
     3
    ],
-   "offset": 15016056
+   "offset": 22711752
   },
   "head-boy7-walk30": {
    "dtype": "float32",
    "shape": [
-    12167,
+    15551,
     3
    ],
-   "offset": 15162060
+   "offset": 22898364
   },
   "head-cage-chain186": {
    "dtype": "float32",
@@ -5373,7 +6716,7 @@
     6205,
     3
    ],
-   "offset": 15308064
+   "offset": 23084976
   },
   "head-cage-face": {
    "dtype": "float32",
@@ -5381,7 +6724,7 @@
     6205,
     3
    ],
-   "offset": 15382524
+   "offset": 23159436
   },
   "head-cage-lie170": {
    "dtype": "float32",
@@ -5389,7 +6732,7 @@
     6205,
     3
    ],
-   "offset": 15456984
+   "offset": 23233896
   },
   "head-cage-rest": {
    "dtype": "float32",
@@ -5397,7 +6740,7 @@
     6205,
     3
    ],
-   "offset": 15531444
+   "offset": 23308356
   },
   "head-cage-run20": {
    "dtype": "float32",
@@ -5405,7 +6748,7 @@
     6205,
     3
    ],
-   "offset": 15605904
+   "offset": 23382816
   },
   "head-cage-sit100": {
    "dtype": "float32",
@@ -5413,7 +6756,7 @@
     6205,
     3
    ],
-   "offset": 15680364
+   "offset": 23457276
   },
   "head-cage-walk30": {
    "dtype": "float32",
@@ -5421,215 +6764,223 @@
     6205,
     3
    ],
-   "offset": 15754824
+   "offset": 23531736
   },
   "head-hood-chain186": {
    "dtype": "float32",
    "shape": [
-    17141,
+    17385,
     3
    ],
-   "offset": 15829284
+   "offset": 23606196
   },
   "head-hood-lie170": {
    "dtype": "float32",
    "shape": [
-    17141,
+    17385,
     3
    ],
-   "offset": 16034976
+   "offset": 23814816
+  },
+  "head-hood-look60": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 24023436
   },
   "head-hood-rest": {
    "dtype": "float32",
    "shape": [
-    17141,
+    17385,
     3
    ],
-   "offset": 16240668
+   "offset": 24232056
   },
   "head-hood-run20": {
    "dtype": "float32",
    "shape": [
-    17141,
+    17385,
     3
    ],
-   "offset": 16446360
+   "offset": 24440676
   },
   "head-hood-sit100": {
    "dtype": "float32",
    "shape": [
-    17141,
+    17385,
     3
    ],
-   "offset": 16652052
+   "offset": 24649296
   },
   "head-hood-walk30": {
    "dtype": "float32",
    "shape": [
-    17141,
+    17385,
     3
    ],
-   "offset": 16857744
+   "offset": 24857916
   },
   "head-jesper-chain186": {
    "dtype": "float32",
    "shape": [
-    15719,
+    20427,
     3
    ],
-   "offset": 17063436
+   "offset": 25066536
   },
   "head-jesper-lie170": {
    "dtype": "float32",
    "shape": [
-    15719,
+    20427,
     3
    ],
-   "offset": 17252064
+   "offset": 25311660
   },
   "head-jesper-rest": {
    "dtype": "float32",
    "shape": [
-    15719,
+    20427,
     3
    ],
-   "offset": 17440692
+   "offset": 25556784
   },
   "head-jesper-run20": {
    "dtype": "float32",
    "shape": [
-    15719,
+    20427,
     3
    ],
-   "offset": 17629320
+   "offset": 25801908
   },
   "head-jesper-sit100": {
    "dtype": "float32",
    "shape": [
-    15719,
+    20427,
     3
    ],
-   "offset": 17817948
+   "offset": 26047032
   },
   "head-jesper-walk30": {
    "dtype": "float32",
    "shape": [
-    15719,
+    20427,
     3
    ],
-   "offset": 18006576
+   "offset": 26292156
   },
   "head-mask-chain186": {
    "dtype": "float32",
    "shape": [
-    12027,
+    16420,
     3
    ],
-   "offset": 18195204
+   "offset": 26537280
   },
   "head-mask-lie170": {
    "dtype": "float32",
    "shape": [
-    12027,
+    16420,
     3
    ],
-   "offset": 18339528
+   "offset": 26734320
   },
   "head-mask-rest": {
    "dtype": "float32",
    "shape": [
-    12027,
+    16420,
     3
    ],
-   "offset": 18483852
+   "offset": 26931360
   },
   "head-mask-run20": {
    "dtype": "float32",
    "shape": [
-    12027,
+    16420,
     3
    ],
-   "offset": 18628176
+   "offset": 27128400
   },
   "head-mask-sit100": {
    "dtype": "float32",
    "shape": [
-    12027,
+    16420,
     3
    ],
-   "offset": 18772500
+   "offset": 27325440
   },
   "head-mask-walk30": {
    "dtype": "float32",
    "shape": [
-    12027,
+    16420,
     3
    ],
-   "offset": 18916824
+   "offset": 27522480
   },
   "head-old-chain186": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 19061148
+   "offset": 27719520
   },
   "head-old-lie170": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 19280232
+   "offset": 27924216
   },
   "head-old-open": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 19499316
+   "offset": 28128912
   },
   "head-old-rest": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 19718400
+   "offset": 28333608
   },
   "head-old-run20": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 19937484
+   "offset": 28538304
   },
   "head-old-run20-face": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 20156568
+   "offset": 28743000
   },
   "head-old-sit100": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 20375652
+   "offset": 28947696
   },
   "head-old-walk30": {
    "dtype": "float32",
    "shape": [
-    18257,
+    17058,
     3
    ],
-   "offset": 20594736
+   "offset": 29152392
   },
   "head-points-chain186": {
    "dtype": "float32",
@@ -5637,7 +6988,7 @@
     6741,
     3
    ],
-   "offset": 20813820
+   "offset": 29357088
   },
   "head-points-lie170": {
    "dtype": "float32",
@@ -5645,7 +6996,7 @@
     6741,
     3
    ],
-   "offset": 20894712
+   "offset": 29437980
   },
   "head-points-rest": {
    "dtype": "float32",
@@ -5653,7 +7004,7 @@
     6741,
     3
    ],
-   "offset": 20975604
+   "offset": 29518872
   },
   "head-points-run20": {
    "dtype": "float32",
@@ -5661,7 +7012,7 @@
     6741,
     3
    ],
-   "offset": 21056496
+   "offset": 29599764
   },
   "head-points-sit100": {
    "dtype": "float32",
@@ -5669,7 +7020,7 @@
     6741,
     3
    ],
-   "offset": 21137388
+   "offset": 29680656
   },
   "head-points-smile": {
    "dtype": "float32",
@@ -5677,7 +7028,7 @@
     6741,
     3
    ],
-   "offset": 21218280
+   "offset": 29761548
   },
   "head-points-walk30": {
    "dtype": "float32",
@@ -5685,111 +7036,111 @@
     6741,
     3
    ],
-   "offset": 21299172
+   "offset": 29842440
   },
   "head-red-blink": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 21380064
+   "offset": 29923332
   },
   "head-red-chain186": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 21523272
+   "offset": 30079608
   },
   "head-red-dqs-walk30": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 21666480
+   "offset": 30235884
   },
   "head-red-face": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 21809688
+   "offset": 30392160
   },
   "head-red-hourglass-walk30": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 21952896
+   "offset": 30548436
   },
   "head-red-lbs-walk30": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 22096104
+   "offset": 30704712
   },
   "head-red-lie170": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 22239312
+   "offset": 30860988
   },
   "head-red-light-plain": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 22382520
+   "offset": 31017264
   },
   "head-red-light-soft-form": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 22525728
+   "offset": 31173540
   },
   "head-red-light-toon": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 22668936
+   "offset": 31329816
   },
   "head-red-line-walk30": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 22812144
+   "offset": 31486092
   },
   "head-red-look60": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 22955352
+   "offset": 31642368
   },
   "head-red-look60-smile": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 23098560
+   "offset": 31798644
   },
   "head-red-mine-blink": {
    "dtype": "float32",
@@ -5797,7 +7148,7 @@
     12070,
     3
    ],
-   "offset": 23241768
+   "offset": 31954920
   },
   "head-red-mine-chain186": {
    "dtype": "float32",
@@ -5805,7 +7156,7 @@
     12070,
     3
    ],
-   "offset": 23386608
+   "offset": 32099760
   },
   "head-red-mine-dance60-face": {
    "dtype": "float32",
@@ -5813,7 +7164,7 @@
     12070,
     3
    ],
-   "offset": 23531448
+   "offset": 32244600
   },
   "head-red-mine-face": {
    "dtype": "float32",
@@ -5821,7 +7172,7 @@
     12070,
     3
    ],
-   "offset": 23676288
+   "offset": 32389440
   },
   "head-red-mine-lie170": {
    "dtype": "float32",
@@ -5829,7 +7180,7 @@
     12070,
     3
    ],
-   "offset": 23821128
+   "offset": 32534280
   },
   "head-red-mine-rest": {
    "dtype": "float32",
@@ -5837,7 +7188,7 @@
     12070,
     3
    ],
-   "offset": 23965968
+   "offset": 32679120
   },
   "head-red-mine-run20": {
    "dtype": "float32",
@@ -5845,7 +7196,7 @@
     12070,
     3
    ],
-   "offset": 24110808
+   "offset": 32823960
   },
   "head-red-mine-sit100": {
    "dtype": "float32",
@@ -5853,7 +7204,7 @@
     12070,
     3
    ],
-   "offset": 24255648
+   "offset": 32968800
   },
   "head-red-mine-walk30": {
    "dtype": "float32",
@@ -5861,167 +7212,167 @@
     12070,
     3
    ],
-   "offset": 24400488
+   "offset": 33113640
   },
   "head-red-open": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 24545328
+   "offset": 33258480
   },
   "head-red-placed-walk60": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 24688536
+   "offset": 33414756
   },
   "head-red-rest": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 24831744
+   "offset": 33571032
   },
   "head-red-run20": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 24974952
+   "offset": 33727308
   },
   "head-red-sit100": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 25118160
+   "offset": 33883584
   },
   "head-red-smile": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 25261368
+   "offset": 34039860
   },
   "head-red-walk30": {
    "dtype": "float32",
    "shape": [
-    11934,
+    13023,
     3
    ],
-   "offset": 25404576
+   "offset": 34196136
   },
   "head-semi-chain186": {
    "dtype": "float32",
    "shape": [
-    17229,
+    21966,
     3
    ],
-   "offset": 25547784
+   "offset": 34352412
   },
   "head-semi-face": {
    "dtype": "float32",
    "shape": [
-    17229,
+    21966,
     3
    ],
-   "offset": 25754532
+   "offset": 34616004
   },
   "head-semi-lie170": {
    "dtype": "float32",
    "shape": [
-    17229,
+    21966,
     3
    ],
-   "offset": 25961280
+   "offset": 34879596
   },
   "head-semi-rest": {
    "dtype": "float32",
    "shape": [
-    17229,
+    21966,
     3
    ],
-   "offset": 26168028
+   "offset": 35143188
   },
   "head-semi-run20": {
    "dtype": "float32",
    "shape": [
-    17229,
+    21966,
     3
    ],
-   "offset": 26374776
+   "offset": 35406780
   },
   "head-semi-sit100": {
    "dtype": "float32",
    "shape": [
-    17229,
+    21966,
     3
    ],
-   "offset": 26581524
+   "offset": 35670372
   },
   "head-semi-walk30": {
    "dtype": "float32",
    "shape": [
-    17229,
+    21966,
     3
    ],
-   "offset": 26788272
+   "offset": 35933964
   },
   "head-tails-chain186": {
    "dtype": "float32",
    "shape": [
-    12978,
+    16628,
     3
    ],
-   "offset": 26995020
+   "offset": 36197556
   },
   "head-tails-lie170": {
    "dtype": "float32",
    "shape": [
-    12978,
+    16628,
     3
    ],
-   "offset": 27150756
+   "offset": 36397092
   },
   "head-tails-rest": {
    "dtype": "float32",
    "shape": [
-    12978,
+    16628,
     3
    ],
-   "offset": 27306492
+   "offset": 36596628
   },
   "head-tails-run20": {
    "dtype": "float32",
    "shape": [
-    12978,
+    16628,
     3
    ],
-   "offset": 27462228
+   "offset": 36796164
   },
   "head-tails-sit100": {
    "dtype": "float32",
    "shape": [
-    12978,
+    16628,
     3
    ],
-   "offset": 27617964
+   "offset": 36995700
   },
   "head-tails-walk30": {
    "dtype": "float32",
    "shape": [
-    12978,
+    16628,
     3
    ],
-   "offset": 27773700
+   "offset": 37195236
   },
   "hero-amplify-dance50": {
    "dtype": "float32",
@@ -6029,7 +7380,7 @@
     3141,
     3
    ],
-   "offset": 27929436
+   "offset": 37394772
   },
   "hero-chain186": {
    "dtype": "float32",
@@ -6037,7 +7388,7 @@
     3141,
     3
    ],
-   "offset": 27967128
+   "offset": 37432464
   },
   "hero-lie170": {
    "dtype": "float32",
@@ -6045,7 +7396,7 @@
     3141,
     3
    ],
-   "offset": 28004820
+   "offset": 37470156
   },
   "hero-rest": {
    "dtype": "float32",
@@ -6053,7 +7404,7 @@
     3141,
     3
    ],
-   "offset": 28042512
+   "offset": 37507848
   },
   "hero-run20": {
    "dtype": "float32",
@@ -6061,7 +7412,7 @@
     3141,
     3
    ],
-   "offset": 28080204
+   "offset": 37545540
   },
   "hero-sit100": {
    "dtype": "float32",
@@ -6069,7 +7420,7 @@
     3141,
     3
    ],
-   "offset": 28117896
+   "offset": 37583232
   },
   "hero-walk30": {
    "dtype": "float32",
@@ -6077,7 +7428,7 @@
     3141,
     3
    ],
-   "offset": 28155588
+   "offset": 37620924
   },
   "man-chain186": {
    "dtype": "float32",
@@ -6085,7 +7436,7 @@
     3141,
     3
    ],
-   "offset": 28193280
+   "offset": 37658616
   },
   "man-dqs-sit100": {
    "dtype": "float32",
@@ -6093,7 +7444,7 @@
     3141,
     3
    ],
-   "offset": 28230972
+   "offset": 37696308
   },
   "man-lbs-sit100": {
    "dtype": "float32",
@@ -6101,7 +7452,7 @@
     3141,
     3
    ],
-   "offset": 28268664
+   "offset": 37734000
   },
   "man-lie170": {
    "dtype": "float32",
@@ -6109,7 +7460,7 @@
     3141,
     3
    ],
-   "offset": 28306356
+   "offset": 37771692
   },
   "man-rest": {
    "dtype": "float32",
@@ -6117,7 +7468,7 @@
     3141,
     3
    ],
-   "offset": 28344048
+   "offset": 37809384
   },
   "man-rollover-prone": {
    "dtype": "float32",
@@ -6125,7 +7476,7 @@
     3141,
     3
    ],
-   "offset": 28381740
+   "offset": 37847076
   },
   "man-run20": {
    "dtype": "float32",
@@ -6133,7 +7484,7 @@
     3141,
     3
    ],
-   "offset": 28419432
+   "offset": 37884768
   },
   "man-sit100": {
    "dtype": "float32",
@@ -6141,7 +7492,7 @@
     3141,
     3
    ],
-   "offset": 28457124
+   "offset": 37922460
   },
   "man-smoothPose-walk30": {
    "dtype": "float32",
@@ -6149,7 +7500,7 @@
     3141,
     3
    ],
-   "offset": 28494816
+   "offset": 37960152
   },
   "man-straightArc-walk30": {
    "dtype": "float32",
@@ -6157,7 +7508,7 @@
     3141,
     3
    ],
-   "offset": 28532508
+   "offset": 37997844
   },
   "man-walk30": {
    "dtype": "float32",
@@ -6165,7 +7516,7 @@
     3141,
     3
    ],
-   "offset": 28570200
+   "offset": 38035536
   },
   "oldman-chain186": {
    "dtype": "float32",
@@ -6173,7 +7524,7 @@
     3141,
     3
    ],
-   "offset": 28607892
+   "offset": 38073228
   },
   "oldman-lie170": {
    "dtype": "float32",
@@ -6181,7 +7532,7 @@
     3141,
     3
    ],
-   "offset": 28645584
+   "offset": 38110920
   },
   "oldman-rest": {
    "dtype": "float32",
@@ -6189,7 +7540,7 @@
     3141,
     3
    ],
-   "offset": 28683276
+   "offset": 38148612
   },
   "oldman-run20": {
    "dtype": "float32",
@@ -6197,7 +7548,7 @@
     3141,
     3
    ],
-   "offset": 28720968
+   "offset": 38186304
   },
   "oldman-sit100": {
    "dtype": "float32",
@@ -6205,7 +7556,7 @@
     3141,
     3
    ],
-   "offset": 28758660
+   "offset": 38223996
   },
   "oldman-walk30": {
    "dtype": "float32",
@@ -6213,7 +7564,7 @@
     3141,
     3
    ],
-   "offset": 28796352
+   "offset": 38261688
   },
   "oldwoman-armsOff-walk30": {
    "dtype": "float32",
@@ -6221,7 +7572,7 @@
     3141,
     3
    ],
-   "offset": 28834044
+   "offset": 38299380
   },
   "oldwoman-chain186": {
    "dtype": "float32",
@@ -6229,7 +7580,7 @@
     3141,
     3
    ],
-   "offset": 28871736
+   "offset": 38337072
   },
   "oldwoman-lie170": {
    "dtype": "float32",
@@ -6237,7 +7588,7 @@
     3141,
     3
    ],
-   "offset": 28909428
+   "offset": 38374764
   },
   "oldwoman-rest": {
    "dtype": "float32",
@@ -6245,7 +7596,7 @@
     3141,
     3
    ],
-   "offset": 28947120
+   "offset": 38412456
   },
   "oldwoman-run20": {
    "dtype": "float32",
@@ -6253,7 +7604,7 @@
     3141,
     3
    ],
-   "offset": 28984812
+   "offset": 38450148
   },
   "oldwoman-sit100": {
    "dtype": "float32",
@@ -6261,7 +7612,7 @@
     3141,
     3
    ],
-   "offset": 29022504
+   "offset": 38487840
   },
   "oldwoman-walk30": {
    "dtype": "float32",
@@ -6269,7 +7620,7 @@
     3141,
     3
    ],
-   "offset": 29060196
+   "offset": 38525532
   },
   "pear-old-woman-chain186": {
    "dtype": "float32",
@@ -6277,7 +7628,7 @@
     3141,
     3
    ],
-   "offset": 29097888
+   "offset": 38563224
   },
   "pear-old-woman-lie170": {
    "dtype": "float32",
@@ -6285,7 +7636,7 @@
     3141,
     3
    ],
-   "offset": 29135580
+   "offset": 38600916
   },
   "pear-old-woman-rest": {
    "dtype": "float32",
@@ -6293,7 +7644,7 @@
     3141,
     3
    ],
-   "offset": 29173272
+   "offset": 38638608
   },
   "pear-old-woman-run20": {
    "dtype": "float32",
@@ -6301,7 +7652,7 @@
     3141,
     3
    ],
-   "offset": 29210964
+   "offset": 38676300
   },
   "pear-old-woman-sit100": {
    "dtype": "float32",
@@ -6309,7 +7660,7 @@
     3141,
     3
    ],
-   "offset": 29248656
+   "offset": 38713992
   },
   "pear-old-woman-walk30": {
    "dtype": "float32",
@@ -6317,7 +7668,7 @@
     3141,
     3
    ],
-   "offset": 29286348
+   "offset": 38751684
   },
   "pictogram-man-chain186": {
    "dtype": "float32",
@@ -6325,7 +7676,7 @@
     3141,
     3
    ],
-   "offset": 29324040
+   "offset": 38789376
   },
   "pictogram-man-lie170": {
    "dtype": "float32",
@@ -6333,7 +7684,7 @@
     3141,
     3
    ],
-   "offset": 29361732
+   "offset": 38827068
   },
   "pictogram-man-rest": {
    "dtype": "float32",
@@ -6341,7 +7692,7 @@
     3141,
     3
    ],
-   "offset": 29399424
+   "offset": 38864760
   },
   "pictogram-man-run20": {
    "dtype": "float32",
@@ -6349,7 +7700,7 @@
     3141,
     3
    ],
-   "offset": 29437116
+   "offset": 38902452
   },
   "pictogram-man-sit100": {
    "dtype": "float32",
@@ -6357,7 +7708,7 @@
     3141,
     3
    ],
-   "offset": 29474808
+   "offset": 38940144
   },
   "pictogram-man-walk30": {
    "dtype": "float32",
@@ -6365,7 +7716,7 @@
     3141,
     3
    ],
-   "offset": 29512500
+   "offset": 38977836
   },
   "pictogram-woman-chain186": {
    "dtype": "float32",
@@ -6373,7 +7724,7 @@
     3141,
     3
    ],
-   "offset": 29550192
+   "offset": 39015528
   },
   "pictogram-woman-lie170": {
    "dtype": "float32",
@@ -6381,7 +7732,7 @@
     3141,
     3
    ],
-   "offset": 29587884
+   "offset": 39053220
   },
   "pictogram-woman-rest": {
    "dtype": "float32",
@@ -6389,7 +7740,7 @@
     3141,
     3
    ],
-   "offset": 29625576
+   "offset": 39090912
   },
   "pictogram-woman-run20": {
    "dtype": "float32",
@@ -6397,7 +7748,7 @@
     3141,
     3
    ],
-   "offset": 29663268
+   "offset": 39128604
   },
   "pictogram-woman-sit100": {
    "dtype": "float32",
@@ -6405,7 +7756,7 @@
     3141,
     3
    ],
-   "offset": 29700960
+   "offset": 39166296
   },
   "pictogram-woman-walk30": {
    "dtype": "float32",
@@ -6413,7 +7764,7 @@
     3141,
     3
    ],
-   "offset": 29738652
+   "offset": 39203988
   },
   "pixar-mother-chain186": {
    "dtype": "float32",
@@ -6421,7 +7772,7 @@
     3141,
     3
    ],
-   "offset": 29776344
+   "offset": 39241680
   },
   "pixar-mother-lie170": {
    "dtype": "float32",
@@ -6429,7 +7780,7 @@
     3141,
     3
    ],
-   "offset": 29814036
+   "offset": 39279372
   },
   "pixar-mother-rest": {
    "dtype": "float32",
@@ -6437,7 +7788,7 @@
     3141,
     3
    ],
-   "offset": 29851728
+   "offset": 39317064
   },
   "pixar-mother-run20": {
    "dtype": "float32",
@@ -6445,7 +7796,7 @@
     3141,
     3
    ],
-   "offset": 29889420
+   "offset": 39354756
   },
   "pixar-mother-sit100": {
    "dtype": "float32",
@@ -6453,7 +7804,7 @@
     3141,
     3
    ],
-   "offset": 29927112
+   "offset": 39392448
   },
   "pixar-mother-walk30": {
    "dtype": "float32",
@@ -6461,7 +7812,7 @@
     3141,
     3
    ],
-   "offset": 29964804
+   "offset": 39430140
   },
   "princess-toddler-head-armsOutOfHead-jump45": {
    "dtype": "float32",
@@ -6469,7 +7820,7 @@
     3141,
     3
    ],
-   "offset": 30002496
+   "offset": 39467832
   },
   "princess-toddler-head-chain186": {
    "dtype": "float32",
@@ -6477,7 +7828,7 @@
     3141,
     3
    ],
-   "offset": 30040188
+   "offset": 39505524
   },
   "princess-toddler-head-lie170": {
    "dtype": "float32",
@@ -6485,7 +7836,7 @@
     3141,
     3
    ],
-   "offset": 30077880
+   "offset": 39543216
   },
   "princess-toddler-head-rest": {
    "dtype": "float32",
@@ -6493,7 +7844,7 @@
     3141,
     3
    ],
-   "offset": 30115572
+   "offset": 39580908
   },
   "princess-toddler-head-run20": {
    "dtype": "float32",
@@ -6501,7 +7852,7 @@
     3141,
     3
    ],
-   "offset": 30153264
+   "offset": 39618600
   },
   "princess-toddler-head-sit100": {
    "dtype": "float32",
@@ -6509,7 +7860,7 @@
     3141,
     3
    ],
-   "offset": 30190956
+   "offset": 39656292
   },
   "princess-toddler-head-walk30": {
    "dtype": "float32",
@@ -6517,7 +7868,7 @@
     3141,
     3
    ],
-   "offset": 30228648
+   "offset": 39693984
   },
   "v-hero-chain186": {
    "dtype": "float32",
@@ -6525,7 +7876,7 @@
     3141,
     3
    ],
-   "offset": 30266340
+   "offset": 39731676
   },
   "v-hero-lie170": {
    "dtype": "float32",
@@ -6533,7 +7884,7 @@
     3141,
     3
    ],
-   "offset": 30304032
+   "offset": 39769368
   },
   "v-hero-rest": {
    "dtype": "float32",
@@ -6541,7 +7892,7 @@
     3141,
     3
    ],
-   "offset": 30341724
+   "offset": 39807060
   },
   "v-hero-run20": {
    "dtype": "float32",
@@ -6549,7 +7900,7 @@
     3141,
     3
    ],
-   "offset": 30379416
+   "offset": 39844752
   },
   "v-hero-sit100": {
    "dtype": "float32",
@@ -6557,7 +7908,7 @@
     3141,
     3
    ],
-   "offset": 30417108
+   "offset": 39882444
   },
   "v-hero-walk30": {
    "dtype": "float32",
@@ -6565,7 +7916,7 @@
     3141,
     3
    ],
-   "offset": 30454800
+   "offset": 39920136
   },
   "woman-caricature-rest": {
    "dtype": "float32",
@@ -6573,7 +7924,7 @@
     3141,
     3
    ],
-   "offset": 30492492
+   "offset": 39957828
   },
   "woman-chain186": {
    "dtype": "float32",
@@ -6581,7 +7932,7 @@
     3141,
     3
    ],
-   "offset": 30530184
+   "offset": 39995520
   },
   "woman-chain4-120": {
    "dtype": "float32",
@@ -6589,7 +7940,7 @@
     3141,
     3
    ],
-   "offset": 30567876
+   "offset": 40033212
   },
   "woman-chain4-123": {
    "dtype": "float32",
@@ -6597,7 +7948,7 @@
     3141,
     3
    ],
-   "offset": 30605568
+   "offset": 40070904
   },
   "woman-chain4-190": {
    "dtype": "float32",
@@ -6605,7 +7956,7 @@
     3141,
     3
    ],
-   "offset": 30643260
+   "offset": 40108596
   },
   "woman-chain4-305": {
    "dtype": "float32",
@@ -6613,7 +7964,7 @@
     3141,
     3
    ],
-   "offset": 30680952
+   "offset": 40146288
   },
   "woman-chain4-360": {
    "dtype": "float32",
@@ -6621,7 +7972,7 @@
     3141,
     3
    ],
-   "offset": 30718644
+   "offset": 40183980
   },
   "woman-clavicle-idle60": {
    "dtype": "float32",
@@ -6629,7 +7980,7 @@
     3141,
     3
    ],
-   "offset": 30756336
+   "offset": 40221672
   },
   "woman-dqs-wave40": {
    "dtype": "float32",
@@ -6637,7 +7988,7 @@
     3141,
     3
    ],
-   "offset": 30794028
+   "offset": 40259364
   },
   "woman-join178": {
    "dtype": "float32",
@@ -6645,7 +7996,7 @@
     3141,
     3
    ],
-   "offset": 30831720
+   "offset": 40297056
   },
   "woman-join180": {
    "dtype": "float32",
@@ -6653,7 +8004,7 @@
     3141,
     3
    ],
-   "offset": 30869412
+   "offset": 40334748
   },
   "woman-join182": {
    "dtype": "float32",
@@ -6661,7 +8012,7 @@
     3141,
     3
    ],
-   "offset": 30907104
+   "offset": 40372440
   },
   "woman-join186": {
    "dtype": "float32",
@@ -6669,7 +8020,7 @@
     3141,
     3
    ],
-   "offset": 30944796
+   "offset": 40410132
   },
   "woman-join195": {
    "dtype": "float32",
@@ -6677,7 +8028,7 @@
     3141,
     3
    ],
-   "offset": 30982488
+   "offset": 40447824
   },
   "woman-lbs-wave40": {
    "dtype": "float32",
@@ -6685,7 +8036,7 @@
     3141,
     3
    ],
-   "offset": 31020180
+   "offset": 40485516
   },
   "woman-lie170": {
    "dtype": "float32",
@@ -6693,7 +8044,7 @@
     3141,
     3
    ],
-   "offset": 31057872
+   "offset": 40523208
   },
   "woman-linePose-walk30": {
    "dtype": "float32",
@@ -6701,7 +8052,7 @@
     3141,
     3
    ],
-   "offset": 31095564
+   "offset": 40560900
   },
   "woman-linePosePelvis-lie170": {
    "dtype": "float32",
@@ -6709,7 +8060,7 @@
     3141,
     3
    ],
-   "offset": 31133256
+   "offset": 40598592
   },
   "woman-linePosePlaced-walk30": {
    "dtype": "float32",
@@ -6717,7 +8068,7 @@
     3141,
     3
    ],
-   "offset": 31170948
+   "offset": 40636284
   },
   "woman-linePoseUpright-lie170": {
    "dtype": "float32",
@@ -6725,7 +8076,7 @@
     3141,
     3
    ],
-   "offset": 31208640
+   "offset": 40673976
   },
   "woman-lineTurn-walk30": {
    "dtype": "float32",
@@ -6733,7 +8084,7 @@
     3141,
     3
    ],
-   "offset": 31246332
+   "offset": 40711668
   },
   "woman-newBody-walk30": {
    "dtype": "float32",
@@ -6741,7 +8092,7 @@
     3141,
     3
    ],
-   "offset": 31284024
+   "offset": 40749360
   },
   "woman-rest": {
    "dtype": "float32",
@@ -6749,7 +8100,7 @@
     3141,
     3
    ],
-   "offset": 31321716
+   "offset": 40787052
   },
   "woman-run20": {
    "dtype": "float32",
@@ -6757,7 +8108,7 @@
     3141,
     3
    ],
-   "offset": 31359408
+   "offset": 40824744
   },
   "woman-seam-idle60": {
    "dtype": "float32",
@@ -6765,7 +8116,7 @@
     3141,
     3
    ],
-   "offset": 31397100
+   "offset": 40862436
   },
   "woman-sigma-wave40": {
    "dtype": "float32",
@@ -6773,7 +8124,7 @@
     3141,
     3
    ],
-   "offset": 31434792
+   "offset": 40900128
   },
   "woman-silhouetteKeep-run20": {
    "dtype": "float32",
@@ -6781,7 +8132,7 @@
     3141,
     3
    ],
-   "offset": 31472484
+   "offset": 40937820
   },
   "woman-sit100": {
    "dtype": "float32",
@@ -6789,7 +8140,7 @@
     3141,
     3
    ],
-   "offset": 31510176
+   "offset": 40975512
   },
   "woman-turnPose-walk30": {
    "dtype": "float32",
@@ -6797,7 +8148,7 @@
     3141,
     3
    ],
-   "offset": 31547868
+   "offset": 41013204
   },
   "woman-turnRestKeep-walk30": {
    "dtype": "float32",
@@ -6805,7 +8156,7 @@
     3141,
     3
    ],
-   "offset": 31585560
+   "offset": 41050896
   },
   "woman-turnRestTurn-rest": {
    "dtype": "float32",
@@ -6813,7 +8164,7 @@
     3141,
     3
    ],
-   "offset": 31623252
+   "offset": 41088588
   },
   "woman-turnRestTurn-walk30": {
    "dtype": "float32",
@@ -6821,7 +8172,7 @@
     3141,
     3
    ],
-   "offset": 31660944
+   "offset": 41126280
   },
   "woman-walk30": {
    "dtype": "float32",
@@ -6829,7 +8180,7 @@
     3141,
     3
    ],
-   "offset": 31698636
+   "offset": 41163972
   }
  }
 }
