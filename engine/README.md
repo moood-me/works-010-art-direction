@@ -17,6 +17,9 @@ strength, on the rest (frames kept or turned) or as a pose layer, taken away; `&
 With `?heads` (Д5–Д7) the heads' panel: the chosen figure's head (a head preset, or none), its form's ways with their
 strengths, each feature painted or as volume, the face's light, an expression and its weight, a close-up of the face;
 `&h=<head preset>&hf=<preset>:<strength>,…&hl=<light preset>&x=<expression>:<weight>&face`.
+With `?hair` (Д8–Д10) the hair's panel: the chosen figure's hairstyle (a preset of group hair — В1's, or a ready head's —
+its own, or none), whether it moves, how firmly it holds its shape, the wind every figure stands in, a close-up of the
+head; `&hs=<hair preset>|none&hm=0|1&hh=<hold>&w=<wind preset>&face`.
 
 ## Layout
 
@@ -44,6 +47,13 @@ src/       engine.js      the entry: createEngine({root?, read?}) → body(ref),
                           paint.js (the face's drawing), expressions.js, pieces.js (noses, Г1's hair, headwear), head.js
                           (a head made on its body: picture, morphs, shading, pieces, its shape to collide with),
                           version.js (how heads are built, versioned)
+           hair/          hair (stage 3): build.js (В1's builders: locks along guide curves, the scalp mass, the inner
+                          layer, surfaces; the guides and each surface bound to them), styles.js (В1's 14 hairstyles,
+                          their groups named), fit.js (a hairstyle onto a head), sim.js (hair in motion), hair.js (hair as
+                          a head's piece, stored builds, the simulations a figure's meshes ask for), shade.js (how hair
+                          takes the light, three.js given)
+           solids.js      the body as hair and clothes meet it: the head's shape with its jaw, the body's skin as the
+                          frame drew it — moving within a step
            skin.js        skinning (centres of rotation / dual quaternions / linear), Т7's seam fix
            collision.js   the body as tapered capsules per bone, moved by the pose: distance and normal
            figure.js      a rig with its meshes: pose → layers (turns, changes of the rest, morphs) → place → meshes →
@@ -55,7 +65,8 @@ data/      skeleton.json, soma/ (Kimodo's SOMA skin, Apache-2.0: NOTICE), topolo
            kimodo/ (the studio's asks, asks.json, and data of motions not kept in experiments/motions-raw)
            anny/specs.json (the new bodies' Anny settings), bodies/index.json (every body by group, pinned),
            anny/face.json + .bin (Anny's 129 changes of the face on moood's mesh, tools/face_targets.py),
-           wraps/ (wrapped heads stored by the key of what they are made from, tools/characters.mjs wraps)
+           wraps/ (wrapped heads stored by the key of what they are made from, tools/characters.mjs wraps),
+           hair/ (В1's hairstyles built in their design space, stored by their key, tools/characters.mjs hair)
 motions/   <id>.json, index.json (motions and chains)
 characters/<id>.json, index.json
 presets/   <id>.json, index.json — presets of parts (deformers with their parameters), by group, pinned
@@ -121,6 +132,17 @@ it (`fit`), with the vertices that still move unlike their neighbours let go (`s
 everything it is made from (`src/head/wrap.js: wrapKey` — the wrap's version, its parameters but its strength, the body
 it is laid on); `data/wraps/index.json` lists the keys. Written by `tools/characters.mjs wraps` for every character and
 case; a wrap not stored (an author's new form) is made where it is needed.
+
+Version 5 (preset) and 6 (character) add hair: a piece of kind `style` (В1's hairstyle: `style`, `off`/`only` groups,
+`color`, `shading`, `moves`, `physics: {hold, bend, drag, wind}`), `moves` and `physics` on Г1's `hair` pieces, and
+`wind: {speed, dir, gust, turbulence}` as a preset's content (group `wind`); earlier files were upgraded by
+`tools/characters.mjs presets` and `upgrade` (only their versions changed).
+
+**Stored hairstyles** `data/hair/<key>.json` (+ `.bin`, `engine/hair` 1): a hairstyle built in its design space by the
+key of what it is built from (`src/hair/hair.js: styleKey` — how hair is built, `HEAD_BUILD.hair`, the style, its groups
+kept): per surface its positions, triangles, normals and strand directions (bytes), its place across and along each lock
+(1/32767ths), seed, occlusion, colour index and outline width (bytes), and its binding to the guides (three chains, their
+places in 1/2048ths of a node, weights in bytes); the guides in the header. 46 MB for the 14 styles.
 
 **Bodies' index** `data/bodies/index.json`: every body with its pin, group (moood, t8, t8-head, age, build, origin),
 label and height. **Anny's settings** `data/anny/specs.json`: per new body its phenotype (`ph`), local changes (`lc`)
@@ -342,6 +364,64 @@ picture), two sets of features for Anny's own face (dot eyes; features as volume
 characters that combine them (`head-anny-face`, `head-anny-age`, `head-points`, `head-cage`, `head-red-mine` — the
 red-haired girl taken as a part, her eyes as volume, a long face by points).
 
+**Hair** (stage 3, `src/hair/`). A hairstyle is one of a head's pieces, so it is taken, changed and taken away as the
+head's other parts are (by its id, `hair`): `{kind: "style", style, off?, only?, color?, shading?, moves?, physics?}` —
+В1's hairstyles (experiments/hair) as code, each a set of parts (surfaces) of named groups of items (`cap`, `fringe`,
+`back`, `sides`, `under`, `tail`, `braid`, `buns`, `hat`…), so `off: ["fringe"]` takes a group away, `only` keeps some;
+14 presets `hair-v1-*` (group hair) hold them, and four winds `wind-*`. Г1's and Г3's hair (the ready heads' `hair-*`)
+stays as it was drawn — rigid on the head — unless `moves: true`: then its locks (ribbons along their curves) and its
+masses' clumps hang on guides of the same simulation, the cap, buns and ties ride the head (`hair-g3-red`,
+`hair-g1-alva`; the viewer's «движутся»).
+- *Built* in the design space round В1's neutral head (`build.js`, В1's code carried as it was): each lock a swept lens
+  section thinning to a pointed tip, drawn twice — its own surface, and merged with the part's other items into the inner
+  layer a little inside, dark, that fills the gaps; strand directions, places across and along each lock, a seed per
+  lock, an occlusion term from the hair's own volume. Changed from В1, after Pavel's «все пластилиновые»: a lock is a
+  sheet, not a lens — its depth 0.6 of В1's (В1's thick sections with round rims read as clay); the seeds by a lock's
+  place, not by the order the styles were built in. Each lock's guide curve becomes a chain of points every 2 cm,
+  stiff by its length (short hair holds its shape, long hair swings, heavy tails and braids slow); a clump's smaller
+  locks ride their clump's chain, a braid is one chain, combed hair and buns ride the head; every surface point is bound
+  to up to three chains where it lies (the inner layer sharply, so it parts where locks part). A build takes 4–16 s, so
+  it is stored (`data/hair/`).
+- *Fitted* onto the head (`fit.js`): its cranium fitted with an ellipsoid through the head's designed form where it has
+  one (a wrap's form, found along rays), else through its skin, above the brows; every point carried as В1 carried it
+  (on the designed skull → on the head's, off it → its direction and its distance, grown with the head); then the head's
+  real surface against the ellipsoid, by direction, added near the skull (fading by 5 cm off it) — roots on the scalp,
+  the lift of the locks kept off the head's own form. The surfaces are skinned to the Head joint and follow the head's
+  skin (a bigger head as a layer grows them), shaded by their own normals and strands (`mesh.shading`, turned with the
+  joint: `src/figure.js`).
+- *In motion* (`sim.js`, В1's simulation on the engine's step): `figure.step` runs it after the floor, from the previous
+  pose to this one in small steps of at most 1/240 s, the solids moving between the two; the step's frame leaves the
+  hair's meshes to it (`figure.driven`), `frame(clip, t)` alone draws them at rest on the head. Each small step:
+  gravity and the air (wind with gusts and turbulence round each lock, less the lock's own speed, drag as its square,
+  across a lock more than along it); twice the groom — each point pulled toward where the hairstyle has it, carried by
+  the head; each segment bent back toward its angle against the one above (XPBD's share k·h²/(1+k·h²)); the solids, with
+  friction against their motion, a point pushed out leaving without the push's speed (no bounce); lengths exactly
+  (follow-the-leader with its velocity correction, twice: last; ringlets give like springs); the hair's own friction and
+  zigzags damped.
+  The rest: designed as it hangs, so the groom is set against the weight (let hang, moved up by the sag, five times),
+  then let settle on the standing body — first draped (the bend eased, so locks lie over the shoulders, not stand off
+  them), then stiff — and that is the rest (В1 left locks standing off the shoulders like flaps). The bend keeps the shape
+  it hangs in free, only the pull takes the body's settling in: a lock draped round a shoulder at rest doesn't keep that
+  curve once the shoulder moves from under it (it flailed sideways in a walk). A reset (the first step, a new clip, a
+  loop, a scrub back) places it where it hangs at rest on the head and lets it settle without speed in that pose; the
+  same moment again moves nothing. `physics` weighs the hairstyle's own: `hold`, `bend`, `drag`, `wind`. The wind: a
+  preset (`sim.wind`), the viewer's «Ветер».
+- *The solids* (`src/solids.js`, `figure.solids()` — the one collision the body offers, for clothes too): the head's
+  shape (the designed form or a ball, `head.shape`) carried by the Head joint and, below the mouth, the Jaw joint, as
+  `headShape`, baked into a grid per head (trilinear) and moved within a step (`set(previous, pose)`, `at(u)`); and the
+  body's own skin as this frame drew it (but the head's): a distance from it by moving least squares over its nearest
+  points' normals, and how fast it moves there (friction). Tried first and dropped: the engine's capsules (round a
+  collarbone one stands over the shoulder like a shelf, and long hair stood off it in flaps); each bone's skin carried
+  rigidly by its bone (neighbours disagree where the skin bends between them, and pushed the hair centimetres in a
+  step); one distance from the nearest skin point (it jumps where that point changes: jitter). A hair point may lie in
+  the head as deep as it did at rest (roots under the scalp); a lock's segments are kept exactly — the lengths are made
+  last in a small step, so what the solids push out a second time is left to the next.
+- *Light* (`shade.js`): В1's hair shading with the stage's lights — strands fine and coarse, bundles a centimetre or two
+  across with dark partings (В1's strands were finer than a pixel at a head's size, so a lock read as one smooth body),
+  darker roots and inner layer, the diffuse light taken partly along the strands (Kajiya-Kay), a two-lobe highlight
+  along the strands broken by the bundles, light through the thin edges against the light, the colour richer in shade;
+  the locks outlined in a dark of their own colour (В1's black), the inner layer not.
+
 **Chains** (`clipOf`). A motion made with `make_motion(after: {key, frames})` begins with the other's last frames.
 Where it stands and which way it faces in the other's space is measured from those shared frames (the same pose in
 both: a turn about the vertical and a move), checked against the studio's `startsAt`; a motion whose first frames are
@@ -418,6 +498,16 @@ more stretched than the plain body (×1.2); in expressions 2.5× (the lips that 
 meets the neck, under the jaw or at the nape; the picture not smeared where it shows (5×); the drawn eyes on the skin's
 eyes and the mouth's parting on the lips' (3 mm); reliefs no more stretched than the skin; a nose piece on the skin in
 motion, and every piece on a head grown by a layer (5 mm).
+Since stage 3: a moment of a figure whose hair moves is its simulation stepped frame by frame from the clip's start to
+that moment (in the case's `wind`), so the numbers and pictures keep it; cases for every hair character in every
+`each` moment, the wind and gusts, looking round, jump, dance, bow, roll. `units.mjs`: every hairstyle preset stored and
+what is stored what is built now; a hairstyle changed by its groups, colour and physics, refused a group it hasn't; the
+step's reset on loop and scrub the same as a fresh start, the same moment again moving nothing; a ready head's hair
+rigid unless it moves, and moving, on the head within 6 mm of its design at rest. `quality.mjs --only hair` (every
+character whose hair moves; ~25 min): at rest it sags from its design no more than 2 cm, leaves its rest no more than
+12 mm in 8 s, jitters no more than 1 mm a frame, its roots on the scalp (12 mm); in every motion and chain the engine has
+and in a strong wind: every point a number, every lock's length kept (1 %; ringlets 35 %), no point faster than 20 m/s,
+the hair no deeper in the body than at rest — the 1 % deepest of its surfaces by 8 mm, more than 1 cm in it 0.5 % of them.
 `pictures.mjs --jobs jobs.json outdir` makes pictures of any moments (`focus` on a joint for a close-up).
 
 ## Adding things
@@ -455,6 +545,12 @@ motion, and every piece on a head grown by a layer (5 mm).
   `src/head/` (or `src/deformers/`) and its strength-0 case in `check/units.mjs`. Anny's face changes again:
   `python3 engine/tools/face_targets.py` (needs Anny and torch). Pictures: `node engine/tools/sheets.mjs
   engine/tools/sheets/heads.json [names]`. After presets or bodies change, `characters.mjs cases` pins the cases anew.
+- *A hairstyle*: a style in `src/hair/styles.js` (its parts, its items in named groups, В1's helpers), a preset
+  `presets/hair-<id>.json` (`pieces: [{id: "hair", kind: "style", style, physics}]`), then `node engine/tools/characters.mjs
+  presets` and `hair` (builds and stores it). A head takes it among its pieces (`{kind: "preset", id}`: it takes the place
+  of the head's own piece `hair`); changed by its id: `{id: "hair", off: ["fringe"], color, physics: {hold: 2}, moves}`.
+  A ready head's hair moves with `{id: "hair", moves: true}`. Look at it from the front, ¾, side, at rest, in motion and
+  in the wind (`?hair`, `tools/sheets/hair.json`). A wind: a preset of group wind (`wind: {speed, dir, gust, turbulence}`).
 - *A change of the format*: `VERSION` up in `src/character.js`, its schema, and a step in `upgrade`.
 - **Before and after changing the engine**: `node engine/check/units.mjs`, `quality.mjs`, `numbers.mjs`, `pictures.mjs`. A
   difference is either a bug or a change meant — then look at the new pictures and store them with `--update`.
@@ -490,6 +586,15 @@ as a hole with a tongue — the two plain heads with lips as volume (`head-point
 (blending them, mouth shapes for speech, a gaze that follows: not now); a closing eye is drawn graded by its weight, a
 smile's happy eyes switch at half. Toon light on a head without a designed form (Anny's own, deformed) shows the mesh's
 small forms as hard tones.
+
+Hair (stage 3): В1's hairstyles keep their design — their big flat pieces are how they were drawn; only the locks'
+depth and the light changed. On a toon-lit head В1's hair keeps its own light (no toon light for it yet). In the
+A-pose rest long hair lies on the raised arms. The hair's surfaces are bound to its chains and may dip into the skin
+where a lock lies flat on it (the chains keep their points out, a lock's width lies beside them): the checks allow
+what lay in the body at rest and 8 mm more. A bigger head as a pose layer moves the hair's rest (it follows the skin)
+but its chains ride the Head joint alone. A frame of one figure with hair costs 15–30 ms in node (the simulation and
+binding its 40–100 thousand vertices); several characters at once are the later task. Characters not from Anny (П1, П2)
+have no hair yet (their heads are the next stage's).
 
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole
 (no foot contacts); the arm can press into the chest's side at the armpit when it hangs close (Anny's weights;

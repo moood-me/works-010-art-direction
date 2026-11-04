@@ -1,85 +1,100 @@
 // The body as hair (and, later, clothes) meet it — one set of solids a figure offers:
 // - its head's shape (the designed form, or a ball fitted to the head: src/head/head.js), carried by the Head joint
-//   and, below the mouth, by the Jaw joint (figure.headShape's split);
-// - its neck, trunk, shoulders and upper arms — where hair lies and cloth hangs, and where a capsule round a bone is
-//   too coarse (a capsule round the collarbone stands over the shoulder like a shelf) — as the skin itself: each of
-//   these bones carries the skin it moves most at rest, as a distance from that skin (signed by its normals), carried by
-//   the bone;
-// - the body's other capsules (src/collision.js: the forearms, hands, legs).
-// A simulation's frame runs in small steps from the previous pose to this one, so the solids move between the two:
-// set(previous, pose) once a frame, at(u) at each small step (u from 0 to 1), the state a step ago kept, so a point
-// lying on a solid can be carried by its motion (friction).
+//   and, below the mouth, by the Jaw joint (figure.headShape's split) — baked once per head into a grid of distances over
+//   its rest (trilinear, refined near the surface);
+// - the body's own skin as it is drawn this frame (but the head's, which the head's shape is): a distance from it —
+//   moving least squares over the nearest skin points' normals, so it is smooth where the nearest point changes — and
+//   how fast the skin there moves (for friction). Capsules round the bones were tried first: round a collarbone one
+//   stands over the shoulder like a shelf; each bone's skin carried rigidly by its bone disagreed with its neighbours'
+//   where the skin bends between them, and pushed the hair centimetres in a step.
+// A simulation's frame runs in small steps from the previous pose to this one: set(previous, pose) once a frame (the
+// skin as this frame drew it), at(u) at each small step (u from 0 to 1) for the head; the state a step ago kept, so a
+// point lying on a solid can be carried by its motion.
 //   const S = figure.solids();           // once (kept on the figure)
-//   S.set(previous, pose); S.at(u);       // each frame, each small step;  S.rest() — the figure at its rest
-//   S.parts: [{head?, local(x, out), was(x, out), world(l, out), distance(l), normal(l, out)}]  in the part's rest
-//   S.head: the head's part, or null;  S.caps: [{a, b, ra, rb, a0, b0}] — now and a step ago
+//   S.set(previous, pose, fresh?); S.at(u);       // each frame, each small step;  S.rest() — the figure at its rest
+//   S.head: null | {local(x, out), was(x, out), world(l, out), turn(v, out), distance(l), normal(l, out)}
+//   S.skin(x, y, z, out) → distance (metres, negative inside; beyond 3 cm of the skin: Infinity), out: {n, v} its
+//     normal and the skin's velocity there (metres a frame's step, set by set())
 //   S.carrier: the Head joint's {now, was: {q, p}, rest}
-// Distances are baked once per head and per body into grids over each part's rest (trilinear between their points,
-// refined only near the surface), so a lookup costs a few reads.
 import { qRot3, qSlerp, clamp, sst } from './math.js';
-import { makeCollider } from './collision.js';
-import { HEAD_JOINTS } from './head/frame.js';
+import { headShares } from './head/frame.js';
 import { normalsOf } from './mesh.js';
 
 // the bones whose skin is a solid of its own
 const SKIN_PARTS = ['Spine1', 'Spine2', 'Chest', 'Neck1', 'Neck2', 'LeftShoulder', 'RightShoulder', 'LeftArm', 'RightArm'];
 
 export function makeSolids(figure) {
-  const rig = figure.rig, sk = rig.skeleton, J = rig.joints, shape = figure.body?.head?.shape ?? null, mesh = figure.body ? figure.body.mesh : figure.outputs[0].mesh;
-  const headJ = new Set(HEAD_JOINTS.map(n => sk.index[n])), skinJ = SKIN_PARTS.map(n => sk.index[n]).filter(j => j !== undefined);
-  const C = makeCollider(rig, mesh);
-  const rest = C.rest.filter(c => !(shape && headJ.has(c.joint)) && !skinJ.includes(c.joint));
-  const caps = rest.map(c => ({ ra: c.ra, rb: c.rb, joint: c.joint, a: c.a.slice(), b: c.b.slice(), a0: c.a.slice(), b0: c.b.slice() }));
-  const ends = rest.map(() => ({ A: [new Float64Array(3), new Float64Array(3)], B: [new Float64Array(3), new Float64Array(3)] }));
-  const H = sk.index.Head, JW = sk.index.Jaw, tmp = [0, 0, 0];
-  // each joint a part rides: its turn and place from the rest, at the frame's two ends, now and a step ago
-  const tr = () => ({ q: [0, 0, 0, 1], qi: [0, 0, 0, 1], p: [0, 0, 0] }), joints = [H, JW, ...skinJ];
+  const rig = figure.rig, sk = rig.skeleton, J = rig.joints, shape = figure.body?.head?.shape ?? null, body = figure.outputs[0], mesh = body.mesh;
+  const H = sk.index.Head, JW = sk.index.Jaw;
+  // each joint the head rides: its turn and place from the rest, at the frame's two ends, now and a step ago
+  const tr = () => ({ q: [0, 0, 0, 1], qi: [0, 0, 0, 1], p: [0, 0, 0] }), joints = [H, JW];
   const T = Object.fromEntries(joints.map(j => [j, { ends: [tr(), tr()], now: tr(), was: tr() }]));
-  const grab = (pose, j, o) => { for (let k = 0; k < 4; k++) o.q[k] = pose.Q[j * 4 + k]; for (let k = 0; k < 3; k++) o.p[k] = pose.P[j * 3 + k]; };
+  const grab = (pose, j, o) => { for (let k = 0; k < 4; k++) o.q[k] = pose.Q[j * 4 + k]; o.qi[0] = -o.q[0]; o.qi[1] = -o.q[1]; o.qi[2] = -o.q[2]; o.qi[3] = o.q[3]; for (let k = 0; k < 3; k++) o.p[k] = pose.P[j * 3 + k]; };
   const lerpT = (a, b, u, o) => { const q = qSlerp(a.q, b.q, u); for (let k = 0; k < 4; k++) o.q[k] = q[k]; o.qi[0] = -q[0]; o.qi[1] = -q[1]; o.qi[2] = -q[2]; o.qi[3] = q[3]; for (let k = 0; k < 3; k++) o.p[k] = a.p[k] + (b.p[k] - a.p[k]) * u; };
   const copyT = (a, o) => { for (let k = 0; k < 4; k++) { o.q[k] = a.q[k]; o.qi[k] = a.qi[k]; } for (let k = 0; k < 3; k++) o.p[k] = a.p[k]; };
-  const carry = (pose, c, from, out) => { const j = c.joint, q = [pose.Q[j * 4], pose.Q[j * 4 + 1], pose.Q[j * 4 + 2], pose.Q[j * 4 + 3]]; qRot3(q, from[0] - J[j * 3], from[1] - J[j * 3 + 1], from[2] - J[j * 3 + 2], tmp); for (let k = 0; k < 3; k++) out[k] = pose.P[j * 3 + k] + tmp[k]; };
   const head = shape ? headOf(shape, J, H, JW, T) : null;
-  const parts = [...(head ? [head] : []), ...skinParts(mesh, rig, skinJ, T)];
+  const skin = skinOf(mesh, sk, !!shape);
   const S = {
-    head, parts, caps,
+    head,
     // the Head joint's turn and place now and a step ago (what carries a hairstyle), and its rest place
     carrier: { now: T[H].now, was: T[H].was, rest: [J[H * 3], J[H * 3 + 1], J[H * 3 + 2]] },
-    set(previous, pose) {
-      rest.forEach((c, n) => { carry(previous, c, c.a, ends[n].A[0]); carry(pose, c, c.a, ends[n].A[1]); carry(previous, c, c.b, ends[n].B[0]); carry(pose, c, c.b, ends[n].B[1]); });
+    set(previous, pose, fresh = false) {
       for (const j of joints) { grab(previous, j, T[j].ends[0]); grab(pose, j, T[j].ends[1]); }
+      skin.set(body.positions, body.normals, fresh);
       S.at(0, true);
     },
     at(u, first = false) {
-      for (let n = 0; n < caps.length; n++) {
-        const c = caps[n], e = ends[n];
-        for (let k = 0; k < 3; k++) { c.a0[k] = c.a[k]; c.b0[k] = c.b[k]; c.a[k] = e.A[0][k] + (e.A[1][k] - e.A[0][k]) * u; c.b[k] = e.B[0][k] + (e.B[1][k] - e.B[0][k]) * u; }
-        if (first) for (let k = 0; k < 3; k++) { c.a0[k] = c.a[k]; c.b0[k] = c.b[k]; }
-        // (its middle and how far it reaches from there)
-        c.m ??= [0, 0, 0]; for (let k = 0; k < 3; k++) c.m[k] = (c.a[k] + c.b[k]) / 2;
-        c.reach = Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]) / 2 + Math.max(c.ra, c.rb);
-      }
       for (const j of joints) { const t = T[j]; copyT(t.now, t.was); lerpT(t.ends[0], t.ends[1], u, t.now); if (first) copyT(t.now, t.was); }
-      for (const p of parts) p.place();
     },
-    // at the figure's rest (its joints where the rig has them, unturned)
+    // at the figure's rest (its joints where the rig has them, unturned; the skin at its rest)
     rest() {
-      rest.forEach((c, n) => { for (let s = 0; s < 2; s++) for (let k = 0; k < 3; k++) { ends[n].A[s][k] = c.a[k]; ends[n].B[s][k] = c.b[k]; } });
-      for (const j of joints) for (const t of T[j].ends) { t.q = [0, 0, 0, 1]; for (let k = 0; k < 3; k++) t.p[k] = J[j * 3 + k]; }
+      for (const j of joints) for (const t of T[j].ends) { t.q = [0, 0, 0, 1]; t.qi = [0, 0, 0, 1]; for (let k = 0; k < 3; k++) t.p[k] = J[j * 3 + k]; }
+      skin.set(mesh.positions, normalsOf(mesh.positions, mesh.triangles, undefined, mesh.used), true);
       S.at(0, true);
     },
-    // how far a point is from a capsule now (negative inside), its outward normal (into n), and where along it (t)
-    capsule(c, x, y, z, n) {
-      const bx = c.b[0] - c.a[0], by = c.b[1] - c.a[1], bz = c.b[2] - c.a[2], L2 = bx * bx + by * by + bz * bz || 1e-12;
-      const t = clamp(((x - c.a[0]) * bx + (y - c.a[1]) * by + (z - c.a[2]) * bz) / L2, 0, 1);
-      const dx = x - c.a[0] - bx * t, dy = y - c.a[1] - by * t, dz = z - c.a[2] - bz * t, l = Math.hypot(dx, dy, dz);
-      if (l > 1e-9) { n[0] = dx / l; n[1] = dy / l; n[2] = dz / l; } else { n[0] = 0; n[1] = 1; n[2] = 0; }
-      n.t = t;
-      return l - (c.ra + (c.rb - c.ra) * t);
-    },
+    skin: skin.at,
   };
   S.rest();
   return S;
+}
+
+// the skin to meet, but the head's: its points as this frame drew them, in a hash of cells, their normals, and how far
+// each moved since the frame before
+function skinOf(mesh, sk, withHead) {
+  const { omega } = headShares(mesh, sk), idx = Uint32Array.from(Array.from(mesh.used).filter(i => !withHead || omega[i] < 0.5));
+  const n = idx.length, P = new Float64Array(n * 3), N = new Float64Array(n * 3), V = new Float64Array(n * 3), cell = 0.03, hash = new Map();
+  const key = (a, b, c) => (a + 512) * 1048576 + (b + 512) * 1024 + (c + 512);
+  const KN = 8, bi = new Int32Array(KN), bd = new Float64Array(KN);
+  return {
+    set(positions, normals, fresh = false) {
+      hash.clear();
+      for (let k = 0; k < n; k++) {
+        const i = idx[k];
+        for (let c = 0; c < 3; c++) { const x = positions[i * 3 + c]; V[k * 3 + c] = fresh ? 0 : x - P[k * 3 + c]; P[k * 3 + c] = x; N[k * 3 + c] = normals[i * 3 + c]; }
+        const h = key(Math.floor(P[k * 3] / cell), Math.floor(P[k * 3 + 1] / cell), Math.floor(P[k * 3 + 2] / cell));
+        let list = hash.get(h); if (!list) hash.set(h, list = []); list.push(k);
+      }
+    },
+    at(x, y, z, out) {
+      const cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell); bd.fill(Infinity); bi.fill(-1);
+      for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+        const list = hash.get(key(cx + a, cy + b, cz + c)); if (!list) continue;
+        for (const k of list) {
+          const d = (P[k * 3] - x) ** 2 + (P[k * 3 + 1] - y) ** 2 + (P[k * 3 + 2] - z) ** 2; if (d >= bd[KN - 1]) continue;
+          let m = KN - 1; while (m > 0 && bd[m - 1] > d) { bd[m] = bd[m - 1]; bi[m] = bi[m - 1]; m--; } bd[m] = d; bi[m] = k;
+        }
+      }
+      if (bi[0] < 0 || bd[0] > 0.0009) return Infinity;
+      const h2 = Math.max(bd[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0, nx = 0, ny = 0, nz = 0, vx = 0, vy = 0, vz = 0;
+      for (let m = 0; m < KN; m++) {
+        const k = bi[m]; if (k < 0) break; const w = Math.exp(-bd[m] / h2);
+        sw += w; sd += w * ((x - P[k * 3]) * N[k * 3] + (y - P[k * 3 + 1]) * N[k * 3 + 1] + (z - P[k * 3 + 2]) * N[k * 3 + 2]);
+        nx += w * N[k * 3]; ny += w * N[k * 3 + 1]; nz += w * N[k * 3 + 2]; vx += w * V[k * 3]; vy += w * V[k * 3 + 1]; vz += w * V[k * 3 + 2];
+      }
+      const l = Math.hypot(nx, ny, nz) || 1; out.n[0] = nx / l; out.n[1] = ny / l; out.n[2] = nz / l; out.v[0] = vx / sw; out.v[1] = vy / sw; out.v[2] = vz / sw;
+      return sd / sw;
+    },
+  };
 }
 
 // a part riding a joint: a point carried into the joint's rest (back by its turn and place now or a step ago), its
@@ -116,52 +131,7 @@ function headOf(shape, J, H, JW, T) {
   return { ...partOf(grid, J, H, T[H], into), head: true };
 }
 
-// the skin each bone moves most (its vertices whose weight on it is the largest, and those it moves by a third or
-// more), as a distance at rest: to the nearest of those vertices, along its normal where it is near (signed: inside
-// the skin is negative), straight beyond — on a grid round them, 8 mm apart on a grown-up, kept per body
-function skinParts(mesh, rig, joints, T) {
-  const P = mesh.positions, K = mesh.skin.K, SJ = mesh.skin.joints, SW = mesh.skin.weights, J = rig.joints;
-  const all = cached(mesh, () => {
-    const N = normalsOf(P, mesh.triangles, undefined, mesh.used), out = new Map();
-    // the whole skin, so each part's distance is the skin's own (no wall where a part's own skin ends)
-    const cell = 0.03, hash = new Map(), key = (a, b, c) => `${a},${b},${c}`;
-    for (const i of mesh.used) { const k = key(Math.floor(P[i * 3] / cell), Math.floor(P[i * 3 + 1] / cell), Math.floor(P[i * 3 + 2] / cell)); if (!hash.has(k)) hash.set(k, []); hash.get(k).push(i); }
-    for (const j of joints) {
-      const vs = [];
-      for (const i of mesh.used) { let w = 0, top = 0, tj = -1; for (let k = 0; k < K; k++) { const a = SW[i * K + k]; if (SJ[i * K + k] === j) w += a; if (a > top) { top = a; tj = SJ[i * K + k]; } } if (tj === j || w >= 0.33) vs.push(i); }
-      if (vs.length < 30) continue;
-      const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
-      for (const i of vs) for (let c = 0; c < 3; c++) { lo[c] = Math.min(lo[c], P[i * 3 + c] - 0.04); hi[c] = Math.max(hi[c], P[i * 3 + c] + 0.04); }
-      const mine = new Uint8Array(mesh.N); for (const i of vs) mine[i] = 1;
-      // (the distance along the normals of the nearest few, weighed by nearness: a smooth surface through the skin's
-      // points — implicit moving least squares — not one that jumps where the nearest point changes)
-      const KN = 8, bi = new Int32Array(KN), bd = new Float64Array(KN);
-      const f = (x, y, z) => {
-        const cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell); bd.fill(Infinity); bi.fill(-1);
-        for (let r = 0; r <= 3; r++) {
-          for (let a = -r; a <= r; a++) for (let b = -r; b <= r; b++) for (let c = -r; c <= r; c++) {
-            if (Math.max(Math.abs(a), Math.abs(b), Math.abs(c)) !== r) continue;
-            for (const i of hash.get(key(cx + a, cy + b, cz + c)) ?? []) {
-              const d = (P[i * 3] - x) ** 2 + (P[i * 3 + 1] - y) ** 2 + (P[i * 3 + 2] - z) ** 2; if (d >= bd[KN - 1]) continue;
-              let k = KN - 1; while (k > 0 && bd[k - 1] > d) { bd[k] = bd[k - 1]; bi[k] = bi[k - 1]; k--; } bd[k] = d; bi[k] = i;
-            }
-          }
-          if (bi[KN - 1] >= 0 && Math.sqrt(bd[KN - 1]) <= r * cell) break;
-        }
-        // (where the skin nearest is not this bone's, the part is not there: another carries it)
-        if (bi[0] < 0 || !mine[bi[0]]) return FAR;
-        const h2 = Math.max(bd[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0;
-        for (let k = 0; k < KN; k++) { const i = bi[k]; if (i < 0) break; const w = Math.exp(-bd[k] / h2); sw += w; sd += w * ((x - P[i * 3]) * N[i * 3] + (y - P[i * 3 + 1]) * N[i * 3 + 1] + (z - P[i * 3 + 2]) * N[i * 3 + 2]); }
-        return sd / sw;
-      };
-      out.set(j, gridOf(f, lo, hi, 0.008 * Math.cbrt(rig.hipHeight / 0.9)));
-    }
-    return out;
-  });
-  return [...all.entries()].map(([j, grid]) => partOf(grid, J, j, T[j]));
-}
-
-const FAR = 0.09, CACHE = new WeakMap(), cached = (key, make) => { if (!CACHE.has(key)) CACHE.set(key, make()); return CACHE.get(key); };
+const CACHE = new WeakMap(), cached = (key, make) => { if (!CACHE.has(key)) CACHE.set(key, make()); return CACHE.get(key); };
 // a distance f(x, y, z) (metres) on a grid from lo to hi, h apart: coarse everywhere, exact near the surface; outside
 // the grid at least as far as its edge
 function gridOf(f, lo, hi, h) {

@@ -9,6 +9,8 @@
 // strengths (presets of group head-form, after the head's own), each feature painted or as volume, the face's light,
 // an expression and its weight, a close-up of the face; &h=<head preset>&hf=<preset>:<strength>,…&hl=<light preset>
 // &x=<expression>:<weight>&face (the close-up).
+// ?hair adds the hair's panel (stage 3): the chosen figure's hairstyle (a preset of group hair, its own, or none),
+// whether it moves, how firmly it holds its shape, the wind; &hs=<hair preset>|none&hm=0|1&hh=<hold>&w=<wind preset>.
 import * as THREE from 'three';
 import { createEngine } from '../src/engine.js';
 import { makeStage, figureView, joinBounds } from '../src/view3d.js';
@@ -19,10 +21,11 @@ const q = new URLSearchParams(location.search);
 const msg = document.getElementById('msg'), canvas = document.getElementById('cv');
 const E = await createEngine();
 const [chars, motions] = await Promise.all([E.characters(), E.motions()]);
-const BODIES = q.has('bodies'), HEADS = q.has('heads');
+const BODIES = q.has('bodies'), HEADS = q.has('heads'), HAIR = q.has('hair');
 if (BODIES) document.body.classList.add('bodies');
 if (HEADS) document.body.classList.add('heads');
-const [bodyIndex, presetIndex] = BODIES || HEADS ? await Promise.all([E.bodies(), E.presets()]) : [null, null];
+if (HAIR) document.body.classList.add('hair');
+const [bodyIndex, presetIndex] = BODIES || HEADS || HAIR ? await Promise.all([E.bodies(), E.presets()]) : [null, null];
 const ofGroup = g => presetIndex.presets.filter(p => p.group === g);
 const presetOf = ref => presetIndex.presets.find(p => p.id === ref.split('@')[0]);
 // presets whose changes give their own skin weights (the pictograms) are changes of the rest only
@@ -49,6 +52,15 @@ if (HEADS) {
   if (q.has('hl')) figs[0].over.light = pin(q.get('hl'));
   if (q.has('x')) { const [name, w = '1'] = q.get('x').split(':'); figs[0].over.expr = { name, weight: +w }; }
 }
+// the wind every figure stands in (a preset of group wind, or none)
+let wind = null;
+if (HAIR) {
+  const pin = id => { const p = presetIndex.presets.find(p => p.id === id); if (!p) throw new Error(`no preset ${id}`); return p.pin; };
+  if (q.has('hs')) figs[0].over.hair = q.get('hs') === 'none' ? '' : pin(q.get('hs'));
+  if (q.has('hm')) figs[0].over.moves = q.get('hm') !== '0';
+  if (q.has('hh')) figs[0].over.hold = +q.get('hh');
+  if (q.get('w')) wind = { id: q.get('w'), wind: (await E.preset(pin(q.get('w')))).wind };
+}
 if (BODIES && q.has('d')) figs[0].over.rows = q.get('d').split(',').filter(Boolean).map(s => {
   const [id, k = '1', where = 'rest'] = s.split(':'), p = presetIndex.presets.find(p => p.id === id); if (!p) throw new Error(`no preset ${id}`);
   return { where, c: { kind: 'preset', id: p.pin, strength: +k }, frames: 'keep' };
@@ -64,7 +76,7 @@ panel.innerHTML = `
   <div class="row"><span class="lab">Движение</span></div><div class="mv" id="moves"></div>
   <div class="row"><button id="play" aria-label="Пауза">❚❚</button><input id="time" type="range" min="0" max="0" step="0.01" value="0" aria-label="Время"><span id="flab"></span></div>
   <div class="row"><span class="lab">Камера</span><button id="follow">следует</button><button data-view="front">спереди</button><button data-view="side">сбоку</button><button id="joints">суставы</button><button id="capsules">капсулы</button></div>
-  <details id="skin"${BODIES || HEADS ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
+  <details id="skin"${BODIES || HEADS || HAIR ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
   <div class="row"><span class="lab">Скиннинг</span><button data-method="cor">центры вращения</button><button data-method="dqs">двойные кватернионы</button><button data-method="lbs">линейный</button></div>
   <div class="row"><span class="lab">Т7</span><button id="clav">ключица ⅓</button><button id="seam">шов сглажен</button></div>
   <div class="row"><span class="lab">Слои позы</span><span class="mv" id="layers"></span></div>
@@ -84,6 +96,10 @@ panel.innerHTML = `
   <div class="row"><span class="lab">Свет лица</span><select id="light" aria-label="Свет лица"></select></div>
   <div class="row"><span class="lab">Выражение</span><span class="mv" id="exprs"></span></div>
   <div class="row"><input id="xw" type="range" min="0" max="1" step="0.05" value="1" aria-label="сила выражения"><span id="xwl" class="hint"></span></div></div>` : ''}
+  ${HAIR ? `<div class="sep"></div><div id="hairBox" class="box">
+  <div class="row"><span class="lab">Причёска</span><select id="hairs" aria-label="Причёска" title="причёска (пресет группы hair): В1 — пряди вдоль направляющих; Г1 и Г3 — волосы готовых голов"></select><button id="hface" title="камера на голову">крупно</button></div>
+  <div class="row"><span class="lab">Движение</span><button id="hmoves" title="волосы движутся (инерция, ветер, столкновения) или держатся на голове как нарисованы">движутся</button><span class="hint">держат форму</span><input id="hhold" type="range" min="0.2" max="3" step="0.1" value="1" aria-label="как держат форму"><span id="hholdl" class="hint"></span></div>
+  <div class="row"><span class="lab">Ветер</span><span class="mv" id="winds"></span></div></div>` : ''}
   <div class="hint">мышь: вращать · колесо: ближе · Shift или правая кнопка: сдвинуть</div>`;
 const $ = s => panel.querySelector(s);
 fit();   // (the panel's size now known)
@@ -133,6 +149,18 @@ async function describe(f) {
       if (o.featAs) d.head.features = [...(d.head.features || []), ...Object.entries(o.featAs).map(([id, as]) => ({ id, as }))];
       if (o.expr) d.pose = [...(d.pose || []), { kind: 'expression', ...o.expr }];
     }
+  }
+  if (HAIR && (o.hair !== undefined || o.moves != null || o.hold != null)) {
+    // the hair: its piece (id "hair") taken away and a preset's in its place, or none; then whether it moves and how
+    // firmly it holds its shape (a change of the keys of the piece by its id)
+    // (a preset's piece of the same id takes the place of the head's own; none: its own taken away, if it has one)
+    const own = (await E.expand(await E.resolve(structuredClone(await E.description(f.char))))).head?.pieces ?? [], has = own.some(p => (p.id ?? p.kind) === 'hair');
+    d.head = { ...(d.head || {}) };
+    const pieces = [...(d.head.pieces || [])];
+    if (o.hair !== undefined) { if (o.hair) pieces.push({ kind: 'preset', id: o.hair }); else if (has) pieces.push({ kind: 'off', id: 'hair' }); }
+    const hairLeft = o.hair !== undefined ? !!o.hair : has;
+    if (hairLeft && (o.moves != null || o.hold != null)) pieces.push({ id: 'hair', ...(o.moves != null ? { moves: o.moves } : {}), ...(o.hold != null ? { physics: { hold: o.hold } } : {}) });
+    d.head.pieces = pieces;
   }
   if (o.rows) {
     d.rest = o.rows.filter(r => r.where === 'rest').map(r => ({ ...r.c, frames: r.frames }));
@@ -202,11 +230,23 @@ async function showHead() {
   $('#xw').value = o.expr?.weight ?? 1; $('#xwl').textContent = o.expr ? (+$('#xw').value).toFixed(2) : '';
   for (const id of ['head', 'addForm', 'fset', 'light', 'xw', 'face']) $('#' + id).disabled = id !== 'head' && !h;
 }
+// the hair's panel: the chosen figure's hairstyle as it is now
+function showHair() {
+  if (!HAIR) return;
+  const f = cur(), hair = f.spec.head?.pieces.find(p => (p.id ?? p.kind) === 'hair'), o = f.over;
+  $('#hairs').value = o.hair === undefined ? '' : o.hair ? pinnedId(o.hair) : 'none';
+  const moves = hair ? hair.moves ?? hair.kind === 'style' : false;
+  $('#hmoves').setAttribute('aria-pressed', String(moves)); $('#hmoves').disabled = !hair;
+  $('#hhold').value = hair?.physics?.hold ?? 1; $('#hholdl').textContent = (+$('#hhold').value).toFixed(1); $('#hhold').disabled = !moves;
+  panel.querySelectorAll('#winds button').forEach(b => b.setAttribute('aria-pressed', String((wind?.id ?? '') === b.dataset.id)));
+  $('#hface').setAttribute('aria-pressed', String(S.face));
+}
 async function build(f, i) {
   f.spec = await E.expand(await describe(f));
   const fig = await E.figure(f.spec, { place: { position: [i * SPACING, 0, 0], heading: 0 } });
   if (f.view) { stage.scene.remove(f.view.group); f.view.dispose(); }
   f.fig = fig; f.view = figureView(THREE, fig, f.spec.look);
+  for (const sim of fig.simulations) sim.wind = wind?.wind ?? null;
   f.view.dots.visible = S.joints; f.view.caps.visible = S.capsules;
   stage.scene.add(f.view.group);
 }
@@ -215,7 +255,7 @@ async function rebuild(which = figs.map((_, i) => i)) {
   try { for (const i of which) await build(figs[i], i); }
   catch (e) { msg.textContent = 'не собралось: ' + e.message; throw e; }
   await setClip(S.clip, true);
-  await showRows(); await showHead();
+  await showRows(); await showHead(); showHair();
   msg.style.display = 'none';
 }
 function toggleLayer(kind) {
@@ -240,7 +280,7 @@ function framed() {
   if (!S.face) return bounds();
   // the face: its middle in head units (src/head/frame.js; Anny's own head's when it has none), carried by the Head joint
   const fig = cur().fig, pose = fig.pose, H = E.skeleton.index.Head, F = fig.body.head?.frame ?? headFrame(fig.rig), J = fig.rig.joints;
-  const v = qRot([pose.Q[H * 4], pose.Q[H * 4 + 1], pose.Q[H * 4 + 2], pose.Q[H * 4 + 3]], F.toW(0, -0.35, 0.4).map((x, k) => x - J[H * 3 + k])), c = v.map((x, k) => x + pose.P[H * 3 + k]), h = 1.8 * F.R;
+  const v = qRot([pose.Q[H * 4], pose.Q[H * 4 + 1], pose.Q[H * 4 + 2], pose.Q[H * 4 + 3]], F.toW(0, HAIR ? -0.9 : -0.35, HAIR ? 0 : 0.4).map((x, k) => x - J[H * 3 + k])), c = v.map((x, k) => x + pose.P[H * 3 + k]), h = (HAIR ? 3 : 1.8) * F.R;   // (hair: the head and what hangs from it)
   return { center: c, min: c.map(x => x - h), max: c.map(x => x + h), size: [2 * h, 2 * h, 2 * h] };
 }
 function draw(snap) {
@@ -283,6 +323,19 @@ if (HEADS) {
   $('#xw').oninput = () => { $('#xwl').textContent = (+$('#xw').value).toFixed(2); };
   $('#xw').onchange = () => { const f = cur(); if (f.over.expr) { f.over.expr = { ...f.over.expr, weight: +$('#xw').value }; rebuild([S.cur]); } };
   $('#face').onclick = () => { S.face = !S.face; $('#face').setAttribute('aria-pressed', String(S.face)); draw(true); };
+}
+if (HAIR) {
+  const hs = $('#hairs'); hs.innerHTML = '<option value="">своя причёска</option><option value="none">без волос</option>';
+  for (const p of ofGroup('hair')) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; hs.appendChild(o); }
+  hs.onchange = () => { const f = cur(); f.over = { ...f.over, hair: hs.value === '' ? undefined : hs.value === 'none' ? '' : presetIndex.presets.find(p => p.id === hs.value).pin, moves: null, hold: null }; rebuild([S.cur]); };
+  $('#hmoves').onclick = () => { const f = cur(), hair = f.spec.head?.pieces.find(p => (p.id ?? p.kind) === 'hair'); f.over.moves = !(hair.moves ?? hair.kind === 'style'); rebuild([S.cur]); };
+  $('#hhold').oninput = () => { $('#hholdl').textContent = (+$('#hhold').value).toFixed(1); };
+  $('#hhold').onchange = () => { cur().over.hold = +$('#hhold').value; rebuild([S.cur]); };
+  const ws = $('#winds');
+  const setWind = async id => { wind = id ? { id, wind: (await E.preset(presetIndex.presets.find(p => p.id === id).pin)).wind } : null; for (const g of figs) { for (const sim of g.fig.simulations) sim.wind = wind?.wind ?? null; g.fig.reset(); } showHair(); };
+  addBtn(ws, '', 'нет', () => setWind(''));
+  for (const p of ofGroup('wind')) addBtn(ws, p.id, p.label.ru.replace(/^ветер: /, ''), () => setWind(p.id)).title = p.about?.ru ?? '';
+  $('#hface').onclick = () => { S.face = !S.face; showHair(); draw(true); };
 }
 $('#add').onclick = () => { figs.push({ char: cur().char, over: {} }); S.cur = figs.length - 1; rebuild([S.cur]); };
 $('#del').onclick = () => {

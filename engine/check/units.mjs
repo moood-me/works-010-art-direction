@@ -11,6 +11,7 @@ import { DEFORMERS, complete } from '../src/deform.js';
 import { regionsOf } from '../src/regions.js';
 import { headShares } from '../src/head/frame.js';
 import { wrapKey, wrapHead } from '../src/head/wrap.js';
+import { buildStyle, styleKey } from '../src/hair/hair.js';
 
 const E = await createEngine({ read });
 let failed = 0, passed = 0;
@@ -40,7 +41,7 @@ await test('a description: unknown keys and values refused', async () => {
 await test('a description of an earlier version: refused with the way to upgrade; the upgrade gives the stored preset', async () => {
   const v1 = { format: 'engine/character', version: 1, id: 'woman', label: woman.label, body: 'moood-woman',
     skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} }, look: woman.look };
-  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 5/);
+  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 6/);
   const up = upgrade(v1, { bodyPin: woman.body });
   ok(JSON.stringify(resolve(up, E.skeleton)) === JSON.stringify(resolve(woman, E.skeleton)), 'the upgraded woman is not the preset');
   const v1c = { ...v1, skinning: { method: 'dqs', clavicleShare: 1 / 3 }, motion: { corrections: { armsOff: { degrees: 5 }, dampHeadSpine: { on: false } } } };
@@ -213,7 +214,7 @@ await test('a character that starts from another (a full-body preset as a part):
   const princess = await E.description('disney-princess'), base = await E.base(`disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`);
   ok(base.id === 'disney-princess', 'the base was not read');
   const pin = `disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`;
-  const mine = { format: 'engine/character', version: 5, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
+  const mine = { format: 'engine/character', version: 6, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
     rest: [{ kind: 'squash', stretch: 0.1, frames: 'keep' }], pose: [{ kind: 'armsOff', degrees: 5 }], look: { skin: '#aa8877' } };
   const spec = await E.resolve(mine), p = await E.resolve(princess);
   ok(spec.body === p.body && spec.rest.length === p.rest.length + 1 && spec.rest.at(-1).kind === 'squash' && spec.pose.at(-1).kind === 'armsOff', 'not the base and then its own');
@@ -310,6 +311,50 @@ await test('heads: a head taken as a part — its form weakened, a way taken awa
   await refuses(() => E.headOf({ features: [{ id: 'eyes', as: 'volume' }] }), /to change: there is none/);
   const dots = await E.headOf({ preset: redPin, features: [{ kind: 'preset', id: pinOf('features-dots') }] });
   ok(dots.features.find(f => f.id === 'eyes').irisScale === 2.2, 'a features preset did not take the place of the head\'s');
+});
+// ———— hair (stage 3) ————
+const apart = (a, b) => { let m = 0; for (let i = 0; i < a.length; i++) m = Math.max(m, Math.abs(a[i] - b[i])); return a.length === b.length ? m : Infinity; };
+const hairOn = async (head, base = 'woman') => E.figure(await E.expand(await E.resolve({ ...structuredClone(await E.description(base)), id: 'h', head })));
+const hairPin = async id => (await E.presets()).presets.find(p => p.id === id).pin;
+await test('hair: every hairstyle preset makes hair on a head; what is stored is what is built now', async () => {
+  for (const p of (await E.presets()).presets.filter(p => p.group === 'hair')) {
+    const pre = await E.preset(p.pin);
+    for (const piece of pre.pieces) if (piece.kind === 'style') ok(await E.stored('hair', styleKey(piece)), `${p.id}: its hairstyle is not stored (node engine/tools/characters.mjs hair)`);
+  }
+  const piece = { kind: 'style', style: 'nimona' }, stored = (await E.stored('hair', styleKey(piece))).arrays, made = buildStyle(piece).arrays;
+  for (const [k, v] of Object.entries(made)) ok(apart(stored[k], v.array) === 0, `${k}: the stored hairstyle is not what is built now — its version (src/head/version.js: hair) was not raised`);
+});
+await test('hair: a hairstyle changed by its groups, colour and physics; refused where it has no such group', async () => {
+  const gwen = await hairPin('hair-v1-gwen');
+  const f = await hairOn({ pieces: [{ kind: 'preset', id: gwen }, { id: 'hair', off: ['fringe'], color: '#3a2a20', physics: { hold: 2 } }] });
+  ok(f.simulations.length === 1 && f.simulations[0].k.hold === 2, 'the physics not taken');
+  ok(f.outputs.some(o => o.mesh.color === '#3a2a20'), 'the colour not taken');
+  const whole = await hairOn({ pieces: [{ kind: 'preset', id: gwen }] });
+  ok(f.simulations[0].chains.length < whole.simulations[0].chains.length, 'the fringe not taken away');
+  await refuses(() => hairOn({ pieces: [{ kind: 'style', style: 'gwen', off: ['tail'] }] }), /has no group "tail"/);
+  const still = await hairOn({ pieces: [{ kind: 'preset', id: gwen }, { id: 'hair', moves: false }] });
+  ok(!still.simulations.length, 'hair that does not move still simulated');
+});
+await test('hair: the step — reset on loop and scrub gives the same as a fresh start; the same moment again moves nothing; frame keeps nothing', async () => {
+  const f = await hairOn({ pieces: [{ kind: 'preset', id: await hairPin('hair-v1-alva') }] }), clip = await E.clip('walk'), sim = f.simulations[0];
+  for (let t = 0; t <= 20; t++) f.step(clip, t);
+  const at20 = Float64Array.from(sim.x); f.step(clip, 20); ok(apart(at20, sim.x) === 0, 'the same moment again moved the hair');
+  f.step(clip, 0); const back = Float64Array.from(sim.x);
+  const g = await hairOn({ pieces: [{ kind: 'preset', id: await hairPin('hair-v1-alva') }] }); g.step(clip, 0);
+  ok(apart(back, g.simulations[0].x) < 1e-9, 'a scrub back to the start is not a fresh start');
+  for (let t = 1; t <= 20; t++) f.step(clip, t);
+  ok(apart(at20, sim.x) < 1e-9, 'played again, the hair is not where it was');
+  const o = f.outputs.find(o => o.mesh.sim), before = Float32Array.from(o.positions); f.frame(clip, 5); ok(apart(before, o.positions) > 0, 'frame did not draw the hair (at rest on the head)');
+});
+await test('hair: a ready head\'s hair as it was (rigid) unless it moves; moving, at rest it keeps its look', async () => {
+  const rigid = await E.figure('head-red'), moving = await E.figure('hair-g3-red');
+  ok(!rigid.simulations.length && moving.simulations.length === 1, 'which moves');
+  const pose = rigid.frame(null, 0); moving.step(null, 0);
+  const a = rigid.outputs.find(o => o.name === 'hair-locks'), b = moving.outputs.find(o => o.name === 'hair-locks');
+  // (on the head itself — the part of each lock above the shoulders — the moving hair lies as the rigid one)
+  let worst = 0; const H = pose.P[E.skeleton.index.Neck1 * 3 + 1];
+  for (const v of a.mesh.used) if (a.positions[v * 3 + 1] > H + 0.06) worst = Math.max(worst, Math.hypot(a.positions[v * 3] - b.positions[v * 3], a.positions[v * 3 + 1] - b.positions[v * 3 + 1], a.positions[v * 3 + 2] - b.positions[v * 3 + 2]));
+  ok(worst < 0.006, `on the head the moving hair lies ${(worst * 1000).toFixed(1)} mm from its design`);
 });
 console.log(failed ? `${failed} of ${passed + failed} failed` : `all ${passed} hold`);
 process.exit(failed ? 1 : 0);

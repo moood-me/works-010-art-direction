@@ -8,8 +8,7 @@
 //   toward its designed angle against the one above — stiffnesses as springs (1/s²), each pass taking k·h²/(1 + k·h²)
 //   as XPBD's compliance does;
 // - the solids (src/solids.js: the head's shape with its jaw — each point allowed as deep as it lies at rest —, the
-//   skin of the neck, trunk, shoulders and upper arms, the body's other capsules, the floor), with friction against
-//   their own motion;
+//   body's skin as the frame drew it, the floor), with friction against their own motion;
 // - lengths kept exactly (follow-the-leader, with its velocity correction; ringlets give like springs);
 // - the hair's own friction (its motion against where the head carries the hairstyle dies down) and zigzags along a
 //   chain damped.
@@ -65,9 +64,8 @@ export class HairSim {
     const head = this.solids.head, l = [0, 0, 0];   // (at rest a point is in the head's rest space as it is)
     for (const c of chains) if (!c.head) c.allow = Array.from({ length: c.n }, (_, k) => { if (!head) return 0; for (let j = 0; j < 3; j++) l[j] = this.X0[(c.at + k) * 3 + j]; return Math.min(c.rad[k], head.distance(l) - 0.001); });
     this.per = new Map(); this.drape = 1;
-    // how far from the Head joint the hair can reach (the capsules beyond it are not looked at)
-    const hr = this.solids.carrier.rest; this.reach = 0.15;
-    for (let i = 0; i < this.X0.length; i += 3) this.reach = Math.max(this.reach, Math.hypot(this.X0[i] - hr[0], this.X0[i + 1] - hr[1], this.X0[i + 2] - hr[2]) + 0.08);
+    // (the skin's answer at a point; how much of a frame's motion of the skin a small step takes)
+    this.skinAt = { n: [0, 0, 0], v: [0, 0, 0] }; this.share = 0;
     this.groom();
     this.time = 0; this.started = false;
   }
@@ -86,16 +84,12 @@ export class HairSim {
     const S = this.solids;
     // (a reset — the first step, a loop, a scrub — finds the hair as it hangs on the body in this pose: from where it
     // hangs at rest, carried by the head, let settle without speed, so a body unlike the rest's doesn't fling it)
-    if (reset || !this.started) { S.set(pose, pose); this.nearCaps(); this.place(S.carrier.now); for (let k = 0; k < SETTLE; k++) this.substep(1 / 240, null, true); this.v.fill(0); this.started = true; this.time = t / (this.figure.state?.clip?.fps ?? 30); this.write(); return; }
+    if (reset || !this.started) { S.set(pose, pose, true); this.place(S.carrier.now); for (let k = 0; k < SETTLE; k++) this.substep(1 / 240, null, true); this.v.fill(0); this.started = true; this.time = t / (this.figure.state?.clip?.fps ?? 30); this.write(); return; }
+    if (!(dt > 0)) { this.write(); return; }   // (the same moment again: nothing moves)
     const n = Math.max(1, Math.ceil(dt / MAX_H - 1e-6)), h = dt / n;
-    S.set(previous, pose); this.nearCaps();
+    S.set(previous, pose); this.share = h / dt;
     for (let s = 1; s <= n; s++) { S.at(s / n); this.substep(h, this.wind, false); this.time += h; }
     this.write();
-  }
-  // the capsules the hair can reach this frame (both ends of it)
-  nearCaps() {
-    const H = this.solids.carrier.now.p, R = this.reach + 0.3, d = (a, b) => { let best = Infinity; for (let t = 0; t <= 1; t += 0.25) best = Math.min(best, Math.hypot(a[0] + (b[0] - a[0]) * t - H[0], a[1] + (b[1] - a[1]) * t - H[1], a[2] + (b[2] - a[2]) * t - H[2])); return best; };
-    this.near = this.solids.caps.filter(c => d(c.a, c.b) - Math.max(c.ra, c.rb) < R);
   }
   // everything where the hairstyle hangs (once found, R0; else the groom), on the head as it is now
   place(H) {
@@ -147,16 +141,12 @@ export class HairSim {
       }
       this.ct.fill(0, a0, a0 + ch.n);
       this.collide(ch, true);
-      // lengths: follow the leader, from the root out (ringlets give like a spring, within limits)
-      for (let k = PIN; k < ch.n; k++) {
-        const i = (a0 + k) * 3, j = i - 3, L = ch.L[k - 1];
-        const dx = x[i] - x[j], dy = x[i + 1] - x[j + 1], dz = x[i + 2] - x[j + 2], dl = Math.hypot(dx, dy, dz) || 1e-9;
-        const want = ch.stretch ? Math.min(L * 1.35, Math.max(L * 0.8, dl + (L - dl) * ch.stretch)) : L;
-        const nx = x[j] + dx / dl * want, ny = x[j + 1] + dy / dl * want, nz = x[j + 2] + dz / dl * want;
-        corr[i] = nx - x[i]; corr[i + 1] = ny - x[i + 1]; corr[i + 2] = nz - x[i + 2];
-        x[i] = nx; x[i + 1] = ny; x[i + 2] = nz;
-      }
+      // lengths: follow the leader, from the root out; the solids again; the lengths again, last (exact, so a lock never
+      // stretches; what the solids push out a second time is left to the next small step)
+      corr.fill(0, a0 * 3, (a0 + ch.n) * 3);
+      this.lengths(ch);
       this.collide(ch, false);
+      this.lengths(ch);
       // velocities, with follow-the-leader's correction (the next point's shift taken back), and the hair's own
       // friction: its motion against where the head carries the hairstyle dies down
       const fr = 1 - Math.exp(-ch.inner * h);
@@ -173,40 +163,52 @@ export class HairSim {
       if (settle) v.fill(0, a0 * 3, (a0 + ch.n) * 3);
     }
   }
-  // the head (in its rest space, each point allowed as deep as it lay at rest), the body's capsules, the floor; with
+  // the head (in its rest space, each point allowed as deep as it lay at rest), the body's skin, the floor; with
   // friction against the solid's own motion
   collide(ch, friction) {
-    const { x, xp, solids: S } = this, l = [0, 0, 0], lp = [0, 0, 0], n = [0, 0, 0], o = [0, 0, 0], q = [0, 0, 0];
+    const { x, xp, solids: S } = this, head = S.head, l = [0, 0, 0], lp = [0, 0, 0], n = [0, 0, 0], o = [0, 0, 0], q = [0, 0, 0], at = this.skinAt, share = this.share;
     for (let k = PIN; k < ch.n; k++) {
       const i = (ch.at + k) * 3, rad = ch.rad[k];
-      // the head (each point as deep as it lay in it at rest) and the skin's parts, each in its own rest
-      for (const part of S.parts) {
-        if (this.noBody && !part.head) continue;
-        if ((x[i] - part.c[0]) ** 2 + (x[i + 1] - part.c[1]) ** 2 + (x[i + 2] - part.c[2]) ** 2 > (part.r + rad) ** 2) continue;
-        q[0] = x[i]; q[1] = x[i + 1]; q[2] = x[i + 2]; part.local(q, l);
-        const d = part.distance(l), limit = part.head ? ch.allow[k] : rad;
-        if (d >= limit) continue;
-        part.normal(l, n);
-        for (let j = 0; j < 3; j++) l[j] += n[j] * (limit - d);
-        if (friction) { q[0] = xp[i]; q[1] = xp[i + 1]; q[2] = xp[i + 2]; part.was(q, lp); const dx = l[0] - lp[0], dy = l[1] - lp[1], dz = l[2] - lp[2], dn = dx * n[0] + dy * n[1] + dz * n[2]; l[0] -= (dx - dn * n[0]) * MU; l[1] -= (dy - dn * n[1]) * MU; l[2] -= (dz - dn * n[2]) * MU; }
-        part.world(l, o); x[i] = o[0]; x[i + 1] = o[1]; x[i + 2] = o[2];
-        this.contact(ch.at + k, part.turn(n, q));
+      // the head, in its own rest (each point as deep as it lay in it at rest)
+      if (head) {
+        q[0] = x[i]; q[1] = x[i + 1]; q[2] = x[i + 2]; head.local(q, l);
+        const d = head.distance(l), limit = ch.allow[k];
+        if (d < limit) {
+          head.normal(l, n);
+          for (let j = 0; j < 3; j++) l[j] += n[j] * (limit - d);
+          if (friction) { q[0] = xp[i]; q[1] = xp[i + 1]; q[2] = xp[i + 2]; head.was(q, lp); const dx = l[0] - lp[0], dy = l[1] - lp[1], dz = l[2] - lp[2], dn = dx * n[0] + dy * n[1] + dz * n[2]; l[0] -= (dx - dn * n[0]) * MU; l[1] -= (dy - dn * n[1]) * MU; l[2] -= (dz - dn * n[2]) * MU; }
+          head.world(l, o); x[i] = o[0]; x[i + 1] = o[1]; x[i + 2] = o[2];
+          this.contact(ch.at + k, head.turn(n, q));
+        }
       }
-      if (!this.noBody) for (const c of this.near) {
-        if ((x[i] - c.m[0]) ** 2 + (x[i + 1] - c.m[1]) ** 2 + (x[i + 2] - c.m[2]) ** 2 > (c.reach + rad) ** 2) continue;
-        const d = S.capsule(c, x[i], x[i + 1], x[i + 2], n) - rad; if (d >= 0) continue;
-        x[i] -= n[0] * d; x[i + 1] -= n[1] * d; x[i + 2] -= n[2] * d;
-        this.contact(ch.at + k, n);
-        if (friction) {
-          const t = n.t, mx = c.a[0] + (c.b[0] - c.a[0]) * t - (c.a0[0] + (c.b0[0] - c.a0[0]) * t), my = c.a[1] + (c.b[1] - c.a[1]) * t - (c.a0[1] + (c.b0[1] - c.a0[1]) * t), mz = c.a[2] + (c.b[2] - c.a[2]) * t - (c.a0[2] + (c.b0[2] - c.a0[2]) * t);
-          const ux = x[i] - xp[i] - mx, uy = x[i + 1] - xp[i + 1] - my, uz = x[i + 2] - xp[i + 2] - mz, un = ux * n[0] + uy * n[1] + uz * n[2];
-          x[i] -= (ux - un * n[0]) * MU; x[i + 1] -= (uy - un * n[1]) * MU; x[i + 2] -= (uz - un * n[2]) * MU;
+      // the skin as this frame drew it; friction against its own motion in a small step
+      if (!this.noBody) {
+        const d = S.skin(x[i], x[i + 1], x[i + 2], at) - rad;
+        if (d < 0) {
+          const N = at.n; x[i] -= N[0] * d; x[i + 1] -= N[1] * d; x[i + 2] -= N[2] * d;
+          this.contact(ch.at + k, N);
+          if (friction) {
+            const ux = x[i] - xp[i] - at.v[0] * share, uy = x[i + 1] - xp[i + 1] - at.v[1] * share, uz = x[i + 2] - xp[i + 2] - at.v[2] * share, un = ux * N[0] + uy * N[1] + uz * N[2];
+            x[i] -= (ux - un * N[0]) * MU; x[i + 1] -= (uy - un * N[1]) * MU; x[i + 2] -= (uz - un * N[2]) * MU;
+          }
         }
       }
       if (x[i + 1] < rad) { x[i + 1] = rad; if (friction) { x[i] -= (x[i] - xp[i]) * 0.6; x[i + 2] -= (x[i + 2] - xp[i + 2]) * 0.6; } }
     }
   }
-
+  // follow the leader along a chain (ringlets give like a spring, within limits); each point's shift kept (corr) for
+  // the velocity's correction
+  lengths(ch) {
+    const { x, corr } = this;
+    for (let k = PIN; k < ch.n; k++) {
+      const i = (ch.at + k) * 3, j = i - 3, L = ch.L[k - 1];
+      const dx = x[i] - x[j], dy = x[i + 1] - x[j + 1], dz = x[i + 2] - x[j + 2], dl = Math.hypot(dx, dy, dz) || 1e-9;
+      const want = ch.stretch ? Math.min(L * 1.35, Math.max(L * 0.8, dl + (L - dl) * ch.stretch)) : L;
+      const nx = x[j] + dx / dl * want, ny = x[j + 1] + dy / dl * want, nz = x[j + 2] + dz / dl * want;
+      corr[i] += nx - x[i]; corr[i + 1] += ny - x[i + 1]; corr[i + 2] += nz - x[i + 2];
+      x[i] = nx; x[i + 1] = ny; x[i + 2] = nz;
+    }
+  }
   // a point in contact this small step, and the solid's normal there (world)
   contact(p, n) { this.ct[p] = 1; this.cn[p * 3] = n[0]; this.cn[p * 3 + 1] = n[1]; this.cn[p * 3 + 2] = n[2]; }
 
@@ -222,7 +224,7 @@ export class HairSim {
   }
   groom() {
     const S = this.solids, D = Float64Array.from(this.T0), free = [];
-    S.rest(); this.nearCaps();
+    S.rest();
     for (const c of this.chains) if (!c.head) for (let k = PIN; k < c.n; k++) free.push((c.at + k) * 3);
     this.noBody = true; this.R0 = null;
     let X;

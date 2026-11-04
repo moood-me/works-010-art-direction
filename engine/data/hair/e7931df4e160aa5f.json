@@ -1,7 +1,7 @@
 {
  "format": "engine/hair",
  "version": 1,
- "key": "900bd85ae258db71",
+ "key": "e7931df4e160aa5f",
  "style": "kbraid",
  "off": [],
  "only": null,
@@ -284,12 +284,12 @@
   }
  ],
  "about": "kbraid: built in its design space (src/hair/hair.js), by styleKey",
- "bin": "900bd85ae258db71.bin",
+ "bin": "e7931df4e160aa5f.bin",
  "arrays": {
   "m0.positions": {
    "dtype": "float32",
    "shape": [
-    21956,
+    20159,
     3
    ],
    "offset": 0
@@ -297,90 +297,90 @@
   "m0.normals": {
    "dtype": "uint8",
    "shape": [
-    21956,
+    20159,
     3
    ],
-   "offset": 263472
+   "offset": 241908
   },
   "m0.triangles": {
    "dtype": "uint16",
    "shape": [
-    44032,
+    40628,
     3
    ],
-   "offset": 329340
+   "offset": 302388
   },
   "m0.tangents": {
    "dtype": "uint8",
    "shape": [
-    21956,
+    20159,
     3
    ],
-   "offset": 593532
+   "offset": 546156
   },
   "m0.uv": {
    "dtype": "int16",
    "shape": [
-    21956,
+    20159,
     2
    ],
-   "offset": 659400
+   "offset": 606636
   },
   "m0.seed": {
    "dtype": "uint8",
    "shape": [
-    21956,
+    20159,
     1
    ],
-   "offset": 747224
+   "offset": 687272
   },
   "m0.ao": {
    "dtype": "uint8",
    "shape": [
-    21956,
+    20159,
     1
    ],
-   "offset": 769180
+   "offset": 707432
   },
   "m0.colors": {
    "dtype": "uint8",
    "shape": [
-    21956,
+    20159,
     1
    ],
-   "offset": 791136
+   "offset": 727592
   },
   "m0.width": {
    "dtype": "uint8",
    "shape": [
-    21956,
+    20159,
     1
    ],
-   "offset": 813092
+   "offset": 747752
   },
   "m0.bindC": {
    "dtype": "uint16",
    "shape": [
-    21956,
+    20159,
     3
    ],
-   "offset": 835048
+   "offset": 767912
   },
   "m0.bindU": {
    "dtype": "uint16",
    "shape": [
-    21956,
+    20159,
     3
    ],
-   "offset": 966784
+   "offset": 888868
   },
   "m0.bindW": {
    "dtype": "uint8",
    "shape": [
-    21956,
+    20159,
     3
    ],
-   "offset": 1098520
+   "offset": 1009824
   },
   "m1.positions": {
    "dtype": "float32",
@@ -388,7 +388,7 @@
     26841,
     3
    ],
-   "offset": 1164388
+   "offset": 1070304
   },
   "m1.normals": {
    "dtype": "uint8",
@@ -396,7 +396,7 @@
     26841,
     3
    ],
-   "offset": 1486480
+   "offset": 1392396
   },
   "m1.triangles": {
    "dtype": "uint16",
@@ -404,7 +404,7 @@
     53186,
     3
    ],
-   "offset": 1567004
+   "offset": 1472920
   },
   "m1.tangents": {
    "dtype": "uint8",
@@ -412,7 +412,7 @@
     26841,
     3
    ],
-   "offset": 1886120
+   "offset": 1792036
   },
   "m1.uv": {
    "dtype": "int16",
@@ -420,7 +420,7 @@
     26841,
     2
    ],
-   "offset": 1966644
+   "offset": 1872560
   },
   "m1.seed": {
    "dtype": "uint8",
@@ -428,7 +428,7 @@
     26841,
     1
    ],
-   "offset": 2074008
+   "offset": 1979924
   },
   "m1.ao": {
    "dtype": "uint8",
@@ -436,7 +436,7 @@
     26841,
     1
    ],
-   "offset": 2100852
+   "offset": 2006768
   },
   "m1.colors": {
    "dtype": "uint8",
@@ -444,7 +444,7 @@
     26841,
     1
    ],
-   "offset": 2127696
+   "offset": 2033612
   },
   "m1.width": {
    "dtype": "uint8",
@@ -452,7 +452,7 @@
     26841,
     1
    ],
-   "offset": 2154540
+   "offset": 2060456
   },
   "m1.bindC": {
    "dtype": "uint16",
@@ -460,7 +460,7 @@
     26841,
     3
    ],
-   "offset": 2181384
+   "offset": 2087300
   },
   "m1.bindU": {
    "dtype": "uint16",
@@ -468,7 +468,7 @@
     26841,
     3
    ],
-   "offset": 2342432
+   "offset": 2248348
   },
   "m1.bindW": {
    "dtype": "uint8",
@@ -476,7 +476,7 @@
     26841,
     3
    ],
-   "offset": 2503480
+   "offset": 2409396
   }
  }
 }

@@ -1,5 +1,5 @@
 {
- "about": "The checks' moments (check/numbers.mjs: skinned positions; check/pictures.mjs: pictures). `each`: every character preset in these; `cases`: one character in moments that exercise an option. A case: {name, char, clip (a motion id, a chain id, or null: at rest), t (frames), over? (keys of the character's description replaced: still checked against its schema), place?, view (front | side | back | three | top: from where the figure faces then), picture (also a picture), w, h (its size; 400 × 400)}. The stored numbers keep the hashes of the bodies, motions and descriptions they were made from: a difference names what changed under them.",
+ "about": "The checks' moments (check/numbers.mjs: skinned positions; check/pictures.mjs: pictures). `each`: every character preset in these; `cases`: one character in moments that exercise an option. A case: {name, char, clip (a motion id, a chain id, or null: at rest), t (frames), over? (keys of the character's description replaced: still checked against its schema), place?, wind? (a wind preset: hair that moves is stepped in it), view (front | side | back | three | top: from where the figure faces then), picture (also a picture), w, h (its size; 400 × 400)}. The stored numbers keep the hashes of the bodies, motions and descriptions they were made from: a difference names what changed under them.",
  "each": [
   {
    "name": "rest",
@@ -1033,6 +1033,82 @@
    "focus": "Head",
    "size": 0.32,
    "view": "profile",
+   "picture": true
+  },
+  {
+   "name": "wind-idle90",
+   "char": "hair-alva",
+   "clip": "idle",
+   "t": 90,
+   "focus": "Head",
+   "size": 0.6,
+   "view": "front",
+   "picture": true,
+   "wind": "wind-strong@543a4c62f1d581cb"
+  },
+  {
+   "name": "gusts-idle90",
+   "char": "hair-kpony",
+   "clip": "idle",
+   "t": 90,
+   "focus": "Head",
+   "size": 0.7,
+   "view": "side",
+   "picture": true,
+   "wind": "wind-gusty@5f3d7c6b68c0883a"
+  },
+  {
+   "name": "look60",
+   "char": "hair-g3-red",
+   "clip": "look-around",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.6,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "jump40",
+   "char": "hair-gwen",
+   "clip": "jump",
+   "t": 40,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "dance60",
+   "char": "hair-g1-alva",
+   "clip": "dance",
+   "t": 60,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "bow50",
+   "char": "hair-kpony",
+   "clip": "bow",
+   "t": 50,
+   "view": "side",
+   "picture": true
+  },
+  {
+   "name": "roll40",
+   "char": "hair-marco",
+   "clip": "roll",
+   "t": 40,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "face",
+   "char": "hair-red-ariel",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "tq",
    "picture": true
   }
  ]

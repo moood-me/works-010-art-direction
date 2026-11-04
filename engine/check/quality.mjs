@@ -17,7 +17,12 @@
 //              meets the neck, under the jaw or at the nape; the face's picture not smeared where it shows; the drawn eyes
 //              on the skin's eyes and the drawn mouth's parting where the lips part (mm); reliefs not stretched; pieces on
 //              the skin in motion and when a layer grows the head
-//   node engine/check/quality.mjs [--only skin,bones,feet,order,heads] [--print]   (--print: every measure, not only failures)
+//   hair       every character whose hair moves: at rest it keeps the rest its groom found (sagging from its design no
+//              more than 2 cm, leaving it no more than 12 mm in 8 s, no jitter past 1 mm a frame), its roots on the scalp;
+//              in every motion and chain the engine has, and in a strong wind: no point not a number, every lock's length
+//              kept (1 %; ringlets give 35 %), no point faster than 20 m/s, the hair no deeper in the body than at rest
+//              (the 1 % deepest of its surfaces: 8 mm; more than 1 cm in it: 0.5 % of them)
+//   node engine/check/quality.mjs [--only skin,bones,feet,order,heads,hair] [--print]   (--print: every measure, not only failures)
 import { createEngine } from '../src/engine.js';
 import { read } from './node-read.mjs';
 import { resolve } from '../src/character.js';
@@ -302,6 +307,56 @@ if (!only || only.includes('heads')) {
       }
       check(`${c}: the lips' parting off the drawn mouth's`, mm(off), 3, ' mm');
     }
+  }
+}
+
+// ———— hair (src/hair/): every character whose hair moves, in every motion the engine has (and in the wind) ————
+if (!only || only.includes('hair')) {
+  const HAIR = [];
+  for (const c of chars) { const f = await E.figure(c.id); if (f.simulations.length) HAIR.push(c.id); }
+  const index = await E.motions(), CLIPS = [...index.motions.filter(m => !m.after).map(m => m.id), ...index.chains.map(c => c.id)];
+  const strong = (await E.preset(pinOf('wind-strong'))).wind;
+  // how deep a point lies in the body's solids now (0 outside): the head's shape, the skin as the frame drew it
+  const depth = (S, x) => {
+    const l = [0, 0, 0], out = { n: [0, 0, 0], v: [0, 0, 0] };
+    let d = S.skin(x[0], x[1], x[2], out); if (S.head) { S.head.local(x, l); d = Math.min(d, S.head.distance(l)); }
+    return Math.max(0, -d);
+  };
+  // the hair's surfaces (every 7th vertex): how much deeper in the body than at the rest, the most over a share of them
+  const surfaces = (fig, sim) => sim.outputs.flatMap(o => Array.from(o.mesh.used).filter((_, k) => k % 7 === 0).map(v => [o, v]));
+  const deepest = (fig, sim, pts, rest) => { const S = sim.solids, out = pts.map(([o, v], k) => depth(S, [o.positions[v * 3], o.positions[v * 3 + 1], o.positions[v * 3 + 2]]) - rest[k]); out.sort((a, b) => b - a); return out; };
+  for (const id of HAIR) {
+    const fig = await E.figure(id), sim = fig.simulations[0], S = sim.solids;
+    // at rest: the rest kept (it hangs where its groom found it, and stays), roots on the scalp, no jitter
+    fig.step(null, 0); const R = Float64Array.from(sim.x), pts = surfaces(fig, sim), rest = pts.map(([o, v]) => depth(S, [o.positions[v * 3], o.positions[v * 3 + 1], o.positions[v * 3 + 2]]));
+    let prev = null, jitter = 0;
+    for (let t = 1; t <= 240; t++) { fig.step(null, t); if (t > 120) { for (let i = 0; i < sim.x.length; i += 3) jitter = Math.max(jitter, Math.hypot(sim.x[i] - prev[i], sim.x[i + 1] - prev[i + 1], sim.x[i + 2] - prev[i + 2])); } prev = Float64Array.from(sim.x); }
+    let kept = 0; for (let i = 0; i < R.length; i += 3) kept = Math.max(kept, Math.hypot(sim.x[i] - R[i], sim.x[i + 1] - R[i + 1], sim.x[i + 2] - R[i + 2]));
+    check(`${id}: hanging at rest, it sags from its design`, sim.rested.sag * 1000, 20, ' mm');
+    check(`${id}: standing still 8 s, it leaves its rest`, kept * 1000, 12, ' mm');
+    check(`${id}: standing still, it moves in a frame (jitter)`, jitter * 1000, 1, ' mm');
+    // roots: each guide's root on the head's surface (its design lays it a little under the scalp)
+    let root = 0; const l = [0, 0, 0];
+    if (S.head) for (const c of sim.chains) if (!c.head) { S.head.local([sim.X0[c.at * 3], sim.X0[c.at * 3 + 1], sim.X0[c.at * 3 + 2]], l); root = Math.max(root, Math.abs(S.head.distance(l) + 0.006)); }
+    check(`${id}: a root off the scalp`, root * 1000, 12, ' mm');
+    for (const [clip, wind] of [...CLIPS.map(c => [c, null]), ['idle', strong]]) {
+      const C = await E.clip(clip); sim.wind = wind; fig.reset();
+      let len = 0, speed = 0, bad = 0, deep = 0, share = 0;
+      for (let t = 0; t < Math.min(C.frames, 240); t++) {
+        fig.step(C, t);
+        for (const c of sim.chains) if (!c.head) for (let k = 0; k < c.n - 1; k++) { const i = (c.at + k) * 3, d = Math.hypot(sim.x[i + 3] - sim.x[i], sim.x[i + 4] - sim.x[i + 1], sim.x[i + 5] - sim.x[i + 2]); len = Math.max(len, Math.abs(d / c.L[k] - 1) - (c.stretch ? 0.35 : 0)); }
+        for (let i = 0; i < sim.v.length; i++) { if (!Number.isFinite(sim.x[i])) bad++; }
+        for (let i = 0; i < sim.v.length; i += 3) speed = Math.max(speed, Math.hypot(sim.v[i], sim.v[i + 1], sim.v[i + 2]));
+        if (t % 6 === 0) { const d = deepest(fig, sim, pts, rest); deep = Math.max(deep, d[Math.floor(d.length * 0.01)]); share = Math.max(share, d.filter(x => x > 0.01).length / d.length); }
+      }
+      const what = `${id} in ${clip}${wind ? ' in a strong wind' : ''}`;
+      check(`${what}: points not numbers`, bad, 0);
+      check(`${what}: a lock's segment longer or shorter (share)`, len, 0.01);
+      check(`${what}: the fastest point (m/s)`, speed, 20);
+      check(`${what}: the hair through the body, deeper than at rest (the 1% deepest)`, deep * 1000, 8, ' mm');
+      check(`${what}: the share of the hair more than 1 cm in the body`, share * 100, 0.5, ' %');
+    }
+    sim.wind = null;
   }
 }
 
