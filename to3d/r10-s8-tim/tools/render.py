@@ -62,7 +62,7 @@ sc.render.threads_mode = 'FIXED'
 sc.render.threads = job.get('threads', 4)
 sc.view_settings.view_transform = 'AgX'
 sc.view_settings.look = 'AgX - Medium High Contrast'
-sc.view_settings.exposure = job.get('exposure', 0.0)
+sc.view_settings.exposure = job.get('exposure', 0.25)
 sc.render.film_transparent = False
 world = bpy.data.worlds.new('w'); sc.world = world; world.use_nodes = True
 world.node_tree.nodes['Background'].inputs[0].default_value = lin('#0b0c10')
@@ -154,7 +154,7 @@ def mat_skin():
 def mat_hair():
     m, nt, b = nodes('hair')
     uv = sep(nt, attr(nt, 'tuv').outputs['Vector'])
-    base = lin('#6e3a1c')
+    base = lin('#6a3e24')
     # fine strands across each lock (the drawing's strand lines) and its grooves: stripes in the across coordinate
     across = uv.outputs['X']
     w = math_(nt, 'MULTIPLY', across, 9.0)
@@ -369,9 +369,9 @@ def lights(centre, yaw=0.0):
     c = Vector(centre)
     k = job.get('light', 1.0)
     R = Matrix.Rotation(-yaw, 3, 'Z')
-    area('key', c + R @ Vector((-1.9, -1.5, 1.9)), c, 0.7, 200 * k, '#ffdcb4')
+    area('key', c + R @ Vector((-1.9, -1.5, 1.9)), c, 0.7, 210 * k, '#ffe4c4')
     area('rim', c + R @ Vector((1.6, 1.5, 1.2)), c, 0.5, 180 * k, '#a8c4ff')
-    area('fill', c + R @ Vector((1.8, -1.6, 0.2)), c, 1.6, 12 * k, '#b8c0d8')
+    area('fill', c + R @ Vector((1.8, -1.6, 0.2)), c, 1.6, 30 * k, '#d8c8c0')
 
 
 # ------------------------------------------------------------------ cameras and output

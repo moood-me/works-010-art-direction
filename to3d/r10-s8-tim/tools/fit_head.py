@@ -181,7 +181,7 @@ def main():
     print('head raw', V.min(0).round(3), V.max(0).round(3))
 
 
-def relax_low(V, Q, adj, iters=25):
+def relax_low(V, Q, adj, iters=60):
     """tangential relaxation under the jaw and on the neck (the projection crowds the base's long jaw into the
     drawing's small one): each vertex toward its neighbours' mean, then back onto the surface"""
     T = base.tris(Q)

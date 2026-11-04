@@ -99,7 +99,6 @@ function headTrack(c) {
   const r = { fps: c.fps, yaw, pitch }; tracks.set(key, r); return r;
 }
 
-window.dbg = () => ({ paint, material, rig, figure, sk, clip });
 const A = window.A = {
   async set(o) {
     if (o.model && o.model !== state.model) { await loadModel(o.model); state.model = o.model; }

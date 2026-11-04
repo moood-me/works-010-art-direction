@@ -47,7 +47,6 @@ void main(){
   if (vMat < 2.2) { float u = clamp(vMat, 0.0, 2.0); alb = u < 1.0 ? mix(base[0], base[1], smoothstep(0.55, 1.0, u)) : mix(base[1], base[2], smoothstep(1.0, 1.12, u)); m = vMat < 1.4 ? 0 : 2; }
   vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
   vec3 v = normalize(camPos - vW);
-  if (clay > 1.5) { gl_FragColor = vec4(fract(vMat * 0.37), fract(vMat * 0.71), fract(vMat*0.13+0.3), 1.0); return; }
   if (clay > 0.5) { float k = 0.3 + 0.7 * max(dot(n, L), 0.0); gl_FragColor = vec4(pow(vec3(0.8, 0.78, 0.74) * k * (1.0 - 0.6 * vAO), vec3(1.0/2.2)), 1.0); return; }
   float rough = 0.6, specK = 0.04, wrap = 0.0; vec3 sss = vec3(0.0);
   bool skin = (m == 0 || m == 1);

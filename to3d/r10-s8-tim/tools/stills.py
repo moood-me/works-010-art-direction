@@ -61,7 +61,7 @@ def run(sheet, samples=48):
         frames.append(F)
         at = head_centre(F)
         views.append(dict(name=f'{sheet}{k}', W=pw, H=H, frame=k,
-                          cam=dict(type='view', yaw=vy, S=S, cx=cx - k * pw, cy=cy, at=at.tolist(), fstop=4.5)))
+                          cam=dict(type='view', yaw=vy, S=S, cx=cx - k * pw, cy=cy, at=at.tolist(), fstop=3.2)))
     np.concatenate(frames).astype(np.float32).tofile(f'{OUT}/{sheet}.bin')
     job = dict(out=OUT, samples=samples, frames=f'{OUT}/{sheet}.bin', views=views,
                hide=[p for p in PC if p not in HEADONLY] if sheet == 'expr' else [])
