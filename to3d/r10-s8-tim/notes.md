@@ -143,4 +143,6 @@ No neural images; StdGEN not used.
 - The figure still waves with the other hand than the drawing (Kimodo's wave), and the pose leans; the drawing's
   ears are bigger.
 - Films are 12 fps on purpose (stop motion on twos); the CPU renders are slow (~1 min a frame on the shared machine).
-- The viewer's materials are an approximation of the renders (no subsurface, no real bokeh).
+- The viewer's materials are an approximation of the renders (no subsurface, no real bokeh); there the glass eyes
+  read whiter and flatter than in the renders.
+- In Kimodo's wave his short arm and big head make the hand wave by the hair, the head tilts toward it.

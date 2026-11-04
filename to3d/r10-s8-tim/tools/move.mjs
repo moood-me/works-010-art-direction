@@ -74,7 +74,6 @@ for (const [k, t] of times.entries()) {
       const sh = P.floor - lo; for (let i = 1; i < fig.positions.length; i += 3) fig.positions[i] += sh;
     }
   }
-  if (job.debug) console.log('head facing', JSON.stringify(headFacing(fig.pose, HI, qRot)));
   // the face's clock: the clip's time, or (a still pose filmed, clockFps) the k-th picture's
   const st = job.face || (life ? life.at(job.clockFps ? k / job.clockFps : t / fps) : { e: { calm: 1 } });
   params.push(st);
