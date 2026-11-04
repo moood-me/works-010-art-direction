@@ -4,19 +4,19 @@
  "kind": "hair",
  "about": "В1's hairstyles as built in their design space (src/hair/hair.js: buildStyle), each stored by the key of what it is built from (styleKey): written by engine/tools/characters.mjs hair.",
  "keys": [
-  "15d7b1551ab2ab15",
-  "28c5473777c877bd",
-  "34137fd44eebea71",
-  "57143770ca4891d0",
-  "5c8620a14a96af7c",
-  "6748b53005e3ed93",
-  "811b78b14b3226e6",
-  "cc7ea546e81839c1",
-  "db5d97332fdc6cf1",
-  "dbbee125d88d1454",
-  "de24b7f01815123b",
-  "e404abeaa3189cd2",
-  "e7931df4e160aa5f",
-  "e8a7b2ce6416f4c9"
+  "059e6ea05406134f",
+  "178ce4f9f5736d1d",
+  "20e2382f1d0f579a",
+  "55a405bb3ff8b796",
+  "638ec71496d74bd6",
+  "6bb2346188c0bb05",
+  "805d8e8927642528",
+  "8982facb22ed623e",
+  "8c1f630403ce476f",
+  "afdfe977d51f4fc9",
+  "b21a4db990b958c0",
+  "b6348377f11732c0",
+  "c3b13fdda478e2e0",
+  "e8745f551b91de8f"
  ]
 }

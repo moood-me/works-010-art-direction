@@ -106,5 +106,5 @@ function ballOf(P, mesh, frame, omega) {
   c = c.map(v => v / n); let r = 0;
   for (const i of mesh.used) if (omega[i] > 0.9) { const l = frame.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); r += Math.hypot(l[0] - c[0], l[1] - c[1], l[2] - c[2]); }
   r /= n;
-  return { sdf: (x, y, z) => Math.hypot(x - c[0], y - c[1], z - c[2]) - r };
+  return { sdf: (x, y, z) => Math.hypot(x - c[0], y - c[1], z - c[2]) - r, ball: true };
 }

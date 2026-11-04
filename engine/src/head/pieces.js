@@ -143,19 +143,19 @@ function hair(p, ctx) {
   // the hair was drawn on it; the cap, buns and ties ride the head (guide 0)
   const guides = p.moves ? [{ head: true, points: [[0, 0, 0], [0, 0, 0]] }] : null;
   const onSkull = q => { const l = F.toL(...q), d = sub(l, C0); return (len(d) - len(cr(d)) * 1.04) * F.R < 0.03; };
-  const guide = (pts, t) => { guides.push(guideOf(pts.map((q, i) => ({ p: F.toW(...q), s: i / (pts.length - 1), t: t * F.R })), {}, false, onSkull)); return guides.length - 1; };
+  const guide = (pts, t, w = t) => { guides.push(guideOf(pts.map((q, i) => ({ p: F.toW(...q), s: i / (pts.length - 1), t: t * F.R, w: w * F.R })), {}, false, onSkull)); return guides.length - 1; };
   // a place along a guide (node index and fraction) where its curve's parameter s lies
   const at = (c, s) => { const G = guides[c]; let i = 0; while (i < G.s.length - 2 && G.s[i + 1] < s) i++; return i + clamp((s - G.s[i]) / (G.s[i + 1] - G.s[i]), 0, 1); };
   const sim = bind => guides ? { sim: { piece: id, guides, physics: p.physics ?? {}, bind, normals: 'surface' } } : {};
   solids.forEach((s, k) => {
     const m = meshOf(s.sdf, [-1.7, -1.2, -1.7], [1.7, 1.8, 1.7], 0.035);
-    out.push(onHead(ctx, `${id}-${k}`, { positions: toWorld(m.positions, F), triangles: m.triangles }, { color: s.color || p.color, ink, toon: true, ...sim(guides && boundToClumps(m.positions, s, s.clumps ? s.clumps.map(([a, b, r]) => guide(lerpLine(a, b, 6), r * 0.5)) : [], at)) }));
+    out.push(onHead(ctx, `${id}-${k}`, { positions: toWorld(m.positions, F), triangles: m.triangles }, { color: s.color || p.color, ink, toon: true, ...sim(guides && boundToClumps(m.positions, s, s.clumps ? s.clumps.map(([a, b, r]) => guide(lerpLine(a, b, 6), r * 0.5, r)) : [], at)) }));
   });
   if (locks.length) {
     // the locks as one mesh (each a ribbon of its own; moving, each on its own guide, ring by ring)
     const P = [], T = [], bc = [], bu = [];
     for (const L of locks) {
-      const g = lockGeometry(L), o = P.length / 3, c = guides ? guide(L.pts, L.w * L.flat) : 0, n = L.pts.length, R = (g.positions.length / 3 - 2) / n;
+      const g = lockGeometry(L), o = P.length / 3, c = guides ? guide(L.pts, L.w * L.flat, L.w) : 0, n = L.pts.length, R = (g.positions.length / 3 - 2) / n;
       P.push(...g.positions); for (const i of g.triangles) T.push(i + o);
       if (guides) for (let v = 0; v < g.positions.length / 3; v++) { const ring = v < n * R ? Math.floor(v / R) : v === n * R ? 0 : n - 1; bc.push(c); bu.push(at(c, ring / (n - 1))); }
     }

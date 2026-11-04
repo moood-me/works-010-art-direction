@@ -430,7 +430,7 @@ export function surfaceNets(sdf, bmin, bmax, h) {
 // along, long hair swings; heavy hair (tails, braids) swings slower and the air holds it less.
 // → {guides: [{points (n×3), s (its lock's parameter at each), rad, hold, bend, drag, inner, stretch, heavy}],
 //    binds: per surface {c, u, w} (each vertex's three chains, the place on each — node index and fraction — and weights)}
-// a guide from a curve ({p, s, t}: its points, its lock's parameter and thickness there): a chain of points every 2 cm
+// a guide from a curve ({p, s, t, w}: its points, its lock's parameter, depth and width there): a chain of points every 2 cm
 // or so, with how stiff each is; onSkull(p): whether a point lies on the skull (from the root, while it does, held firmly)
 export function guideOf(curve, dyn, coil, onSkull) {
   const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -439,7 +439,10 @@ export function guideOf(curve, dyn, coil, onSkull) {
   for (let k = 0, i = 0; k <= nseg; k++) {
     const a = L * k / nseg; while (i < acc.length - 2 && acc[i + 1] < a) i++;
     const f = Math.min(1, Math.max(0, (a - acc[i]) / Math.max(1e-9, acc[i + 1] - acc[i]))), A = curve[i], B = curve[i + 1];
-    points.push(A.p.map((v, j) => v + (B.p[j] - v) * f)); s.push(A.s + (B.s - A.s) * f); rad.push(Math.min(0.012, 0.55 * (A.t + (B.t - A.t) * f) + 0.002));
+    points.push(A.p.map((v, j) => v + (B.p[j] - v) * f)); s.push(A.s + (B.s - A.s) * f);
+    // (how far from the body a chain's point keeps: half the lock's depth, and a share of its width — a wide lock lying
+    // over a rounded body dips its edges toward it)
+    rad.push(Math.min(0.015, 0.5 * (A.t + (B.t - A.t) * f) + 0.15 * ((A.w ?? A.t) + ((B.w ?? B.t) - (A.w ?? A.t)) * f) + 0.002));
   }
   const heavy = dyn.heavy ? 1 : 0, lg = (a, b) => Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * smooth(0.1, 0.3, L));
   const bendTip = dyn.lTip ?? (coil ? 600 : heavy ? 600 : lg(6000, 250)), holdTip = dyn.gTip ?? (heavy ? 8 : lg(3000, 6));
@@ -450,7 +453,8 @@ export function guideOf(curve, dyn, coil, onSkull) {
     hold.push(k <= leave ? 20000 : holdTip * Math.pow(4000 / holdTip, Math.exp(-(a - aL) / (heavy ? 0.03 : 0.06))));
     bend.push(20000 * Math.pow(bendTip / 20000, u));
   }
-  return { points, s, rad, hold, bend, drag: dyn.drag ?? (heavy ? 0.1 : 0.21), inner: heavy ? 2.5 : 3, stretch: coil ? 0.18 : 0, heavy };
+  // (rooted: it grows from the scalp — not a tail out of a band, a braid off the crown)
+  return { points, s, rad, hold, bend, drag: dyn.drag ?? (heavy ? 0.1 : 0.21), inner: heavy ? 2.5 : 3, stretch: coil ? 0.18 : 0, heavy, rooted: onSkull(points[0]) };
 }
 
 export function bindOf(built) {
@@ -462,11 +466,11 @@ export function bindOf(built) {
     if (L.rig === 'head') return 0;
     if (L.rig) return groupChain(L.rig);
     if (L.parent) return lockChain(L.parent);
-    if (!own.has(L)) own.set(L, chainOf(frames({ ...L.o, coil: undefined }, 64).map(e => ({ p: e.p, s: e.s, t: e.t })), L.o.dyn || {}, !!L.o.coil));
+    if (!own.has(L)) own.set(L, chainOf(frames({ ...L.o, coil: undefined }, 64).map(e => ({ p: e.p, s: e.s, t: e.t, w: e.w })), L.o.dyn || {}, !!L.o.coil));
     return own.get(L);
   };
   const groupChain = g => {
-    if (!groups.has(g)) groups.set(g, chainOf(frames({ pts: g.guide, w: 0.03, t: 0.012 }, 64).map(e => ({ p: e.p, s: e.s, t: 0.016 })), g.dyn || {}, false));
+    if (!groups.has(g)) groups.set(g, chainOf(frames({ pts: g.guide, w: 0.03, t: 0.012 }, 64).map(e => ({ p: e.p, s: e.s, t: 0.016, w: 0.03 })), g.dyn || {}, false));
     return groups.get(g);
   };
   // the chain's parameter where its lock's parameter s lies; the nearest place on a chain to a point

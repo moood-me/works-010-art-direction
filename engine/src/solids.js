@@ -1,8 +1,8 @@
 // The body as hair (and, later, clothes) meet it — one set of solids a figure offers:
-// - its head's shape (the designed form, or a ball fitted to the head: src/head/head.js), carried by the Head joint
+// - its head's designed form (src/head/head.js), carried by the Head joint
 //   and, below the mouth, by the Jaw joint (figure.headShape's split) — baked once per head into a grid of distances over
 //   its rest (trilinear, refined near the surface);
-// - the body's own skin as it is drawn this frame (but the head's, which the head's shape is): a distance from it —
+// - the body's own skin as it is drawn this frame (but a designed head's, which its form is): a distance from it —
 //   moving least squares over the nearest skin points' normals, so it is smooth where the nearest point changes — and
 //   how fast the skin there moves (for friction). Capsules round the bones were tried first: round a collarbone one
 //   stands over the shoulder like a shelf; each bone's skin carried rigidly by its bone disagreed with its neighbours'
@@ -24,7 +24,8 @@ import { normalsOf } from './mesh.js';
 const SKIN_PARTS = ['Spine1', 'Spine2', 'Chest', 'Neck1', 'Neck2', 'LeftShoulder', 'RightShoulder', 'LeftArm', 'RightArm'];
 
 export function makeSolids(figure) {
-  const rig = figure.rig, sk = rig.skeleton, J = rig.joints, shape = figure.body?.head?.shape ?? null, body = figure.outputs[0], mesh = body.mesh;
+  // (a head without a designed form is met as its skin: a ball fitted to it is too coarse for hair to lie on)
+  const rig = figure.rig, sk = rig.skeleton, J = rig.joints, given = figure.body?.head?.shape ?? null, shape = given && !given.ball ? given : null, body = figure.outputs[0], mesh = body.mesh;
   const H = sk.index.Head, JW = sk.index.Jaw;
   // each joint the head rides: its turn and place from the rest, at the frame's two ends, now and a step ago
   const tr = () => ({ q: [0, 0, 0, 1], qi: [0, 0, 0, 1], p: [0, 0, 0] }), joints = [H, JW];

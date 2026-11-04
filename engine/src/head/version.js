@@ -9,4 +9,4 @@
 //   expressions  src/head/expressions.js: the expressions' morphs
 //   pieces       src/head/pieces.js: noses, hair, headwear and how they follow the skin
 //   hair         src/hair/build.js, styles.js: В1's hairstyles as built in their design space (stored: data/hair/)
-export const HEAD_BUILD = { wrap: 2, picture: 2, expressions: 2, pieces: 2, hair: 2 };
+export const HEAD_BUILD = { wrap: 2, picture: 2, expressions: 2, pieces: 2, hair: 4 };

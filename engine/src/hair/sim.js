@@ -44,7 +44,7 @@ export class HairSim {
     let N = 0;
     for (const [gi, g] of guides.entries()) {
       const n = g.points.length, c = { n, at: N, head: !!g.head, seed: gi * 1.618, gain: 0.8 + 0.4 * ((gi * 0.618) % 1) };
-      if (!g.head) Object.assign(c, { rad: g.rad, hold: g.hold.map(v => v * k.hold), bend: g.bend.map(v => v * k.bend), drag: g.drag * k.drag, inner: g.inner, stretch: g.stretch });
+      if (!g.head) Object.assign(c, { rooted: g.rooted, rad: g.rad, hold: g.hold.map(v => v * k.hold), bend: g.bend.map(v => v * k.bend), drag: g.drag * k.drag, inner: g.inner, stretch: g.stretch });
       chains.push(c); N += n;
     }
     this.N = N;
@@ -62,7 +62,12 @@ export class HairSim {
     }
     // how deep each point lies in the head's shape at rest: it may stay that deep (the hairstyle lies as designed)
     const head = this.solids.head, l = [0, 0, 0];   // (at rest a point is in the head's rest space as it is)
-    for (const c of chains) if (!c.head) c.allow = Array.from({ length: c.n }, (_, k) => { if (!head) return 0; for (let j = 0; j < 3; j++) l[j] = this.X0[(c.at + k) * 3 + j]; return Math.min(c.rad[k], head.distance(l) - 0.001); });
+    // (and in the skin, where a head without a designed form is its skin)
+    this.solids.rest(); const at = { n: [0, 0, 0], v: [0, 0, 0] };
+    for (const c of chains) if (!c.head) {
+      c.allow = Array.from({ length: c.n }, (_, k) => { if (!head) return 0; for (let j = 0; j < 3; j++) l[j] = this.X0[(c.at + k) * 3 + j]; return Math.min(c.rad[k], head.distance(l) - 0.001); });
+      c.allowSkin = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3; return Math.min(c.rad[k], this.solids.skin(this.X0[i], this.X0[i + 1], this.X0[i + 2], at) - 0.001); });
+    }
     this.per = new Map(); this.drape = 1;
     // (the skin's answer at a point; how much of a frame's motion of the skin a small step takes)
     this.skinAt = { n: [0, 0, 0], v: [0, 0, 0] }; this.share = 0;
@@ -183,7 +188,7 @@ export class HairSim {
       }
       // the skin as this frame drew it; friction against its own motion in a small step
       if (!this.noBody) {
-        const d = S.skin(x[i], x[i + 1], x[i + 2], at) - rad;
+        const d = S.skin(x[i], x[i + 1], x[i + 2], at) - ch.allowSkin[k];
         if (d < 0) {
           const N = at.n; x[i] -= N[0] * d; x[i + 1] -= N[1] * d; x[i + 2] -= N[2] * d;
           this.contact(ch.at + k, N);
@@ -216,7 +221,8 @@ export class HairSim {
   // where the chains are, in the head's rest space (the solids at rest: that is the body's rest space)
   settled(frames, from = true) {
     if (from) this.place(this.solids.carrier.now);
-    for (let f = 0; f < frames; f++) for (let s = 0; s < 8; s++) this.substep(MAX_H, null, true);
+    for (let f = 0; f < frames; f++) for (let s = 0; s < 8; s++) this.substep(MAX_H, null, !this.noSettle);
+    this.v.fill(0);
     return Float64Array.from(this.x);
   }
   dirs() {
@@ -241,8 +247,14 @@ export class HairSim {
     // does not keep that curve once the shoulder has moved from under it)
     this.drape = 0.05; const Y0 = this.settled(90); this.drape = 1;
     for (const i of free) for (let d = 0; d < 3; d++) this.T0[i + d] += Y0[i + d] - X[i + d];
-    const Y = this.settled(150, false);
-    for (const i of free) for (let d = 0; d < 3; d++) this.T0[i + d] += Y[i + d] - Y0[i + d];
+    // (stiff, it lets settle as it would stand: moving, not crept step by step — friction holds a creeping lock where
+    // a moving one slides on)
+    // (again from standing still, until it stays: a lock held on a sloping arm by its own motion slides off when it
+    // starts from rest, as every reset starts it)
+    this.noSettle = true; let Y = this.settled(150, false);
+    for (let k = 0; k < 6; k++) { const Z = this.settled(60, false); let m = 0; for (const i of free) m = Math.max(m, Math.hypot(Z[i] - Y[i], Z[i + 1] - Y[i + 1], Z[i + 2] - Y[i + 2])); Y = Z; if (m < 0.004) break; }
+    this.noSettle = false;
+    // (and what it settled to is the rest as it is: the pull's aim moved by it again would pull it on further)
     this.v.fill(0); this.R0 = Y;
     // how far the hanging hair stays from its design, and how far the body moved it (for the checks)
     let sag = 0, body = 0; for (const i of free) { sag = Math.max(sag, Math.hypot(X[i] - D[i], X[i + 1] - D[i + 1], X[i + 2] - D[i + 2])); body = Math.max(body, Math.hypot(Y[i] - X[i], Y[i + 1] - X[i + 1], Y[i + 2] - X[i + 2])); }
