@@ -49,17 +49,18 @@ const HOLD_TIME = 0.012, HELD_MASS = 0.95, TETHER = 1.04, TETHER_PULL = 0.3, SHA
 // SETTLE: small steps a reset lets the cloth settle in its pose without speed; ENTER: how long (s) the body goes into it
 // from the rest on a reset; REST_TIME: how long it hangs on the body at rest to find the rest (s); PREPARE: rounds of
 // putting it on (out of the skin and the garments under it)
-const SETTLE = 30, REST_TIME = 1.2, PREPARE = 6, ENTER = 0.4;
+const SETTLE = 30, REST_TIME = 2, PREPARE = 6, ENTER = 0.4;
 // FLOOR_MU: the floor's friction; REACH: how far past its thickness a point is looked at by the skin (farther: surely
 // clear until the skin or the point has moved that far); HEAD_REACH: how near the Head joint the head's form is asked
 // (a share of nothing: metres)
 const FLOOR_MU = 0.8, REACH = 0.01, HEAD_REACH = 0.3;
 // CURVE: the radius of the body's tightest curve cloth wraps (m)
 const CURVE = 0.04;
-// CLEAR: how far clear of the body a point's designed form must be for the form to pull it fully
-const CLEAR = 0.02;
-// GIVE: the most an edge is shortened in a pass of the lengths (m)
-const GIVE = 0.004;
+// SELF: how far apart a garment's points keep where it folds onto itself (m)
+const SELF = 0.008;
+// AGAINST: the share of its depth in a garment under it a point is pushed out of it in a small step (all of it at once,
+// a hem lying on a waistband was thrown off it and fell back, a shimmer)
+const AGAINST = 0.5;
 // RIM: how far past a garment's edge one over it stops meeting it (m)
 const RIM = 0.015;
 // TOUCH: how near the skin a corner of a triangle is, for its middle to be asked too (m)
@@ -99,7 +100,8 @@ export class ClothSim {
     for (let s = 0; s < n; s++) this.substep(mr, mr, 1, null);
     // (and that is where it is held: where it hangs, not as it was cut — held as cut, a point the skin pushed out was
     // drawn back into it for ever, a standing tug at a strap that shimmered)
-    for (const g of gs) { g.R0 = Float64Array.from(g.x); g.base.set(g.x); g.v.fill(0); g.normals(); }
+    // (and its points that lie together as it hangs may: its folds at rest are not pushed apart for ever)
+    for (const g of gs) { g.R0 = Float64Array.from(g.x); g.base.set(g.x); g.cut.set(g.x); g.v.fill(0); g.normals(); }
     // the clothes as what lies over them meets them (hair: src/solids.js cover), at rest
     this.coverP = new Float32Array(gs.reduce((s, g) => s + g.n * 3, 0)); this.coverN = new Float32Array(this.coverP.length);
     this.cover = this.solids.cover(this.coverP.length / 3); this.covered(); this.cover.rest(this.coverP, this.coverN);
@@ -114,7 +116,7 @@ export class ClothSim {
   step({ dt, reset, jump, t }) {
     const S = this.solids, m = this.m, F = this.figure, gs = this.garments;
     // where the skin carries each garment now, and its designed form (the frame's end)
-    for (const g of gs) { g.T0.set(g.T1); g.carry(F); if (g.shapeF) g.clearOfBody(S, m.end ??= S.moment(1)); }
+    for (const g of gs) { g.settled(); g.carry(F); }
     this.bodyMoved(reset || jump);
     if (reset || !this.started) {
       // (from where it hangs at rest, carried whole by the pelvis to where the body is now, the body going into its pose
@@ -264,7 +266,7 @@ class Garment {
     // each time)
     this.nrm = new Float64Array(n * 3); this.clear = new Float64Array(n); this.near = new Int32Array(n * kn).fill(-1);
     this.touched = new Uint8Array(n); this.tn = new Float64Array(n * 3); this.tv = new Float64Array(n * 3);
-    this.free = new Float64Array(n).fill(1); this.uv = [0, 0, 0]; this.kid = new Int32Array(4); this.kd = new Float64Array(4);
+    this.uv = [0, 0, 0]; this.kid = new Int32Array(4); this.kd = new Float64Array(4);
     this.pushL = new Float64Array(n); this.pushN = new Float64Array(n * 3); this.pushV = new Float64Array(n * 3);
     this.hold = Float64Array.from(cut.hold); this.shapeK = strength * SHAPE_K;
     // masses from the fabric's weight per square metre (the smallest triangles' points given at least a share of a usual
@@ -300,7 +302,8 @@ class Garment {
     const h2 = 1 / (H * H); this.aT = h2 / F.stretch; this.aC = h2 / (F.stretch * F.compress); this.damp = Math.exp(-F.damping * H);
     this.shapeF = this.shapeK * H * H / (1 + this.shapeK * H * H);
     this.tether();
-    this.selfGrid = new Grid(Math.max(this.thick * 2, this.edge * 0.55), n); this.grid = new Grid(0.025, n);
+    // (its points kept SELF apart — О3's half an edge was half a centimetre on its finer cloth; here an edge is 2–3 cm)
+    this.selfGrid = new Grid(Math.max(F.thick * 2, SELF), n); this.grid = new Grid(0.025, n);
     this.normals();
   }
   // tethers: each point no farther from its nearest held point than the cloth between them is long (by TETHER)
@@ -338,7 +341,7 @@ class Garment {
     const b = this.buf; this.skinner.skin(pose, b, this.base); for (let i = 0; i < b.length; i++) this.x[i] = this.p[i] = b[i];
     this.T0.set(this.x); if (this.shape0) { this.skinner.skin(pose, b, this.shape0); for (let i = 0; i < b.length; i++) this.S0[i] = b[i]; }
     // (nothing of before kept: a reset is the same however it is come to)
-    this.v.fill(0); this.clear.fill(0); this.near.fill(-1); this.tick = 0;
+    this.v.fill(0); this.clear.fill(0); this.near.fill(-1); this.touched.fill(0); this.tick = 0;
   }
   // the clip begun again: each point moved as the skin under it jumped (T0: before, T1: after)
   jump() { const { x, p, T0, T1 } = this; for (let i = 0; i < x.length; i++) { const d = T1[i] - T0[i]; x[i] += d; p[i] += d; } this.clear.fill(0); }
@@ -381,9 +384,7 @@ class Garment {
       const a = E[k * 2], b = E[k * 2 + 1], a3 = a * 3, b3 = b * 3, wa = w[a], wb = w[b];
       const dx = x[b3] - x[a3], dy = x[b3 + 1] - x[a3 + 1], dz = x[b3 + 2] - x[a3 + 2], l = Math.sqrt(dx * dx + dy * dy + dz * dz);
       if (l < 1e-9) continue;
-      // (pulled across the body — a hem over a knee — an edge gives no more than GIVE a pass: past it the cloth would be
-      // drawn through the body faster than the body can push it out)
-      const C0 = l - EL[k], C = C0 > GIVE ? GIVE : C0, s = C / ((wa + wb + (C > 0 ? aT : aC)) * l);
+      const C = l - EL[k], s = C / ((wa + wb + (C > 0 ? aT : aC)) * l);
       x[a3] += wa * s * dx; x[a3 + 1] += wa * s * dy; x[a3 + 2] += wa * s * dz;
       x[b3] -= wb * s * dx; x[b3 + 1] -= wb * s * dy; x[b3 + 2] -= wb * s * dz;
     }
@@ -429,18 +430,17 @@ class Garment {
       for (let c = i * 3; c < i * 3 + 3; c++) x[c] += (T0[c] + (T1[c] - T0[c]) * u - x[c]) * f;
     }
   }
-  // toward the designed form, as firmly as the garment's strength says — where the form is clear of the body: where the
-  // body stands in it (a knee rising into a bell when sitting, the thighs level, the floor), the cloth lies on the body
-  // instead of being drawn into it (О1's: "a weaker pull to the form when sitting")
+  // toward the designed form, as firmly as the garment's strength says — but not into the body: where a point lay on the
+  // skin the small step before and its form is behind that (a knee rising into a bell, sitting, the floor), it is drawn
+  // along the skin only, and lies on the body instead (О1's: "a weaker pull to the form when sitting")
   pull() {
     if (!this.shapeF) return;
-    const { x, S0, S1, u, free: W } = this, f = this.shapeF;
-    for (let i = 0; i < this.n; i++) { const k = f * W[i]; if (!k) continue; for (let c = i * 3; c < i * 3 + 3; c++) x[c] += (S0[c] + (S1[c] - S0[c]) * u - x[c]) * k; }
-  }
-  // how clear of the body each point's form is at the frame's end (1 clear by CLEAR, 0 in it or on it)
-  clearOfBody(S, m) {
-    S.moment(1, m); const T = this.S1, at = this.at ??= { n: [0, 0, 0], v: [0, 0, 0] }, W = this.free;
-    for (let i = 0; i < this.n; i++) { const d = T[i * 3 + 1] < this.thick ? 0 : S.skin(m, T[i * 3], T[i * 3 + 1], T[i * 3 + 2], at); W[i] = d === Infinity ? 1 : Math.max(0, Math.min(1, (d - this.thick) / CLEAR)); }
+    const { x, S0, S1, u, touched: T, tn } = this, f = this.shapeF;
+    for (let i = 0; i < this.n; i++) {
+      const i3 = i * 3; let dx = (S0[i3] + (S1[i3] - S0[i3]) * u - x[i3]) * f, dy = (S0[i3 + 1] + (S1[i3 + 1] - S0[i3 + 1]) * u - x[i3 + 1]) * f, dz = (S0[i3 + 2] + (S1[i3 + 2] - S0[i3 + 2]) * u - x[i3 + 2]) * f;
+      if (T[i]) { const dn = dx * tn[i3] + dy * tn[i3 + 1] + dz * tn[i3 + 2]; if (dn < 0) { dx -= dn * tn[i3]; dy -= dn * tn[i3 + 1]; dz -= dn * tn[i3 + 2]; } }
+      x[i3] += dx; x[i3 + 1] += dy; x[i3 + 2] += dz;
+    }
   }
   tethers() {
     const { x, anchor, reach, n } = this;
@@ -540,7 +540,7 @@ class Garment {
   // planes of its nearest points, weighed by nearness: one nearest point's plane jumps where it changes, and the cloth
   // over it shimmered), not past u's edge, the slide over it held back by friction, no bounce
   against(u, mask) {
-    const { x, p, n, mu } = this, P = u.x, N = u.nrm, Q = u.p, R = u.rim, want = this.thick + u.thick, reach = Math.min(u.grid.cell * 1.5, want + 0.02), ids = this.kid, ds = this.kd, nn = [0, 0, 0], uv = this.uv;
+    const { x, p, n, mu } = this, P = u.x, N = u.nrm, Q = u.p, R = u.rim, want = this.F.thick + u.F.thick, reach = Math.min(u.grid.cell * 1.5, want + 0.02), ids = this.kid, ds = this.kd, nn = [0, 0, 0], uv = this.uv;
     for (let i = 0; i < n; i++) {
       if (!mask[i]) continue;
       const k = i * 3, m = u.nearestK(x[k], x[k + 1], x[k + 2], reach, ids, ds); if (!m) continue;
@@ -554,7 +554,7 @@ class Garment {
       const d = sd / sw, l = Math.hypot(nn[0], nn[1], nn[2]) || 1; for (let c = 0; c < 3; c++) { nn[c] /= l; uv[c] /= sw; }
       // (far under it — tucked in under a waistband — it stays there)
       if (d >= want || d < -want) continue;
-      const pen = (want - d) * keep;
+      const pen = (want - d) * keep * AGAINST;
       x[k] += nn[0] * pen; x[k + 1] += nn[1] * pen; x[k + 2] += nn[2] * pen;
       let tx = (x[k] - p[k]) - uv[0], ty = (x[k + 1] - p[k + 1]) - uv[1], tz = (x[k + 2] - p[k + 2]) - uv[2];
       const dn = tx * nn[0] + ty * nn[1] + tz * nn[2]; tx -= dn * nn[0]; ty -= dn * nn[1]; tz -= dn * nn[2];

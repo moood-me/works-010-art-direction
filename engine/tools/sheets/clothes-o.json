@@ -1,0 +1,344 @@
+{
+ "about": "О1, О3 and the engine side by side: node engine/tools/clothes-o.mjs engine/tools/sheets/clothes-o.json [names]",
+ "sheets": [
+  {
+   "name": "o3",
+   "out": "docs/pictures/engine/clothes/o3-side.png",
+   "title": "О3 (своя страница) и движок в те же моменты: те же вещи и ткани на теле moood",
+   "cols": 4,
+   "w": 320,
+   "h": 420,
+   "items": [
+    {
+     "label": "платье и шарф · шаг 30",
+     "o3": {
+      "outfit": "w-dress",
+      "motion": "walk",
+      "t": 30
+     },
+     "engine": {
+      "char": "woman",
+      "clip": "walk",
+      "t": 30,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-dress",
+        "fabric": "fabric-chiffon",
+        "color": "#9a4a52"
+       },
+       {
+        "kind": "garment",
+        "pattern": "scarf",
+        "fabric": "fabric-silk",
+        "color": "#d9b77a"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2b211d"
+       }
+      ]
+     }
+    },
+    {
+     "label": "блузка и юбка · шаг 30",
+     "o3": {
+      "outfit": "w-blouse",
+      "motion": "walk",
+      "t": 30
+     },
+     "engine": {
+      "char": "woman",
+      "clip": "walk",
+      "t": 30,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "flared-skirt",
+        "fabric": "fabric-suiting",
+        "color": "#3a3f4f"
+       },
+       {
+        "kind": "garment",
+        "pattern": "blouse",
+        "fabric": "fabric-silk",
+        "color": "#e8e0d0"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2b211d"
+       }
+      ]
+     }
+    },
+    {
+     "label": "блузка и юбка · сесть 100",
+     "o3": {
+      "outfit": "w-blouse",
+      "motion": "sit",
+      "t": 100
+     },
+     "engine": {
+      "char": "woman",
+      "clip": "sit",
+      "t": 100,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "flared-skirt",
+        "fabric": "fabric-suiting",
+        "color": "#3a3f4f"
+       },
+       {
+        "kind": "garment",
+        "pattern": "blouse",
+        "fabric": "fabric-silk",
+        "color": "#e8e0d0"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2b211d"
+       }
+      ]
+     }
+    },
+    {
+     "label": "футболка и джинсы · бег 20",
+     "o3": {
+      "outfit": "m-jeans",
+      "motion": "run",
+      "t": 20
+     },
+     "engine": {
+      "char": "man",
+      "clip": "run",
+      "t": 20,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-pants",
+        "fabric": "fabric-denim",
+        "color": "#3e5578"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-tshirt",
+        "fabric": "fabric-heavyjersey",
+        "color": "#7a8a5a"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-boots",
+        "fabric": "fabric-suiting",
+        "color": "#2e231c"
+       }
+      ]
+     }
+    },
+    {
+     "label": "ребёнок, юбка · бег 20",
+     "o3": {
+      "outfit": "c-skirt",
+      "motion": "run",
+      "t": 20
+     },
+     "engine": {
+      "char": "child",
+      "clip": "run",
+      "t": 20,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "flared-skirt",
+        "fabric": "fabric-chiffon",
+        "color": "#c47a96"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-tshirt",
+        "fabric": "fabric-jersey",
+        "color": "#f0ead8"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2b211d"
+       }
+      ]
+     }
+    },
+    {
+     "label": "свитер и брюки · кувырок 40",
+     "o3": {
+      "outfit": "m-sweater",
+      "motion": "roll",
+      "t": 40
+     },
+     "engine": {
+      "char": "man",
+      "clip": "roll",
+      "t": 40,
+      "view": "side",
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-pants",
+        "fabric": "fabric-suiting",
+        "color": "#3d4048"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-sweater",
+        "fabric": "fabric-woolknit",
+        "color": "#8c6a4a"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-boots",
+        "fabric": "fabric-suiting",
+        "color": "#2e231c"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "name": "o1",
+   "out": "docs/pictures/engine/clothes/o1-side.png",
+   "title": "О1 (своя страница, физика с нарисованной формой) и движок: тот же силуэт при силе 1",
+   "cols": 4,
+   "w": 320,
+   "h": 420,
+   "items": [
+    {
+     "label": "колокол · шаг 30",
+     "o1": {
+      "look": "d-bell",
+      "motion": "walk",
+      "t": 30,
+      "dist": 2.4
+     },
+     "engine": {
+      "char": "woman",
+      "clip": "walk",
+      "t": 30,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-dress",
+        "fabric": "fabric-poplin",
+        "color": "#2b6b6b",
+        "shape": "shape-bell",
+        "strength": 1
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2a2230"
+       }
+      ]
+     }
+    },
+    {
+     "label": "А-силуэт · прыжок 40",
+     "o1": {
+      "look": "d-aline",
+      "motion": "jump",
+      "t": 40,
+      "dist": 2.4
+     },
+     "engine": {
+      "char": "woman",
+      "clip": "jump",
+      "t": 40,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-dress",
+        "fabric": "fabric-poplin",
+        "color": "#7a4a6a",
+        "shape": "shape-aline",
+        "strength": 1
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2a2230"
+       }
+      ]
+     }
+    },
+    {
+     "label": "колокол · сесть 80",
+     "o1": {
+      "look": "d-bell",
+      "motion": "sit",
+      "t": 80,
+      "dist": 2.4
+     },
+     "engine": {
+      "char": "woman",
+      "clip": "sit",
+      "t": 80,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-dress",
+        "fabric": "fabric-poplin",
+        "color": "#2b6b6b",
+        "shape": "shape-bell",
+        "strength": 1
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2a2230"
+       }
+      ]
+     }
+    },
+    {
+     "label": "тюльпан · шаг 30",
+     "o1": {
+      "look": "d-tulip",
+      "motion": "walk",
+      "t": 30,
+      "dist": 2.4
+     },
+     "engine": {
+      "char": "woman",
+      "clip": "walk",
+      "t": 30,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-dress",
+        "fabric": "fabric-poplin",
+        "color": "#c76b7a",
+        "shape": "shape-tulip",
+        "strength": 1
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-flats",
+        "fabric": "fabric-suiting",
+        "color": "#2a2230"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

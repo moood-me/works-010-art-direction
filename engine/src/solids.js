@@ -64,7 +64,7 @@ export function makeSolids(figure) {
   const R = regionsOf(mesh, rig), limbOf = i => { let m = 0; for (let l = 1; l < 5; l++) if (R.limb[i * 5 + l] > R.limb[i * 5 + m]) m = l; return m; };
   // (and where the fingers are: cloth lies on the hand as a mitten — between fingers thinner than its reach it would
   // be pushed from one side of a finger to the other)
-  const fingers = Uint8Array.from(idx, i => R.fingers[i] > 0.5 ? 1 : 0);
+  const fingers = Uint8Array.from(idx, i => R.ends[i] > 0.5 && (limbOf(i) === 1 || limbOf(i) === 2) ? 1 : 0);
   const headOfPoint = Float32Array.from(idx, i => omega[i]), limbs = Uint8Array.from(idx, limbOf), now = stateOf(idx, caps, [H, JW], headOfPoint, limbs, fingers), rest = stateOf(idx, caps, [H, JW], headOfPoint, limbs, fingers);
   const head = shape ? headOf(shape, J, H, JW) : null, restNormals = normalsOf(mesh.positions, mesh.triangles, undefined, mesh.used);
   rest.set(null, null, mesh.positions, restNormals, mesh.positions, restNormals, J, 0);

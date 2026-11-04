@@ -230,7 +230,7 @@ await test('a character that starts from another (a full-body preset as a part):
   const princess = await E.description('disney-princess'), base = await E.base(`disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`);
   ok(base.id === 'disney-princess', 'the base was not read');
   const pin = `disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`;
-  const mine = { format: 'engine/character', version: 6, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
+  const mine = { format: 'engine/character', version: VERSION, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
     rest: [{ kind: 'squash', stretch: 0.1, frames: 'keep' }], pose: [{ kind: 'armsOff', degrees: 5 }], look: { skin: '#aa8877' } };
   const spec = await E.resolve(mine), p = await E.resolve(princess);
   ok(spec.body === p.body && spec.rest.length === p.rest.length + 1 && spec.rest.at(-1).kind === 'squash' && spec.pose.at(-1).kind === 'armsOff', 'not the base and then its own');

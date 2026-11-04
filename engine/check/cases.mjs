@@ -19,7 +19,8 @@ export function jobsOf(cases, characters, only) {
 }
 
 // the job's character: its description with the case's keys replaced, checked like any — at its moment: a figure with
-// simulations (hair that moves) stepped there frame by frame from the start (the wind a preset's: job.wind), else
+// simulations (hair and clothes that move) stepped there frame by frame from the start (the wind a preset's: job.wind;
+// at job.fps frames a second if it says), else
 // that moment's frame
 export async function figureOf(E, job) {
   const d = structuredClone(await E.description(job.char));
@@ -30,7 +31,9 @@ export async function figureOf(E, job) {
   if (fig.simulations.length) {
     const wind = job.wind ? (await E.preset(job.wind)).wind : null;
     for (const s of fig.simulations) s.wind = wind;
-    for (let k = 0; k < job.t; k++) fig.step(clip, k);
+    // (at job.fps frames a second, if it says: the clip's frames are its own 30)
+    const st = (clip?.fps ?? 30) / (job.fps ?? clip?.fps ?? 30);
+    for (let k = 0; k * st < job.t; k++) fig.step(clip, k * st);
     fig.step(clip, job.t);
   } else fig.frame(clip, job.t, fig.pose);
   return { fig, clip, spec, description: d };

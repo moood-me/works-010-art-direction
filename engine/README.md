@@ -522,8 +522,7 @@ sleeves, legs), 11 outfits `outfit-*` (what the ready heads were drawn in), and 
   small step gravity, the fabric's damping and the air (the hair's winds, `src/wind.js`, pressing on each point as its
   surface faces the flow less its own velocity); lengths three times (each edge holds against stretching with the
   fabric's stretch, gives way when pushed together, so it folds; the edges ordered by their distance from where the
-  garment hangs, so a pass carries the weight down from the top; an edge pulled across the body gives no more than 4 mm
-  a pass — the cloth stretches over a knee rather than being drawn through it), bending (Kawabata's rigidity per
+  garment hangs, so a pass carries the weight down from the top), bending (Kawabata's rigidity per
   hinge), what holds it on (a held point an elastic to where the skin carries it, its weight taken up so a waistband of
   a hundred points carries trousers of five thousand), its form, soft tethers (no farther from a held point than the
   cloth between is long, a share of the excess a step), its own points kept apart, then the body: the figure's solids
@@ -651,6 +650,22 @@ far side of a wide mass over an arm, hair under a face on the floor; looked at),
 hidden where locks part (a quarter at most); walking at 20, 60 and 144 frames a second as at 30 (5 mm on the whole, 3 cm at most); long locks leaning in a
 light wind 12–30°, in a strong one 45–75°. `quality.mjs --only heads`: a hairstyle on a head grown by a layer lies as
 far off the skin's surface as at rest (5 mm).
+Since stage 4: a moment of a figure whose clothes move is its simulation stepped from the clip's start (as hair's); every
+dressed character (`clothes-*`, the ready heads in their outfits, the hair characters that start from them) in every
+`each` moment, and cases for the wind (strong, light), the silhouette's strength (0, ½, 1), fabrics (chiffon, denim),
+jump, dance, roll, bow, a hood looking round, hair over a blouse. `units.mjs`: every pattern cut on a body (its
+points, triangles, what holds it on, the skin under it, drawn finer); garments refused where they are not (an unknown
+pattern or key, a fabric missing its keys, a preset of another kind as a fabric or a shape); clothes over a base by id
+(taken away, changed by a key, replaced whole, added; an outfit taken in); the silhouette (a bell's hem wider than the
+dress's own, strength 0 pulling nothing, strength 1 hanging nearer its form); the step (the same moment again moves
+nothing, a scrub back is a fresh start, `frame()` draws the cloth on the skin); the solids (a limb's own skin, the points
+kept nearest, the cover hair lies over). `quality.mjs --only clothes` (every dressed character, every motion and chain
+whole, a strong wind, a light wind walking; `--chars a,b` for some), each limit saying what looks right: at strength 1
+hanging off its designed form no more than 1 cm on the whole; standing still it leaves where it settled no more than 12
+mm in 8 s and moves no more than 1 mm a frame; no point not a number, none faster than 10 m/s from frame to frame;
+the cloth in the body (LIMITS); walking at 20, 60 and 144 frames a second as at 30 (5 mm on the whole, 3 cm at most);
+across a loop it moves on the body no more than three of the next frames do (or 3 cm); a scrub back is a fresh start.
+The time a frame of each dressed character's step takes is printed.
 `pictures.mjs --jobs jobs.json outdir` makes pictures of any moments (`focus` on a joint for a close-up).
 
 ## Adding things
@@ -697,6 +712,13 @@ far off the skin's surface as at rest (5 mm).
   of the head's own piece `hair`); changed by its id: `{id: "hair", off: ["fringe"], color, physics: {hold: 2}, moves}`.
   A ready head's hair moves with `{id: "hair", moves: true}`. Look at it from the front, ¾, side, at rest, in motion and
   in the wind (`?hair`, `tools/sheets/hair.json`). A wind: a preset of group wind (`wind: {speed, dir, gust, turbulence}`).
+- *Clothes*: a garment in a character's `clothes` (`{kind: "garment", pattern, fabric: "fabric-…", color, shape?:
+  "shape-…", strength?}`), an outfit (a preset of group outfit: `clothes: [garment…]`), a fabric (`presets/fabric-<id>.json`,
+  `fabric: {density, stretch, bend, …}`), a silhouette (`presets/shape-<id>.json`, `shape: {…}` — О1's keys), then `node
+  engine/tools/characters.mjs presets` and `pin`. A pattern: a line in `src/cloth/patterns.js` PATTERNS and how it is cut
+  (`MADE`), or a MakeHuman garment added to `tools/garments.mjs` and run. Look at it from the front, ¾, side, at rest, in
+  motion (sitting, lying, rolling too) and in the wind (`?clothes`, `tools/sheets/clothes.json`); against О1 and О3:
+  `node engine/tools/clothes-o.mjs engine/tools/sheets/clothes-o.json`.
 - *A change of the format*: `VERSION` up in `src/character.js`, its schema, and a step in `upgrade`.
 - **Before and after changing the engine**: `node engine/check/units.mjs`, `quality.mjs`, `numbers.mjs`, `pictures.mjs`. A
   difference is either a bug or a change meant — then look at the new pictures and store them with `--update`.
@@ -744,6 +766,17 @@ and Г3's hair on a head grown by a layer is carried by the affine change of the
 near the root when the head bows. A frame of one figure with hair costs 18–30 ms in node (the skin between the frames
 asked at every small step, the surfaces' binding); a figure with hair is made in 3–7 s (its groom); several characters
 at once are the later task. Characters not from Anny (П1, П2) have no hair yet (their heads are the next stage's).
+
+Clothes (stage 4): the cloth is simulated as cut — MakeHuman's garments with points 2–3 cm apart (drawn finer), so
+folds are that coarse and small ones (a sleeve's wrinkles at the elbow) are not there; a knee or an elbow pressing hard
+into tight cloth can stand out between its points for a moment (a high knee in a run under a bell held stiff). A
+garment meets the ones under it only where they lay together as dressed; layers are as cut (a jacket over a T-shirt,
+a top over trousers), not buttons or pockets. Cloth lies on the fingers as on a mitten (it is not pushed between them)
+and is not carried by the hand. The hood is cloth round the head and over its rigid hair, which it does not meet; hair
+lies over the clothes but clothes don't feel the hair. О1's ladder down to the sign is not carried (the pictogram Т4
+has the sign); О1's "the form recomputed round the axes each frame" is not either (the cloth is the form's rest).
+Gloves, belts, buttons and openings that close are not made. A frame of a dressed figure costs 30–90 ms in node:
+several characters at once (the GPU) are the later task.
 
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole
 (no foot contacts); the arm can press into the chest's side at the armpit when it hangs close (Anny's weights;
