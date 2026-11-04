@@ -1,5 +1,5 @@
 """Аня, about 20 — warm, trusting, dreamy. A 1950s bob with a flip, an Alice band, a Peter Pan collar."""
-from kit import shape, brush, blush, ell, circle, dryb, pattern_dots, mirror, limb, INK
+from kit import shape, brush, blush, ell, circle, dryb, pattern_dots, limb, edge, INK
 from face import eye, brow, mouth, EXPR
 
 SKIN = '#f6d7bf'
@@ -13,6 +13,7 @@ CARDI = '#2f8f8a'
 CARDI_D = '#226e6a'
 COLLAR = '#fbf6ea'
 CHEEK = '#ec7f72'
+FIG_SCALE = 1.0  # how much larger the full figure is drawn on its own page
 BUST_DY = -34
 
 # Аня looks a little dreamy even when calm: lids lowered a touch
@@ -25,16 +26,20 @@ def _e(expr):
     return e
 
 
-def head(view='34', expr='calm'):
+def head(view='34', expr='calm', neck=True):
+    """The head around (0, 0), crown near y=-120, chin near y=95; neck=False leaves the neck to the figure."""
     e = _e(expr)
     o = []
     if view == '34':
         o.append(shape([(-30, -132), (32, -128), (76, -100), (92, -55), (90, 0), (88, 38), (104, 66, 'c'), (80, 70),
                         (60, 62), (0, 74), (-52, 66), (-80, 66), (-104, 76, 'c'), (-94, 48), (-92, 0), (-86, -62),
                         (-62, -110)], HAIR))
-        o.append(shape([(-24, 66), (20, 78), (24, 150), (-28, 150)], SKIN_D))
-        o.append(shape([(-54, -60), (-28, -98), (15, -104), (50, -84), (64, -46), (66, -8), (64, 22), (56, 50), (38, 76),
-                        (18, 90), (-2, 88), (-26, 74), (-46, 46), (-58, 6)], SKIN))
+        if neck:
+            o.append(shape([(-24, 66), (20, 78), (24, 150), (-28, 150)], SKIN_D))
+        face = [(-54, -60), (-28, -98), (15, -104), (50, -84), (64, -46), (66, -8), (64, 22), (56, 50), (38, 76),
+                (18, 90), (-2, 88), (-26, 74), (-46, 46), (-58, 6)]
+        o.append(shape(face, SKIN))
+        o.append(edge(face, 9, 13, 1.8, '#9a6450'))
         cheek = e.get('cheek', 1.0)
         o.append(blush(-20, 40, 16 * cheek, CHEEK))
         o.append(eye(-12, 12, 1.55, e['eye'], side=-1, lid=e.get('lid', 0)))
@@ -43,8 +48,9 @@ def head(view='34', expr='calm'):
         o.append(brow(-12, -16, 1.25, side=-1, inner=bi, outer=bo))
         o.append(brow(42, -18, 1.25, side=1, inner=bi, outer=bo, squash=0.6))
         # small turned-up nose: a skin-dark wedge that breaks toward the far cheek
-        o.append(brush([(55, 20), (61, 35), (53, 39)], 2.6, '#9a5440', taper=(0.6, 0.25)))
-        o.append(mouth(32, 60, 1.25, e['mouth'], side=1, width=0.8))
+        o.append(shape([(58, 16), (66, 30), (69, 36, 'c'), (62, 41), (54, 40)], SKIN))
+        o.append(brush([(57, 18), (65, 31), (69, 36), (62, 41)], 2.2, '#a8624c', taper=(0.7, 0.2)))
+        o.append(mouth(32, 60, 1.25 * e.get('ms', 1), e['mouth'], side=1, width=0.8))
         # fringe swept to the near side, Alice band behind it
         o.append(shape([(-66, -40), (-58, -86), (-20, -118), (30, -120), (70, -96), (84, -58), (72, -46), (50, -60),
                         (18, -66), (-14, -60), (-42, -46), (-62, -22, 'c')], HAIR))
@@ -54,7 +60,8 @@ def head(view='34', expr='calm'):
     elif view == 'front':
         o.append(shape([(0, -132), (58, -118), (88, -76), (94, -20), (94, 36), (112, 66, 'c'), (84, 72), (60, 64), (0, 74),
                         (-60, 64), (-84, 72), (-112, 66, 'c'), (-94, 36), (-94, -20), (-88, -76), (-58, -118)], HAIR))
-        o.append(shape([(-24, 66), (24, 66), (26, 150), (-26, 150)], SKIN_D))
+        if neck:
+            o.append(shape([(-24, 66), (24, 66), (26, 150), (-26, 150)], SKIN_D))
         o.append(shape([(0, -104), (44, -94), (66, -56), (70, -10), (64, 34), (46, 70), (20, 92), (0, 97), (-20, 92), (-46, 70),
                         (-64, 34), (-70, -10), (-66, -56), (-44, -94)], SKIN))
         cheek = e.get('cheek', 1.0)
@@ -66,7 +73,7 @@ def head(view='34', expr='calm'):
         o.append(brow(-27, -15, 1.0, side=-1, inner=bi, outer=bo))
         o.append(brow(27, -15, 1.0, side=1, inner=bi, outer=bo))
         o.append(brush([(4, 22), (8, 38), (1, 42)], 2.4, '#b9775e', taper=(0.4, 0.2)))
-        o.append(mouth(0, 63, 1.0, e['mouth'], side=1, width=0.9))
+        o.append(mouth(0, 63, 1.0 * e.get('ms', 1), e['mouth'], side=1, width=0.9))
         o.append(shape([(-72, -30), (-66, -84), (-30, -118), (20, -122), (62, -104), (76, -60), (72, -34), (52, -54), (20, -64),
                         (-10, -62), (-40, -50), (-62, -26, 'c')], HAIR))
         o.append(dryb([[(-56, -50), (-20, -100), (30, -112)], [(-10, -62), (30, -100), (64, -86)]], 3, HAIR_L, 0.55))
@@ -74,7 +81,8 @@ def head(view='34', expr='calm'):
     elif view == 'side':
         o.append(shape([(-20, -130), (30, -122), (60, -96), (64, -60), (40, -40), (0, 20), (10, 66), (-30, 70), (-70, 66),
                         (-96, 78, 'c'), (-90, 48), (-96, 0), (-90, -60), (-64, -112)], HAIR))
-        o.append(shape([(-14, 60), (22, 72), (20, 150), (-30, 150)], SKIN_D))
+        if neck:
+            o.append(shape([(-14, 60), (22, 72), (20, 150), (-30, 150)], SKIN_D))
         # profile: forehead, small scoop at the bridge, turned-up nose, lips, small chin
         o.append(shape([(-30, -100), (20, -104), (52, -84), (64, -50), (66, -14), (64, 4), (70, 24), (78, 36, 'c'), (68, 42),
                         (64, 50), (66, 58), (62, 64), (64, 72), (56, 86), (36, 96), (10, 94), (-10, 80), (-24, 40), (-30, -40)],
@@ -84,7 +92,7 @@ def head(view='34', expr='calm'):
         o.append(eye(44, 8, 1.15, e['eye'], side=1, squash=0.75, lid=e.get('lid', 0)))
         bi, bo = e['brow']
         o.append(brow(46, -16, 1.0, side=1, inner=bi, outer=bo, squash=0.7))
-        o.append(mouth(58, 63, 1.0, e['mouth'], side=1, width=0.55))
+        o.append(mouth(58, 63, 1.0 * e.get('ms', 1), e['mouth'], side=1, width=0.55))
         # ear is under the bob
         o.append(shape([(-34, -40), (-40, -86), (-6, -118), (36, -118), (62, -90), (70, -58), (52, -60), (30, -64), (0, -56),
                         (-24, -40), (-36, -10, 'c')], HAIR))
@@ -159,5 +167,5 @@ def figure(expr='calm'):
     o.append(ell(20, -494, 9, 8, SKIN))
     # neck and head, tilted toward the flowers
     o.append(shape([(-9, -630), (11, -626), (12, -600), (-11, -600)], SKIN_D))
-    o.append('<g transform="translate(4,-670) rotate(-7) scale(0.5)">' + ''.join(head('34', expr)) + '</g>')
+    o.append('<g transform="translate(4,-670) rotate(-7) scale(0.5)">' + ''.join(head('34', expr, neck=False)) + '</g>')
     return o

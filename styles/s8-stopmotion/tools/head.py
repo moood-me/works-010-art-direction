@@ -58,10 +58,24 @@ class Head:
             return (interp(self.sh['front'], y) + interp(self.sh['back'], y)) / 2
         return interp(self.sh['c'], y)
 
+    def xo(self, y):
+        return interp(self.sh['x'], y) if 'x' in self.sh else 0.0
+
+    def bump(self, phi, y):
+        """Radial swelling of the slice at (phi, y): cheekbones, brow ridge, chin (shape 'bumps': phi, y, amp, w_phi, w_y;
+        mirrored for both sides when phi != 0)."""
+        m = 1.0
+        for (p, yy, amp, sp, sy) in self.sh.get('bumps', ()):
+            for pp in ((p, -p) if p else (p,)):
+                dp = (phi - pp + math.pi) % (2 * math.pi) - math.pi
+                m += amp * math.exp(-(dp / sp) ** 2 - ((y - yy) / sy) ** 2)
+        return m
+
     def surf(self, phi, y, out=0.0, k=1.0):
         """3D point on the surface (scaled by k about the slice centre, pushed out along the normal by `out`)."""
-        a, b, c = self.a(y) * k, self.b(y) * k, self.c(y)
-        X, Z = a * math.sin(phi), c + b * math.cos(phi)
+        m = self.bump(phi, y)
+        a, b, c = self.a(y) * k * m, self.b(y) * k * m, self.c(y)
+        X, Z = self.xo(y) + a * math.sin(phi), c + b * math.cos(phi)
         nx, nz = math.sin(phi) / max(a, 1e-3), math.cos(phi) / max(b, 1e-3)
         n = math.hypot(nx, nz)
         return (X + out * nx / n, y, Z + out * nz / n)
@@ -103,16 +117,34 @@ class Head:
         return f'matrix({f(tx/1)},{f(ty)},{f(vx)},{f(vy)},{f(x0)},{f(y0)})', (tx, ty)
 
     def outline(self, k=1.0, y0=-0.5, y1=0.5, n=60, extra=0.0):
-        """Silhouette of the loft (scaled by k) between y0 and y1."""
+        """Silhouette of the loft (scaled by k, grown by extra) between y0 and y1."""
         left, right = [], []
+        bumps = bool(self.sh.get('bumps'))
         for i in range(n + 1):
             y = y0 + (y1 - y0) * i / n
+            if bumps:
+                best = None
+                for j in range(96):
+                    phi = -math.pi + 2 * math.pi * j / 96
+                    p = self.surf(phi, y, extra, k)
+                    q = self.scr(p)
+                    u = q[0] * self.cr + q[1] * self.sr
+                    if best is None:
+                        best = [u, q, u, q]
+                    if u < best[0]:
+                        best[0], best[1] = u, q
+                    if u > best[2]:
+                        best[2], best[3] = u, q
+                left.append(best[1][:2])
+                right.append(best[3][:2])
+                continue
             a, b, c = self.a(y) * k + extra, self.b(y) * k + extra, self.c(y)
             # extreme x of the rotated ellipse X = a sin t, Z = c + b cos t:  x = X cy + Z sy
             ang = math.atan2(a * self.cy_, b * self.sy_)
             xs = []
+            xo = self.xo(y)
             for t in (ang, ang + math.pi):
-                X, Z = a * math.sin(t), c + b * math.cos(t)
+                X, Z = xo + a * math.sin(t), c + b * math.cos(t)
                 xs.append((X, Z))
             pr = [self.scr((X, y, Z)) for X, Z in xs]
             pr.sort(key=lambda q: q[0] * self.cr + q[1] * self.sr)
@@ -146,8 +178,8 @@ def eye(h, d, side, P, ex, skin, out):
     # local coordinates: x across, y down; inner corner lower than outer when tilt>0
     ci = (inn, 0.004 * (1 if tilt >= 0 else -1) * abs(tilt) * 10)
     co = (outer, -tilt)
-    top_h = R * 1.05 * op * (1 + up)
-    bot_h = R * 0.62 * op * (1 - lo)
+    top_h = R * P.get('lid_top', 0.78) * op * (1 + up)
+    bot_h = R * P.get('lid_bot', 0.42) * op * (1 - lo)
     # opening polygon: upper arc (peak toward the inner third), lower arc
     up_pts, lo_pts = [], []
     N = 14
@@ -173,13 +205,19 @@ def eye(h, d, side, P, ex, skin, out):
         x = ci[0] * 1.35 + (co[0] * 1.3 - ci[0] * 1.35) * t
         sock.append((x, bot_h * 1.6 * math.sin(math.pi * t) + 0.006))
     bl = d.blur(max(1.5, S * 0.012))
-    out.append(f'<g filter="url(#{bl})" opacity="0.55"><path d="{pts(sock)}" transform="{tr}" fill="{mix(skin, P.get("socket", "#7a4050"), 0.55)}"/></g>')
+    out.append(f'<g filter="url(#{bl})" opacity="{P.get('socket_a', 0.35)}"><path d="{pts(sock)}" transform="{tr}" fill="{mix(skin, P.get("socket", "#7a4050"), 0.55)}"/></g>')
+    # painted eye shadow on the upper lid (as on Laika's printed faces)
+    if P.get('lid_paint'):
+        lp = [(x * 1.1, y - 0.004) for (x, y) in up_pts] + [(x * 1.05, y - R * 0.95 - 0.01) for (x, y) in up_pts[::-1]]
+        out.append(f'<g filter="url(#{d.blur(max(1.5, S*0.012))})" opacity="{P.get("lid_paint_a", 0.45)}"><path d="{pts(lp)}" transform="{tr}" fill="{P["lid_paint"]}"/></g>')
     # eyeball
     white = P.get('white', '#efe6dc')
     g = d.rad([(0, mix(white, '#ffffff', 0.4), 1), (0.65, white, 1), (1, mix(white, '#8a6a70', 0.55), 1)], fx=0.38, fy=0.3)
     ball = f'<circle cx="{f(ecx)}" cy="{f(ecy)}" r="{f(R*S*1.05)}" fill="url(#{g})"/>'
     # iris: on the ball toward the gaze
     gx, gy = ex.get('gaze', P.get('gaze', (0.0, 0.0)))
+    if ex.get('at_camera', True):          # the gaze is given relative to the camera, not to the head
+        gx -= h.yaw * 0.85
     gv = (math.sin(gx) * math.cos(gy), math.sin(gy), math.cos(gx) * math.cos(gy))
     # gaze in head space; place iris centre on the eyeball surface
     ip = (cpt[0] + gv[0] * R, cpt[1] + gv[1] * R, cpt[2] + gv[2] * R)
@@ -209,8 +247,8 @@ def eye(h, d, side, P, ex, skin, out):
              f'<circle cx="{f(icx+ir*0.4)}" cy="{f(icy+ir*0.42)}" r="{f(ir*0.09)}" fill="#ffffff" opacity="0.45"/>')
     out.append(f'<g clip-path="url(#{cid})">{ball}{iris}{shade}{glint}</g>')
     # upper lid: a thin crescent of skin above the opening + a lash line along the edge
-    lid = up_pts + [(x, y - R * 0.38 * op - 0.004) for (x, y) in up_pts[::-1]]
-    out.append(d.bump(pts(lid), mix(skin, '#c07a70', 0.18), soft=max(1.2, S*0.006), height=max(2, S*0.02), spec=0.35,
+    lid = up_pts + [(x, y - R * 0.26 * op - 0.003) for (x, y) in up_pts[::-1]]
+    out.append(d.bump(pts(lid), mix(skin, '#c07a70', 0.18), soft=max(1.5, S*0.009), height=max(2, S*0.014), spec=0.3,
                       tr=tr))
     lash = P.get('lash', '#24161a')
     lw = P.get('lash_w', 0.010)
@@ -222,8 +260,8 @@ def eye(h, d, side, P, ex, skin, out):
     out.append(f'<path d="{lpath}" transform="{tr}" fill="none" stroke="{lash}" stroke-width="{f(lw)}" '
                f'stroke-linecap="round" stroke-linejoin="round" vector-effect="none"/>')
     # lower lid: a soft ledge
-    ll = lo_pts + [(x, y + R * 0.22) for (x, y) in lo_pts[::-1]]
-    out.append(d.bump(pts(ll), mix(skin, '#b06a68', 0.12), soft=max(1, S*0.005), height=max(1.5, S*0.012), spec=0.25,
+    ll = lo_pts + [(x, y + R * 0.14) for (x, y) in lo_pts[::-1]]
+    out.append(d.bump(pts(ll), mix(skin, '#b06a68', 0.06), soft=max(1.5, S*0.008), height=max(1, S*0.005), spec=0.15,
                       tr=tr))
     lowline = pts(lo_pts[2:-2], close=False)
     out.append(f'<path d="{lowline}" transform="{tr}" fill="none" stroke="{mix(lash, skin, 0.55)}" stroke-width="{f(lw*0.35)}" opacity="0.7"/>')
@@ -262,7 +300,7 @@ def brow(h, d, side, P, ex, out):
         bot.append((x, y + thick * 0.4))
     shape = top + bot[::-1]
     col = P['brow_col']
-    out.append(d.bump(pts(shape), col, soft=max(1, h.S * 0.006), height=max(2, h.S * 0.03), spec=0.3, shine=14,
+    out.append(d.bump(pts(shape), col, soft=max(1.5, h.S * 0.007), height=max(2, h.S * 0.016), spec=0.3, shine=14,
                       tr=tr))
 
 
@@ -315,17 +353,26 @@ def nose(h, d, P, out):
     # cast shadow of the nose on the face (light from upper left → shadow to lower right)
     sh = [(x + S * 0.03, y + S * 0.035) for (x, y) in outline]
     bl = d.blur(max(1.5, S * 0.01))
-    out.append(f'<path d="{pts(sh)}" fill="#4a1e22" opacity="0.32" filter="url(#{bl})"/>')
     col = mix(skin, P.get('nose_tint', '#e07a6a'), 0.12)
-    out.append(d.bump(pts(outline), col, soft=max(2, S * 0.022), height=max(4, S * 0.07), spec=0.45, shine=24))
+    # the bridge fades into the face; the lower nose is a clear form
+    r0 = h.scr(h.surf(0, y0))
+    r1 = h.scr((0, yt, zt))
+    gid = d.uid('ng')
+    fade = P.get('nose_fade', 0.55)
+    d.defs.append(f'<linearGradient id="{gid}" gradientUnits="userSpaceOnUse" x1="{f(r0[0])}" y1="{f(r0[1])}" x2="{f(r1[0])}" y2="{f(r1[1])}">'
+                  f'<stop offset="0" stop-color="#fff" stop-opacity="0.15"/><stop offset="{fade}" stop-color="#fff" stop-opacity="1"/></linearGradient>'
+                  f'<mask id="{gid}m" maskUnits="userSpaceOnUse" x="0" y="0" width="{d.w}" height="{d.h}">'
+                  f'<rect width="{d.w}" height="{d.h}" fill="url(#{gid})"/></mask>')
+    out.append(f'<g mask="url(#{gid}m)"><path d="{pts(sh)}" fill="#4a1e22" opacity="0.32" filter="url(#{bl})"/></g>')
+    out.append(f'<g mask="url(#{gid}m)">' + d.bump(pts(outline), col, soft=max(2, S * 0.03), height=max(4, S * 0.06), spec=0.4, shine=24) + '</g>')
     # nostrils: two small dark shapes under the tip, seen when facing
     for side in (-1, 1):
         X = side * wt * 0.55
         p = h.scr((X, yt + wt * 0.38, zt - wt * 0.55))
         vis = h.rot((side * 0.5, 0.6, 0.6))[2]
         if vis > 0:
-            out.append(f'<ellipse cx="{f(p[0])}" cy="{f(p[1])}" rx="{f(S*wt*0.28*max(0.35, abs(h.cy_)))}" ry="{f(S*wt*0.13)}" '
-                       f'fill="#3a1416" opacity="0.75" transform="rotate({f(math.degrees(h.roll)+side*12)} {f(p[0])} {f(p[1])})"/>')
+            out.append(f'<ellipse cx="{f(p[0])}" cy="{f(p[1])}" rx="{f(S*wt*0.22*max(0.35, abs(h.cy_)))}" ry="{f(S*wt*0.1)}" '
+                       f'fill="#5a2224" opacity="0.5" transform="rotate({f(math.degrees(h.roll)+side*12)} {f(p[0])} {f(p[1])})"/>')
     # alae (wings)
     for side in (-1, 1):
         X = side * wt * 0.95
@@ -414,36 +461,28 @@ def mouth(h, d, P, ex, out):
 
 
 def ear(h, d, side, P, out, behind):
+    """An ear: a C-shaped plate standing out from the side of the head, in the plane of the vertical and a
+    direction that goes back and out (ear_out = how much it stands out, degrees)."""
     phi = side * P['ear_phi']
     ye = P['ear_y']
-    # ear normal: sideways, turned toward the front by ear_out
     al = math.radians(P.get('ear_out', 25))
-    n3 = (side * math.cos(al), 0, math.sin(al))
-    nz = h.rot(n3)[2]
-    base = h.surf(phi, ye, -0.004)
+    u = (side * max(math.sin(al), 0.4), 0.0, -math.cos(al))
+    n = math.hypot(u[0], u[2])
+    u = (u[0] / n, 0.0, u[2] / n)
+    base = h.surf(phi, ye, -0.01)
     z = h.rot(base)[2]
     if behind != (z < 0.0):
         return
-    x0, y0, _ = h.scr(base)
-    # direction of the ear plane across: perpendicular to normal in xz-plane, pointing back
-    across = (-math.sin(al) * side, 0, math.cos(al))
-    ax = h.rot(across)[0] * h.cr
-    w = P['ear_w'] * h.S
-    ht = P['ear_h'] * h.S
-    sx = max(0.18, abs(nz))
+    W, H = P['ear_w'], P['ear_h']
+    loc = [(0.0, -0.42), (0.35, -0.55), (0.8, -0.45), (1.0, -0.1), (0.85, 0.3), (0.5, 0.52), (0.2, 0.5), (0.0, 0.32)]
+    proj = [h.P((base[0] + u[0] * a * W, base[1] + b * H, base[2] + u[2] * a * W)) for a, b in loc]
     skin = P['skin']
-    # C-shaped ear outline in its plane (local: x back from the head, y down)
-    loc = [(0, -0.5), (0.45, -0.55), (0.9, -0.3), (1.0, 0.05), (0.8, 0.4), (0.45, 0.55), (0.15, 0.48), (0.0, 0.3)]
-    dirx = -side * (1 if h.cy_ >= 0 else -1)
-    # where the ear's far edge goes on screen: away from the face
-    proj = []
-    for (u, v) in loc:
-        proj.append((x0 + dirx * u * w * (0.35 + 0.65 * sx) * 1.0 * (-1 if side < 0 else 1) * -1, y0 + v * ht))
-    col = mix(skin, P.get('ear_tint', '#e08070'), 0.25)
-    out.append(d.bump(pts(proj), col, soft=max(1.5, h.S * 0.012), height=max(3, h.S * 0.04), spec=0.25))
-    # inner fold
-    inner = [(x0 + (px - x0) * 0.62 + (1 if side > 0 else -1) * w * 0.02, y0 + (py - y0) * 0.62) for (px, py) in proj[1:6]]
-    out.append(d.groove(pts(inner, close=False), col, h.S * 0.012, soft=max(1, h.S * 0.006), depth=-4))
+    col = mix(skin, P.get('ear_tint', '#e08070'), 0.28)
+    S = h.S
+    out.append(d.bump(pts(proj), col, soft=max(2, S * 0.012), height=max(3, S * 0.035), spec=0.25))
+    inner = [h.P((base[0] + u[0] * (0.2 + a * 0.55) * W, base[1] + b * 0.6 * H, base[2] + u[2] * (0.2 + a * 0.55) * W))
+             for a, b in loc[1:6]]
+    out.append(d.groove(pts(inner, close=False), col, S * 0.014, soft=max(1.2, S * 0.006), depth=-4))
 
 
 def wrinkle(h, d, phi, y, local_pts, P, out, sw=0.006, depth=-3):
@@ -475,56 +514,3 @@ def freckles(h, d, P, out, n=14, seed=3, col='#9a5a3a'):
             continue
         x, yy, _ = h.scr(h.surf(phi, y))
         out.append(f'<circle cx="{f(x)}" cy="{f(yy)}" r="{f(h.S*(0.004+r.random()*0.003))}" fill="{col}" opacity="{f(0.35+r.random()*0.3)}"/>')
-
-
-# ------------------------------------------------------------------ hair
-
-def lock(h, d, path3, w0, w1=0.0, col='#3a2418', hi=None, soft=None, height=None, taper=1.0, curl=0.0):
-    """A sculpted lock of hair: a ribbon along a 3D centre line (head units), width from w0 at the root to w1 at the tip.
-    Returns (depth, svg)."""
-    S = h.S
-    P2 = [h.scr(p) for p in path3]
-    zs = [p[2] for p in P2]
-    n = len(P2)
-    # smooth the centre line
-    import math as m
-    L, R = [], []
-    for i in range(n):
-        x, y, _ = P2[i]
-        xa, ya, _ = P2[max(0, i - 1)]
-        xb, yb, _ = P2[min(n - 1, i + 1)]
-        dx, dy = xb - xa, yb - ya
-        ln = m.hypot(dx, dy) or 1
-        nx, ny = -dy / ln, dx / ln
-        t = i / (n - 1)
-        wd = (w0 + (w1 - w0) * t ** taper) * S
-        L.append((x + nx * wd / 2, y + ny * wd / 2))
-        R.append((x - nx * wd / 2, y - ny * wd / 2))
-    shape = L + R[::-1]
-    soft = soft if soft is not None else max(1.5, w0 * S * 0.22)
-    height = height if height is not None else max(3, w0 * S * 0.5)
-    svg = d.bump(pts(shape), col, soft=round(soft, 1), height=round(height, 1), spec=0.55, shine=26)
-    return (sum(zs) / n, svg)
-
-
-def cap(h, d, k, y_top, y_bottom_fn, col, out, n=40):
-    """The hair mass over the skull: the shell (head scaled by k) above a hairline y_bottom_fn(phi), as one shape.
-    Built as many thick horizontal strokes (slices) that merge into one silhouette, then given form."""
-    S = h.S
-    segs = []
-    for i in range(n + 1):
-        y = y_top + (0.5 - y_top) * i / n
-        arc = []
-        for j in range(73):
-            phi = -math.pi + 2 * math.pi * j / 72
-            if y <= y_bottom_fn(phi):
-                arc.append(h.scr(h.surf(phi, y, 0, k))[:2])
-            else:
-                if len(arc) > 1:
-                    segs.append(arc)
-                arc = []
-        if len(arc) > 1:
-            segs.append(arc)
-    sw = S * (0.5 - y_top) / n * 2.2
-    body = ''.join(f'<path d="{poly(s)[:-2]}" fill="none" stroke="{col}" stroke-width="{f(sw)}" stroke-linejoin="round" stroke-linecap="round"/>' for s in segs)
-    return body

@@ -63,14 +63,19 @@ def eye(x, y, s=1.0, kind='open', side=1, squash=1.0, lash=True, color=INK, lid=
         if lash:
             o.append(brush([(x + side * 9 * w, y - 1.6 * s), (x + side * 12.5 * w, y - 4.2 * s)], 1.6 * s, color, taper=(0, 0.8)))
     elif kind == 'wide':
-        o.append(ell(x, y - 1 * s, 6.5 * w, 7.8 * s, '#fbf6ea'))
-        o.append(ell(x + side * 0.6 * w, y - 0.5 * s, 3.4 * w, 4.4 * s, color))
-        o.append(brush([(x - side * 7 * w, y - 3 * s), (x, y - 9.4 * s), (x + side * 7.5 * w, y - 3.5 * s)], 1.8 * s, color,
+        o.append(ell(x, y - 1 * s, 7.6 * w, 9 * s, '#fbf6ea'))
+        o.append(ell(x + side * 0.6 * w, y - 0.5 * s, 3.6 * w, 4.6 * s, color))
+        o.append(brush([(x - side * 8 * w, y - 3 * s), (x, y - 10.8 * s), (x + side * 8.5 * w, y - 3.5 * s)], 2.0 * s, color,
                        taper=(0.3, 0.3)))
     elif kind == 'sad':
         o.append(ell(x, y + 0.8 * s, 3.8 * w, 4.4 * s, color))
         o.append(brush([(x - side * 7 * w, y - 4.5 * s), (x + side * 1 * w, y - 4.6 * s), (x + side * 8 * w, y - 1 * s)],
                        2.2 * s, color, taper=(0.2, 0.3)))
+    elif kind == 'glare':
+        # anger: the top lid slants down to the nose and cuts the eye
+        o.append(shape([(x - side * 7 * w, y + 1.5 * s, 'c'), (x + side * 8 * w, y - 3.5 * s, 'c'), (x + side * 4 * w, y + 3.6 * s),
+                        (x - side * 3 * w, y + 3.8 * s)], color))
+        o.append(brush([(x - side * 8.5 * w, y + 1.2 * s), (x + side * 9.5 * w, y - 4.2 * s)], 3.0 * s, color, taper=(0.1, 0.2)))
     elif kind == 'cross':   # squeezed shut (anger, a shout)
         o.append(brush([(x - side * 7 * w, y - 2.5 * s), (x + side * 1 * w, y + 0.5 * s), (x + side * 8 * w, y + 0.5 * s)],
                        2.6 * s, color, taper=(0.2, 0.2)))
@@ -125,8 +130,8 @@ def mouth(x, y, s=1.0, kind='smile', side=1, color=LIP, width=1.0):
 # the four expressions of the sheet, and calm; characters may override per face
 EXPR = {
     'calm':     dict(eye='open', brow=(0, 0), mouth='soft'),
-    'joy':      dict(eye='happy', brow=(-3, -1), mouth='grin', cheek=1.25),
-    'surprise': dict(eye='wide', brow=(-8, -7), mouth='o'),
-    'sad':      dict(eye='sad', brow=(-4, 4), mouth='sad'),
-    'anger':    dict(eye='lid', brow=(5, -4), mouth='shout'),
+    'joy':      dict(eye='happy', brow=(-3, -1), mouth='grin', cheek=1.25, ms=1.45),
+    'surprise': dict(eye='wide', brow=(-8, -7), mouth='o', ms=1.35),
+    'sad':      dict(eye='sad', brow=(-7, 5), mouth='sad', ms=1.2),
+    'anger':    dict(eye='glare', brow=(8, -6), mouth='shout', cheek=1.3, ms=1.45),
 }

@@ -9,8 +9,11 @@ designed shapes around the body's axes, О3 simulates MakeHuman garments as clot
 (flat panels + seams), so the shape comes from the pattern and gravity.
 
 Made with GarmentCode, on our Anny body (engine `moood-woman`, the woman of О3 pictures), at rest:
-two dresses with designed silhouettes (bell = circle skirt, A-line with puff sleeves), a trapeze dress, a circle skirt
-on a waistband, a long-sleeved shirt, trousers; one dress with its parameters changed (flare, length, sleeves);
+two dresses with designed silhouettes (bell = circle skirt; A-line with puff sleeves), a loose straight dress
+("trapeze" asked of its Shirt with flare 1.5 — it barely flares: the shirt's flare is mild), a long-sleeved shirt
+with a circle skirt and with trousers (GarmentCode makes a top and a bottom as one garment sewn at the waistband:
+the shirt reads as tucked in; alone, a skirt or trousers leave Anny bare above — drapes `skirt-circle`, `pants` kept
+in out/ but not shown); one dress with its parameters changed (suns 0.3 / 1.5 with length, V-neck);
 the tool's own uses: patterns as code (2D pieces), one design made to measure on other bodies (its own female and
 male), random designs from its dataset sampler.
 
@@ -46,10 +49,14 @@ Everything heavy is in `/home/user/cache/n2-garments/` (not in the repository).
    4–50 min; the bell dress at GarmentCode's resolution (27k cloth points) ran into the 50-min cap at frame 552 but
    had settled. The rest: `RES=1.6` (coarser), except those with a short edge (cuffs, collars): at resolution > 1
    GarmentCode crashes on its own warning (`Edge` has no `name`) — those ran at 1.0.
+   Dropped: `var-suns15-long` (suns 1.5 to the ankles) had not settled within the 50-minute cap — still spread out
+   in the air; a sleeve variant of the bell (needs resolution 1.0, ~50 min). Replaced by a short full skirt and a V-neck.
 7. Pictures: `tools/render_all.sh` (Blender 4.5, Cycles CPU, 32 samples; `tools/render.py` — beige floor and
    backdrop like our clothes pictures), sheets by `tools/sheets.py`. GarmentCode's own preview renders
    (`*_render_front.png`, pyrender) are in the runs too.
-8. `tools/sample.py`: its dataset sampler (`pyg.DesignSampler` + `pattern_sampler.assert_param_combinations`), seed 7,
+8. The sewing film: the shirt-with-skirt draped once more with `gc_run.py --dump` (cloth points every 4th frame),
+   `tools/film.py` renders them on the box mesh in Blender, ffmpeg → `pics/sewing.mp4`.
+9. `tools/sample.py`: its dataset sampler (`pyg.DesignSampler` + `pattern_sampler.assert_param_combinations`), seed 7,
    12 designs fitted to Anny's measurements; three of them draped.
 
 Meshes for Н3: `/home/user/cache/n2-garments/out/` (README there).
@@ -59,3 +66,8 @@ Meshes for Н3: `/home/user/cache/n2-garments/out/` (README there).
 GarmentCode, pygarment: MIT (Maria Korosteleva). NvidiaWarp-GarmentCode: NVIDIA Source Code License (non-commercial
 research use in its fork's licence — check before any product use). GarmentCode's bodies `mean_all`, `mean_female`,
 `mean_male`: its own body model (GarmentMeasurements). Anny: NAVER, Apache-2.0; MakeHuman CC0.
+
+## Pictures
+
+All `pics/*.webp`, `pics/sewing.mp4` made here from GarmentCode's output, except `pics/gc-header.webp` — GarmentCode's
+repository picture `assets/img/header.png` (MIT), put on a light background.

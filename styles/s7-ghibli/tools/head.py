@@ -19,6 +19,15 @@ def table(pairs):
     return lambda y: np.asarray(f(np.clip(y, ys[0], ys[-1])))
 
 
+def profile(nose_y, nose=0.14, bridge=0.04, mouth_y=None, lip=0.03, chin=0.02, brow=0.0):
+    """the bulge along the middle of the face (head units forward of the plain form): brow, bridge, nose tip,
+    under the nose, lips, chin."""
+    my = mouth_y if mouth_y is not None else nose_y - 0.22
+    return [(0.35, 0.0), (0.18, brow), (0.0, bridge * 0.5), (nose_y + 0.22, bridge), (nose_y + 0.08, nose * 0.65),
+            (nose_y, nose), (nose_y - 0.05, nose * 0.4), (nose_y - 0.10, 0.015), (my + 0.03, lip),
+            (my - 0.06, 0.0), (my - 0.18, chin), (-1.0, 0.0)]
+
+
 def rotm(yaw, nod, tilt):
     """head turn (deg): yaw about y (+ face to the viewer's right at view yaw 0), nod about x (+ looks down),
     tilt about z (+ head leans to the viewer's right)."""
@@ -121,6 +130,13 @@ class Head:
         u = -uv[:, 0] if mirror else uv[:, 0]
         return self.xy(view, self.on(cx + u, cy + uv[:, 1], lift))
 
+    def patch(self, view, pts, lift=0.01, closed=True, n=60):
+        """a flat shape lying on the face surface (moustache, eyebrow tuft, plaster), from head-local (x, y)
+        outline points through a Catmull-Rom curve."""
+        c = spline(pts, n, closed=closed)
+        L = self.xy(view, self.on(c[:, 0], c[:, 1], lift))
+        return poly(L) if closed else L
+
     def ear(self, view, side):
         P = self.P
         ey0, ey1 = P.get('ear', (-0.06, -0.40))
@@ -157,9 +173,9 @@ class Head:
         if clip is not None:
             skin_g = skin_g.intersection(clip)
         k = view.s * self.k
-        sh = skin_g.difference(shift(skin_g, light[0] * 0.10 * k, light[1] * 0.10 * k))
+        sh = skin_g.difference(shift(skin_g, light[0] * 0.09 * k, light[1] * 0.06 * k))
         if hair_front is not None and not hair_front.is_empty:
-            sh = sh.union(shift(hair_front, 0.03 * k, 0.07 * k).intersection(skin_g))
+            sh = sh.union(shift(hair_front, 0.015 * k, 0.045 * k).intersection(skin_g))
         sh = smooth(sh, 0.5)
         d.fill(skin_g, skin)
         d.fill(sh.intersection(skin_g), sc or shade(skin))
@@ -277,11 +293,10 @@ class Head:
         d.fill(low.intersection(iris), mix(iris_c, P.get('iris_light', '#8a5a40'), 0.55))
         d.fill(iris.intersection(lid_sh), mix(iris_c, '#000000', 0.3))
         # glints: a round one up-left (toward the light), a small one lower right
-        for (hx, hy, hr) in P.get('glints', [(-0.35, 0.38, 0.30), (0.28, -0.32, 0.12)]):
+        for (hx, hy, hr) in P.get('glints', [(-0.35, 0.40, 0.24), (0.30, -0.35, 0.10)]):
             gpt = self.tmpl(view, cx, cy, [(icx + hx * rw, icy + hy * rh)])[0]
             g = Point(gpt).buffer(hr * rw * view.s * self.k * max(f, 0.6), 16).intersection(iris.buffer(0.5))
             d.fill(g, '#ffffff')
-        d.outline(white, lw * 0.5)
         # the upper lid: a thick line, heavier toward the outer corner, a small flick past it
         upl = up.copy()
         upl = np.vstack([upl, [[0.56 * w, upl[-1, 1] - 0.06 * h * P.get('flick', 1.0)]]])
@@ -292,8 +307,8 @@ class Head:
         d.fill(ribbon(pts, th), INK)
         # the lower lid: a short thin stroke toward the outer corner
         if P.get('lower_lid', True):
-            seg = lo[int(len(lo) * 0.45):int(len(lo) * 0.92)]
-            d.line(self.tmpl(view, cx, cy, seg + [0, -0.05 * h], mirror), lw * 0.55)
+            seg = lo[int(len(lo) * 0.40):int(len(lo) * 0.96)]
+            d.line(self.tmpl(view, cx, cy, seg, mirror), lw * 0.6)
         if P.get('crease', 0):
             cr = up[int(len(up) * 0.2):int(len(up) * 0.85)] + [0, 0.32 * h * P['crease']]
             d.line(self.tmpl(view, cx, cy, cr, mirror), lw * 0.45)
@@ -313,6 +328,8 @@ class Head:
     # ---- brow
     def brow(self, d, view, side, E, c, inside):
         P = self.P
+        if P.get('brow_style') == 'bushy':
+            return self.bushy_brow(d, view, side, E, inside)
         w = P['brow_w']
         bx, by = P['eye_x'] + P.get('brow_dx', 0.0), P['eye_y'] + P['brow_y'] + E.brow_up * 0.08
         arch = P.get('brow_arch', 0.035) + E.brow_arch * 0.03
@@ -323,6 +340,24 @@ class Head:
         th = d.lw * P.get('brow_th', 1.6) * (1 - 0.75 * s) + d.lw * 0.3
         g = ribbon(pts, th).intersection(inside)
         d.fill(g, c)
+
+    def bushy_brow(self, d, view, side, E, inside):
+        """an old man's brow: a white tuft with a ragged lower edge that hangs over the eye."""
+        P = self.P
+        bx, by = P['eye_x'] + P.get('brow_dx', 0.0), P['eye_y'] + P['brow_y'] + E.brow_up * 0.07
+        w = P['brow_w']
+        ti = E.brow_in * 0.06
+        top = [(-0.5 * w, 0.02 - ti), (-0.2 * w, 0.075 - ti * 0.5), (0.2 * w, 0.08), (0.55 * w, 0.03)]
+        jag = [(0.62 * w, -0.06), (0.42 * w, -0.03), (0.32 * w, -0.08), (0.16 * w, -0.035), (0.02 * w, -0.075 - ti * 0.3),
+               (-0.14 * w, -0.03 - ti * 0.6), (-0.3 * w, -0.06 - ti * 0.8), (-0.42 * w, -0.025 - ti), (-0.55 * w, -0.03 - ti)]
+        pts = np.array(top + jag)
+        pts[:, 0] = side * (bx + pts[:, 0])
+        pts[:, 1] += by
+        g = poly(self.xy(view, self.on(pts[:, 0], pts[:, 1], 0.02))).buffer(0).intersection(inside.buffer(0.03 * view.s * self.k))
+        col = P.get('brow_c', '#ebe6de')
+        d.fill(g, col)
+        d.fill(g.difference(shift(g, -0.02 * view.s * self.k, -0.025 * view.s * self.k)), shade(col))
+        d.outline(g, d.lw * 0.7)
 
     # ---- nose
     def nose(self, d, view, E, inside):

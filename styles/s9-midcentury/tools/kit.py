@@ -6,7 +6,7 @@ Everything a character is made of goes through three calls:
   dots / blush          — round marks
 Doc collects the SVG, keeps the shared filters, and adds paper at the end.
 """
-import math, os, random, subprocess
+import math, os, subprocess
 
 # ---------- colour ----------
 
@@ -77,26 +77,12 @@ def sample(pts, closed=False, per=10):
     return res
 
 
-def mirror(pts, cx=0):
-    return [((2 * cx - q[0]), q[1]) + tuple(q[2:]) for q in pts]
 
 
-def move(pts, dx=0, dy=0, s=1.0):
-    return [(q[0] * s + dx, q[1] * s + dy) + tuple(q[2:]) for q in pts]
 
 
-def lerp_pts(a, b, t):
-    return [(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t) + tuple(p[2:]) for (x0, y0, *_), (x1, y1, *__), p in zip(a, b, a)]
 
 
-def ellipse_pts(cx, cy, rx, ry, n=10, rot=0):
-    r = math.radians(rot)
-    out = []
-    for i in range(n):
-        a = 2 * math.pi * i / n
-        x, y = rx * math.cos(a), ry * math.sin(a)
-        out.append((cx + x * math.cos(r) - y * math.sin(r), cy + x * math.sin(r) + y * math.cos(r)))
-    return out
 
 # ---------- marks ----------
 
@@ -194,14 +180,20 @@ FILTERS = '''
 <filter id="gouache" x="-5%" y="-5%" width="110%" height="110%">
   <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="n"/>
   <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G" result="d"/>
-  <feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="3" seed="11" result="m"/>
-  <feColorMatrix in="m" type="matrix" values="0.7 0 0 0 0.15  0.7 0 0 0 0.15  0.7 0 0 0 0.15  0 0 0 0 1" result="mg"/>
+  <feTurbulence type="fractalNoise" baseFrequency="0.018 0.045" numOctaves="3" seed="11" result="m"/>
+  <feColorMatrix in="m" type="matrix" values="0.45 0 0 0 0.275  0.45 0 0 0 0.275  0.45 0 0 0 0.275  0 0 0 0 1" result="mg"/>
   <feBlend in="mg" in2="d" mode="soft-light" result="mb"/>
   <feComposite in="mb" in2="d" operator="in" result="mls"/>
   <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="3" result="g"/>
   <feColorMatrix in="g" type="matrix" values="0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.1  0 0 0 -4 1.3" result="gd"/>
   <feComposite in="gd" in2="d" operator="in" result="gds"/>
   <feMerge><feMergeNode in="mls"/><feMergeNode in="gds"/></feMerge>
+</filter>
+<filter id="board" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.02 0.035" numOctaves="3" seed="5" result="m"/>
+  <feColorMatrix in="m" type="matrix" values="0.28 0 0 0 0.36  0.28 0 0 0 0.36  0.28 0 0 0 0.36  0 0 0 0 1" result="mg"/>
+  <feBlend in="mg" in2="SourceGraphic" mode="soft-light" result="mb"/>
+  <feComposite in="mb" in2="SourceGraphic" operator="in"/>
 </filter>
 <filter id="paper" x="0" y="0" width="100%" height="100%">
   <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="21" result="t"/>
@@ -211,8 +203,9 @@ FILTERS = '''
 
 
 class Doc:
-    def __init__(self, w, h, paper=PAPER):
+    def __init__(self, w, h, paper=PAPER, texture=True):
         self.w, self.h = w, h
+        self.texture = texture
         self.parts = [f'<rect width="{w}" height="{h}" fill="{paper}"/>']
         self.defs = []
 
@@ -220,9 +213,9 @@ class Doc:
         self.parts.extend(s)
 
     def svg(self):
+        paper = f'<rect width="{self.w}" height="{self.h}" filter="url(#paper)" opacity="0.35"/>' if self.texture else ''
         return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {self.w} {self.h}" width="{self.w}" height="{self.h}">'
-                f'<defs>{FILTERS}{"".join(self.defs)}</defs>' + ''.join(self.parts) +
-                f'<rect width="{self.w}" height="{self.h}" filter="url(#paper)" opacity="0.35"/></svg>')
+                f'<defs>{FILTERS}{"".join(self.defs)}</defs>' + ''.join(self.parts) + paper + '</svg>')
 
     def save(self, p):
         with open(p, 'w') as f:
@@ -266,3 +259,9 @@ def limb(pts, ws, fill, per=8, cap=True):
     if cap:
         d += ' A%.1f,%.1f 0 0 1 %.1f,%.1f' % (W[0] / 2, W[0] / 2, *left[0])
     return f'<path d="{d}Z" fill="{fill}"/>'
+
+
+def edge(pts, i0, i1, w=2.2, color=INK, dx=1.6, dy=1.2, opacity=0.85):
+    """Part of a shape's contour in ink, a little off the fill (the print's misregistration): the Šašek line."""
+    seg = [(q[0] + dx, q[1] + dy) for q in pts[i0:i1 + 1]]
+    return brush(seg, w, color, taper=(0.3, 0.3), opacity=opacity)

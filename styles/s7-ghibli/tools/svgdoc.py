@@ -16,8 +16,12 @@ def mix(a, b, t):
 
 
 def shade(c, k=1.0):
-    """the one shadow tone of a colour: darker, a little cooler and greyer — as Ghibli's cel shadows."""
-    return mix(mix(c, '#5a4a6a', 0.30 * k), '#000000', 0.10 * k)
+    """the one shadow tone of a colour: as if multiplied by a soft warm lavender — Ghibli's cel shadow keeps the
+    colour's warmth, it does not turn grey."""
+    c = c.lstrip('#')
+    m = (0.86, 0.78, 0.84)
+    v = [int(c[i:i + 2], 16) for i in (0, 2, 4)]
+    return '#' + ''.join(f'{round(x * (1 - (1 - f) * k)):02x}' for x, f in zip(v, m))
 
 
 class Doc:

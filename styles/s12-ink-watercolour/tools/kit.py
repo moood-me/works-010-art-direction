@@ -77,9 +77,10 @@ class Doc:
         self.w, self.h = w, h
         self.rnd = random.Random(seed)
         self.paper = paper
-        self.washes, self.whites, self.inks, self.top = [], [], [], []
+        self.washes, self.whites, self.inks = [], [], []
         self.T = [(1, 0, 0, 1, 0, 0)]      # affine stack: x' = a x + c y + e ; y' = b x + d y + f
         self.lw = 1.0                       # line width multiplier (for small figures)
+        self.fade = None                    # (y0, y1): washes thin out from y0 to y1, as a vignette on a page
 
     # transforms
     def push(self, dx=0, dy=0, s=1.0, rot=0.0, flip=False):
@@ -94,9 +95,10 @@ class Doc:
     def pop(self):
         self.T.pop()
 
-    def scale(self):
-        a, b, c, d, e, f = self.T[-1]
-        return math.sqrt(abs(a * d - b * c))
+    def turn(self, cx, cy, rot):
+        """Turn what follows about (cx, cy) by rot degrees (a lean of the body); undo with two pops."""
+        self.push(cx, cy, 1, rot)
+        self.push(-cx, -cy)
 
     def tp(self, pts):
         a, b, c, d, e, f = self.T[-1]
@@ -108,10 +110,25 @@ class Doc:
                 f'<defs>{DEFS}</defs>'
                 f'<rect width="{self.w}" height="{self.h}" fill="{self.paper}"/>'
                 f'<rect width="{self.w}" height="{self.h}" filter="url(#paper)" opacity="0.5"/>'
-                f'<g style="mix-blend-mode:multiply">{"".join(self.washes)}</g>'
+                f'{self._fade_defs()}'
+                f'<g style="mix-blend-mode:multiply"{self._fade_attr()}>{"".join(self.washes)}</g>'
                 f'<g fill="{self.paper}" filter="url(#wcS0)">{"".join(self.whites)}</g>'
                 f'<g style="mix-blend-mode:multiply" fill="{INK}" filter="url(#nib)">{"".join(self.inks)}</g>'
-                f'{"".join(self.top)}</svg>')
+                '</svg>')
+
+    def _fade_defs(self):
+        if not self.fade:
+            return ''
+        y0, y1 = self.fade
+        return (f'<defs><linearGradient id="fadeg" gradientUnits="userSpaceOnUse" x1="0" y1="{y0}" x2="0" y2="{y1}">'
+                f'<stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>'
+                f'<filter id="fadef"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="4"/>'
+                f'<feDisplacementMap in="SourceGraphic" scale="60" xChannelSelector="R" yChannelSelector="G"/></filter>'
+                f'<mask id="fadem" maskUnits="userSpaceOnUse" x="0" y="0" width="{self.w}" height="{self.h}">'
+                f'<rect x="-50" y="-50" width="{self.w + 100}" height="{self.h + 100}" fill="url(#fadeg)" filter="url(#fadef)"/></mask></defs>')
+
+    def _fade_attr(self):
+        return ' mask="url(#fadem)"' if self.fade else ''
 
     def save(self, path):
         with open(path, 'w') as f:
@@ -193,7 +210,6 @@ def ink(d, pts, w=2.0, closed=False, taper=(0.18, 0.35), jit=0.9, press=0.5, ski
 def dot(d, x, y, r=2.2, seed=None):
     """An ink dot (an eye, a freckle): a tiny irregular blob."""
     rnd = random.Random(seed) if seed is not None else d.rnd
-    k = d.scale() * 0 + 1
     pts = []
     for i in range(9):
         a = i / 9 * 2 * math.pi
@@ -209,27 +225,6 @@ def white(d, x, y, rx, ry, rot=0):
             y + rx * math.cos(a) * math.sin(math.radians(rot)) + ry * math.sin(a) * math.cos(math.radians(rot)))
            for a in [i / 12 * 2 * math.pi for i in range(12)]]
     d.whites.append(f'<polygon points="{fmt(catmull(d.tp(pts), True, 1.5))}"/>')
-
-
-def scribble(d, path, r=6, turns=None, w=1.1, seed=None, squash=0.8):
-    """A loopy pen line travelling along path (curly hair, foliage, wool): small loops of radius r."""
-    rnd = random.Random(seed) if seed is not None else d.rnd
-    C = catmull(path, False, 1.0)
-    L = sum(math.dist(C[i - 1], C[i]) for i in range(1, len(C)))
-    n = turns or max(2, int(L / (r * 1.6)))
-    pts = []
-    step = max(1, len(C) // (n * 6))
-    for k, i in enumerate(range(0, len(C), step)):
-        x, y = C[i]
-        j = min(len(C) - 1, i + 1); h = max(0, i - 1)
-        tx, ty = C[j][0] - C[h][0], C[j][1] - C[h][1]
-        nn = math.hypot(tx, ty) or 1
-        tx, ty = tx / nn, ty / nn
-        a = k / 6 * 2 * math.pi
-        rr = r * rnd.uniform(0.7, 1.2)
-        pts.append((x + tx * rr * math.cos(a) - ty * rr * math.sin(a) * squash,
-                    y + ty * rr * math.cos(a) + tx * rr * math.sin(a) * squash))
-    ink(d, pts, w=w, jit=0.3, press=0.4, taper=(0.1, 0.2), start=0.5, end=0.2, seed=rnd.randint(0, 1 << 30))
 
 
 def hatch(d, poly, angle=45, gap=6, w=1.0, fill=0.8, jit=0.4, seed=None, curve=0.0):
@@ -275,9 +270,10 @@ def hatch(d, poly, angle=45, gap=6, w=1.0, fill=0.8, jit=0.4, seed=None, curve=0
 
 # ---------- watercolour ----------
 
-def wash(d, poly, color, opacity=0.62, dx=0, dy=0, soft=None, closed=True, seed=None, rough=None):
+def wash(d, poly, color, opacity=0.62, dx=0, dy=0, closed=True, seed=None, rough=None, angle=None):
     """A watercolour patch. poly: rough outline (local coords), smoothed. dx, dy shift it off the line.
-    rough: 'S' (small shapes) or 'L' (big ones), by default from the size on the page."""
+    rough: 'S' (small shapes) or 'L' (big ones), by default from the size on the page.
+    angle: the brush direction (degrees on the page) along which the pigment streaks; random by default."""
     rnd = random.Random(seed) if seed is not None else d.rnd
     pts = [(x + dx, y + dy) for x, y in poly]
     P = catmull(d.tp(pts), closed, 3)
@@ -286,7 +282,14 @@ def wash(d, poly, color, opacity=0.62, dx=0, dy=0, soft=None, closed=True, seed=
     if rough is None:
         rough = 'S' if size < 90 else 'L'
     k = rnd.randrange(6)
-    d.washes.append(f'<polygon points="{fmt(P)}" fill="{color}" fill-opacity="{opacity}" filter="url(#wc{rough}{k})"/>')
+    if angle is None:
+        angle = rnd.uniform(-60, 60)
+    # turn the shape by -angle and the element by +angle, so the filter's streaks run along the brush
+    cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+    ca, sa = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
+    R = [(cx + (x - cx) * ca - (y - cy) * sa, cy + (x - cx) * sa + (y - cy) * ca) for x, y in P]
+    d.washes.append(f'<polygon points="{fmt(R)}" fill="{color}" fill-opacity="{opacity}" filter="url(#wc{rough}{k})" '
+                    f'transform="rotate({angle:.1f} {cx:.1f} {cy:.1f})"/>')
 
 
 def blot(d, x, y, r, color, opacity=0.4, seed=None):
@@ -298,18 +301,18 @@ def blot(d, x, y, r, color, opacity=0.4, seed=None):
     d.washes.append(f'<polygon points="{fmt(P)}" fill="{color}" fill-opacity="{opacity}" filter="url(#blush)"/>')
 
 
-def _wc_filter(name, i, freq, scale, erode, blur):
+def _wc_filter(name, i, freq, scale, erode, blur, dfreq='0.008 0.02', dm=-4.0, db=2.6, rimk=0.8):
     return f'''<filter id="{name}{i}" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
 <feTurbulence type="fractalNoise" baseFrequency="{freq}" numOctaves="4" seed="{i * 7 + 3}" result="n1"/>
 <feDisplacementMap in="SourceGraphic" in2="n1" scale="{scale}" xChannelSelector="R" yChannelSelector="G" result="d"/>
 <feGaussianBlur in="d" stdDeviation="{blur}" result="ds"/>
-<feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="2" seed="{i * 5 + 21}" result="n2"/>
-<feColorMatrix in="n2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.7 1.55" result="dens"/>
+<feTurbulence type="fractalNoise" baseFrequency="{dfreq}" numOctaves="3" seed="{i * 5 + 21}" result="n2"/>
+<feColorMatrix in="n2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 {dm} {db}" result="dens"/>
 <feComposite in="ds" in2="dens" operator="in" result="dd"/>
 <feMorphology in="d" operator="erode" radius="{erode}" result="er"/>
 <feComposite in="d" in2="er" operator="out" result="rim"/>
-<feGaussianBlur in="rim" stdDeviation="0.7" result="rimb"/>
-<feComponentTransfer in="rimb" result="rimc"><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
+<feGaussianBlur in="rim" stdDeviation="0.6" result="rimb"/>
+<feComponentTransfer in="rimb" result="rimc"><feFuncA type="linear" slope="{rimk}"/></feComponentTransfer>
 <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="{i + 40}" result="g"/>
 <feColorMatrix in="g" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.1 1.25" result="ga"/>
 <feComposite in="dd" in2="ga" operator="in" result="gr"/>
@@ -317,8 +320,8 @@ def _wc_filter(name, i, freq, scale, erode, blur):
 </filter>'''
 
 
-DEFS = (''.join(_wc_filter('wcL', i, 0.022, 18, 2.2, 0.6) for i in range(6))
-        + ''.join(_wc_filter('wcS', i, 0.05, 7, 1.3, 0.4) for i in range(6))
+DEFS = (''.join(_wc_filter('wcL', i, 0.03, 12, 1.6, 0.2) for i in range(6))
+        + ''.join(_wc_filter('wcS', i, 0.06, 6, 1.1, 0.2, '0.016 0.04') for i in range(6))
         + '''<filter id="blush" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
 <filter id="nib" x="-5%" y="-5%" width="110%" height="110%">
 <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="5" result="t"/>
@@ -329,7 +332,7 @@ DEFS = (''.join(_wc_filter('wcL', i, 0.022, 18, 2.2, 0.6) for i in range(6))
 <feComposite operator="in" in2="SourceGraphic"/></filter>''')
 
 
-# ---------- text (hand-lettered captions are drawn by the page, not here) ----------
+# ---------- rendering ----------
 
 def render(svg_path, png_path, w, h, scale=1):
     """Render with headless Chrome (SVG filters and blend modes as in a browser)."""

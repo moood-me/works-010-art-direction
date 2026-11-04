@@ -1,7 +1,7 @@
 """Савелий Петрович, about 70, a watchmaker — grumpy outside, kind inside.
 A Šašek head: tall bald dome, a big soft nose, a white walrus moustache, heavy white brows, little round spectacles,
 the watchmaker's loupe pushed up on his forehead."""
-from kit import shape, brush, blush, ell, circle, dryb, limb, mix, INK
+from kit import edge, shape, brush, blush, ell, circle, dryb, limb, mix, INK
 from face import eye, brow, mouth, EXPR
 
 SKIN = '#efc3a2'
@@ -18,7 +18,8 @@ TIE = '#2f5a4a'
 SLEEVE = '#cdd6d0'
 BRASS = '#d9a441'
 CHEEK = '#e2715c'
-BUST_DY = -52
+FIG_SCALE = 1.3  # how much larger the full figure is drawn on its own page
+BUST_DY = -42
 
 OWN = {
     'calm':     dict(eye='dot', brow=(5, -2), mouth=None),
@@ -44,7 +45,8 @@ def _brow(x, y, side, inner, outer, s=1.0, squash=1.0):
                                      taper=(0.3, 0.3), opacity=0.8)
 
 
-def head(view='34', expr='calm'):
+def head(view='34', expr='calm', neck=True):
+    """The head around (0, 0), crown near y=-120, chin near y=95; neck=False leaves the neck to the figure."""
     e = _e(expr)
     o = []
     if view != '34':
@@ -53,10 +55,13 @@ def head(view='34', expr='calm'):
     o.append(shape([(-46, -70), (-78, -50), (-92, -14), (-86, 28), (-70, 52), (-54, 40), (-60, 10), (-50, -30)], WHITE))
     o.append(dryb([[(-80, -40), (-84, 0), (-72, 36)], [(-66, -54), (-76, -10)]], 2.2, WHITE_D, 0.8))
     # neck
-    o.append(shape([(-30, 60), (30, 74), (34, 150), (-40, 150)], SKIN_D))
+    if neck:
+        o.append(shape([(-30, 60), (30, 74), (34, 150), (-40, 150)], SKIN_D))
     # the dome and face
-    o.append(shape([(-60, -36), (-56, -86), (-24, -116), (22, -118), (56, -96), (70, -58), (72, -16), (70, 30), (62, 64),
-                    (40, 90), (12, 100), (-18, 94), (-44, 74), (-58, 40), (-64, 0)], SKIN))
+    face = [(-60, -36), (-56, -86), (-24, -116), (22, -118), (56, -96), (70, -58), (72, -16), (70, 30), (62, 64),
+                    (40, 90), (12, 100), (-18, 94), (-44, 74), (-58, 40), (-64, 0)]
+    o.append(shape(face, SKIN))
+    o.append(edge(face, 1, 4, 1.8, '#a8705a'))
     # ear
     o.append(shape([(-56, -12), (-74, -18), (-82, 6), (-74, 34), (-56, 32)], SKIN))
     o.append(brush([(-62, -6), (-72, 6), (-66, 26)], 2.2, SKIN_D, taper=(0.3, 0.3)))
@@ -89,7 +94,7 @@ def head(view='34', expr='calm'):
     # mouth under the moustache
     m = e['mouth']
     if m:
-        o.append(mouth(26, 80, 1.3, m, side=1, width=0.9))
+        o.append(mouth(26, 80, 1.3 * e.get('ms', 1), m, side=1, width=0.9))
     else:
         o.append(brush([(14, 84), (26, 88), (38, 84)], 3.0, '#b0503e', taper=(0.3, 0.3)))
     # the walrus moustache: two heavy white sweeps
@@ -150,5 +155,5 @@ def figure(expr='calm'):
     o.append(brush([(108, -446), (117, -443)], 2, INK, taper=(0, 0.3)))
     o.append(ell(92, -416, 7, 9, SKIN))
     # head bent forward and down toward the watch
-    o.append('<g transform="translate(34,-482) rotate(12) scale(0.6)">' + ''.join(head('34', expr)) + '</g>')
+    o.append('<g transform="translate(34,-482) rotate(12) scale(0.6)">' + ''.join(head('34', expr, neck=False)) + '</g>')
     return o

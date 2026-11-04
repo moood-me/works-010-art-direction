@@ -13,18 +13,41 @@ LIPS = '#d4594b'
 SHADOW = '#8f86a8'      # a cool violet-grey wash for shade under hair, chin, folds
 
 EXPR = {
-    # brow lift (+ up), brow tilt (+ inner ends up = sad, - = angry), lid (0 open .. 1 shut), look (dx, dy),
-    # mouth kind, eye size
+    # lift: brows up (+); tilt: inner ends up (+, sad) or down (-, angry); lid: 0 open .. 1 shut; look: pupils
+    # (dx, dy); mouth: kind; eye: size; ms: mouth size; tilt_head: how the head goes with it (degrees);
+    # extra: a mark beside the face (a tear, a start, a flush)
     'calm':     dict(lift=0, tilt=0, lid=0.25, look=(0, 0), mouth='soft', eye=1.0),
     'dream':    dict(lift=2, tilt=1, lid=0.5, look=(-0.5, -1), mouth='soft', eye=1.0),
-    'joy':      dict(lift=4, tilt=0, lid=0.0, look=(0, 0), mouth='laugh', eye=0.9, squint=True),
-    'surprise': dict(lift=12, tilt=2, lid=0.0, look=(0, 0), mouth='O', eye=1.25),
-    'sad':      dict(lift=2, tilt=7, lid=0.45, look=(0, 1.5), mouth='down', eye=1.0),
-    'anger':    dict(lift=-5, tilt=-8, lid=0.3, look=(0, 0), mouth='shout', eye=1.0),
+    'joy':      dict(lift=7, tilt=0, lid=0.0, look=(0, 0), mouth='laugh', eye=0.9, squint=True, ms=1.6,
+                     tilt_head=-10),
+    'surprise': dict(lift=17, tilt=3, lid=0.0, look=(0, 0), mouth='O', eye=1.3, ms=1.5, tilt_head=-4,
+                     extra='start'),
+    'sad':      dict(lift=3, tilt=11, lid=0.5, look=(0, 1.5), mouth='down', eye=1.0, ms=1.4, tilt_head=12,
+                     extra='tear'),
+    'anger':    dict(lift=-7, tilt=-12, lid=0.3, look=(0, 0), mouth='shout', eye=1.0, ms=1.6, tilt_head=6,
+                     extra='flush'),
     'grump':    dict(lift=-3, tilt=-5, lid=0.35, look=(0, 0), mouth='flat', eye=0.95),
     'smirk':    dict(lift=2, tilt=-2, lid=0.1, look=(-1, 0), mouth='grin', eye=1.0),
+    'peer':     dict(lift=-2, tilt=-3, lid=0.45, look=(-1, 1.6), mouth='soft', eye=0.95),
     'stern':    dict(lift=-1, tilt=-3, lid=0.4, look=(0, 0), mouth='flat', eye=1.0),
 }
+
+
+def extra(d, e, eye_x, eye_y, cheek_x, cheek_y, top_y):
+    """The small marks Blake adds to a face: a tear for sadness, start-lines for surprise, a flush for anger."""
+    k = e.get('extra')
+    if k == 'tear':
+        x, y = eye_x - 2, eye_y + 16
+        pts = [(x, y), (x - 4, y + 10), (x, y + 15), (x + 4, y + 10), (x, y)]
+        wash(d, pts, '#7fb6dc', 0.7, rough='S')
+        ink(d, pts, w=1.0, retrace=0)
+    elif k == 'start':
+        for dx, a in ((-26, -20), (0, -30), (26, -20)):
+            ink(d, [(eye_x + dx, top_y - 8), (eye_x + dx * 1.4, top_y - 26)], w=1.5, start=1.0, end=0.1, retrace=0)
+    elif k == 'flush':
+        blot(d, cheek_x, cheek_y, 26, '#e0503c', 0.45)
+        for dx in (-10, 0, 10):
+            ink(d, [(cheek_x + dx - 3, cheek_y - 6), (cheek_x + dx + 3, cheek_y + 4)], w=0.9, retrace=0)
 
 
 def eye(d, x, y, s=1.0, look=(0, 0), lid=0.25, lash=False, side=-1, squint=False, white_=True, w=1.0, seed=None):
@@ -59,7 +82,8 @@ def brow(d, x, y, length=22, lift=0, tilt=0, side=-1, w=1.6, arch=4, seed=None):
 
 def mouth(d, x, y, kind='soft', s=1.0, side=-1, w=1.0, lips=True, seed=None):
     """Mouths. side: which way the face looks (-1 left); the far corner is shorter."""
-    a, b = x + side * 12 * s, x - side * 9 * s       # near-the-profile corner, far corner
+    a, b = x + side * 12 * min(s, 1.0), x - side * 9 * s - side * 12 * (max(s, 1.0) - 1)   # near-the-profile corner, far
+    x = (a + b) / 2
     if kind == 'soft':
         ink(d, [(a, y - 1), ((a + b) / 2, y + 2.5 * s), (b, y - 2.5 * s)], w=1.7 * w, start=0.4, end=0.2, seed=seed)
         if lips:
@@ -74,8 +98,8 @@ def mouth(d, x, y, kind='soft', s=1.0, side=-1, w=1.0, lips=True, seed=None):
         ink(d, [(a, y - 1), ((a + b) / 2, y + 4 * s), (b, y - 4 * s), (b - side * 3, y - 7 * s)], w=1.8 * w,
             start=0.4, end=0.2, seed=seed)
     elif kind == 'laugh':
-        pts = [(a, y - 3), ((a + b) / 2 - side * 2, y - 2), (b + side * 1, y - 5 * s),
-               (b - side * 1, y + 4 * s), ((a + b) / 2, y + 12 * s), (a + side * 1, y + 3)]
+        pts = [(a, y - 3), ((a + b) / 2 - side * 2, y - 2), (b + side * 1, y - 6 * s),
+               (b - side * 2, y + 6 * s), ((a + b) / 2, y + 14 * s), (a - side * 2, y + 6 * s)]
         wash(d, pts, '#c4473f', 0.75)
         ink(d, pts + [pts[0]], w=1.7 * w, start=0.8, end=0.6, seed=seed)
         ink(d, [(a - side * 4, y - 1), (b + side * 1, y - 3 * s)], w=0.8, jit=0.2)   # teeth line
@@ -125,20 +149,64 @@ def hand(d, x, y, s=1.0, rot=0, kind='open', flip=False, color=SKIN, seed=None):
     d.pop()
 
 
-def shade(d, poly, opacity=0.35, dx=0, dy=0):
-    """A cool violet-grey wash in shadow (under a chin, a hat brim, inside a fold)."""
-    wash(d, poly, SHADOW, opacity, dx, dy)
+def tufts(d, path, n=12, length=(10, 22), lean=0.5, w=1.5, seed=0, inward=False):
+    """A tufty hair edge along path: each tuft one pen stroke out to a point and back, of uneven size, all leaning
+    the same way (lean: along the path, in tuft lengths). The outward side is to the left of the path's direction."""
+    import random
+    from kit import catmull
+    r = random.Random(seed)
+    C = catmull(path, False, 1.0)
+    L = len(C)
+    pts = [C[0]]
+    for k in range(n):
+        i0 = int(k / n * (L - 1)); i1 = int((k + 1) / n * (L - 1))
+        a, b = C[i0], C[i1]
+        mx, my = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
+        tx, ty = b[0] - a[0], b[1] - a[1]
+        nn = math.hypot(tx, ty) or 1
+        tx, ty = tx / nn, ty / nn
+        nx, ny = (ty, -tx) if not inward else (-ty, tx)
+        ln = r.uniform(*length)
+        pts.append((mx + nx * ln + tx * ln * lean, my + ny * ln + ty * ln * lean))
+        pts.append(b)
+    # draw as a few strokes so the pen lifts now and then
+    i = 0
+    while i < len(pts) - 1:
+        j = min(len(pts), i + r.choice((5, 7, 9)))
+        ink(d, pts[i:j], w=w, start=0.7, end=0.3, jit=0.3, retrace=0, seed=r.randint(0, 1 << 30))
+        i = j - 1
 
 
-def strand(d, x0, y0, x1, y1, amp=6, waves=1.5, w=1.0, phase=0.0, seed=None, start=0.4, end=0.05):
-    """A wavy lock of hair from (x0, y0) to (x1, y1)."""
-    n = 7
-    dx, dy = x1 - x0, y1 - y0
-    L = math.hypot(dx, dy) or 1
-    nx, ny = -dy / L, dx / L
-    pts = []
-    for i in range(n + 1):
-        t = i / n
-        o = amp * math.sin((t * waves + phase) * 2 * math.pi) * (0.3 + 0.7 * t)
-        pts.append((x0 + dx * t + nx * o, y0 + dy * t + ny * o))
-    ink(d, pts, w=w, start=start, end=end, seed=seed)
+def offsets(center, widths):
+    """Left and right edges of a tube along center with half-widths given per point."""
+    L, R = [], []
+    n = len(center)
+    for i, (x, y) in enumerate(center):
+        a = center[max(0, i - 1)]; b = center[min(n - 1, i + 1)]
+        tx, ty = b[0] - a[0], b[1] - a[1]
+        nn = math.hypot(tx, ty) or 1
+        nx, ny = -ty / nn, tx / nn
+        w = widths[i] if isinstance(widths, (list, tuple)) else widths
+        L.append((x + nx * w, y + ny * w)); R.append((x - nx * w, y - ny * w))
+    return L, R
+
+
+def tube(d, center, widths, color=None, opacity=0.6, w=1.8, sides=(True, True), wash_dx=0, wash_dy=0, seed=None):
+    """A sleeve, a leg, a trouser leg: two pen lines along a centre line, and a wash between them.
+    widths: half-width per centre point (or one number). sides: which edges to draw."""
+    L, R = offsets(center, widths)
+    if color:
+        wash(d, L + R[::-1], color, opacity, wash_dx, wash_dy)
+    if sides[0]:
+        ink(d, L, w=w, start=0.6, end=0.3, seed=seed)
+    if sides[1]:
+        ink(d, R, w=w * 0.9, start=0.6, end=0.3, seed=None if seed is None else seed + 1)
+    return L, R
+
+
+def shoe(d, x, y, length=34, side=-1, color='#7a4a34', w=1.6):
+    """A simple shoe seen from the side, toe pointing to side (-1 left)."""
+    pts = [(x + side * -8, y - 12), (x + side * -10, y), (x + side * length, y + 2), (x + side * (length + 4), y - 4),
+           (x + side * (length - 6), y - 12), (x + side * 8, y - 16)]
+    wash(d, pts, color, 0.75, rough='S')
+    ink(d, pts[:5], w=w, start=0.8, end=0.4)

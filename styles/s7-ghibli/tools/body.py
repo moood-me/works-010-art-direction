@@ -24,7 +24,9 @@ def unit(v):
 class Loft:
     """rings along y: each ring (y, a, zf, zb[, x0, z0]) — half width, front, back, centre offsets; exponent n."""
 
-    def __init__(self, rings, n=2.4):
+    def __init__(self, rings, n=2.4, wave=None):
+        """wave=(amp, count, y_start): soft folds that grow toward the bottom (a skirt's hem)."""
+        self.wave = wave
         R = sorted(rings, key=lambda r: r[0])
         self.y0, self.y1 = R[0][0], R[-1][0]
         cols = list(zip(*[(r + (0.0, 0.0))[:6] if len(r) < 6 else r for r in R]))
@@ -37,6 +39,9 @@ class Loft:
     def pt(self, t, y, push=0.0):
         """surface point at azimuth t (rad, 0 front, +pi/2 the character's left) and height y."""
         a, zf, zb, x0, z0 = self.at(y)
+        if self.wave:
+            amp, cnt, ys = self.wave
+            push += amp * math.sin(cnt * t + 0.7) * min(max((ys - y) / max(ys - self.y0, 1e-3), 0), 1) ** 1.5
         zm = (zf + zb) / 2
         s, c = math.sin(t), math.cos(t)
         x = (a + push) * math.copysign(abs(s) ** (2 / self.n), s)
@@ -146,16 +151,16 @@ class Figure:
                                                                                w + ax * L * 0.45 + pn * r * 0.6], [r * 0.45, r * 0.4])]), []
         curl = 0.25 if kind == 'relaxed' else 0.05
         k1 = w + ax * L * 0.48
-        tip = k1 + unit(ax - pn * curl * 2) * L * 0.5
+        tip = k1 + unit(ax + pn * curl * 2) * L * 0.5
         palm = tube(view, [w, k1], [r * 0.75, r])
-        fingers = tube(view, [k1, k1 + unit(ax - pn * curl) * L * 0.28, tip], [r * 0.95, r * 0.8, r * 0.55])
+        fingers = tube(view, [k1, k1 + unit(ax + pn * curl) * L * 0.28, tip], [r * 0.95, r * 0.8, r * 0.55])
         th0 = w + ax * L * 0.15 + side_v * r * 0.7 * s * -1
         thumb = tube(view, [th0, th0 + unit(ax * 0.8 + pn * 0.5 - side_v * 0.3 * s) * L * 0.38], [r * 0.45, r * 0.32])
         g = unary_union([palm, fingers, thumb])
         # a line between fingers: two short marks near the tip
         marks = []
         for f in (-0.3, 0.3):
-            a = k1 + unit(ax - pn * curl) * L * 0.12 + side_v * r * f
+            a = k1 + unit(ax + pn * curl) * L * 0.12 + side_v * r * f
             b = tip + side_v * r * f * 0.7 - ax * L * 0.06
             marks.append(view.xy(np.array([a, b])))
         return g, marks

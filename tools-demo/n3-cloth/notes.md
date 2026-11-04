@@ -46,12 +46,40 @@ motions, drawn in the same studio from the same camera.
    page's requests are answered from disk through Playwright's routing); `tools/film.sh` puts the simulators side by
    side in one h264 mp4. `tools/measure.py` counts cloth points deeper than 2 mm in the body (as `sim.js`'s
    `inside()`) and the mean edge stretch against the dressed shape, every other frame.
-6. **Uses** — `tools/blender_uses.py <out> table|flag|pillow`: Blender's cloth as its manual uses it (a tablecloth
-   falling on a round table, a flag in gusty wind with a pinned edge, a cushion inflated by pressure), EEVEE.
+6. **Uses** — `tools/blender_uses.py <out> table|flag`: Blender's cloth as its manual uses it (a tablecloth falling on
+   a round table with the Cotton preset as is; a flag in gusty wind with a pinned edge, its mass per point from the
+   fabric's weight — with the preset's 0.3 kg per point no wind lifts 3721 points; the wind set a little across the
+   flag's plane — along a flat cloth it pushes on nothing), EEVEE 8 samples. A pressure cushion was tried and dropped
+   (it crumpled and slid out of frame: my setup, not shown). Encoded with ffmpeg (libx264, crf 26).
+
+## What came out (also on the page)
+
+- Blender's masses: its presets give mass per point for coarse meshes; on our 5–9 thousand points the garments are
+  far too heavy (they sag, stretch a few per cent). Physical mass per point (fabric kg/m² × area / points) with the
+  same stiffness and quality 10 made the blouse unstable mid-walk (sleeves torn into strings, 12% mean stretch, 4% of
+  points in the body) — `pics/blender-light-mass.webp`; the page shows the preset runs.
+- HOOD on our body: tops (T-shirt, blouse) sit well while the body stands, and slide through/off the body as soon as it
+  moves (blouse: 20% of points inside the body on average). On HOOD's own mesh-sequence example the unpinned skirt
+  slides to the floor too (this mode pins nothing). Possible reasons, not checked further: the network is trained on
+  SMPL bodies and its own garments' mesh density (ours: cloth edges ~9 mm, body ~6 mm; HOOD's ~12–14 mm — its
+  successor lists "re-meshing to support outfits of arbitrary resolution" as not done yet); our body moves about twice
+  as far per frame as in its example.
 
 ## Times (4 shared cores, heavily loaded by other agents; times are wall clock)
 
-See `measure.json`, `blender.json`, `hood-*.json` in each run dir; the numbers on the page come from them.
+| run (frames) | ours (Node) | Blender | HOOD (CPU, 2 threads) |
+|---|---|---|---|
+| blouse+skirt walk (200) | 51–57 s | 473 s (at the same load as ours' 51 s); 1744 s under heavy load | blouse only, 150 frames: 2343 s |
+| blouse+skirt sit (175) | 74 s | 1932 s (heavy load) | — |
+| tee+shorts roll (180) | 28 s | 970 s (heavy load) | T-shirt only: 1953 s |
+| HOOD's example skirt (90) | | | 1032 s |
+
+Measures (`tools/measure.py`, every other frame; points >2 mm in the body, mean / max %; mean edge stretch %):
+walk — blouse ours 0/0.01, 1.3%; Blender 0.02/0.09, 2.9%; HOOD 20/32, 2.5%. skirt ours 0/0.02, 1.1%; Blender 0/0,
+0.2%. sit — blouse ours 0.04/0.22, 4.5%; Blender 0.03/0.13, 8.3%; skirt ours 0.07/0.32, 2.8%; Blender 0.01/0.26,
+0.3%. roll — T-shirt ours 0/0.04, 3.6%; Blender 0/0.04, 8.8%; HOOD 0.01/0.21, 5.3% (the metric misses cloth lying a
+hair under the skin; HOOD's T-shirt visibly goes into the body). The run files and these numbers are in
+`/home/user/cache/n3-cloth/runs/*/` (`measure.json`, `blender.json`, `hood-*.json`).
 
 ## Licences
 

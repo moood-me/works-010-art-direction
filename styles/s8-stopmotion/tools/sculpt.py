@@ -32,7 +32,7 @@ def mix(a, b, t):
 
 
 def f(v):
-    return ('%.2f' % v).rstrip('0').rstrip('.')
+    return ('%.4f' % v).rstrip('0').rstrip('.')
 
 
 def pts(points, close=True):
@@ -97,7 +97,7 @@ class Doc:
         key = ('form', size, shade, depth, ao, sheen, rim, rim_col)
 
         def make(i):
-            d, b = size * 0.20, size * 0.16
+            d, b = size * 0.32, size * 0.17
             e = size * 0.05
             hb = size * 0.22
             rw = max(1.5, size * 0.018)
@@ -137,7 +137,8 @@ class Doc:
                  f'lighting-color="#fff3e2" result="s"><feDistantLight azimuth="{KEY_AZ}" elevation="{KEY_EL}"/></feSpecularLighting>'
                  f'<feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/>') if spec > 0 else ''
             out = ('<feComposite in="m2" in2="s2" operator="arithmetic" k2="1" k3="1"/>' if spec > 0 else '')
-            return (f'<filter id="{i}" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">'
+            return (f'<filter id="{i}" filterUnits="userSpaceOnUse" x="0" y="0" width="{self.w}" height="{self.h}" '
+                    f'color-interpolation-filters="sRGB">'
                     f'<feGaussianBlur in="SourceAlpha" stdDeviation="{soft}" result="h"/>'
                     f'<feDiffuseLighting in="h" surfaceScale="{height}" diffuseConstant="{f(dc)}" lighting-color="#ffffff" result="d">'
                     f'<feDistantLight azimuth="{KEY_AZ}" elevation="{KEY_EL}"/></feDiffuseLighting>'
@@ -146,7 +147,9 @@ class Doc:
         return self.define(key, make)
 
     def blur(self, sd):
-        return self.define(('blur', sd), lambda i: f'<filter id="{i}" x="-50%" y="-50%" width="200%" height="200%">'
+        sd = round(sd, 1)
+        return self.define(('blur', sd), lambda i: f'<filter id="{i}" filterUnits="userSpaceOnUse" x="0" y="0" '
+                           f'width="{self.w}" height="{self.h}">'
                            f'<feGaussianBlur stdDeviation="{sd}"/></filter>')
 
     def tex(self, kind, scale=1.0, amount=0.25, seed=2):
@@ -231,6 +234,16 @@ def studio(d, top='#2a2226', floor='#3a2e2a', glow='#c98a55', gx=0.4, gy=0.4, ho
     bg = d.lin([(0, mix(top, '#000000', 0.25), 1), (horizon, top, 1), (horizon, floor, 1), (1, mix(floor, '#000000', 0.4), 1)])
     d.add(f'<rect width="{w}" height="{h}" fill="url(#{bg})"/>')
     d.add(f'<rect width="{w}" height="{h}" fill="url(#{g})"/>')
+    if bokeh == 'auto':
+        import random
+        r = random.Random(seed)
+        cols = ['#ffcf8a', '#ffb070', '#ffe0b0', '#9ab8ff', '#ff9a70']
+        bokeh = []
+        for i in range(16):
+            x, y = r.random(), r.random() * horizon * 0.95
+            if abs(x - 0.5) < 0.22 and y > 0.15:
+                x = x + (0.3 if x > 0.5 else -0.3)
+            bokeh.append((x, y, 0.015 + r.random() * 0.04, r.choice(cols), round(0.12 + r.random() * 0.3, 2)))
     if bokeh:
         bl = d.blur(max(2, w * 0.006))
         s = ''.join(f'<circle cx="{f(x*w)}" cy="{f(y*h)}" r="{f(r*w)}" fill="{c}" opacity="{a}"/>' for x, y, r, c, a in bokeh)
@@ -267,3 +280,32 @@ def render(svg_path, png_path, w, h, scale=1):
                     f'--screenshot={os.path.abspath(png_path)}', 'file://' + os.path.abspath(html)],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=180)
     os.remove(html)
+
+
+def puppet(d, inner, size, rim_col='#a8c8ff', rim=0.55, warm_col='#ffcf8a', warm=0.3):
+    """Wrap a whole puppet: a cool rim light along its edge away from the key (right), a thin warm edge on the key
+    side (left), as the set lights do on a small object."""
+    w = max(2.0, size * 0.012)
+    key = ('puppet', round(w, 1), rim_col, rim, warm_col, warm)
+
+    def make(i):
+        return (f'<filter id="{i}" filterUnits="userSpaceOnUse" x="0" y="0" width="{d.w}" height="{d.h}" color-interpolation-filters="sRGB">'
+                f'<feOffset in="SourceAlpha" dx="{f(-w)}" dy="{f(w*0.3)}" result="o"/>'
+                f'<feComposite in="SourceAlpha" in2="o" operator="out" result="r"/>'
+                f'<feGaussianBlur in="r" stdDeviation="{f(w*0.35)}" result="rb"/>'
+                f'<feComposite in="rb" in2="SourceAlpha" operator="in" result="rb2"/>'
+                f'<feFlood flood-color="{rim_col}" flood-opacity="{rim}"/><feComposite in2="rb2" operator="in" result="rc"/>'
+                f'<feOffset in="SourceAlpha" dx="{f(w*0.6)}" dy="{f(w*0.4)}" result="o2"/>'
+                f'<feComposite in="SourceAlpha" in2="o2" operator="out" result="k"/>'
+                f'<feGaussianBlur in="k" stdDeviation="{f(w*0.3)}" result="kb"/>'
+                f'<feComposite in="kb" in2="SourceAlpha" operator="in" result="kb2"/>'
+                f'<feFlood flood-color="{warm_col}" flood-opacity="{warm}"/><feComposite in2="kb2" operator="in" result="kc"/>'
+                f'<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="rc"/><feMergeNode in="kc"/></feMerge></filter>')
+    fid = d.define(key, make)
+    return f'<g filter="url(#{fid})">{inner}</g>'
+
+
+def keylight(d, x, y, r, dark='#1c1430', amount=0.55):
+    """Fall-off of the key light over the frame: full at (x, y), darker and cooler away from it (multiply)."""
+    g = d.rad([(0, '#ffffff', 1), (0.45, '#ffffff', 1), (1, dark, 1)], cx=x, cy=y, r=r, units='userSpaceOnUse')
+    d.add(f'<rect width="{d.w}" height="{d.h}" fill="url(#{g})" opacity="{amount}" style="mix-blend-mode:multiply"/>')

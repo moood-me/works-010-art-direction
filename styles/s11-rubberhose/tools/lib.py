@@ -182,8 +182,48 @@ class Head:
         fz = max(Z / math.sqrt(max(R * R - y * y * .25, 1)), 0.0)  # 1 facing us, 0 on the edge
         return X, y, Z, fz
 
+    def muzzle(self, cy, A, B, C, cz):
+        """The lower face as a second, flatter ball (semi-axes A wide, B tall, C deep) centred at (0, cy, cz): returns
+        the path of its outline in the turned view. Turned to the side it bulges past the skull — cheeks and mouth."""
+        X = cz * math.sin(self.a)
+        rx = math.hypot(A * math.cos(self.a), C * math.sin(self.a))
+        return (f'M {f(X - rx)} {f(cy)} A {f(rx)} {f(B)} 0 1 1 {f(X + rx)} {f(cy)} '
+                f'A {f(rx)} {f(B)} 0 1 1 {f(X - rx)} {f(cy)} Z')
+
+    def ball(self, grow=0):
+        R = self.R + grow
+        return f'M {f(-R)} 0 A {f(R)} {f(R)} 0 1 1 {f(R)} 0 A {f(R)} {f(R)} 0 1 1 {f(-R)} 0 Z'
+
+    def jaw(self, pts, k=.5):
+        """Project the lower face: like pts(), but the chin sits flatter than the ball would put it (k)."""
+        R = self.R
+        return [self.project(x, y, math.sqrt(max(R * R - x * x - y * y * k, R * R * .02)))[:2] for x, y in pts]
+
     def pts(self, pts, z=None):
         return [self.project(x, y, z)[:2] for x, y in pts]
+
+    def loop(self, pts, push=1.6):
+        """Project a loop drawn on the ball; points that turn to the back are pushed out past the edge, so a region
+        bounded by the loop is cut cleanly by the silhouette."""
+        out = []
+        for x, y in pts:
+            X, Y, Z, fz = self.project(x, y)
+            if Z < 0:
+                X = (1 if X >= 0 else -1) * max(abs(X), self.R * push)
+            out.append((X, Y))
+        return out
+
+    def cap(self, face_loop, fill, grow=9, lw=LW):
+        """Hair over the skull: the ball (grown by `grow`) minus the face. face_loop: (x, y) points on the front of
+        the ball going round the bare face — over the forehead along the hairline, down the cheeks, under the chin."""
+        R = self.R + grow
+        fl = smooth(self.loop(face_loop), True)
+        circ = f'M {-R} 0 A {R} {R} 0 1 1 {R} 0 A {R} {R} 0 1 1 {-R} 0 Z'
+        big = f'M {-4 * R} {-4 * R} L {4 * R} {-4 * R} L {4 * R} {4 * R} L {-4 * R} {4 * R} Z'
+        i = uid('h')
+        return (f'<clipPath id="{i}"><path clip-rule="evenodd" d="{big} {fl}"/></clipPath>'
+                f'<g clip-path="url(#{i})"><path d="{circ}" fill="{fill}" stroke="{INK}" stroke-width="{lw}"/></g>'
+                + clip(circ, P(fl, 'none', INK, lw)))
 
 
 # ------------------------------------------------------------------ eyes
@@ -351,7 +391,7 @@ def defs(seed=3):
 <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="{seed + 7}" result="n"/>
 <feColorMatrix type="matrix" values="0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .05  0 0 0 -1.4 .95"/></filter>
 <filter id="bw"><feColorMatrix type="matrix" values=".30 .55 .15 0 0  .30 .55 .15 0 0  .30 .55 .15 0 0  0 0 0 1 0"/>
-<feComponentTransfer><feFuncR type="gamma" amplitude="1.08" exponent="1.25" offset="-.02"/><feFuncG type="gamma" amplitude="1.08" exponent="1.25" offset="-.02"/><feFuncB type="gamma" amplitude="1.06" exponent="1.25" offset="-.02"/></feComponentTransfer></filter>
+<feComponentTransfer><feFuncR type="gamma" amplitude="1.12" exponent=".8" offset="-.04"/><feFuncG type="gamma" amplitude="1.12" exponent=".8" offset="-.04"/><feFuncB type="gamma" amplitude="1.1" exponent=".8" offset="-.04"/></feComponentTransfer></filter>
 <radialGradient id="vig" cx="50%" cy="48%" r="72%"><stop offset="55%" stop-color="#2a1d10" stop-opacity="0"/><stop offset="100%" stop-color="#2a1d10" stop-opacity=".42"/></radialGradient>
 <radialGradient id="vigbw" cx="50%" cy="48%" r="70%"><stop offset="50%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".62"/></radialGradient>
 </defs>'''
@@ -360,7 +400,7 @@ def defs(seed=3):
 def svg(w, h, body, bg=PAPER, film=True, bw=False, seed=3):
     """A finished sheet: background, the drawing with ink wobble, grain and vignette on top.
     bw=True: black-and-white film (desaturated, harder, darker corners)."""
-    grain = (f'<rect width="{w}" height="{h}" filter="url(#grain)" opacity="{.55 if bw else .38}"/>'
+    grain = (f'<rect width="{w}" height="{h}" filter="url(#grain)" opacity="{.4 if bw else .2}"/>'
              f'<rect width="{w}" height="{h}" fill="url(#{"vigbw" if bw else "vig"})"/>') if film else ''
     inner = f'<rect width="{w}" height="{h}" fill="{bg}"/><g filter="url(#wob)">{body}</g>{grain}'
     if bw:
@@ -445,3 +485,19 @@ def nose(cx, cy, r, fill, kind='button', fz=1.0, dirx=0):
 
 def cheek(cx, cy, r, col=CHEEK, op=.55):
     return ellipse(cx, cy, r, r * .8, col, 0, extra=f'opacity="{op}"')
+
+
+def arm(pts, w, fill, pose='open', gs=1.0, flip=False, gfill=WHITE, sleeve=None):
+    """A hose arm along pts ending in a glove that follows the arm's last direction.
+    flip mirrors the glove (thumb to the other side). sleeve: (fill, length in points) — a sleeve over the start."""
+    (x1, y1), (x2, y2) = pts[-2], pts[-1]
+    rot = -math.degrees(math.atan2(x2 - x1, y2 - y1))
+    out = hose(pts, w, fill)
+    return out + g(glove(pose, gfill), x2, y2, gs, rot, flip)
+
+
+def leg(pts, w0, w1, w2, fill, shoe_fill, sole=None, ss=1.0, toe=1, view='side', sock=None):
+    """A hose leg from hip to ankle, tapering w0 → w1 → w2, standing in a big shoe (toe=+1 right, -1 left)."""
+    out = hose(pts, w0, fill, w1, w2)
+    x, y = pts[-1]
+    return out + g(shoe(shoe_fill, sole, view=view), x, y - 2, ss, flip=(toe < 0))
