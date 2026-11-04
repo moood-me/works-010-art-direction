@@ -124,7 +124,7 @@ _de = np.sqrt(_q[..., 0] ** 2 + _q[..., 2] ** 2 + np.minimum(_q[..., 1], 0) ** 2
 dist_eye = _de.min(1)
 eye_k = _de.argmin(1)
 eye_w = np.clip((0.026 - dist_eye) / 0.008, 0, 1)            # 1 inside 18 mm of an eye, 0 beyond 26 mm
-ear = (np.abs(V0[:, 0] - cx) > 0.062) & (V0[:, 2] > 0.68) & (V0[:, 2] < 0.80) & (V0[:, 1] > -0.06) & (V0[:, 1] < 0.04)
+ear = (np.abs(V0[:, 0] - cx) > 0.066) & (V0[:, 2] > 0.68) & (V0[:, 2] < 0.80) & (V0[:, 1] > -0.066) & (V0[:, 1] < -0.018)
 # the inside of the mouth and the throat: vertices whose normal at rest points inward (toward the head's axis)
 n0 = vnormals(V0) * SGN   # V0 is in Blender's handedness: flip back
 axis_pt = np.stack([np.full(N, cx), np.full(N, -0.03), V0[:, 2]], 1)
@@ -202,10 +202,10 @@ for k, s in ((0, 'L'), (1, 'R')):
     for part in ('sclera', 'iris'):
         P = d[part + s + '_v']
         if part == 'iris':        # the base's iris lies under a clear cornea; ours is opaque: set it on the ball
-            P = EYE_H[k] + (P - EYE_H[k]) * 1.06
+            P = P + np.array([0, -0.0024, 0])
         balls[part + s] = eye_carry(P, k)
 
-np.savez(os.path.join(C, 'head_fit.npz'), v=V, f=Fpoly, tris=tris, v_init=Vref, low=low,
+np.savez(os.path.join(C, 'head_fit.npz'), v=V, f=Fpoly, tris=tris, v_init=Vref, low=low, ear=ear, eye_w=eye_w, mouth_in=mouth_in,
          **{b + '_v': balls[b] for b in balls}, **{b + '_f': d[b + '_f'] for b in balls})
 
 # a look: profile and front, the fitted head over the drawing's points

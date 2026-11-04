@@ -99,7 +99,7 @@ def mesh_obj(name, V, F, colour, lined=True, smooth=True, solidify=0.0, coll=Non
 
 for ob in meta['objects']:
     V, F = SC['obj_' + ob['name'] + '_v'], SC['obj_' + ob['name'] + '_f']
-    o = mesh_obj(ob['name'], V, F, ob['colour'], ob.get('line', True), ob.get('smooth', True), ob.get('solidify', 0))
+    o = mesh_obj(ob['name'], V, F, job.get('debug_colours', {}).get(ob['name'], ob['colour']), ob.get('line', True), ob.get('smooth', True), ob.get('solidify', 0))
     if ob.get('subsurf'):
         m = o.modifiers.new('sub', 'SUBSURF')
         m.levels = m.render_levels = ob['subsurf']
@@ -148,10 +148,10 @@ def tube_mesh(name, pts, r, colour, closed=False, nseg=8):
     return o
 
 
-def shape_mesh(name, pts, colour):
+def shape_mesh(name, pts, colour, tris=None):
     me = bpy.data.meshes.new(name)
     P = [tuple(p) for p in pts]
-    me.from_pydata(P, [], [list(range(len(P)))])
+    me.from_pydata(P, [], tris if tris else [list(range(len(P)))])
     o = bpy.data.objects.new(name, me)
     mark_coll.objects.link(o)
     o.data.materials.append(flat(colour))
@@ -178,9 +178,9 @@ def build_marks(expr, lw_units, yaw=0.0):
         stroke = mk.get('stroke') or INK
         if mk['kind'] == 'shape':
             if mk.get('fill') and mk['fill'] != 'none':
-                MARK_OBJS.append(shape_mesh(f'mk{i}', P, mk['fill']))
+                MARK_OBJS.append(shape_mesh(f'mk{i}', P, mk['fill'], mk.get('tris')))
             if r > 0:
-                MARK_OBJS.append(tube_mesh(f'mkl{i}', P, r, stroke, closed=True))
+                MARK_OBJS.append(tube_mesh(f'mkl{i}', P[:mk.get('outline', len(P))], r, stroke, closed=True))
         else:
             MARK_OBJS.append(tube_mesh(f'mk{i}', P, r, stroke))
 
@@ -188,7 +188,7 @@ def build_marks(expr, lw_units, yaw=0.0):
 # ------------------------------------------------------------------ freestyle: one even line
 vl = sc.view_layers[0]
 fs = vl.freestyle_settings
-fs.crease_angle = math.radians(job.get('crease', 140))
+fs.crease_angle = math.radians(job.get('crease', 100))
 for ls in list(fs.linesets):
     fs.linesets.remove(ls)
 ls = fs.linesets.new('ink')
@@ -200,7 +200,7 @@ ls.collection = line_coll
 ls.collection_negation = 'INCLUSIVE'
 ls.select_silhouette = True
 ls.select_border = True
-ls.select_crease = bool(job.get('crease_lines', True))
+ls.select_crease = bool(job.get('crease_lines', False))
 ls.select_material_boundary = True
 ls.select_external_contour = True
 lst = ls.linestyle
