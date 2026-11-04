@@ -31,13 +31,17 @@ cv.onpointermove = e => { if (!st.drag) return; st.yaw = st.drag[2] - (e.clientX
 cv.onpointerup = () => { st.drag = null; cv.style.cursor = 'grab'; };
 cv.onwheel = e => { e.preventDefault(); st.dist = Math.max(1.0, Math.min(8, st.dist * Math.exp(e.deltaY * 0.001))); };
 
-let last = performance.now(), busy = false;
+let last = performance.now(), busy = false, lastKey = '';
 async function loop(now) {
   requestAnimationFrame(loop);
   if (busy) return; busy = true;
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
   const w = innerWidth, h = innerHeight;
   const ci = A.clipInfo();
+  // paused and nothing changed: draw nothing (the page stays quiet)
+  const key = [w, h, st.motion, st.t, st.clock, st.yaw, st.pitch, st.dist, st.close, st.expr.length, st.talkSpans.length].join();
+  if (!st.play && key === lastKey) { busy = false; return; }
+  lastKey = key;
   if (st.play) { st.clock += dt; if (ci) { st.t += dt * ci.fps; if (st.t > ci.frames - 1) st.t = 0; } }
   const cam = st.close ? { yaw: st.yaw, pitch: st.pitch * 0.4, dist: st.dist * 0.42, joint: 'Head', offset: [0, 0.07, 0], fov: 20 }
     : { yaw: st.yaw, pitch: st.pitch, dist: st.dist, follow: [0, 0.6, 0], fov: 22 };
