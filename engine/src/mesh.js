@@ -6,13 +6,17 @@
 //               carried whole by one joint (an eye, a hat, a piece of a head): its own transform kept
 //   procedural  {kind: 'procedural', id, N, triangles, build(pose, rig, out), floor?}
 //               rebuilt from the pose each frame (sweeps along curves through the joints, bending in arcs)
+//   attached    {kind: 'attached', id, host (another mesh's name), tri (each vertex's triangle of the host), bary (its
+//               place in it, N×3), lift (how far out along the host's normal there, metres), triangles, floor?}
+//               laid on another mesh each frame, after it (a feature as volume on the skin: it follows the skin in
+//               motion, in its morphs and in every change of its rest)
 // triangles: Uint32Array (or Uint16Array while N ≤ 65,536). `used`: the vertices the triangles use — only they are
 // skinned, drawn and counted for the floor. morphs: {name: {indices: Uint32Array, deltas: Float32Array (n×3)}} —
 // rest changes applied before skinning, each with a weight (src/figure.js: a rest change or a pose layer).
 export function makeMesh(o) {
   const kind = o.kind || 'skinned';
-  if (!['skinned', 'rigid', 'procedural'].includes(kind)) throw new Error(`no mesh kind "${kind}"`);
-  const N = kind === 'procedural' ? o.N : o.positions.length / 3;
+  if (!['skinned', 'rigid', 'procedural', 'attached'].includes(kind)) throw new Error(`no mesh kind "${kind}"`);
+  const N = kind === 'procedural' ? o.N : kind === 'attached' ? o.tri.length : o.positions.length / 3;
   const triangles = o.triangles instanceof Uint32Array || o.triangles instanceof Uint16Array ? o.triangles : indexArray(o.triangles, N);
   for (let i = 0; i < triangles.length; i++) if (triangles[i] >= N) throw new Error(`${o.id}: a triangle uses vertex ${triangles[i]} of ${N}`);
   const mark = new Uint8Array(N); for (let i = 0; i < triangles.length; i++) mark[triangles[i]] = 1;
@@ -25,6 +29,7 @@ export function makeMesh(o) {
     m.skin = { ...o.skin, K };
   }
   if (kind === 'rigid' && !Number.isInteger(o.joint)) throw new Error(`${o.id}: a rigid mesh names its joint`);
+  if (kind === 'attached' && (typeof o.host !== 'string' || o.bary.length !== N * 3 || o.lift.length !== N)) throw new Error(`${o.id}: an attached mesh names its host and gives each vertex a triangle, a place and a lift`);
   for (const [name, mo] of Object.entries(m.morphs)) if (mo.deltas.length !== mo.indices.length * 3) throw new Error(`${o.id}: morph ${name} has ${mo.indices.length} vertices and ${mo.deltas.length / 3} deltas`);
   return m;
 }

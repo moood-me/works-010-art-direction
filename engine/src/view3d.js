@@ -2,6 +2,9 @@
 // copy, vendor/three). A soft studio: a warm key light with shadows and a cool rim, both fitted each frame to the box
 // around every figure drawn (any number of them), a floor with a metre grid, the pelvis's paths drawn on it.
 // The camera is framed by a box (fit): what is seen is the figures, whatever the page around them is.
+import { paintFace } from './head/paint.js';
+import { paintState } from './head/expressions.js';
+
 export function makeStage(THREE, canvas, { background = '#cfc8bd', pixelRatio = 1 } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(pixelRatio);
@@ -82,18 +85,33 @@ export function joinBounds(list) {
 }
 
 // a figure's meshes (every output: body, head, pieces, clothes, sweeps) as three.js meshes, updated from the figure
-// each frame; the joints and the body's collision capsules drawn over them when asked
+// each frame; the joints and the body's collision capsules drawn over them when asked. A head (src/head/head.js) brings
+// its face's picture (painted each time its expressions ask the drawing something else: src/head/paint.js) and its
+// light: toon (three soft tones, not tone-mapped) with an outline (the back of a shell a little outside, set back in
+// depth so it shows only past the silhouette), and no cast shadows on the face when it asks.
 export function figureView(THREE, figure, look) {
-  const group = new THREE.Group(), parts = [];
+  const group = new THREE.Group(), parts = [], head = figure.body?.head, light = head?.light;
+  const face = head ? facePicture(THREE, head) : null;
   for (const o of figure.outputs) {
-    const g = new THREE.BufferGeometry();
+    const g = new THREE.BufferGeometry(), m = o.mesh;
     g.setAttribute('position', new THREE.BufferAttribute(o.positions, 3));
     g.setAttribute('normal', new THREE.BufferAttribute(o.normals, 3));
-    g.setIndex(new THREE.BufferAttribute(o.mesh.triangles, 1));
-    const color = o.name === 'body' ? look.skin : (o.mesh.color || '#8a8f99');
-    const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color, roughness: look.roughness }));
-    mesh.castShadow = mesh.receiveShadow = true; mesh.frustumCulled = false;
+    g.setIndex(new THREE.BufferAttribute(m.triangles, 1));
+    if (m.uv) g.setAttribute('uv', new THREE.BufferAttribute(m.uv, 2));
+    if (m.colors) g.setAttribute('color', new THREE.BufferAttribute(m.colors, 3));
+    const color = o.name === 'body' || m.painted ? (head?.skin ?? look.skin) : (m.color || '#8a8f99'), map = m.uv && face ? face.texture : null;
+    const toon = !!light?.toon, side = m.double ? THREE.DoubleSide : THREE.FrontSide;
+    const mat = toon ? new THREE.MeshToonMaterial({ color: map || m.colors ? '#ffffff' : color, gradientMap: toonRamp(THREE, light.soft), map, vertexColors: !!m.colors, side })
+      : new THREE.MeshStandardMaterial({ color: map ? '#ffffff' : color, roughness: look.roughness, map, vertexColors: !!m.colors, side });
+    if (toon) mat.toneMapped = false;
+    if (m.noShadow) g.setAttribute('noShadow', new THREE.BufferAttribute(m.noShadow, 1));
+    if (m.paintMask) g.setAttribute('paintMask', new THREE.BufferAttribute(m.paintMask, 1));
+    if (m.noShadow || m.paintMask) faceMaterial(THREE, mat, { shadows: !m.noShadow, skin: m.paintMask ? new THREE.Color(head.skin) : null });
+    const mesh = new THREE.Mesh(g, mat);
+    mesh.castShadow = m.shadows !== false; mesh.receiveShadow = m.shadows !== false; mesh.frustumCulled = false;
     group.add(mesh); parts.push({ o, g, mesh });
+    const ink = o.name === 'body' ? (light?.outline ? { width: light.outline, color: light.outlineColor } : null) : light?.toon || light?.outline ? m.ink : null;
+    if (ink) { const om = new THREE.Mesh(g, outlineMaterial(THREE, ink)); om.frustumCulled = false; group.add(om); parts.push({ g, mesh: om, ink: true }); }
   }
   const J = figure.rig.J;
   const dots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.008, 10, 8), new THREE.MeshBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true }), J);
@@ -104,7 +122,8 @@ export function figureView(THREE, figure, look) {
   return {
     group, dots, caps,
     update() {
-      for (const p of parts) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; }
+      for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; }
+      if (face) face.paint(figure.ctx.expressions);
       const P = figure.pose.P;
       if (dots.visible) { for (let j = 0; j < J; j++) dots.setMatrixAt(j, m.makeTranslation(P[j * 3], P[j * 3 + 1], P[j * 3 + 2])); dots.instanceMatrix.needsUpdate = true; }
       if (caps.visible) {
@@ -115,10 +134,64 @@ export function figureView(THREE, figure, look) {
       }
     },
     dispose() {
-      for (const p of parts) { p.g.dispose(); p.mesh.material.dispose(); }
+      for (const p of parts) { if (!p.ink) p.g.dispose(); p.mesh.material.dispose(); }
+      if (face) face.texture.dispose();
       dots.geometry.dispose(); dots.material.dispose(); for (const c of caps.children) c.geometry.dispose(); capMat.dispose();
     },
   };
+}
+
+// the face's picture, drawn again when what the expressions ask of it changes
+function facePicture(THREE, head) {
+  const canvas = document.createElement('canvas'); canvas.width = canvas.height = 1024;
+  const g = canvas.getContext('2d'), texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace; texture.anisotropy = 8;
+  let last = null;
+  const paint = weights => {
+    const st = paintState(head, weights), key = JSON.stringify(st); if (key === last) return;
+    last = key; paintFace(g, 1024, head.features, head.skin, st); texture.needsUpdate = true;
+  };
+  paint({});
+  return { texture, paint };
+}
+// three tones, their edges eased over `soft` texels of 32, so an uneven mesh doesn't fray them (Г3's)
+const RAMPS = new Map();
+function toonRamp(THREE, soft = 3) {
+  if (RAMPS.has(soft)) return RAMPS.get(soft);
+  const W = 32, d = new Uint8Array(W * 4), sst = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t), e = Math.max(0.01, soft);
+  for (let k = 0; k < W; k++) { const x = (k + 0.5) / W * 3, t1 = sst((x - 1) * W / 3 / (2 * e) + 0.5), t2 = sst((x - 2) * W / 3 / (2 * e) + 0.5), v = 150 + 72 * t1 + 33 * t2; d.set([v, v, v, 255], k * 4); }
+  const t = new THREE.DataTexture(d, W, 1); t.minFilter = t.magFilter = THREE.LinearFilter; t.needsUpdate = true;
+  RAMPS.set(soft, t); return t;
+}
+function outlineMaterial(THREE, { width, color }) {
+  const m = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide, polygonOffset: true, polygonOffsetFactor: 3, polygonOffsetUnits: 30 });
+  m.toneMapped = false;
+  m.onBeforeCompile = sh => { sh.vertexShader = sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>\n transformed += normalize( normal ) * ${width.toFixed(6)};`); };
+  m.customProgramCacheKey = () => 'outline' + width;
+  return m;
+}
+// a face's material: its picture shown as far as the mesh's paint mask says (the plain skin beyond it), and the key
+// light's shadow left off where the mesh says (the face: no cast shadows on it)
+function faceMaterial(THREE, mat, { shadows, skin }) {
+  mat.onBeforeCompile = sh => {
+    let vs = sh.vertexShader, fs = sh.fragmentShader;
+    if (!shadows) {
+      vs = 'attribute float noShadow;\nvarying float vNoShadow;\n' + vs.replace('#include <begin_vertex>', '#include <begin_vertex>\n vNoShadow = noShadow;');
+      const chunk = THREE.ShaderChunk.lights_fragment_begin.replace('? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;',
+        '? mix( getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ), 1.0, vNoShadow ) : 1.0;');
+      if (chunk === THREE.ShaderChunk.lights_fragment_begin) throw new Error('three.js: the directional shadow line is not where it was (no face shadows)');
+      fs = 'varying float vNoShadow;\n' + fs.replace('#include <lights_fragment_begin>', chunk);
+    }
+    if (skin) {
+      sh.uniforms.faceSkin = { value: skin };
+      vs = 'attribute float paintMask;\nvarying float vPaint;\n' + vs.replace('#include <begin_vertex>', '#include <begin_vertex>\n vPaint = paintMask;');
+      const chunk = THREE.ShaderChunk.map_fragment.replace('diffuseColor *= sampledDiffuseColor;', 'diffuseColor *= mix( vec4( faceSkin, 1.0 ), sampledDiffuseColor, vPaint );');
+      if (chunk === THREE.ShaderChunk.map_fragment) throw new Error('three.js: the map line is not where it was (the face\'s picture)');
+      fs = 'uniform vec3 faceSkin;\nvarying float vPaint;\n' + fs.replace('#include <map_fragment>', chunk);
+    }
+    sh.vertexShader = vs; sh.fragmentShader = fs;
+  };
+  mat.customProgramCacheKey = () => `face:${shadows}:${!!skin}`;
 }
 
 // a tapered capsule along +y from 0 to its length, radius ra below and rb above

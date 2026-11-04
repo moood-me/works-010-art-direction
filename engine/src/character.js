@@ -24,15 +24,32 @@
 //                        sign is a change of the rest only), {kind: "preset", id, strength, space?}
 //    skinning: {method: "cor" | "dqs" | "lbs", sigma (the centres' likeness, cor), seam: null | {iterations, rings}},
 //    motion: {floor: "lowest" | "pelvis"},
-//    look: {skin: "#rrggbb", roughness}}
+//    look: {skin: "#rrggbb", roughness},
+//    head?: {preset?: "<head preset>@<hash>",  the head this one starts from (a part: presets/ of group "head")
+//            size?          how big the head is drawn against Anny's own (head units, src/head/frame.js)
+//            form?: [change…]   changes of the rest made after the character's own (deformers: the wrap onto a designed
+//                           form, the face deformers, Anny's own face, a head of another age; or presets of them)
+//            features?: [feature…]   painted or as volume (src/head/features.js), or {kind: "preset"} of features;
+//                           {kind: "off", id} takes one of the base's away
+//            expressions?: [expression…]   by the mesh (src/head/expressions.js), or {kind: "preset"} of them
+//            pieces?: [piece…]   meshes on the rig beside the skin (src/head/pieces.js)
+//            light?: {toon, soft, outline, outlineColor, design, faceShadows} or {kind: "preset", id}
+//            skin?: the face picture's skin colour (else look.skin)
+//            ref?: {image, points, view, crop} — the picture it was drawn after (tools/overlay.mjs)}
+//    — this one's head over its base's and its preset's: its size, skin and light keys over theirs, its form after
+//    theirs, its features, expressions and pieces replacing theirs of the same id (name) and added after them
 // motion.floor: "lowest" — after everything is drawn, the figure's lowest point as high as SOMA's skin's lowest then
 // (scaled): standing on its feet, lying on its back, nothing in the floor; "pelvis" — only the pelvis's height scaled.
 import { validate } from './schema.js';
 import { pinned } from './hash.js';
 import { DEFORMERS, layerOf } from './deform.js';
 import './deformers/index.js';
+import { FEATURE_SCHEMA } from './head/features.js';
+import { EXPRESSION_SCHEMA } from './head/expressions.js';
+import { PIECE_SCHEMA } from './head/pieces.js';
+import { LIGHT_SCHEMA } from './head/head.js';
 
-export const FORMAT = 'engine/character', VERSION = 3;
+export const FORMAT = 'engine/character', VERSION = 4;
 
 const PARTS = ['pelvis', 'spine', 'neck', 'head', 'eye', 'clavicle', 'upperArm', 'foreArm', 'hand', 'finger', 'thigh', 'shin', 'foot', 'toe'];
 // the defaults, the one place they are kept: a missing key takes these
@@ -59,6 +76,8 @@ export function schemaOf(skeleton) {
   const deformer = (d, more, required) => ({ type: 'object', props: { kind: { const: d.kind }, ...d.params, strength: num(-3, 3), ...more }, required: ['kind', ...required] });
   // a preset (presets/<id>.json): its changes, each one's strength times this one
   const preset = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
+  // a change of a head's form: a deformer or a preset of them (made on the rest with its frames kept)
+  const formChange = { type: 'union', key: 'kind', cases: { preset, ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, deformer(d, {}, [])])) } };
   return {
     type: 'object', required: ['format', 'version', 'id', 'label'],
     props: {
@@ -78,37 +97,69 @@ export function schemaOf(skeleton) {
         dampHeadSpine: layer('dampHeadSpine', { spine: num(0, 2), head: num(0, 2) }),
         clavicleShare: layer('clavicleShare', { share: num(0, 1) }),
         turn, morph, preset: { ...preset, props: { ...preset.props, space } },
+        expression: layer('expression', { name: { type: 'string', pattern: /^[a-z][a-zA-Z0-9]*$/ }, weight: num(-1, 2) }),
         ...Object.fromEntries(Object.values(DEFORMERS).filter(d => layerOf(d.kind)).map(d => [d.kind, deformer(d, layerOf(d.kind) === 'turns' ? { space } : {}, [])])) } } },
       skinning: { type: 'object', props: {
         method: { type: 'string', enum: ['cor', 'dqs', 'lbs'] }, sigma: num(0.01, 1),
         seam: { anyOf: [{ type: 'null' }, { type: 'object', props: { iterations: { type: 'integer', min: 1, max: 200 }, rings: { type: 'integer', min: 0, max: 20 } } }] } } },
       motion: { type: 'object', props: { floor: { type: 'string', enum: ['lowest', 'pelvis'] } } },
       look: { type: 'object', props: { skin: { type: 'string', pattern: /^#[0-9a-f]{6}$/i }, roughness: num(0, 1) } },
+      head: headSchema(formChange),
     },
   };
+}
+// a head (a character's, or a head preset's): see the top
+const REF = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ } }, required: ['kind', 'id'] };
+const OFF = { type: 'object', props: { kind: { const: 'off' }, id: { type: 'string' } }, required: ['kind', 'id'] };
+export function headSchema(change) {
+  const num = (min, max) => ({ type: 'number', min, max });
+  return { type: 'object', props: {
+    preset: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, size: num(0.3, 3), skin: { type: 'string', pattern: /^#[0-9a-f]{6}$/i },
+    form: { type: 'array', items: change },
+    features: { type: 'array', items: { type: 'union', key: 'kind', cases: { ...FEATURE_SCHEMA.cases, preset: REF, off: OFF } } },
+    expressions: { type: 'array', items: { anyOf: [REF, { type: 'object', props: { kind: { const: 'off' }, name: { type: 'string' } }, required: ['kind', 'name'] }, EXPRESSION_SCHEMA] } },
+    pieces: { type: 'array', items: { type: 'union', key: 'kind', cases: { ...PIECE_SCHEMA.cases, off: OFF } } },
+    light: { anyOf: [REF, LIGHT_SCHEMA] },
+    // the picture it was drawn after, for the overlay check (tools/overlay.mjs): the image (docs/pictures/references/),
+    // its landmarks in the picture's pixels, the angle it is seen at
+    ref: { type: 'object', required: ['image'], props: { image: { type: 'string', pattern: /^[a-z0-9][a-z0-9._-]*\.(png|jpg|webp)$/ },
+      points: { type: 'map', keys: ['eL', 'eR', 'tip', 'mouth', 'mL', 'mR', 'chin'], values: { type: 'array', min: 2, max: 2, items: num(-10000, 10000) } },
+      view: { type: 'object', props: { yaw: num(-4, 4), pitch: num(-2, 2) } }, crop: { type: 'array', min: 4, max: 4, items: num(0, 100000) } } },
+  } };
 }
 
 // A preset (presets/<id>.json): a named list of changes — deformers with their parameters and strengths, or other
 // presets — that a character takes into its rest or its pose layers ({kind: "preset", id: "<id>@<hash>", strength,
 // frames | space}); each of its changes' strength is multiplied by the reference's, the reference says how they go on
 // the rest (frames) or as a layer (space). Plain data an author can read, copy and change.
-//   {format: "engine/preset", version: 2, id, label: {ru, en}, group, about: {ru, en}, changes: [change…]}
-// (version 2: a silhouette's keys are {at, width, depth, forward}; version 1 had [at, width, depth, forward] —
-// upgradePreset, run by tools/characters.mjs presets)
-export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 2;
+//   {format: "engine/preset", version: 3, id, label: {ru, en}, group, about: {ru, en}, and one of
+//    changes: [change…]          deformers (of a body, or of a head's form)
+//    head: {…}                   a whole head, as a character's `head` (its form, features, expressions, pieces, light),
+//                                that a character or another head takes by head.preset and changes
+//    features: [feature…]        a head's features (src/head/features.js)
+//    expressions: [expression…]  a head's expressions (src/head/expressions.js)
+//    light: {…}                  a head's light (src/head/head.js)}
+// (version 3: the head's parts; version 2: a silhouette's keys are {at, width, depth, forward}; version 1 had
+// [at, width, depth, forward] — upgradePreset, run by tools/characters.mjs presets)
+export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 3;
+export const PRESET_CONTENT = ['changes', 'head', 'features', 'expressions', 'light'];
 export function presetSchemaOf() {
   const num = (min, max) => ({ type: 'number', min, max });
   const ref = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
+  const change = { type: 'union', key: 'kind', cases: { preset: ref,
+    ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, { type: 'object', props: { kind: { const: d.kind }, ...d.params, strength: num(-3, 3) }, required: ['kind'] }])) } };
   return {
-    type: 'object', required: ['format', 'version', 'id', 'label', 'group', 'changes'],
+    type: 'object', required: ['format', 'version', 'id', 'label', 'group'],
     props: {
       format: { const: PRESET_FORMAT }, version: { const: PRESET_VERSION }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*$/ },
       label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
       group: { type: 'string', pattern: /^[a-z][a-z-]*$/ },
       about: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
-      changes: { type: 'array', min: 1, items: { type: 'union', key: 'kind', cases: {
-        preset: ref,
-        ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, { type: 'object', props: { kind: { const: d.kind }, ...d.params, strength: num(-3, 3) }, required: ['kind'] }])) } } },
+      changes: { type: 'array', min: 1, items: change },
+      head: headSchema(change),
+      features: { type: 'array', min: 1, items: FEATURE_SCHEMA },
+      expressions: { type: 'array', min: 1, items: EXPRESSION_SCHEMA },
+      light: LIGHT_SCHEMA,
     },
   };
 }
@@ -116,6 +167,8 @@ export function checkPreset(p) {
   if (p?.format === PRESET_FORMAT && p.version < PRESET_VERSION) throw new Error(`${p.id}: a preset of version ${p.version} — upgrade it to ${PRESET_VERSION} (node engine/tools/characters.mjs presets)`);
   if (p?.format !== PRESET_FORMAT || p.version !== PRESET_VERSION) throw new Error(`${p?.id ?? '?'}: not a preset of version ${PRESET_VERSION}`);
   validate(p, presetSchemaOf(), 'preset ' + p.id);
+  const has = PRESET_CONTENT.filter(k => k in p);
+  if (has.length !== 1) throw new Error(`preset ${p.id}: one of ${PRESET_CONTENT.join(', ')}, not ${has.length ? has.join(' and ') : 'none'}`);
   return p;
 }
 
@@ -124,6 +177,7 @@ export function upgradePreset(p) {
   const d = structuredClone(p);
   if (d.format !== PRESET_FORMAT) throw new Error(`${d.id ?? '?'}: not a preset`);
   if (d.version === 1) { d.changes = d.changes.map(namedKeys); d.version = 2; }
+  if (d.version === 2) d.version = 3;   // 2 → 3 added the head's parts: a preset of changes is as it was
   if (d.version !== PRESET_VERSION) throw new Error(`${d.id}: no way from preset version ${d.version} to ${PRESET_VERSION}`);
   return d;
 }
@@ -152,6 +206,8 @@ export function resolve(desc, skeleton, base = null) {
     skinning: sk,
     motion: { ...b.motion, ...(desc.motion || {}) },
     look: { ...b.look, ...(desc.look || {}) },
+    // the head: this one's over its base's (engine.js expand merges them, with their presets)
+    head: desc.head ? { ...desc.head, under: b.head ?? null } : b.head ?? null,
   };
 }
 
@@ -184,6 +240,7 @@ export function upgrade(desc, { bodyPin }) {
     d.pose = (d.pose || []).map(l => { l = namedKeys(l); if (l.space && DEFORMERS[l.kind] && layerOf(l.kind) !== 'turns') { l = { ...l }; delete l.space; } return l; });
     d.version = 3;
   }
+  if (d.version === 3) d.version = 4;   // 3 → 4 added the head: a character without one is as it was
   if (d.version !== VERSION) throw new Error(`${d.id}: no way from version ${d.version} to ${VERSION}`);
   return d;
 }

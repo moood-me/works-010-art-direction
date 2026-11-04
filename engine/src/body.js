@@ -54,9 +54,13 @@ export function makeBody(o) {
   };
   // the same body with another rest: new vertices and joints, its own skin weights if a change gives them; frames as
   // given (src/changes.js makes them)
-  b.withRest = ({ positions, joints, frames, skin, label }) => makeBody({
-    ...o, label: label ?? o.label, hash: null,   // a changed body is not the stored one: it has no pin of its own
-    mesh: makeMesh({ ...mesh, positions: positions ?? mesh.positions, skin: skin ? { ...skin, K: skin.K ?? mesh.skin.K } : mesh.skin }),
+  // (more: what else its mesh carries now — a head's picture, morphs, shading: src/head/head.js)
+  // (origin: the stored body a changed one comes from — what its vertices were before any change: src/head/face.js
+  // finds a face's landmarks there)
+  b.origin = o.origin ?? b;
+  b.withRest = ({ positions, joints, frames, skin, label, mesh: more }) => makeBody({
+    ...o, origin: b.origin, label: label ?? o.label, hash: null,   // a changed body is not the stored one: it has no pin of its own
+    mesh: makeMesh({ ...mesh, ...more, positions: positions ?? mesh.positions, skin: skin ? { ...skin, K: skin.K ?? mesh.skin.K } : mesh.skin }),
     joints: joints ?? rig.joints, frames: frames ?? rig.frames,
   });
   return b;

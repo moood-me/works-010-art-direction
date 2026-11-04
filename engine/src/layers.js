@@ -17,6 +17,9 @@
 //   turn           {joint, axis, degrees}   a joint turned about an axis of its own frame (and all under it): the same
 //                                       change src/changes.js applies to the rest — here it rides on every frame
 //   morph          {mesh?, name, weight}    a morph of a mesh weighted in this frame (before skinning)
+//   expression     {name, weight}          one of the head's expressions (src/head/expressions.js): its morph of the skin,
+//                                       the jaw turned by its degrees (the Jaw joint), what it asks of the painted
+//                                       features (ctx.expressions: read by whoever draws them) — each by the weight
 import { qPow, qRot, qMul, qConj, qAxisAngle, getQ, setQ, getV, sub, add, scale, cross, len, normalize } from './math.js';
 import { localOf, setLocal, turnUnder } from './pose.js';
 import { makeCollider } from './collision.js';
@@ -102,6 +105,13 @@ export const LAYERS = {
   },
   morph(pose, ctx, { mesh = 'body', name, weight }) {
     (ctx.morphs[mesh] ??= {})[name] = weight;
+  },
+  expression(pose, ctx, { name, weight }) {
+    const x = ctx.body?.head?.expressions[name];
+    if (!x) throw new Error(`expression "${name}": ${ctx.body?.head ? `the head has ${Object.keys(ctx.body.head.expressions).join(', ') || 'none'}` : 'the character has no head'}`);
+    ctx.expressions[name] = (ctx.expressions[name] ?? 0) + weight;
+    if (x.mesh?.length) (ctx.morphs.body ??= {})[name] = weight;
+    if (x.jaw) { const sk = ctx.rig.skeleton, j = sk.index.Jaw; turnUnder(pose, sk, j, qAxisAngle(qRot(getQ(pose.Q, j), [1, 0, 0]), x.jaw * weight * Math.PI / 180)); }
   },
 };
 // layers that only weigh morphs (no turn changed: no places to rebuild)

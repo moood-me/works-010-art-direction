@@ -10,12 +10,15 @@ import { loadSkeleton } from './skeleton.js';
 import { loadBody } from './body.js';
 import { loadMotion, clipOf } from './motion.js';
 import { loadSoma } from './soma.js';
-import { readJSON, defaultRead } from './pack.js';
+import { readJSON, defaultRead, loadPack } from './pack.js';
 import { pinned, checkPin, canonical, hashOf } from './hash.js';
 import { resolve, checkPreset } from './character.js';
 import { turnAtRest, morphAtRest } from './changes.js';
 import { DEFORMERS, deformAtRest, layerOf, turnLayer, restLayer } from './deform.js';
 import { Figure } from './figure.js';
+import { buildHead, LIGHT_DEFAULTS } from './head/head.js';
+import { featureId } from './head/features.js';
+import { makeMesh } from './mesh.js';
 
 export async function createEngine({ root = new URL('../', import.meta.url), read = defaultRead } = {}) {
   root = new URL(root);
@@ -36,6 +39,11 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
     // a character's description pinned by its content (what a `base` names): refused if it changed under the pin
     base: ref => pinnedLoad('character ', ref, id => async () => { const d = await E.description(id); return { ...d, hash: hashOf([d]) }; }).then(d => { const o = { ...d }; delete o.hash; return o; }),
     bodies: () => once('bi', () => readJSON(new URL('data/bodies/index.json', root), read)),
+    // Anny's own changes of the face (data/anny/face.json, tools/face_targets.py): {unit, changes: {name: {i, p, n}}}
+    faceTargets: () => once('face', async () => {
+      const { header: h, arrays: a } = await loadPack(new URL('data/anny/face.json', root).href, read);
+      return { unit: h.unit, topology: h.topology, changes: Object.fromEntries(h.changes.map(c => [c.name, { i: a['i' + c.key], p: a['p' + c.key], n: a['n' + c.key] }])) };
+    }),
     // presets (presets/<id>.json, presets/index.json): checked, pinned like bodies
     presets: () => once('pi', () => readJSON(new URL('presets/index.json', root), read)),
     preset: ref => pinnedLoad('preset ', ref, id => async () => { const p = checkPreset(await readJSON(new URL(`presets/${id}.json`, root), read)); return { ...p, hash: hashOf([p]) }; }),
@@ -53,7 +61,41 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
         }
         return out;
       };
-      return { ...spec, rest: await open(spec.rest, 'rest'), pose: await open(spec.pose, 'pose') };
+      const head = spec.head ? await E.headOf(spec.head, spec.look) : null;
+      const rest = await open(spec.rest, 'rest');
+      if (!head) return { ...spec, rest, pose: await open(spec.pose, 'pose'), head: null, expanded: true };
+      // the head's form: changes of the rest after the character's own, frames kept (a design rides along in motion)
+      const form = await open(head.form.map(c => ({ ...c, frames: 'keep' })), 'rest');
+      const wrap = [...form].reverse().find(c => c.kind === 'wrap') ?? null;
+      return { ...spec, rest: [...rest, ...form], pose: await open(spec.pose, 'pose'), head: { ...head, formAt: rest.length, wrap }, expanded: true };
+    },
+    // a head with what it starts from (its base's head, its preset, the preset's own) merged under it, and its
+    // presets of features, expressions and light taken in: {size, skin, form, features, expressions, pieces, light}
+    async headOf(h, look = {}, depth = 0) {
+      if (depth > 8) throw new Error('heads nested deeper than 8 (a cycle?)');
+      const under = h.under ? await E.headOf(h.under, look, depth + 1) : h.preset ? await E.headOf(await E.headPreset(h.preset), look, depth + 1) : { form: [], features: [], expressions: [], pieces: [], light: { ...LIGHT_DEFAULTS } };
+      const inline = async (list, key) => (await Promise.all((list || []).map(async x => x.kind === 'preset' ? (await E.preset(x.id))[key] ?? (() => { throw new Error(`preset ${x.id} has no ${key}`); })() : [x]))).flat();
+      const byId = (base, own, id) => { const out = base.filter(x => !own.some(o => id(o) === id(x))); for (const o of own) if (o.kind !== 'off') out.push(o); return out; };
+      const light = h.light?.kind === 'preset' ? (await E.preset(h.light.id)).light : h.light;
+      return {
+        size: h.size ?? under.size, skin: h.skin ?? under.skin ?? look.skin, ref: h.ref ?? under.ref ?? null,
+        form: [...under.form, ...(h.form || [])],
+        features: byId(under.features, await inline(h.features, 'features'), featureId),
+        expressions: byId(under.expressions, await inline(h.expressions, 'expressions'), x => x.name),
+        pieces: byId(under.pieces, h.pieces || [], p => p.id ?? p.kind),
+        light: { ...under.light, ...(light || {}) },
+      };
+    },
+    // a head preset's head (presets/ of group "head"), pinned
+    headPreset: async ref => { const p = await E.preset(ref); if (!p.head) throw new Error(`preset ${ref} is not a head`); return p.head; },
+    // the character's body with its head made on it (src/head/head.js), and the meshes beside its skin (kept)
+    headBody(spec) {
+      if (!spec.head) return E.restBody(spec).then(body => ({ body, meshes: [] }));
+      return once('head:' + spec.body + canonical(spec.rest) + canonical(spec.head), async () => {
+        const pre = await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.formAt) }), post = await E.restBody(spec);
+        const { body, meshes } = buildHead(pre, post, spec.head);
+        return { body, meshes: meshes.map(m => makeMesh(m)) };
+      });
     },
     // what plays: a motion id, a chain's id (motions/index.json), or {motions: [refs], joins}
     async clip(what) {
@@ -83,8 +125,8 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
     // src/deform.js turnLayer) or its rest change weighed in each frame (restLayer: named "<its place in the list>:<kind>"
     // for ctx.weights), made on the body with the changes of the rest before it in the list.
     async figure(c, { place, layers = [], meshes = [] } = {}) {
-      const spec = typeof c === 'string' ? await E.character(c) : c.pose.some(l => l.kind === 'preset') || c.rest.some(l => l.kind === 'preset') ? await E.expand(c) : c;
-      const body = await E.restBody(spec), list = [];
+      const spec = typeof c === 'string' ? await E.character(c) : c.expanded ? c : await E.expand(c);
+      const { body, meshes: head } = await E.headBody(spec), list = [];
       let from = body, chain = [];
       for (const [k, l] of spec.pose.entries()) {
         if (!DEFORMERS[l.kind]) { list.push(l); continue; }
@@ -98,7 +140,7 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       }
       return new Figure({
         rig: body.rig, body, place, floor: spec.motion.floor, layers: [...list, ...layers],
-        meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...meshes],
+        meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...head.map(mesh => ({ mesh, name: mesh.id, skinning: spec.skinning })), ...meshes],
       });
     },
     // the character's rest with the changes of the rest among its pose layers made, up to the last of `chain` (kept)

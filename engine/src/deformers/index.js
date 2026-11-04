@@ -7,3 +7,5 @@ import './surface.js';
 import './contour.js';
 import './masses.js';
 import './sign.js';
+import '../head/wrap.js';
+import '../head/face.js';

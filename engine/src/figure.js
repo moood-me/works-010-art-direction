@@ -14,7 +14,9 @@
 //      weighed in, about this frame's joints and centres of rotation; rigid; rebuilt (sweeps)
 //   5. the floor (motion.floor 'lowest'): the lowest of all meshes that count for it, over the vertices their triangles
 //      use, set as high as the pose says — everything (meshes and pose) moved up by that one shift (pose.shift)
-//   6. normals
+//   6. normals; where a mesh shades by a designed form (mesh.shading: a head's light, src/head/head.js), its normals
+//      are that form's, turned as the skin's joints turned it, weighed in by its weights
+//   7. attached meshes laid on their host (a feature as volume on the skin), and their normals
 // `frame(clip, t, pose?)` does that for a moment, into the pose it is given (or a new one) and into the meshes'
 // buffers (figure.outputs) — it keeps nothing between calls. `step(clip, t)` is the stateful frame for simulations
 // (hair, cloth): it keeps the current and the previous pose (figure.pose, figure.previous: valid until the next step;
@@ -28,6 +30,7 @@ import { Pose, build, hipOf } from './pose.js';
 import { LAYERS, NO_REBUILD } from './layers.js';
 import { makeCollider } from './collision.js';
 import { newSample } from './motion.js';
+import { qRot } from './math.js';
 
 export class Figure {
   // rig; meshes: [{mesh, name?, skinning?: {method, sigma, seam}}] (the first is the body's, named 'body'); layers: resolved pose layers;
@@ -49,7 +52,7 @@ export class Figure {
     this.pose = new Pose(rig.J); this.previous = new Pose(rig.J); this.state = null;
     // rest: the joints' rest places this frame; weights: of the changes of the rest (by name; a code layer may set
     // them); applied: the weight each change of the rest was taken at this frame (in this.restLayers' order)
-    this.ctx = { rig, body, t: 0, morphs: {}, weights: {}, rest: Float64Array.from(rig.joints), applied: new Float64Array(this.restLayers.length),
+    this.ctx = { rig, body, t: 0, morphs: {}, weights: {}, expressions: {}, rest: Float64Array.from(rig.joints), applied: new Float64Array(this.restLayers.length),
       hip: [0, 0, 0], pose: null, build: () => build(this.ctx.pose, rig, this.ctx.hip, this.ctx.rest) };
   }
   // another mesh off the same pose (a head, a piece, a garment, a sweep); name: what morph layers call it ('body' for
@@ -84,7 +87,7 @@ export class Figure {
     const sk = this.rig.skeleton, ctx = this.ctx, rest = ctx.rest;
     if (clip) this.retarget.pose(clip.sample(t, this.sample), pose); else Pose.rest(this.rig, pose);
     rest.set(this.rig.joints); ctx.applied.fill(0);
-    ctx.pose = pose; ctx.t = t; ctx.morphs = {}; ctx.weights = {}; ctx.hip = hipOf(pose, sk);
+    ctx.pose = pose; ctx.t = t; ctx.morphs = {}; ctx.weights = {}; ctx.expressions = {}; ctx.hip = hipOf(pose, sk);
     let changed = false, r = 0;
     for (const l of this.layers) {
       if (l.kind === 'rest') {
@@ -115,15 +118,16 @@ export class Figure {
     pose.shift = 0;
     if (this.floorMode === 'lowest') {
       let lo = Infinity;
-      for (const o of this.outputs) if (o.mesh.floor) { const u = o.mesh.used, p = o.positions; for (let k = 0; k < u.length; k++) { const y = p[u[k] * 3 + 1]; if (y < lo) lo = y; } }
+      for (const o of this.outputs) if (o.mesh.floor && o.mesh.kind !== 'attached') { const u = o.mesh.used, p = o.positions; for (let k = 0; k < u.length; k++) { const y = p[u[k] * 3 + 1]; if (y < lo) lo = y; } }
       if (lo < Infinity) {
         const shift = pose.floor - lo;
-        for (const o of this.outputs) { const u = o.mesh.used, p = o.positions; for (let k = 0; k < u.length; k++) p[u[k] * 3 + 1] += shift; }
+        for (const o of this.outputs) { if (o.mesh.kind === 'attached') continue; const u = o.mesh.used, p = o.positions; for (let k = 0; k < u.length; k++) p[u[k] * 3 + 1] += shift; }
         for (let j = 0; j < this.rig.J; j++) pose.P[j * 3 + 1] += shift;
         pose.shift = shift;
       }
     }
-    for (const o of this.outputs) normalsOf(o.positions, o.mesh.triangles, o.normals, o.mesh.used);
+    for (const o of this.outputs) if (o.mesh.kind !== 'attached') { normalsOf(o.positions, o.mesh.triangles, o.normals, o.mesh.used); if (o.mesh.shading) shadeByForm(o, pose); }
+    for (const o of this.outputs) if (o.mesh.kind === 'attached') { attach(o, this.outputs.find(h => h.name === o.mesh.host)); normalsOf(o.positions, o.mesh.triangles, o.normals, o.mesh.used); }
     return pose;
   }
 
@@ -143,6 +147,17 @@ export class Figure {
     return this.pose;
   }
   reset() { this.state = null; }
+
+  // the head to collide with (hair, a hood): its shape (src/head/head.js: the designed form, or a ball) moved by the
+  // Head joint of the current pose — distance(x, y, z) in metres, negative inside
+  headShape() {
+    const shape = this.body?.head?.shape; if (!shape) throw new Error('a figure without a head (its character has no "head")');
+    const sk = this.rig.skeleton, H = sk.index.Head, F = shape.frame, rig = this.rig;
+    return { distance: (x, y, z) => {
+      const P = this.pose, q = [-P.Q[H * 4], -P.Q[H * 4 + 1], -P.Q[H * 4 + 2], P.Q[H * 4 + 3]], v = qRot(q, [x - P.P[H * 3], y - P.P[H * 3 + 1], z - P.P[H * 3 + 2]]);
+      return shape.sdf(...F.toL(v[0] + rig.joints[H * 3], v[1] + rig.joints[H * 3 + 1], v[2] + rig.joints[H * 3 + 2])) * F.R;
+    } };
+  }
 
   // the box around everything drawn (the used vertices of every mesh)
   bounds() {
@@ -188,5 +203,33 @@ function rigid(o, pose, rig) {
     out[i * 3] = R[0] * a + R[1] * b + R[2] * c + pose.P[j * 3];
     out[i * 3 + 1] = R[3] * a + R[4] * b + R[5] * c + pose.P[j * 3 + 1];
     out[i * 3 + 2] = R[6] * a + R[7] * b + R[8] * c + pose.P[j * 3 + 2];
+  }
+}
+
+// a mesh shaded by a designed form: each vertex's normal there is the form's normal at its rest, turned as its joints
+// turned (their turns blended by its skin's weights), weighed in by its weight
+function shadeByForm(o, pose) {
+  const m = o.mesh, { normals: D, weight: W } = m.shading, K = m.skin.K, SJ = m.skin.joints, SW = m.skin.weights, Q = pose.Q, n = o.normals, r = [0, 0, 0];
+  for (const i of m.used) {
+    const w = W[i]; if (!w) continue;
+    let x = 0, y = 0, z = 0;
+    for (let k = 0; k < K; k++) {
+      const a = SW[i * K + k]; if (!a) continue; const j = SJ[i * K + k];
+      qRot([Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]], [D[i * 3], D[i * 3 + 1], D[i * 3 + 2]], r); x += a * r[0]; y += a * r[1]; z += a * r[2];
+    }
+    const l = Math.hypot(x, y, z) || 1;
+    x = n[i * 3] + (x / l - n[i * 3]) * w; y = n[i * 3 + 1] + (y / l - n[i * 3 + 1]) * w; z = n[i * 3 + 2] + (z / l - n[i * 3 + 2]) * w;
+    const L = Math.hypot(x, y, z) || 1; n[i * 3] = x / L; n[i * 3 + 1] = y / L; n[i * 3 + 2] = z / L;
+  }
+}
+// an attached mesh on its host this frame: each vertex at its place in its host triangle, lifted along the normal there
+function attach(o, host) {
+  if (!host) throw new Error(`${o.mesh.id}: no mesh "${o.mesh.host}" to lay it on`);
+  const m = o.mesh, T = host.mesh.triangles, P = host.positions, N = host.normals, out = o.positions;
+  for (let v = 0; v < m.N; v++) {
+    const t = m.tri[v] * 3, a = T[t] * 3, b = T[t + 1] * 3, c = T[t + 2] * 3, u = m.bary[v * 3], w = m.bary[v * 3 + 1], s = m.bary[v * 3 + 2];
+    let nx = u * N[a] + w * N[b] + s * N[c], ny = u * N[a + 1] + w * N[b + 1] + s * N[c + 1], nz = u * N[a + 2] + w * N[b + 2] + s * N[c + 2];
+    const l = Math.hypot(nx, ny, nz) || 1, h = m.lift[v] / l;
+    out[v * 3] = u * P[a] + w * P[b] + s * P[c] + nx * h; out[v * 3 + 1] = u * P[a + 1] + w * P[b + 1] + s * P[c + 1] + ny * h; out[v * 3 + 2] = u * P[a + 2] + w * P[b + 2] + s * P[c + 2] + nz * h;
   }
 }

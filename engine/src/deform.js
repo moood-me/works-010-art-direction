@@ -29,7 +29,8 @@
 //                                                               {joints, weights} — its own skin weights)
 //    prepare?(p, E, body) → data                               (what it needs loaded: other bodies)
 //    turns?(p, R) → apply(pose, ctx)                           (as a pose layer: turns of the joints)
-//    restOnly?: true                                           (refused as a pose layer)}
+//    restOnly?: true                                           (refused as a pose layer)
+//    ownFolds?: true                                           (its folds are its own to ease: src/head/wrap.js)}
 // p — the change's parameters, complete (defaults filled in), with `strength`.
 import { regionsOf, limbsOfMesh, unfold } from './regions.js';
 import { withRest } from './changes.js';
@@ -63,7 +64,8 @@ export async function deformAtRest(body, change, E) {
   }
   // no triangle turned over: where a change would fold the skin it goes only as far as it can (src/regions.js: unfold).
   // The sign is the exception: it gathers a hand's skin onto a ball, folded there by its nature
-  if (!d.restOnly) positions = unfold(R, body.mesh.positions, positions);
+  // (a wrap onto a designed form sees its own folds against the form, not against the body it starts from: ownFolds)
+  if (!d.restOnly && !d.ownFolds) positions = unfold(R, body.mesh.positions, positions);
   return withRest(body, { positions, joints: joints ?? rig.joints, skin, frames: change.frames });
 }
 
