@@ -75,15 +75,20 @@ def workshop(d, w, h, seed=3):
 
 
 def thicket(d, w, h, seed=4):
-    """sunlit summer leaves, a glimpse of sky through them."""
+    """sunlit summer trees: two big masses of leaves left and right, sky and a cloud between, bushes below."""
     rnd = random.Random(seed)
     ro = d.rough(0.025, 6, seed)
-    sky(d, w, h, '#5b97cf', '#cfe4ea')
-    cloud(d, w * 0.75, h * 0.32, w * 0.5, h * 0.22, rnd, ro)
-    reg = unary_union([Point(rnd.uniform(-0.1, 1.1) * w, rnd.uniform(0.0, 1.0) * h).buffer(rnd.uniform(0.08, 0.2) * w, 16)
-                       for _ in range(16)])
-    reg = reg.difference(Point(w * 0.72, h * 0.28).buffer(w * 0.28, 24)).intersection(box(0, 0, w, h))
-    foliage(d, reg, '#4e8a45', rnd, ro, n=int(w * h / 1800), r=(10, 26))
+    sky(d, w, h, '#5b97cf', '#d4e6ea')
+    cloud(d, w * 0.55, h * 0.42, w * 0.55, h * 0.25, rnd, ro)
+    left = unary_union([Point(rnd.uniform(-0.2, 0.30) * w, rnd.uniform(-0.1, 0.75) * h).buffer(rnd.uniform(0.10, 0.2) * w, 18)
+                        for _ in range(9)])
+    right = unary_union([Point(rnd.uniform(0.80, 1.2) * w, rnd.uniform(-0.1, 0.6) * h).buffer(rnd.uniform(0.10, 0.18) * w, 18)
+                         for _ in range(7)])
+    low = unary_union([Point(rnd.uniform(-0.1, 1.1) * w, rnd.uniform(0.78, 1.0) * h).buffer(rnd.uniform(0.08, 0.14) * w, 18)
+                       for _ in range(12)])
+    painted(d, box(w * 0.08, h * 0.2, w * 0.13, h), '#5a4a38', ro)
+    for reg, base in ((left, '#4a8442'), (right, '#4f8a46'), (low, '#5a9448')):
+        foliage(d, reg.intersection(box(0, 0, w, h)), base, rnd, ro, n=int(reg.area / 900), r=(10, 24))
     d.mottle(0.012, 0.35, seed)
 
 

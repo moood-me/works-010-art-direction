@@ -243,8 +243,8 @@ def collar(d, view, F, size, c, k):
     lo = F.torso_loft(push=1.0)
     y1 = F.B['torso'][-1][0]
     for s in (1, -1):
-        ts = [s * 0.05, s * 0.10, s * 0.42, s * 0.85, s * 0.95, s * 0.7, s * 0.3]
-        ys = [y1 - 1.5, y1 - size, y1 - size * 0.8, y1 - 2.2, y1 - 0.8, y1 - 0.2, y1 - 0.3]
+        ts = [s * 0.04, s * 0.08, s * 0.36, s * 0.70, s * 0.78, s * 0.55, s * 0.25]
+        ys = [y1 - 1.2, y1 - size, y1 - size * 0.75, y1 - 1.6, y1 - 0.4, y1 + 0.1, y1 - 0.1]
         fac = lo.facing(view, s * 0.5, y1 - size * 0.5)
         if fac < 0.05:
             continue
@@ -286,11 +286,20 @@ def draw_arm(d, view, F, S, side, torso, k):
     sl = sleeve_src.get('sleeve', {}) if sleeve_src else {}
     c = sleeve_src['c'] if sleeve_src else S['skin']
     arm, pts = F.arm_shape(view, side)
-    hg, marks = F.hand(view, side, F.pose['arm' + side].get('hand_kind', 'relaxed'))
+    hand_parts = F.hand(view, side, F.pose['arm' + side].get('hand_kind', 'relaxed'))
+
+    def draw_hand():
+        hk = 0.12 * view.s
+        whole = unary_union(hand_parts)
+        hsh = shadow_of(whole, hk * 3)
+        for g in hand_parts:
+            d.fill(g, S['skin'])
+            d.fill(hsh.intersection(g), shade(S['skin']))
+            d.outline(g, lw * 0.75)
     upto = sl.get('upto', 1.0)
     order_hand_first = F.pose['arm' + side].get('hand_behind', False)
     if order_hand_first:
-        fill_part(d, hg, S['skin'], k * 0.25)
+        draw_hand()
     sg, _ = F.arm_shape(view, side, ease=sl.get('ease', 0.9), upto=min(upto + 0.02, 1.0) if upto < 1 else 0.97)
     if upto >= 0.98:
         # a long sleeve ends in a cuff a little wider than the wrist
@@ -322,9 +331,7 @@ def draw_arm(d, view, F, S, side, torso, k):
         f = view.xy(np.array([e - u * 2.5 + [0, 0, B['arm_r'][1] * 0.6], e + u * 1.5 + [0, 0, B['arm_r'][1] * 0.9]]))
         d.line(f, lw * 0.5)
     if not order_hand_first:
-        fill_part(d, hg, S['skin'], k * 0.25)
-        for m in marks:
-            d.line(m, lw * 0.45)
+        draw_hand()
     for fn in getattr(F, 'after_hands', []):
         fn()
     F.after_hands = []

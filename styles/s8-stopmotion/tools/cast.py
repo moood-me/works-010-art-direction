@@ -115,12 +115,11 @@ def savely_hair(h, d, P, ex):
 
 
 def savely_under_nose(h, d, P, ex):
-    return props.moustache(h, d, P, P['hair_col'], w=0.16, droop=0.06, thick=0.075, ex=ex)
+    return props.moustache(h, d, P, '#d8d0c4', w=0.17, droop=0.07, thick=0.085, ex=ex)
 
 
 def savely_over(h, d, P, ex):
-    return (props.glasses(h, d, P, 'round', rw=0.078, rh=0.068, out=0.075, col='#8a6a3a', lw=0.009, y_off=0.035)
-            + props.loupe(h, d, P, side=-1))
+    return props.glasses(h, d, P, 'round', rw=0.078, rh=0.068, out=0.075, col='#8a6a3a', lw=0.009, y_off=0.035)
 
 
 SAVELY = dict(
@@ -208,7 +207,11 @@ def tim_hair(h, d, P, ex):
     """Thick tousled hair with a cowlick at the crown and a fringe of chunky clumps."""
     def line(phi):
         a = abs(phi)
-        return -0.2 + 0.12 * min(1.0, a / 1.2) ** 2 + 0.3 * max(0.0, a - 1.2)
+        if a < 1.2:
+            return -0.2 + 0.12 * (a / 1.2) ** 2
+        if a < 1.75:
+            return -0.08 - 0.04 * math.sin((a - 1.2) / 0.55 * math.pi)
+        return -0.08 + 0.3 * min(1.0, (a - 1.75) / 1.0)
     locks = []
     # fringe clumps falling forward over the forehead
     for k, (ph, ln) in enumerate(((-0.75, 0.16), (-0.45, 0.2), (-0.15, 0.22), (0.15, 0.2), (0.45, 0.19), (0.75, 0.15))):
@@ -292,13 +295,13 @@ def vera_hair(h, d, P, ex):
         y0 = line(ph) + 0.01
         p = H.surf_path(h, [(ph, y0), (ph * 1.25 + (0.6 if ph > 0 else -0.6), -0.4), (math.pi * (0.95 if ph >= 0 else -0.95), -0.33)],
                         out=(0.012, 0.02), k=1.02)
-        locks.append(H.Lock(p, 0.2, 0.08, taper=1.0, root=0.9, strands=4, grooves=1, sheen=(0.1, 0.35), z_bias=0.05))
+        locks.append(H.Lock(p, 0.22, 0.1, taper=1.0, root=0.9, strands=3, grooves=0, sheen=(0.1, 0.35), z_bias=0.05))
     # escaped strands by the temples
     extra_front = []
     for side in (-1, 1):
-        p = H.surf_path(h, [(side * 1.0, -0.12), (side * 1.12, 0.05)], out=0.03, k=1.02)
-        p += H.fall(p[-1], 0.22, n=4, side=side, out_x=0.01, wave=0.015, waves=1.2)
-        locks.append(H.Lock(p, 0.035, 0.0, taper=1.0, root=1.0, strands=1, grooves=0, z_bias=0.2))
+        p = H.surf_path(h, [(side * 1.12, -0.1), (side * 1.25, 0.04)], out=0.03, k=1.02)
+        p += H.fall(p[-1], 0.12, n=4, side=side, out_x=0.02, wave=0.012, waves=1.0)
+        locks.append(H.Lock(p, 0.03, 0.0, taper=1.0, root=1.0, strands=0, grooves=0, z_bias=0.2))
     z, bun = props.bun(h, d, P, P['hair_col'], y=-0.28, phi=math.pi, r=0.17)
     out = dict(col=P['hair_col'], locks=locks, cap=(line, 0.2, 1.02))
     if z < 0:
@@ -315,20 +318,20 @@ def vera_over(h, d, P, ex):
 VERA = dict(
     name='vera',
     shape=dict(
-        a=[(-0.5, 0.02), (-0.46, 0.19), (-0.38, 0.29), (-0.25, 0.335), (-0.1, 0.34), (0.0, 0.33), (0.1, 0.315),
-           (0.2, 0.285), (0.3, 0.24), (0.4, 0.17), (0.46, 0.1), (0.5, 0.04)],
+        a=[(-0.5, 0.02), (-0.46, 0.18), (-0.38, 0.27), (-0.25, 0.31), (-0.1, 0.315), (0.0, 0.305), (0.1, 0.29),
+           (0.2, 0.262), (0.3, 0.22), (0.4, 0.15), (0.46, 0.09), (0.5, 0.035)],
         front=[(-0.5, -0.02), (-0.46, 0.19), (-0.38, 0.32), (-0.25, 0.39), (-0.12, 0.41), (0.0, 0.4), (0.1, 0.39),
                (0.2, 0.37), (0.3, 0.35), (0.4, 0.32), (0.46, 0.28), (0.5, 0.2)],
         back=[(-0.5, -0.02), (-0.46, -0.23), (-0.38, -0.37), (-0.25, -0.45), (-0.1, -0.46), (0.0, -0.43), (0.1, -0.35),
               (0.2, -0.22), (0.3, -0.08), (0.4, 0.04), (0.46, 0.1), (0.5, 0.13)],
         bumps=[(0.92, 0.08, 0.07, 0.3, 0.07), (0.0, 0.46, 0.04, 0.3, 0.04)]),
     skin='#ecc2a6', skin_shade='#9a5a6a', shade='#3a2440', blush=0.18, blush_col='#c86070', skin_tex=0.05,
-    eye_phi=0.42, eye_y=0.09, eye_r=0.074, eye_w=0.088, eye_open=0.72, eye_tilt=0.012, iris_r=0.048, iris='#4a3a2a',
+    eye_phi=0.43, eye_y=0.07, eye_r=0.07, eye_w=0.085, eye_open=0.66, eye_tilt=0.014, iris_r=0.046, iris='#3a4a3a',
     lash='#1a1014', lash_w=0.014, wing=1.6, socket_a=0.45, bags=1, lid_top=0.72, lid_bot=0.4,
     lid_paint='#7a5a7a', lid_paint_a=0.35,
-    brow_gap=0.075, brow_w=0.08, brow_th=0.016, brow_col='#2a1a18', brow_arch=0.018,
-    nose_root=0.07, nose_tip=0.27, nose_len=0.075, nose_w=0.032, nose_fade=0.35,
-    mouth_y=0.37, mouth_w=0.07, lip='#9a4a52', upper_lip=0.007, lower_lip=0.012,
+    brow_gap=0.07, brow_w=0.085, brow_th=0.014, brow_col='#2a1a18', brow_arch=0.006,
+    nose_root=0.05, nose_tip=0.27, nose_len=0.085, nose_w=0.03, nose_fade=0.3, nose_hook=0.15,
+    mouth_y=0.37, mouth_w=0.068, lip='#9a4a52', upper_lip=0.006, lower_lip=0.011,
     ear_phi=1.5, ear_y=0.14, ear_w=0.07, ear_h=0.15, ear_out=15,
     hair=vera_hair, hair_col='#3a2622', hair_shade='#0a0404',
     over_all=vera_over,

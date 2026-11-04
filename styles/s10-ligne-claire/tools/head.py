@@ -33,7 +33,7 @@ DEFAULT = dict(
     lips=[(47, 0, 18), (50, 2.5, 20), (54, 2, 21), (56, 0.5, 21), (59, 2.2, 18), (63, 1.5, 14), (67, 0, 10)],
     chin=[(72, 0, 18), (82, 3, 22), (90, 3, 20), (96, 0, 12)],
     brow=[(-22, 0, 40), (-14, 2.5, 46), (-8, 1.5, 44), (-2, 0, 30)],
-    ear=dict(y=10, z=-10, ry=19, rz=11, out=13, tilt=0.12),
+    ear=dict(y=10, z=-16, ry=19, rz=11, out=13, tilt=0.12),
     neck=dict(z=-8, rx=31, rz=34, y0=40, y1=170),
     eye=dict(x=27, y=0, kind='lid'),
     mouth=dict(y=56),
@@ -107,7 +107,8 @@ class Head:
         return np.array(out)
 
     # ---------------------------------------------------------------- parts
-    def skull_part(self, nu=420, nv=420):
+    def skull_part(self, res=2.4):
+        nu, nv = int(2 * np.pi * 85 * res * 1.3), int((self.ymax - self.ymin) * res * 1.5)
         def fn(u, v):
             y = self.ymin + (self.ymax - self.ymin) * v
             w, zm, zf, zb, n = self.sl(y)
@@ -125,17 +126,19 @@ class Head:
         # close the top
         return r3.Part('skull', 'skin', X, Y, Z)
 
-    def bump_part(self, k, name=None, n=120):
+    def bump_part(self, k, name=None, res=2.4):
         y0, y1, h, hw = self.bumps[k]
+        nv = int((y1 - y0) * res * 1.6) + 4
+        nu = int(2 * float(np.max(hw(np.linspace(y0, y1, 20)))) * res * 1.6) + 4
 
         def fn(u, v):
             y = y0 + (y1 - y0) * v
             x = (u * 2 - 1) * hw(y)
             return x, y, self.face_z(x, y) + 0.05
-        X, Y, Z = r3.grid(fn, n, n)
+        X, Y, Z = r3.grid(fn, nu, nv)
         return r3.Part(name or k, 'skin', X, Y, Z)
 
-    def ear_part(self, side):
+    def ear_part(self, side, res=2.4):
         e = self.p['ear']
         w = float(self.sl(e['y'])[0])
 
@@ -150,27 +153,28 @@ class Head:
             Y = e['y'] + dy - e['tilt'] * dz
             Z = e['z'] + dz
             return side * xo, Y, Z
-        X, Y, Z = r3.grid(fn, 60, 160)
+        X, Y, Z = r3.grid(fn, int(25 * res * 1.5), int(2 * np.pi * 20 * res * 1.5))
         return r3.Part('ear' + ('R' if side > 0 else 'L'), 'skin', X, Y, Z)
 
-    def neck_part(self):
+    def neck_part(self, res=2.4):
         nk = self.p['neck']
 
         def fn(u, v):
             a = u * 2 * np.pi
             y = nk['y0'] + (nk['y1'] - nk['y0']) * v
             return nk['rx'] * np.cos(a), y, nk['z'] + nk['rz'] * np.sin(a)
-        X, Y, Z = r3.grid(fn, 220, 160)
+        X, Y, Z = r3.grid(fn, int(2 * np.pi * 36 * res * 1.4), int((nk['y1'] - nk['y0']) * res * 1.5))
         return r3.Part('neck', 'skin', X, Y, Z)
 
-    def parts(self):
-        ps = [self.skull_part()]
+    def parts(self, res=2.4):
+        """res: raster pixels per model unit (view scale x supersampling); sampling follows it."""
+        ps = [self.skull_part(res)]
         for k in ('nose', 'lips', 'chin'):
             if k in self.bumps:
-                ps.append(self.bump_part(k))
-        ps += [self.ear_part(1), self.ear_part(-1), self.neck_part()]
+                ps.append(self.bump_part(k, res=res))
+        ps += [self.ear_part(1, res), self.ear_part(-1, res), self.neck_part(res)]
         for f in self.extra_parts:
-            ps += f(self)
+            ps += f(self, res)
         return ps
 
 
@@ -196,9 +200,12 @@ class Shell:
         Z = np.where(front, zm + (zf - zm) * np.abs(sa) ** ex, zm - (zm - zb) * np.abs(sa))
         return X, y + 0 * a, Z
 
-    def part(self, name, material, keep=None, nu=360, nv=300, y0=None, y1=None):
+    def part(self, name, material, res, keep=None, y0=None, y1=None):
         y0 = self.ymin if y0 is None else y0
         y1 = self.ymax if y1 is None else y1
+        ys = np.linspace(y0, y1, 30)
+        size = max(float(np.max(self.sl(ys)[0])), float(np.max(np.abs(self.sl(ys)[2] - self.sl(ys)[3]))) / 2)
+        nu, nv = int(2 * np.pi * size * res * 1.3) + 8, int((y1 - y0) * res * 1.5) + 4
         u, v = np.meshgrid(np.linspace(0, 2 * np.pi, nu), np.linspace(y0, y1, nv), indexing='ij')
         X, Y, Z = self.point(u, v)
         if keep is not None:
@@ -246,7 +253,7 @@ def draw_marks(marks, R, lw):
 
 def draw(head, view, box, colours, expr=None, lw=lc.LINE, clip_id='fc'):
     """Render a head (with its parts and marks) for one view. Returns (svg items, Render)."""
-    parts = head.parts()
+    parts = head.parts(view.s * view.ss)
     R = r3.Render(parts, view, box, thr=head.p.get('thr', 6.0))
     out = R.fills(colours)
     out += R.lines(lw)

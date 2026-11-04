@@ -73,7 +73,7 @@ def extra(d, view, F, h, skin_g):
 B = dict(
     hip_y=87, hip_x=8.5, thigh=41, shin=39, shoulder=(14.4, 135, -1.0), upper=28, fore=24, hand=16,
     arm_r=[3.9, 3.3, 2.8, 2.2], hand_r=2.1, leg_r=[7.2, 6.0, 4.4, 3.9, 4.4, 4.0, 2.9, 2.7],
-    neck=(137, 149, -1.5, 0.0), neck_r=4.0, head_c=(0, 156.0, 1.5), head_h=23.0, chest_y=122,
+    neck=(140.0, 147, -1.0, 0.5), neck_r=3.5, head_c=(0, 153.6, 1.8), head_h=23.5, chest_y=122,
     torso=[(79, 10.5, 7, -7), (87, 16.0, 8.5, -9.5), (96, 15.0, 8, -9), (106, 12.4, 7.0, -7.0), (115, 13.8, 8.6, -7.6),
            (123, 14.8, 10.0, -8.0), (130, 16.2, 9.0, -8.0), (134, 17.4, 7.4, -7.2), (137, 15.0, 5.8, -6.4),
            (139.5, 10.0, 4.5, -5.5), (141.5, 5.3, 3.5, -4.6)],
@@ -99,7 +99,7 @@ POSES = dict(
 
 SPEC = dict(
     skin=SKIN,
-    top=dict(c='#dfe6ee', ease=0.5, hem=88, sleeve=dict(upto=1.0, ease=0.8), collar=5.0),
+    top=dict(c='#dfe6ee', ease=0.5, hem=88, sleeve=dict(upto=1.0, ease=0.8), collar=3.4),
     over=dict(c='#4b5468', ease=1.4, hem=84, open=(0.10, 0.38), sleeve=dict(upto=1.0, ease=1.2), buttons=[96, 104]),
     bottom=dict(kind='trousers', c='#5b5a62', ease=1.8, waist=104),
     shoes=dict(c='#3b3236', len=23, r=3.0, out=8),

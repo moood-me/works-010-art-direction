@@ -156,7 +156,7 @@ def bust(d, P, B, ex, S, cx, cy, yaw=30, roll=0, body_yaw=None, extra=None):
     # arms: far one first
     arms = []
     for side in (-1, 1):
-        A = Head(dict(B['arm'], x=[(0, side * B['arm_x'])]), S, cx, cy, by)
+        A = Head(dict(B['arm'], x=[(0.8, side * B['arm_x']), (2.2, side * (B['arm_x'] + B.get('arm_out', 0.07)))]), S, cx, cy, by)
         z = T.rot((side * B['arm_x'], 0, 0))[2]
         arms.append((z, side, A))
     arms.sort(key=lambda t: t[0])

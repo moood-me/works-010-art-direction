@@ -66,51 +66,36 @@ def geom(h, L, n=28):
     return dict(c=c, half=half, left=left, right=right, poly=left + right[::-1], z=z)
 
 
-def cap_polys(h, k, line, y_back, n=36):
-    """The hair cap over the skull (shell = head scaled by k). line(phi) → hairline y on the face side.
-    Returns (back, front): back = the whole shell silhouette down to y_back (drawn behind the head);
-    front = the part of the shell facing us, above the hairline."""
-    # back: silhouette of the shell from the crown to y_back
-    back = h.outline(k=k, y0=-0.5, y1=y_back, n=n)
-    # front: visible hairline run
-    N = 240
-    phis = [-math.pi + 2 * math.pi * i / N for i in range(N)]
-    hl = []
-    for phi in phis:
-        y = line(phi)
-        x, yy, z = h.scr(h.surf(phi, y, 0, k))
-        hl.append((phi, x, yy, z, y))
-    # start from the phi that faces us most
-    i0 = max(range(N), key=lambda i: hl[i][3])
-    run = [hl[i0]]
-    i = i0
-    while True:
-        i = (i + 1) % N
-        if hl[i][3] < 0 or i == i0:
-            break
-        run.append(hl[i])
-    i = i0
-    while True:
-        i = (i - 1) % N
-        if hl[i][3] < 0 or i == i0:
-            break
-        run.insert(0, hl[i])
-    run.sort(key=lambda r: r[1])
-    yl, yr = run[0][4], run[-1][4]
-    sil = h.outline(k=k, y0=-0.5, y1=max(yl, yr), n=n)
-    m = len(sil) // 2
-    leftS, rightS = sil[:m], sil[m:][::-1]       # both from crown down
-
-    def cut(side, ycut):
-        out = []
-        for j, p in enumerate(side):
-            yj = -0.5 + (max(yl, yr) + 0.5) * j / (len(side) - 1)
-            if yj <= ycut:
-                out.append(p)
-        return out
-    lf = cut(leftS, yl)
-    rt = cut(rightS, yr)
-    front = [(r[1], r[2]) for r in run] + rt[::-1] + lf
+def cap_polys(h, k, line, y_back=None, rows=44, cols=120):
+    """The hair cap over the skull (shell = head scaled by k): the region above the hairline line(phi).
+    Built as horizontal strips of the shell, split into the part turned away from us (back, drawn before the head)
+    and the part facing us (front). Returns (back, front): lists of polygons."""
+    back, front = [], []
+    ys = [-0.5 + (0.5 + 0.35) * i / rows for i in range(rows + 1)]
+    for r in range(rows):
+        ya, yb = ys[r], ys[r + 1]
+        ym = (ya + yb) / 2
+        run, run_front = [], None
+        for j in range(cols + 1):
+            phi = -math.pi + 2 * math.pi * j / cols
+            inside = ym <= line(phi)
+            fr = h.facing(phi, ym) >= 0 if inside else None
+            if run and (not inside or fr != run_front):
+                if len(run) > 1:
+                    (front if run_front else back).append(run)
+                run = [run[-1]] if inside else []
+            if inside:
+                run.append(phi)
+                run_front = fr
+        if len(run) > 1:
+            (front if run_front else back).append(run)
+        # turn phi runs into strip polygons (a hair wider, so strips overlap)
+        for lst in (front, back):
+            for i, item in enumerate(lst):
+                if isinstance(item, list) and item and isinstance(item[0], float):
+                    top = [h.P(h.surf(p, ya - 0.004, 0, k)) for p in item]
+                    bot = [h.P(h.surf(p, yb + 0.004, 0, k)) for p in item]
+                    lst[i] = top + bot[::-1]
     return back, front
 
 
@@ -118,12 +103,7 @@ def mass(d, h, P, locks, col, cap=None, groove_col=None, sheen=0.28, name='hair'
     """One sculpted mass of hair: union of locks (+ cap polygon) with form shading, grooves, sheen."""
     S = h.S
     G = [geom(h, L) for L in locks]
-    flat = ''
-    if cap:
-        flat += f'<path d="{pts(cap)}" fill="{col}"/>'
-    for g, L in zip(G, locks):
-        flat += f'<path d="{pts(g["poly"])}" fill="{L.col or col}"/>'
-    if not flat:
+    if not G and not cap:
         return ''
     fid = d.form(S * 0.6, shade=P.get('hair_shade', '#1a0a06'), depth=0.6, ao=0.45, sheen=0.0, rim=0.0,
                  rim_col=P.get('hair_rim', '#c0d4ff'))
@@ -132,7 +112,7 @@ def mass(d, h, P, locks, col, cap=None, groove_col=None, sheen=0.28, name='hair'
     gw = max(1.2, S * 0.0055)
     body = []
     if cap:
-        body.append(f'<path d="{pts(cap)}" fill="{col}"/>')
+        body.append(''.join(f'<path d="{poly(c)}" fill="{col}" stroke="{col}" stroke-width="1"/>' for c in cap))
     # each lock in turn: its fill covers the cuts of the locks under it
     fid2 = d.relief(1.0, -max(1.5, round(S * 0.005, 1)), 0, 20)
     for g, L in zip(G, locks):
@@ -168,7 +148,7 @@ def mass(d, h, P, locks, col, cap=None, groove_col=None, sheen=0.28, name='hair'
     out = [f'<g filter="url(#{fid})">{"".join(body)}</g>']
     # sheen: a light band across the locks where the key light catches the curve of the head
     cid = d.uid('hc')
-    d.defs.append(f'<clipPath id="{cid}">' + (f'<path d="{pts(cap)}"/>' if cap else '')
+    d.defs.append(f'<clipPath id="{cid}">' + (''.join(f'<path d="{poly(c)}"/>' for c in cap) if cap else '')
                   + ''.join(f'<path d="{pts(g["poly"])}"/>' for g in G) + '</clipPath>')
     hb = d.blur(max(1.5, S * 0.014))
     sh = ''

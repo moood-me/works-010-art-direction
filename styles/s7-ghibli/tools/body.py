@@ -135,35 +135,50 @@ class Figure:
 
     # ---------------------------------------------------------------- hands and feet
     def hand(self, view, side, kind='relaxed'):
-        """a simple hand: palm, fingers held together and slightly curled, a thumb apart."""
+        """a hand: a palm, four fingers side by side and a thumb. Returns a list of flat pieces in drawing order
+        (far to near) — each drawn with its own line, so the fingers part from each other as in a drawing."""
         B = self.B
         s = 1 if side == 'l' else -1
         w, h = self.J['wr' + side], self.J['hd' + side]
         ax = unit(h - w)
         L = B['hand']
-        pal = self.pose['arm' + side].get('palm', (0, 0, 1))     # where the palm faces (model, before mirroring)
+        pal = self.pose['arm' + side].get('palm', (0, 0, 1))
         pn = unit(np.array(pal) * [s, 1, 1])
-        side_v = unit(np.cross(ax, pn))
+        pn = unit(pn - ax * np.dot(pn, ax))
+        sv = unit(np.cross(ax, pn)) * s          # across the knuckles, from the little finger to the index
         r = B['hand_r']
+        pieces = []
         if kind == 'fist':
-            pts = [w, w + ax * L * 0.45]
-            return unary_union([tube(view, pts, [r * 0.8, r * 1.15]), tube(view, [w + ax * L * 0.3 + side_v * r * 0.6 * s,
-                                                                               w + ax * L * 0.45 + pn * r * 0.6], [r * 0.45, r * 0.4])]), []
-        curl = 0.25 if kind == 'relaxed' else 0.05
-        k1 = w + ax * L * 0.48
-        tip = k1 + unit(ax + pn * curl * 2) * L * 0.5
-        palm = tube(view, [w, k1], [r * 0.75, r])
-        fingers = tube(view, [k1, k1 + unit(ax + pn * curl) * L * 0.28, tip], [r * 0.95, r * 0.8, r * 0.55])
-        th0 = w + ax * L * 0.15 + side_v * r * 0.7 * s * -1
-        thumb = tube(view, [th0, th0 + unit(ax * 0.8 + pn * 0.5 - side_v * 0.3 * s) * L * 0.38], [r * 0.45, r * 0.32])
-        g = unary_union([palm, fingers, thumb])
-        # a line between fingers: two short marks near the tip
-        marks = []
-        for f in (-0.3, 0.3):
-            a = k1 + unit(ax + pn * curl) * L * 0.12 + side_v * r * f
-            b = tip + side_v * r * f * 0.7 - ax * L * 0.06
-            marks.append(view.xy(np.array([a, b])))
-        return g, marks
+            k1 = w + ax * L * 0.42
+            palm = tube(view, [w, k1], [r * 0.8, r * 1.05])
+            knuck = tube(view, [k1 - sv * r * 0.7 + pn * r * 0.3, k1 + sv * r * 0.7 + pn * r * 0.3], [r * 0.62, r * 0.62])
+            thumb = tube(view, [w + ax * L * 0.15 + sv * r * 0.8, k1 + sv * r * 0.5 + pn * r * 0.9], [r * 0.42, r * 0.36])
+            return [unary_union([palm, knuck]), thumb]
+        curl = {'relaxed': 0.55, 'open': 0.12, 'hold': 0.95}.get(kind, 0.5)
+        k1 = w + ax * L * 0.47
+        palm = tube(view, [w, k1 - ax * r * 0.3], [r * 0.78, r * 1.0])
+        palm = unary_union([palm, tube(view, [k1 - sv * r * 0.65, k1 + sv * r * 0.65], [r * 0.55] * 2)])
+        fingers = []
+        for f, (off, ln) in enumerate(((-0.72, 0.36), (-0.24, 0.44), (0.24, 0.47), (0.72, 0.42))):
+            base = k1 + sv * r * off
+            d1 = unit(ax + pn * curl * 0.5 + sv * off * 0.06)
+            p1 = base + d1 * L * ln * 0.45
+            d2 = unit(ax + pn * curl * 1.6)
+            p2 = p1 + d2 * L * ln * 0.32
+            d3 = unit(ax * (1 - curl) + pn * curl * 2.2)
+            p3 = p2 + d3 * L * ln * 0.23
+            g = tube(view, [base, p1, p2, p3], [r * 0.30, r * 0.28, r * 0.26, r * 0.23])
+            dep = float(view.depth(np.array([p2]))[0])
+            fingers.append((dep, g))
+        th0 = w + ax * L * 0.12 + sv * r * 0.75
+        t1 = th0 + unit(ax * 0.7 + sv * 0.5 + pn * 0.4) * L * 0.26
+        t2 = t1 + unit(ax * 0.8 + pn * 0.6 * (0.5 + curl)) * L * 0.2
+        thumb = tube(view, [th0, t1, t2], [r * 0.42, r * 0.33, r * 0.26])
+        tdep = float(view.depth(np.array([t1]))[0])
+        pdep = float(view.depth(np.array([k1]))[0])
+        items = [(pdep, palm), (tdep, thumb)] + fingers
+        items.sort(key=lambda x: x[0])
+        return [g for _, g in items]
 
     def shoe(self, view, side, B_shoe):
         an = self.J['an' + side]

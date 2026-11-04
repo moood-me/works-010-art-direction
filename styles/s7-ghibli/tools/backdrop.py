@@ -45,22 +45,22 @@ def cloud(d, cx, cy, w, h, rnd, rough, top='#fbfaf6', shadow='#b9c3d6', mid='#e3
 
 
 def foliage(d, region, base, rnd, rough, n=60, r=(12, 30), light=(-0.5, -1)):
-    """a mass of leaves: the dark mass, then mid clumps toward the light, then a few light clumps."""
+    """a mass of leaves: the dark mass; mid-tone clumps that gather toward the light; small lit tips on them."""
     painted(d, region, mix(base, '#10201a', 0.35), rough)
     b = region.bounds
-    for tone, k, sz in ((base, 1.0, 1.0), (mix(base, '#e8f0a0', 0.30), 0.55, 0.75), (mix(base, '#fff6c0', 0.55), 0.25, 0.5)):
-        clumps = []
-        for _ in range(int(n * k)):
-            x, y = rnd.uniform(b[0], b[2]), rnd.uniform(b[1], b[3])
-            # clumps gather toward the lit side
-            if rnd.random() > 0.35 + 0.65 * ((b[3] - y) / max(b[3] - b[1], 1)) ** (1.2 / k):
-                continue
-            rr = rnd.uniform(*r) * sz
-            c = Point(x, y).buffer(rr, 16)
-            c = c.difference(shift(c, -light[0] * rr * 0.5, -light[1] * rr * 0.5))
-            clumps.append(c)
-        g = unary_union(clumps).intersection(region)
-        painted(d, g, tone, rough)
+    mids, lits = [], []
+    for _ in range(n):
+        x, y = rnd.uniform(b[0], b[2]), rnd.uniform(b[1], b[3])
+        up = (b[3] - y) / max(b[3] - b[1], 1)
+        if rnd.random() > 0.25 + 0.75 * up:
+            continue
+        rr = rnd.uniform(*r)
+        c = Point(x, y).buffer(rr, 18)
+        mids.append(c)
+        if rnd.random() < 0.6:
+            lits.append(c.intersection(shift(c, light[0] * rr * 0.55, light[1] * rr * 0.55)))
+    painted(d, unary_union(mids).intersection(region), base, rough)
+    painted(d, unary_union(lits).intersection(region), mix(base, '#f2f0a8', 0.38), rough)
 
 
 def grass(d, x0, x1, y, h, base, rnd, rough, n=220):
