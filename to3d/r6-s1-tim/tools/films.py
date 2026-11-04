@@ -18,11 +18,11 @@ def motion_film(motion, frames, cam, expr, talk=(), W=640, H=720, step=1):
 
 
 FILMS = {
-    'walk': lambda: motion_film('walk', 150, follow(-0.6), [{'t': 0, 'name': 'calm'}, {'t': 2.6, 'name': 'joy'}], [[0.8, 2.4]]),
+    'walk': lambda: motion_film('walk', 120, follow(-0.6), [{'t': 0, 'name': 'calm'}, {'t': 2.6, 'name': 'joy'}], [[0.8, 2.4]]),
     'sit': lambda: motion_film('sit', 150, follow(-0.9, 0.14, 3.4, 0.42), [{'t': 0, 'name': 'calm'}, {'t': 2.6, 'name': 'sad'}]),
-    'wave': lambda: motion_film('wave', 120, follow(-0.25, 0.06, 3.2, 0.62), [{'t': 0, 'name': 'joy'}], [[1.0, 3.2]]),
+    'wave': lambda: motion_film('wave', 90, follow(-0.25, 0.06, 3.2, 0.62), [{'t': 0, 'name': 'joy'}], [[1.0, 3.2]]),
     'jump': lambda: motion_film('jump', 105, follow(-0.4, 0.08, 4.0, 0.62), [{'t': 0, 'name': 'surprise'}, {'t': 1.4, 'name': 'joy'}]),
-    'look': lambda: motion_film('idle', 180, follow(-0.25, 0.05, 2.6, 0.72), [{'t': 0, 'name': 'calm'}, {'t': 4.0, 'name': 'smirk'}], [[1.5, 3.5]]),
+    'look': lambda: motion_film('idle', 120, follow(-0.25, 0.05, 2.6, 0.72), [{'t': 0, 'name': 'calm'}, {'t': 2.8, 'name': 'smirk'}], [[1.0, 2.6]]),
 }
 
 
@@ -34,7 +34,7 @@ def face_film():
 
 
 def turn_film():
-    n = 96
+    n = 72
     return 500, 820, 24, [{'name': f'f{i:04d}', 'set': {'motion': ['bow'], 't': 0, 'faceTime': i / 24, 'expr': [{'t': 0, 'name': 'calm'}],
                                                         'cam': {'yaw': -6.2832 * i / n, 'follow': [0, 0.62, 0], 'height': 1.42, 'dist': 5}}} for i in range(n)]
 

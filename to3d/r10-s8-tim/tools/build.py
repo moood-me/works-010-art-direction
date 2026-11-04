@@ -259,7 +259,7 @@ def arm_coord(X):
 
 
 HEM = (FEET - 1.75) * HH                          # the sweater's hem (world y)
-NECK_F, NECK_B = (FEET - 0.70) * HH, (FEET - 0.60) * HH   # the neckline, front and back
+NECK_F, NECK_B = (FEET - 0.63) * HH, (FEET - 0.57) * HH   # the neckline, front and back
 at, ap = arm_coord(BV)
 
 
@@ -277,6 +277,10 @@ f_sw = np.maximum.reduce([HEM - Y, neckline(BV), np.where(armw + handw > 0.3, at
 v, t, a, on = cut(BV, BT, f_sw, np.c_[BD, at, armw, BV])
 D_sw = a[:, :NJ]; at_s = a[:, NJ]; aw_s = a[:, NJ + 1]; rest_s = a[:, NJ + 2:]
 sv = v.copy()
+# the drawing's shoulders are high and round (the barrel closes up to the neck at 0.56 head): the trunk's top is lifted
+SH0 = 0.66
+lift = (sv[:, 1] > SH0) & (aw_s < 0.5)
+sv[lift, 1] = SH0 + (sv[lift, 1] - SH0) * 1.45
 # trunk part → the barrel (radially from the trunk's axis, at every height)
 A_, FR_, BK_ = torso_at(sv[:, 1])
 cz = (FR_ + BK_) / 2; hz = (FR_ - BK_) / 2
@@ -302,7 +306,9 @@ for s, pre in ((1, 'Left'), (-1, 'Right')):
     dd = rest_s[m] - BJ[IX[pre + 'Arm']]
     u_a[m] = np.arctan2(dd @ e2, dd @ e1) * 0.03
 uv_sw = np.c_[np.where(wa > 0.5, u_a, u_t), np.where(wa > 0.5, at_s * 0.17, sv[:, 1])]
-stripe = np.where(wa > 0.5, (FEET - 0.8) * HH - at_s * 0.17, sv[:, 1])
+# the stripes' coordinate: metres down from the first cream band's top (the drawing's stripes(0.62, …, 0.09) on the
+# body, (0.8, …) on the arms)
+stripe = np.where(wa > 0.5, at_s * 0.18 - 0.027, (FEET - 0.62) * HH - sv[:, 1])
 sj, sw = top4(D_sw)
 piece('sweater', 'sweater', sv, t, sj, sw, uv=uv_sw, pat=np.c_[np.zeros(len(sv)), stripe, np.zeros(len(sv))], subdiv=1)
 SW_V, SW_T, SW_D, SW_ON = sv, t, D_sw, on

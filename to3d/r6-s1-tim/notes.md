@@ -60,7 +60,7 @@ ball under real lids (not painted, unlike Р1/Р3/Р4, whose styles are graphic)
    and skins by centres of rotation; the engine's `armsOutOfHead` correction), `look.js` (the look), `face.js` (the
    face rig), `life.js` (timing), `paint.js` (the face layer), `ui.js` + `view.html` (the viewer).
 7. `compare.py turn figure expr portrait` (the drawing's views, same scale and place: side by side and overlaid),
-   `films.py walk turn face look wave sit` (mp4s), `steps.py`, `viewer_check.mjs` (the viewer as the site serves it).
+   `films.py walk turn face look wave` (mp4s; `sit` is defined but was not rendered: the machine was loaded), `steps.py`, `viewer_check.mjs` (the viewer as the site serves it).
 
 ## The look (`web/look.js`)
 
@@ -96,7 +96,7 @@ $PY head.py                     # → cache/head_fit.npz (+ head_fit*.png looks)
 python3 paint.py                # → web/data/paint.json
 $PY build.py                    # → web/data/tim.json/.bin (and the cache)
 python3 compare.py turn figure expr portrait
-python3 films.py walk turn face look wave sit      # ~2 s a frame on SwiftShader
+python3 films.py walk turn face look wave          # ~2–8 s a frame on SwiftShader
 $PY steps.py
 node viewer_check.mjs /tmp/v.png
 ```

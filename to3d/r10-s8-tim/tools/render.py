@@ -154,7 +154,7 @@ def mat_skin():
 def mat_hair():
     m, nt, b = nodes('hair')
     uv = sep(nt, attr(nt, 'tuv').outputs['Vector'])
-    base = lin('#7a4220')
+    base = lin('#6e3a1c')
     # fine strands across each lock (the drawing's strand lines) and its grooves: stripes in the across coordinate
     across = uv.outputs['X']
     w = math_(nt, 'MULTIPLY', across, 9.0)
@@ -181,14 +181,14 @@ def mat_eye():
     return m
 
 
-def mat_knit(name, base, stripe=None, period=None, y0=0.0, rib=0.0045):
+def mat_knit(name, base, stripe=None, period=None, y0=0.0, rib=0.013):
     """knitting: vertical ribs (the uv's across coordinate in metres), stitches as small Vs along them, stripes by
     the rest height (pat.y), fuzz (sheen)"""
     m, nt, b = nodes(name)
     uv = sep(nt, attr(nt, 'tuv').outputs['Vector'])
     pat = sep(nt, attr(nt, 'pat').outputs['Vector'])
     u = math_(nt, 'DIVIDE', uv.outputs['X'], rib)
-    v = math_(nt, 'DIVIDE', uv.outputs['Y'], rib * 0.75)
+    v = math_(nt, 'DIVIDE', uv.outputs['Y'], rib * 0.45)
     ribs = math_(nt, 'ABSOLUTE', math_(nt, 'SINE', math_(nt, 'MULTIPLY', u, math.pi)))
     # stitches: each rib a column of small chevrons
     st = math_(nt, 'FRACT', math_(nt, 'ADD', v, math_(nt, 'MULTIPLY', math_(nt, 'ABSOLUTE', math_(nt, 'SUBTRACT', math_(nt, 'FRACT', u), 0.5)), 1.2)))
@@ -200,8 +200,9 @@ def mat_knit(name, base, stripe=None, period=None, y0=0.0, rib=0.0045):
     bump(nt, b, h, 0.6, 0.0016)
     col = base
     if stripe:
-        k = math_(nt, 'FRACT', math_(nt, 'DIVIDE', math_(nt, 'SUBTRACT', pat.outputs['Y'], y0), 2 * period))
-        f = math_(nt, 'GREATER_THAN', k, 0.5)
+        # cream where the coordinate (metres down from the first cream band) is in the first half of each period
+        k = math_(nt, 'FRACT', math_(nt, 'DIVIDE', pat.outputs['Y'], 2 * period))
+        f = math_(nt, 'MULTIPLY', math_(nt, 'LESS_THAN', k, 0.5), math_(nt, 'GREATER_THAN', pat.outputs['Y'], 0.0))
         col = mixc(nt, f, base, stripe)
     # yarn colour varies a little; deeper between the ribs
     col = mixc(nt, math_(nt, 'MULTIPLY', math_(nt, 'SUBTRACT', 1.0, ribs), 0.35), col, lin('#000000'))
@@ -235,9 +236,9 @@ def mat_plain(name, base, rough=0.5, coat=0.0, sheen=0.0, sss=0.0, bump_scale=0.
 
 MATS = {
     'skin': mat_skin, 'hair': mat_hair, 'eye': mat_eye,
-    'sweater': lambda: mat_knit('sweater', lin('#2c4a72'), lin('#f0e6d2'), 0.09 * HH, meta.get('stripe_y0', 0.0)),
-    'cuff': lambda: mat_knit('cuff', lin('#24406a'), rib=0.003),
-    'sock': lambda: mat_knit('sock', lin('#e8e0d0'), rib=0.0035),
+    'sweater': lambda: mat_knit('sweater', lin('#2c4a72'), lin('#f0e6d2'), 0.09 * HH),
+    'cuff': lambda: mat_knit('cuff', lin('#24406a'), rib=0.005),
+    'sock': lambda: mat_knit('sock', lin('#e8e0d0'), rib=0.006),
     'shorts': lambda: mat_felt('shorts', lin('#6a5a3a')),
     'shoe': lambda: mat_plain('shoe', lin('#c83a2a'), rough=0.38, coat=0.35, bump_scale=300),
     'sole': lambda: mat_plain('sole', lin('#efe6d6'), rough=0.7, bump_scale=200),
@@ -312,7 +313,7 @@ for i, c in enumerate(['#ffcf8a', '#ffb070', '#ffe0b0', '#9ab8ff', '#ff9a70']):
     e = em.node_tree.nodes; o_ = e['Material Output']
     for n in list(e):
         if n != o_: e.remove(n)
-    E = e.new('ShaderNodeEmission'); E.inputs[0].default_value = lin(c); E.inputs[1].default_value = 12.0
+    E = e.new('ShaderNodeEmission'); E.inputs[0].default_value = lin(c); E.inputs[1].default_value = 6.0
     em.node_tree.links.new(E.outputs[0], o_.inputs[0])
     LAMP_MATS.append(em)
 SET = []
@@ -340,14 +341,14 @@ def set_behind(at, fwd, d, W, H, pxm):
         x, y = rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.42)
         if abs(x) < 0.2 and y < 0.3: x += 0.3 * np.sign(x or 1)
         p = at - fwd * back + right * x * wv + np.array([0, 0, 1.0]) * y * hv
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=rng.uniform(0.004, 0.012) * (d + back) / 4, location=tuple(p), segments=10, ring_count=5)
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=rng.uniform(0.003, 0.008) * (d + back) / 4, location=tuple(p), segments=10, ring_count=5)
         s_ = bpy.context.active_object
         s_.data.materials.append(LAMP_MATS[rng.integers(len(LAMP_MATS))])
         s_.visible_shadow = False; s_.visible_diffuse = False; s_.visible_glossy = False
         SET.append(s_)
     # the warm pool of light on the backdrop, upper left of the picture
-    l = bpy.data.lights.new('pool', 'SPOT'); l.energy = 600 * job.get('light', 1.0) * (d + back) ** 2 / 16
-    l.color = lin(st['glow'])[:3]; l.spot_size = math.radians(40); l.spot_blend = 1.0
+    l = bpy.data.lights.new('pool', 'SPOT'); l.energy = 140 * job.get('light', 1.0) * (d + back) ** 2 / 16
+    l.color = lin(st['glow'])[:3]; l.spot_size = math.radians(28); l.spot_blend = 1.0
     ob = bpy.data.objects.new('pool', l); sc.collection.objects.link(ob); SET.append(ob)
     tgt = at - fwd * (back + 1.0) - right * 0.35 * wv + np.array([0, 0, 0.25 * hv])
     ob.location = Vector(tgt + fwd * 2.0 + np.array([0, 0, 0.5]))
@@ -368,9 +369,9 @@ def lights(centre, yaw=0.0):
     c = Vector(centre)
     k = job.get('light', 1.0)
     R = Matrix.Rotation(-yaw, 3, 'Z')
-    area('key', c + R @ Vector((-1.6, -1.8, 1.9)), c, 0.9, 260 * k, '#ffd8a8')
-    area('rim', c + R @ Vector((1.5, 1.6, 1.1)), c, 0.6, 160 * k, '#a8c4ff')
-    area('fill', c + R @ Vector((1.8, -1.6, 0.2)), c, 1.6, 30 * k, '#b8c0d8')
+    area('key', c + R @ Vector((-1.9, -1.5, 1.9)), c, 0.7, 200 * k, '#ffdcb4')
+    area('rim', c + R @ Vector((1.6, 1.5, 1.2)), c, 0.5, 180 * k, '#a8c4ff')
+    area('fill', c + R @ Vector((1.8, -1.6, 0.2)), c, 1.6, 12 * k, '#b8c0d8')
 
 
 # ------------------------------------------------------------------ cameras and output

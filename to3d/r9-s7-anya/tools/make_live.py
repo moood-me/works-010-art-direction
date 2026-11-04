@@ -16,7 +16,7 @@ NEAR = lambda yaw: dict(mode='persp', dist=1.45, fov=22, yaw=yaw, pitch=0.03, fo
 FILMS = {
     'face-live': dict(w=480, h=540, fps=30, set=dict(STAND, clip=None, cam=HEAD, talk=True, talkFrom=2.0, talkTo=5.0,
                       exprTrack=[[0, 'calm'], [5.2, 'joy'], [6.9, 'surprise'], [8.4, 'sad'], [10.0, 'anger'],
-                                 [11.6, {'joy': 0.5, 'surprise': 0.5}]]), time=(0, 13.2)),
+                                 [11.6, {'joy': 0.35, 'surprise': 0.65}]]), time=(0, 13.2)),
     'idle-face': dict(w=480, h=540, fps=30, set=dict(clip='idle', cam=NEAR(-0.2), exprTrack=[[0, 'dream']], talk=False), frames=150),
     'walk': dict(w=560, h=860, fps=30, set=dict(clip='walk', cam=FULL(0.8), exprTrack=[[0, 'calm'], [2.0, 'dream']], talk=False), frames=120),
     'wave': dict(w=560, h=860, fps=30, set=dict(clip='wave', cam=FULL(0.35), exprTrack=[[0, 'joy']], talk=True, talkFrom=0.6, talkTo=2.4), frames=90),

@@ -278,7 +278,7 @@ export class LiveFace {
     const mix = (k, ww = w) => { let s = 0, z = 0; for (const n of EXPR_NAMES) { s += ww[n] * EXPR[n][k]; z += ww[n]; } return s / (z || 1); };
     const E = {};
     for (const k of KEYS) E[k] = mix(k, k.startsWith('brow') ? wb : w);
-    E.closedOpen = Math.min(1, E.closed * 1.6);           // a joy eye closes on its way to the arc
+    E.closedOpen = 0.9 * Math.min(1, (E.closed / 0.5) ** 3);   // a joy eye closes on its way to the arc (a mix keeps it open)
     let look = [E.lx, E.ly];
     const base = look.slice();
     let f = this.fix[0]; { let lo = 0, hi = this.fix.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (this.fix[m].t <= t) lo = m; else hi = m - 1; } f = this.fix[lo]; }

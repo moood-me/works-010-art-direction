@@ -81,10 +81,10 @@ def mouth(ex):
     # upper lip: from its outer edge (s=0) to the line of the mouth (s=1); a roll that rises and turns in
     r = np.linspace(0, 1, R)[:, None]
     yu = top - (ul * 1.4 * s ** 0.5 + 0.004) * (1 - r)
-    hu_ = 0.011 * np.sin(np.pi * (0.12 + 0.88 * r)) ** 0.7 * env
+    hu_ = 0.006 * np.sin(np.pi * (0.12 + 0.88 * r)) ** 0.7 * env
     out['lipU'] = laid(np.tile(x, (R, 1)), yu, 0.0, ym, hu_)
     yl = bot + (ll * 1.5 * s ** 0.6 + 0.005) * (1 - r)
-    hl = 0.014 * np.sin(np.pi * (0.12 + 0.88 * r)) ** 0.7 * env
+    hl = 0.008 * np.sin(np.pi * (0.12 + 0.88 * r)) ** 0.7 * env
     out['lipL'] = laid(np.tile(x, (R, 1)), yl, 0.0, ym, hl)
     # the dark of the mouth between the lines; a little sunk in the middle (it reads as depth under the lips)
     yc = top + (bot - top) * r
@@ -165,7 +165,7 @@ def lash(L, side):
     tang = np.gradient(Pm, axis=0); tang /= np.linalg.norm(tang, axis=1, keepdims=True)
     upd = np.cross(tang, rad) * side
     upd *= np.sign((upd @ up).mean())
-    rows = [Pm + rad * 0.003, Pm + rad * 0.006 + upd * width * 0.5, Pm + rad * 0.003 + upd * width]
+    rows = [Pm + rad * 0.004, Pm + rad * 0.011 + upd * width * 0.6, Pm + rad * 0.007 + upd * width * 1.3]
     V = np.concatenate(rows)
     m = len(ids)
     T = grid_tris(3, m)

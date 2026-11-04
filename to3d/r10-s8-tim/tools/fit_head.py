@@ -25,7 +25,7 @@ from common import CACHE, vertex_normals
 P = drawing.P
 R_EYE = P['eye_r'] * 1.05          # the drawing draws the ball 5 % bigger than eye_r
 LID_R = 1.03            # the lid margin's distance from the eye's centre, in eyeball radii
-K_NOSE, K_LIPS, K_FACE, K_EAR = 0.5, 0.0, 0.3, 1.0
+K_NOSE, K_LIPS, K_FACE, K_EAR = 0.8, 0.0, 0.3, 1.0
 LOWZ = None
 
 
@@ -162,7 +162,7 @@ def main():
     ear = {s: (s * V0[:, 0] > 0.36) & (V0[:, 1] > -0.24) & (V0[:, 1] < 0.12) & (V0[:, 2] > -0.1) & (V0[:, 2] < 0.13)
            for s in (1, -1)}
     # the lower face is the drawing's smooth mask (a puppet's cheeks): less of the base's folds there
-    k = K_FACE * (0.3 + 0.7 * np.clip((V0[:, 1] + 0.25) / 0.15, 0, 1))
+    k = K_FACE * np.clip((V0[:, 1] + 0.16) / 0.12, 0, 1)
     k = k + (K_NOSE - K_FACE) * smooth_mask(nose, adj, 6) + (K_LIPS - K_FACE) * np.minimum(1, 1.6 * smooth_mask(lips, adj, 8))
     k = k + (K_EAR - K_FACE) * smooth_mask(ear[1] | ear[-1], adj, 3)
     k = k * (1 - smooth_mask(underpatch, adj, 6))
