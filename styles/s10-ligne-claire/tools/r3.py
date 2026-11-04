@@ -19,6 +19,7 @@ import lc
 
 class View:
     def __init__(self, yaw=0.0, pitch=0.0, roll=0.0, s=1.0, cx=0.0, cy=0.0, ss=2):
+        self.yaw_deg = yaw
         self.yaw, self.pitch, self.roll = math.radians(yaw), math.radians(pitch), math.radians(roll)
         self.s, self.cx, self.cy, self.ss = s, cx, cy, ss   # ss: raster pixels per output pixel
 

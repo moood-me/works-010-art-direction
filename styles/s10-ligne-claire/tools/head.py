@@ -225,7 +225,8 @@ class Shell:
 class Mark:
     """A 3D polyline or closed shape drawn on top of the regions."""
 
-    def __init__(self, pts, kind='line', w=1.0, fill=None, stroke=lc.INK, corners=(), tol=4.0, whole=False):
+    def __init__(self, pts, kind='line', w=1.0, fill=None, stroke=lc.INK, corners=(), tol=4.0, whole=False, on='skin'):
+        self.on = on
         self.pts, self.kind, self.w, self.fill, self.stroke = np.asarray(pts, float), kind, w, fill, stroke
         self.corners, self.tol, self.whole = corners, tol, whole
 
@@ -259,11 +260,11 @@ def draw(head, view, box, colours, expr=None, lw=lc.LINE, clip_id='fc'):
     out += R.lines(lw)
     marks = []
     for f in head.marks:
-        marks += f(head, expr or {})
-    # marks on the skin are clipped to the skin so nothing crosses a contour in near-profile views
-    face = [m for m in marks if getattr(m, 'on', 'skin') == 'skin']
-    other = [m for m in marks if getattr(m, 'on', 'skin') != 'skin']
-    clip = R.clip_path(['skin'], clip_id)
-    out.append(f'<defs>{clip}</defs><g clip-path="url(#{clip_id})">' + ''.join(draw_marks(face, R, lw)) + '</g>')
-    out += draw_marks(other, R, lw)
+        marks += f(head, expr or {}, view)
+    # marks are clipped to the material they lie on, so nothing crosses a contour in near-profile views
+    for mat in sorted(set(m.on for m in marks)):
+        ms = [m for m in marks if m.on == mat]
+        cid = f'{clip_id}-{mat}'
+        out.append(f'<defs>{R.clip_path([mat], cid)}</defs><g clip-path="url(#{cid})">'
+                   + ''.join(draw_marks(ms, R, lw)) + '</g>')
     return out, R
