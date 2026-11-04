@@ -13,8 +13,8 @@ import { register } from '../deform.js';
 import { taubin } from '../regions.js';
 import { normalsOf } from '../mesh.js';
 import { lerp } from '../math.js';
+import { num } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 const KEEP = { head: 1, fingers: 1, toes: 1 };
 
 register({

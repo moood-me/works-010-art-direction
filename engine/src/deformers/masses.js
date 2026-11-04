@@ -12,12 +12,13 @@ import { smoothField } from '../regions.js';
 import { normalsOf } from '../mesh.js';
 import { smin } from '../math.js';
 import { ownContours } from './contour.js';
+import { num, flag, vec } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max }), v3 = { type: 'array', min: 3, max: 3, items: num(-10, 10) };
+const v3 = vec(3, -10, 10);
 const PLACE = { type: 'object', props: { from: { type: 'string', pattern: /^[A-Za-z0-9]+$/ }, to: { type: 'string', pattern: /^[A-Za-z0-9]+$/ }, t: num(-2, 3), along: num(-10, 10), offset: v3 }, required: ['from'] };
 const ITEM = { type: 'object', props: {
   shape: { type: 'string', enum: ['ellipsoid', 'capsule'] }, at: PLACE, to: PLACE, radii: v3, r: { type: 'array', min: 2, max: 2, items: num(0, 10) },
-  blend: num(0, 10), unit: { type: 'string', enum: ['torso', 'arm', 'leg'] }, mirror: { type: 'boolean' } }, required: ['shape', 'at'] };
+  blend: num(0, 10), unit: { type: 'string', enum: ['torso', 'arm', 'leg'] }, mirror: flag }, required: ['shape', 'at'] };
 
 register({
   kind: 'masses', of: 'skin',

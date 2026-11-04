@@ -157,7 +157,8 @@
      "mouth": {
       "y": -0.9,
       "w": 0.46,
-      "wide": true
+      "wide": true,
+      "crooked": 0.12
      }
     }
    }

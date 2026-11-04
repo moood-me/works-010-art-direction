@@ -17,8 +17,8 @@
 import { register } from '../deform.js';
 import { clamp, sst, qRot, qAxisAngle, getQ } from '../math.js';
 import { turnUnder, keepFeet } from '../pose.js';
+import { num } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 
 // the line's curve: its offset (metres) and its slope's angle at a height y (metres at the rest)
 function lineCurve(p, R) {

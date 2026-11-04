@@ -207,7 +207,7 @@ if (!only || only.includes('heads')) {
     const fig = await E.figure(c), plain = await E.figure(resolve({ ...structuredClone(woman), body: spec.body }, sk));
     for (const [m, t] of HM) {
       const clip = await E.clip(m); fig.frame(clip, t, fig.pose); plain.frame(clip, t, plain.pose);
-      check(`${c} ${m}${t}: head edge stretch in motion against the plain body's`, stretch(headMesh, P, fig.positions) / stretch(headMesh, base.mesh.positions, plain.positions), 1.3, '×');
+      check(`${c} ${m}${t}: head edge stretch in motion against the plain body's`, stretch(headMesh, base.mesh.positions, fig.positions, P) / stretch(headMesh, base.mesh.positions, plain.positions), 1.3, '×');
       // a piece's root against the skin: the nose piece's points nearest the skin at the rest stay as near
       const nose = fig.outputs.find(o => o.name === 'nose');
       if (nose) check(`${c} ${m}${t}: the nose piece off the skin, beyond its rest`, pieceGap(nose, fig.outputs[0], body), 3, ' mm');

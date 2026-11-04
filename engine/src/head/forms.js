@@ -12,10 +12,11 @@
 // neck: the body's neck where it meets the head ({c: [x, y, z], r} in head units, measured by the wrap).
 import { smin, clamp } from '../math.js';
 import { smax, sdEll, sdCapsule, sdSphere, udTriangle, sdPoly2, catmull, keysAt, monotone, frontZ } from './shapes.js';
+import { num, flag, vec } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max }), v2 = { type: 'array', min: 2, max: 2, items: num(-10, 10) }, v3 = { type: 'array', min: 3, max: 3, items: num(-10, 10) };
+const v2 = vec(2, -10, 10), v3 = vec(3, -10, 10);
 const curve = { type: 'array', min: 1, items: v2 };
-const ELL = { type: 'object', props: { at: v3, r: v3, k: num(0, 2), mirror: { type: 'boolean' } }, required: ['at', 'r'] };
+const ELL = { type: 'object', props: { at: v3, r: v3, k: num(0, 2), mirror: flag }, required: ['at', 'r'] };
 const CURVES = {
   type: 'object', required: ['kind', 'face'], props: {
     kind: { const: 'curves' }, size: num(0.3, 3),
@@ -29,11 +30,11 @@ const CURVES = {
         root: v3, tip: v3, base: v3, radius: { anyOf: [num(0, 1), { type: 'array', min: 2, max: 2, items: num(0, 1) }] },
         ball: { type: 'object', props: { at: v3, r: num(0, 2), k: num(0, 1) }, required: ['at', 'r'] },
         wings: { type: 'object', props: { y: num(-3, 3), z: num(-3, 3), r: v3 }, required: ['y', 'z', 'r'] },
-        piece: { type: 'boolean' } } },
+        piece: flag } },
       lips: { type: 'array', items: ELL }, masses: { type: 'array', items: ELL } } },
   },
 };
-const MASS = { type: 'object', props: { at: v3, r: v3, k: num(0, 2), mirror: { type: 'boolean' } }, required: ['at', 'r'] };
+const MASS = { type: 'object', props: { at: v3, r: v3, k: num(0, 2), mirror: flag }, required: ['at', 'r'] };
 const SOLID = {
   type: 'object', required: ['kind', 'face', 'eye'], props: {
     kind: { const: 'solid' }, size: num(0.3, 3), place: { type: 'object', props: { at: v3, scale: num(0.05, 5), neck: { type: 'object', props: { a: v3, b: v3, rx: num(0, 3), rz: num(0, 3) }, required: ['a', 'b', 'rx', 'rz'] } }, required: ['at', 'scale'] },

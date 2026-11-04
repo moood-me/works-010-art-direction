@@ -16,9 +16,7 @@ export function paintFace(g, size, features, skin, state = {}) {
   const P = { g, FX, FY, KS };
   g.fillStyle = skin; g.fillRect(0, 0, size, size);
   const by = kind => features.filter(f => f.kind === kind);
-  for (const f of by('blush')) for (const s of [-1, 1]) radial(P, s * (f.x ?? 0.52), f.y ?? -0.56, (f.r ?? 0.24), `rgba(240,120,120,${0.45 * f.amount})`, 'rgba(240,120,120,0)');
-  for (const f of by('eye')) if (f.bags) for (const s of [-1, 1]) radial(P, s * f.x, f.y - 0.12, 0.3, f.bags + 'aa', f.bags + '00');
-  for (const f of by('tint')) radial(P, f.x ?? 0, f.y ?? -0.64, f.r ?? 0.16, f.color, f.color + '00');
+  for (const w of washes(features)) radial(P, w);
   for (const f of by('mask')) drawMask(P, f);
   for (const f of by('eye')) for (const s of [-1, 1]) drawEye(P, f, s, state);
   // (a brow as volume is a relief: it moves with the skin's own morph, its drawing stays where the relief is)
@@ -27,8 +25,24 @@ export function paintFace(g, size, features, skin, state = {}) {
   for (const f of by('mouth')) drawMouth(P, f, state);
 }
 
-function radial({ g, FX, FY, KS }, x, y, r, a, b) {
-  const gr = g.createRadialGradient(FX(x), FY(y), 0, FX(x), FY(y), r * KS); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, g.canvas.width, g.canvas.height);
+// the soft washes of colour over the face — blush, bags under the eyes, a nose's tint: each a round spot {x, y, r}
+// of a colour ([r, g, b] 0..255) whose alpha falls from `alpha` in its middle to 0 at r — what the picture draws, and what
+// a piece over the skin takes on itself (src/head/pieces.js: a nose keeps its tint and the blush across it)
+export function washes(features) {
+  const rgb = c => [1, 3, 5].map(k => parseInt(c.slice(k, k + 2), 16)), by = kind => features.filter(f => f.kind === kind), out = [];
+  for (const f of by('blush')) for (const s of [-1, 1]) out.push({ x: s * (f.x ?? 0.52), y: f.y ?? -0.56, r: f.r ?? 0.24, color: [240, 120, 120], alpha: 0.45 * f.amount });
+  for (const f of by('eye')) if (f.bags) for (const s of [-1, 1]) out.push({ x: s * f.x, y: f.y - 0.12, r: 0.3, color: rgb(f.bags), alpha: 0xaa / 255 });
+  for (const f of by('tint')) out.push({ x: f.x ?? 0, y: f.y ?? -0.64, r: f.r ?? 0.16, color: rgb(f.color), alpha: 1 });
+  return out;
+}
+// a colour ([r, g, b] 0..255) with the washes over it at (x, y), as the picture composes them
+export function washedAt(list, base, x, y) {
+  const c = base.slice();
+  for (const w of list) { const a = w.alpha * Math.max(0, 1 - Math.hypot(x - w.x, y - w.y) / w.r); for (let k = 0; k < 3; k++) c[k] = c[k] * (1 - a) + w.color[k] * a; }
+  return c;
+}
+function radial({ g, FX, FY, KS }, { x, y, r, color: [R, G, B], alpha }) {
+  const gr = g.createRadialGradient(FX(x), FY(y), 0, FX(x), FY(y), r * KS); gr.addColorStop(0, `rgba(${R},${G},${B},${alpha})`); gr.addColorStop(1, `rgba(${R},${G},${B},0)`); g.fillStyle = gr; g.fillRect(0, 0, g.canvas.width, g.canvas.height);
 }
 
 function drawEye({ g, FX, FY, KS }, E, s, st) {
@@ -146,18 +160,30 @@ function drawMouth(P, M, st) {
   if (M.lowerLine) { g.strokeStyle = M.line || '#7a3a36'; g.lineWidth = 0.01 * KS; g.globalAlpha = 0.5; g.beginPath(); const y = M.y - (M.lower || 0) - 0.035, w = M.w / 2; g.moveTo(FX(-w * M.lowerLine), FY(y)); g.quadraticCurveTo(FX(0), FY(y - 0.008), FX(w * M.lowerLine), FY(y)); g.stroke(); g.globalAlpha = 1; }
   if (M.dimple && !sm) { g.strokeStyle = M.line || '#7a3a36'; g.lineWidth = 0.009 * KS; g.beginPath(); const [x, y] = L[L.length - 1]; g.moveTo(FX(x + 0.005), FY(y + 0.02)); g.quadraticCurveTo(FX(x + 0.025), FY(y), FX(x + 0.008), FY(y - 0.022)); g.stroke(); }
 }
+// a wide grin's lines (head units): its top and bottom (a crescent from corner to corner) and the upper teeth's lower
+// edge along its top — what the wrap lays the lips' parting along (src/head/wrap.js), so an open jaw opens below the teeth
+export function grinLines(M, st = {}, n = 28) {
+  const smile = clamp(st.smile ?? 0, 0, 1), ww = M.w * (1 + 0.08 * smile), cr = (M.crooked || 0) * ww, lift = 0.05 * smile;
+  const qb = (a, c, b, t) => [0, 1].map(k => (1 - t) * (1 - t) * a[k] + 2 * (1 - t) * t * c[k] + t * t * b[k]);
+  const A = [-ww, M.y + 0.12 * ww - cr + lift], B = [ww, M.y + 0.12 * ww + cr + lift], cu = [0, M.y - 0.25 * ww], cl = [0, M.y - 0.9 * ww], teethH = 0.05 * ww / 0.46;
+  const top = [], bot = [], teeth = [];
+  for (let k = 0; k <= n; k++) { const t = k / n; top.push(qb(A, cu, B, t)); bot.push(qb(A, cl, B, t)); teeth.push([top[k][0], top[k][1] - Math.min((top[k][1] - bot[k][1]) * 0.3, teethH) * Math.sin(Math.PI * t) ** 0.3]); }
+  return { top, bot, teeth };
+}
 // a wide grin: a dark crescent, the upper teeth along its top
 function drawGrin({ g, FX, FY, KS }, M, st) {
-  const smile = clamp(st.smile ?? 0, 0, 1), ww = M.w * (1 + 0.08 * smile), cr = (M.crooked || 0) * ww, lift = 0.05 * smile, n = 28;
-  const qb = (a, c, b, t) => [0, 1].map(k => (1 - t) * (1 - t) * a[k] + 2 * (1 - t) * t * c[k] + t * t * b[k]);
-  const A = [-ww, M.y + 0.12 * ww - cr + lift], B = [ww, M.y + 0.12 * ww + cr + lift], cu = [0, M.y - 0.25 * ww], cl = [0, M.y - 0.9 * ww];
-  const top = [], bot = []; for (let k = 0; k <= n; k++) { const t = k / n; top.push(qb(A, cu, B, t)); bot.push(qb(A, cl, B, t)); }
+  const { top, bot, teeth } = grinLines(M, st), n = top.length - 1;
   const shape = () => { g.beginPath(); top.forEach(([x, y], i) => i ? g.lineTo(FX(x), FY(y)) : g.moveTo(FX(x), FY(y))); for (let k = n; k >= 0; k--) g.lineTo(FX(bot[k][0]), FY(bot[k][1])); g.closePath(); };
-  shape(); g.fillStyle = '#5a1e1e'; g.fill();
+  shape(); g.fillStyle = M.inside ?? GRIN.inside; g.fill();
   g.save(); shape(); g.clip();
-  const teethH = 0.05 * ww / 0.46;
-  g.fillStyle = '#fbf6ef'; g.beginPath(); top.forEach(([x, y], i) => i ? g.lineTo(FX(x), FY(y + 0.01)) : g.moveTo(FX(x), FY(y + 0.01)));
-  for (let k = n; k >= 0; k--) { const t = k / n, d = top[k][1] - bot[k][1]; g.lineTo(FX(top[k][0]), FY(top[k][1] - Math.min(d * 0.3, teethH) * Math.sin(Math.PI * t) ** 0.3)); } g.closePath(); g.fill();
+  g.fillStyle = M.teeth ?? GRIN.teeth; g.beginPath(); top.forEach(([x, y], i) => i ? g.lineTo(FX(x), FY(y + 0.01)) : g.moveTo(FX(x), FY(y + 0.01)));
+  // (the teeth end above where the skin parts under the grin, when it is known: src/head/head.js)
+  const end = k => M.parting ? Math.min(top[k][1] + 0.01, Math.max(teeth[k][1], along(M.parting, teeth[k][0]) + 0.004)) : teeth[k][1];
+  for (let k = n; k >= 0; k--) g.lineTo(FX(teeth[k][0]), FY(end(k))); g.closePath(); g.fill();
   g.restore();
-  g.strokeStyle = '#3a1210'; g.lineJoin = 'round'; g.lineCap = 'round'; g.lineWidth = 0.012 * KS; shape(); g.stroke();
+  g.strokeStyle = M.line ?? GRIN.line; g.lineJoin = 'round'; g.lineCap = 'round'; g.lineWidth = (M.lineW ?? 0.012) * KS; shape(); g.stroke();
 }
+// a curve's height at x (its points [x, y] in order of x, held flat beyond its ends)
+export const along = (Q, x) => { if (x <= Q[0][0]) return Q[0][1]; let k = 1; while (k < Q.length - 1 && Q[k][0] < x) k++; if (x >= Q[k][0]) return Q[k][1]; return lerp(Q[k - 1][1], Q[k][1], (x - Q[k - 1][0]) / (Q[k][0] - Q[k - 1][0])); };
+// a grin's colours when its mouth names none (Г1's)
+const GRIN = { inside: '#5a1e1e', teeth: '#fbf6ef', line: '#3a1210' };

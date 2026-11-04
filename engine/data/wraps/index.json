@@ -1,0 +1,20 @@
+{
+ "format": "engine/stored",
+ "version": 1,
+ "kind": "wraps",
+ "about": "Wrapped heads (src/head/wrap.js), each stored by the key of what it is made from (wrapKey): written by engine/tools/characters.mjs wraps.",
+ "keys": [
+  "008fe3bbd75d0cca",
+  "07569b2a7856278f",
+  "0f37eb14887b43bc",
+  "1ee7bf9781964412",
+  "243c7b39bf436e9d",
+  "2fea7bbedebe8989",
+  "31263b85dc704c5d",
+  "457c7bec25f6b4ac",
+  "7ec763339df5da9e",
+  "95c9cf50cdd9bf32",
+  "dc17fef384f756aa",
+  "f614a696641c8fb6"
+ ]
+}

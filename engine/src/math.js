@@ -79,3 +79,35 @@ export const getQ = (A, j) => [A[j * 4], A[j * 4 + 1], A[j * 4 + 2], A[j * 4 + 3
 export const setQ = (A, j, q) => { A[j * 4] = q[0]; A[j * 4 + 1] = q[1]; A[j * 4 + 2] = q[2]; A[j * 4 + 3] = q[3]; };
 export const getV = (A, j) => [A[j * 3], A[j * 3 + 1], A[j * 3 + 2]];
 export const setV = (A, j, v) => { A[j * 3] = v[0]; A[j * 3 + 1] = v[1]; A[j * 3 + 2] = v[2]; };
+
+// a smooth warp through points (src → dst): biharmonic radial basis (|r|) plus an affine part — as a function
+// (x, y, z, out) → the move there
+export function biharmonic(src, dst) {
+  const n = src.length, m = n + 4, A = Array.from({ length: m }, () => new Float64Array(m)), B = [0, 1, 2].map(() => new Float64Array(m));
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) A[i][j] = Math.hypot(src[i][0] - src[j][0], src[i][1] - src[j][1], src[i][2] - src[j][2]);
+    A[i][n] = 1; A[i][n + 1] = src[i][0]; A[i][n + 2] = src[i][1]; A[i][n + 3] = src[i][2];
+    for (let k = 0; k < 4; k++) A[n + k][i] = A[i][n + k];
+    for (let c = 0; c < 3; c++) B[c][i] = dst[i][c] - src[i][c];
+  }
+  const W = B.map(b => solve(A, b)), S = Float64Array.from(src.flat());
+  return (x, y, z, out = [0, 0, 0]) => {
+    for (let c = 0; c < 3; c++) {
+      const w = W[c]; let v = w[n] + w[n + 1] * x + w[n + 2] * y + w[n + 3] * z;
+      for (let i = 0; i < n; i++) v += w[i] * Math.hypot(x - S[i * 3], y - S[i * 3 + 1], z - S[i * 3 + 2]);
+      out[c] = v;
+    }
+    return out;
+  };
+}
+// Gauss–Jordan with partial pivoting
+export function solve(A0, b0) {
+  const m = A0.length, a = A0.map(r => Float64Array.from(r)), b = Float64Array.from(b0);
+  for (let i = 0; i < m; i++) {
+    let p = i; for (let r = i + 1; r < m; r++) if (Math.abs(a[r][i]) > Math.abs(a[p][i])) p = r;
+    [a[i], a[p]] = [a[p], a[i]]; [b[i], b[p]] = [b[p], b[i]];
+    const d = a[i][i] || 1e-12;
+    for (let r = 0; r < m; r++) { if (r === i) continue; const f = a[r][i] / d; if (!f) continue; for (let c = i; c < m; c++) a[r][c] -= f * a[i][c]; b[r] -= f * b[i]; }
+  }
+  return Float64Array.from(b, (v, i) => v / (a[i][i] || 1e-12));
+}

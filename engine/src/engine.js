@@ -14,7 +14,7 @@ import { readJSON, defaultRead, loadPack } from './pack.js';
 import { pinned, checkPin, canonical, hashOf } from './hash.js';
 import { resolve, checkPreset } from './character.js';
 import { turnAtRest, morphAtRest } from './changes.js';
-import { DEFORMERS, deformAtRest, layerOf, turnLayer, restLayer } from './deform.js';
+import { DEFORMERS, deformAtRest, layerOf, turnLayer, restLayer, complete } from './deform.js';
 import { Figure } from './figure.js';
 import { buildHead, LIGHT_DEFAULTS } from './head/head.js';
 import { featureId } from './head/features.js';
@@ -44,6 +44,12 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       const { header: h, arrays: a } = await loadPack(new URL('data/anny/face.json', root).href, read);
       return { unit: h.unit, topology: h.topology, changes: Object.fromEntries(h.changes.map(c => [c.name, { i: a['i' + c.key], p: a['p' + c.key], n: a['n' + c.key] }])) };
     }),
+    // what is slow to make, stored by the key of all it is made from (data/<kind>/index.json lists the keys stored, each
+    // a pack data/<kind>/<key>.json): its arrays, or null when it is not stored (then it is made where it is needed)
+    stored: async (kind, key) => {
+      const index = await once('stored:' + kind, () => readJSON(new URL(`data/${kind}/index.json`, root), read));
+      return index.keys.includes(key) ? (await loadPack(new URL(`data/${kind}/${key}.json`, root).href, read)).arrays : null;
+    },
     // presets (presets/<id>.json, presets/index.json): checked, pinned like bodies
     presets: () => once('pi', () => readJSON(new URL('presets/index.json', root), read)),
     preset: ref => pinnedLoad('preset ', ref, id => async () => { const p = checkPreset(await readJSON(new URL(`presets/${id}.json`, root), read)); return { ...p, hash: hashOf([p]) }; }),
@@ -66,8 +72,9 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       if (!head) return { ...spec, rest, pose: await open(spec.pose, 'pose'), head: null, expanded: true };
       // the head's form: changes of the rest after the character's own, frames kept (a design rides along in motion)
       const form = await open(head.form.map(c => ({ ...c, frames: 'keep' })), 'rest');
-      const wrap = [...form].reverse().find(c => c.kind === 'wrap') ?? null;
-      return { ...spec, rest: [...rest, ...form], pose: await open(spec.pose, 'pose'), head: { ...head, formAt: rest.length, wrap }, expanded: true };
+      // the last wrap onto a designed form: where in the rest it is made (the face is drawn on the head it leaves)
+      const w = form.findLastIndex(c => c.kind === 'wrap'), wrap = w < 0 ? null : complete(form[w]);
+      return { ...spec, rest: [...rest, ...form], pose: await open(spec.pose, 'pose'), head: { ...head, formAt: rest.length, wrapAt: w < 0 ? null : rest.length + w, wrap }, expanded: true };
     },
     // a head with what it starts from (its base's head, its preset, the preset's own) merged under it, and its
     // presets of features, expressions and light taken in: {size, skin, form, features, expressions, pieces, light}
@@ -92,8 +99,8 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
     headBody(spec) {
       if (!spec.head) return E.restBody(spec).then(body => ({ body, meshes: [] }));
       return once('head:' + spec.body + canonical(spec.rest) + canonical(spec.head), async () => {
-        const pre = await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.formAt) }), post = await E.restBody(spec);
-        const { body, meshes } = buildHead(pre, post, spec.head);
+        const upTo = n => E.restBody({ ...spec, rest: spec.rest.slice(0, n) }), { formAt, wrapAt } = spec.head, pre = await upTo(formAt);
+        const { body, meshes } = buildHead({ pre, laid: wrapAt == null ? null : await upTo(wrapAt), drawn: wrapAt == null ? pre : await upTo(wrapAt + 1), post: await E.restBody(spec) }, spec.head);
         return { body, meshes: meshes.map(m => makeMesh(m)) };
       });
     },
@@ -140,7 +147,7 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       }
       return new Figure({
         rig: body.rig, body, place, floor: spec.motion.floor, layers: [...list, ...layers],
-        meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...head.map(mesh => ({ mesh, name: mesh.id, skinning: spec.skinning })), ...meshes],
+        meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...head.map(mesh => ({ mesh, name: mesh.id, skinning: mesh.skinning ?? spec.skinning })), ...meshes],
       });
     },
     // the character's rest with the changes of the rest among its pose layers made, up to the last of `chain` (kept)

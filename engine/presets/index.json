@@ -946,7 +946,7 @@
   },
   {
    "id": "head-old",
-   "pin": "head-old@66f7a7760e929510",
+   "pin": "head-old@365915e99f1b6ce5",
    "group": "head",
    "label": {
     "ru": "голова: старик",
@@ -1141,20 +1141,20 @@
   },
   {
    "id": "features-dots",
-   "pin": "features-dots@c505d67d408ea435",
+   "pin": "features-dots@6aebe5da62d9eff7",
    "group": "features",
    "label": {
     "ru": "черты: глаза-точки",
     "en": "features: dot eyes"
    },
    "about": {
-    "ru": "как у инди-героев: два тёмных глаза-точки низко и широко, короткие брови, маленький рот — нарисованы на коже",
-    "en": "as the indie heroes: two dark dot eyes set low and wide, short brows, a small mouth — painted on the skin"
+    "ru": "как у инди-героев: два тёмных глаза-точки на месте её глаз, короткие брови, маленький рот на её губах — нарисованы на коже Anny до изменений формы и следуют за ней",
+    "en": "as the indie heroes: two dark dot eyes where her eyes are, short brows, a small mouth on her lips — painted on Anny's skin before the form's changes, and following it"
    }
   },
   {
    "id": "features-relief",
-   "pin": "features-relief@59ba274edc0577fa",
+   "pin": "features-relief@a2d89110e3b0fb37",
    "group": "features",
    "label": {
     "ru": "черты объёмом",

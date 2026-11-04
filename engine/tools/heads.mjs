@@ -7,6 +7,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { HEAD_SIZE } from '../src/head/frame.js';
 
 const ROOT = new URL('../../', import.meta.url), EN = new URL('../', import.meta.url);
 const page = async p => (await readFile(new URL(p, ROOT), 'utf8')).split('\n');
@@ -36,7 +37,7 @@ function formOf(id, CH) {
   if (!WRAPPED.includes(id) && f.jawRise) face.jawRise = f.jawRise;
   if (f.lips) face.lips = f.lips.map(L => ({ at: [0, L[0], L[1]], r: L.slice(2, 5) }));
   if (f.masses) face.masses = f.masses.map(M => ({ at: M.slice(0, 3), r: [M[3], M[3] * (M[6] || 1), M[3] * (M[7] || 0.8)], k: M[4], ...(M[5] === 'mid' ? { mirror: false } : {}) }));
-  const form = { kind: 'curves', size: CH.hs ?? 1.1, face };
+  const form = { kind: 'curves', size: CH.hs ?? HEAD_SIZE, face };
   const cr = pick(h, ['cw', 'ch', 'cd']); if (Object.keys(cr).length) form.cranium = { ...(cr.cw ? { w: cr.cw } : {}), ...(cr.ch ? { h: cr.ch } : {}), ...(cr.cd ? { d: cr.cd } : {}) };
   if (h.ears) form.ears = h.ears;
   form.neck = { r: h.neckR ?? 0.36, ...(!WRAPPED.includes(id) && h.neckK ? { k: h.neckK } : {}) };
@@ -92,9 +93,9 @@ const REFS = { red: { image: 'cartoon-anatomical-2.png', points: { eL: [113, 79]
 for (const [id, p] of Object.entries(PRESETS)) await save(new URL(`presets/${id}.json`, EN), { format: 'engine/preset', version: 3, id, ...p });
 for (const [id, CH] of Object.entries(C)) {
   const { form, piece } = formOf(id, CH), [ru, en] = NAMES[id], mouth = CH.face.mouth;
-  const marks = { eye: pick(CH.face.eye, ['x', 'y', 'w', 'h']), mouth: mouth.type === 'none' ? { y: -0.8, w: 0.1 } : { y: mouth.y, w: mouth.w, ...(mouth.sag ? { sag: mouth.sag } : {}), ...(mouth.type === 'grin' ? { wide: true } : {}) } };
+  const marks = { eye: pick(CH.face.eye, ['x', 'y', 'w', 'h']), mouth: mouth.type === 'none' ? { y: -0.8, w: 0.1 } : { y: mouth.y, w: mouth.w, ...(mouth.sag ? { sag: mouth.sag } : {}), ...(mouth.type === 'grin' ? { wide: true, ...(mouth.crooked ? { crooked: mouth.crooked } : {}) } : {}) } };
   const head = {
-    size: CH.hs ?? 1.1, skin: CH.skin,
+    size: CH.hs ?? HEAD_SIZE, skin: CH.skin,
     form: [{ kind: 'wrap', form, marks, ...(CH.neckSlim ? { neckSlim: CH.neckSlim } : {}) }],
     features: featuresOf(CH), expressions: [{ kind: 'preset', id: 'expressions-drawn' + PIN }], pieces: piecesOf(CH, piece),
     light: { kind: 'preset', id: 'light-toon-form' + PIN },

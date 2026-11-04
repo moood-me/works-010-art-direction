@@ -9,15 +9,21 @@
 //                                                      (by group, each pinned)
 //   node engine/tools/characters.mjs bodies           write data/bodies/index.json (every body, its group, pinned)
 //   node engine/tools/characters.mjs cases            pin anew the presets and bodies check/cases.json takes
+//   node engine/tools/characters.mjs wraps            store every wrapped head the characters and the cases make
+//                                                      (data/wraps/: by the key of what each is made from), drop the
+//                                                      ones nothing makes now
 // `pin` also pins the presets a character takes, and the character it starts from (`base`), as they are now.
 // No ids: every character of characters/index.json.
-import { readFile, writeFile, readdir } from 'node:fs/promises';
+import { readFile, writeFile, readdir, rm } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createEngine } from '../src/engine.js';
 import { upgrade, VERSION, checkPreset, upgradePreset, PRESET_VERSION } from '../src/character.js';
-import { hashOf } from '../src/hash.js';
-import { pinned, pinOf } from '../src/hash.js';
+import { hashOf, pinned, pinOf } from '../src/hash.js';
 import { read } from '../check/node-read.mjs';
+import { jobsOf } from '../check/cases.mjs';
+import { complete } from '../src/deform.js';
+import { wrapKey, wrapHead } from '../src/head/wrap.js';
+import { packOf } from '../src/pack.js';
 
 const ROOT = new URL('../', import.meta.url), E = await createEngine({ root: ROOT, read });
 const [what, ...ids] = process.argv.slice(2);
@@ -60,6 +66,27 @@ if (what === 'upgrade' || what === 'pin') {
   const pins = Object.fromEntries([...index.presets, ...bodies.bodies].map(p => [p.id, p.pin]));
   let n = 0; const out = text.replace(/"([A-Za-z0-9][A-Za-z0-9_.-]*)@([0-9a-f]{12,64})"/g, (m, id) => pins[id] && `"${pins[id]}"` !== m ? (n++, `"${pins[id]}"`) : m);
   await writeFile(path, out); console.log(`${n} pins in check/cases.json made anew`);
+} else if (what === 'wraps') {
+  const dir = fileURLToPath(new URL('data/wraps/', ROOT)), index = JSON.parse(await readFile(dir + 'index.json', 'utf8'));
+  const cases = JSON.parse(await readFile(fileURLToPath(new URL('check/cases.json', ROOT)), 'utf8'));
+  const descs = [...await Promise.all((await E.characters()).characters.map(c => E.description(c.id))),
+    ...await Promise.all(jobsOf(cases, (await E.characters()).characters, null).filter(j => j.over).map(async j => ({ ...structuredClone(await E.description(j.char)), ...j.over })))];
+  const keys = new Set();
+  for (const d of descs) {
+    const spec = await E.expand(await E.resolve(d));
+    for (const [k, c] of spec.rest.entries()) {
+      if (c.kind !== 'wrap') continue;
+      const body = await E.restBody({ ...spec, rest: spec.rest.slice(0, k) }), p = complete(c), key = wrapKey(p, body);
+      if (keys.has(key)) continue; keys.add(key);
+      if (index.keys.includes(key)) continue;
+      const t = Date.now(), { json, bin } = packOf({ format: 'engine/wrap', version: 1, key, about: `${d.id}: its head wrapped (src/head/wrap.js), by wrapKey` }, { positions: { array: wrapHead(body, p.form, p.marks, p.neckSlim, p.onto), shape: [body.mesh.N, 3] } }, key + '.bin');
+      await writeFile(dir + key + '.json', json); await writeFile(dir + key + '.bin', bin);
+      console.log(`${d.id}: wrapped and stored as ${key} (${((Date.now() - t) / 1000).toFixed(1)} s)`);
+    }
+  }
+  for (const key of index.keys) if (!keys.has(key)) { await rm(dir + key + '.json'); await rm(dir + key + '.bin'); console.log(`${key}: nothing makes it now — dropped`); }
+  await save(dir + 'index.json', { ...index, keys: [...keys].sort() });
+  console.log(`${keys.size} wraps stored`);
 } else if (what === 'chains') {
   const path = fileURLToPath(new URL('motions/index.json', ROOT)), index = JSON.parse(await readFile(path, 'utf8'));
   for (const c of index.chains) {
@@ -103,6 +130,6 @@ if (what === 'upgrade' || what === 'pin') {
   await save(fileURLToPath(new URL('data/bodies/index.json', ROOT)), { format: 'engine/bodies', version: 1, about: 'Every body (data/bodies/<id>.json), by group, pinned. Written by engine/tools/characters.mjs bodies.', groups: ORDER.map(g => ({ id: g, label: GROUPS[g] })), bodies: list });
   console.log(`${list.length} bodies`);
 } else {
-  console.log('node engine/tools/characters.mjs upgrade|pin [ids…] | chains | presets | bodies');
+  console.log('node engine/tools/characters.mjs upgrade|pin [ids…] | chains | presets | bodies | cases | wraps');
   process.exit(1);
 }

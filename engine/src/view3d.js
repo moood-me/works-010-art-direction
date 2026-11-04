@@ -101,12 +101,14 @@ export function figureView(THREE, figure, look) {
     if (m.colors) g.setAttribute('color', new THREE.BufferAttribute(m.colors, 3));
     const color = o.name === 'body' || m.painted ? (head?.skin ?? look.skin) : (m.color || '#8a8f99'), map = m.uv && face ? face.texture : null;
     const toon = !!light?.toon, side = m.double ? THREE.DoubleSide : THREE.FrontSide;
-    const mat = toon ? new THREE.MeshToonMaterial({ color: map || m.colors ? '#ffffff' : color, gradientMap: toonRamp(THREE, light.soft), map, vertexColors: !!m.colors, side })
+    const mat = toon ? new THREE.MeshToonMaterial({ color: map || m.colors ? '#ffffff' : color, gradientMap: toonRamp(THREE, light.soft, light.shade), map, vertexColors: !!m.colors, side })
       : new THREE.MeshStandardMaterial({ color: map ? '#ffffff' : color, roughness: look.roughness, map, vertexColors: !!m.colors, side });
     if (toon) mat.toneMapped = false;
     if (m.noShadow) g.setAttribute('noShadow', new THREE.BufferAttribute(m.noShadow, 1));
     if (m.paintMask) g.setAttribute('paintMask', new THREE.BufferAttribute(m.paintMask, 1));
-    if (m.noShadow || m.paintMask) faceMaterial(THREE, mat, { shadows: !m.noShadow, skin: m.paintMask ? new THREE.Color(head.skin) : null });
+    lightMaterial(THREE, mat, { toon, faceMask: !!m.noShadow, skin: m.paintMask ? new THREE.Color(head.skin) : null, shine: m.shine });
+    // a head's piece, closed, casts its shadow from its back faces (no shadow acne on its own lit side: thin locks of hair)
+    if (m.piece && !m.double) mat.shadowSide = THREE.BackSide;
     const mesh = new THREE.Mesh(g, mat);
     mesh.castShadow = m.shadows !== false; mesh.receiveShadow = m.shadows !== false; mesh.frustumCulled = false;
     group.add(mesh); parts.push({ o, g, mesh });
@@ -154,14 +156,15 @@ function facePicture(THREE, head) {
   paint({});
   return { texture, paint };
 }
-// three tones, their edges eased over `soft` texels of 32, so an uneven mesh doesn't fray them (Г3's)
+// three tones, their edges eased over `soft` texels of 32, so an uneven mesh doesn't fray them (Г3's); `shade`: the
+// darkest, of the side turned away from the key light and what it shadows (Г3's 150 of 255)
 const RAMPS = new Map();
-function toonRamp(THREE, soft = 3) {
-  if (RAMPS.has(soft)) return RAMPS.get(soft);
-  const W = 32, d = new Uint8Array(W * 4), sst = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t), e = Math.max(0.01, soft);
-  for (let k = 0; k < W; k++) { const x = (k + 0.5) / W * 3, t1 = sst((x - 1) * W / 3 / (2 * e) + 0.5), t2 = sst((x - 2) * W / 3 / (2 * e) + 0.5), v = 150 + 72 * t1 + 33 * t2; d.set([v, v, v, 255], k * 4); }
+function toonRamp(THREE, soft, shade) {
+  const key = soft + ':' + shade; if (RAMPS.has(key)) return RAMPS.get(key);
+  const W = 32, d = new Uint8Array(W * 4), sst = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t), e = Math.max(0.01, soft), low = shade * 255;
+  for (let k = 0; k < W; k++) { const x = (k + 0.5) / W * 3, t1 = sst((x - 1) * W / 3 / (2 * e) + 0.5), t2 = sst((x - 2) * W / 3 / (2 * e) + 0.5), v = low + (222 - low) * t1 + 33 * t2; d.set([v, v, v, 255], k * 4); }
   const t = new THREE.DataTexture(d, W, 1); t.minFilter = t.magFilter = THREE.LinearFilter; t.needsUpdate = true;
-  RAMPS.set(soft, t); return t;
+  RAMPS.set(key, t); return t;
 }
 function outlineMaterial(THREE, { width, color }) {
   const m = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide, polygonOffset: true, polygonOffsetFactor: 3, polygonOffsetUnits: 30 });
@@ -170,28 +173,46 @@ function outlineMaterial(THREE, { width, color }) {
   m.customProgramCacheKey = () => 'outline' + width;
   return m;
 }
-// a face's material: its picture shown as far as the mesh's paint mask says (the plain skin beyond it), and the key
-// light's shadow left off where the mesh says (the face: no cast shadows on it)
-function faceMaterial(THREE, mat, { shadows, skin }) {
+// a material's light, by what its mesh asks: its face's picture shown as far as the mesh's paint mask says (the plain
+// skin beyond it); the key light's shadow left off where the mesh says (the face: no cast shadows on it); and in toon
+// light a cast shadow taken through the toon's own tones: a shadowed point is lit as the side turned away from the light
+// is, its edge eased as the tones' are (three.js multiplies the light by the shadow map's penumbra: grey blotches between
+// the tones, and the self-shadow's edge stepped by the map's texels)
+const SHADOW_LINE = 'directLight.color *= ( directLight.visible && receiveShadow ) ? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;';
+function lightMaterial(THREE, mat, { toon, faceMask, skin, shine }) {
+  if (!toon && !faceMask && !skin) return;
   mat.onBeforeCompile = sh => {
     let vs = sh.vertexShader, fs = sh.fragmentShader;
-    if (!shadows) {
-      vs = 'attribute float noShadow;\nvarying float vNoShadow;\n' + vs.replace('#include <begin_vertex>', '#include <begin_vertex>\n vNoShadow = noShadow;');
-      const chunk = THREE.ShaderChunk.lights_fragment_begin.replace('? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;',
-        '? mix( getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ), 1.0, vNoShadow ) : 1.0;');
-      if (chunk === THREE.ShaderChunk.lights_fragment_begin) throw new Error('three.js: the directional shadow line is not where it was (no face shadows)');
-      fs = 'varying float vNoShadow;\n' + fs.replace('#include <lights_fragment_begin>', chunk);
+    const replace = (text, a, b, what) => { const out = text.replace(a, b); if (out === text) throw new Error(`three.js: ${what} is not where it was`); return out; };
+    if (toon || faceMask) {
+      // the key light's shadow: how much of it reaches the point (1 on the face when it asks for no cast shadows)
+      let shadow = 'getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] )';
+      if (faceMask) {
+        vs = 'attribute float noShadow;\nvarying float vNoShadow;\n' + replace(vs, '#include <begin_vertex>', '#include <begin_vertex>\n vNoShadow = noShadow;', 'begin_vertex');
+        fs = 'varying float vNoShadow;\n' + fs; shadow = `mix( ${shadow}, 1.0, vNoShadow )`;
+      }
+      const line = toon ? `toonShadow = ( directLight.visible && receiveShadow ) ? ${shadow} : 1.0; toonKey = 1.0;` : `directLight.color *= ( directLight.visible && receiveShadow ) ? ${shadow} : 1.0;`;
+      let chunk = replace(THREE.ShaderChunk.lights_fragment_begin, SHADOW_LINE, line, 'the directional shadow line');
+      if (toon) chunk = replace(chunk, 'getDirectionalLightInfo( directionalLight, directLight );', 'getDirectionalLightInfo( directionalLight, directLight );\n\t\ttoonShadow = 1.0; toonKey = 0.0;', 'the directional light');
+      fs = replace(fs, '#include <lights_fragment_begin>', chunk, 'lights_fragment_begin');
+    }
+    if (toon) {
+      const pars = replace(THREE.ShaderChunk.lights_toon_pars_fragment, 'vec3 irradiance = getGradientIrradiance( geometryNormal, directLight.direction ) * directLight.color;',
+        'vec3 irradiance = vec3( texture2D( gradientMap, vec2( ( dot( geometryNormal, directLight.direction ) * 0.5 + 0.5 ) * toonShadow, 0.0 ) ).r ) * directLight.color;', 'the toon irradiance');
+      // a shine (a ball nose's): a small bright spot where the key light's reflection meets the eye, edged as the tones are
+      const shone = shine ? replace(pars, 'reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );',
+        `reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor ) + directLight.color * toonKey * toonShadow * ${(shine * 0.3).toFixed(4)} * smoothstep( 0.955, 0.975, dot( geometryNormal, normalize( directLight.direction + geometryViewDir ) ) );`, 'the toon diffuse') : pars;
+      fs = replace(fs, '#include <lights_toon_pars_fragment>', 'float toonShadow = 1.0, toonKey = 0.0;\n' + shone, 'lights_toon_pars_fragment');
     }
     if (skin) {
       sh.uniforms.faceSkin = { value: skin };
-      vs = 'attribute float paintMask;\nvarying float vPaint;\n' + vs.replace('#include <begin_vertex>', '#include <begin_vertex>\n vPaint = paintMask;');
-      const chunk = THREE.ShaderChunk.map_fragment.replace('diffuseColor *= sampledDiffuseColor;', 'diffuseColor *= mix( vec4( faceSkin, 1.0 ), sampledDiffuseColor, vPaint );');
-      if (chunk === THREE.ShaderChunk.map_fragment) throw new Error('three.js: the map line is not where it was (the face\'s picture)');
-      fs = 'uniform vec3 faceSkin;\nvarying float vPaint;\n' + fs.replace('#include <map_fragment>', chunk);
+      vs = 'attribute float paintMask;\nvarying float vPaint;\n' + replace(vs, '#include <begin_vertex>', '#include <begin_vertex>\n vPaint = paintMask;', 'begin_vertex');
+      const chunk = replace(THREE.ShaderChunk.map_fragment, 'diffuseColor *= sampledDiffuseColor;', 'diffuseColor *= mix( vec4( faceSkin, 1.0 ), sampledDiffuseColor, vPaint );', 'the map line (the face\'s picture)');
+      fs = 'uniform vec3 faceSkin;\nvarying float vPaint;\n' + replace(fs, '#include <map_fragment>', chunk, 'map_fragment');
     }
     sh.vertexShader = vs; sh.fragmentShader = fs;
   };
-  mat.customProgramCacheKey = () => `face:${shadows}:${!!skin}`;
+  mat.customProgramCacheKey = () => `light:${!!toon}:${!!faceMask}:${!!skin}:${shine ?? 0}`;
 }
 
 // a tapered capsule along +y from 0 to its length, radius ra below and rb above

@@ -1,0 +1,17 @@
+{
+ "format": "engine/wrap",
+ "version": 1,
+ "key": "008fe3bbd75d0cca",
+ "about": "head-hood: its head wrapped (src/head/wrap.js), by wrapKey",
+ "bin": "008fe3bbd75d0cca.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  }
+ }
+}

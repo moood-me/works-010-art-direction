@@ -5,17 +5,20 @@
 // here is Г1's designed hair carried as it was (rigid volumes and ribbons on the head); the hair that moves is a
 // later stage — it takes the head's shape to collide with (src/head/head.js, src/figure.js headShape).
 //   piecesOf(list, {form, frame, sk, skin, cranium}) → [mesh fields for makeMesh]
-import { smin, clamp, lerp, sst, add, sub, scale, normalize, len, cross, dot } from '../math.js';
+import { smin, clamp, lerp, add, sub, scale, normalize, len, cross, dot } from '../math.js';
 import { smax, sdEll, sdCapsule, sdSphere, meshOf } from './shapes.js';
+import { headShares } from './frame.js';
+import { washes, washedAt } from './paint.js';
+import { followOf } from '../mesh.js';
+import { num, flag, color } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max }), color = { type: 'string', pattern: /^#[0-9a-f]{6}$/i };
-const part = { type: 'array', min: 2, max: 2, items: { anyOf: [{ type: 'string', pattern: /^[a-zA-Z]+$/ }, { type: 'map', values: { anyOf: [num(-100, 100), { type: 'string', pattern: /^#[0-9a-f]{6}$/i }, { type: 'array', items: { type: 'array', items: num(-20, 20) } }, { type: 'boolean' }] } }] } };
+const part = { type: 'array', min: 2, max: 2, items: { anyOf: [{ type: 'string', pattern: /^[a-zA-Z]+$/ }, { type: 'map', values: { anyOf: [num(-100, 100), color, { type: 'array', items: { type: 'array', items: num(-20, 20) } }, flag] } }] } };
 export const PIECE_SCHEMA = { type: 'union', key: 'kind', cases: {
-  nose: { type: 'object', props: { kind: { const: 'nose' }, id: { type: 'string' }, ink: num(0, 0.01) }, required: ['kind'] },
+  nose: { type: 'object', props: { kind: { const: 'nose' }, id: { type: 'string' }, ink: num(0, 0.01), inkColor: color, rosy: num(0, 1), shine: num(0, 1) }, required: ['kind'] },
   hair: { type: 'object', props: { kind: { const: 'hair' }, id: { type: 'string' }, color, ink: color, parts: { type: 'array', min: 1, items: part } }, required: ['kind', 'color', 'parts'] },
-  hood: { type: 'object', props: { kind: { const: 'hood' }, id: { type: 'string' }, color, inner: color, wide: num(0.5, 2) }, required: ['kind', 'color'] },
-  hat: { type: 'object', props: { kind: { const: 'hat' }, id: { type: 'string' }, color }, required: ['kind', 'color'] },
-  earDevice: { type: 'object', props: { kind: { const: 'earDevice' }, id: { type: 'string' }, color, dark: color }, required: ['kind', 'color'] },
+  hood: { type: 'object', props: { kind: { const: 'hood' }, id: { type: 'string' }, color, inner: color, ink: color, wide: num(0.5, 2) }, required: ['kind', 'color'] },
+  hat: { type: 'object', props: { kind: { const: 'hat' }, id: { type: 'string' }, color, ink: color }, required: ['kind', 'color'] },
+  earDevice: { type: 'object', props: { kind: { const: 'earDevice' }, id: { type: 'string' }, color, dark: color, ink: color }, required: ['kind', 'color'] },
 } };
 export const HAIR_PARTS = ['cap', 'bangsBlunt', 'bangsSide', 'bangsSpiky', 'sides', 'back', 'sidePart', 'centerPart', 'sideSweep', 'spiky', 'mass', 'messyShort', 'chunky', 'sweptBack', 'topBun', 'twoTails', 'bowl', 'messy', 'fringeTufts', 'strays'];
 
@@ -28,29 +31,43 @@ export function piecesOf(list, ctx) {
   }
   return out;
 }
-const rigidOn = (ctx, name, m, o) => ({ kind: 'rigid', id: name, joint: ctx.sk.index.Head, positions: toWorld(m.positions, ctx.frame), triangles: m.triangles, floor: false, ...o });
+// a piece on the head: carried by the Head joint (skinned to it alone: every skinning method moves it the same, so the
+// cheapest, linear, does), and following the head's skin — bound to the skin of the head nearest it, so whatever changes
+// the head's rest in a frame (an expression's morph, a change of the form as a pose layer: a bigger head) moves it too
+function onHead(ctx, name, m, o) {
+  const P = toWorld(m.positions, ctx.frame), n = P.length / 3, { omega } = headShares(ctx.body.mesh, ctx.sk);
+  return { kind: 'skinned', id: name, positions: P, triangles: m.triangles, floor: false, piece: true, skinning: { method: 'lbs' },
+    skin: { K: 1, joints: new Uint8Array(n).fill(ctx.sk.index.Head), weights: new Float32Array(n).fill(1) },
+    follow: followOf('body', ctx.body.mesh, ctx.body.mesh.positions, P, Uint8Array.from(omega, w => w > 0.5 ? 1 : 0)), ...o };
+}
 const toWorld = (P, F) => { const out = new Float32Array(P.length); for (let i = 0; i < P.length; i += 3) { const w = F.toW(P[i], P[i + 1], P[i + 2]); out[i] = w[0]; out[i + 1] = w[1]; out[i + 2] = w[2]; } return out; };
 
 // the drawn nose set on the wrapped face where the skin couldn't take it: a long one — what of the drawn head stands
 // out of the face the skin was laid on, closed a little under the skin (its outline only inked); a ball — round, a
-// little rosier than the face, with a shine where the light falls
+// little rosier than the face (`rosy`), with a shine where the key light falls (drawn by the light: src/view3d.js). Each
+// takes the face's washes of colour where it stands over them (a nose's tint, the blush across it: src/head/paint.js)
 function nose(p, ctx) {
   const G = ctx.form, N = G?.piece; if (!N) throw new Error('a nose piece needs a designed form whose nose is its own piece (form.face.nose.piece)');
-  const skin = ctx.skin, hsdf = G.sdf;
-  if (N.ball && N.root) {   // a ball on a capsule nose: the ball round; on a nose drawn by its side curve, what stands out as below
+  const hsdf = G.sdf, ball = N.ball && N.root;
+  let m;
+  if (ball) {   // a ball on a capsule nose: the ball round; on a nose drawn by its side curve, what stands out as below
     const b = N.ball, ns = (x, y, z) => smin(sdCapsule(x, y, z, N.root, N.tip, N.radius), sdSphere(x - b.at[0], y - b.at[1], z - b.at[2], b.r), b.k ?? 0.05);
-    const m = meshOf(ns, [b.at[0] - b.r - 0.1, b.at[1] - b.r - 0.1, 0.5], [b.at[0] + b.r + 0.1, N.root[1] + 0.1, b.at[2] + b.r + 0.1], 0.012);
+    m = meshOf(ns, [b.at[0] - b.r - 0.1, b.at[1] - b.r - 0.1, 0.5], [b.at[0] + b.r + 0.1, N.root[1] + 0.1, b.at[2] + b.r + 0.1], 0.012);
     const keep = []; for (let t = 0; t < m.triangles.length; t += 3) { let inside = 0; for (let k = 0; k < 3; k++) { const v = m.triangles[t + k]; if (hsdf(m.positions[v * 3], m.positions[v * 3 + 1], m.positions[v * 3 + 2]) < -0.01) inside++; } if (inside < 3) keep.push(m.triangles[t], m.triangles[t + 1], m.triangles[t + 2]); }
-    const base = mix(hex(skin), hex('#f0a088'), 0.25), hi = hex('#fff4ea'), L = normalize([-0.45, 0.6, 0.65]), cl = new Float32Array(m.positions.length);
-    for (let v = 0; v < m.positions.length / 3; v++) { const sp = sst(clamp((dot([m.normals[v * 3], m.normals[v * 3 + 1], m.normals[v * 3 + 2]], L) - 0.86) / 0.06, 0, 1)), c = mix(base, hi, sp * 0.85); cl.set(c, v * 3); }
-    return [rigidOn(ctx, 'nose', { positions: m.positions, triangles: keep }, { color: skin, colors: cl, ink: { width: 0.0014, color: '#7a4a2a' }, toon: true })];
+    m = { positions: m.positions, triangles: keep };
+  } else {
+    const ridge = G.nose, ns = (x, y, z) => Math.max(G.full(x, y, z), -(hsdf(x, y, z) + 0.03), ridge(x, y, z) - 0.05);
+    m = meshOf(ns, [-0.32, -1.12, 0.4], [0.32, 0.0, 1.72], 0.008);
   }
-  const ridge = G.nose, ns = (x, y, z) => Math.max(G.full(x, y, z), -(hsdf(x, y, z) + 0.03), ridge(x, y, z) - 0.05);
-  const m = meshOf(ns, [-0.32, -1.12, 0.4], [0.32, 0.0, 1.72], 0.008);
-  return [rigidOn(ctx, 'nose', m, { color: skin, ink: { width: p.ink ?? 0.0008, color: '#a07882' }, toon: true, shadows: false })];
+  const rosy = p.rosy ?? (ball ? 0.25 : 0), base = mixed(rgb(ctx.skin), rgb(ROSY), rosy), w = washes(ctx.features), cl = new Float32Array(m.positions.length);
+  for (let v = 0; v < m.positions.length / 3; v++) cl.set(washedAt(w, base, m.positions[v * 3], m.positions[v * 3 + 1]).map(linear), v * 3);
+  return [onHead(ctx, 'nose', m, { color: ctx.skin, colors: cl, ink: { width: p.ink ?? (ball ? 0.0014 : 0.0008), color: p.inkColor ?? (ball ? '#7a4a2a' : '#a07882') }, toon: true, ...(ball ? { shine: p.shine ?? 0.85 } : { shadows: false }) })];
 }
+const ROSY = '#f0a088';
 
-// hoods, hats, an ear device: shells by distance, two-sided
+// hoods, hats, an ear device: shells by distance, two-sided — what a head preset wears so it looks as it was drawn, made
+// coarse (a garment's form is the clothes' stage: there a hood becomes cloth that doesn't go through the body)
+const WEAR_STEP = 0.07, INK = '#2a1e24';
 function extra(p, ctx) {
   const W = p.wide ?? 1;
   const sdf = {
@@ -58,8 +75,8 @@ function extra(p, ctx) {
     hat: (x, y, z) => { const crown = sdEll(x, y - 1.05, z + 0.05, 1.32, 0.78, 1.28), band = Math.max(Math.abs(y - 0.55) - 0.16, Math.hypot(x / 1.12, (z + 0.04) / 1.14) - 1); return smin(crown, band - 0.03, 0.12); },
     earDevice: (x, y, z) => Math.max(sdCapsule(x, y, z, [-1.0, -0.28, -0.05], [-1.16, -0.28, -0.05], 0.26), 0),
   }[p.kind];
-  const m = meshOf(sdf, [-2.4, -3.2, -2.2], [2.4, 2.2, 2.2], 0.04);
-  return rigidOn(ctx, p.id ?? p.kind, m, { color: p.color, double: true, ink: { width: 0.0018, color: '#2a1e24' }, toon: true });
+  const m = meshOf(sdf, [-2.4, -3.2, -2.2], [2.4, 2.2, 2.2], WEAR_STEP);
+  return onHead(ctx, p.id ?? p.kind, m, { color: p.color, double: true, ink: { width: 0.0018, color: p.ink ?? INK }, toon: true });
 }
 
 // —— Г1's hair: a cap and locks (ribbons flattened against the head), masses with clumps melted into their edge ——
@@ -116,13 +133,13 @@ function hair(p, ctx) {
     if (kind === 'fringeTufts') for (const s of [-1, 1]) for (let k = 0; k < 4; k++) { const az = s * (0.7 + k * 0.25); lock([S(az * 0.6, 0.6, 1.0), S(az, 0.35, 1.2), add(S(az * 1.1, -0.05, 1.2), [s * 0.1, 0, 0])], 0.26, { lift: 0.12, tipPow: 1.2 }); }
     if (kind === 'strays') for (let k = 0; k < o.n; k++) { const s = k % 2 ? 1 : -1, az = s * (0.3 + 0.15 * k); lock([S(az * 0.3, 1.0), S(az, 0.5, 1.16), add(S(az * 1.3, -0.1, 1.12), [s * 0.1, -0.2 - 0.1 * k, 0.05])], 0.06, { lift: 0.1, tipPow: 1.0 }); }
   }
-  const ink = { width: 0.0016, color: p.ink ?? '#2a1e24' };
-  solids.forEach((s, k) => { const m = meshOf(s.sdf, [-1.7, -1.2, -1.7], [1.7, 1.8, 1.7], 0.035); out.push(rigidOn(ctx, `${p.id ?? 'hair'}-${k}`, m, { color: s.color || p.color, ink, toon: true })); });
+  const ink = { width: 0.0016, color: p.ink ?? INK };
+  solids.forEach((s, k) => { const m = meshOf(s.sdf, [-1.7, -1.2, -1.7], [1.7, 1.8, 1.7], 0.035); out.push(onHead(ctx, `${p.id ?? 'hair'}-${k}`, m, { color: s.color || p.color, ink, toon: true })); });
   if (locks.length) {
     // the locks as one mesh (each a ribbon of its own)
     const P = [], T = [];
     for (const L of locks) { const g = lockGeometry(L), o = P.length / 3; P.push(...g.positions); for (const i of g.triangles) T.push(i + o); }
-    out.push(rigidOn(ctx, `${p.id ?? 'hair'}-locks`, { positions: Float32Array.from(P), triangles: T }, { color: p.color, ink: { width: 0.0012, color: p.ink ?? '#2a1e24' }, toon: true }));
+    out.push(onHead(ctx, `${p.id ?? 'hair'}-locks`, { positions: Float32Array.from(P), triangles: T }, { color: p.color, ink: { width: 0.0012, color: p.ink ?? INK }, toon: true }));
   }
   return out;
 }
@@ -141,5 +158,7 @@ function lockGeometry(L, R = 10) {
   cap(0, pts[0], false); cap(n - 1, pts[n - 1], true);
   return { positions: pos, triangles: idx };
 }
-const hex = c => [parseInt(c.slice(1, 3), 16) / 255, parseInt(c.slice(3, 5), 16) / 255, parseInt(c.slice(5, 7), 16) / 255].map(v => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+// a colour: '#rrggbb' → [r, g, b] 0..255; two mixed; one 0..255 sRGB channel as linear 0..1 (vertex colours are linear)
+const rgb = c => [1, 3, 5].map(k => parseInt(c.slice(k, k + 2), 16));
+const mixed = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+const linear = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };

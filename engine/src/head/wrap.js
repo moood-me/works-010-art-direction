@@ -14,21 +14,26 @@
 // All lengths that are Anny's (how near a point must be to a landmark) are scaled by the head's own size against
 // moood's woman, whose head they were found on.
 import { register } from '../deform.js';
-import { headFrame, headShares } from './frame.js';
+import { headFrame, headShares, annyScale, HEAD_SIZE } from './frame.js';
 import { formOf, FORM_SCHEMA } from './forms.js';
 import { gradOf, frontZ, projectOn } from './shapes.js';
+import { grinLines, along } from './paint.js';
 import { smoothField } from '../regions.js';
 import { neighboursOf } from '../mesh.js';
-import { lerp, clamp, sst } from '../math.js';
+import { lerp, clamp, sst, biharmonic, solve } from '../math.js';
+import { landmarksOf } from './face.js';
+import { HEAD_BUILD } from './version.js';
+import { hashOf } from '../hash.js';
+import { num, flag } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 export const MARKS_SCHEMA = { type: 'object', required: ['eye', 'mouth'], props: {
   eye: { type: 'object', required: ['x', 'y', 'w', 'h'], props: { x: num(0, 2), y: num(-2, 2), w: num(0, 2), h: num(0, 2) } },
-  mouth: { type: 'object', required: ['y', 'w'], props: { y: num(-3, 0), w: num(0, 2), sag: num(-1, 1), wide: { type: 'boolean' } } } } };
+  mouth: { type: 'object', required: ['y', 'w'], props: { y: num(-3, 0), w: num(0, 2), sag: num(-1, 1), wide: flag, crooked: num(-1, 1) } } } };
+
 
 // the form as it is laid on this body: the form, its distance with the body's neck, the frame
-export function formOnBody(form, body, neckSlim = 0.78) {
-  const F = headFrame(body.rig, form.size ?? 1.1), sh = headShares(body.mesh, body.rig.skeleton), P = body.mesh.positions, N = body.mesh.N;
+export function formOnBody(form, body, neckSlim) {
+  const F = headFrame(body.rig, form.size ?? HEAD_SIZE), sh = headShares(body.mesh, body.rig.skeleton), P = body.mesh.positions, N = body.mesh.N;
   // the neck where it meets the head: the ring of skin half head, half neck (after the slimming)
   const slim = slimmed(P, body, sh, neckSlim);
   let cx = 0, cy = 0, cz = 0, n = 0;
@@ -78,52 +83,52 @@ function slimmed(P, body, sh, k) {
   return out;
 }
 
+// what a wrap is made from, as a key: the wrap's version (src/head/version.js), its parameters but its strength (the
+// wrapped head is blended by it after), the body it is laid on — its result is stored by it (data/wraps/,
+// tools/characters.mjs wraps), so a head is wrapped once, not at every load
+export const wrapKey = (p, body) => hashOf(['engine/wrap', HEAD_BUILD.wrap, { form: p.form, marks: p.marks, neckSlim: p.neckSlim, onto: p.onto }, body.topology, body.mesh.positions, body.rig.joints]).slice(0, 16);
+
 register({
   kind: 'wrap', of: 'skin', ownFolds: true,
   params: { form: FORM_SCHEMA, marks: MARKS_SCHEMA, neckSlim: num(0.3, 1.5), onto: { type: 'array', min: 2, max: 2, items: num(0, 1) } },
   defaults: { neckSlim: 0.78, onto: [0.35, 0.95] },
-  rest(p, R, { body }) {
-    const wrapped = wrapHead(body, p.form, p.marks, p.neckSlim, p.onto), P0 = body.mesh.positions, k = p.strength;
-    const positions = Float32Array.from(P0, (v, i) => v + (wrapped[i] - v) * k);
-    return { positions };
+  // the wrapped head as stored, if it is (else made here: an author's new form, or a body not wrapped before)
+  prepare: (p, E, body) => E.stored('wraps', wrapKey(p, body)),
+  rest(p, R, { body, data }) {
+    const wrapped = data?.positions ?? wrapHead(body, p.form, p.marks, p.neckSlim, p.onto), P0 = body.mesh.positions, k = p.strength;
+    return { positions: Float32Array.from(P0, (v, i) => v + (wrapped[i] - v) * k) };
   },
 });
 
-export function wrapHead(body, form, marks, neckSlim = 0.78, onto = [0.35, 0.95]) {
+export function wrapHead(body, form, marks, neckSlim, onto) {
   const G = formOnBody(form, body, neckSlim), { toL, toW, R: HR } = G.frame, hsdf = G.sdf, sk = body.rig.skeleton, J = body.rig.joints;
   const mesh = body.mesh, N = mesh.N, used = mesh.isUsed, nbr = neighboursOf(mesh), { head: headW, jaw: jawW, omega } = G.shares;
-  const at = Float32Array.from(G.slim), u = (J[sk.index.HeadEnd * 3 + 1] - J[sk.index.Head * 3 + 1]) / 0.151;   // Anny's lengths, scaled
+  const at = Float32Array.from(G.slim), u = annyScale(body.rig);   // Anny's lengths, scaled
   const jt = n => { const j = sk.index[n]; return [J[j * 3], J[j * 3 + 1], J[j * 3 + 2]]; };
   const g = [0, 0, 0], grad = (x, y, z) => gradOf(hsdf, x, y, z, 0.004, g), surfZ = (x, y) => frontZ(hsdf, x, y);
   const { eye: E, mouth: M } = G.toHead ? marksOnHead(marks, G) : marks, yChin = G.chin, ears = G.ears ?? { x: 0.92, y: -0.32, z: -0.12 };   // (a solid's ears: src/head/forms.js)
-  const MH = M.wide ? M.w : M.w / 2, MS = M.wide ? { w: 0.8 * M.w, y: M.y + 0.005, sag: 0.2 * M.w } : { w: Math.max(MH * 1.05, 0.14), y: M.y, sag: M.sag ?? 0 };
-  const front = (x, y, rx = 0.006 * u, ry = 0.006 * u) => { let best = -1, bz = -9; for (let i = 0; i < N; i++) { if (!used[i] || headW[i] < 0.3) continue; const X = at[i * 3], Y = at[i * 3 + 1], Z = at[i * 3 + 2]; if (Math.abs(X - x) < rx && Math.abs(Y - y) < ry && Z > bz) { bz = Z; best = i; } } return best; };
-  const eL = jt('LeftEye'), jaw = jt('Jaw'), chest = jt('Chest'), neck2 = jt('Neck2');
+  // the lips' parting as the mouth is drawn, from corner to corner (half its length MW): a drawn mouth's line, its middle
+  // sagging, its corners apart enough to open however small the mouth; a grin's upper teeth's lower edge, so an open jaw
+  // opens below the teeth (where the easing of folds leaves it, the grin's teeth end: src/head/head.js)
+  const MW = M.wide ? 0.8 * M.w : Math.max(M.w / 2 * 1.05, 0.14), teeth = M.wide ? grinLines({ y: M.y, w: M.w, crooked: M.crooked }).teeth : null;
+  const part = x => teeth ? along(teeth, x) : M.y - (M.sag ?? 0) * (1 - (x / MW) ** 2);
+  const jaw = jt('Jaw'), chest = jt('Chest'), neck2 = jt('Neck2'), eL = jt('LeftEye'), L = landmarksOf(body);
   const src = [], dst = [], pinned = new Uint8Array(N);
-  const add = (i, t) => { if (i < 0) return; pinned[i] = 1; src.push([at[i * 3], at[i * 3 + 1], at[i * 3 + 2]]); dst.push(toW(...t)); };
-  const X = i => at[i * 3], Y = i => at[i * 3 + 1], Z = i => at[i * 3 + 2];
-  let tipI = -1; for (let i = 0, tz = -9; i < N; i++) if (used[i] && headW[i] > 0.5 && Math.abs(X(i)) < 0.004 * u && Y(i) < eL[1] && Y(i) > jaw[1] - 0.02 * u && Z(i) > tz) { tz = Z(i); tipI = i; }
-  // the lip seam: where the jaw's weight changes, in front
-  const seam = []; for (let i = 0; i < N; i++) if (used[i] && jawW[i] > 0.25 && jawW[i] < 0.75 && Z(i) > Z(tipI) - 0.03 * u && Y(i) < Y(tipI) - 0.005 * u && Math.abs(X(i)) < 0.03 * u) seam.push(i);
-  let mL = seam[0], mC = seam[0]; for (const i of seam) { if (X(i) > X(mL)) mL = i; if (Math.abs(X(i)) < 0.003 * u && Z(i) > Z(mC) - 1) mC = Math.abs(X(i)) < Math.abs(X(mC)) + 0.002 * u && Z(i) >= Z(mC) ? i : mC; }
-  let chinI = -1; for (let i = 0, cy = 9; i < N; i++) if (used[i] && headW[i] > 0.5 && Math.abs(X(i)) < 0.004 * u && Z(i) > jaw[2] + 0.035 * u && Y(i) < cy) { cy = Y(i); chinI = i; }
-  let earI = -1; for (let i = 0, ex = 0; i < N; i++) if (used[i] && headW[i] > 0.6 && X(i) > ex && Y(i) < eL[1] + 0.01 * u) { ex = X(i); earI = i; }
-  let topI = -1; for (let i = 0, ty = 0; i < N; i++) if (used[i] && Y(i) > ty) { ty = Y(i); topI = i; }
-  let backI = -1; for (let i = 0, bz = 9; i < N; i++) if (used[i] && headW[i] > 0.6 && Math.abs(Y(i) - eL[1]) < 0.006 * u && Math.abs(X(i)) < 0.01 * u && Z(i) < bz) { bz = Z(i); backI = i; }
-  const mir = i => { let best = -1, bd = 9; for (let j = 0; j < N; j++) { if (!used[j]) continue; const d = Math.hypot(X(j) + X(i), Y(j) - Y(i), Z(j) - Z(i)); if (d < bd) { bd = d; best = j; } } return best; };
-  const eyeAnny = { w: 0.03 * u, h: 0.012 * u };
-  for (const s of [1, -1]) {
-    const ex0 = s * Math.abs(eL[0]), ey0 = eL[1];
-    for (const [ux, uy] of [[0, 0], [-0.5, 0], [0.5, 0], [0, 0.5], [0, -0.5]]) { const i = front(ex0 + s * ux * eyeAnny.w, ey0 + uy * eyeAnny.h); const x = s * (E.x + ux * E.w), y = E.y + uy * E.h; add(i, [x, y, surfZ(x, y)]); }
-    add(s > 0 ? mL : mir(mL), [s * MS.w, MS.y, surfZ(s * MS.w, MS.y)]);   // the lips' seam keeps room to open, however small the drawn mouth
-    add(s > 0 ? earI : mir(earI), [s * (ears.x + 0.08), ears.y, ears.z]);
+  const add = (i, t) => { pinned[i] = 1; src.push([at[i * 3], at[i * 3 + 1], at[i * 3 + 2]]); dst.push(toW(...t)); };
+  const X = i => at[i * 3], Y = i => at[i * 3 + 1], Z = i => at[i * 3 + 2], tipI = L.noseTip, mC = L.mouth;
+  // Anny's landmarks (src/head/face.js) to where the form has them: each eye's middle, inner and outer corner, top and
+  // bottom; the mouth's corners (the lips' seam keeps room to open, however small the drawn mouth) and middle; the ears
+  for (const [s, e] of [[1, 'L'], [-1, 'R']]) {
+    for (const [n, ux, uy] of [['eye', 0, 0], ['eyeIn', -0.5, 0], ['eyeOut', 0.5, 0], ['eyeUp', 0, 0.5], ['eyeDown', 0, -0.5]]) { const x = s * (E.x + ux * E.w), y = E.y + uy * E.h; add(L[n + e], [x, y, surfZ(x, y)]); }
+    add(L['mouth' + e], [s * MW, part(s * MW), surfZ(s * MW, part(s * MW))]);
+    add(L['ear' + e], [s * (ears.x + 0.08), ears.y, ears.z]);
   }
-  add(mC, [0, MS.y - MS.sag, surfZ(0, MS.y - MS.sag)]);
-  add(chinI, [0, yChin + 0.05, surfZ(0, yChin + 0.05) - 0.02]);
+  add(mC, [0, part(0), surfZ(0, part(0))]);
+  add(L.chin, [0, yChin + 0.05, surfZ(0, yChin + 0.05) - 0.02]);
   const top = form.kind === 'curves' ? 1.08 * (form.cranium?.h ?? 1) + 0.02 : (() => { let y = 2; while (hsdf(0, y, 0) > 0 && y > 0) y -= 0.005; return y; })();
-  add(topI, [0, top, 0]);
+  add(L.top, [0, top, 0]);
   const back = form.kind === 'curves' ? -1.05 * (form.cranium?.d ?? 1.05) : (() => { let z = -2.5; while (hsdf(0, -0.3, z) > 0 && z < 0) z += 0.005; return z; })();
-  add(backI, [0, -0.3, back]);
+  add(L.back, [0, -0.3, back]);
   // the profile, point by point: Anny's midline from the root of the nose over its tip down to the mouth is laid along
   // the form's own profile — root to root, tip to tip, mouth to mouth, and between them by length along the curve
   const mids = []; let midTop = 0;
@@ -132,7 +137,7 @@ export function wrapHead(body, form, marks, neckSlim = 0.78, onto = [0.35, 0.95]
     mid.sort((a, b) => Y(b) - Y(a));
     let aRoot = mid[0]; for (const i of mid) if (Y(i) > Y(tipI) && Z(i) < Z(aRoot)) aRoot = i;
     const annyUp = mid.filter(i => Y(i) <= Y(aRoot) && Y(i) >= Y(tipI)), annyDn = mid.filter(i => Y(i) < Y(tipI));
-    const prof = []; for (let y = E.y + 0.02; y >= MS.y - MS.sag; y -= 0.004) prof.push([y, surfZ(0, y)]);
+    const prof = []; for (let y = E.y + 0.02; y >= part(0); y -= 0.004) prof.push([y, surfZ(0, y)]);
     let dTip = 0; for (let k = 0; k < prof.length; k++) if (prof[k][1] > prof[dTip][1]) dTip = k;
     let dRoot = 0; for (let k = 0; k < dTip; k++) if (prof[k][1] < prof[dRoot][1]) dRoot = k;
     // under the tip the form turns back in: follow it as a curve, not a jump
@@ -142,7 +147,7 @@ export function wrapHead(body, form, marks, neckSlim = 0.78, onto = [0.35, 0.95]
     const annyAlong = I => { const L = lengths(I.map(i => [Y(i), Z(i)])); return L.map(l => l / Math.max(1e-9, L[L.length - 1])); };
     const lay = (I, Q) => { const t = annyAlong(I); I.forEach((i, k) => { const [y, z] = along(Q, t[k]); const w = toW(0, y, z); mids.push([Y(i), w[1] - Y(i), w[2] - Z(i)]); if (k % 2) return; add(i, [0, y, z]); }); };
     lay(annyUp, prof.slice(dRoot, dTip + 1));
-    lay(annyDn, [prof[dTip], ...under.filter(q => q[0] > MS.y - MS.sag), [MS.y - MS.sag, surfZ(0, MS.y - MS.sag)]]);
+    lay(annyDn, [prof[dTip], ...under.filter(q => q[0] > part(0)), [part(0), surfZ(0, part(0))]]);
     midTop = Y(aRoot);
   }
   // the mouth: Anny's lips' seam laid along the drawn mouth's line, end to end, so it opens where the drawing is
@@ -153,7 +158,7 @@ export function wrapHead(body, form, marks, neckSlim = 0.78, onto = [0.35, 0.95]
       if (v.some(i => !used[i] || headW[i] < 0.5 || Z(i) < Z(tipI) - 0.035 * u || Math.abs(Y(i) - Y(mC)) > 0.012 * u || Math.abs(X(i)) > 0.03 * u)) continue; v.forEach(i => S.add(i));
     }
     let xA = 0; for (const i of S) xA = Math.max(xA, Math.abs(X(i)));
-    for (const i of S) { if (pinned[i]) continue; const f = X(i) / xA, x = f * MS.w, y = MS.y + (jawW[i] > 0.5 ? -0.0015 : 0.0015) - MS.sag * (1 - f * f); add(i, [x, y, surfZ(x, y) - 0.004 * (1 - f * f)]); }
+    for (const i of S) { if (pinned[i]) continue; const f = X(i) / xA, x = f * MW, y = part(x) + (jawW[i] > 0.5 ? -0.0015 : 0.0015); add(i, [x, y, surfZ(x, y) - 0.004 * (1 - f * f)]); }
   }
   // the neck stays Anny's: points well down the neck hold still
   for (let i = 0; i < N; i += 37) if (used[i] && omega[i] < 0.02 && Y(i) > chest[1] && Y(i) < neck2[1] + 0.02 * u) { src.push([X(i), Y(i), Z(i)]); dst.push([X(i), Y(i), Z(i)]); }
@@ -230,36 +235,4 @@ export function wrapHead(body, form, marks, neckSlim = 0.78, onto = [0.35, 0.95]
     }
   }
   return at;
-}
-
-// a smooth warp through points (src → dst): biharmonic radial basis (|r|) plus an affine part — as a function
-// (x, y, z, out) → the move there
-export function biharmonic(src, dst) {
-  const n = src.length, m = n + 4, A = Array.from({ length: m }, () => new Float64Array(m)), B = [0, 1, 2].map(() => new Float64Array(m));
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) A[i][j] = Math.hypot(src[i][0] - src[j][0], src[i][1] - src[j][1], src[i][2] - src[j][2]);
-    A[i][n] = 1; A[i][n + 1] = src[i][0]; A[i][n + 2] = src[i][1]; A[i][n + 3] = src[i][2];
-    for (let k = 0; k < 4; k++) A[n + k][i] = A[i][n + k];
-    for (let c = 0; c < 3; c++) B[c][i] = dst[i][c] - src[i][c];
-  }
-  const W = B.map(b => solve(A, b)), S = Float64Array.from(src.flat());
-  return (x, y, z, out = [0, 0, 0]) => {
-    for (let c = 0; c < 3; c++) {
-      const w = W[c]; let v = w[n] + w[n + 1] * x + w[n + 2] * y + w[n + 3] * z;
-      for (let i = 0; i < n; i++) v += w[i] * Math.hypot(x - S[i * 3], y - S[i * 3 + 1], z - S[i * 3 + 2]);
-      out[c] = v;
-    }
-    return out;
-  };
-}
-// Gauss–Jordan with partial pivoting
-export function solve(A0, b0) {
-  const m = A0.length, a = A0.map(r => Float64Array.from(r)), b = Float64Array.from(b0);
-  for (let i = 0; i < m; i++) {
-    let p = i; for (let r = i + 1; r < m; r++) if (Math.abs(a[r][i]) > Math.abs(a[p][i])) p = r;
-    [a[i], a[p]] = [a[p], a[i]]; [b[i], b[p]] = [b[p], b[i]];
-    const d = a[i][i] || 1e-12;
-    for (let r = 0; r < m; r++) { if (r === i) continue; const f = a[r][i] / d; if (!f) continue; for (let c = i; c < m; c++) a[r][c] -= f * a[i][c]; b[r] -= f * b[i]; }
-  }
-  return Float64Array.from(b, (v, i) => v / (a[i][i] || 1e-12));
 }

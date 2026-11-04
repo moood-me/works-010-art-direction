@@ -64,13 +64,15 @@ export class Figure {
       o.skinner = new Skinner(mesh, this.rig, skinning);
       // what each change of the rest does to this mesh: the body's own as the change made it, another's by its field
       const sk = this.rig.skeleton, rest = Float32Array.from(mesh.positions), cor = o.skinner.cor ? Float32Array.from(o.skinner.cor) : null;
-      o.changes = this.restLayers.map(l => {
+      // (a mesh that follows its host's rest takes the changes of the rest as the host's vertices it is bound to do)
+      o.changes = mesh.follow ? [] : this.restLayers.map(l => {
         const m = name === 'body' ? l.body : l.forMesh(mesh, rest, cor, sk);
         if (m) for (let k = 0; k < m.indices.length; k++) for (let c = 0; c < 3; c++) rest[m.indices[k] * 3 + c] += m.deltas[k * 3 + c];
         if (m?.centres && cor) for (let i = 0; i < cor.length; i++) cor[i] += m.centres[i];
         return m;
       });
-      if (Object.keys(mesh.morphs).length || o.changes.some(Boolean)) o.rest = new Float32Array(mesh.positions.length);
+      if (Object.keys(mesh.morphs).length || o.changes.some(Boolean) || mesh.follow) o.rest = new Float32Array(mesh.positions.length);
+      if (mesh.follow) { o.host = this.outputs.find(h => h.name === mesh.follow.host); if (!o.host) throw new Error(`${mesh.id}: follows "${mesh.follow.host}", added after it`); }
       if (o.skinner.cor && o.changes.some(m => m?.centres)) o.cor = new Float64Array(o.skinner.cor.length);
     }
     this.outputs.push(o);
@@ -111,7 +113,7 @@ export class Figure {
     const { morphs, rest, applied } = this.ctx;
     for (const o of this.outputs) {
       const m = o.mesh;
-      if (m.kind === 'skinned') o.skinner.skin(pose, o.positions, o.rest ? restOf(o, morphs[o.name] || {}, applied) : m.positions, rest, o.cor ? centresOf(o, applied) : o.skinner.cor);
+      if (m.kind === 'skinned') o.skinner.skin(pose, o.positions, m.follow ? followed(o) : o.rest ? restOf(o, morphs[o.name] || {}, applied) : m.positions, rest, o.cor ? centresOf(o, applied) : o.skinner.cor);
       else if (m.kind === 'rigid') rigid(o, pose, this.rig);
       else if (m.build) m.build(pose, this.rig, o.positions);
     }
@@ -173,15 +175,27 @@ export class Figure {
   }
 }
 
-// a skinned mesh's rest this frame: its morphs and the changes of the rest weighed in (into o.rest)
+// a skinned mesh's rest this frame: its morphs and the changes of the rest weighed in (into o.rest); o.moved: whether
+// anything moved it
 function restOf(o, weights, applied) {
   const P = morphed(o.mesh, weights, o.rest);
+  o.moved = Object.values(weights).some(Boolean);
   for (let n = 0; n < o.changes.length; n++) {
     const m = o.changes[n], w = applied[n]; if (!m || !w) continue;
+    o.moved = true;
     const I = m.indices, D = m.deltas;
     for (let k = 0; k < I.length; k++) { const i = I[k] * 3; P[i] += w * D[k * 3]; P[i + 1] += w * D[k * 3 + 1]; P[i + 2] += w * D[k * 3 + 2]; }
   }
   return P;
+}
+// a mesh that follows its host's rest: its rest moved as the host's bound vertices moved this frame (into o.rest)
+function followed(o) {
+  const m = o.mesh, { K, idx, w } = m.follow, R = o.rest, P = m.positions; R.set(P);
+  if (!o.host.moved) return P;   // (the host's rest is its own this frame)
+  const H = o.host.rest;
+  const H0 = o.host.mesh.positions;
+  for (const i of m.used) for (let k = 0; k < K; k++) { const j = idx[i * K + k] * 3, a = w[i * K + k]; R[i * 3] += a * (H[j] - H0[j]); R[i * 3 + 1] += a * (H[j + 1] - H0[j + 1]); R[i * 3 + 2] += a * (H[j + 2] - H0[j + 2]); }
+  return R;
 }
 // its centres of rotation this frame (into o.cor)
 function centresOf(o, applied) {

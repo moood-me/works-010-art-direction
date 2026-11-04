@@ -6,22 +6,23 @@
 //   mesh effects: lids (the skin over each eye swells, as a lid over a ball), corners (the mouth's corners up, out and
 //   back, its middle still), cheeks (they rise and round), brows (the skin over the brows lifts) — each with an amount
 import { clamp } from '../math.js';
+import { num } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 const EFFECT = { type: 'object', required: ['kind'], props: { kind: { type: 'string', enum: ['lids', 'corners', 'cheeks', 'brows'] }, amount: num(-3, 3) } };
 export const EXPRESSION_SCHEMA = { type: 'object', required: ['name'], props: {
   name: { type: 'string', pattern: /^[a-z][a-zA-Z0-9]*$/ }, label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
   jaw: num(-30, 30), mesh: { type: 'array', items: EFFECT },
   paint: { type: 'object', props: { close: num(0, 1), happy: num(0, 1), smile: num(0, 1), open: num(0, 1), up: num(0, 1), down: num(0, 1) } } } };
 
-// the morph of one expression: {indices, deltas} (metres), on positions P of the head; eye, mouth: where they are
-// drawn (head units: the eye's {x, y, w, h, tilt}, the mouth's {y, w, wide})
-export function expressionMorph(x, { P, mesh, frame, omega, eye, mouth, brow }) {
+// the morph of one expression: {indices, deltas} (metres), on positions P of the head, each vertex placed by where it
+// is in the face's picture (pic, src/head/features.js picturePlaces) — so it moves the skin where the eyes, the mouth and
+// the brows are drawn on it ({x, y, w, h, tilt}, {y, w, wide}, a brow's line: head units)
+export function expressionMorph(x, { pic, P, mesh, frame, omega, eye, mouth, brow }) {
   const idx = [], del = [], R = frame.R;
   const hw = mouth ? (mouth.wide ? mouth.w : mouth.w / 2) : 0.1, my = mouth?.y ?? -0.8;
   for (const i of mesh.used) {
     if (omega[i] < 0.5) continue;
-    const [lx, ly, lz] = frame.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); if (lz < 0) continue;
+    const lz = frame.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2])[2], lx = pic[i * 2], ly = pic[i * 2 + 1]; if (lz < 0) continue;
     let dx = 0, dy = 0, dz = 0;
     for (const e of x.mesh || []) {
       const a = e.amount ?? 1;

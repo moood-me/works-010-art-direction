@@ -12,8 +12,8 @@
 //                one's. On bodies of one topology only.
 import { register } from '../deform.js';
 import { local, smoothField } from '../regions.js';
+import { num } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 const KINDS = ['torso', 'neck', 'head', 'clav', 'arm', 'fore', 'hand', 'thigh', 'shin', 'foot'];
 const part = { type: 'object', props: { length: num(0.2, 4), width: num(0.2, 4), size: num(0.2, 4) } };
 

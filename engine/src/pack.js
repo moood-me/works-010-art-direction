@@ -19,6 +19,19 @@ export async function loadPack(url, read = defaultRead) {
   return { header, arrays, hash: hashOf([header, buf]) };
 }
 
+// a pack's two files from a header and its arrays ({key: {array (typed), shape?}}, in the order given): {json (text),
+// bin (bytes)} — each array starts at a multiple of 4 bytes, as tools/pack.py writes them
+export function packOf(header, arrays, bin) {
+  const meta = {}, chunks = []; let at = 0;
+  for (const [key, { array: a, shape = [a.length] }] of Object.entries(arrays)) {
+    const dtype = Object.keys(KINDS).find(k => a instanceof KINDS[k]); if (!dtype) throw new Error(`${key}: not a pack type`);
+    const bytes = new Uint8Array(a.buffer, a.byteOffset, a.byteLength), pad = (4 - bytes.length % 4) % 4;
+    meta[key] = { dtype, shape, offset: at }; chunks.push(bytes, new Uint8Array(pad)); at += bytes.length + pad;
+  }
+  const out = new Uint8Array(at); let o = 0; for (const c of chunks) { out.set(c, o); o += c.length; }
+  return { json: JSON.stringify({ ...header, bin, arrays: meta }, null, 1) + '\n', bin: out };
+}
+
 export async function defaultRead(url) {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`${url}: ${r.status}`);

@@ -25,8 +25,8 @@ import { taubin, smoothField } from '../regions.js';
 import { normalsOf } from '../mesh.js';
 import { lerp, clamp, sst, smin } from '../math.js';
 import { cone } from './masses.js';
+import { num } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 const FIGURES = { inverted: [1.05, 0.45], rectangle: [0.8, 0.8], trapezoid: [0.95, 0.7], oval: [0.75, 0.75] };
 
 register({

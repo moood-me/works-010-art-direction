@@ -1,0 +1,17 @@
+{
+ "format": "engine/wrap",
+ "version": 1,
+ "key": "7ec763339df5da9e",
+ "about": "head-anime: its head wrapped (src/head/wrap.js), by wrapKey",
+ "bin": "7ec763339df5da9e.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  }
+ }
+}

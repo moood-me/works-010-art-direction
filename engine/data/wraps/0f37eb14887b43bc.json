@@ -1,0 +1,17 @@
+{
+ "format": "engine/wrap",
+ "version": 1,
+ "key": "0f37eb14887b43bc",
+ "about": "head-alva: its head wrapped (src/head/wrap.js), by wrapKey",
+ "bin": "0f37eb14887b43bc.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  }
+ }
+}

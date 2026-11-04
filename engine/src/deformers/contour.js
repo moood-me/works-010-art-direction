@@ -24,8 +24,8 @@ import { register } from '../deform.js';
 import { local, smoothField } from '../regions.js';
 import { clamp, lerp } from '../math.js';
 import { curve } from './curves.js';
+import { num } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 const keys = { type: 'array', min: 1, items: { type: 'array', min: 2, max: 2, items: num(-1, 10) } };
 const four = { type: 'object', props: { outer: keys, inner: keys, front: keys, back: keys }, required: ['outer', 'inner', 'front', 'back'] };
 const FORM = { type: 'object', props: {

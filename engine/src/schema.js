@@ -6,6 +6,14 @@
 //   {type: 'string', enum?: [...], pattern?: RegExp}   {type: 'number' | 'integer', min?, max?}   {type: 'boolean'}
 //   {type: 'array', items: schema, min?, max?}         {type: 'null'}   {const: value}
 //   {anyOf: [schemas]}                                 {type: 'union', key: 'kind', cases: {name: object schema}}
+// the schemas every format is built of
+export const num = (min, max) => ({ type: 'number', min, max });
+export const flag = { type: 'boolean' };
+export const color = { type: 'string', pattern: /^#[0-9a-f]{6}$/i };
+export const vec = (n, min, max) => ({ type: 'array', min: n, max: n, items: num(min, max) });
+// a preset or a character by its pin (id@hash)
+export const pin = { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ };
+
 export function validate(value, schema, where = '') {
   const at = where || '(top)', fail = m => { throw new Error(`${at}: ${m}`); };
   if (schema.anyOf) {

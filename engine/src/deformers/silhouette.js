@@ -29,8 +29,8 @@ import { register } from '../deform.js';
 import { levelOf } from '../regions.js';
 import { clamp, lerp, sub, cross, dot, len, normalize, qAxisAngle, qRot, qRot3 } from '../math.js';
 import { curve } from './curves.js';
+import { num } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max });
 export const LEVELS = ['floor', 'ankle', 'knee', 'crotch', 'hips', 'waist', 'chest', 'armpit', 'shoulders', 'neck', 'head', 'top'];
 const at = { anyOf: [{ type: 'number', min: 0, max: 1 }, { type: 'string', enum: LEVELS }] };
 const KEY = { type: 'object', props: { at, width: num(0.05, 5), depth: num(0.05, 5), forward: num(-2, 2) }, required: ['at'] };

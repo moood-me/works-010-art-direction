@@ -40,7 +40,7 @@
 //    theirs, its features, expressions and pieces replacing theirs of the same id (name) and added after them
 // motion.floor: "lowest" — after everything is drawn, the figure's lowest point as high as SOMA's skin's lowest then
 // (scaled): standing on its feet, lying on its back, nothing in the floor; "pelvis" — only the pelvis's height scaled.
-import { validate } from './schema.js';
+import { validate, num, color, pin } from './schema.js';
 import { pinned } from './hash.js';
 import { DEFORMERS, layerOf } from './deform.js';
 import './deformers/index.js';
@@ -64,7 +64,6 @@ export const DEFAULTS = {
   },
 };
 
-const num = (min, max) => ({ type: 'number', min, max });
 const axis = { type: 'array', items: num(-1, 1), min: 3, max: 3 };
 export function schemaOf(skeleton) {
   const joint = { type: 'string', enum: skeleton.names };
@@ -75,7 +74,7 @@ export function schemaOf(skeleton) {
   // a deformer (src/deform.js): its own parameters, its strength, and how it goes on the rest (frames) or as a layer (space)
   const deformer = (d, more, required) => ({ type: 'object', props: { kind: { const: d.kind }, ...d.params, strength: num(-3, 3), ...more }, required: ['kind', ...required] });
   // a preset (presets/<id>.json): its changes, each one's strength times this one
-  const preset = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
+  const preset = { type: 'object', props: { kind: { const: 'preset' }, id: pin, strength: num(-3, 3) }, required: ['kind', 'id'] };
   // a change of a head's form: a deformer or a preset of them (made on the rest with its frames kept)
   const formChange = { type: 'union', key: 'kind', cases: { preset, ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, deformer(d, {}, [])])) } };
   return {
@@ -84,7 +83,7 @@ export function schemaOf(skeleton) {
       format: { const: FORMAT }, version: { const: VERSION },
       id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*$/ },
       label: { type: 'object', props: { ru: { type: 'string' }, en: { type: 'string' } }, required: ['ru', 'en'] },
-      base: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ },
+      base: pin,
       body: { type: 'string', pattern: /^[A-Za-z0-9_.-]+@[0-9a-f]{12,64}$/ },
       rest: { type: 'array', items: { type: 'union', key: 'kind', cases: {
         turn: { ...turn, props: { ...turn.props, frames }, required: [...turn.required, 'frames'] },
@@ -103,18 +102,17 @@ export function schemaOf(skeleton) {
         method: { type: 'string', enum: ['cor', 'dqs', 'lbs'] }, sigma: num(0.01, 1),
         seam: { anyOf: [{ type: 'null' }, { type: 'object', props: { iterations: { type: 'integer', min: 1, max: 200 }, rings: { type: 'integer', min: 0, max: 20 } } }] } } },
       motion: { type: 'object', props: { floor: { type: 'string', enum: ['lowest', 'pelvis'] } } },
-      look: { type: 'object', props: { skin: { type: 'string', pattern: /^#[0-9a-f]{6}$/i }, roughness: num(0, 1) } },
+      look: { type: 'object', props: { skin: color, roughness: num(0, 1) } },
       head: headSchema(formChange),
     },
   };
 }
 // a head (a character's, or a head preset's): see the top
-const REF = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ } }, required: ['kind', 'id'] };
+const REF = { type: 'object', props: { kind: { const: 'preset' }, id: pin }, required: ['kind', 'id'] };
 const OFF = { type: 'object', props: { kind: { const: 'off' }, id: { type: 'string' } }, required: ['kind', 'id'] };
 export function headSchema(change) {
-  const num = (min, max) => ({ type: 'number', min, max });
   return { type: 'object', props: {
-    preset: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, size: num(0.3, 3), skin: { type: 'string', pattern: /^#[0-9a-f]{6}$/i },
+    preset: pin, size: num(0.3, 3), skin: color,
     form: { type: 'array', items: change },
     features: { type: 'array', items: { type: 'union', key: 'kind', cases: { ...FEATURE_SCHEMA.cases, preset: REF, off: OFF } } },
     expressions: { type: 'array', items: { anyOf: [REF, { type: 'object', props: { kind: { const: 'off' }, name: { type: 'string' } }, required: ['kind', 'name'] }, EXPRESSION_SCHEMA] } },
@@ -144,8 +142,7 @@ export function headSchema(change) {
 export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 3;
 export const PRESET_CONTENT = ['changes', 'head', 'features', 'expressions', 'light'];
 export function presetSchemaOf() {
-  const num = (min, max) => ({ type: 'number', min, max });
-  const ref = { type: 'object', props: { kind: { const: 'preset' }, id: { type: 'string', pattern: /^[a-z0-9][a-z0-9-]*@[0-9a-f]{12,64}$/ }, strength: num(-3, 3) }, required: ['kind', 'id'] };
+  const ref = { type: 'object', props: { kind: { const: 'preset' }, id: pin, strength: num(-3, 3) }, required: ['kind', 'id'] };
   const change = { type: 'union', key: 'kind', cases: { preset: ref,
     ...Object.fromEntries(Object.values(DEFORMERS).map(d => [d.kind, { type: 'object', props: { kind: { const: d.kind }, ...d.params, strength: num(-3, 3) }, required: ['kind'] }])) } };
   return {

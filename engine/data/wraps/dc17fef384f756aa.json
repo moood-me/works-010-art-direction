@@ -1,0 +1,17 @@
+{
+ "format": "engine/wrap",
+ "version": 1,
+ "key": "dc17fef384f756aa",
+ "about": "head-boy7: its head wrapped (src/head/wrap.js), by wrapKey",
+ "bin": "dc17fef384f756aa.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  }
+ }
+}

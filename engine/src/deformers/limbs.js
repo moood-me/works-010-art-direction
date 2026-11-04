@@ -12,8 +12,8 @@
 // the next.
 import { register } from '../deform.js';
 import { clamp, sst } from '../math.js';
+import { num, flag } from '../schema.js';
 
-const num = (min, max) => ({ type: 'number', min, max }), bool = { type: 'boolean' };
 const win = t => t <= 0 || t >= 1 ? 0 : Math.sin(Math.PI * t);
 const ACROSS = 0.16;   // how much of the limb's length the hand-over from one bone to the next takes
 
@@ -64,7 +64,7 @@ function limbField(R, which, { across, whole }) {
 
 register({
   kind: 'taper', of: 'figure',
-  params: { amount: num(-2, 2), arms: bool, legs: bool },
+  params: { amount: num(-2, 2), arms: flag, legs: flag },
   defaults: { amount: 0.6, arms: true, legs: true },
   field(p, R) {
     const a = p.amount * p.strength;
@@ -76,7 +76,7 @@ register({
 
 register({
   kind: 'straight', of: 'figure',
-  params: { amount: num(-2, 2), arms: bool, legs: bool },
+  params: { amount: num(-2, 2), arms: flag, legs: flag },
   defaults: { amount: 0.6, arms: true, legs: true },
   field(p, R) {
     const a = p.amount * p.strength;
@@ -91,7 +91,7 @@ register({
 
 register({
   kind: 'arc', of: 'figure',
-  params: { amount: num(-2, 2), arms: bool, legs: { anyOf: [bool, { type: 'string', enum: ['out', 'in'] }] } },
+  params: { amount: num(-2, 2), arms: flag, legs: { anyOf: [flag, { type: 'string', enum: ['out', 'in'] }] } },
   defaults: { amount: 0.5, arms: true, legs: 'out' },
   field(p, R) {
     const a = p.amount * p.strength, which = { arms: p.arms, legs: !!p.legs }, inward = p.legs === 'in';

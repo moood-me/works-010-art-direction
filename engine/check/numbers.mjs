@@ -11,7 +11,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createEngine } from '../src/engine.js';
-import { loadPack } from '../src/pack.js';
+import { loadPack, packOf } from '../src/pack.js';
 import { read } from './node-read.mjs';
 import { jobsOf, figureOf, sourcesOf, parseArgs } from './cases.mjs';
 
@@ -42,12 +42,11 @@ if (args.update) {
   if (stored) for (const [name, m] of Object.entries(stored.header.jobs)) if (!now[name]) keep[name] = { values: stored.arrays[name], joints: m.joints, sources: m.sources };
   const all = { ...keep, ...now }, names = Object.keys(all).sort();
   const header = { format: 'engine/check-numbers', version: 1, about: 'check/numbers.mjs: each case\'s joints and every 4th used vertex, metres', stride: STRIDE,
-    jobs: Object.fromEntries(names.map(n => [n, { joints: all[n].joints, sources: all[n].sources }])), bin: 'numbers.bin', arrays: {} };
-  const chunks = []; let off = 0;
-  for (const n of names) { header.arrays[n] = { dtype: 'float32', shape: [all[n].values.length / 3, 3], offset: off }; chunks.push(Buffer.from(all[n].values.buffer, all[n].values.byteOffset, all[n].values.byteLength)); off += all[n].values.byteLength; }
+    jobs: Object.fromEntries(names.map(n => [n, { joints: all[n].joints, sources: all[n].sources }])) };
+  const { json, bin } = packOf(header, Object.fromEntries(names.map(n => [n, { array: all[n].values, shape: [all[n].values.length / 3, 3] }])), 'numbers.bin');
   await mkdir(new URL('numbers/', HERE), { recursive: true });
-  await writeFile(STORE, JSON.stringify(header, null, 1) + '\n');
-  await writeFile(new URL('numbers/numbers.bin', HERE), Buffer.concat(chunks));
+  await writeFile(STORE, json);
+  await writeFile(new URL('numbers/numbers.bin', HERE), bin);
   console.log(`stored the numbers of ${jobs.length} cases (${names.length} in all)`);
   process.exit(0);
 }
