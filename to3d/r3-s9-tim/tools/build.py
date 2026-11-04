@@ -64,10 +64,10 @@ hs = np.load(f'{CACHE}/head_steps.npz')
 HV, HQ = hs['warped'].copy(), hs['Q']; HT = tris(HQ)
 # the ears stick out as the drawing's do: each ear (found on the base) turned out about its front edge, a little larger
 FB = hs['faired']
-ew = np.clip((np.abs(FB[:, 0]) - 0.086) / 0.012, 0, 1) * ((FB[:, 1] > 0.665) & (FB[:, 1] < 0.815) & (np.abs(FB[:, 2]) < 0.05))
+ew = np.clip((np.abs(FB[:, 0]) - 0.104) / 0.01, 0, 1) * ((FB[:, 1] > 0.66) & (FB[:, 1] < 0.80) & (FB[:, 2] > -0.045) & (FB[:, 2] < 0.035))
 for sgn in (1, -1):
     m = (ew > 0) & (np.sign(HV[:, 0]) == sgn)
-    c = (HV[m] * ew[m, None]).sum(0) / ew[m].sum(); zf = HV[m & (ew > 0.9), 2].max()
+    c = (HV[m] * ew[m, None]).sum(0) / ew[m].sum(); zf = HV[m & (ew > 0.5), 2].max()
     w = ew[m, None]
     X = HV[m]; X = c + (X - c) * (1 + 0.18 * w)
     X[:, 0] += sgn * w[:, 0] * 0.4 * np.clip(zf - X[:, 2], 0, None)

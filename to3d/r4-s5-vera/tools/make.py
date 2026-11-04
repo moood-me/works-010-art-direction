@@ -89,8 +89,8 @@ def turn_film():
 
 def walk_film():
     # Kimodo's walk: she comes toward the camera and to its left, seen from three quarters
-    film('walk', [{'view': 'style', 'line': 2.1, 'figures': [{'yaw': -32, 'x': 150, 'z': -120, 'motion': 'walk', 'f': f, 'travel': True}],
-                   'cam': {'pos': [0.75, 0.8, 3.3], 'at': [-0.05, 0.5, 0.3], 'fov': 24}} for f in range(120)],
+    film('walk', [{'view': 'style', 'line': 2.1, 'figures': [{'yaw': -45, 'x': 200, 'z': -150, 'motion': 'walk', 'f': f, 'travel': True}],
+                   'cam': {'pos': [0.6, 0.85, 4.4], 'at': [-0.1, 0.48, 0.2], 'fov': 24}} for f in range(120)],
          [960, 600], 30, os.path.join(PICS, 'walk.mp4'))
     jpg(os.path.join(OUT, 'walk', 'f0060.png'), os.path.join(PICS, 'walk-frame.jpg'))
 
