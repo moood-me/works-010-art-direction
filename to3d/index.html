@@ -143,7 +143,18 @@ function show(id) {
   const src = (it.sources || []).map(t => `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.name)}</a>`).join(', ');
   view.innerHTML = `<h2><span class="id">${it.id}</span>${esc(it.name)}<span class="st ${it.status}">${esc(it.statusText)}</span></h2>
     ${src ? `<p class="tool refs">Исходное: ${src}</p>` : ''}<p class="what">${esc(it.what)}</p>${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ''}
-    ${(it.blocks || []).map(b => `<section class="blk"><h3>${esc(b.title)}</h3>${b.text ? `<p class="what">${esc(b.text)}</p>` : ''}${(b.list || []).length ? `<ul>${b.list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}${(b.pics || []).length ? `<div class="grid">${figs(it, b.pics)}</div>` : ''}</section>`).join('')}`;
+    ${it.view3d ? `<div class="tabs"><button data-t="pics" aria-pressed="true">Картинки</button><button data-t="3d" aria-pressed="false">3D: вращать, двигать, лицо</button></div><div class="d3"></div>` : ''}<div class="picsbox">
+    ${(it.blocks || []).map(b => `<section class="blk"><h3>${esc(b.title)}</h3>${b.text ? `<p class="what">${esc(b.text)}</p>` : ''}${(b.list || []).length ? `<ul>${b.list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}${(b.pics || []).length ? `<div class="grid">${figs(it, b.pics)}</div>` : ''}</section>`).join('')}</div>`;
+  if (it.view3d) {
+    const d3 = view.querySelector('.d3'), box = view.querySelector('.picsbox');
+    const setTab = t => {
+      view.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === t)));
+      box.style.display = t === 'pics' ? '' : 'none'; d3.classList.toggle('on', t === '3d');
+      d3.innerHTML = t === '3d' ? `<div class="d3bar"><b>${it.id}</b><span>${esc(it.name)}</span><span class="note">${esc(it.view3dNote || '')}</span><button class="back">← Картинки</button></div><div class="d3box"><iframe class="v3d" src="${it.dir}/${it.view3d}" title="3D: ${esc(it.name)}"></iframe></div>` : '';
+      if (t === '3d') d3.querySelector('.back').onclick = () => setTab('pics');
+    };
+    view.querySelectorAll('.tabs button').forEach(b => b.onclick = () => setTab(b.dataset.t));
+  }
   view.querySelectorAll('figure[data-k]').forEach(f => f.onclick = () => openLb(+f.dataset.k));
   window.scrollTo(0, 0);
 }
