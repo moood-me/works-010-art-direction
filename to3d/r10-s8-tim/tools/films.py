@@ -60,7 +60,7 @@ def main(name, samples=16):
         if ty == 'head': tgt[0], tgt[2] = head[i][0], head[i][2]
         pos = tgt + np.array([math.sin(a) * d, 0.08 if ty == 'head' else 0.18, math.cos(a) * d])
         views.append(dict(name=f'f{k:04d}', W=F['size'][0], H=F['size'][1], frame=i,
-                          cam=dict(type='persp', pos=pos.tolist(), target=tgt.tolist(), lens=lens, fstop=2.8 if ty == 'head' else 3.5)))
+                          cam=dict(type='persp', pos=pos.tolist(), target=tgt.tolist(), lens=lens, fstop=1.2 if ty == 'head' else 0.8)))
     job = dict(out=out, samples=samples, frames=f'{out}/frames.bin', views=views, noise=0.05)
     json.dump(job, open(f'{out}/render.json', 'w'))
     subprocess.run([BLENDER, '-b', '--python', os.path.join(HERE, 'render.py'), '--', f'{out}/render.json'],

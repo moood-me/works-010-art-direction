@@ -141,7 +141,9 @@ def mat_skin():
     uv = attr(nt, 'tuv')
     img = image(nt, os.path.join(TEX, 'face.png'), uv.outputs['Vector'])
     tint = attr(nt, 'tint')                     # ears and hands warmer (per vertex)
-    col = mixc(nt, tint.outputs['Fac'], img.outputs['Color'], lin('#e8a090'))
+    # Filmic pales a light skin: a little of a warmer, pinker one under the paint (the drawing's skin reads warm)
+    warm = mixc(nt, 0.18, img.outputs['Color'], lin('#f0a888'))
+    col = mixc(nt, tint.outputs['Fac'], warm, lin('#e8a090'))
     nt.links.new(col, b.inputs['Base Color'])
     set_(b, rough=0.42, sss=0.35, sss_r=(1.0, 0.45, 0.3), sss_s=0.012, coat=0.12, coat_r=0.35, spec=0.45)
     # resin cast: the faintest unevenness, fingerprints of the sculptor
@@ -286,7 +288,7 @@ for o in meta['pieces']:
     OBJ[n] = (ob, s0, cnt)
 
 # ------------------------------------------------------------------ the set
-st = dict(dict(floor='#2e2a2a', back='#1e2430', glow='#d89a60', seed=8), **job.get('stage', {}))
+st = dict(dict(floor='#2a2322', back='#1e2430', glow='#d89a60', seed=8), **job.get('stage', {}))
 
 
 def plane(name, size, loc, rot, mat):
@@ -296,12 +298,10 @@ def plane(name, size, loc, rot, mat):
 
 fm, fnt, fb = nodes('floor')
 tc = fnt.nodes.new('ShaderNodeTexCoord')
-wood = fnt.nodes.new('ShaderNodeTexWave'); wood.wave_type = 'BANDS'; wood.inputs['Scale'].default_value = 3.0
-wood.inputs['Distortion'].default_value = 6.0; wood.inputs['Detail'].default_value = 4
-fnt.links.new(tc.outputs['Object'], wood.inputs['Vector'])
-fcol = mixc(fnt, math_(fnt, 'MULTIPLY', wood.outputs['Fac'], 0.5), lin(st['floor']), lin('#1a1616'))
+fcol = mixc(fnt, math_(fnt, 'MULTIPLY', noise(fnt, tc.outputs['Object'], 6.0, 3, 0.5), 0.6), lin(st['floor']), lin('#151111'))
 fnt.links.new(fcol, fb.inputs['Base Color'])
-set_(fb, rough=0.55, spec=0.4)
+bump(fnt, fb, noise(fnt, tc.outputs['Object'], 80.0, 4, 0.6), 0.1, 0.002)
+set_(fb, rough=0.75, spec=0.3)
 plane('floor', 40, (0, 0, 0), (0, 0, 0), fm)
 bm, bnt, bb = nodes('backdrop')
 bnt.links.new(bnt.nodes.new('ShaderNodeRGB').outputs[0], bb.inputs['Base Color'])
@@ -328,7 +328,7 @@ def set_behind(at, fwd, d, W, H, pxm):
     SET.clear()
     at, fwd = np.asarray(at), np.asarray(fwd)           # Blender axes; fwd points toward the camera
     right = np.cross([0, 0, 1.0], fwd); right /= np.linalg.norm(right)
-    back = 3.0
+    back = 3.0 if d > 6 else 4.0
     bpy.ops.mesh.primitive_plane_add(size=1)
     bd = bpy.context.active_object; bd.data.materials.append(bm); SET.append(bd)
     span = (d + back + 1.0) / d * max(W, H) / pxm * 1.4
@@ -341,7 +341,9 @@ def set_behind(at, fwd, d, W, H, pxm):
         x, y = rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.42)
         if abs(x) < 0.2 and y < 0.3: x += 0.3 * np.sign(x or 1)
         p = at - fwd * back + right * x * wv + np.array([0, 0, 1.0]) * y * hv
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=rng.uniform(0.003, 0.008) * (d + back) / 4, location=tuple(p), segments=10, ring_count=5)
+        p[2] = max(p[2], 0.15 + rng.uniform(0, 0.4) * hv)        # lamps stand above the set's floor
+        rr = rng.uniform(0.003, 0.008) * (d + back) / 4 if d > 6 else rng.uniform(0.01, 0.025)
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=rr, location=tuple(p), segments=10, ring_count=5)
         s_ = bpy.context.active_object
         s_.data.materials.append(LAMP_MATS[rng.integers(len(LAMP_MATS))])
         s_.visible_shadow = False; s_.visible_diffuse = False; s_.visible_glossy = False

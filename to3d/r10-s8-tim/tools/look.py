@@ -20,7 +20,7 @@ def raster(meshes, yaw=0.0, box=(-0.6, 0.6, -0.6, 0.6), size=500, light=(-0.5, 0
     for V, T, col in meshes:
         Q = view(V)
         N = vertex_normals(Q, T)
-        sh = np.clip(N @ L, 0, 1) * 0.7 + 0.3
+        sh = np.abs(N @ L) * 0.7 + 0.3          # two-sided: the meshes are not all wound alike
         col = np.broadcast_to(np.asarray(col, float), (len(V), 3))
         vc = col * sh[:, None]
         px = (Q[:, 0] - x0) / (x1 - x0) * W; py = (y1 - Q[:, 1]) / (y1 - y0) * H

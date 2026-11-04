@@ -39,7 +39,7 @@ SHEETS = {
     # name: drawing picture, size, panels [(cx, cy, S, view yaw, head yaw on top, motion, frame, face, roll)]
     'turn': ('turn-tim.jpg', (1500, 620), [(250 + 500 * i, 255, 255, 0.8 * y, 0.2 * y, 'bow', 0, {'calm': 1}, 0) for i, y in enumerate((0, 40, 88))]),
     'portrait': ('portrait-tim.jpg', (700, 820), [(350, 335, 330, 0.55 * 28, 0.45 * 28, 'bow', 0, {'grin': 1}, 0)]),
-    'figure': ('figure-tim.jpg', (560, 960), [(280, 900 - 2.86 * 215, 215, 0.6 * 22.4, 0.4 * 22.4, 'wave', 45, {'grin': 1}, 0)]),
+    'figure': ('figure-tim.jpg', (560, 960), [(280, 900 - 2.86 * 215, 215, 0.6 * 22.4, 0.4 * 22.4, 'wave', 38, {'grin': 1}, 0)]),
     'expr': ('expr-tim.jpg', (1600, 540), [(200 + 400 * i, 280, 290, 18, 0, 'bow', 0, {e: 1}, r)
                                            for i, (e, r) in enumerate((('joy', -5), ('surprise', 0), ('sad', 6), ('anger', -3)))]),
 }
