@@ -139,9 +139,11 @@ if (!SHOTS) {
     S.loop = S.motion === 'walk' || S.motion === 'idle';
     S.seed = (S.seed + 1) % 997;
     moment(); render(playing ? dt : 0);
-    requestAnimationFrame(tick);
+    next(tick);
   };
-  requestAnimationFrame(tick);
+  // ?slow: a frame every half second (for looking at the page headless, where WebGL is slow)
+  const next = params.has('slow') ? f => setTimeout(() => f(performance.now()), 500) : requestAnimationFrame;
+  next(tick);
 }
 document.getElementById('msg').style.display = 'none';
 window.__ready = true;

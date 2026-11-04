@@ -64,7 +64,8 @@ the figure's mask on the lamp's side, the signs, the world's light. Same choice 
      of fog over each; the ground fogging to the horizon; a 2.6 m street lamp with a pool of warm light; his shadow
      from the lamp flattened onto the ground (stencil, so it is one shadow); the watch, the chain (a sagging curve of
      fixed length from the waistcoat pocket to the hand), the loupe's glint.
-3. `web/app.js`, `web/view.html` — the page and the viewer (`window.A` for pictures and films).
+3. `web/app.js`, `web/view.html` — the page and the viewer (`window.A` for pictures and films; `?shots` without
+   controls, `?slow` a frame every 0.5 s — for looking at it headless, where software WebGL is too slow for a live loop).
 4. `shots.mjs` — headless Chromium (swiftshader) over the page; `make.py` — all pictures and films;
    `drawing.py` + `svg2png.mjs` — the drawing's own silhouettes from the style's code for the overlays.
 
@@ -102,4 +103,6 @@ No neural images, no StdGEN, no third-party meshes.
   own portraits were drawn by hand for that reason). No close-up portrait was made.
 - The coat's skirt is skinned, not cloth: on wide steps its front wedges with the forward thigh. The hand is one
   drop; Kimodo's fingers are ignored.
+- His stoop is added to every motion as it is: in the bow it adds to Kimodo's bow, which comes out too deep (the
+  head below the hips); in the wave the raised hand goes forward with the stooped trunk.
 - The lamp is a point for the rim and the shadow only; nothing else is lit (on purpose: the style has no inner shade).
