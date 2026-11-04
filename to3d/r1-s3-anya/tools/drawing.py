@@ -83,3 +83,8 @@ def profile(d, ys, n=24):
 FRONT = dict(face=anya.FACE_F, hair_back=anya.BACK_F, curtain=anya.CURT_F, dress=anya.DRESS_F, card=anya.CARD_FL,
              arm=anya.ARM_FL)
 SIDE = dict(face=anya.FACE_S, hair=anya.HAIR_S)
+# the profile's dress and cardigan are local to anya.body_s(); copied here as they are there
+SIDE['dress'] = ('M -40 196 C -10 206, 20 206, 40 196 C 60 300, 70 380, 54 420 C 92 640, 124 900, 126 1130 '
+                 'C 40 1150, -60 1150, -136 1130 C -124 900, -92 640, -60 420 C -66 340, -60 260, -40 196 Z')
+SIDE['card'] = ('M -40 188 C -76 200, -92 240, -94 300 L -100 460 C -102 540, -96 600, -90 652 C -40 664, 20 664, 60 650 '
+                'C 64 560, 70 460, 62 400 C 66 330, 60 260, 40 192 Z')
