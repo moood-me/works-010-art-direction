@@ -8,9 +8,19 @@ from kit import Doc, g
 import scenery
 
 
+def backdrop(d, kind):
+    """the drawing's backdrop (scenery.backdrop); for a walk across a wide picture its suns stay up in the sky"""
+    if kind != 'walk': return scenery.backdrop(d, 'tim', kind)
+    b = scenery.BACK['tim']; w, h = d.w, d.h
+    d.add(g([f'<rect width="{w}" height="{h}" fill="{b['field']}"/>'], filt='board'))
+    o = [f'<rect y="{h * 0.8}" width="{w}" height="{h}" fill="{b['ground']}"/>']
+    o += [scenery.sun(x, y, r, b['mc']) for x, y, r in ((70, 70, 24), (300, 130, 16), (560, 60, 20), (820, 140, 18), (900, 50, 14))]
+    d.add(g(o, filt='gouache'))
+
+
 def compose(out, w, h, kind, figs, gouache=True, backdrop=True):
     d = Doc(w, h)
-    if backdrop: scenery.backdrop(d, 'tim', kind)
+    if backdrop: globals()['backdrop'](d, kind)
     for png, x, y in figs:
         b64 = base64.b64encode(open(png, 'rb').read()).decode()
         from PIL import Image
@@ -27,7 +37,7 @@ def compose_many(jobs, w, h, kind, gouache=True):
     from PIL import Image
     tmp = tempfile.mkdtemp(dir=CACHE); names = []
     for i, (out, figs) in enumerate(jobs):
-        d = Doc(w, h); scenery.backdrop(d, 'tim', kind)
+        d = Doc(w, h); backdrop(d, kind)
         for png, x, y in figs:
             b64 = base64.b64encode(open(png, 'rb').read()).decode(); iw, ih = Image.open(png).size
             d.add(g([f'<image href="data:image/png;base64,{b64}" x="{x}" y="{y}" width="{iw}" height="{ih}"/>'], filt='gouache' if gouache else None))

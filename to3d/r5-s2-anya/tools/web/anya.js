@@ -112,13 +112,13 @@ const toon = new THREE.ShaderMaterial({
       float d = dot(n, L);
       float lam = smoothstep(thr - soft, thr + soft, d);
       float sh = lit_by_map();
-      float l = lam * smoothstep(0.15, 0.85, sh);
+      float l = lam * mix(1.0, smoothstep(0.15, 0.85, sh), vHair > 0.5 ? 0.45 : 1.0);
       vec3 litc = mix(base, key, kLit);
       vec3 c = mix(bshd, litc, l);
       // the hair's light band: where its surface turns to the light and up
       if (vHair > 0.5) {
         vec3 h = normalize(L + Vd);
-        float b = smoothstep(0.92, 0.98, dot(n, h)) * smoothstep(0.2, 0.5, n.y) * l;
+        float b = smoothstep(0.94, 0.985, dot(n, h)) * smoothstep(0.3, 0.6, n.y) * l;
         c = mix(c, mix(vCol, vec3(1.0, 0.88, 0.66), 0.55), b * 0.85);
       }
       // rim: a thin warm edge where the form turns away from the eye on the far side from the key
@@ -141,7 +141,11 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.7), new THREE.Shade
 }));
 ground.rotation.x = -Math.PI / 2; ground.position.y = 0.001; ground.renderOrder = -1; scene.add(ground);
 // a floor for the films (the drawing's dark ground band, as a plane)
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({ color: '#241830', transparent: true, opacity: 0.7, depthWrite: false }));
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, uniforms: { c: { value: new THREE.Vector2(0, 2.6) } },
+  vertexShader: 'varying vec3 vP; void main(){ vP = (modelMatrix * vec4(position, 1.0)).xyz; gl_Position = projectionMatrix * viewMatrix * vec4(vP, 1.0); }',
+  fragmentShader: 'uniform vec2 c; varying vec3 vP; void main(){ float d = length(vP.xz - c); gl_FragColor = vec4(0.14, 0.09, 0.19, 0.7 * (1.0 - smoothstep(3.0, 9.0, d))); }',
+}));
 floor.rotation.x = -Math.PI / 2; floor.renderOrder = -2; floor.visible = false; scene.add(floor);
 
 // the frame's finish: backdrop, glow, grain, mottling, vignette (as kit.py's bg() and grain())
@@ -186,14 +190,14 @@ let camera = ortho;
 const J = sk.J, I = sk.index;
 function standPose(o = {}) {
   const pose = fig.restPose();
-  const down = o.down ?? 0.62;
+  const down = o.down ?? 0.6;
   for (const [s, sg] of [['Left', -1], ['Right', 1]]) {
     turnUnder(pose, sk, I[s + 'Arm'], qAxisAngle([0, 0, 1], sg * down));
     if (o.fwd) turnUnder(pose, sk, I[s + 'Arm'], qAxisAngle([1, 0, 0], -o.fwd));
     turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle([1, 0, 0], o.straighten ?? 0.45));
   }
   // fingers a little curled, as a hand at rest
-  const curl = o.curl ?? 0.5;
+  const curl = o.curl ?? 0.35;
   for (const s of ['Left', 'Right']) {
     const P0 = body.joints, jp = n => [P0[I[s + n] * 3], P0[I[s + n] * 3 + 1], P0[I[s + n] * 3 + 2]];
     const ix = jp('HandIndex1'), pk = jp('HandPinky1');

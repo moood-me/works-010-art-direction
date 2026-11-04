@@ -53,6 +53,7 @@ g.setAttribute('pn', new THREE.BufferAttribute(a.pn, 3));
 g.setAttribute('pw', new THREE.BufferAttribute(a.pw, 1, true));
 g.setAttribute('pj', new THREE.BufferAttribute(a.pj, 1));
 g.setAttribute('two', new THREE.BufferAttribute(a.two, 1));
+g.setAttribute('band', new THREE.BufferAttribute(a.band, 1));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 
 // the face's drawn layer: a canvas drawn every frame (face.js)
@@ -61,6 +62,7 @@ faceCanvas.width = (X1 - X0) * PX; faceCanvas.height = (Y1 - Y0) * PX;
 const faceCtx = faceCanvas.getContext('2d');
 const faceTex = new THREE.CanvasTexture(faceCanvas);
 faceTex.colorSpace = THREE.NoColorSpace; faceTex.anisotropy = 8;
+faceTex.premultiplyAlpha = true;      // filtered premultiplied: no dark fringe where the painting ends
 const face = new LiveFace(Number(q.get('seed') ?? 7));
 const U = {
   L: { value: new THREE.Vector3(0.55, 0.62, 0.56).normalize() },
@@ -73,21 +75,25 @@ const U = {
 const toon = new THREE.ShaderMaterial({
   uniforms: U,
   vertexShader: `
-    attribute vec3 col; attribute vec3 shd; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two;
+    attribute vec3 col; attribute vec3 shd; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two; attribute float band; varying float vBand;
     uniform mat3 R[${sk.J}];
     varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw;
-    void main() { vPw = pw; vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
+    void main() { vBand = band; vPw = pw; vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: `
     uniform vec3 L; uniform float thr; uniform sampler2D face; uniform float paint; uniform float clay;
-    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw;
+    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw; varying float vBand;
     void main() {
       if (!gl_FrontFacing) { if (vTwo < 0.5) discard; gl_FragColor = vec4(vShd * 0.92, 1.0); return; }
       float d = dot(normalize(vN), L);
       float th = thr - 0.22 * vPw; float lit = smoothstep(th - 0.015, th + 0.015, d);
-      vec3 c = mix(vShd, vCol, lit);
+      vec3 base = vCol, sh = vShd;
+      // the legs: the shoe and the sock cut at the drawing's heights (shoe top 0.06 m, sock top 0.134 m)
+      if (vBand > -0.5) { if (vBand < 0.06) { base = vec3(0.42, 0.227, 0.165); sh = vec3(0.333, 0.188, 0.122); }
+        else if (vBand < 0.134) { base = vec3(0.965, 0.933, 0.886); sh = vec3(0.886, 0.839, 0.769); } }
+      vec3 c = mix(sh, base, lit);
       if (clay > 0.5) c = vec3(0.86, 0.84, 0.8) * (0.55 + 0.45 * max(d, 0.0)) + 0.08;
-      if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv); c = mix(c, t.rgb, t.a); }
+      if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv); c = c * (1.0 - t.a) + t.rgb; }
       gl_FragColor = vec4(c, 1.0);
     }`,
   side: THREE.DoubleSide,
@@ -151,11 +157,11 @@ function headTrack(c) {
 }
 // the skirt kept off the legs: each skirt point inside a leg's capsule (thigh, shin) is put on its surface
 const dressR = H.pieces.dress, skirt = [];
-for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.86) skirt.push(i);
-const CAPS = [['LeftLeg', 'LeftShin', 0.075], ['LeftShin', 'LeftFoot', 0.05], ['RightLeg', 'RightShin', 0.075], ['RightShin', 'RightFoot', 0.05]]
+for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.62) skirt.push(i);
+const CAPS = [['LeftLeg', 'LeftShin', 0.06], ['LeftShin', 'LeftFoot', 0.048], ['RightLeg', 'RightShin', 0.06], ['RightShin', 'RightFoot', 0.048]]
   .map(([a, b, r]) => [I[a], I[b], r]);
 function pushSkirt(P, pose) {
-  const caps = CAPS.map(([a, b, r]) => [getV(pose.P, a), getV(pose.P, b), r]);
+  const caps = CAPS.map(([a, b, r], k) => { const A = getV(pose.P, a), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => (v + B[c]) / 2), B, r]; });
   for (const i of skirt) {
     let x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
     for (const [A, B, r] of caps) {
@@ -214,7 +220,7 @@ window.A = {
     if (o.liveClock !== undefined) S.liveClock = o.liveClock;
     if (o.exprTrack) { face.exprKeys = [{ t: -10, w: { dream: 1 } }]; for (const [t, w] of o.exprTrack) face.setExpr(t, typeof w === 'string' ? { [w]: 1 } : w); }
     if (o.expr) face.setExpr(S.time, typeof o.expr === 'string' ? { [o.expr]: 1 } : o.expr);
-    if (o.talk !== undefined) face.talk(o.talk ? (o.talkFrom ?? S.time) : null);
+    if (o.talk !== undefined) { face.talk(o.talk ? (o.talkFrom ?? S.time) : null); face.talkTo = o.talkTo ?? null; }
     if (o.cam) Object.assign(S.cam, o.cam);
     if (o.light) S.light = o.light;
     if (o.thr !== undefined) U.thr.value = o.thr;

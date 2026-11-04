@@ -161,6 +161,16 @@ def shape_mesh(name, pts, colour, tris=None):
 
 
 MARK_OBJS = []
+HEAD_XF = None
+
+
+def kabsch(A, B):
+    """The rigid turn and shift taking points A to B (least squares)."""
+    ca, cb = A.mean(0), B.mean(0)
+    U, _, Vt = np.linalg.svd((A - ca).T @ (B - cb))
+    d = np.sign(np.linalg.det(Vt.T @ U.T))
+    R = Vt.T @ np.diag([1, 1, d]) @ U.T
+    return R, cb - R @ ca
 
 
 def build_marks(expr, lw_units, yaw=0.0, extra_skip=()):
@@ -175,7 +185,10 @@ def build_marks(expr, lw_units, yaw=0.0, extra_skip=()):
             continue
         if 'pupil' in skip and mk.get('group') == 'eye' and mk['kind'] == 'shape' and mk.get('fill') == INK:
             continue          # the 3D eye has its own pupil
-        P = to_b(np.array(mk['pts']))
+        P = np.array(mk['pts'], float)
+        if HEAD_XF is not None:                  # the head turned in this pose: its marks turn with it
+            P = P @ HEAD_XF[0].T + HEAD_XF[1]
+        P = to_b(P)
         r = max(mk['w'] or 0, 0) * lw_units * K / 2
         stroke = mk.get('stroke') or INK
         if mk['kind'] == 'shape':
@@ -281,8 +294,13 @@ else:
                 R = view_matrix(v.get('yaw', 0), v.get('pitch', 0))
                 hp = R @ np.array([hx / K, 0.0, hz / K])
                 vv['cx'] = v['cx'] - hp[0] * v['s']
+                vv['cy'] = v['cy'] - hp[1] * v['s']        # with a pitch, going away or near moves him on screen
             set_view(vv)
-            if job.get('still_marks'):       # the head at rest: the drawing's marks at this picture's line width
+            if job.get('still_marks'):       # the drawing's marks at this picture's line width, on the head as posed
+                rest = SC['obj_head_v']
+                i0, i1 = offs['head']
+                sel = rest[:, 1] < 90
+                HEAD_XF = kabsch(rest[sel], D[i0:i1][sel])
                 build_marks(v.get('expr', job.get('marks_expr', 'calm')), v.get('lw', 2.2) / v['s'], v.get('yaw', 0),
                             v.get('skip', ()))
             sc.render.filepath = os.path.join(job['out'], f"{v['name']}_{fi:04d}.png")

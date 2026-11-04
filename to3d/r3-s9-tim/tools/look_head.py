@@ -9,10 +9,13 @@ from body import B
 
 d = np.load(f'{CACHE}/head_steps.npz')
 key = sys.argv[1] if len(sys.argv) > 1 else 'warped'
-V = d[key]
-if key == 'faired': V = (V - [0, 0.7375, 0]) * [1, 1, 1]
+if key == 'orig':
+    from hbm import load
+    V, Q, _ = load(); T = tris(Q); V = V - [0, 0.7375, 0]
+else:
+    V = d[key]; T = tris(d['Q'])
+    if key == 'faired': V = V - [0, 0.7375, 0]
 TY = -V[:, 1].min()
-T = tris(d['Q'])
 n = len(V)
 write('look-head', [part(V, T, np.tile([IX['Head'], 0, 0, 0], (n, 1)), np.tile([1, 0, 0, 0], (n, 1)), 'clay')], B['joints'], B['frames'])
 H = 0.5; S = 600

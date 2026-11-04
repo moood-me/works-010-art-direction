@@ -53,6 +53,9 @@ function eye(g, cx, cy, rx, ry, { look = [0, 0], lid = 0, lidtilt = 0, lower = 0
     ell(g, ix, iy, ir * sq, ir, C.iris); ell(g, ix, iy, ir * .55 * sq, ir * .55, C.pupil);
     ell(g, ix - ir * .35 * sq, iy - ir * .4, ir * .28 * sq, ir * .28, '#fff'); ell(g, ix + ir * .35 * sq, iy + ir * .38, ir * .12, ir * .12, '#fff', .85);
     fill(g, edge + ` L ${cx + rx + 3} ${yb + 7} C ${cx + rx} ${yc + 7}, ${cx - rx} ${yc + 7}, ${cx - rx - 3} ${ya + 7} Z`, C.line, null, 0, .18);
+  });
+  // the lids' skin over a slightly bigger oval, so no white rim is left at the eye's edge where a lid covers it
+  clipped(g, oval(cx, cy, rx + 1.4, ry + 1.4), () => {
     fill(g, edge + ` L ${cx + rx + 6} ${cy - ry - 30} L ${cx - rx - 6} ${cy - ry - 30} Z`, C.skin);
     if (lower > 0) fill(g, `M ${cx - rx - 3} ${cy + ry * .1} C ${cx - rx * .7} ${yl}, ${cx + rx * .7} ${yl}, ${cx + rx + 3} ${cy + ry * .1} L ${cx + rx + 6} ${cy + ry + 30} L ${cx - rx - 6} ${cy + ry + 30} Z`, C.skin);
   });
@@ -108,7 +111,7 @@ export function draw(g, p) {
   for (const [sx, flick] of [[-1, -1], [1, 1]]) {
     const cx = 36 * sx, rs = p.rs;
     const lid = p.lid + (1 - p.lid) * p.blink;
-    if (p.happy > 0.55) closedEye(g, cx, 6, 21, 2.2);
+    if (p.happy > 0.55) { clipped(g, oval(cx, 0, 22 * rs + 2, 26 * rs + 2), () => fill(g, oval(cx, 0, 30, 34), C.skin)); closedEye(g, cx, 6, 21, 2.2); }
     else eye(g, cx, 0, 22 * rs, 26 * rs, { look: p.look, lid: Math.min(1, lid + p.happy * 0.5), lidtilt: sx * p.lidtilt, lower: p.happy * 1.1, ir: p.ir, flick });
     const B = p.brow; brow(g, sx * -B[0], B[1], sx * -B[2], B[3], B[4], B[5]);
   }
@@ -242,7 +245,7 @@ export class LiveFace {
     const mix = (get, ww = w) => { let s = 0, z = 0; for (const n of EXPR_NAMES) { s += ww[n] * get(EXPR[n]); z += ww[n]; } return s / (z || 1); };
     const p = {
       brow: [0, 1, 2, 3, 4, 5].map(i => mix(e => e.brow[i], wb)), lid: mix(e => e.lid), lidtilt: mix(e => e.lidtilt),
-      ir: mix(e => e.ir), rs: mix(e => e.rs), happy: mix(e => e.happy),
+      ir: mix(e => e.ir), rs: mix(e => e.rs), happy: (h => h <= .35 ? 0 : (h - .35) / .65)(mix(e => e.happy)),
       mouth: Object.fromEntries(['w', 'o', 's', 'r', 'b', 'tT', 'tB'].map(k => [k, mix(e => e.mouth[k])])),
     };
     // gaze: the expression's own, the fixations, the lead of a head turn
@@ -261,7 +264,7 @@ export class LiveFace {
     const lim = (p.rs * 22) - p.ir * 0.7; look[0] = Math.max(-lim, Math.min(lim, look[0])); look[1] = Math.max(-8, Math.min(8, look[1]));
     p.look = look; p.blink = blink * (1 - p.happy);
     // speech over the expression's mouth
-    if (this.speech && t >= this.talkFrom) {
+    if (this.speech && t >= this.talkFrom && t < (this.talkTo ?? Infinity)) {
       const S = this.speech, i = Math.floor((t - this.talkFrom) / S.dt) % S.n, o = S.out;
       const k = 0.9, m = p.mouth;
       m.o = lerp(m.o * 0.6, Math.max(0, o[i * 4]) + m.o * 0.25, k); m.w = m.w + o[i * 4 + 1] * k; m.r = Math.max(m.r * 0.5, o[i * 4 + 2]);

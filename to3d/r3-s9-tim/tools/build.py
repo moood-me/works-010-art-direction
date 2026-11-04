@@ -76,6 +76,11 @@ for sgn in (1, -1):
 HV, HT, EW, _ = cut(HV, HT, -(HV[:, 1] - (0.78 - O[1])), ew[:, None]); EW = EW[:, 0]
 # the cheeks and jaw smoothed (the base's jaw muscles and the patch's edge leave dents a flat-painted face shows)
 yd, zd = -HV[:, 1] / K, HV[:, 2] / K
+# the chin's underside drawn up flat, as the drawing's profile has it (a short level jaw, then the neck straight down)
+sq = np.clip(1 - (zd - 18) / 18, 0.3, 1.0)
+under = (yd > 78) & (EW < 0.01)
+HV[under, 1] = -(78 + (yd[under] - 78) * sq[under]) * K
+yd = -HV[:, 1] / K
 cm = ((yd > -5) & (yd < 100) & (zd > -25) & (EW < 0.01)).astype(float)
 HV = smooth(HV, HT, it=25, lam=0.5, mask=cm)
 HW = toW(HV)
@@ -115,7 +120,7 @@ def ellipsoid(c, r, nu=24, nv=16):
             F += [(a, c2, b), (b, c2, d)]
     return X, np.array(F)
 
-NX, NT = ellipsoid(np.array([0, -36 * K, (84 + 8 - 10) * K]), np.array([9, 8, 10]) * K)
+NX, NT = ellipsoid(np.array([0, -36 * K, (84 + 8 - 13) * K]), np.array([9, 8, 9]) * K)
 sj, sw = one(len(NX), 'Head')
 parts.append(part(toW(NX), NT, sj, sw, 'skin', fuv=fuv_of(NX, vertex_normals(NX, NT)), pat=toW(NX)))
 
@@ -192,7 +197,7 @@ armside = pw('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lhand', 'Rhand')
 f_shirt = np.maximum.reduce([hem - y, y - (coll - 0.010 * np.clip(V[:, 2] / 0.05, 0, 1)), np.where(armside | (np.abs(V[:, 0]) > 0.11), sl - 0.5, -1),
                              (pw('Lthigh', 'Rthigh') > 0.4) * 1.0 - 0.5])
 off_s = 0.006 + 0.010 * np.clip((0.66 - y) / 0.1, 0, 1) + 0.006 * np.clip(sl / 0.5, 0, 1) * armside
-shirt = shell(f_shirt, off_s, 'shirt', smooth_it=14)
+shirt = shell(f_shirt, off_s, 'shirt', smooth_it=30)
 # a crew neck: above the shoulders the shirt is drawn in round the (thin, drawn) neck
 sv = shirt['V']; nz = O[2] + 10 * K
 rr = np.hypot(sv[:, 0], sv[:, 2] - nz)
@@ -206,19 +211,54 @@ sp = shirt['pat']
 parts += split(shirt, sp[:, 1] - (coll - 0.008 - 0.010 * np.clip(sp[:, 2] / 0.05, 0, 1)), 'collar')
 # shorts: from the waist to just below the crotch, wide legs
 tl = np.maximum(bone_t(V, 'LeftLeg', 'LeftShin') * (V[:, 0] > 0), bone_t(V, 'RightLeg', 'RightShin') * (V[:, 0] < 0))
-f_shorts = np.maximum(y - 0.574, tl - 0.42)
-off_p = 0.005 + 0.012 * np.clip(tl / 0.42, 0, 1) ** 1.5
+f_shorts = np.maximum(y - 0.574, tl - 0.32)
+off_p = 0.005 + 0.012 * np.clip(tl / 0.32, 0, 1) ** 1.5
 parts.append(shell(f_shorts, off_p, 'shorts', smooth_it=8))
-# shoes: the foot below the ankle, puffed and smoothed
+# shoes: a sneaker lofted along each foot, heel to toe — rounded sections on a flat sole (the drawing's red shoe with
+# a white sole); the foot's skin under it is left out
 shoe_top = 0.062
-f_shoe = np.where(pw('Lfoot', 'Rfoot', 'Lshin', 'Rshin') > 0.3, y - shoe_top, 1.0)
-shoe = shell(f_shoe, np.full(len(V), 0.007), 'shoe', smooth_it=12)
-sv = shoe['V']; sv[:, 1] = np.maximum(sv[:, 1], -0.002)
-parts += split(shoe, 0.009 - sv[:, 1], 'sole')
+def sneaker(side):
+    F_, T_ = J[IX[side + 'Foot']], J[IX[side + 'ToeEnd']]
+    ax = np.array([T_[0] - F_[0], 0, T_[2] - F_[2]]); L = np.linalg.norm(ax); ax /= L
+    heel = np.array([F_[0], 0, F_[2]]) - ax * 0.035; Ltot = L + 0.035 + 0.012
+    side_v = np.cross([0, 1, 0], ax)
+    nu, nv = 28, 24; X = []
+    for i in range(nu):
+        t = i / (nu - 1)
+        c = heel + ax * Ltot * t
+        w = 0.024 + 0.008 * np.sin(np.pi * min(t / 0.75, 1) / 2)          # half width
+        hgt = np.interp(t, [0, 0.3, 0.55, 0.85, 1], [0.064, 0.066, 0.048, 0.036, 0.028])
+        cap = np.sqrt(np.clip(1 - ((t - 0.5) / 0.5) ** 8, 0, 1)) if True else 1      # rounded heel and toe
+        cap = np.clip(np.sin(np.pi * t) ** 0.25, 0.05, 1)
+        for j in range(nv):
+            a = 2 * np.pi * j / nv
+            sx, sy = np.cos(a), np.sin(a)
+            r = (abs(sx) ** 2.6 + abs(sy) ** 2.6) ** (-1 / 2.6)              # a rounded-square section
+            px, py = sx * r * w * cap, (sy * r * 0.5 + 0.5) * hgt * (0.35 + 0.65 * cap)
+            X.append(c + side_v * px + np.array([0, max(py, 0) - 0.002, 0]))
+    X = np.array(X); Fc = []
+    for i in range(nu - 1):
+        for j in range(nv):
+            a_, b_ = i * nv + j, i * nv + (j + 1) % nv
+            Fc += [(a_, b_, a_ + nv), (b_, b_ + nv, a_ + nv)]
+    # close the ends
+    for end, rev in ((0, True), (nu - 1, False)):
+        ci = len(X); X = np.r_[X, X[end * nv:(end + 1) * nv].mean(0)[None]]
+        for j in range(nv):
+            tri = (end * nv + j, end * nv + (j + 1) % nv, ci)
+            Fc.append(tri[::-1] if rev else tri)
+    tt = ((X - heel) @ ax) / Ltot
+    Dd = np.zeros((len(X), NJ)); wt = np.clip((tt - 0.55) / 0.2, 0, 1)
+    Dd[:, IX[side + 'Foot']] = 1 - wt; Dd[:, IX[side + 'ToeBase']] = wt
+    sj, sw = top4(Dd)
+    return part(X, np.array(Fc), sj, sw, 'shoe')
+for sd in ('Left', 'Right'):
+    sh = sneaker(sd)
+    parts += split(sh, 0.011 - sh['V'][:, 1], 'sole')
 
 # the skin left showing: arms below the sleeves, hands, legs below the shorts (white socks above the shoes)
-f_skin = np.minimum.reduce([np.where(armside, 0.45 - sl, 1.0), np.where(pw('Lthigh', 'Rthigh', 'Lshin', 'Rshin', 'Lfoot', 'Rfoot') > 0.3, 0.36 - tl, 1.0)])
-f_skin = np.where((y < 0.03) & (pw('Lfoot', 'Rfoot') > 0.5), 1.0, f_skin)   # under the shoe
+f_skin = np.minimum.reduce([np.where(armside, 0.45 - sl, 1.0), np.where(pw('Lthigh', 'Rthigh', 'Lshin', 'Rshin', 'Lfoot', 'Rfoot') > 0.3, 0.26 - tl, 1.0)])
+f_skin = np.where(y < shoe_top - 0.004, 1.0, f_skin)   # under the shoe
 v, t, a, _ = cut(V, T, f_skin, D)
 sj, sw = top4(a)
 parts += split(part(v, t, sj, sw, 'skin'), 0.168 - v[:, 1], 'sock')

@@ -227,8 +227,8 @@ def build():
         m = ear & (np.sign(v[:, 0]) == sg)
         w = np.clip((abs(v[m, 0]) - 0.10) / 0.02, 0, 1)
         c = V[m].mean(0)
-        V[m] = V[m] + (c - V[m]) * (0.45 * w)[:, None]
-        V[m, 0] -= sg * 0.8 * w * np.clip(abs(V[m, 0]) - abs(c[0]) + 0.004, 0, None)
+        V[m] = V[m] + (c - V[m]) * (0.6 * w)[:, None]
+        V[m, 0] -= sg * 1.0 * w * np.clip(abs(V[m, 0]) - abs(c[0]) + 0.004, 0, None)
     return V, P, patch
 
 

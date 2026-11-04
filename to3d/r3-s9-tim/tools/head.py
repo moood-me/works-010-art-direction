@@ -48,7 +48,7 @@ def landmarks(V):
         f = s[s[:, 2].argmax()]; b = s[s[:, 2].argmin()]
         xf = extent(SIDE_NO_NOSE, y, +1); xb = extent(SIDE_NO_NOSE, y, -1)
         if xf is not None and f[2] > 0.03: add(f, f[0], y, xf + 8)
-        if xb is not None and y < 60 and b[2] < -0.03: add(b, b[0], y, xb + 8)
+        if xb is not None and y < 78 and b[2] < -0.03: add(b, b[0], y, xb + 8)
         # the widest points each height (in front of the ears and behind them where the ears are)
         a = extent(FRONT, y, +1)
         sl = V[np.abs(V[:, 1] - yb) < 0.004]
@@ -80,11 +80,15 @@ def landmarks(V):
     # the crown
     top = V[V[:, 1].argmax()]; add(top, 0, -106, top[2] / K * 0.92)
     # the neck: the base's neck rings → the drawing's neck (front ±22, side from −20 to 24 about the ear's −8)
-    for yb, yd in ((0.56, 110), (0.53, 134)):
+    for yb, yd in ((0.575, 100), (0.56, 112), (0.545, 124)):
         sl = V[np.abs(V[:, 1] - yb) < 0.004]
-        for p, (x, z) in ((sl[sl[:, 2].argmax()], (0, 24 + 8)), (sl[sl[:, 2].argmin()], (0, -20 + 8)),
-                          (sl[sl[:, 0].argmax()], (22, None)), (sl[sl[:, 0].argmin()], (-22, None))):
-            add(p, x if z is None else p[0] / K, yd, z if z is not None else p[2] / K)
+        zc = (sl[:, 2].max() + sl[:, 2].min()) / 2
+        ang = np.arctan2(sl[:, 0], sl[:, 2] - zc)
+        for phi in np.radians(np.arange(-180, 180, 45)):
+            p = sl[np.abs(((ang - phi + np.pi) % (2 * np.pi)) - np.pi).argmin()]
+            # the drawing's neck: 44 wide, from −18 to 24 in the side view (about the ear's −8)
+            a, cf, cb, c0 = 21, 16, 16, 3 + 8
+            add(p, a * np.sin(phi), yd, c0 + (cf if np.cos(phi) > 0 else cb) * np.cos(phi))
     return np.array(src), np.array(dst)
 
 

@@ -76,9 +76,10 @@ def build(head_V, head_N, thick=0.006):
         O += head_N[i] * push[:, None]
     O = O.reshape(rows, cols, 3)
     # smooth along the rows and down (keeps the big shape, takes out kinks the pushing made)
-    for _ in range(6):
+    for _ in range(10):
         Q = O.copy()
         Q[1:-1] = (O[:-2] + 2 * O[1:-1] + O[2:]) / 4
+        Q[:, 1:-1] = (Q[:, :-2] + 2 * Q[:, 1:-1] + Q[:, 2:]) / 4
         O = Q
     # the inner skin: toward the ring's own middle; thinner at the tips
     mid = O.mean(1, keepdims=True)

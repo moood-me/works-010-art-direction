@@ -19,11 +19,11 @@ GROUPS = {
     'trunk': (['Hips', 'Spine1', 'Spine2', 'Chest'], (1.0, 0.8, 0.78)),
     'neck': (['Neck1', 'Neck2', 'Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'], (0.6, 0.8, 0.8)),
     'clav': (['LeftShoulder', 'RightShoulder'], (0.86, 0.86)),
-    'upper': (['LeftArm', 'RightArm'], (0.62, 0.62)),
-    'fore': (['LeftForeArm', 'RightForeArm'], (0.6, 0.58)),
+    'upper': (['LeftArm', 'RightArm'], (0.62, 0.55)),
+    'fore': (['LeftForeArm', 'RightForeArm'], (0.6, 0.52)),
     'hand': ([n for n in NAMES if 'Hand' in n], (0.55, 0.6)),
-    'thigh': (['LeftLeg', 'RightLeg'], (0.69, 0.62)),
-    'shin': (['LeftShin', 'RightShin'], (0.6, 0.6)),
+    'thigh': (['LeftLeg', 'RightLeg'], (0.69, 0.56)),
+    'shin': (['LeftShin', 'RightShin'], (0.6, 0.52)),
     'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (0.62, 0.62)),
 }
 

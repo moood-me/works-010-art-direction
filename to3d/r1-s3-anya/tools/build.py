@@ -111,7 +111,7 @@ B = dict(V=PF[bi], T=remap[TRI0[tk]], SJ=SJ0[bi], SW=SW0[bi])
 nb = len(bi)
 # colours of what is left of the body: skin, white socks, brown shoes (feet a little fuller, as shoes)
 by = B['V'][:, 1]
-isfoot = np.array([('Foot' in n or 'Toe' in n) for n in dn[bi]]) | (by < 0.06)
+isfoot = np.array([('Foot' in n or 'Toe' in n) for n in dn[bi]]) | (by < 0.085)
 nrm = M.vertex_normals(B['V'], B['T'])
 # a shoe: the foot smoothed into one rounded form (no toes), a little fuller
 Ab = M.adjacency(nb, [list(t_) for t_ in B['T']])
@@ -121,8 +121,10 @@ nrm = M.vertex_normals(B['V'], B['T'])
 B['V'][isfoot] += nrm[isfoot] * 0.006
 B['col'] = np.tile(C['skin'], (nb, 1)); B['shd'] = np.tile(C['shade'], (nb, 1)); B['lin'] = np.tile(C['line'], (nb, 1))
 sock = (by < y3(1252)) & ~isfoot
-B['col'][sock] = C['sock']; B['shd'][sock] = rgb('#e2d6c4'); B['lin'][sock] = rgb('#9c8a76')
+
 B['col'][isfoot] = C['shoe']; B['shd'][isfoot] = rgb('#55301f'); B['lin'][isfoot] = C['shoeL']
+# the legs' rest height, per vertex: the shader cuts sock and shoe at exact heights (a clean edge, not a blurred one)
+B['band'] = np.where(by < 0.3, by, -1.0)
 
 # ---------------------------------------------------------------- the head
 hv, hP, eyes, er, vis = Hd.load(HBM)
@@ -298,7 +300,7 @@ for s, sg in (('Left', 1), ('Right', -1)):
     V_ = []
     for uu in np.linspace(-0.12, 1.0, rows_):
         tip_r = np.sqrt(max(0.0, 1 - max(0.0, (uu - 0.55) / 0.45) ** 2))
-        a_ = 0.023 * tip_r * (0.85 + 0.15 * smooth((uu + 0.1) / 0.3)); b_ = 0.0125 * tip_r * (0.9 + 0.1 * smooth(uu / 0.4))
+        a_ = 0.025 * tip_r * (0.85 + 0.15 * smooth((uu + 0.1) / 0.3)); b_ = 0.0125 * tip_r * (0.9 + 0.1 * smooth(uu / 0.4))
         thumb = 0.010 * np.exp(-((uu - 0.33) / 0.14) ** 2)
         for th in np.linspace(0, 2 * np.pi, cols_, endpoint=False):
             x_ = a_ * np.cos(th) + thumb * max(np.cos(th), 0) ** 2; z_ = b_ * np.sin(th)
@@ -312,15 +314,18 @@ for s, sg in (('Left', 1), ('Right', -1)):
 # socks: a short tube over the shin (its own colour, a clean edge), from the drawn sock top down over the shoe's top
 SOCKS = []
 for s in ('Left', 'Right'):
+    A_, F_ = J1[I[s + 'Shin']], J1[I[s + 'Foot']]
     legv = B['V'][(np.sign(B['V'][:, 0]) == (1 if s == 'Left' else -1)) & (B['V'][:, 1] < 0.2)]
-    rows_, cols_ = 10, 28; V_ = []
-    for yy in np.linspace(y3(1252), 0.052, rows_):
-        m = abs(legv[:, 1] - yy) < 0.006
-        q = legv[m]; c = q.mean(0)
-        rx_, rz_ = np.abs(q[:, 0] - c[0]).max() + 0.003, np.abs(q[:, 2] - c[2]).max() + 0.003
-        rz_ = min(rz_, rx_ * 1.4)
+    rows_, cols_ = 8, 28; V_ = []
+    y_top = y3(1252); ax = A_ + (F_ - A_) * (A_[1] - y_top) / (A_[1] - F_[1])
+    m = (abs(legv[:, 1] - y_top) < 0.008) & (np.hypot(legv[:, 0] - ax[0], legv[:, 2] - ax[2]) < 0.05)
+    q = legv[m]; off = q.mean(0) - ax
+    rx_ = np.abs(q[:, 0] - q[:, 0].mean()).max() + 0.004; rz_ = np.abs(q[:, 2] - q[:, 2].mean()).max() + 0.004
+    for yy in np.linspace(y_top, 0.07, rows_):
+        ax = A_ + (F_ - A_) * (A_[1] - yy) / (A_[1] - F_[1]); c = ax + off
+        k_ = 1 + 0.12 * (y_top - yy) / (y_top - 0.07)           # a little fuller at the ankle
         for th in np.linspace(0, 2 * np.pi, cols_, endpoint=False):
-            V_.append([c[0] + rx_ * np.sin(th), yy, c[2] + rz_ * np.cos(th)])
+            V_.append([c[0] + rx_ * k_ * np.sin(th), yy, c[2] + rz_ * k_ * np.cos(th)])
     V_ = np.array(V_); T_ = grid(rows_, cols_, True)
     if (M.vertex_normals(V_, T_) * (V_ - V_.mean(0) * [1, 0, 1] - [0, 1, 0] * V_[:, 1:2])).sum(1).mean() < 0: T_ = T_[:, ::-1]
     SOCKS.append(dict(V=V_, T=T_, col=np.tile(C['sock'], (len(V_), 1)), shd=np.tile(rgb('#e2d6c4'), (len(V_), 1)),
@@ -374,7 +379,6 @@ def cloth_weights(V, T):
 Dd['W'] = cloth_weights(DV, DT)
 Kc['W'] = cloth_weights(KV, KT)
 Cc['W'] = transfer(CV)
-for S_ in SOCKS: S_['W'] = transfer(S_['V'])
 for S_ in SL:
     W = transfer(S_['V'])
     # a sleeve belongs to its own arm only (the nearest skin under the armpit may be the chest's)
@@ -395,15 +399,15 @@ Hr = HR.build(dict(head=(V0[:nh], M.triangulate(hP_ne)), dress=drows, card=krows
 
 # ---------------------------------------------------------------- one pack
 pieces = [('body', B), ('head', Hh), ('dress', Dd), ('collar', Cc), ('cardigan', Kc)] + \
-         [('hand' + h_['side'], h_) for h_ in HANDS] + [('sock' + s_['side'], s_) for s_ in SOCKS] + \
+         [('hand' + h_['side'], h_) for h_ in HANDS] + \
          [('sleeve' + S_['side'], S_) for S_ in SL] + [('hair', Hr)]
-Vs, Ts, Ws, cols, shds, lins, ows, uvs, texs, pns, pws, two = [], [], [], [], [], [], [], [], [], [], [], []
+Vs, Ts, Ws, cols, shds, lins, ows, uvs, texs, pns, pws, two, bands = [], [], [], [], [], [], [], [], [], [], [], [], []
 base = 0; ranges = {}; tbase = 0; tranges = {}
 for name, p in pieces:
     n = len(p['V'])
     Vs.append(p['V']); Ts.append(p['T'] + base); Ws.append(p['W'])
     cols.append(p['col']); shds.append(p['shd']); lins.append(p['lin'])
-    ows.append(p.get('ow', np.ones(n))); uvs.append(p.get('uv', np.zeros((n, 2))))
+    ows.append(p.get('ow', np.ones(n))); bands.append(p.get('band', -np.ones(n))); uvs.append(p.get('uv', np.zeros((n, 2))))
     texs.append(p.get('tex', np.zeros(n))); pns.append(p.get('pn', np.zeros((n, 3)))); pws.append(p.get('pw', np.zeros(n)))
     two.append(np.full(n, 1 if name in ('cardigan', 'hair', 'dress', 'collar') or name.startswith('sleeve') or name.startswith('sock') else 0))
     ranges[name] = [base, base + n]; tranges[name] = [tbase, tbase + len(p['T'])]; base += n; tbase += len(p['T'])
@@ -421,5 +425,5 @@ pack.save(os.path.join(OUT, 'anya.json'),
                col=np.vstack(cols).astype(np.uint8), shd=np.vstack(shds).astype(np.uint8), lin=np.vstack(lins).astype(np.uint8),
                ow=(np.clip(np.concatenate(ows), 0, 1) * 255).astype(np.uint8), uv=np.vstack(uvs).astype(np.float32),
                tex=np.concatenate(texs).astype(np.uint8), pn=np.vstack(pns).astype(np.float32),
-               pw=(np.clip(np.concatenate(pws), 0, 1) * 255).astype(np.uint8), pj=pj, two=np.concatenate(two).astype(np.uint8)))
+               pw=(np.clip(np.concatenate(pws), 0, 1) * 255).astype(np.uint8), pj=pj, two=np.concatenate(two).astype(np.uint8), band=np.concatenate(bands).astype(np.float32)))
 print('vertices', N, 'triangles', sum(len(t_) for t_ in Ts), {k: v[1] - v[0] for k, v in ranges.items()})

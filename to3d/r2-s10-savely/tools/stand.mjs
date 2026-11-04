@@ -41,6 +41,9 @@ const A = JSON.parse(process.env.STAND || '{"arm": 38, "fore": 12, "back": 6}');
 turn('LeftArm', [0, 0, 1], -A.arm); turn('RightArm', [0, 0, 1], A.arm);          // arms down to the sides
 turn('LeftArm', [1, 0, 0], A.back); turn('RightArm', [1, 0, 0], A.back);         // a little back
 turn('LeftForeArm', [1, 0, 0], -A.fore); turn('RightForeArm', [1, 0, 0], -A.fore); // elbows a little bent
+const HD = JSON.parse(process.env.HEAD || '{"pitch": 0, "yaw": 0}');   // the drawing's head_rot, if asked
+if (HD.pitch) turn('Head', [1, 0, 0], HD.pitch);
+if (HD.yaw) turn('Head', [0, 1, 0], HD.yaw);
 const P = new Float32Array(body.N * 3);
 fig.skinner.skin(pose, P);
 await writeFile(out, Buffer.from(P.buffer));

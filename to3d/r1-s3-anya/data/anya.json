@@ -37,25 +37,17 @@
    22848,
    23420
   ],
-  "sockLeft": [
-   23420,
-   23700
-  ],
-  "sockRight": [
-   23700,
-   23980
-  ],
   "sleeveLeft": [
-   23980,
-   24724
+   23420,
+   24164
   ],
   "sleeveRight": [
-   24724,
-   25468
+   24164,
+   24908
   ],
   "hair": [
-   25468,
-   41968
+   24908,
+   41408
   ]
  },
  "trianglePieces": {
@@ -87,146 +79,145 @@
    43902,
    45002
   ],
-  "sockLeft": [
-   45002,
-   45506
-  ],
-  "sockRight": [
-   45506,
-   46010
-  ],
   "sleeveLeft": [
-   46010,
-   47450
+   45002,
+   46442
   ],
   "sleeveRight": [
-   47450,
-   48890
+   46442,
+   47882
   ],
   "hair": [
-   48890,
-   81372
+   47882,
+   80364
   ]
  },
  "arrays": {
   "positions": {
    "dtype": "float32",
    "shape": [
-    125904
+    124224
    ],
    "offset": 0
   },
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    244116
+    241092
    ],
-   "offset": 503616
+   "offset": 496896
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    41968,
+    41408,
     4
    ],
-   "offset": 1480080
+   "offset": 1461264
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    41968,
+    41408,
     4
    ],
-   "offset": 1647952
+   "offset": 1626896
   },
   "joints": {
    "dtype": "float32",
    "shape": [
     231
    ],
-   "offset": 2319440
+   "offset": 2289424
   },
   "frames": {
    "dtype": "float32",
    "shape": [
     308
    ],
-   "offset": 2320368
+   "offset": 2290352
   },
   "col": {
    "dtype": "uint8",
    "shape": [
-    41968,
+    41408,
     3
    ],
-   "offset": 2321600
+   "offset": 2291584
   },
   "shd": {
    "dtype": "uint8",
    "shape": [
-    41968,
+    41408,
     3
    ],
-   "offset": 2447504
+   "offset": 2415808
   },
   "lin": {
    "dtype": "uint8",
    "shape": [
-    41968,
+    41408,
     3
    ],
-   "offset": 2573408
+   "offset": 2540032
   },
   "ow": {
    "dtype": "uint8",
    "shape": [
-    41968
+    41408
    ],
-   "offset": 2699312
+   "offset": 2664256
   },
   "uv": {
    "dtype": "float32",
    "shape": [
-    41968,
+    41408,
     2
    ],
-   "offset": 2741280
+   "offset": 2705664
   },
   "tex": {
    "dtype": "uint8",
    "shape": [
-    41968
+    41408
    ],
-   "offset": 3077024
+   "offset": 3036928
   },
   "pn": {
    "dtype": "float32",
    "shape": [
-    41968,
+    41408,
     3
    ],
-   "offset": 3118992
+   "offset": 3078336
   },
   "pw": {
    "dtype": "uint8",
    "shape": [
-    41968
+    41408
    ],
-   "offset": 3622608
+   "offset": 3575232
   },
   "pj": {
    "dtype": "float32",
    "shape": [
-    41968
+    41408
    ],
-   "offset": 3664576
+   "offset": 3616640
   },
   "two": {
    "dtype": "uint8",
    "shape": [
-    41968
+    41408
    ],
-   "offset": 3832448
+   "offset": 3782272
+  },
+  "band": {
+   "dtype": "float32",
+   "shape": [
+    41408
+   ],
+   "offset": 3823680
   }
  },
  "bin": "anya.bin"
