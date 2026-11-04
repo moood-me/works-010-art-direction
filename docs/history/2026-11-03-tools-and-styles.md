@@ -31,3 +31,14 @@ clones and drafts stayed in that cache. The orchestrator looked at each result a
 pretty VRM avatars shown on Н6 owe their looks to the artists' textures and forms, not to the shader. Of the styles,
 the flat graphic (С3), Klaus's light (С2) and the symbolic scene (С6) came out best; Pixar (С1) and Arcane (С4) look
 like dolls and mannequins — SVG drawn by a script from 3D-like forms loses the life of drawing.
+
+**Later the same night.** Pavel liked the styles and asked for six more, strongly different: С7 Ghibli, С8 stop-motion
+(Laika, Aardman), С9 mid-century gouache (Mary Blair, Šašek, Provensen), С10 ligne claire (Hergé, Chaland, Floc'h),
+С11 1930s rubber hose (Fleischer, Cuphead), С12 pen and watercolour (Quentin Blake, Sempé). Same brief, plus: keep the
+drawing code reusable and say in `notes.md` how to add a new character. Best of them: С9, С11, С12 and С10's street.
+
+He also gave a Hugging Face token to run StdGEN (one picture → 3D body, clothes, hair) on a rented GPU, budget and
+short, with auto-sleep and a pause afterwards — `tools-demo/n8-stdgen/` (its notes say how). It guesses the shape from
+all sides; the models are rough. A try on a white background with other seeds improved Anya, not Tim (his cap is taken
+for hair), so, as Pavel said, the remaining styles were not run. Н3 (cloth in motion) and Н4 (hair) pages came too:
+neither Blender nor HOOD beats our О3; HairDeck looks right for us but its main path needs a GPU and two gated models.
