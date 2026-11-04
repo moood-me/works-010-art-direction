@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 3,
+ "version": 4,
  "id": "disney-princess",
  "label": {
   "ru": "Дисней: принцесса",
@@ -10,37 +10,37 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "smooth-4cm@f054330aa1f702fd",
+   "id": "smooth-4cm@aaffdc487d4b691c",
    "strength": 0.8,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "contour-disney@8797d4cfbdea6fbb",
+   "id": "contour-disney@a0530dca6cb67487",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "masses-disney-bust@ddb1ca08d01f8a3a",
+   "id": "masses-disney-bust@d9c96b93fa164c1d",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "masses-shoulders@7b55ef833e7041f2",
+   "id": "masses-shoulders@5bde23c62a0755e5",
    "strength": 0.8,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-small-hands-feet@57bde87cecd7cc12",
+   "id": "proportions-small-hands-feet@e6a02502687f9fb9",
    "strength": 0.6,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "limbs-taper@3870dd0a894582a8",
+   "id": "limbs-taper@4e32e55658962947",
    "strength": 0.35,
    "frames": "keep"
   }

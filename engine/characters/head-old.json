@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-old",
+ "label": {
+  "ru": "Голова: старик",
+  "en": "Head: old man"
+ },
+ "body": "moood-oldman@4cc8baf71d85269e",
+ "head": {
+  "preset": "head-old@66f7a7760e929510"
+ },
+ "look": {
+  "skin": "#f2c49f",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

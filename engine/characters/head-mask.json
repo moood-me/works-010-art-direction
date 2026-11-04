@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-mask",
+ "label": {
+  "ru": "Голова: девушка в маске",
+  "en": "Head: masked girl"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "head": {
+  "preset": "head-mask@0231effcd4c574af"
+ },
+ "look": {
+  "skin": "#f1c6bd",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

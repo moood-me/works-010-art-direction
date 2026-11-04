@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "face-anny-big-eyes",
+ "group": "head-form",
+ "label": {
+  "ru": "лицо Anny: большие глаза",
+  "en": "Anny's face: big eyes"
+ },
+ "about": {
+  "ru": "собственные ползунки Anny: глаза крупнее и шире раскрыты",
+  "en": "Anny's own settings: the eyes larger and wider open"
+ },
+ "changes": [
+  {
+   "kind": "face",
+   "changes": {
+    "l-eye-scale-incr": 1,
+    "r-eye-scale-incr": 1,
+    "l-eye-height2-incr": 0.8,
+    "r-eye-height2-incr": 0.8,
+    "l-eye-trans-out": 0.3,
+    "r-eye-trans-out": 0.3
+   }
+  }
+ ]
+}

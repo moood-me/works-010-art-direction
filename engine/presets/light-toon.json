@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "light-toon",
+ "group": "face-light",
+ "label": {
+  "ru": "свет: мультяшный",
+  "en": "light: toon"
+ },
+ "about": {
+  "ru": "три мягких тона с контуром, тени лица — от самой сетки",
+  "en": "three soft tones with an outline, the face shaded by its own mesh"
+ },
+ "light": {
+  "toon": true,
+  "soft": 3,
+  "outline": 0.0012,
+  "outlineColor": "#2a1e24",
+  "design": 0,
+  "faceShadows": true
+ }
+}

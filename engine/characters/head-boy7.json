@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-boy7",
+ "label": {
+  "ru": "Голова: мальчик с каре",
+  "en": "Head: boy with a bob"
+ },
+ "body": "moood-child@5c187b05e70b6a54",
+ "head": {
+  "preset": "head-boy7@2c52bc6916d4f608"
+ },
+ "look": {
+  "skin": "#f6d6be",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

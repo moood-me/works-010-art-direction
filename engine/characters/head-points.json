@@ -1,0 +1,41 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-points",
+ "label": {
+  "ru": "Голова: лицо по точкам",
+  "en": "Head: the face by points"
+ },
+ "body": "moood-girl@a2f190bc6fd1cf0e",
+ "head": {
+  "size": 1.1,
+  "form": [
+   {
+    "kind": "preset",
+    "id": "face-points-cute@bc4c178e2fa5d997"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-relief@59ba274edc0577fa"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@9dd44ade6ed9c94a"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-plain@6ab58cddbde93d2c"
+  }
+ },
+ "look": {
+  "skin": "#efc8ae",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

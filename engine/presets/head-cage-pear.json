@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "head-cage-pear",
+ "group": "head-form",
+ "label": {
+  "ru": "каркас головы: груша",
+  "en": "cage on the head: pear"
+ },
+ "about": {
+  "ru": "решётка вокруг головы: низ шире, верх уже — голова-груша одним движением",
+  "en": "a lattice round the head: the bottom wider, the top narrower — a pear in one gesture"
+ },
+ "changes": [
+  {
+   "kind": "cage",
+   "moves": [
+    {
+     "at": [
+      0,
+      0,
+      1
+     ],
+     "by": [
+      -0.12,
+      0,
+      0
+     ]
+    },
+    {
+     "at": [
+      0,
+      2,
+      1
+     ],
+     "by": [
+      0.12,
+      0,
+      0
+     ]
+    },
+    {
+     "at": [
+      0,
+      0,
+      2
+     ],
+     "by": [
+      -0.08,
+      0,
+      0
+     ]
+    },
+    {
+     "at": [
+      0,
+      2,
+      2
+     ],
+     "by": [
+      0.1,
+      0,
+      0
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -2,9 +2,9 @@
 // replaced — a body, rest changes, pose layers — a motion and a frame, a view), drawn by the picture check's own page
 // (check/render.html) and tiled with their labels (tools/sheet.py).
 //   node engine/tools/sheets.mjs engine/tools/sheets/bodies.json [sheet names…]
-// A sheet: {name, out (from the repository's root), title, cols, w, h, items: [{label, char, body?, rest?, pose?, clip?,
-// t?, view?, w?, h?, place?, focus?, size?}]} — rest and pose as in a character, with presets named by id alone (pinned
-// here as they are now) and bodies by id.
+// A sheet: {name, out (from the repository's root), title, cols, w, h, items: [{label, char, body?, rest?, pose?, head?,
+// skin? (a skinning method), clip?, t?, view?, w?, h?, place?, focus?, size?}]} — rest, pose and head as in a character, with presets named by id
+// alone (pinned here as they are now) and bodies by id.
 import { readFile, writeFile, mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -18,6 +18,9 @@ const spec = JSON.parse(await readFile(specPath, 'utf8'));
 const presets = JSON.parse(await readFile(join(ENG, 'presets/index.json'), 'utf8')).presets, bodies = JSON.parse(await readFile(join(ENG, 'data/bodies/index.json'), 'utf8')).bodies;
 const pin = (list, id, what) => { const x = list.find(p => p.id === id.split('@')[0]); if (!x) throw new Error(`no ${what} ${id}`); return x.pin; };
 const changes = list => list.map(c => c.kind === 'preset' ? { ...c, id: pin(presets, c.id, 'preset') } : c);
+// a head (as a character's): its presets by id alone, pinned here
+const headOf = h => ({ ...h, ...(h.preset ? { preset: pin(presets, h.preset, 'preset') } : {}), ...(h.form ? { form: changes(h.form) } : {}), ...(h.features ? { features: changes(h.features) } : {}),
+  ...(h.expressions ? { expressions: changes(h.expressions) } : {}), ...(h.light?.kind === 'preset' ? { light: { ...h.light, id: pin(presets, h.light.id, 'preset') } } : {}) });
 for (const s of spec.sheets) {
   if (only.length && !only.includes(s.name)) continue;
   const dir = await mkdtemp(join(tmpdir(), 'sheet-'));
@@ -26,6 +29,8 @@ for (const s of spec.sheets) {
     if (it.body) over.body = pin(bodies, it.body, 'body');
     if (it.rest) over.rest = changes(it.rest);
     if (it.pose) over.pose = changes(it.pose);
+    if (it.head) over.head = headOf(it.head);
+    if (it.skin) over.skinning = { method: it.skin };
     return { name: 'p' + k, char: it.char || 'woman', clip: it.clip ?? null, t: it.t ?? 0, view: it.view || 'front', over, place: it.place, focus: it.focus, size: it.size, w: it.w || s.w || 300, h: it.h || s.h || 440 };
   });
   await shoot(jobs, dir);

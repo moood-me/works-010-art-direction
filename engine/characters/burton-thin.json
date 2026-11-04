@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 3,
+ "version": 4,
  "id": "burton-thin",
  "label": {
   "ru": "Бёртон: тонкий",
@@ -10,37 +10,37 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "silhouette-reed@25e9313a9a319fc2",
+   "id": "silhouette-reed@236a28bfbc591bb8",
    "strength": 0.8,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-thin-limbs@2b59bce56e2861e7",
+   "id": "proportions-thin-limbs@be99c9a27a999b10",
    "strength": 0.7,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "limbs-taper@3870dd0a894582a8",
+   "id": "limbs-taper@4e32e55658962947",
    "strength": 0.6,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-long-neck@8d89b53b9d64b6cf",
+   "id": "proportions-long-neck@8765812144b073fa",
    "strength": 0.5,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "line-side-s@ed4083a707d1108f",
+   "id": "line-side-s@c68fae76fc4829a1",
    "strength": 0.35,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "smooth-2cm@97ccac20c86b8b15",
+   "id": "smooth-2cm@ed0a41f2295e768a",
    "strength": 1,
    "frames": "keep"
   }

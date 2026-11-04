@@ -1,0 +1,302 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "head-old",
+ "group": "head",
+ "label": {
+  "ru": "голова: старик",
+  "en": "head: old man"
+ },
+ "about": {
+  "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.12,
+  "skin": "#f2c49f",
+  "form": [
+   {
+    "kind": "wrap",
+    "form": {
+     "kind": "curves",
+     "size": 1.12,
+     "face": {
+      "n": 2,
+      "W": [
+       [
+        0.4,
+        0.96
+       ],
+       [
+        -0.3,
+        1
+       ],
+       [
+        -0.62,
+        1.06
+       ],
+       [
+        -0.88,
+        1
+       ],
+       [
+        -1.06,
+        0.72
+       ],
+       [
+        -1.16,
+        0.4
+       ]
+      ],
+      "P": [
+       [
+        0.4,
+        0.78
+       ],
+       [
+        -0.1,
+        0.9
+       ],
+       [
+        -0.3,
+        0.86
+       ],
+       [
+        -0.72,
+        0.96
+       ],
+       [
+        -0.9,
+        0.94
+       ],
+       [
+        -1.06,
+        0.86
+       ],
+       [
+        -1.16,
+        0.7
+       ]
+      ],
+      "nose": {
+       "root": [
+        0,
+        -0.24,
+        0.9
+       ],
+       "tip": [
+        0,
+        -0.46,
+        1.06
+       ],
+       "k": 0.08,
+       "radius": [
+        0.06,
+        0.1
+       ],
+       "ball": {
+        "at": [
+         0,
+         -0.56,
+         1.14
+        ],
+        "r": 0.29,
+        "k": 0.08
+       },
+       "piece": true
+      },
+      "masses": [
+       {
+        "at": [
+         0.56,
+         -0.56,
+         0.62
+        ],
+        "r": [
+         0.33,
+         0.33,
+         0.264
+        ],
+        "k": 0.22
+       },
+       {
+        "at": [
+         0.6,
+         -0.98,
+         0.42
+        ],
+        "r": [
+         0.42,
+         0.42,
+         0.336
+        ],
+        "k": 0.3
+       }
+      ]
+     },
+     "cranium": {
+      "w": 1.04
+     },
+     "ears": {
+      "x": 1,
+      "y": -0.32,
+      "z": -0.08,
+      "s": 1.15
+     },
+     "neck": {
+      "r": 0.6
+     }
+    },
+    "marks": {
+     "eye": {
+      "x": 0.4,
+      "y": -0.26,
+      "w": 0.3,
+      "h": 0.14
+     },
+     "mouth": {
+      "y": -0.9,
+      "w": 0.46,
+      "wide": true
+     }
+    }
+   }
+  ],
+  "features": [
+   {
+    "id": "eyes",
+    "kind": "eye",
+    "as": "paint",
+    "x": 0.4,
+    "y": -0.26,
+    "w": 0.3,
+    "h": 0.14,
+    "iris": [
+     "#3a2a1a",
+     "#5a4030"
+    ],
+    "lash": "#2a1a12",
+    "lashW": 0.045,
+    "lower": 0,
+    "glints": 0,
+    "smiley": true
+   },
+   {
+    "id": "brows",
+    "kind": "brow",
+    "as": "paint",
+    "x0": 0.14,
+    "x1": 0.68,
+    "y0": -0.08,
+    "y1": -0.07,
+    "arch": 0.1,
+    "peak": 0.45,
+    "w0": 0.08,
+    "w1": 0.05,
+    "color": "#b0682e"
+   },
+   {
+    "id": "mouth",
+    "kind": "mouth",
+    "as": "paint",
+    "y": -0.9,
+    "w": 0.46,
+    "type": "grin",
+    "crooked": 0.12
+   },
+   {
+    "id": "marks",
+    "kind": "marks",
+    "lines": [
+     {
+      "mirror": true,
+      "pts": [
+       [
+        0.32,
+        -0.62
+       ],
+       [
+        0.42,
+        -0.78
+       ],
+       [
+        0.4,
+        -0.95
+       ]
+      ],
+      "w": 0.014,
+      "color": "#a0602e",
+      "alpha": 0.55
+     },
+     {
+      "mirror": true,
+      "pts": [
+       [
+        0.55,
+        -0.32
+       ],
+       [
+        0.62,
+        -0.3
+       ],
+       [
+        0.66,
+        -0.26
+       ]
+      ],
+      "w": 0.01,
+      "color": "#8a5030",
+      "alpha": 0.5
+     }
+    ]
+   },
+   {
+    "id": "blush",
+    "kind": "blush",
+    "amount": 0.8
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@9dd44ade6ed9c94a"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "id": "hair",
+    "kind": "hair",
+    "color": "#d08a4a",
+    "ink": "#6a3a1a",
+    "parts": [
+     [
+      "cap",
+      {
+       "front": 0.1,
+       "back": -0.2
+      }
+     ],
+     [
+      "fringeTufts",
+      {}
+     ]
+    ]
+   },
+   {
+    "id": "hood",
+    "kind": "hood",
+    "color": "#f4f2ee",
+    "inner": "#c9c6c0",
+    "wide": 1.15
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@d8ab31c73412d70b"
+  }
+ }
+}

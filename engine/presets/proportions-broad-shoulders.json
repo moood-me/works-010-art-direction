@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 2,
+ "version": 3,
  "id": "proportions-broad-shoulders",
  "label": {
   "ru": "пропорции: широкие плечи",
@@ -25,7 +25,7 @@
   },
   {
    "kind": "preset",
-   "id": "masses-shoulders@7b55ef833e7041f2",
+   "id": "masses-shoulders@5bde23c62a0755e5",
    "strength": 0.8
   }
  ]

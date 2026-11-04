@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 3,
+ "version": 4,
  "id": "anime-girl",
  "label": {
   "ru": "Аниме: девушка",
@@ -10,37 +10,37 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "smooth-4cm@f054330aa1f702fd",
+   "id": "smooth-4cm@aaffdc487d4b691c",
    "strength": 0.9,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-long-legs@e116a8db3bcaf909",
+   "id": "proportions-long-legs@aa12fde05d7de419",
    "strength": 0.8,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "contour-anime@3ac1a771c67569da",
+   "id": "contour-anime@3dff92a902fd4cd8",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "masses-anime-bust@747a8a1cadf22df7",
+   "id": "masses-anime-bust@7033091d9b9a620e",
    "strength": 1,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "masses-shoulders@7b55ef833e7041f2",
+   "id": "masses-shoulders@5bde23c62a0755e5",
    "strength": 0.7,
    "frames": "keep"
   },
   {
    "kind": "preset",
-   "id": "proportions-small-hands-feet@57bde87cecd7cc12",
+   "id": "proportions-small-hands-feet@e6a02502687f9fb9",
    "strength": 0.5,
    "frames": "keep"
   }

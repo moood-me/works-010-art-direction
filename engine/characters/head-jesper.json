@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-jesper",
+ "label": {
+  "ru": "Голова: Джеспер",
+  "en": "Head: Jesper"
+ },
+ "body": "moood-man@ae2fe31d3d61c6e7",
+ "head": {
+  "preset": "head-jesper@76b3cd4a1546a2db"
+ },
+ "look": {
+  "skin": "#f0c4a8",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

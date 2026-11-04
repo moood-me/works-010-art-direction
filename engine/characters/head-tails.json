@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-tails",
+ "label": {
+  "ru": "Голова: мальчик с хвостиками",
+  "en": "Head: boy with tails"
+ },
+ "body": "moood-man@ae2fe31d3d61c6e7",
+ "head": {
+  "preset": "head-tails@c0a34baf08a6c6ec"
+ },
+ "look": {
+  "skin": "#e9b8a8",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

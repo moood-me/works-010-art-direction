@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "face-anny-soft-chin",
+ "group": "head-form",
+ "label": {
+  "ru": "лицо Anny: мягкий маленький подбородок",
+  "en": "Anny's face: a soft small chin"
+ },
+ "about": {
+  "ru": "ползунки Anny: подбородок короче и уже, щёки полнее",
+  "en": "Anny's settings: the chin shorter and narrower, the cheeks fuller"
+ },
+ "changes": [
+  {
+   "kind": "face",
+   "changes": {
+    "chin-height-incr": -0.6,
+    "chin-width-incr": -0.5,
+    "chin-prominent-incr": -0.4,
+    "l-cheek-volume-incr": 0.6,
+    "r-cheek-volume-incr": 0.6,
+    "mouth-scale-horiz-incr": -0.3
+   }
+  }
+ ]
+}

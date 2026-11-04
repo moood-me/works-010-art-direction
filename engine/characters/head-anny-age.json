@@ -1,0 +1,42 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-anny-age",
+ "label": {
+  "ru": "Голова: голова малыша на взрослом",
+  "en": "Head: a toddler's head on a grown-up"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "head": {
+  "size": 1.1,
+  "form": [
+   {
+    "kind": "preset",
+    "id": "head-of-toddler@3452e4f06c1193ed",
+    "strength": 0.7
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-relief@59ba274edc0577fa"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@9dd44ade6ed9c94a"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon@21d01379abf7249c"
+  }
+ },
+ "look": {
+  "skin": "#e9bb9c",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

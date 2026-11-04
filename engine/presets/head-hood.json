@@ -1,0 +1,262 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "head-hood",
+ "group": "head",
+ "label": {
+  "ru": "голова: женщина в капюшоне",
+  "en": "head: hooded woman"
+ },
+ "about": {
+  "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.06,
+  "skin": "#ecbcc4",
+  "form": [
+   {
+    "kind": "wrap",
+    "form": {
+     "kind": "curves",
+     "size": 1.06,
+     "face": {
+      "n": 2.3,
+      "W": [
+       [
+        0.4,
+        0.84
+       ],
+       [
+        -0.3,
+        0.8
+       ],
+       [
+        -0.6,
+        0.7
+       ],
+       [
+        -0.86,
+        0.46
+       ],
+       [
+        -1.05,
+        0.2
+       ],
+       [
+        -1.13,
+        0.09
+       ]
+      ],
+      "P": [
+       [
+        0.4,
+        0.8
+       ],
+       [
+        0,
+        0.88
+       ],
+       [
+        -0.25,
+        0.86
+       ],
+       [
+        -0.64,
+        0.9
+       ],
+       [
+        -0.78,
+        0.9
+       ],
+       [
+        -0.9,
+        0.84
+       ],
+       [
+        -1.04,
+        0.8
+       ],
+       [
+        -1.13,
+        0.68
+       ]
+      ],
+      "nose": {
+       "ridge": [
+        [
+         -0.2,
+         0.88
+        ],
+        [
+         -0.36,
+         0.97
+        ],
+        [
+         -0.5,
+         1.06
+        ],
+        [
+         -0.6,
+         1.14
+        ]
+       ],
+       "under": [
+        [
+         -0.62,
+         1.1
+        ],
+        [
+         -0.645,
+         1.02
+        ],
+        [
+         -0.665,
+         0.92
+        ]
+       ],
+       "w": [
+        0.018,
+        0.022,
+        0.06
+       ],
+       "k": 0.05,
+       "round": 0.015,
+       "piece": true
+      }
+     },
+     "ears": {
+      "x": 0.9,
+      "y": -0.36,
+      "z": -0.1,
+      "s": 1.05
+     },
+     "neck": {
+      "r": 0.32
+     }
+    },
+    "marks": {
+     "eye": {
+      "x": 0.4,
+      "y": -0.3,
+      "w": 0.38,
+      "h": 0.17
+     },
+     "mouth": {
+      "y": -0.8,
+      "w": 0.11,
+      "sag": 0.004
+     }
+    }
+   }
+  ],
+  "features": [
+   {
+    "id": "eyes",
+    "kind": "eye",
+    "as": "paint",
+    "x": 0.4,
+    "y": -0.3,
+    "w": 0.38,
+    "h": 0.17,
+    "tilt": -0.1,
+    "iris": [
+     "#2b2236",
+     "#5a4a6a"
+    ],
+    "lash": "#160f16",
+    "lashW": 0.07,
+    "wing": 0.22,
+    "lower": 0.2,
+    "glints": 1,
+    "sharp": true,
+    "look": 0.55,
+    "crease": true
+   },
+   {
+    "id": "brows",
+    "kind": "brow",
+    "as": "paint",
+    "x0": 0.13,
+    "x1": 0.7,
+    "y0": -0.1,
+    "y1": 0,
+    "arch": 0.05,
+    "peak": 0.6,
+    "w0": 0.065,
+    "w1": 0.014,
+    "color": "#1e1a26"
+   },
+   {
+    "id": "mouth",
+    "kind": "mouth",
+    "as": "paint",
+    "type": "drawn",
+    "y": -0.8,
+    "w": 0.11,
+    "sag": 0.004,
+    "cL": 0,
+    "cR": 0.022,
+    "lineW": 0.013,
+    "line": "#7a3a46",
+    "dimple": true,
+    "lowerLine": 0.3
+   },
+   {
+    "id": "blush",
+    "kind": "blush",
+    "amount": 0.15
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@9dd44ade6ed9c94a"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "id": "hair",
+    "kind": "hair",
+    "color": "#1e1a26",
+    "parts": [
+     [
+      "cap",
+      {
+       "front": 0.3
+      }
+     ],
+     [
+      "sides",
+      {
+       "n": 2,
+       "len": 2,
+       "w": 0.22,
+       "z": 0.3
+      }
+     ],
+     [
+      "bangsSide",
+      {
+       "n": 5
+      }
+     ]
+    ]
+   },
+   {
+    "id": "hood",
+    "kind": "hood",
+    "color": "#a6b4ea",
+    "inner": "#6d77b5"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@d8ab31c73412d70b"
+  }
+ }
+}

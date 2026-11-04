@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-hood",
+ "label": {
+  "ru": "Голова: женщина в капюшоне",
+  "en": "Head: hooded woman"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "head": {
+  "preset": "head-hood@ae66fb6b724156a6"
+ },
+ "look": {
+  "skin": "#ecbcc4",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

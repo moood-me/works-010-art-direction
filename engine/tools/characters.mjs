@@ -8,6 +8,7 @@
 //                                                      check it, pin the presets it takes, write presets/index.json
 //                                                      (by group, each pinned)
 //   node engine/tools/characters.mjs bodies           write data/bodies/index.json (every body, its group, pinned)
+//   node engine/tools/characters.mjs cases            pin anew the presets and bodies check/cases.json takes
 // `pin` also pins the presets a character takes, and the character it starts from (`base`), as they are now.
 // No ids: every character of characters/index.json.
 import { readFile, writeFile, readdir } from 'node:fs/promises';
@@ -24,7 +25,19 @@ const file = id => fileURLToPath(new URL(`characters/${id}.json`, ROOT));
 const all = async () => ids.length ? ids : (await E.characters()).characters.map(c => c.id);
 const save = (path, d) => writeFile(path, JSON.stringify(d, null, 1) + '\n');
 // the presets a list of changes takes, pinned as they are now
-const repin = list => Promise.all(list.map(async c => c.kind === 'preset' ? { ...c, id: pinOf(pinned(c.id).id, (await E.preset(pinned(c.id).id)).hash) } : c));
+// (and the bodies a change takes: a head of another age)
+const repin = list => Promise.all(list.map(async c => c.kind === 'preset' ? { ...c, id: pinOf(pinned(c.id).id, (await E.preset(pinned(c.id).id)).hash) }
+  : typeof c.body === 'string' ? { ...c, body: pinOf(pinned(c.body).id, (await E.body(pinned(c.body).id)).hash) } : c));
+const pinRef = async ref => pinOf(pinned(ref).id, (await E.preset(pinned(ref).id)).hash);
+// a head's presets (the head it starts from, its form's, its features', expressions' and light's), pinned as they are now
+async function repinHead(h) {
+  if (!h) return h;
+  const o = { ...h };
+  if (o.preset) o.preset = await pinRef(o.preset);
+  for (const k of ['form', 'features', 'expressions']) if (o[k]) o[k] = await repin(o[k]);
+  if (o.light?.kind === 'preset') o.light = { ...o.light, id: await pinRef(o.light.id) };
+  return o;
+}
 
 if (what === 'upgrade' || what === 'pin') {
   for (const id of await all()) {
@@ -35,11 +48,18 @@ if (what === 'upgrade' || what === 'pin') {
       if (pin) d.body = pin;
       if (d.base) { const b = pinned(d.base).id; d.base = pinOf(b, hashOf([JSON.parse(await readFile(file(b), 'utf8'))])); }
       for (const k of ['rest', 'pose']) d[k] = await repin(d[k] || []);
+      if (d.head) d.head = await repinHead(d.head);
     }
     await E.resolve(d);
     await save(file(id), d);
     console.log(`${id}: ${what === 'upgrade' ? `version ${d.version}, ` : ''}${pin ? 'body ' + pin : 'base ' + d.base}`);
   }
+} else if (what === 'cases') {
+  // the checks' cases (check/cases.json) take presets and bodies in their `over`: pinned as they are now
+  const path = fileURLToPath(new URL('check/cases.json', ROOT)), text = await readFile(path, 'utf8'), index = await E.presets(), bodies = await E.bodies();
+  const pins = Object.fromEntries([...index.presets, ...bodies.bodies].map(p => [p.id, p.pin]));
+  let n = 0; const out = text.replace(/"([A-Za-z0-9][A-Za-z0-9_.-]*)@([0-9a-f]{12,64})"/g, (m, id) => pins[id] && `"${pins[id]}"` !== m ? (n++, `"${pins[id]}"`) : m);
+  await writeFile(path, out); console.log(`${n} pins in check/cases.json made anew`);
 } else if (what === 'chains') {
   const path = fileURLToPath(new URL('motions/index.json', ROOT)), index = JSON.parse(await readFile(path, 'utf8'));
   for (const c of index.chains) {
@@ -53,12 +73,22 @@ if (what === 'upgrade' || what === 'pin') {
   // presets that take presets: those first pinned anew (in the order they depend)
   const list = [];
   for (const f of files) { const p = JSON.parse(await readFile(dir + f, 'utf8')); if (p.version < PRESET_VERSION) await save(dir + f, upgradePreset(p)); }
-  for (const f of files) { const p = JSON.parse(await readFile(dir + f, 'utf8')); p.changes = await repin(p.changes); checkPreset(p); await save(dir + f, p); }
+  // in the order they take each other: a preset is pinned anew after the presets it takes
+  const content = {}; for (const f of files) content[f.slice(0, -5)] = JSON.parse(await readFile(dir + f, 'utf8'));
+  const takes = p => JSON.stringify(p).match(/"(?:id|preset)":\s*"([a-z0-9][a-z0-9-]*)@[0-9a-f]+"/g)?.map(m => m.match(/"([a-z0-9][a-z0-9-]*)@/)[1]).filter(x => x !== p.id) ?? [];
+  const done = new Set(), order = [], visit = (id, path = []) => { if (done.has(id)) return; if (path.includes(id)) throw new Error(`presets take each other: ${[...path, id].join(' → ')}`); for (const t of takes(content[id])) if (content[t]) visit(t, [...path, id]); done.add(id); order.push(id); };
+  for (const id of Object.keys(content)) visit(id);
+  for (const id of order) {
+    const p = content[id];
+    if (p.changes) p.changes = await repin(p.changes);
+    if (p.head) p.head = await repinHead(p.head);
+    checkPreset(p); await save(dir + id + '.json', p);
+  }
   for (const f of files) { const id = f.slice(0, -5), p = await E.preset(id); list.push({ id, pin: pinOf(id, p.hash), group: p.group, label: p.label, about: p.about }); }
-  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram'];
+  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram', 'head', 'head-form', 'features', 'expressions', 'face-light'];
   const rank = g => ORDER.includes(g) ? ORDER.indexOf(g) : ORDER.length;
   list.sort((a, b) => rank(a.group) - rank(b.group) || a.id.localeCompare(b.id));
-  await save(dir + 'index.json', { format: 'engine/presets', version: 1, about: 'Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: "preset", id: "<pin>", strength, frames | space}. Written by engine/tools/characters.mjs presets.', groups: ORDER, presets: list });
+  await save(dir + 'index.json', { format: 'engine/presets', version: 1, about: 'Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: "preset", id: "<pin>", strength, frames | space}; heads a character or another head takes by head.preset; a head\'s features, expressions and light. Written by engine/tools/characters.mjs presets.', groups: ORDER, presets: list });
   console.log(`${list.length} presets`);
 } else if (what === 'bodies') {
   const dir = fileURLToPath(new URL('data/bodies/', ROOT)), ids = (await readdir(dir)).filter(f => f.endsWith('.json') && f !== 'index.json').map(f => f.slice(0, -5));

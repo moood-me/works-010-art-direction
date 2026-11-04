@@ -1,0 +1,248 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "head-mask",
+ "group": "head",
+ "label": {
+  "ru": "голова: девушка в маске",
+  "en": "head: masked girl"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.08,
+  "skin": "#f1c6bd",
+  "form": [
+   {
+    "kind": "wrap",
+    "form": {
+     "kind": "curves",
+     "size": 1.08,
+     "face": {
+      "n": 2.2,
+      "W": [
+       [
+        0.4,
+        0.94
+       ],
+       [
+        -0.3,
+        0.92
+       ],
+       [
+        -0.6,
+        0.84
+       ],
+       [
+        -0.84,
+        0.62
+       ],
+       [
+        -1,
+        0.36
+       ],
+       [
+        -1.08,
+        0.18
+       ]
+      ],
+      "P": [
+       [
+        0.4,
+        0.8
+       ],
+       [
+        0,
+        0.9
+       ],
+       [
+        -0.32,
+        0.86
+       ],
+       [
+        -0.6,
+        0.94
+       ],
+       [
+        -0.8,
+        0.9
+       ],
+       [
+        -1,
+        0.8
+       ],
+       [
+        -1.08,
+        0.66
+       ]
+      ],
+      "nose": {
+       "ridge": [
+        [
+         -0.34,
+         0.88
+        ],
+        [
+         -0.48,
+         0.955
+        ],
+        [
+         -0.6,
+         1.025
+        ],
+        [
+         -0.63,
+         1.04
+        ]
+       ],
+       "under": [
+        [
+         -0.655,
+         0.99
+        ],
+        [
+         -0.675,
+         0.92
+        ]
+       ],
+       "w": [
+        0.022,
+        0.03,
+        0.07
+       ],
+       "k": 0.05
+      }
+     },
+     "ears": {
+      "x": 0.94,
+      "y": -0.34,
+      "z": -0.1,
+      "s": 1
+     },
+     "neck": {
+      "r": 0.36
+     }
+    },
+    "marks": {
+     "eye": {
+      "x": 0.43,
+      "y": -0.3,
+      "w": 0.44,
+      "h": 0.2
+     },
+     "mouth": {
+      "y": -0.8,
+      "w": 0.1
+     }
+    }
+   }
+  ],
+  "features": [
+   {
+    "id": "eyes",
+    "kind": "eye",
+    "as": "paint",
+    "x": 0.43,
+    "y": -0.3,
+    "w": 0.44,
+    "h": 0.2,
+    "tilt": -0.14,
+    "iris": [
+     "#7a2b1c",
+     "#c2603a"
+    ],
+    "lash": "#1d1418",
+    "lashW": 0.075,
+    "wing": 0.3,
+    "lower": 0.25,
+    "glints": 1,
+    "sharp": true,
+    "look": 0.45
+   },
+   {
+    "id": "brows",
+    "kind": "brow",
+    "as": "paint",
+    "x0": 0.12,
+    "x1": 0.74,
+    "y0": -0.13,
+    "y1": 0.02,
+    "arch": 0.08,
+    "peak": 0.55,
+    "w0": 0.075,
+    "w1": 0.018,
+    "color": "#2a1d1b"
+   },
+   {
+    "id": "mask",
+    "kind": "mask",
+    "color": "#c9c9d3",
+    "dark": "#74738a",
+    "top": -0.46
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@9dd44ade6ed9c94a"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "hair",
+    "kind": "hair",
+    "color": "#4a3b38",
+    "parts": [
+     [
+      "mass",
+      {
+       "n": 18,
+       "scale": 1.12,
+       "front": 0.4,
+       "bang": 0.35,
+       "bangEl": 0.5,
+       "len": 0.3,
+       "flick": 0.12,
+       "side": 0.1,
+       "r": 0.22,
+       "tufts": [
+        [
+         0.5,
+         0.75,
+         0.25,
+         -0.45,
+         0.25,
+         0.26
+        ]
+       ]
+      }
+     ],
+     [
+      "topBun",
+      {
+       "color2": "#3aa0d8"
+      }
+     ],
+     [
+      "bangsSide",
+      {
+       "n": 3
+      }
+     ]
+    ]
+   },
+   {
+    "id": "earDevice",
+    "kind": "earDevice",
+    "color": "#b5b6c5",
+    "dark": "#5a5b70"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@d8ab31c73412d70b"
+  }
+ }
+}

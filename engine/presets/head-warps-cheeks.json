@@ -1,0 +1,56 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "head-warps-cheeks",
+ "group": "head-form",
+ "label": {
+  "ru": "плавные сдвиги: щёки и затылок",
+  "en": "smooth warps: cheeks and the back of the head"
+ },
+ "about": {
+  "ru": "плавные сдвиги: круглые щёки наружу, затылок назад, челюсть чуть уже",
+  "en": "smooth warps: round cheeks out, the back of the head back, the jaw a little narrower"
+ },
+ "changes": [
+  {
+   "kind": "warps",
+   "warps": [
+    {
+     "kind": "push",
+     "at": [
+      0.45,
+      -0.55,
+      0.55
+     ],
+     "r": 0.3,
+     "by": [
+      0.06,
+      0.02,
+      0.05
+     ],
+     "mirror": true
+    },
+    {
+     "kind": "push",
+     "at": [
+      0,
+      0.1,
+      -1
+     ],
+     "r": 0.5,
+     "by": [
+      0,
+      0,
+      -0.12
+     ]
+    },
+    {
+     "kind": "scale",
+     "y": -0.95,
+     "r": 0.25,
+     "x": 0.9
+    }
+   ]
+  }
+ ]
+}

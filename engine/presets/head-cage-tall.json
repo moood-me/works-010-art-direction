@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "head-cage-tall",
+ "group": "head-form",
+ "label": {
+  "ru": "каркас головы: высокий череп",
+  "en": "cage on the head: a tall cranium"
+ },
+ "about": {
+  "ru": "решётка: верх головы выше и шире, подбородок на месте",
+  "en": "a lattice: the top of the head higher and wider, the chin where it was"
+ },
+ "changes": [
+  {
+   "kind": "cage",
+   "moves": [
+    {
+     "at": [
+      1,
+      2,
+      1
+     ],
+     "by": [
+      0,
+      0.25,
+      0
+     ]
+    },
+    {
+     "at": [
+      0,
+      2,
+      1
+     ],
+     "by": [
+      0.06,
+      0.18,
+      0
+     ]
+    },
+    {
+     "at": [
+      1,
+      2,
+      0
+     ],
+     "by": [
+      0,
+      0.15,
+      -0.05
+     ]
+    },
+    {
+     "at": [
+      1,
+      2,
+      2
+     ],
+     "by": [
+      0,
+      0.15,
+      0.03
+     ]
+    }
+   ]
+  }
+ ]
+}

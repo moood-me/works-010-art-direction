@@ -1,0 +1,55 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-red-mine",
+ "label": {
+  "ru": "Голова: рыжая девушка, своя",
+  "en": "Head: the red-haired girl, my own"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "head": {
+  "preset": "head-red@8f69e32ec83f1ab1",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "face-points-long@fc3fd456b884880a",
+    "strength": 0.35
+   }
+  ],
+  "features": [
+   {
+    "id": "eyes",
+    "kind": "eye",
+    "as": "volume",
+    "x": 0.43,
+    "y": -0.34,
+    "w": 0.42,
+    "h": 0.44,
+    "tilt": 0.06,
+    "iris": [
+     "#5a2a6a",
+     "#c07ad8"
+    ],
+    "lash": "#3a1a14",
+    "lashW": 0.065,
+    "wing": 0.12,
+    "lower": 0.3,
+    "glints": 2,
+    "lashes": 3,
+    "round": true,
+    "crease": true,
+    "lift": 0.02
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon@21d01379abf7249c"
+  }
+ },
+ "look": {
+  "skin": "#fbe2d2",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

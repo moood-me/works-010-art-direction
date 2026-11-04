@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-anime",
+ "label": {
+  "ru": "Голова: аниме-девушка",
+  "en": "Head: anime girl"
+ },
+ "body": "moood-girl@a2f190bc6fd1cf0e",
+ "head": {
+  "preset": "head-anime@6670bc2912c99324"
+ },
+ "look": {
+  "skin": "#f9e3d8",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

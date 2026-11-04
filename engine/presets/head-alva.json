@@ -1,0 +1,253 @@
+{
+ "format": "engine/preset",
+ "version": 3,
+ "id": "head-alva",
+ "group": "head",
+ "label": {
+  "ru": "голова: Альва",
+  "en": "head: Alva"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1,
+  "skin": "#f2c9b6",
+  "form": [
+   {
+    "kind": "wrap",
+    "form": {
+     "kind": "curves",
+     "size": 1,
+     "face": {
+      "n": 2.3,
+      "W": [
+       [
+        0.4,
+        0.84
+       ],
+       [
+        -0.3,
+        0.82
+       ],
+       [
+        -0.6,
+        0.7
+       ],
+       [
+        -0.9,
+        0.48
+       ],
+       [
+        -1.15,
+        0.2
+       ],
+       [
+        -1.26,
+        0.07
+       ]
+      ],
+      "P": [
+       [
+        0.4,
+        0.8
+       ],
+       [
+        0,
+        0.9
+       ],
+       [
+        -0.3,
+        0.86
+       ],
+       [
+        -0.76,
+        0.92
+       ],
+       [
+        -0.86,
+        0.92
+       ],
+       [
+        -0.96,
+        0.88
+       ],
+       [
+        -1.12,
+        0.82
+       ],
+       [
+        -1.26,
+        0.68
+       ]
+      ],
+      "nose": {
+       "ridge": [
+        [
+         -0.25,
+         0.88
+        ],
+        [
+         -0.45,
+         0.98
+        ],
+        [
+         -0.62,
+         1.07
+        ],
+        [
+         -0.7,
+         1.1
+        ]
+       ],
+       "under": [
+        [
+         -0.73,
+         1.05
+        ],
+        [
+         -0.77,
+         0.93
+        ]
+       ],
+       "w": [
+        0.018,
+        0.03,
+        0.058
+       ],
+       "k": 0.05,
+       "round": 0.025,
+       "piece": true
+      }
+     },
+     "ears": {
+      "x": 0.9,
+      "y": -0.36,
+      "z": -0.12,
+      "s": 0.95
+     },
+     "neck": {
+      "r": 0.32
+     }
+    },
+    "marks": {
+     "eye": {
+      "x": 0.4,
+      "y": -0.34,
+      "w": 0.32,
+      "h": 0.17
+     },
+     "mouth": {
+      "y": -0.88,
+      "w": 0.13
+     }
+    }
+   }
+  ],
+  "features": [
+   {
+    "id": "eyes",
+    "kind": "eye",
+    "as": "paint",
+    "x": 0.4,
+    "y": -0.34,
+    "w": 0.32,
+    "h": 0.17,
+    "tilt": 0.02,
+    "iris": [
+     "#3a2418",
+     "#7a5038"
+    ],
+    "lash": "#2a1a14",
+    "lashW": 0.045,
+    "wing": 0.08,
+    "lower": 0.2,
+    "glints": 1,
+    "crease": true,
+    "irisScale": 0.75
+   },
+   {
+    "id": "brows",
+    "kind": "brow",
+    "as": "paint",
+    "x0": 0.12,
+    "x1": 0.66,
+    "y0": -0.1,
+    "y1": -0.07,
+    "arch": 0.05,
+    "peak": 0.55,
+    "w0": 0.035,
+    "w1": 0.01,
+    "color": "#6a4a24"
+   },
+   {
+    "id": "mouth",
+    "kind": "mouth",
+    "as": "paint",
+    "type": "drawn",
+    "y": -0.88,
+    "w": 0.13,
+    "sag": 0,
+    "corners": 0.01,
+    "upper": 0.012,
+    "lower": 0.022,
+    "lip": "#c8706a",
+    "line": "#7a3a36",
+    "lineW": 0.012
+   },
+   {
+    "id": "blush",
+    "kind": "blush",
+    "amount": 0.3
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@9dd44ade6ed9c94a"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "id": "hair",
+    "kind": "hair",
+    "color": "#8a6a3a",
+    "ink": "#3a2a14",
+    "parts": [
+     [
+      "cap",
+      {
+       "front": 0.55
+      }
+     ],
+     [
+      "centerPart",
+      {
+       "n": 8,
+       "w": 0.44
+      }
+     ],
+     [
+      "back",
+      {
+       "n": 11,
+       "len": 3.2,
+       "w": 0.5,
+       "wave": 0.15,
+       "lift": 0.18
+      }
+     ]
+    ]
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@d8ab31c73412d70b"
+  }
+ }
+}

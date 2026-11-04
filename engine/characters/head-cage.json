@@ -1,0 +1,45 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-cage",
+ "label": {
+  "ru": "Голова: каркас и плавные сдвиги",
+  "en": "Head: a cage and smooth warps"
+ },
+ "body": "moood-child@5c187b05e70b6a54",
+ "head": {
+  "size": 1.1,
+  "form": [
+   {
+    "kind": "preset",
+    "id": "head-cage-tall@da8ef4d7d58d4abb"
+   },
+   {
+    "kind": "preset",
+    "id": "head-warps-cheeks@3bb57dc82ae60fb2"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-dots@c505d67d408ea435"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@9dd44ade6ed9c94a"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon@21d01379abf7249c"
+  }
+ },
+ "look": {
+  "skin": "#f2cdb4",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

@@ -1,0 +1,19 @@
+{
+ "format": "engine/character",
+ "version": 4,
+ "id": "head-red",
+ "label": {
+  "ru": "Голова: рыжая девушка",
+  "en": "Head: red-haired girl"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "head": {
+  "preset": "head-red@8f69e32ec83f1ab1"
+ },
+ "look": {
+  "skin": "#fbe2d2",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}
