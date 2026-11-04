@@ -1,0 +1,200 @@
+{
+ "format": "tim-pixar/model",
+ "version": 1,
+ "id": "tim",
+ "skeleton": "soma77",
+ "mats": [
+  "skin",
+  "lip",
+  "mouth",
+  "eye",
+  "hair",
+  "shirt",
+  "collar",
+  "shorts",
+  "sock",
+  "shoe",
+  "sole",
+  "teeth",
+  "patch",
+  "brow"
+ ],
+ "parts": [
+  "head"
+ ],
+ "ranges": {
+  "head": [
+   0,
+   4118
+  ],
+  "eyeL": [
+   4118,
+   5558
+  ],
+  "eyeR": [
+   5558,
+   6998
+  ],
+  "teethUp": [
+   6998,
+   7978
+  ],
+  "teethLo": [
+   7978,
+   9098
+  ],
+  "hair": [
+   9098,
+   16325
+  ],
+  "shirt": [
+   16325,
+   18771
+  ],
+  "shorts": [
+   18771,
+   19534
+  ],
+  "shoes": [
+   19534,
+   21878
+  ],
+  "limbs": [
+   21878,
+   27012
+  ]
+ },
+ "K": 0.0028,
+ "headY": 373.0,
+ "balls": [
+  [
+   18.5,
+   -5.0,
+   21.5,
+   12.5
+  ],
+  [
+   -18.5,
+   -5.0,
+   21.5,
+   12.5
+  ]
+ ],
+ "mouthY": -36.5,
+ "lipZ": 38.38342470529461,
+ "stripes": [
+  [
+   128,
+   140
+  ],
+  [
+   146,
+   152
+  ]
+ ],
+ "floor": 388.0,
+ "bin": "tim.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    27012,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    51228,
+    3
+   ],
+   "offset": 324144
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    27012,
+    4
+   ],
+   "offset": 938880
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    27012,
+    4
+   ],
+   "offset": 1046928
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1479120
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1480044
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    27012
+   ],
+   "offset": 1481276
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    27012,
+    3
+   ],
+   "offset": 1508288
+  },
+  "aux": {
+   "dtype": "float32",
+   "shape": [
+    27012,
+    4
+   ],
+   "offset": 1832432
+  },
+  "ao": {
+   "dtype": "float32",
+   "shape": [
+    27012
+   ],
+   "offset": 2264624
+  },
+  "face": {
+   "dtype": "float32",
+   "shape": [
+    27012,
+    4
+   ],
+   "offset": 2372672
+  },
+  "jaw": {
+   "dtype": "float32",
+   "shape": [
+    27012
+   ],
+   "offset": 2804864
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    27012,
+    1
+   ],
+   "offset": 2912912
+  }
+ }
+}

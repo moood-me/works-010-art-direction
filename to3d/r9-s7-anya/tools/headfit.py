@@ -54,13 +54,32 @@ def blank(v, P, vis, eyes, r):
     near = np.zeros(len(P), bool)
     for c in eyes: near |= np.linalg.norm(fc - c, axis=1) < r * 1.5
     near |= (abs(fc[:, 0]) < 0.06) & (fc[:, 1] > 0.55) & (fc[:, 1] < 0.70) & (fc[:, 2] > -0.0) & (fc[:, 2] < 0.14)
+    # every lining no ray from outside reaches (sockets, mouth bag, nostrils), above the neck
     drop = set(np.where((vis == 0) & near)[0])
     P = [p for i, p in enumerate(P) if i not in drop]
     v, P, _ = compact(v, P)
     for L in M.boundary_loops(P):
         if v[L].mean(0)[1] < 0.54: continue
         v, P, _ = fill(v, P, L)
-    return v, P
+    # small holes left where the linings met the surface (the mouth's corners, the nostrils): each closed by a fan
+    # from its middle, over its boundary edges as they run
+    cnt = M.edges_of(P); half = []
+    for p in P:
+        for a, b in zip(p, p[1:] + p[:1]):
+            if cnt[(min(a, b), max(a, b))] == 1: half.append((a, b))
+    par = {}
+    def root(x):
+        while par.get(x, x) != x: x = par[x]
+        return x
+    for a, b in half: par[root(a)] = root(b)
+    groups = {}
+    for a, b in half: groups.setdefault(root(a), []).append((a, b))
+    v = list(v)
+    for g in groups.values():
+        if np.mean([v[a][1] for a, _ in g]) < 0.54: continue
+        c = len(v); v.append(np.mean([v[a] for a, _ in g], 0))
+        for a, b in g: P.append([b, a, c])
+    return np.array(v), P
 
 
 def ears(v):
@@ -168,4 +187,22 @@ def build(path):
     A = M.adjacency(len(L), P)
     bnd = L[:, 1] < -1.3
     L = M.smooth(L, A, ~earm & ~bnd & (wgt < 0.99), iters=3, lam=0.4)
+    # the face relaxed on the drawing's surface: where the base had sockets and lips, laying them on one surface
+    # leaves folds; spreading the points evenly over it (and back onto it) takes the folds out
+    face = wgt > 0.3
+    for _ in range(40):
+        L = M.smooth(L, A, face, iters=1, lam=0.5)
+        yy = np.clip(L[:, 1], -0.999, 0.999); aa = np.maximum(H.a(yy), 1e-3)
+        s = H.surf(np.clip(L[:, 0], -aa, aa), yy)
+        L[face, 2] = L[face, 2] * (1 - wgt[face]) + s[face] * wgt[face]
+    # what the base kept inside (the mouth bag's and nostrils' remains joined to the holes' fills) out onto the form:
+    # left inside, its triangles pierce the face
+    yy = np.clip(L[:, 1], -0.98, 0.98); zm = H.zm(yy); aa = np.maximum(H.a(yy), 1e-3)
+    df = np.where(L[:, 2] > zm, H.zf(yy) - zm, zm - H.zb(yy))
+    rr = (np.abs(L[:, 0] / aa) ** H.n + np.abs((L[:, 2] - zm) / df) ** H.n) ** (1 / H.n)
+    inside = (rr < 0.93) & ~earm & (L[:, 1] > -0.9) & (L[:, 1] < 0.95)
+    L[inside, 0] /= rr[inside]; L[inside, 2] = zm[inside] + (L[inside, 2] - zm[inside]) / rr[inside]
+    # the seam where the drawing's face meets the base's cheek and jaw, smoothed (no ridge on the outline)
+    seam = (wgt > 0.01) & (wgt < 0.97) & ~earm & ~bnd
+    L = M.smooth(L, A, seam, iters=12, lam=0.5)
     return L, P, earm, wgt

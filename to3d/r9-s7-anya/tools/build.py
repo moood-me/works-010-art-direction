@@ -119,22 +119,16 @@ fore = np.array([n.endswith('ForeArm') for n in dn])
 legs = np.array([('Shin' in n or 'Foot' in n or 'Toe' in n or n.endswith('Leg')) for n in dn])
 near_wrist = np.zeros(len(P0), bool)
 for s in ('Left', 'Right'): near_wrist |= np.linalg.norm(PF - J1[I[s + 'Hand']], axis=1) < 0.07
-keep = handv | (fore & near_wrist) | (legs & (PF[:, 1] < 0.43))
+# kept of Anny: the hands with the wrists, the shins below the skirt down into the shoes (the feet are the drawing's
+# shoes, built below)
+feet = np.array([('Foot' in n or 'Toe' in n) for n in dn])
+keep = handv | (fore & near_wrist) | (legs & ~feet & (PF[:, 1] < 0.43) & (PF[:, 1] > 0.035))
 tk = keep[TRI0].all(1)
 bi = np.where(keep)[0]; remap = -np.ones(len(P0), int); remap[bi] = np.arange(len(bi))
 Bd = dict(V=PF[bi], T=remap[TRI0[tk]], SJ=SJ0[bi], SW=SW0[bi])
 nb = len(bi)
-by = Bd['V'][:, 1]
-isfoot = np.array([('Foot' in n or 'Toe' in n) for n in dn[bi]]) | (by < 0.07)
-# the shoe: the foot smoothed into one rounded form (no toes), a little fuller — the drawing's flat brown shoe
-Ab = M.adjacency(nb, [list(t_) for t_ in Bd['T']])
-fz = isfoot & (by < 0.075)
-Bd['V'] = M.smooth(Bd['V'], Ab, fz, iters=40, lam=0.5)
-nrm = M.vertex_normals(Bd['V'], Bd['T'])
-Bd['V'][isfoot] += nrm[isfoot] * 0.004
 Bd.update(paint(nb, D.COL['skin']))
-# the shoe's top edge, per vertex: below it the shader paints the shoe (a clean edge, sloping from heel to toe)
-Bd['band'] = np.where(by < 0.2, by - (0.058 - 0.2 * (Bd['V'][:, 2] + 0.0075)), -1.0)
+Bd['two'] = np.ones(nb)          # the shins' cut ends go into the shoes: their inside is skin, not a hole
 BW = np.zeros((nb, NJ))
 for q in range(4): np.add.at(BW, (np.arange(nb), Bd['SJ'][:, q]), Bd['SW'][:, q])
 Bd['W'] = BW
@@ -184,6 +178,11 @@ def arm_weights(V, T, side):
 # ---------------------------------------------------------------- the head (headfit.py)
 hl, hP, earm, fw = Hf.build(HBM)
 HT = M.triangulate(hP)
+# the face's triangles all facing out (the closed sockets and the folds of laying the face on one surface may face in)
+_c = hl[HT].mean(1); _n = np.cross(hl[HT[:, 1]] - hl[HT[:, 0]], hl[HT[:, 2]] - hl[HT[:, 0]])
+_out = _c - np.c_[np.zeros(len(_c)), _c[:, 1], np.full(len(_c), -0.1)]
+_flip = ((_n * _out).sum(1) < 0) & ~earm[HT].any(1) & (_c[:, 1] > -1.0)
+HT[_flip] = HT[_flip][:, ::-1]
 V0 = D.head_to_model(hl)
 nH = len(V0)
 hx, hy, hz = hl[:, 0], hl[:, 1], hl[:, 2]
@@ -202,7 +201,7 @@ W *= (1 - wj)[:, None]; W[:, I['Jaw']] += wj
 Hh['W'] = W
 Hh.update(paint(nH, D.COL['skin']))
 # the neck under the jaw is in the head's shadow (the drawing: the head's outline shifted down over the neck)
-neck = (hy < -0.98) | ((hy < -0.75) & (hz < 0.1) & (abs(hx) < 0.42))
+neck = (hy < -0.98) | ((hy < -0.6) & (hz < -0.15))
 Hh['col'][neck] = D.shade(D.COL['skin'])
 # the face's drawn layer: front projection in head-local units (web/face.js draws in the same box)
 FX0, FX1, FY0, FY1 = -1.0, 1.0, -1.3, 1.0
@@ -211,7 +210,25 @@ Hh['tex'] = ((hz > D.HEAD.zm(np.clip(hy, -1, 1)) - 0.1) & (hy > -1.05) & ~earm).
 # the face's shade by a smoothed head (one clean shade on the far side, not every bump of the base)
 Ah = M.adjacency(nH, hP)
 hs = M.smooth(V0, Ah, np.ones(nH, bool), iters=60, lam=0.5)
-Hh['pn'] = M.vertex_normals(hs, HT); Hh['pw'] = 1 - smooth((-0.8 - hy) / 0.2)
+pn_s = M.vertex_normals(hs, HT)
+# on the face: the normal of the drawing's own plain head form (its rings, without the nose and lips), so the shade's
+# edge is the drawing's clean crescent, not the base's bumps
+def form_normal(L):
+    e = 1e-3; y = np.clip(L[:, 1], -0.99, 0.99)
+    def p(t, yy):
+        a_ = D.HEAD.a(yy); zm = D.HEAD.zm(yy); df = D.HEAD.zf(yy) - zm; db = zm - D.HEAD.zb(yy); n_ = D.HEAD.n
+        s_, c_ = np.sin(t), np.cos(t)
+        return np.stack([a_ * np.sign(s_) * np.abs(s_) ** (2 / n_), yy, zm + np.where(c_ > 0, df, db) * np.sign(c_) * np.abs(c_) ** (2 / n_)], 1)
+    zm = D.HEAD.zm(y); a_ = np.maximum(D.HEAD.a(y), 1e-3)
+    t = np.arctan2(L[:, 0] / a_, (L[:, 2] - zm) / np.maximum(D.HEAD.zf(y) - zm, 1e-3))
+    n_ = np.cross(p(t + e, y) - p(t - e, y), p(t, y + e) - p(t, y - e))
+    n_ /= np.linalg.norm(n_, axis=1, keepdims=True) + 1e-12
+    return n_ * np.sign((n_ * (L - np.c_[np.zeros(len(L)), L[:, 1], zm])).sum(1, keepdims=True) + 1e-9)
+fn = form_normal(hl)
+wf = smooth((hy + 0.95) / 0.1) * smooth((hz - D.HEAD.zm(np.clip(hy, -1, 1)) + 0.35) / 0.3) * ~earm
+pn_h = pn_s * (1 - wf[:, None]) + fn * wf[:, None]
+Hh['pn'] = pn_h / (np.linalg.norm(pn_h, axis=1, keepdims=True) + 1e-9); Hh['pw'] = 1 - smooth((-0.8 - hy) / 0.2)
+Hh['two'] = np.ones(nH)
 Hh['ow'] = np.ones(nH)
 
 
@@ -324,6 +341,29 @@ for s, side in (('Left', 'l'), ('Right', 'r')):
     V_, T_ = S.tube(path, rr, cols=28)
     SLEEVES.append(piece(V_, T_, over_s['c'], arm_weights(V_, T_, s), side=s))
 
+# the shoes: the drawing's own (body.py Figure.shoe): a tube heel → instep → toe, radii 0.95 / 1.05 / 0.75 of r,
+# turned out by `out`, the sole flat on the floor; on the foot and the toes
+SHOES = []
+sh_ = SPEC['shoes']
+for s, side in (('Left', 'l'), ('Right', 'r')):
+    sg = 1 if side == 'l' else -1
+    an = D.J['an' + side]; Ls, r = sh_['len'], sh_['r']; o_ = np.radians(sh_.get('out', 10))
+    fwd = np.array([sg * np.sin(o_), 0, np.cos(o_)])
+    heel = an + [0, -r * 0.6, 0] - fwd * Ls * 0.18
+    mid = an + fwd * Ls * 0.25 + [0, -r * 0.3, 0]
+    toe = an + [0, -r * 0.8, 0] + fwd * Ls * 0.78
+    ctrl = np.array([heel - fwd * r * 0.5, heel, mid, toe, toe + fwd * r * 0.45])
+    path = np.vstack([np.linspace(p, q_, 8, endpoint=False) for p, q_ in zip(ctrl[:-1], ctrl[1:])] + [ctrl[-1:]])
+    d_ = np.r_[0, np.cumsum(np.linalg.norm(np.diff(path, axis=0), axis=1))]; dc = np.r_[0, np.cumsum(np.linalg.norm(np.diff(ctrl, axis=0), axis=1))]
+    rad = np.interp(d_, dc, [0.3 * r, 0.95 * r, 1.05 * r, 0.75 * r, 0.25 * r])
+    rad = np.sqrt(np.maximum(rad ** 2, 0.0))
+    V_, T_ = S.tube(path * CM, rad * CM, cols=28)
+    V_[:, 1] = np.maximum(V_[:, 1], 0.0)                     # the sole flat on the floor
+    W_ = np.zeros((len(V_), NJ))
+    u_ = smooth((((V_ / CM) - an) @ fwd - Ls * 0.35) / (Ls * 0.25))
+    W_[:, I[s + 'Foot']] = 1 - u_; W_[:, I[s + 'ToeBase']] = u_
+    SHOES.append(piece(V_, T_, sh_['c'], smooth_w(W_, T_, len(V_), 6), side=s))
+
 # ---------------------------------------------------------------- the hair (hair3d.py)
 import hair3d  # noqa: E402
 HAIR = hair3d.build(dict(head=(V0, HT), earm=earm, J1=J1, I=I, NJ=NJ, smooth_w=smooth_w,
@@ -361,17 +401,25 @@ def fringe_shadow():
     from geo import View, shift, polys
     from head import Head
     from hair import Hair
+    K = 150.0           # the drawing works in pixels (its small round-offs are in px): draw at 150 px a unit
     h0 = Head(D.anya.FACE); h0.place((0, 0, 0), 2.0)
-    v = View(yaw=0, pitch=0, s=1.0)
+    v = View(yaw=0, pitch=0, s=K)
     Fh, _, _ = Hair(h0, D.anya.HAIRDEF).build(v)
     sk = h0.skull(v)
-    g = shift(Fh, 0.015, 0.045).intersection(sk).difference(Fh.buffer(-0.004))
-    return [[[float(x), float(-y)] for x, y in np.asarray(p.exterior.coords)] for p in polys(g) if p.area > 1e-4]
+    g = shift(Fh, 0.015 * K, 0.045 * K).intersection(sk).difference(Fh)
+    g = g.buffer(-0.012 * K).buffer(0.012 * K)      # only the shadow's body under the locks' tips, not slivers along their edges
+    out = []
+    for p in polys(g):
+        if p.area < 1e-4 * K * K: continue
+        if p.centroid.y > 0.2 * K: continue      # (screen y down) only on the forehead
+        for ring in [p.exterior] + list(p.interiors):
+            out.append([[float(x) / K, float(-y) / K] for x, y in np.asarray(ring.coords)])
+    return out
 
 
 # ---------------------------------------------------------------- one pack
 pieces = [('body', Bd), ('head', Hh), ('skin', SKIN), ('skirt', SKIRT), ('top', TOP), ('cardigan', OVER)] + \
-         [('sleeve' + p_['side'], p_) for p_ in SLEEVES] + [('hair', HAIR)] + [('lines', dict(
+         [('sleeve' + p_['side'], p_) for p_ in SLEEVES] + [('shoe' + p_['side'], p_) for p_ in SHOES] + [('hair', HAIR)] + [('lines', dict(
              V=np.vstack([l_['V'] for l_ in LINES]), T=np.vstack([l_['T'] + o for l_, o in zip(LINES, np.cumsum([0] + [len(l_['V']) for l_ in LINES])[:-1])]),
              W=np.vstack([l_['W'] for l_ in LINES]), col=np.vstack([l_['col'] for l_ in LINES]), shd=np.vstack([l_['shd'] for l_ in LINES]),
              lin=np.vstack([l_['lin'] for l_ in LINES]), ow=np.concatenate([l_['ow'] for l_ in LINES])))]
@@ -383,9 +431,11 @@ for name, p in pieces:
     cols.append(p['col']); shds.append(p['shd']); lins.append(p['lin'])
     ows.append(p.get('ow', np.ones(n))); bands.append(p.get('band', -np.ones(n))); uvs.append(p.get('uv', np.zeros((n, 2))))
     texs.append(p.get('tex', np.zeros(n))); pns.append(p.get('pn', np.zeros((n, 3)))); pws.append(p.get('pw', np.zeros(n)))
-    two.append(np.full(n, 1 if name in ('lines',) else 0)); obs.append(p.get('ob', np.zeros(n)))
+    two.append(p.get('two', np.full(n, 1 if name in ('lines',) else 0))); obs.append(p.get('ob', np.zeros(n)))
     ranges[name] = [base, base + n]; tranges[name] = [tbase, tbase + len(p['T'])]; base += n; tbase += len(p['T'])
 V = np.vstack(Vs); W = np.maximum(np.vstack(Ws), 0); N = len(V)
+W /= W.sum(1, keepdims=True)
+W[W < 0.05] = 0          # no dust of tiny weights left by smoothing (it costs the skinning's centres much, gives nothing)
 order = np.argsort(-W, 1)[:, :4]
 SJ = order.astype(np.uint8); SWt = np.take_along_axis(W, order, 1); SWt /= SWt.sum(1, keepdims=True)
 pj = SJ[:, 0].astype(np.float32)

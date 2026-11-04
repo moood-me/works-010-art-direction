@@ -13,7 +13,7 @@ import face
 
 R = 12.5                                  # the new ball (head units)
 OPEN_C = np.array([18.5, -5.0])           # the drawn opening's middle (y up)
-ZC = 19.5                                 # the ball's centre depth: its front at ~32, the drawn face there
+ZC = 21.5                                 # the ball's centre depth: its front at ~34, near the drawn face (the eye reads in profile)
 # the rings of the left eye (seed vertex → which ring), from the margin outward, and the lining inward
 OUTER = [381, 657, 385, 687, 597, 390]
 OUTER_W = [1, 1, 0, 0, 0, 0]          # the margin and the next ring placed; the rest relaxed
@@ -63,20 +63,19 @@ def from_sph(r, a, t, c, F):
     return c + L @ F
 
 
-def fit_eyes(V, P, eyes, mirror_ix):
+def fit_eyes(V, P, eyes, mirror_ix, V0):
     """V: the head (already shaped); eyes: {'L': ball vertices, 'R': …} as shaped. Returns new V and the balls."""
     Q = Quads(P)
     O = polar_interp(opening())
     V = V.copy(); balls = {}
+    RINGS = {s: ring(Q, V0, s) for s in OUTER + LINING}          # found on the base as it came
     for side, key in ((1, 'L'), (-1, 'R')):
         c1, R1 = ball_fit(eyes[key])
         ax1 = np.array([0.0, -0.25, 1.0]); ax1[0] = side * -0.15     # the base eye looks a little down and in
         F1 = frame(ax1)
         c2 = np.array([side * OPEN_C[0], OPEN_C[1], ZC]); F2 = frame(np.array([0.0, 0, 1]))
         S = lambda I: I if side == 1 else mirror_ix[I]
-        rings = [S(ring(Q, V if side == 1 else V * [-1, 1, 1], s) if side == 1 else ring(Q, V, s)) for s in OUTER]
-        lin = [S(ring(Q, V, s)) for s in LINING] if side == 1 else [mirror_ix[ring(Q, V, s)] for s in LINING]
-        if side == -1: rings = [mirror_ix[ring(Q, V, s)] for s in OUTER]
+        rings = [S(RINGS[s]) for s in OUTER]; lin = [S(RINGS[s]) for s in LINING]
         margin = rings[0]
         r_m, a_m, t_m = sph(V[margin], c1, F1)
         # α_old(θ) of the margin, α_new(θ) of the drawn opening on the new ball

@@ -1,0 +1,238 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "vera-arcane",
+ "label": {
+  "ru": "Вера (Arcane)"
+ },
+ "topology": "vera-arcane",
+ "skeleton": "soma",
+ "source": "to3d/r7-s4-vera/tools/build.py",
+ "floor": -0.003359932219609618,
+ "materials": [
+  "skin",
+  "lips",
+  "hair",
+  "coat",
+  "lapel",
+  "shirt",
+  "tights",
+  "shoe",
+  "sclera",
+  "iris",
+  "frame",
+  "brooch",
+  "mouth",
+  "lens"
+ ],
+ "ranges": {
+  "body": [
+   0,
+   10676
+  ],
+  "head": [
+   10676,
+   23626
+  ],
+  "scleraL": [
+   23626,
+   24172
+  ],
+  "irisL": [
+   24172,
+   24572
+  ],
+  "scleraR": [
+   24572,
+   25118
+  ],
+  "irisR": [
+   25118,
+   25518
+  ],
+  "hair": [
+   25518,
+   40678
+  ],
+  "shoes": [
+   40678,
+   42216
+  ],
+  "skirt": [
+   42216,
+   44616
+  ],
+  "glasses": [
+   44616,
+   45792
+  ],
+  "lens": [
+   45792,
+   45922
+  ]
+ },
+ "K": 0.00097,
+ "FEET": 1656.0,
+ "ZOFF": 0.09095359140530489,
+ "face": {
+  "x0": -80.0,
+  "x1": 80.0,
+  "y0": -110.0,
+  "y1": 130.0
+ },
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    82129,
+    3
+   ],
+   "offset": 551064
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    45922,
+    4
+   ],
+   "offset": 1536616
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    45922,
+    4
+   ],
+   "offset": 1720304
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    231
+   ],
+   "offset": 2455056
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    308
+   ],
+   "offset": 2455984
+  },
+  "col": {
+   "dtype": "uint8",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 2457216
+  },
+  "shd": {
+   "dtype": "uint8",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 2594984
+  },
+  "glw": {
+   "dtype": "uint8",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 2732752
+  },
+  "rim": {
+   "dtype": "uint8",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 2870520
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    45922
+   ],
+   "offset": 3008288
+  },
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    45922,
+    2
+   ],
+   "offset": 3054216
+  },
+  "tw": {
+   "dtype": "uint8",
+   "shape": [
+    45922
+   ],
+   "offset": 3421592
+  },
+  "pn": {
+   "dtype": "float32",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 3467520
+  },
+  "pw": {
+   "dtype": "uint8",
+   "shape": [
+    45922
+   ],
+   "offset": 4018584
+  },
+  "two": {
+   "dtype": "uint8",
+   "shape": [
+    45922
+   ],
+   "offset": 4064512
+  },
+  "hs": {
+   "dtype": "float32",
+   "shape": [
+    45922
+   ],
+   "offset": 4110440
+  },
+  "hg": {
+   "dtype": "uint8",
+   "shape": [
+    45922
+   ],
+   "offset": 4294128
+  },
+  "rp": {
+   "dtype": "float32",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 4340056
+  },
+  "dr": {
+   "dtype": "float32",
+   "shape": [
+    45922,
+    3
+   ],
+   "offset": 4891120
+  }
+ },
+ "bin": "vera.bin"
+}

@@ -273,12 +273,15 @@ MOODS = {
                                              armL=(-26, 10, -14, -84), armR=(-26, 10, -14, -84)), arms=1.0),
     'sad': dict(label='грустит', pose=dict(lean=14, hunch=32, neck=12, nod=26, slump=3, shrug=-1.5,
                                            armL=(3, 3, 2, 0), armR=(3, 3, 2, 0)), arms=1.0),
-    'glad': dict(label='радуется', pose=dict(lean=-3, hunch=12, neck=4, nod=-16, slump=1, shrug=1,
-                                             armL=(16, 22, 40, 10), armR=(20, 24, 46, 10)), arms=1.0),
-    'surprised': dict(label='удивлён', pose=dict(lean=-9, hunch=10, neck=-2, nod=-12, slump=0, shrug=2,
-                                                 armL=(34, 22, 98, 6), armR=(38, 20, 104, 6)), arms=1.0),
-    'angry': dict(label='сердится', pose=dict(lean=12, hunch=18, neck=22, nod=-24, slump=2, shrug=2.4,
-                                              armL=(-30, 18, -8, 4), armR=(-26, 18, -6, 4)), arms=1.0),
+    # glad: he straightens a little, the chin goes up, the hands meet on the chest — «ну надо же!»
+    'glad': dict(label='радуется', pose=dict(lean=-5, hunch=10, neck=2, nod=-22, slump=.5, shrug=.6,
+                                             armL=(12, 6, 96, -58), armR=(14, 6, 100, -62)), arms=1.0),
+    # surprised: he draws back, the head goes back, both hands fly up before the chest, palms out
+    'surprised': dict(label='удивлён', pose=dict(lean=-11, hunch=8, neck=-4, nod=-12, slump=-1, shrug=2.4,
+                                                 armL=(-6, 16, 142, 0), armR=(-4, 16, 146, 0)), arms=1.0),
+    # angry: the body forward, the head pushed out, a fist shaken out ahead, the watch hand behind the back
+    'angry': dict(label='сердится', pose=dict(lean=12, hunch=16, neck=22, nod=-22, slump=2, shrug=2.4,
+                                              armL=(52, 6, 70, 0), armR=(-26, 10, -14, -84)), arms=1.0),
     'plain': dict(label='просто стоит', pose=dict(lean=4, hunch=22, neck=12, nod=-6, slump=2), arms=0.0),
 }
 LAYER_TRUNK = ['Spine1', 'Spine2', 'Chest', 'Neck1', 'Neck2', 'Head']

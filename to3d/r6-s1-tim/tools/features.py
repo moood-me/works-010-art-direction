@@ -7,40 +7,44 @@ import numpy as np, igl
 from quads import Quads
 from eyefit import ring, OUTER, LINING
 
-NOSE_DY, NOSE_S = -7.0, 0.8
+NOSE_DY, NOSE_S = -6.5, 0.74
 MOUTH_Y = -36.5
 MOUTH_RINGS = [767, 770, 774, 1851, 1836, 1822, 798, 1798, 1812, 1813, 1815, 1816]
 EAR_S = 0.72
 
 
-def place_features(V, T, P, mirror_ix, outer):
+def place_features(V, T, P, mirror_ix, outer, ear_res, ear_band, V0):
+    """V0: the base as it came (its rings are found on it)"""
     Q = Quads(P)
     tgt = {}
     held = set()
     for s in OUTER + LINING:
-        L = ring(Q, V, s); held |= set(L.tolist()) | set(mirror_ix[L].tolist())
+        L = ring(Q, V0, s); held |= set(L.tolist()) | set(mirror_ix[L].tolist())
     mouth = set()
     for s in MOUTH_RINGS:
-        mouth |= set(ring(Q, V, s).tolist())
-    line = ring(Q, V, 767)
+        mouth |= set(ring(Q, V0, s).tolist())
+    line = ring(Q, V0, 767)
     dy_m = MOUTH_Y - V[line, 1].mean()
-    inside = np.where(~outer & (V[:, 1] < -12) & (V[:, 1] > -45) & (np.abs(V[:, 0]) < 20) & (V[:, 2] > 0))[0]
-    for i in set(mouth) | set(inside.tolist()): tgt[i] = np.array([0, dy_m, 0.5])
+    outer = outer & outer[mirror_ix]
+    ear_res = np.minimum(ear_res, ear_res[mirror_ix]); ear_band = ear_band & ear_band[mirror_ix]
+    inside = np.where(~outer & (V0[:, 1] < -12) & (V0[:, 1] > -45) & (np.abs(V0[:, 0]) < 14) & (V0[:, 2] > 0))[0]
+    for i in set(mouth): tgt[i] = np.array([0, dy_m, 0.5])
     tip = np.argmax(np.where(np.abs(V[:, 0]) < 1, V[:, 2], -1e9))
     d = np.linalg.norm(V - V[tip], axis=1)
-    nose = np.where((d < 8) & (V[:, 1] > V[tip, 1] - 7))[0]
-    root = V[tip] + [0, 0, -9]
+    nose = np.where(d < 11)[0]
+    root = V[tip] + [0, 1, -11]
     for i in nose: tgt[i] = (root + (V[i] - root) * NOSE_S + [0, NOSE_DY, 0]) - V[i]
-    # the ears: their outer part scaled about the root
+    # the ears: their rims (ear_res > 1.2: standing out of the skull's smooth form, found on the base) scaled about
+    # the ear's root; the skin round the root held
+    from scipy.spatial import cKDTree
     for sgn in (1, -1):
-        x = sgn * V[:, 0]
-        m = np.where((x > 37) & (V[:, 1] > -26) & (V[:, 1] < 20) & (V[:, 2] < 14) & (V[:, 2] > -22))[0]
-        c = np.array([sgn * 34, V[m, 1].mean(), V[m, 2].mean()])
+        m = np.where((ear_res > 0.4) & (np.sign(V[:, 0]) == sgn))[0]
+        rootm = np.where((np.abs(ear_res) < 0.25) & (np.sign(V[:, 0]) == sgn) & (ear_band))[0]
+        dd, _ = cKDTree(V[m]).query(V[rootm]); rootm = rootm[(dd < 6) & (dd > 1.5)]
+        c = V[rootm].mean(0)
         for i in m: tgt[i] = (c + (V[i] - c) * EAR_S) - V[i]
+        for i in rootm: tgt[i] = np.zeros(3)
     hold = list(held) + list(np.where(V[:, 1] > 16)[0]) + list(np.where(V[:, 1] < -50)[0])
-    for sgn in (1, -1):     # round the ears' roots
-        x = sgn * V[:, 0]
-        hold += list(np.where((x > 28) & (x < 32) & (V[:, 1] > -30) & (V[:, 1] < 24))[0])
     hold += list(np.where((V[:, 2] < -10))[0])
     for i in hold:
         if i not in tgt: tgt[i] = np.zeros(3)

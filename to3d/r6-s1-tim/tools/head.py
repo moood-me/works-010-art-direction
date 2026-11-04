@@ -48,20 +48,63 @@ def shape_map(V, outer, keep):
     return lambda X: fD(unit(X - CEN)) / fB(unit(X - CEN)), fB, fD
 
 
-if __name__ == '__main__':
-    B = load(); V, T, Q = B['head']
-    outer = np.load(f'{CACHE}/outer.npy')
-    ear = (np.abs(V[:, 0]) > 30) & (V[:, 1] > -22) & (V[:, 1] < 18) & (V[:, 2] < 10)
-    neck = V[:, 1] < -44
-    k, fB, fD = shape_map(V, outer, ~ear & ~neck)
-    V1 = CEN + (V - CEN) * k(V)[:, None]
-    np.savez(f'{CACHE}/head1.npz', V=V1)
-    from look import views
-    DV, DT = head_mesh(); DV = np.c_[DV[:, 0], -DV[:, 1], DV[:, 2]]
-    views([(V1, T, [0.85, 0.85, 0.85])], overlay=(DV, DT), path=f'{CACHE}/head1.png')
 
 
 def mirror_index(V):
     from scipy.spatial import cKDTree
     d, i = cKDTree(V).query(V * [-1, 1, 1])
     return i
+
+
+
+def outer_surface(V, T, extra):
+    """which vertices are on the outer surface: the first hit of a ray from outside toward the centre (the eyeballs
+    in `extra` close the sockets)"""
+    AV = np.r_[V] if extra is None else np.r_[V, extra[0]]
+    AT = T if extra is None else np.r_[T, extra[1] + len(V)]
+    dirs = unit(V - CEN); out = np.zeros(len(V), bool)
+    for i, (v, d) in enumerate(zip(V, dirs)):
+        h = igl.ray_mesh_intersect(CEN + d * 300, -d, AV, AT, True)
+        if h: out[i] = np.linalg.norm(CEN + d * (300 - h[0][1]) - v) < 0.6
+    return out
+
+
+def ear_residual(V, outer):
+    """how far each vertex stands out of the skull's smooth form, in a band where the ears are (0 elsewhere)"""
+    band = (np.abs(V[:, 0]) > 22) & (V[:, 1] > -30) & (V[:, 1] < 25) & (V[:, 2] < 15) & (V[:, 2] > -25)
+    D = unit(V - CEN); R = np.linalg.norm(V - CEN, axis=1)
+    sel = outer & ~band & (V[:, 1] > -44)
+    f = RBFInterpolator(D[sel], R[sel], kernel='thin_plate_spline', smoothing=40.0, degree=1)
+    return (R - f(D)) * band
+
+
+def build():
+    from eyefit import fit_eyes
+    from features import place_features
+    B = load(); V, T, P = B['head']
+    EL, ET, _ = B['eyeL']; ER = B['eyeR'][0]
+    mi = mirror_index(V)
+    outer = outer_surface(V, T, (np.r_[EL, ER], np.r_[ET, ET + len(EL)]))
+    outer = outer & outer[mi]
+    ear = (np.abs(V[:, 0]) > 30) & (V[:, 1] > -22) & (V[:, 1] < 18) & (V[:, 2] < 10)
+    neck = V[:, 1] < -44
+    k, _, _ = shape_map(V, outer, ~ear & ~neck)
+    V1 = CEN + (V - CEN) * k(V)[:, None]
+    eyes = {s: CEN + (B['eye' + s][0] - CEN) * k(B['eye' + s][0])[:, None] for s in 'LR'}
+    V2, balls = fit_eyes(V1, P, eyes, mi, V)
+    er = ear_residual(V, outer)
+    V3, info = place_features(V2, T, P, mi, outer, er, er != 0, V)
+    np.savez(f'{CACHE}/head_fit.npz', base=V, shaped=V1, eyes=V2, final=V3, T=T,
+             balls=np.array([np.r_[balls['L'][0], balls['L'][1]], np.r_[balls['R'][0], balls['R'][1]]]), mirror=mi, outer=outer)
+    return V3, T, P, balls
+
+
+if __name__ == '__main__':
+    V3, T, P, balls = build()
+    from look import views
+    from sphere import sphere
+    from drawing import head_mesh
+    ms = [(V3, T, [0.85, 0.85, 0.85])] + [(*sphere(*balls[s]), [0.95, 0.95, 1.0]) for s in 'LR']
+    DV, DT = head_mesh(); DV = np.c_[DV[:, 0], -DV[:, 1], DV[:, 2]]
+    views(ms, overlay=(DV, DT), path=f'{CACHE}/head_fit.png')
+    views(ms, yaws=(0, -0.62, -1.5708), size=500, box=(-50, 50, -55, 45), path=f'{CACHE}/head_fit_z.png')

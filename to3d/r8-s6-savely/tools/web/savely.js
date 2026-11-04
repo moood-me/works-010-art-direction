@@ -240,8 +240,10 @@ const VS_FIG = `varying float vDist; void main(){ vec4 w = modelMatrix * vec4(po
 const FS_INK = `uniform vec3 ink; uniform vec3 fogCol; uniform float fogNear; uniform float fogFar; varying float vDist;
 void main(){ float f = clamp((vDist - fogNear) / (fogFar - fogNear), 0., 1.); gl_FragColor = vec4(mix(ink, fogCol, f * .55), 1.); }`;
 const FS_MASK = `varying float vDist; void main(){ gl_FragColor = vec4(1., vDist, 0., 1.); }`;
-const VS_SHADED = `varying vec3 vN; varying float vDist; void main(){ vN = normalize(mat3(modelMatrix) * normal); vec4 mv = viewMatrix * modelMatrix * vec4(position,1.); vDist = -mv.z; gl_Position = projectionMatrix * mv; }`;
-const FS_SHADED = `uniform vec3 base; varying vec3 vN; varying float vDist; void main(){ vec3 n = normalize(vN); float l = .45 + .45 * max(dot(n, normalize(vec3(.4,.8,.6))), 0.) + .12 * max(dot(n, normalize(vec3(-.6,.2,-.4))), 0.); gl_FragColor = vec4(base * l, 1.); }`;
+const VS_SHADED = `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`;
+// the construction seen as it is: every hull flat-shaded by its own faces
+const FS_SHADED = `uniform vec3 base; uniform vec3 camPos; varying vec3 vW; void main(){ vec3 n = normalize(cross(dFdx(vW), dFdy(vW))); if (dot(n, camPos - vW) < 0.) n = -n;
+  float l = .42 + .5 * max(dot(n, normalize(vec3(.5,.75,.6))), 0.) + .14 * max(dot(n, normalize(vec3(-.6,.2,-.5))), 0.); gl_FragColor = vec4(base * l, 1.); }`;
 // the figure's shadow from the lamp, flattened onto the ground
 const VS_SHADOW = `uniform vec3 lamp; varying float vK; void main(){ vec4 w = modelMatrix * vec4(position,1.); float h = max(lamp.y - w.y, .05); float s = lamp.y / h; vec3 g = lamp + (w.xyz - lamp) * s; g.y = .002; vK = clamp(1. - (s - 1.) * .18, 0., 1.); gl_Position = projectionMatrix * viewMatrix * vec4(g, 1.); }`;
 const FS_SHADOW = `uniform float alpha; varying float vK; void main(){ gl_FragColor = vec4(0.,0.,0., alpha * (.35 + .65 * vK)); }`;
@@ -251,7 +253,7 @@ const FS_SKY = `uniform vec3 top; uniform vec3 hor; uniform vec3 fog; uniform ve
 float h(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
 void main(){ vec3 d = normalize(vW - cam); float e = d.y;
   vec3 c = mix(hor, top, smoothstep(-.02, .42, e));
-  c = mix(c, fog, .35 * exp(-abs(e) * 14.));
+  c = mix(c, fog, .22 * exp(-abs(e) * 14.));
   // a few dim stars high up
   vec2 g = vec2(atan(d.z, d.x) * 90., e * 90.); vec2 cell = floor(g); vec2 f = fract(g) - .5;
   float s = step(.985, h(cell)) * smoothstep(.12, 0., length(f)) * smoothstep(.2, .5, e);
@@ -262,7 +264,7 @@ const FS_GROUND = `uniform vec3 ground; uniform vec3 fog; uniform vec3 warm; uni
 void main(){ float d = length(vW.xz - cam.xz);
   vec3 c = ground;
   float r = length(vW.xz - lamp.xz);
-  c += warm * pool * (.28 * exp(-r * r / 2.6) + .07 * exp(-r * r / 22.));
+  c += warm * pool * (.2 * exp(-r * r / 2.6) + .04 * exp(-r * r / 22.));
   c = mix(c, fog, smoothstep(6., 70., d) * .8);
   gl_FragColor = vec4(c, 1.); }`;
 const VS_BAND = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position,1.); }`;
@@ -274,7 +276,7 @@ const FS_COMP = `precision highp float;
 uniform sampler2D tScene; uniform sampler2D tFig; uniform vec2 res;
 uniform vec2 lampPx; uniform float useLampDir; uniform vec2 lightDir; uniform float rimPx; uniform vec3 rimCol; uniform float rimK;
 uniform vec4 glow[4]; uniform vec3 glowCol[4]; uniform float glowDepth[4]; uniform float glowBehind[4]; uniform int nGlow;
-uniform float vign; uniform float grain; uniform float seed;
+uniform float vign; uniform float grain; uniform float seed; uniform vec3 contact; uniform float ss;
 varying vec2 vUv;
 float m(vec2 px){ return texture2D(tFig, px / res).r; }
 float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233)) + seed) * 43758.5453); }
@@ -283,14 +285,12 @@ void main(){
   vec3 c = texture2D(tScene, vUv).rgb;
   vec4 F = texture2D(tFig, vUv);
   float mask = F.r;
+  if (contact.z > 0.) { vec2 e = (px - contact.xy) / vec2(contact.z, contact.z * .12); float a = .45 * (1. - smoothstep(.8, 1.05, length(e))); c = mix(c, vec3(0.), a * (1. - mask)); }
   // the rim: the figure minus itself moved away from the light (the drawing's own way), softened over three steps
-  vec2 dir = useLampDir > .5 ? normalize(lampPx - px + vec2(1e-4)) : normalize(lightDir);
+  vec2 dir = useLampDir > .5 ? normalize(lampPx - px + vec2(1e-4)) : lightDir;
   if (mask > 0.) {
-    float o = 0.;
-    o += 1. - m(px + dir * rimPx * .45);
-    o += 1. - m(px + dir * rimPx * .8);
-    o += 1. - m(px + dir * rimPx * 1.15);
-    float rim = mask * clamp(o / 3., 0., 1.);
+    // a pixel is on the rim when the figure is not there a rim's width toward the light (bilinear: soft, not jagged)
+    float rim = mask * (1. - m(px + dir * rimPx));
     c = mix(c, rimCol, clamp(rim * rimK, 0., 1.));
   }
   // glows: the lamp's behind the figure, the watch's and the glint's in front of it (unless the body hides them)
@@ -307,7 +307,7 @@ void main(){
   // vignette and grain
   vec2 q = (vUv - .5) / .75; float dv = length(q);
   c *= 1. - vign * clamp((dv - .55) / .45, 0., 1.);
-  float g = h(floor(px)) * .6 + h(floor(px * .5) + 7.) * .4;
+  vec2 gp = floor(px / ss); float g = h(gp) * .6 + h(floor(gp * .5) + 7.) * .4;
   c += (g - .5) * grain;
   gl_FragColor = vec4(c, 1.);
 }`;
@@ -350,9 +350,9 @@ export class Stage {
     g.setIndex(new THREE.BufferAttribute(data.body.triangles, 1));
     this.inkMat = new THREE.ShaderMaterial({ vertexShader: VS_FIG, fragmentShader: FS_INK, uniforms: { ink: { value: col(P.ink) }, fogCol: { value: col(P.fog) }, fogNear: { value: 8 }, fogFar: { value: 60 } } });
     this.maskMat = new THREE.ShaderMaterial({ vertexShader: VS_FIG, fragmentShader: FS_MASK });
-    this.shadedMat = new THREE.ShaderMaterial({ vertexShader: VS_SHADED, fragmentShader: FS_SHADED, uniforms: { base: { value: col('#b9b3ad') } } });
+    this.shadedMat = new THREE.ShaderMaterial({ vertexShader: VS_SHADED, fragmentShader: FS_SHADED, uniforms: { base: { value: col('#b9b3ad') }, camPos: { value: new THREE.Vector3() } } });
     this.fig = new THREE.Mesh(g, this.inkMat); this.fig.frustumCulled = false;
-    this.shadowMat = new THREE.ShaderMaterial({ vertexShader: VS_SHADOW, fragmentShader: FS_SHADOW, uniforms: { lamp: { value: new THREE.Vector3() }, alpha: { value: .5 } }, transparent: true, depthWrite: false,
+    this.shadowMat = new THREE.ShaderMaterial({ vertexShader: VS_SHADOW, fragmentShader: FS_SHADOW, uniforms: { lamp: { value: new THREE.Vector3() }, alpha: { value: .42 } }, transparent: true, depthWrite: false,
       stencilWrite: true, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc, stencilZPass: THREE.ReplaceStencilOp });
     this.shadow = new THREE.Mesh(g, this.shadowMat); this.shadow.frustumCulled = false; this.shadow.renderOrder = 1;
     // --- the signs
@@ -384,11 +384,13 @@ export class Stage {
     // the street lamp: a dark post, an arm, a head with a warm bulb
     this.lampG = new THREE.Group();
     const inkM = new THREE.MeshBasicMaterial({ color: col(P.ink) });
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(.03, .045, 3.0, 12), inkM); post.position.y = 1.5; this.lampG.add(post);
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(.55, .035, .035), inkM); arm.position.set(-.26, 2.98, 0); this.lampG.add(arm);
-    const head = new THREE.Mesh(new THREE.CylinderGeometry(.06, .16, .09, 20), inkM); head.position.set(-.5, 2.93, 0); this.lampG.add(head);
-    const bulb = new THREE.Mesh(new THREE.SphereGeometry(.1, 20, 10), new THREE.MeshBasicMaterial({ color: col(P.warm) })); bulb.scale.set(1, .42, 1); bulb.position.set(-.5, 2.875, 0); this.lampG.add(bulb);
-    this.bulbLocal = new THREE.Vector3(-.5, 2.86, 0);
+    // a street lamp 2.6 m high, as in the drawing: its head just over a man's head, close behind him
+    const LH = 2.6;
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(.03, .045, LH, 12), inkM); post.position.y = LH / 2; this.lampG.add(post);
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(.5, .035, .035), inkM); arm.position.set(-.24, LH - .02, 0); this.lampG.add(arm);
+    const head = new THREE.Mesh(new THREE.CylinderGeometry(.05, .14, .08, 20), inkM); head.position.set(-.46, LH - .07, 0); this.lampG.add(head);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(.09, 20, 10), new THREE.MeshBasicMaterial({ color: col(P.warm) })); bulb.scale.set(1, .42, 1); bulb.position.set(-.46, LH - .12, 0); this.lampG.add(bulb);
+    this.bulbLocal = new THREE.Vector3(-.46, LH - .14, 0);
     this.world.add(this.lampG);
     // --- the flat plate (the drawing's own sheet: a sky gradient, the floor band, a band of fog) for the drawing's views
     this.plate = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ vertexShader: VS_Q, depthWrite: false, depthTest: false,
@@ -407,22 +409,27 @@ export class Stage {
       tScene: { value: null }, tFig: { value: null }, res: { value: new THREE.Vector2() }, lampPx: { value: new THREE.Vector2() }, useLampDir: { value: 1 }, lightDir: { value: new THREE.Vector2(1, .3) },
       rimPx: { value: 2 }, rimCol: { value: col(P.rim) }, rimK: { value: 1 },
       glow: { value: [0, 1, 2, 3].map(() => new THREE.Vector4()) }, glowCol: { value: [0, 1, 2, 3].map(() => new THREE.Color()) }, glowDepth: { value: [0, 0, 0, 0] }, glowBehind: { value: [0, 0, 0, 0] }, nGlow: { value: 0 },
-      vign: { value: .5 }, grain: { value: .07 }, seed: { value: 0 } } });
+      vign: { value: .5 }, grain: { value: .07 }, seed: { value: 0 }, ss: { value: 2 }, contact: { value: new THREE.Vector3() } } });
     this.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.comp); this.quad.frustumCulled = false;
     this.qScene = new THREE.Scene(); this.qScene.add(this.quad); this.qCam = new THREE.Camera();
+    this.down = new THREE.ShaderMaterial({ vertexShader: VS_Q, fragmentShader: 'uniform sampler2D t; varying vec2 vUv; void main(){ gl_FragColor = vec4(texture2D(t, vUv).rgb, 1.); }', uniforms: { t: { value: null } }, depthTest: false, depthWrite: false });
+    const dq = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.down); dq.frustumCulled = false; this.dScene = new THREE.Scene(); this.dScene.add(dq);
     this.opts = {};
   }
-  resize(w, h) {
-    if (this.size[0] === w && this.size[1] === h && this.rtS) return;
-    this.size = [w, h]; this.renderer.setSize(w, h, false);
-    this.rtS?.dispose(); this.rtF?.dispose();
-    this.rtS = new THREE.WebGLRenderTarget(w, h, { samples: 4, stencilBuffer: true });
-    this.rtF = new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType, samples: 0, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+  // ss: everything is drawn ss times larger and averaged down (the rim is cut from a mask: smooth only so)
+  resize(w, h, ss = 2) {
+    if (this.size[0] === w && this.size[1] === h && this.ss === ss && this.rtS) return;
+    this.size = [w, h]; this.ss = ss; this.renderer.setSize(w, h, false);
+    this.rtS?.dispose(); this.rtF?.dispose(); this.rtC?.dispose();
+    const W = w * ss, H = h * ss;
+    this.rtS = new THREE.WebGLRenderTarget(W, H, { samples: 4, stencilBuffer: true });
+    this.rtF = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: 0, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+    this.rtC = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
   }
   // put the figure (skinned positions are already in the poser), the signs and the camera; then draw
   draw(o) {
     const P = PAL, poser = this.poser, A = this.d.poses.accents;
-    const [w, h] = this.size;
+    const ss = this.ss, w = this.size[0] * ss, h = this.size[1] * ss;
     const look = { world: true, rim: true, signs: true, grain: true, shaded: false, skeleton: false, ink: true, shadow: true, ...(o.look || {}) };
     // the figure
     this.posAttr.needsUpdate = true; if (look.shaded) this.nrmAttr.needsUpdate = true;
@@ -432,6 +439,7 @@ export class Stage {
     // signs: the watch in the left hand, its chain to the waistcoat pocket, the loupe's glint
     const wp = poser.at(A.watch.rest, A.watch.joint), pk = poser.at(A.pocket.rest, A.pocket.joint), gp = poser.at(A.glint.rest, A.glint.joint);
     const gd = poser.dirOn(A.glint.dir, 'Head');
+    for (let i = 0; i < 3; i++) gp[i] += gd[i] * .016;
     this.watch.position.set(...wp); this.watch.scale.setScalar(A.watch.r * .75);
     this.glint.position.set(...gp); this.glint.scale.setScalar(A.glint.r * .55);
     this.watch.visible = this.glint.visible = this.beads.visible = look.signs;
@@ -459,9 +467,10 @@ export class Stage {
     let cam;
     if (v.type === 'ortho') {
       // the drawing's projection: k px per cm, the feet at (cx, feetY) px, the figure turned by yaw (done by placing)
-      const k = v.k * 100;     // px per metre
+      const k = v.k * 100 * ss;     // px per metre (drawn ss times larger)
       cam = this.ortho;
-      cam.left = -v.cx / k; cam.right = (w - v.cx) / k; cam.top = v.feetY / k; cam.bottom = -(h - v.feetY) / k;
+      const cx = v.cx * ss, fy = v.feetY * ss;
+      cam.left = -cx / k; cam.right = (w - cx) / k; cam.top = fy / k; cam.bottom = -(h - fy) / k;
       cam.position.set(0, 0, 20); cam.lookAt(0, 0, 0); cam.near = -50; cam.far = 100;
       cam.updateProjectionMatrix();
     } else {
@@ -470,6 +479,7 @@ export class Stage {
       cam.position.set(...v.pos); cam.up.set(0, 1, 0); cam.lookAt(...v.target);
     }
     cam.updateMatrixWorld();
+    this.shadedMat.uniforms.camPos.value.copy(v.type === 'ortho' ? new THREE.Vector3(0, 0, 1000) : cam.position);
     // the world or the plate
     const plate = !!o.plate;
     this.world.visible = look.world && !plate;
@@ -500,9 +510,9 @@ export class Stage {
     // the rim's width: the drawing's ~0.55 cm at the figure's distance, never under 1.2 px
     const hips = getV(poser.pose.P, this.d.sk.index.Hips);
     let pxPerM;
-    if (v.type === 'ortho') pxPerM = v.k * 100;
+    if (v.type === 'ortho') pxPerM = v.k * 100 * ss;
     else pxPerM = h / (2 * Math.tan(cam.fov * Math.PI / 360) * Math.max(.5, depthOf(hips)));
-    U.rimPx.value = clamp(.0055 * pxPerM * (o.rimScale || 1), 1.2, 9);
+    U.rimPx.value = clamp(.0055 * pxPerM * (o.rimScale || 1), 1.2 * ss, 9 * ss);
     // the rim is as bright as the lamp is behind him and near
     let rimK = 1;
     if (!o.lightDir) {
@@ -513,17 +523,26 @@ export class Stage {
     }
     U.rimK.value = look.rim ? rimK : 0;
     // glows
-    const G = []; const pxPerMAt = p => v.type === 'ortho' ? v.k * 100 : h / (2 * Math.tan(cam.fov * Math.PI / 360) * Math.max(.3, depthOf(p)));
-    if (look.world && !plate && o.lampVisible !== false) G.push([lp, 2.6 * pxPerMAt(bulb.toArray()), P.warm, 1.0, depthOf(bulb.toArray()), 1]);
+    const G = []; const pxPerMAt = p => v.type === 'ortho' ? v.k * 100 * ss : h / (2 * Math.tan(cam.fov * Math.PI / 360) * Math.max(.3, depthOf(p)));
+    if (look.world && !plate && o.lampVisible !== false) G.push([lp, 2.3 * pxPerMAt(bulb.toArray()), P.warm, .85, depthOf(bulb.toArray()), 1]);
     if (look.signs) {
       G.push([toPx(wp), A.watch.r * 9 * pxPerMAt(wp), P.watch, .9 * (o.watchGlow ?? 1), depthOf(wp), 0]);
       const camDir = new THREE.Vector3().subVectors(cam.position, new THREE.Vector3(...gp)).normalize();
       const facing = v.type === 'ortho' ? gd[2] : camDir.dot(new THREE.Vector3(...gd));
-      if (facing > -.1) G.push([toPx(gp), A.glint.r * 6 * pxPerMAt(gp), P.glint, .8 * smooth(-.1, .4, facing), depthOf(gp), 0]);
+      if (facing > -.1) G.push([toPx(gp), A.glint.r * 6 * pxPerMAt(gp), P.glint, .45 * smooth(-.1, .4, facing), depthOf(gp), 0]);
     }
     U.nGlow.value = G.length;
     G.forEach(([p, rad, c, k, dpt, behind], i) => { U.glow.value[i].set(p[0], p[1], rad, k); U.glowCol.value[i].set(c); U.glowDepth.value[i] = dpt; U.glowBehind.value[i] = behind; });
-    U.vign.value = look.grain ? (o.vign ?? .5) : 0; U.grain.value = look.grain ? (o.grain ?? .07) : 0; U.seed.value = (o.seed ?? 0) % 1000;
-    r.setRenderTarget(o.target || null); r.render(this.qScene, this.qCam);
+    // the drawing's contact shadow under the feet (on the flat sheet only; in the world the lamp's shadow does it)
+    if (plate && this.fig.visible) {
+      const pts = ['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase'].map(n => toPx(getV(poser.pose.P, this.d.sk.index[n])));
+      const xs = pts.map(p => p[0]), xmin = Math.min(...xs), xmax = Math.max(...xs);
+      this.geo.computeBoundingBox(); const bb = this.geo.boundingBox, a = toPx([bb.min.x, 0, 0]), bq = toPx([bb.max.x, 0, 0]);
+      U.contact.value.set((xmin + xmax) / 2, toPx([0, 0, 0])[1] - ss, Math.abs(bq[0] - a[0]) * .55);
+    } else U.contact.value.set(0, 0, 0);
+    U.vign.value = look.grain ? (o.vign ?? .5) : 0; U.grain.value = look.grain ? (o.grain ?? .07) : 0; U.seed.value = (o.seed ?? 0) % 1000; U.ss.value = ss;
+    r.setRenderTarget(this.rtC); r.render(this.qScene, this.qCam);
+    // down to the screen: one bilinear tap in the middle of each ss×ss block (2×2: their mean)
+    this.down.uniforms.t.value = this.rtC.texture; r.setRenderTarget(o.target || null); r.render(this.dScene, this.qCam);
   }
 }

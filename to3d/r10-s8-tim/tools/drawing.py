@@ -52,6 +52,9 @@ def eye_centre(side):
     return surf(phi, P['eye_y'], -P['eye_r'] * 0.55)
 
 
+EYE_R = P['eye_r'] * 1.05          # the ball as the drawing draws it (head.eye: r = eye_r · 1.05)
+
+
 def eye_opening(side, ex=None, n=24):
     """the lid opening as a closed 3D curve on the head's surface (the drawing's `eye()` shape, laid by (phi, y))"""
     ex = ex or {}

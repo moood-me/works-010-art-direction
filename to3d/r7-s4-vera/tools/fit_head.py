@@ -45,7 +45,8 @@ cxs = EX / abs(EYE_H[0, 0] - cx)
 up = (EYD - CROWN_D) / (0.880 - ez)
 down = (CHIN_D - EYD) / (ez - 0.648)
 zs = 0.5 * (up + down) * 1.0
-EYE_SCALE = float(os.environ.get('EYE_SCALE', 1.12))      # the eye region a little larger than the head's scale
+EYE_SCALE = float(os.environ.get('EYE_SCALE', 1.24))      # the eye region larger than the head's scale (Arcane: big eyes)
+EYE_WIDE = 1.12                                            # and a little wider (an almond)
 c_e = EYE_SCALE * cxs
 EYE_ZD = face_z(EX + 2, EYD)
 eye_depth = (RS + 0.0016) * c_e + float(os.environ.get("EYE_BACK", 3.0))
@@ -69,7 +70,7 @@ def place(Pt):
 
 def eye_carry(Pt, k):
     q = Pt - EYE_H[k]
-    return EYE_D[k] + np.stack([q[:, 0], -q[:, 2], -q[:, 1]], 1) * c_e
+    return EYE_D[k] + np.stack([q[:, 0] * EYE_WIDE, -q[:, 2], -q[:, 1]], 1) * c_e
 
 
 V = place(V0)
@@ -144,8 +145,8 @@ T = dr['pts'].copy()
 lab = dr['lab']
 nk = lab == 2
 zc = -26.0
-T[nk, 0] *= 1.45
-T[nk, 2] = zc + (T[nk, 2] - zc) * 1.3
+T[nk, 0] *= 1.3
+T[nk, 2] = zc + (T[nk, 2] - zc) * 1.2
 # neck points inside the head (under the jaw) are no target
 from arc import interp
 yy = np.clip(T[:, 1], head.v0, head.v1)

@@ -16,12 +16,12 @@ import numpy as np
 import pack, mesh as M
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-R1 = os.path.join(HERE, '..', '..', 'r1-s3-anya', 'data', 'anya.json')
+FORM = '/home/user/cache/to3d-r12-s12-anya/form/anya.json'   # form.py's pack: Р1's build, reshaped to С12
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, '..', 'data')
 os.makedirs(OUT, exist_ok=True)
 smooth = lambda t: (lambda c: c * c * (3 - 2 * c))(np.clip(t, 0, 1))
 
-h, a = pack.load(R1)
+h, a = pack.load(FORM)
 P = a['positions'].reshape(-1, 3).astype(np.float64).copy()
 T = a['triangles'].reshape(-1, 3).astype(np.int64)
 pieces = {k: list(v) for k, v in h['pieces'].items()}
@@ -54,14 +54,6 @@ uv = arr['uv'][H]
 fx = (uv[:, 0] * 240 - 120)            # Р1's face layer units (eyes at x ±36, y 0; mouth y 76)
 fy = (1 - uv[:, 1]) * 260 - 130
 front = hv[:, 2] > 0.0
-# nose: forward and a touch down at its tip
-wn = np.exp(-((fx / 13) ** 2) - ((fy - 40) / 16) ** 2) * front * smooth((hv[:, 2] - 0.05) / 0.03)
-hv[:, 2] += 0.010 * wn
-hv[:, 1] -= 0.002 * wn
-# the cheeks and the lower face a little fuller and rounder (С12's three-quarter face is round under the cheek)
-wc = np.exp(-(((np.abs(fx) - 52) / 26) ** 2) - ((fy - 62) / 34) ** 2) * (hv[:, 2] > -0.02)
-nh = M.vertex_normals(hv, T[slice(*tpieces['head'])] - pieces['head'][0])
-hv += nh * (0.004 * wc)[:, None]
 P[H] = hv
 
 # ---------------------------------------------------------------- hair: С12's hair is longer, in loose waves
@@ -70,9 +62,8 @@ rows, cols = 150, 110
 v = np.linspace(0, 1, rows)[:, None]
 yy = hp[:, :, 1]
 below = smooth((1.30 - yy) / 0.12)                     # from the shoulders down: longer, waves
-hp[:, :, 1] -= 0.10 * below * smooth((1.24 - yy) / 0.2)
 th = np.linspace(0, 1, cols)[None, :]
-wave = np.sin((1.40 - yy) * 26 + th * 3.0) * 0.006 * below
+wave = np.sin((1.40 - yy) * 22 + th * 3.0) * 0.011 * below
 rad = np.stack([hp[:, :, 0], np.zeros_like(yy), hp[:, :, 2] + 0.02], -1)
 rad /= np.linalg.norm(rad, axis=-1, keepdims=True) + 1e-9
 hp += rad * wave[:, :, None]
@@ -103,23 +94,24 @@ drop |= inhead & (F1 < 0)                                         # the head's o
 # the eyes' and the mouth's regions (Р1 flattened them onto one surface; the face is drawn there, not contoured)
 mid = (E[:, 0] - hd0).clip(0, hd1 - hd0 - 1)
 ex = (arr['uv'][E[:, 0], 0] * 240 - 120); ey = (1 - arr['uv'][E[:, 0], 1]) * 260 - 130
-for cx, cy, rx, ry in [(36, -2, 30, 34), (-36, -2, 30, 34), (0, 72, 28, 10)]:
+for cx, cy, rx, ry in [(29, -2, 24, 28), (-29, -2, 24, 28), (2, 60, 24, 10)]:
     drop |= inhead & ((((ex - cx) / (rx * 1.15)) ** 2 + ((ey - cy) / (ry * 1.15)) ** 2) < 1) & (P[E[:, 0], 2] > 0.02)
+
+# where inner silhouettes (skin over skin) are drawn on the head: the nose, the chin and jaw, the ear; elsewhere on the
+# face the folds of the base mesh (lips, nostrils, cheeks) are not lines of this drawing
+inner = np.ones(N, np.uint8)
+hfx, hfy = fx, fy
+face_area = (hv[:, 2] > -0.01) & (hfy > -60) & (hfy < 100)
+nose = (np.abs(hfx) < 14) & (hfy > -10) & (hfy < 37)
+inner[H] = np.where(face_area & ~nose, 0, 1)
 
 # ---------------------------------------------------------------- the face grid on the head (front projection)
 thi = np.arange(*tpieces['head'])
 thi = thi[((T[thi] < hd1) & (T[thi] >= hd0)).all(1)]
 TH = T[thi]
-# where the face's features are on the head (Р1's face layer: eyes ±36,0; mouth 0,76)
-def at(x, y):
-    m = front & (hv[:, 2] > 0.03)
-    d = (fx - x) ** 2 + (fy - y) ** 2; d[~m] = 1e9
-    return hv[np.argmin(d)]
-eyeL, eyeR, mth = at(36, 0), at(-36, 0), at(0, 76)
-# С12's head_front units: eyes (±28, −4), mouth (2, 54): an affine from those to the head's front plane
-sx = (eyeL[0] - eyeR[0]) / 56.0
-sy = ((eyeL[1] + eyeR[1]) / 2 - mth[1]) / 58.0
-ox = 0.0; oy = (eyeL[1] + eyeR[1]) / 2 + sy * -4
+# С12's head_front units → the form's (drawing.py: × 1.03, eye line y −4 → 0) → metres
+import drawing as D
+sx = D.S12 * D.K; sy = D.S12 * D.K; ox = 0.0; oy = (D.FLOOR - 4 * D.S12) * D.K
 GX = np.arange(-84, 85, 3.0); GY = np.arange(-96, 112, 3.0)
 gx, gy = np.meshgrid(GX, GY)
 qx = ox + gx * sx; qy = oy - gy * sy
@@ -179,5 +171,5 @@ pack.save(os.path.join(OUT, 'anya.json'), header, dict(
     joints=a['joints'].astype(np.float32), frames=a['frames'].astype(np.float32),
     band=band.astype(np.float32), grp=grp, pid=pid,
     edges=E.astype(np.uint32).ravel(), edgeTris=np.where(np.c_[F0, F1] < 0, 0xFFFFFFFF, np.c_[F0, F1]).astype(np.uint32).ravel(), edgeDrop=drop.astype(np.uint8),
-    faceTri=np.where(faceTri < 0, 0xFFFFFFFF, faceTri).astype(np.uint32), faceBar=faceBar.astype(np.float32).ravel()))
+    inner=inner, faceTri=np.where(faceTri < 0, 0xFFFFFFFF, faceTri).astype(np.uint32), faceBar=faceBar.astype(np.float32).ravel()))
 print('saved', OUT, N, 'vertices', len(T), 'triangles')

@@ -45,6 +45,7 @@ function restJoints(old, sk) {
   return out;
 }
 
+const raw0 = h => { const c = new THREE.Color(); c.setStyle(h, THREE.LinearSRGBColorSpace); return c.toArray(); };
 // ———————————————————— the look: flat paint, a second tone, a shine, painted marks; an ink hull ————————————————————
 const VS = `
 attribute vec3 rp;
@@ -62,14 +63,14 @@ void main() {
 const FS = `
 uniform vec3 uColor; uniform float uShade, uShine, uPaint, uBW; uniform sampler2D uMap; uniform vec4 uMapBox;
 varying vec3 vN; varying vec3 vRp; varying vec3 vCol;
-const vec3 INK = vec3(${new THREE.Color(C.ink).toArray().map(v => v.toFixed(4)).join(',')});
+const vec3 INK = vec3(${raw0(C.ink).map(v => v.toFixed(4)).join(',')});
 float seg(vec2 p, vec2 a, vec2 b) { vec2 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0); return length(pa - ba * h); }
 vec3 srgb(vec3 c) { return c; }
 void main() {
   vec3 c = uColor * vCol;
   vec2 p = vRp.xy;
   if (uPaint > 0.5 && uPaint < 1.5 && vRp.z > 0.0) {          // the waistcoat: shirt in the V, ink lines, pocket
-    vec3 shirt = vec3(${new THREE.Color(C.shirt).toArray().map(v => v.toFixed(4)).join(',')});
+    vec3 shirt = vec3(${raw0(C.shirt).map(v => v.toFixed(4)).join(',')});
     float vl = mix(-7.0, 3.0, clamp((p.y - 106.0) / 44.0, 0.0, 1.0)), vr = mix(11.0, 3.0, clamp((p.y - 104.0) / 46.0, 0.0, 1.0));
     bool inV = p.y < 150.0 && p.x > vl && p.x < vr;
     if (p.y < 100.0 || inV) c = shirt;
@@ -96,16 +97,17 @@ void main() {
 const HVS = `
 uniform float uLine;
 void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * uLine, 1.0); }`;
-const HFS = `void main() { gl_FragColor = vec4(${new THREE.Color(C.ink).toArray().map(v => v.toFixed(4)).join(',')}, 1.0); }`;
+const HFS = `void main() { gl_FragColor = vec4(${raw0(C.ink).map(v => v.toFixed(4)).join(',')}, 1.0); }`;
 
 function paintMat(color, o = {}) {
   const m = new THREE.ShaderMaterial({
     vertexShader: VS, fragmentShader: FS, defines: o.vc ? { VCOL: 1 } : {}, vertexColors: !!o.vc,
-    uniforms: { uColor: { value: new THREE.Color(color) }, uShade: { value: o.shade ?? 0.1 }, uShine: { value: o.shine ?? 0 }, uPaint: { value: o.paint ?? 0 },
+    uniforms: { uColor: { value: raw(color) }, uShade: { value: o.shade ?? 0.1 }, uShine: { value: o.shine ?? 0 }, uPaint: { value: o.paint ?? 0 },
       uBW: { value: 0 }, uMap: { value: o.map || null }, uMapBox: { value: new THREE.Vector4(X0, X1, Y0, Y1) } },
   });
   return m;
 }
+const raw = h => { const c = new THREE.Color(); c.setStyle(h, THREE.LinearSRGBColorSpace); return c; };   // paints as written: the shaders work in the drawing's sRGB numbers
 const hullMat = line => new THREE.ShaderMaterial({ vertexShader: HVS, fragmentShader: HFS, side: THREE.BackSide, uniforms: { uLine: { value: line } } });
 
 // a part: a mesh in its paint, and its ink hull sharing the geometry
@@ -178,8 +180,9 @@ export class Savely {
     this.buildRest();
     // the body the engine retargets onto: our rest mesh, SOMA's joints at our places, Anny's frames
     this.body = makeBody({ id: 'savely-s11', label: { ru: 'Савелий Петрович (С11)' }, skeleton: sk, positions: this.restPositions, triangles: this.restTriangles,
-      joints: this.R, frames: Float64Array.from(old.frames), skin: null, parts: { names: [], weights: new Uint8Array(0) } });
-    this.retarget = makeRetarget(this.body, { corrections: { armsOff: { degrees: 15 } } });
+      joints: this.R, frames: Float64Array.from(old.frames), skin: null, parts: { names: ['head'], weights: this.restHead } });
+    // the engine's own corrections: the arms a little off the body (his belly), and out of his big head
+    this.retarget = makeRetarget(this.body, { corrections: { armsOff: { degrees: 15 }, armsOutOfHead: { margin: 0.06 } } });
     this.sample = newSample(sk.J);
   }
   J(n) { const j = this.sk.index[n]; return new V3(this.R[j * 3], this.R[j * 3 + 1], this.R[j * 3 + 2]); }
@@ -284,17 +287,20 @@ export class Savely {
     this.headC = W(XC + 1, 31, 11);
     this.head = new THREE.Group(); root.add(this.head);
     this.faceCanvas = document.createElement('canvas'); this.faceCanvas.width = (X1 - X0) * PX; this.faceCanvas.height = (Y1 - Y0) * PX;
-    this.faceTex = new THREE.CanvasTexture(this.faceCanvas); this.faceTex.colorSpace = THREE.SRGBColorSpace; this.faceTex.anisotropy = 4;
+    this.faceTex = new THREE.CanvasTexture(this.faceCanvas); this.faceTex.colorSpace = THREE.NoColorSpace; this.faceTex.anisotropy = 4;
     const hl = 2.6;
     const ball0 = new Part(this.head, paintMat(C.skin, { paint: 3, map: this.faceTex, shade: 0.09, shine: 0.012 }), hl); ball0.set(headGeometry());
     // ears (behind the tufts), flat cushions facing forward-out
     const earG = merge([-1, 1].map(sd => {
-      const o = outline([[0, -18], [16, -14], [18, 6], [8, 18], [-2, 14]].map(([u, v]) => [u * sd, v]), 6);
-      const g = pillow(o, (u, v, h) => { const a = sd * 0.5; const x = sd * 58 + u, y = -(14 + v); const z = -2 + h; return [x * Math.cos(a) + z * Math.sin(a) * 0 + (x - sd * 58) * 0, y, z + (x - sd * 58) * Math.sin(-a) * sd * 0.6]; }, { thick: 4, sink: 4, rings: 5, flip: sd > 0 });
-      return g;
+      const o = outline([[0, -18], [16, -14], [18, 6], [8, 18], [-2, 14]].map(([u, v]) => [u * sd, v]), 6), b = 0.6;
+      const n = new V3(sd * Math.sin(b), 0, Math.cos(b)), out = new V3(sd * Math.cos(b), 0, -Math.sin(b));
+      return pillow(o, (u, v, h) => new V3(sd * 57, -(14 + v), -2).addScaledVector(out, u * sd).addScaledVector(n, h).toArray(), { thick: 4, sink: 4, rings: 5, flip: sd > 0 });
     }));
     new Part(this.head, paintMat(C.skin, { shade: 0.12 }), hl).set(earG);
-    const earLines = merge([-1, 1].map(sd => sweep(through([[4, -8], [11, -4], [9, 8]].map(([u, v]) => new V3(sd * (58 + u), -(14 + v), 3.5 - Math.abs(u) * 0.35)), 6), circle(() => 1), { radial: 6 })));
+    const earLines = merge([-1, 1].map(sd => {
+      const b = 0.6, n = new V3(sd * Math.sin(b), 0, Math.cos(b)), out = new V3(sd * Math.cos(b), 0, -Math.sin(b));
+      return sweep(through([[4, -8], [11, -4], [9, 8]].map(([u, v]) => new V3(sd * 57, -(14 + v), -2).addScaledVector(out, u).addScaledVector(n, 3.2 - Math.abs(u - 8) * 0.12)), 6), circle(() => 1), { radial: 6 });
+    }));
     new Part(this.head, paintMat(C.ink, { shade: 0 }), 0).set(earLines);
     // white tufts over the ears
     const tufts = merge([-1, 1].map(sd => cloudBall([sd * 66, 6, 2], [22, 24, 21], { x: sd })));
@@ -316,7 +322,7 @@ export class Savely {
       ringG.push(sweep(pts, circle(() => 1.25), { radial: 8, capStart: false, capEnd: false }));
       const gl = ball([0, 0, 0], [3, 5, 0.6], 10); const m = new THREE.Matrix4().makeBasis(ex, ey, n).setPosition(new V3(cx2, cy2, cz).addScaledVector(ex, -4).addScaledVector(ey, 5)); gl.applyMatrix4(m); glintG.push(gl);
       const outer = new V3(cx2, cy2, cz).addScaledVector(ex, sd * 16);
-      const back = [outer, new V3(sd * 50, -7, frontZ(sd * 50, -7) + 3), new V3(sd * 62, -6, 12), new V3(sd * 64, -9, -6)];
+      const back = [outer, new V3(sd * 46, -8, frontZ(sd * 46, -8) + 2.5), new V3(sd * 56, -7, frontZ(sd * 56, -7) + 1), new V3(sd * 60, -7, 6)];
       ringG.push(sweep(through(back, 6), circle(() => 1), { radial: 6 }));
     }
     const bz = frontZ(0, -6) + 7;
@@ -328,16 +334,16 @@ export class Savely {
     const tilt = -0.42, nrm = new V3(0, Math.cos(tilt), Math.sin(tilt)), dd = 30, rr = Math.sqrt(66 ** 2 - dd * dd);
     const e1 = new V3(1, 0, 0), e2 = new V3().crossVectors(nrm, e1).normalize();
     const strap = []; for (let k = 0; k <= 96; k++) { const a = k / 96 * Math.PI * 2; const d = nrm.clone().multiplyScalar(dd).addScaledVector(e1, Math.cos(a) * rr).addScaledVector(e2, Math.sin(a) * rr); const r = headR(d.clone().normalize().toArray()) + 1.4; strap.push(d.normalize().multiplyScalar(r)); }
-    new Part(this.loupe, paintMat(C.strap, { shade: 0.1 }), hl).set(sweep(strap, (i, a) => [Math.cos(a) * 1.4, Math.sin(a) * 2.6], { radial: 10, capStart: false, capEnd: false, up: undefined }));
+    new Part(this.loupe, paintMat(C.strap, { shade: 0.1 }), hl).set(sweep(strap, (i, a) => [Math.cos(a) * 2.6, Math.sin(a) * 1.4], { radial: 10, capStart: false, capEnd: false, up: nrm }));
     {
-      const at = (() => { let best = null, bd = 1e9; for (const p of strap) { const d = Math.hypot(p.x - 16, p.z - 60) + (p.z < 0 ? 999 : 0); if (d < bd) { bd = d; best = p; } } return best; })();
-      const n = at.clone().normalize(), down = new V3(0, -1, 0).addScaledVector(n, n.y).normalize();
-      const base = at.clone().addScaledVector(n, 9).addScaledVector(down, -8);
-      const body = sweep([base, base.clone().addScaledVector(down, 17)], circle(i => i ? 12.5 : 10.5), { radial: 24, capDepth: 0.25 });
+      const at = (() => { let best = null, bd = 1e9; for (const p of strap) { if (p.z < 0 || p.y < 0) continue; const d = Math.abs(p.x - 16); if (d < bd) { bd = d; best = p; } } return best; })();
+      const n = at.clone().normalize(), down0 = new V3(0, -1, 0).addScaledVector(n, n.y).normalize();
+      const down = down0.clone().multiplyScalar(Math.cos(0.6)).addScaledVector(n, Math.sin(0.6)).normalize();   // tipped forward: the lens shows
+      const base = at.clone().addScaledVector(n, 6).addScaledVector(down0, -5);
+      const body = sweep([base, base.clone().addScaledVector(down, 15)], circle(i => i ? 11 : 9), { radial: 24, capDepth: 0.25 });
       new Part(this.loupe, paintMat(C.loupe, { shine: 0.04, shade: 0.12 }), hl).set(body);
-      const lens = ball(base.clone().addScaledVector(down, 17.6).toArray(), [1, 1, 1], 20); lens.scale(1, 1, 1);
-      const lm = new THREE.Matrix4().makeBasis(new V3().crossVectors(down, n).normalize(), n, down).multiply(new THREE.Matrix4().makeScale(12.5, 12.5, 1.5));
-      const lensG = new THREE.SphereGeometry(1, 24, 12); lensG.applyMatrix4(lm); lensG.translate(...base.clone().addScaledVector(down, 17.4).toArray());
+      const lm = new THREE.Matrix4().makeBasis(new V3().crossVectors(down, n).normalize(), n, down).multiply(new THREE.Matrix4().makeScale(10.5, 10.5, 1.5));
+      const lensG = new THREE.SphereGeometry(1, 24, 12); lensG.applyMatrix4(lm); lensG.translate(...base.clone().addScaledVector(down, 15.6).toArray());
       new Part(this.loupe, paintMat(C.glass, { shine: 0.1, shade: 0 }), hl).set(lensG);
     }
     // shadow on the floor (the drawing's soft ellipse)
@@ -348,10 +354,10 @@ export class Savely {
     this.setFace(exprVec(EXPR.neutral) && vecExpr(exprVec(EXPR.neutral)), { look: [0, 0], blink: 0 }, true);
     const restPose = this.standPose(false);
     this.apply(restPose, true);
-    const pos = [], tri = []; let off = 0;
+    const pos = [], tri = [], hd = []; let off = 0;
     this.root.updateMatrixWorld(true);
-    this.root.traverse(o => { if (o.isMesh && o.material?.uniforms?.uColor && o.geometry.index) { const g = o.geometry, p = g.attributes.position, v = new V3(); for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld); pos.push(v.x, v.y, v.z); } for (const i of g.index.array) tri.push(i + off); off += p.count; } });
-    this.restPositions = Float32Array.from(pos); this.restTriangles = Uint32Array.from(tri);
+    this.root.traverse(o => { if (o.isMesh && o.material?.uniforms?.uColor && o.geometry.index) { const g = o.geometry, p = g.attributes.position, v = new V3(), h = o.parent === this.head && o.geometry.attributes.rp && o.material.uniforms.uPaint.value > 2.5; for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld); pos.push(v.x, v.y, v.z); hd.push(h ? 255 : 0); } for (const i of g.index.array) tri.push(i + off); off += p.count; } });
+    this.restPositions = Float32Array.from(pos); this.restTriangles = Uint32Array.from(tri); this.restHead = Uint8Array.from(hd);   // the skull's skin: the engine's head ball
   }
 
   // ———— poses ————
@@ -504,12 +510,12 @@ export async function createStage(canvas, o = {}) {
   const ch = new Savely(E, old);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(o.pixelRatio || Math.min(2, devicePixelRatio));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  const scene = new THREE.Scene(); scene.background = new THREE.Color('#efe2c4');
+  renderer.outputColorSpace = THREE.LinearSRGBColorSpace;   // no conversions: every shader here writes the drawing's own numbers
+  const scene = new THREE.Scene(); scene.background = new THREE.Color().setStyle('#efe2c4', THREE.LinearSRGBColorSpace);
   scene.add(ch.root); scene.add(ch.shadow);
   const persp = new THREE.PerspectiveCamera(24, 1, 0.05, 60), ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.05, 60);
   // the film: a target, then the pass that wobbles the ink, adds grain and darkens the corners
-  const rt = new THREE.WebGLRenderTarget(4, 4, { samples: 4, type: THREE.UnsignedByteType, colorSpace: THREE.SRGBColorSpace });
+  const rt = new THREE.WebGLRenderTarget(4, 4, { samples: 4, type: THREE.UnsignedByteType });
   const nz = new Uint8Array(64 * 64 * 4); for (let i = 0; i < nz.length; i++) nz[i] = Math.random() * 255;
   const noise = new THREE.DataTexture(nz, 64, 64); noise.wrapS = noise.wrapT = THREE.RepeatWrapping; noise.magFilter = noise.minFilter = THREE.LinearFilter; noise.needsUpdate = true;
   const post = new THREE.ShaderMaterial({ vertexShader: POST_VS, fragmentShader: POST_FS, uniforms: { tCol: { value: rt.texture }, tNoise: { value: noise }, uRes: { value: new THREE.Vector2() }, uWob: { value: 2.4 }, uGrain: { value: 0.12 }, uVig: { value: 0.42 }, uBW: { value: 0 }, uSeed: { value: 0 } } });
@@ -524,12 +530,12 @@ export async function createStage(canvas, o = {}) {
       const dir = new V3(Math.sin(yaw) * Math.cos(pit), Math.sin(pit), Math.cos(yaw) * Math.cos(pit));
       if (c.mode === 'ortho') {
         const a = this.w / this.h, hh = c.ortho.h / 2; Object.assign(ortho, { left: -hh * a, right: hh * a, top: hh, bottom: -hh }); ortho.updateProjectionMatrix();
-        const t = c.target; ortho.position.copy(t).addScaledVector(dir, 20); ortho.up.set(0, 1, 0); ortho.lookAt(t);
+        const right = new V3(Math.cos(yaw), 0, -Math.sin(yaw)), t = c.target.clone().addScaledVector(right, -(c.ortho.dx || 0)); ortho.position.copy(t).addScaledVector(dir, 20); ortho.up.set(0, 1, 0); ortho.lookAt(t);
         // shift the view so the target sits at (cx, cy) of the frame (frame units: world)
         ortho.updateMatrixWorld(); return ortho;
       }
       persp.fov = c.fov; persp.aspect = this.w / this.h;
-      persp.setViewOffset(this.w, this.h + c.pad, 0, 0, this.w, this.h); persp.updateProjectionMatrix();
+      persp.setViewOffset(this.w, this.h + c.pad, 0, c.pad, this.w, this.h); persp.updateProjectionMatrix();
       persp.position.copy(c.target).addScaledVector(dir, c.dist); persp.lookAt(c.target); return persp;
     },
     render() {

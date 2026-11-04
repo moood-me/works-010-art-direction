@@ -26,11 +26,11 @@ for (const s of jobs.shots) {
       const set = { ...s.set, t };
       if (s.film.yaw) set.cam = { ...(s.set.cam || {}), yaw: s.film.yaw[0] + (s.film.yaw[1] - s.film.yaw[0]) * (t - s.film.from) / (s.film.to - s.film.from) };
       await page.evaluate(async o => { await window.A.set(o); window.A.render(); }, set); await page.evaluate(() => new Promise(r => requestAnimationFrame(() => r())));
-      await page.screenshot({ path: `${out}/${s.name}/f${String(k++).padStart(4, '0')}.png` });
+      await page.screenshot({ path: `${out}/${s.name}/f${String(k++).padStart(4, '0')}.png`, timeout: 300000 });
     }
   } else {
     await page.evaluate(async o => { await window.A.set(o); window.A.render(); }, s.set || {}); await page.evaluate(() => new Promise(r => requestAnimationFrame(() => r())));
-    await page.screenshot({ path: `${out}/${s.name}.png` });
+    await page.screenshot({ path: `${out}/${s.name}.png`, timeout: 300000 });
   }
   console.log(s.name);
 }

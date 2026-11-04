@@ -60,3 +60,28 @@ if __name__ == '__main__':
         print('loop', len(L), V[L].mean(0).round(3), V[L].min(0).round(3), V[L].max(0).round(3))
     for s in 'LR':
         e = B['eye' + s][0]; print('eye', s, e.mean(0).round(3), (e.max(0) - e.min(0)).round(3))
+
+
+def largest(V, Q):
+    from scipy.sparse.csgraph import connected_components
+    from scipy.sparse import coo_matrix
+    r = Q.ravel(); c = np.roll(Q, -1, axis=1).ravel()
+    n, lab = connected_components(coo_matrix((np.ones(len(r)), (r, c)), shape=(len(V), len(V))))
+    k = np.bincount(lab[Q[:, 0]]).argmax()
+    return Q[lab[Q[:, 0]] == k]
+
+
+def close(V, Q, L, rings=6):
+    """close the hole L with rings of quads toward its middle (and a fan at the centre) — Р3's hbm.close"""
+    n = len(L); c = V[L].mean(0)
+    Vn = [V]; Qn = [Q]; prev = np.array(L); new = []
+    b = len(V)
+    for r in range(1, rings + 1):
+        t = r / (rings + 1)
+        ring = np.arange(b, b + n); b += n
+        Vn.append(V[L] * (1 - t) + c * t); new += list(ring)
+        Qn.append(np.stack([prev, np.roll(prev, -1), np.roll(ring, -1), ring], 1)[:, ::-1])
+        prev = ring
+    ci = b; Vn.append(c[None]); new.append(ci)
+    Qn.append(np.stack([prev, np.roll(prev, -1), np.full(n, ci), np.full(n, ci)], 1)[:, ::-1])
+    return np.concatenate(Vn), np.concatenate(Qn), np.array(new)

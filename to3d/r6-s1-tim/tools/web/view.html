@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Тим 3D</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;font:14px system-ui,sans-serif;color:#24323f}
+body{background:radial-gradient(circle at 50% 40%, #eef3f6 0%, #d3dfe8 55%, #a9c3d6 100%)}
+#c{position:absolute;left:0;top:0;width:100%;height:100%;touch-action:none;cursor:grab}
+#floor{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(rgba(186,207,222,0),rgba(155,180,197,.6));pointer-events:none}
+#ui{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.86);border-radius:10px;padding:8px 10px;max-width:min(560px,calc(100% - 24px));box-shadow:0 1px 6px rgba(0,0,0,.15)}
+#ui .row{margin:5px 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+#ui button{font:inherit;border:1px solid #9fb4c6;background:#f6f9fb;border-radius:6px;padding:3px 9px;cursor:pointer}
+#ui button.on{background:#e0553a;color:#fff;border-color:#b9402f}
+#ui select{font:inherit}#ui input[type=range]{flex:1;min-width:180px}
+#hint{position:absolute;right:12px;top:10px;opacity:.6;font-size:12px}
+body.shots #ui,body.shots #hint{display:none}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+</head><body><div id="floor"></div><canvas id="c"></canvas>
+<script>if (new URLSearchParams(location.search).has('shots')) document.body.classList.add('shots');</script>
+<div id="ui">
+  <div class="row"><b>Тим</b>&nbsp;· движение (Kimodo):&nbsp;<select id="motion"></select><button id="face">лицо крупно</button></div>
+  <div class="row" id="exprs"></div>
+  <div class="row"><button id="play">пауза</button><button id="talk">говорит</button><input id="scrub" type="range" min="0" max="1" step="any" value="0"><span id="time"></span></div>
+</div>
+<div id="hint">вращать — мышью, приблизить — колёсиком</div>
+<script type="module">await import('./tim.js'); if (!document.body.classList.contains('shots')) await import('./ui.js');</script>
+</body></html>

@@ -51,7 +51,7 @@ const faceCanvas = document.createElement('canvas');
 faceCanvas.width = Math.round((FB.x1 - FB.x0) * PX); faceCanvas.height = Math.round((FB.y1 - FB.y0) * PX);
 const faceCtx = faceCanvas.getContext('2d');
 const faceTex = new THREE.CanvasTexture(faceCanvas);
-faceTex.colorSpace = THREE.SRGBColorSpace; faceTex.anisotropy = 8;
+faceTex.colorSpace = THREE.NoColorSpace;      // premultiplied sRGB: decoded in the shader after un-premultiplying faceTex.anisotropy = 8;
 faceTex.premultiplyAlpha = true;
 const face = new LiveFace(Number(q.get('seed') ?? 7));
 const U = {
@@ -82,14 +82,14 @@ const toon = new THREE.ShaderMaterial({
     uniform vec3 L; uniform float thr; uniform sampler2D face; uniform float paint; uniform float clay; uniform vec3 shoe; uniform vec3 shoeS;
     varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw; varying float vBand;
     void main() {
-      if (!gl_FrontFacing && vTwo < 0.5) { gl_FragColor = vec4(vShd * 0.9, 1.0); return; }
+      if (!gl_FrontFacing && vTwo < 0.5) discard;
       float d = dot(normalize(vN), L);
       float lit = smoothstep(thr - 0.012, thr + 0.012, d);
       vec3 base = vCol, sh = vShd;
       if (vBand > -0.5 && vBand < 0.0) { base = shoe; sh = shoeS; }
       vec3 c = mix(sh, base, lit);
       if (clay > 0.5) c = vec3(0.86, 0.84, 0.8) * (0.55 + 0.45 * max(d, 0.0)) + 0.08;
-      if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv); c = c * (1.0 - t.a) + t.rgb; }
+      if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv); if (t.a > 0.002) { vec3 s = t.rgb / t.a; s = mix(s / 12.92, pow((s + 0.055) / 1.055, vec3(2.4)), step(0.04045, s)); c = mix(c, s, t.a); } }
       gl_FragColor = vec4(c, 1.0);
       #include <colorspace_fragment>
     }`,
@@ -122,7 +122,8 @@ let camera = ortho;
 // ---------------------------------------------------------------- poses
 const J = sk.J, I = sk.index;
 // the drawing's 'stand' pose (styles/s7-ghibli/tools/anya.py POSES.stand): upper arm, forearm, hand directions
-const STAND = { upper: [0.07, -1, 0.02], fore: [0.06, -1, 0.14], hand: [0.0, -1, 0.1] };
+// (the drawing paints the hands over the skirt; in 3D they hang just outside it: the arms a little more out)
+const STAND = { upper: [0.13, -1, 0.02], fore: [0.2, -1, 0.14], hand: [0.08, -1, 0.1] };
 function aim(pose, j, child, dir) {
   const cur = normalize(sub(getV(pose.P, child), getV(pose.P, j)));
   turnUnder(pose, sk, j, qBetween(cur, normalize(dir)));
@@ -237,7 +238,7 @@ function facing() {
 }
 
 window.A = {
-  H, body, fig, sk, facing, face, S, EXPR_NAMES, clipInfo: () => clip && { frames: clip.frames, fps: clip.fps },
+  H, body, fig, sk, facing, face, S, EXPR_NAMES, faceCanvas, clipInfo: () => clip && { frames: clip.frames, fps: clip.fps },
   async set(o) {
     if (o.clip !== undefined) {
       const ids = o.clip ? (Array.isArray(o.clip) ? o.clip : [o.clip]) : null;
