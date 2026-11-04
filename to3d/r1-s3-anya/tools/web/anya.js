@@ -1,8 +1,8 @@
 // Аня in 3D, flat graphic style: the character pack (tools/build.py) on the engine's skeleton, skinning and Kimodo
-// retargeting; drawn with flat colour, one stepped shade, a coloured outline (inverted hull) and the face painted
-// from the drawing's own SVG (front projection, one picture per expression).
-//   view.html?pack=<url of the pack .json>
-//   window.A.set({clip, t, pose, expr, cam}) then A.render()
+// retargeting; drawn with flat colour, one stepped shade, a coloured outline (inverted hull) and the face drawn live
+// on a canvas from the drawing's own parts (face.js), projected from the front.
+//   view.html — by hand (ui.js); view.html?pack=<url> — driven by tools/shots.mjs
+//   window.A.set({clip, t, time, pose, expr, exprMix, exprAt, talk, talkFrom, cam, …}) then A.render()
 import * as THREE from 'three';
 import { createEngine } from '../../../../engine/src/engine.js';
 import { makeBody } from '../../../../engine/src/body.js';
@@ -10,7 +10,8 @@ import { Figure } from '../../../../engine/src/figure.js';
 import { loadPack } from '../../../../engine/src/pack.js';
 import { build, turnUnder } from '../../../../engine/src/retarget.js';
 import { normalsOf } from '../../../../engine/src/skin.js';
-import { qAxisAngle, qBetween, getQ, getV, normalize, sub } from '../../../../engine/src/math.js';
+import { qAxisAngle, qBetween, qRot, getQ, getV, normalize, sub } from '../../../../engine/src/math.js';
+import { LiveFace, draw as drawFace, X0, X1, Y0, Y1, PX, EXPR_NAMES } from './face.js';
 
 const q = new URLSearchParams(location.search);
 const packUrl = new URL(q.get('pack') || '../../data/anya.json', location.href);
@@ -54,16 +55,17 @@ g.setAttribute('pj', new THREE.BufferAttribute(a.pj, 1));
 g.setAttribute('two', new THREE.BufferAttribute(a.two, 1));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 
-const loader = new THREE.TextureLoader();
-const faceTex = {};
-async function texture(name) {
-  if (!faceTex[name]) faceTex[name] = await new Promise((ok, no) => loader.load(new URL(`${H.faces}/face-${name}.png`, packUrl).href, ok, undefined, no));
-  const t = faceTex[name]; t.colorSpace = THREE.NoColorSpace; t.anisotropy = 8; t.flipY = true; return t;
-}
+// the face's drawn layer: a canvas drawn every frame (face.js)
+const faceCanvas = document.createElement('canvas');
+faceCanvas.width = (X1 - X0) * PX; faceCanvas.height = (Y1 - Y0) * PX;
+const faceCtx = faceCanvas.getContext('2d');
+const faceTex = new THREE.CanvasTexture(faceCanvas);
+faceTex.colorSpace = THREE.NoColorSpace; faceTex.anisotropy = 8;
+const face = new LiveFace(Number(q.get('seed') ?? 7));
 const U = {
   L: { value: new THREE.Vector3(0.55, 0.62, 0.56).normalize() },
   thr: { value: Number(q.get('thr') ?? -0.18) },
-  face: { value: await texture('dream') },
+  face: { value: faceTex },
   width: { value: Number(q.get('line') ?? 0.0028) },
   paint: { value: 1 }, clay: { value: 0 },
   R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) },
@@ -128,21 +130,64 @@ function standPose(o = {}) {
   return pose;
 }
 
-const S = { clip: null, clipIds: null, t: 0, pose: 'stand', expr: 'dream', morph: {}, cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.81, h: 1.75, dist: 6, target: null, follow: false } };
+const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', morph: {}, push: true,
+  cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.81, h: 1.75, dist: 6, target: null, follow: false } };
 let clip = null;
 function applyMorphs() {
   const P = body.positions; P.set(rest);
   for (const [k, w] of Object.entries(S.morph)) { const m = morphs[k]; if (!m || !w) continue; for (let i = 0; i < P.length; i++) P[i] += w * m[i]; }
 }
+// where the head looks over a clip (yaw, pitch at 100 Hz) — for the eyes to lead its turns
+function headTrack(c) {
+  const dt = 0.01, n = Math.floor((c.frames - 1) / c.fps / dt) + 1, yaw = new Float32Array(n), pitch = new Float32Array(n);
+  const smp = { q: new Float64Array(J * 4), p: new Float64Array(J * 3), lowest: 0 };
+  let prev = 0;
+  for (let i = 0; i < n; i++) {
+    const pose = fig.retarget.pose(c.sample(i * dt * c.fps, smp)), f = qRot(getQ(pose.Q, I.Head), [0, 0, 1]);
+    let y = Math.atan2(f[0], f[2]); while (y - prev > Math.PI) y -= 2 * Math.PI; while (y - prev < -Math.PI) y += 2 * Math.PI;
+    yaw[i] = prev = y; pitch[i] = Math.asin(Math.max(-1, Math.min(1, f[1])));
+  }
+  return { dt, yaw, pitch };
+}
+// the skirt kept off the legs: each skirt point inside a leg's capsule (thigh, shin) is put on its surface
+const dressR = H.pieces.dress, skirt = [];
+for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.86) skirt.push(i);
+const CAPS = [['LeftLeg', 'LeftShin', 0.075], ['LeftShin', 'LeftFoot', 0.05], ['RightLeg', 'RightShin', 0.075], ['RightShin', 'RightFoot', 0.05]]
+  .map(([a, b, r]) => [I[a], I[b], r]);
+function pushSkirt(P, pose) {
+  const caps = CAPS.map(([a, b, r]) => [getV(pose.P, a), getV(pose.P, b), r]);
+  for (const i of skirt) {
+    let x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
+    for (const [A, B, r] of caps) {
+      const ab = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], l2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
+      let u = ((x - A[0]) * ab[0] + (y - A[1]) * ab[1] + (z - A[2]) * ab[2]) / l2; u = Math.max(0, Math.min(1, u));
+      const cx = A[0] + ab[0] * u, cy = A[1] + ab[1] * u, cz = A[2] + ab[2] * u, dx = x - cx, dy = y - cy, dz = z - cz, d = Math.hypot(dx, dy, dz);
+      if (d < r && d > 1e-6) { const k = r / d; x = cx + dx * k; y = cy + dy * k; z = cz + dz * k; }
+    }
+    P[i * 3] = x; P[i * 3 + 1] = y; P[i * 3 + 2] = z;
+  }
+}
 function frame() {
   applyMorphs();
-  if (S.clip) fig.frame(clip, S.t);
-  else if (S.pose === 'raw') { fig.positions.set(body.positions); fig.pose = fig.restPose(); normalsOf(fig.positions, body.triangles, fig.normals); }
+  const fp = face.at(S.time, { headT: S.clip ? S.t / clip.fps : null });
+  drawFace(faceCtx, fp); faceTex.needsUpdate = true;
+  let pose;
+  if (S.clip) { pose = fig.retarget.pose(clip.sample(S.t, fig.sample)); fig.retarget.placed(pose); }
+  else if (S.pose === 'raw') pose = null;
+  else pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts || {});
+  if (!pose) { fig.positions.set(body.positions); fig.pose = fig.restPose(); }
   else {
-    const pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts || {});
-    fig.skinner.skin(pose, fig.positions); fig.pose = pose;
-    normalsOf(fig.positions, body.triangles, fig.normals);
+    // the jaw opens a little with the drawn mouth
+    if (fp.jaw > 0) turnUnder(pose, sk, I.Jaw, qAxisAngle(qRot(getQ(pose.Q, I.Head), [1, 0, 0]), fp.jaw * 0.11));
+    fig.skinner.skin(pose, fig.positions);
+    if (S.clip) {          // on the floor as the engine's Figure does (motion.floor 'lowest')
+      const P = fig.positions; let lo = Infinity; for (let i = 1; i < P.length; i += 3) if (P[i] < lo) lo = P[i];
+      const shift = pose.floor - lo; for (let i = 1; i < P.length; i += 3) P[i] += shift; for (let j = 0; j < J; j++) pose.P[j * 3 + 1] += shift;
+    }
+    if (S.push) pushSkirt(fig.positions, pose);
+    fig.pose = pose;
   }
+  normalsOf(fig.positions, body.triangles, fig.normals);
   g.attributes.position.needsUpdate = true; g.attributes.normal.needsUpdate = true;
   const Q = fig.pose.Q;
   for (let j = 0; j < J; j++) { const [x, y, z, w] = [Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]];
@@ -150,21 +195,26 @@ function frame() {
   const P = fig.pose.P; shadow.position.x = P[I.Hips * 3]; shadow.position.z = P[I.Hips * 3 + 2];
 }
 function facing() { // where the pelvis faces now (yaw about y; 0 — +z)
-  const qh = getQ(fig.pose.Q, I.Hips), f = [0, 0, 1];
+  const qh = getQ(fig.pose.Q, I.Hips);
   const x = 2 * (qh[0] * qh[2] + qh[1] * qh[3]), z = 1 - 2 * (qh[0] * qh[0] + qh[1] * qh[1]);
   return Math.atan2(x, z);
 }
 
 window.A = {
-  H, body, fig, sk, facing,
+  H, body, fig, sk, facing, face, S, EXPR_NAMES, clipInfo: () => clip && { frames: clip.frames, fps: clip.fps },
   async set(o) {
     if (o.clip !== undefined) {
       const ids = o.clip ? (Array.isArray(o.clip) ? o.clip : [o.clip]) : null;
-      if (JSON.stringify(ids) !== JSON.stringify(S.clipIds)) { clip = ids ? await E.clip(ids) : null; S.clipIds = ids; }
+      if (JSON.stringify(ids) !== JSON.stringify(S.clipIds)) { clip = ids ? await E.clip(ids) : null; S.clipIds = ids; face.setHead(clip ? headTrack(clip) : null); }
       S.clip = !!ids;
     }
-    for (const k of ['t', 'pose', 'poseOpts', 'morph']) if (o[k] !== undefined) S[k] = o[k];
-    if (o.expr && o.expr !== S.expr) { S.expr = o.expr; U.face.value = await texture(o.expr); }
+    for (const k of ['t', 'pose', 'poseOpts', 'morph', 'push']) if (o[k] !== undefined) S[k] = o[k];
+    // the face's clock (seconds): given, or the clip's time
+    if (o.time !== undefined) S.time = o.time; else if (o.t !== undefined && clip && !S.liveClock) S.time = o.t / clip.fps;
+    if (o.liveClock !== undefined) S.liveClock = o.liveClock;
+    if (o.exprTrack) { face.exprKeys = [{ t: -10, w: { dream: 1 } }]; for (const [t, w] of o.exprTrack) face.setExpr(t, typeof w === 'string' ? { [w]: 1 } : w); }
+    if (o.expr) face.setExpr(S.time, typeof o.expr === 'string' ? { [o.expr]: 1 } : o.expr);
+    if (o.talk !== undefined) face.talk(o.talk ? (o.talkFrom ?? S.time) : null);
     if (o.cam) Object.assign(S.cam, o.cam);
     if (o.light) S.light = o.light;
     if (o.thr !== undefined) U.thr.value = o.thr;
@@ -188,6 +238,7 @@ window.A = {
     const c = S.cam, cp = Math.cos(c.pitch);
     let tg = c.target || [c.cx, c.cy, 0];
     if (c.follow && fig.pose) { const P = fig.pose.P; tg = [P[I.Hips * 3], c.cy, P[I.Hips * 3 + 2]]; }
+    if (c.focus && fig.pose) { const P = fig.pose.P, k = I[c.focus]; tg = [P[k * 3], P[k * 3 + 1] + (c.up || 0), P[k * 3 + 2]]; }
     const dir = [Math.sin(c.yaw) * cp, Math.sin(c.pitch), Math.cos(c.yaw) * cp];
     if (c.mode === 'ortho') {
       camera = ortho; const hh = c.h / 2, ww = hh * w / h;
@@ -209,21 +260,4 @@ await window.A.set({});
 window.A.render();
 window.__ready = true;
 
-// ---------------------------------------------------------------- by hand (when no picture script drives the page)
-if (!q.has('pack')) {
-  const bar = document.createElement('div');
-  bar.style.cssText = 'position:fixed;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;font:14px system-ui;z-index:2';
-  const btn = (label, f) => { const b = document.createElement('button'); b.textContent = label; b.style.cssText = 'padding:4px 12px;border-radius:999px;border:1px solid #cbbfae;background:#fffdf9;cursor:pointer'; b.onclick = f; bar.appendChild(b); return b; };
-  let walking = false, t0 = performance.now();
-  btn('стоит', () => { walking = false; window.A.set({ clip: null, cam: { mode: 'ortho', follow: false, cy: 0.84, h: 1.85 } }); });
-  btn('идёт (Kimodo)', async () => { walking = true; t0 = performance.now(); await window.A.set({ clip: 'walk', cam: { mode: 'persp', dist: 6, fov: 22, cy: 0.82, follow: true } }); });
-  for (const [e, l] of [['dream', 'мечтает'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']]) btn(l, () => window.A.set({ expr: e }));
-  document.body.appendChild(bar);
-  let drag = null; const cam = S.cam;
-  canvas.onpointerdown = e => { drag = [e.clientX, e.clientY, cam.yaw, cam.pitch]; };
-  window.onpointerup = () => { drag = null; };
-  window.onpointermove = e => { if (drag) { cam.yaw = drag[2] - (e.clientX - drag[0]) * 0.01; cam.pitch = Math.max(-0.4, Math.min(0.8, drag[3] + (e.clientY - drag[1]) * 0.005)); } };
-  await window.A.set({ cam: { h: 1.85, cy: 0.84 } });
-  const loop = async () => { if (walking) await window.A.set({ t: ((performance.now() - t0) / 1000 * 30) % (window.A.frames() - 1) }); window.A.render(); requestAnimationFrame(loop); };
-  loop();
-}
+if (!q.has('pack')) (await import('./ui.js')).ui(window.A, canvas);

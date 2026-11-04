@@ -36,7 +36,7 @@ void main(){ vMat = mat; vPat = pat; vFuv = fuv; vN = normalize(normal); vVN = n
 const FS = `
 precision highp float;
 uniform vec3 base[16]; uniform vec3 shade[16]; uniform sampler2D face; uniform float hasFace; uniform vec3 L; uniform float clay;
-uniform float stripe0, stripeP, stripeW; uniform vec3 cream, creamS, sockBand; uniform vec2 sockY;
+uniform float stripe0, stripeP, stripeW, stripeTop; uniform vec3 cream, creamS, sockBand; uniform vec2 sockY;
 varying float vMat; varying vec3 vPat; varying vec3 vFuv; varying vec3 vN; varying vec3 vVN;
 float h(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
 float noise(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
@@ -46,15 +46,16 @@ void main(){
   int m = int(vMat + 0.5);
   vec3 b = base[0], s = shade[0];
   for (int i = 0; i < 16; i++) if (i == m) { b = base[i]; s = shade[i]; }
-  vec3 n = normalize(vVN); if (!gl_FrontFacing) n = -n;
+  vec3 n = normalize(vVN); float inside = gl_FrontFacing ? 0.0 : 1.0; if (!gl_FrontFacing) n = -n;
   float d = dot(n, normalize(L));
   if (clay > 0.5) { float k = 0.35 + 0.65 * max(d, 0.0); gl_FragColor = vec4(vec3(0.85, 0.82, 0.77) * k + 0.08, 1.0); return; }
-  if (m == 3) { float k = fract((vPat.y - stripe0) / stripeP); if (k < stripeW) { b = cream; s = creamS; } }
+  if (m == 3 && vPat.y < stripeTop) { float k = fract((vPat.y - stripe0) / stripeP); if (k < stripeW) { b = cream; s = creamS; } }
   if (m == 5) { if (vPat.y > sockY.x && vPat.y < sockY.y) { b = sockBand; s = sockBand * 0.88; } }
   if (hasFace > 0.5 && vFuv.z > 0.01) { vec4 f = texture2D(face, vFuv.xy); float a = f.a * smoothstep(0.05, 0.4, vFuv.z);
     b = mix(b, f.rgb, a); s = mix(s, f.rgb * 0.97, a); }
-  float t = smoothstep(0.02, 0.10, d);
-  vec3 col = mix(s, b, t);
+  float th = (m == 0 || m == 8) ? -0.12 : 0.04;
+  float t = smoothstep(th - 0.04, th + 0.04, d);
+  vec3 col = mix(s, b, t * (1.0 - inside));
   // gouache: uneven density of the paint over the form
   float nn = noise(vPat * 38.0) * 0.6 + noise(vPat * 110.0) * 0.4;
   col *= 0.965 + 0.07 * nn;
@@ -64,7 +65,7 @@ void main(){
 const uniforms = {
   base: { value: Array.from({ length: 16 }, () => new THREE.Color()) }, shade: { value: Array.from({ length: 16 }, () => new THREE.Color()) },
   face: { value: null }, hasFace: { value: 0 }, L: { value: new THREE.Vector3(-0.45, 0.55, 0.75) }, clay: { value: 0 },
-  stripe0: { value: 0 }, stripeP: { value: 0.03 }, stripeW: { value: 0.42 }, cream: { value: hex('#f6eedd') }, creamS: { value: hex('#e3d8c2') },
+  stripe0: { value: 0 }, stripeTop: { value: 9 }, stripeP: { value: 0.03 }, stripeW: { value: 0.42 }, cream: { value: hex('#f6eedd') }, creamS: { value: hex('#e3d8c2') },
   sockBand: { value: hex('#c8402f') }, sockY: { value: new THREE.Vector2(-1, -1) },
 };
 const material = new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: FS, uniforms, side: THREE.DoubleSide });
@@ -75,7 +76,7 @@ const state = { pose: 'rest', t: 0, motion: null };
 async function loadModel(url) {
   const { header: h, arrays: a } = await loadPack(new URL(url, location.href).href);
   h.mats.forEach((m, i) => { const p = PAINT[m]; uniforms.base.value[i] = hex(p[0]); uniforms.shade.value[i] = hex(p[1]); });
-  if (h.stripes) { uniforms.stripe0.value = h.stripes.y0; uniforms.stripeP.value = h.stripes.period; uniforms.stripeW.value = h.stripes.width; }
+  if (h.stripes) { uniforms.stripe0.value = h.stripes.y0; uniforms.stripeP.value = h.stripes.period; uniforms.stripeW.value = h.stripes.width; uniforms.stripeTop.value = h.stripes.top ?? 9; }
   if (h.sockBand) uniforms.sockY.value.set(...h.sockBand);
   const body = makeBody({ id: h.id, skeleton: sk, positions: a.positions, triangles: a.triangles, skin: { joints: a.skinJoints, weights: a.skinWeights },
     parts: { names: [], weights: new Uint8Array(0) }, joints: Float64Array.from(a.joints), frames: Float64Array.from(a.frames) });

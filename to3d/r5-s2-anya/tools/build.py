@@ -28,7 +28,7 @@ MAT = {
     'cardi':  (rgb('#c99a3e'), mix(rgb('#c99a3e'), rgb('#3a2440'), 0.55), rgb('#f0b878')),
     'blouse': (rgb('#efe2cf'), mix(rgb('#efe2cf'), SHADE, 0.45), rgb('#fff0d8')),
     'scarf':  (rgb('#4f6e74'), mix(rgb('#4f6e74'), rgb('#2a2040'), 0.5), rgb('#e8b890')),
-    'skirt':  (rgb('#4c5a3e'), mix(rgb('#4c5a3e'), rgb('#2a1e40'), 0.55), rgb('#e8a070')),
+    'skirt':  (rgb('#55633f'), mix(rgb('#55633f'), rgb('#3a2a5a'), 0.42), rgb('#e8a070')),
     'tights': (rgb('#6e5258'), mix(rgb('#6e5258'), rgb('#2a1e40'), 0.5), rgb('#d89a80')),
     'shoe':   (rgb('#4a2a1e'), mix(rgb('#5a3424'), rgb('#1e1020'), 0.5), rgb('#d08a60')),
 }
@@ -58,7 +58,7 @@ def under(j):
 J1 = J0 * S
 for s, sg in (('Left', 1), ('Right', -1)):            # shoulders a little narrower and lower (sloped, as drawn)
     for j in under(I[s + 'Shoulder']): J1[j] += [-sg * 0.006, -0.018, 0]
-    for j in under(I[s + 'Arm']): J1[j] += [-sg * 0.022, -0.016, 0]
+    for j in under(I[s + 'Arm']): J1[j] += [-sg * 0.03, -0.018, 0]
     for n in ('Leg',):
         for j in under(I[s + n]): J1[j] += [-sg * 0.012, 0, 0]
 
@@ -67,7 +67,7 @@ def joint_affine(j):
     """Joint j's own change of the rest about its place: the trunk slimmer, limbs thinner round their bones."""
     n = NAMES[j]
     if n in ('Hips', 'Spine1', 'Spine2'): return np.diag([0.86, 1, 0.92])
-    if n in ('Chest',): return np.diag([0.82, 1, 0.9])
+    if n in ('Chest',): return np.diag([0.8, 1, 0.9])
     if n.endswith('Shoulder'): return np.diag([0.85, 0.85, 0.9])
     r = {'LeftArm': 0.86, 'RightArm': 0.86, 'LeftForeArm': 0.86, 'RightForeArm': 0.86,
          'LeftLeg': 0.84, 'RightLeg': 0.84, 'LeftShin': 0.82, 'RightShin': 0.82}.get(n)
@@ -120,7 +120,9 @@ Ab = M.adjacency(len(bv), body['T'])
 bv = M.smooth(bv, Ab, chest * sm((bv[:, 2] + 0.02) / 0.06), iters=60, lam=0.5)
 # shoes: the toes smoothed into one shoe form
 feet = mat == MATS.index('shoe')
-bv = M.smooth(bv, Ab, feet * 1.0, iters=90, lam=0.5)
+toes = feet & (bpart('Lfoot', 'Rfoot') > 0.5) & (bv[:, 2] > 0.08)
+bv = M.smooth(bv, Ab, feet * 1.0, iters=60, lam=0.5)
+bv = M.smooth(bv, Ab, toes * 1.0, iters=200, lam=0.5)
 body['V'] = bv
 body['mat'] = mat
 body['W'] = None
@@ -144,7 +146,7 @@ pw = 0.7 * (1 - sm((yd_h - 330) / 40))
 xf = hv[:, 0] / K + Hd.XF
 uv = np.c_[(xf - FT.X0) / FT.W, 1 - (yd_h - FT.Y0) / FT.H]
 nh = M.vertex_normals(HV, hT)
-tw = sm((nh[:, 2] - 0.05) / 0.25) * (hv[:, 2] > 0.0) * (uv[:, 0] > 0) * (uv[:, 0] < 1) * (uv[:, 1] > 0) * (uv[:, 1] < 1)
+tw = sm((nh[:, 2] - 0.05) / 0.25) * sm((nh[:, 1] + 0.6) / 0.3) * (hv[:, 2] > 0.0) * (uv[:, 0] > 0) * (uv[:, 0] < 1) * (uv[:, 1] > 0) * (uv[:, 1] < 1)
 # weights: the head, then down the neck to the chest
 def chain_w(yd, n, marks):
     W = np.zeros((n, NJ)); js = ['Head', 'Neck2', 'Neck1', 'Chest']

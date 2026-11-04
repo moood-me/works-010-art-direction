@@ -49,7 +49,7 @@ D = dense(B['sj'], B['sw'])
 NB = vertex_normals(V, T)
 
 # where the head sits: the drawing's head centre O; chin (drawing y 88) a little above the shoulders
-CHIN_Y = 0.832
+CHIN_Y = 0.848
 O = np.array([0.0, CHIN_Y + 88 * K, 0.002])
 toW = lambda X: X + O                         # head frame → world
 J2 = J.copy()
@@ -121,7 +121,7 @@ parts.append(part(toW(NX), NT, sj, sw, 'skin', fuv=fuv_of(NX, vertex_normals(NX,
 
 # ---------------- the hair ----------------
 FR = [(-90, -20), (-78, -26), (-66, -50), (-48, -42), (-34, -66), (-10, -48), (6, -70), (30, -50), (46, -68), (66, -46), (78, -28), (90, -20)]
-SD = [(90, -62), (76, -62), (62, -56), (54, -70), (46, -46), (34, -62), (20, -30), (8, -44), (-6, -16), (-24, -34), (-44, -12), (-58, -28), (-72, -18), (-90, -18)]
+SD = [(90, -62), (76, -62), (62, -56), (54, -70), (46, -46), (34, -62), (20, -30), (8, -44), (-6, -16), (-24, -34), (-44, -6), (-58, -14), (-72, 8), (-90, 14)]
 def hairline(X):
     x = X[:, 0] / K; y = -X[:, 1] / K; z = X[:, 2] / K; sx = z - 8
     hf = np.interp(x, *zip(*FR)); hs_ = np.interp(-sx, *zip(*[(-a, b) for a, b in SD]))
@@ -180,23 +180,27 @@ def shell(region_f, off, mat, A_extra=None, rim_in=0.006, smooth_it=3):
     d, n, o = a[:, :NJ], a[:, NJ:NJ + 3], a[:, -1]
     n /= np.linalg.norm(n, axis=1, keepdims=True)
     v = v + n * o[:, None]
-    v = smooth(v, t, it=smooth_it, lam=0.3)
-    for Lp in loops(t):
-        if len(Lp) < 8: continue
-        v, t, _ = rim(v, t, Lp, -n[Lp] * (o[Lp, None] + rim_in) * 0.9)
-        n = np.r_[n, n[Lp]]; d = np.r_[d, d[Lp]]
+    v = smooth(v, t, it=smooth_it, lam=0.3, fixed=np.where(on)[0])
     sj, sw = top4(d)
     return part(v, t, sj, sw, mat)
 
 y = V[:, 1]
 # shirt: above the hem, below the collar, sleeves to the upper arm's middle
-hem = 0.565; coll = 0.818
+hem = 0.565; coll = 0.834
 sl = np.maximum(np.where(V[:, 0] > 0, bone_t(V, 'LeftArm', 'LeftForeArm'), bone_t(V, 'RightArm', 'RightForeArm')), -9)
 armside = pw('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lhand', 'Rhand') > 0.3
 f_shirt = np.maximum.reduce([hem - y, y - (coll - 0.010 * np.clip(V[:, 2] / 0.05, 0, 1)), np.where(armside | (np.abs(V[:, 0]) > 0.11), sl - 0.5, -1),
                              (pw('Lthigh', 'Rthigh') > 0.4) * 1.0 - 0.5])
 off_s = 0.006 + 0.010 * np.clip((0.66 - y) / 0.1, 0, 1) + 0.006 * np.clip(sl / 0.5, 0, 1) * armside
-shirt = shell(f_shirt, off_s, 'shirt')
+shirt = shell(f_shirt, off_s, 'shirt', smooth_it=14)
+# a crew neck: above the shoulders the shirt is drawn in round the (thin, drawn) neck
+sv = shirt['V']; nz = O[2] + 10 * K
+rr = np.hypot(sv[:, 0], sv[:, 2] - nz)
+sgy = np.clip((sv[:, 1] - 0.785) / (coll - 0.785), 0, 1) ** 1.5
+rt = 0.040
+k = np.where(rr > rt, (rr + (rt - rr) * sgy) / rr, 1.0)
+sv[:, 0] *= k; sv[:, 2] = nz + (sv[:, 2] - nz) * k
+shirt['pat'] = sv.copy()
 # the collar: a cream band at the neckline
 sp = shirt['pat']
 parts += split(shirt, sp[:, 1] - (coll - 0.008 - 0.010 * np.clip(sp[:, 2] / 0.05, 0, 1)), 'collar')
@@ -204,7 +208,7 @@ parts += split(shirt, sp[:, 1] - (coll - 0.008 - 0.010 * np.clip(sp[:, 2] / 0.05
 tl = np.maximum(bone_t(V, 'LeftLeg', 'LeftShin') * (V[:, 0] > 0), bone_t(V, 'RightLeg', 'RightShin') * (V[:, 0] < 0))
 f_shorts = np.maximum(y - 0.552, tl - 0.42)
 off_p = 0.005 + 0.012 * np.clip(tl / 0.42, 0, 1) ** 1.5
-parts.append(shell(f_shorts, off_p, 'shorts'))
+parts.append(shell(f_shorts, off_p, 'shorts', smooth_it=8))
 # shoes: the foot below the ankle, puffed and smoothed
 shoe_top = 0.062
 f_shoe = np.where(pw('Lfoot', 'Rfoot', 'Lshin', 'Rshin') > 0.3, y - shoe_top, 1.0)
@@ -219,4 +223,4 @@ v, t, a, _ = cut(V, T, f_skin, D)
 sj, sw = top4(a)
 parts += split(part(v, t, sj, sw, 'skin'), 0.168 - v[:, 1], 'sock')
 
-write('tim', parts, J2, B['frames'], extra=dict(stripes=dict(y0=0.5, period=0.034, width=0.42), sockBand=[0.148, 0.158]))
+write('tim', parts, J2, B['frames'], extra=dict(stripes=dict(y0=0.5, period=0.034, width=0.42, top=0.773), sockBand=[0.148, 0.158]))

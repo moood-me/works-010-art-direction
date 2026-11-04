@@ -31,7 +31,7 @@ JAW = np.array([0.0, 30.0, -25.0])
 EXPRS = {
     'calm': dict(),
     'joy': dict(up=34, low=14, jaw=7, smile=1.0, brow=2.5, look=(0, 0)),
-    'surprise': dict(up=-14, low=-8, jaw=13, smile=0.0, brow=7, iris=0.82),
+    'surprise': dict(up=-14, low=-8, jaw=6, smile=0.0, brow=7, iris=0.82),
     'sad': dict(up=16, low=0, jaw=0, smile=-1.0, brow=1.5, inner=4, look=(0, 7)),
     'anger': dict(up=12, low=6, jaw=5, smile=-0.8, brow=-4, inner=-5),
 }

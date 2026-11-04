@@ -38,8 +38,10 @@
 - **Motion:** Kimodo's walk from `experiments/indie/motions/walk.json`, retargeted the constructor's way: each SOMA
   joint turns as in the motion, a fixed turn first brings our leg bones to SOMA's rest direction, the pelvis goes as
   high and as far as our legs make it (×0.26), the feet are put on the floor. The arms keep the folder at the chest:
-  they take no turns of their own from the motion and go with the chest. The coat skirt is on the hips; the thighs
-  move inside it.
+  they take no turns of their own from the motion. While she holds the folder, sleeves, hands and folder are weighted
+  along the body like the coat (hips → spine → chest): tied to the chest alone, the folder's lower edge went into the
+  coat as soon as the spine bent. The arm bones are in the skeleton for motions that free the arms (not made here).
+  The coat skirt is on the hips; the thighs move inside it.
 - **Judged by eye**, many times, in the drawing's own views (same viewBox, same pixels, orthographic like the
   drawing): side by side and with the drawing's edges over the render.
 

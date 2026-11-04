@@ -62,7 +62,6 @@ def sheet(expr='calm'):
     else:
         o += [brow((236, 222 + b), (214, 210 + b), (192, 222 + b), 4, bc), brow((264, 222 + b), (286, 210 + b), (308, 222 + b), 4, bc)]
     nl = mix(SKIN, INK, 0.5)
-    o.append(f'<path d="M238,300 C241,303 244,303 246,301 M254,301 C256,303 259,303 262,300" fill="none" stroke="{nl}" stroke-width="1.5" stroke-linecap="round"/>')
     o.append(d.tone('M246,286 C248,284 251,284 253,286 C251,288 248,288 246,286Z', '#fff4e0', 0.7, 0.8))
     o += mouth(d, e['mouth'])
     d.add(f'<g transform="scale({S}) translate({-X0},{-Y0})">'); [d.add(s) for s in o]; d.add('</g>')

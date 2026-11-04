@@ -163,13 +163,13 @@ def shape_mesh(name, pts, colour, tris=None):
 MARK_OBJS = []
 
 
-def build_marks(expr, lw_units, yaw=0.0):
+def build_marks(expr, lw_units, yaw=0.0, extra_skip=()):
     """lw_units: the contour's width in drawing units for this picture; a mark of width w is w times it.
     The nose hook is drawn only in near-front views (|yaw| < 25), as in the drawing."""
     for o in MARK_OBJS:
         bpy.data.objects.remove(o)
     MARK_OBJS.clear()
-    skip = set(job.get('skip', meta.get('skip', [])))
+    skip = set(job.get('skip', meta.get('skip', []))) | set(extra_skip)
     for i, mk in enumerate(meta['marks'].get(expr, [])):
         if mk.get('group') in skip or (mk.get('group') == 'nose' and abs(yaw) >= 25):
             continue
@@ -283,6 +283,7 @@ else:
                 vv['cx'] = v['cx'] - hp[0] * v['s']
             set_view(vv)
             if job.get('still_marks'):       # the head at rest: the drawing's marks at this picture's line width
-                build_marks(v.get('expr', job.get('marks_expr', 'calm')), v.get('lw', 2.2) / v['s'], v.get('yaw', 0))
+                build_marks(v.get('expr', job.get('marks_expr', 'calm')), v.get('lw', 2.2) / v['s'], v.get('yaw', 0),
+                            v.get('skip', ()))
             sc.render.filepath = os.path.join(job['out'], f"{v['name']}_{fi:04d}.png")
             bpy.ops.render.render(write_still=True)

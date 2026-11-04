@@ -57,11 +57,11 @@ const depthMat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, colorWrit
 const U = {
   L: { value: new THREE.Vector3() }, Lr: { value: new THREE.Vector3() }, Vd: { value: new THREE.Vector3() },
   key: { value: new THREE.Color('#ffc47a') }, kLit: { value: 0.3 },
-  thr: { value: 0.08 }, soft: { value: 0.16 },
+  thr: { value: 0.22 }, soft: { value: 0.14 },
   face: { value: await texture('calm') },
   R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) }, headJ: { value: sk.index.Head },
   smap: { value: smTarget.depthTexture }, smMat: { value: new THREE.Matrix4() }, smTexel: { value: 1 / SM }, smBlur: { value: 3.0 },
-  smBias: { value: 0.0015 },
+  smBias: { value: 0.003 },
 };
 const toon = new THREE.ShaderMaterial({
   uniforms: U, side: THREE.DoubleSide,
@@ -118,7 +118,7 @@ const toon = new THREE.ShaderMaterial({
       // the hair's light band: where its surface turns to the light and up
       if (vHair > 0.5) {
         vec3 h = normalize(L + Vd);
-        float b = smoothstep(0.90, 0.975, dot(n, h)) * l;
+        float b = smoothstep(0.92, 0.98, dot(n, h)) * smoothstep(0.2, 0.5, n.y) * l;
         c = mix(c, mix(vCol, vec3(1.0, 0.88, 0.66), 0.55), b * 0.85);
       }
       // rim: a thin warm edge where the form turns away from the eye on the far side from the key
@@ -140,6 +140,9 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.7), new THREE.Shade
   fragmentShader: 'varying vec2 vUv; void main(){ float r = length((vUv - 0.5) * vec2(2.0, 2.0)); gl_FragColor = vec4(0.08, 0.05, 0.13, 0.55 * (1.0 - smoothstep(0.15, 0.6, r))); }',
 }));
 ground.rotation.x = -Math.PI / 2; ground.position.y = 0.001; ground.renderOrder = -1; scene.add(ground);
+// a floor for the films (the drawing's dark ground band, as a plane)
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({ color: '#241830', transparent: true, opacity: 0.7, depthWrite: false }));
+floor.rotation.x = -Math.PI / 2; floor.renderOrder = -2; floor.visible = false; scene.add(floor);
 
 // the frame's finish: backdrop, glow, grain, mottling, vignette (as kit.py's bg() and grain())
 const rt = new THREE.WebGLRenderTarget(16, 16, { samples: 4 });
@@ -187,7 +190,16 @@ function standPose(o = {}) {
   for (const [s, sg] of [['Left', -1], ['Right', 1]]) {
     turnUnder(pose, sk, I[s + 'Arm'], qAxisAngle([0, 0, 1], sg * down));
     if (o.fwd) turnUnder(pose, sk, I[s + 'Arm'], qAxisAngle([1, 0, 0], -o.fwd));
-    if (o.elbow) turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle([0, 1, 0], -sg * o.elbow));
+    turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle([1, 0, 0], o.straighten ?? 0.45));
+  }
+  // fingers a little curled, as a hand at rest
+  const curl = o.curl ?? 0.5;
+  for (const s of ['Left', 'Right']) {
+    const P0 = body.joints, jp = n => [P0[I[s + n] * 3], P0[I[s + n] * 3 + 1], P0[I[s + n] * 3 + 2]];
+    const ix = jp('HandIndex1'), pk = jp('HandPinky1');
+    const ax = [pk[0] - ix[0], pk[1] - ix[1], pk[2] - ix[2]];
+    for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (const k of [1, 2, 3])
+      turnUnder(pose, sk, I[s + 'Hand' + f + k], qAxisAngle(ax, (s === 'Left' ? 1 : -1) * (o.curlSign ?? 1) * curl * (k === 1 ? 0.6 : 1)));
   }
   if (o.headTilt) turnUnder(pose, sk, I.Head, qAxisAngle([0, 0, 1], o.headTilt));
   if (o.headNod) turnUnder(pose, sk, I.Head, qAxisAngle([1, 0, 0], o.headNod));
@@ -228,6 +240,7 @@ window.A = {
     if (o.cam) Object.assign(S.cam, o.cam);
     for (const k of ['thr', 'soft', 'kLit', 'smBlur', 'smBias']) if (o[k] !== undefined) U[k].value = o[k];
     if (o.ground !== undefined) ground.visible = o.ground;
+    if (o.floor3d !== undefined) floor.visible = o.floor3d;
     if (o.floorY !== undefined) post.material.uniforms.floorY.value = o.floorY;
     frame();
   },
@@ -269,9 +282,9 @@ window.A = {
     lightCam.lookAt(box.c[0], box.c[1], box.c[2]); lightCam.updateMatrixWorld();
     U.smMat.value.multiplyMatrices(lightCam.projectionMatrix, lightCam.matrixWorldInverse);
     U.smTexel.value = 1 / SM; U.smBlur.value = (S.blur ?? (0.003 + 0.008 * box.r)) / (2 * box.r / SM);
-    mesh.material = depthMat; ground.visible = false;
+    mesh.material = depthMat; ground.visible = false; const fv = floor.visible; floor.visible = false;
     renderer.setRenderTarget(smTarget); renderer.clear(); renderer.render(scene, lightCam);
-    mesh.material = toon; ground.visible = S.groundOn !== false;
+    mesh.material = toon; ground.visible = S.groundOn !== false; floor.visible = fv;
     renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, camera);
     renderer.setRenderTarget(null); renderer.render(postScene, postCam);
   },

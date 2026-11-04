@@ -55,7 +55,7 @@ J1[I['Neck1']] = [0, y3(238), 0.0]
 J1[I['Neck2']] = [0, y3(150), 0.0]
 J1[I['Head']] = [0, y3(100), -0.004]
 J1[I['HeadEnd']] = [0, y3(-126), -0.01]
-J1[I['Jaw']] = [0, y3(66), 0.03]
+J1[I['Jaw']] = [0, y3(34), -0.02]          # where the jaw turns, under the ear
 for s, sg in (('Left', 1), ('Right', -1)):
     J1[I[s + 'Eye']] = [sg * u(36), y3(0), 0.045]
     J1[I[s + 'Shoulder']] = [sg * 0.015, 1.19, 0.035]
@@ -104,7 +104,7 @@ fore = np.array([n.endswith('ForeArm') for n in dn])
 legs = np.array([('Shin' in n or 'Foot' in n or 'Toe' in n or n.endswith('Leg')) for n in dn])
 near_wrist = np.zeros(len(P0), bool)
 for s in ('Left', 'Right'): near_wrist |= np.linalg.norm(P0 - J0[I[s + 'Hand']], axis=1) < 0.06
-keep = hand | (fore & near_wrist) | (legs & (P0[:, 1] < 0.33))
+keep = (fore & near_wrist) | (legs & (P0[:, 1] < 0.33))      # Anny's hands are replaced by drawn mittens
 tk = keep[TRI0].all(1)
 bi = np.where(keep)[0]; remap = -np.ones(len(P0), int); remap[bi] = np.arange(len(bi))
 B = dict(V=PF[bi], T=remap[TRI0[tk]], SJ=SJ0[bi], SW=SW0[bi])
@@ -150,6 +150,10 @@ SW[:, I['Head']] = 1 - sA
 SW[:, I['Neck2']] = sA * (1 - sB)
 SW[:, I['Neck1']] = sA * sB * (1 - sC)
 SW[:, I['Chest']] = sA * sB * sC
+# the lower face on the jaw (it opens a little with the drawn mouth)
+wj = smooth((yd - 74) / 14) * smooth(V0[:, 2] / 0.03) * (1 - smooth((yd - 112) / 14))
+wj[nh:] = 0
+SW *= (1 - wj)[:, None]; SW[:, I['Jaw']] += wj
 Hh['W'] = SW
 Hh['col'] = np.tile(C['skin'], (nH, 1)); Hh['shd'] = np.tile(C['shade'], (nH, 1)); Hh['lin'] = np.tile(C['line'], (nH, 1))
 Hh['uv'] = np.c_[(xd - FC.X0) / (FC.X1 - FC.X0), 1 - (yd - FC.Y0) / (FC.Y1 - FC.Y0)]
@@ -283,6 +287,45 @@ def catmull(pts, n):
     out.append(P[-2]); return np.array(out)
 
 
+# hands: mittens as drawn (fingers together, a small thumb), rigid on the hand, instead of Anny's spread fingers
+HANDS = []
+for s, sg in (('Left', 1), ('Right', -1)):
+    W_ = J1[I[s + 'Hand']]; tip = J1[I[s + 'HandMiddleEnd']]
+    d = tip - W_; d /= np.linalg.norm(d)
+    acr = J1[I[s + 'HandIndex1']] - J1[I[s + 'HandPinky1']]; acr -= d * (acr @ d); acr /= np.linalg.norm(acr)
+    nrm_ = np.cross(d, acr) * sg
+    Lh, rows_, cols_ = 0.115, 26, 22
+    V_ = []
+    for uu in np.linspace(-0.12, 1.0, rows_):
+        tip_r = np.sqrt(max(0.0, 1 - max(0.0, (uu - 0.55) / 0.45) ** 2))
+        a_ = 0.023 * tip_r * (0.85 + 0.15 * smooth((uu + 0.1) / 0.3)); b_ = 0.0125 * tip_r * (0.9 + 0.1 * smooth(uu / 0.4))
+        thumb = 0.010 * np.exp(-((uu - 0.33) / 0.14) ** 2)
+        for th in np.linspace(0, 2 * np.pi, cols_, endpoint=False):
+            x_ = a_ * np.cos(th) + thumb * max(np.cos(th), 0) ** 2; z_ = b_ * np.sin(th)
+            V_.append(W_ + d * uu * Lh + acr * x_ + nrm_ * z_)
+    V_ = np.array(V_); T_ = grid(rows_, cols_, True)
+    if (M.vertex_normals(V_, T_) * (V_ - V_.mean(0))).sum(1).mean() < 0: T_ = T_[:, ::-1]
+    W = np.zeros((len(V_), NJ)); W[:, I[s + 'Hand']] = 1
+    HANDS.append(dict(V=V_, T=T_, W=W, col=np.tile(C['skin'], (len(V_), 1)), shd=np.tile(C['shade'], (len(V_), 1)),
+                      lin=np.tile(C['line'], (len(V_), 1)), side=s))
+
+# socks: a short tube over the shin (its own colour, a clean edge), from the drawn sock top down over the shoe's top
+SOCKS = []
+for s in ('Left', 'Right'):
+    legv = B['V'][(np.sign(B['V'][:, 0]) == (1 if s == 'Left' else -1)) & (B['V'][:, 1] < 0.2)]
+    rows_, cols_ = 10, 28; V_ = []
+    for yy in np.linspace(y3(1252), 0.052, rows_):
+        m = abs(legv[:, 1] - yy) < 0.006
+        q = legv[m]; c = q.mean(0)
+        rx_, rz_ = np.abs(q[:, 0] - c[0]).max() + 0.003, np.abs(q[:, 2] - c[2]).max() + 0.003
+        rz_ = min(rz_, rx_ * 1.4)
+        for th in np.linspace(0, 2 * np.pi, cols_, endpoint=False):
+            V_.append([c[0] + rx_ * np.sin(th), yy, c[2] + rz_ * np.cos(th)])
+    V_ = np.array(V_); T_ = grid(rows_, cols_, True)
+    if (M.vertex_normals(V_, T_) * (V_ - V_.mean(0) * [1, 0, 1] - [0, 1, 0] * V_[:, 1:2])).sum(1).mean() < 0: T_ = T_[:, ::-1]
+    SOCKS.append(dict(V=V_, T=T_, col=np.tile(C['sock'], (len(V_), 1)), shd=np.tile(rgb('#e2d6c4'), (len(V_), 1)),
+                      lin=np.tile(rgb('#9c8a76'), (len(V_), 1)), side=s))
+
 SL = []
 for s in ('Left', 'Right'):
     A_, E_, W_ = J1[I[s + 'Arm']], J1[I[s + 'ForeArm']], J1[I[s + 'Hand']]
@@ -331,6 +374,7 @@ def cloth_weights(V, T):
 Dd['W'] = cloth_weights(DV, DT)
 Kc['W'] = cloth_weights(KV, KT)
 Cc['W'] = transfer(CV)
+for S_ in SOCKS: S_['W'] = transfer(S_['V'])
 for S_ in SL:
     W = transfer(S_['V'])
     # a sleeve belongs to its own arm only (the nearest skin under the armpit may be the chest's)
@@ -351,6 +395,7 @@ Hr = HR.build(dict(head=(V0[:nh], M.triangulate(hP_ne)), dress=drows, card=krows
 
 # ---------------------------------------------------------------- one pack
 pieces = [('body', B), ('head', Hh), ('dress', Dd), ('collar', Cc), ('cardigan', Kc)] + \
+         [('hand' + h_['side'], h_) for h_ in HANDS] + [('sock' + s_['side'], s_) for s_ in SOCKS] + \
          [('sleeve' + S_['side'], S_) for S_ in SL] + [('hair', Hr)]
 Vs, Ts, Ws, cols, shds, lins, ows, uvs, texs, pns, pws, two = [], [], [], [], [], [], [], [], [], [], [], []
 base = 0; ranges = {}; tbase = 0; tranges = {}
@@ -360,7 +405,7 @@ for name, p in pieces:
     cols.append(p['col']); shds.append(p['shd']); lins.append(p['lin'])
     ows.append(p.get('ow', np.ones(n))); uvs.append(p.get('uv', np.zeros((n, 2))))
     texs.append(p.get('tex', np.zeros(n))); pns.append(p.get('pn', np.zeros((n, 3)))); pws.append(p.get('pw', np.zeros(n)))
-    two.append(np.full(n, 1 if name in ('cardigan', 'hair', 'dress', 'collar') or name.startswith('sleeve') else 0))
+    two.append(np.full(n, 1 if name in ('cardigan', 'hair', 'dress', 'collar') or name.startswith('sleeve') or name.startswith('sock') else 0))
     ranges[name] = [base, base + n]; tranges[name] = [tbase, tbase + len(p['T'])]; base += n; tbase += len(p['T'])
 V = np.vstack(Vs); W = np.vstack(Ws); N = len(V)
 W = np.maximum(W, 0)

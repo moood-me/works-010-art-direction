@@ -16,14 +16,22 @@ def _fill(a):
     return np.interp(i, i[ok], a[ok])
 
 
-def rings(rows=70, cols=64):
-    yd = np.r_[np.linspace(72, 120, 10), np.linspace(124, 452, rows - 10)]
+def rings(head_V=None, rows=70, cols=64):
+    yd = np.r_[np.linspace(80, 120, 9), np.linspace(124, 452, rows - 9)]
     f = D.spans(D.FRONT['hair'], yd); s = D.spans(D.SIDE['hairall'], yd); fa = D.spans(D.FRONT['face'], yd)
-    f[0] = [258, 266]; s[0] = [250, 280]
     cx = _fill((f[:, 0] + f[:, 1]) / 2 - H.XF); a = _fill((f[:, 1] - f[:, 0]) / 2)
     zf, zb = _fill(H.XS - s[:, 0]), _fill(H.XS - s[:, 1])
     inner = (fa[:, 1] - fa[:, 0]) / 2              # the face's half-width (nan above the hairline, below the chin)
     inner = np.where(np.isnan(inner) & (yd > 300), 58, inner)
+    # where the opening's edge lies: beside the face, at the depth of the head's own side (so the hair frames the face
+    # in three-quarter view, as drawn), never behind the profile's hair edge
+    if head_V is not None:
+        hy = H.CHIN_Y - head_V[:, 1] / H.K
+        for r in range(len(yd)):
+            m = abs(hy - yd[r]) < 5
+            if m.sum() and not np.isnan(inner[r]):
+                i = np.where(m)[0][np.argmax(abs(head_V[m, 0]))]
+                zf[r] = max(zf[r], 0.5 * zf[r] + 0.5 * (head_V[i, 2] / H.K))
     V = np.zeros((len(yd), cols, 3)); gap = np.zeros(len(yd))
     for r in range(len(yd)):
         zc = (zf[r] + zb[r]) / 2; db = zc - zb[r]
@@ -38,6 +46,15 @@ def rings(rows=70, cols=64):
         z = zc + np.where(cs > 0, df, db) * np.sign(cs) * abs(cs) ** (2 / P)
         V[r] = np.c_[cx[r] + x, np.full(cols, yd[r]), z]
         gap[r] = g
+    # the crown: a dome over the first ring, up to the drawing's top of the hair (y=66), its peak over the parting
+    top = V[0]; c = top.mean(0); c[0] = 262 - H.XF
+    dome = []
+    for u in np.linspace(0.92, 0.25, 6):
+        h = np.sqrt(1 - u * u)
+        R = c + (top - c) * u; R[:, 1] = yd[0] - (yd[0] - 66) * h
+        dome.append(R)
+    V = np.concatenate([np.array(dome[::-1]), V]); yd = np.r_[[d[0, 1] for d in dome[::-1]], yd]
+    gap = np.r_[np.zeros(len(dome)), gap]
     return V, yd, gap
 
 
@@ -46,7 +63,7 @@ def to_m(V):
 
 
 def build(head_V, head_N, thick=0.006):
-    R, yd, gap = rings()
+    R, yd, gap = rings(head_V)
     rows, cols, _ = R.shape
     O = to_m(R.reshape(-1, 3))
     # out of the head: every hair point at least 4 mm (more on the skull) outside the head's surface
@@ -88,7 +105,7 @@ def build(head_V, head_N, thick=0.006):
     for c in range(cols - 1):
         a, b = r * cols + c, r * cols + c + 1
         quad(a, n + a, n + b, b)
-    V = np.r_[V, O[0].mean(0, keepdims=True) + [0, 0.002, 0]]
+    V = np.r_[V, O[0].mean(0, keepdims=True) + [0, 0.001, 0]]
     top = len(V) - 1
     for c in range(cols): T.append([c, top, (c + 1) % cols][::-1])
     outer = np.zeros(len(V), bool); outer[:n] = True; outer[top] = True
