@@ -34,6 +34,9 @@ SHIRT="meta.upper=Shirt shirt.length=1.0 shirt.width=1.1 sleeve.sleeveless=false
 R=1.4 run outfit-shirt-pants $A $SHIRT meta.wb=StraightWB meta.bottom=Pants pants.length=0.85 pants.width=1.1
 R=1.4 run outfit-shirt-skirt $A $SHIRT meta.wb=StraightWB meta.bottom=SkirtCircle flare-skirt.suns=0.75 flare-skirt.length=0.45
 # the tool's own use: random designs from its sampler (tools/sample.py, seed 7), draped on Anny
-for k in 01 09 10; do n=rand$k; [ -n "$ONLY" ] && [ "$ONLY" != "$n" ] && continue
+# (at 1.6 only those two mesh; the others have short edges and would need 1.0: too slow here)
+for k in 01 09; do n=rand$k; [ -n "$ONLY" ] && [ "$ONLY" != "$n" ] && continue
   [ -f $GC/runs/moood-woman/${n}_sim/${n}_sim_sim.obj ] && continue
-  (cd $GC/src && PYTHONPATH=. $GC/venv/bin/python $T/gc_run.py --design $GC/runs/samples/$n.yaml --body $A --out $GC/runs/moood-woman --name $n $DRY 2>&1 | grep -v Progress | tail -4); done
+  (cd $GC/src && PYTHONPATH=. $GC/venv/bin/python $T/gc_run.py --design $GC/runs/samples/$n.yaml --body $A --out $GC/runs/moood-woman --name $n --res 1.6 $DRY 2>&1 | grep -v Progress | tail -4); done
+# the sewing film: the shirt with the skirt again, its cloth points saved every 4th frame (tools/film.py renders them)
+[ -z "$ONLY" -o "$ONLY" = film ] && [ ! -f $GC/runs/film/sewing_sim/sewing_sim_sim.obj ] && (cd $GC/src && PYTHONPATH=. $GC/venv/bin/python $T/gc_run.py --design $GC/runs/moood-woman/outfit-shirt-skirt/design_params.yaml --body $A --out $GC/runs/film --name sewing --res 1.4 --dump $GC/runs/film/frames $DRY 2>&1 | grep -v Progress | tail -3)

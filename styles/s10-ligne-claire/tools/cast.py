@@ -65,7 +65,7 @@ def sq(y, k, pivot=20.0):
 
 # ---------------------------------------------------------------------------------------------------- Аня
 def anya():
-    K = 0.86
+    K = 0.83
     h = Head(
         slices=squash([
             (-104, 6, -14, -6, -22, 2.0),
@@ -76,40 +76,50 @@ def anya():
             (-16, 66, -4, 73, -95, 2.7),
             (2, 64, -2, 70, -90, 3.0),
             (22, 62, 0, 75, -78, 3.0),
-            (40, 58, 4, 77, -58, 2.8),
-            (55, 52, 8, 77, -34, 2.5),
-            (68, 45, 14, 75, -8, 2.3),
-            (80, 34, 25, 71, 18, 2.2),
-            (90, 20, 40, 66, 38, 2.1),
-            (96, 7, 55, 60, 50, 2.0),
+            (40, 59, 4, 77, -58, 2.7),
+            (55, 54, 8, 77, -34, 2.4),
+            (68, 45, 14, 75, -8, 2.2),
+            (80, 32, 25, 72, 18, 2.1),
+            (90, 17, 40, 68, 38, 2.0),
+            (95, 6, 55, 62, 50, 2.0),
         ], K),
         nose=squash([(-4, 0, 6), (8, 2, 6), (20, 6, 7), (30, 11, 8), (35, 12.5, 10), (39, 7, 11), (42, 1, 10),
                      (44, 0, 8)], K),
         lips=squash([(46, 0, 16), (49, 2.6, 18), (52.5, 2.3, 19), (55, 0.4, 19), (58, 3.0, 16), (62, 2.0, 12),
                      (66, 0, 8)], K),
         chin=squash([(72, 0, 14), (81, 2.5, 17), (89, 2.5, 15), (95, 0, 9)], K),
-        neck=dict(z=-8, rx=27, rz=30, y0=36, y1=150),
+        neck=dict(z=-10, rx=32, rz=33, y0=36, y1=150),
         ear=dict(y=12, z=-16, ry=17, rz=10, out=11, tilt=0.12),
     )
     shell = Shell([
-        (-114, 8, -16, 2, -28, 2.0),
-        (-107, 42, -14, 32, -60, 2.0),
-        (-90, 64, -12, 58, -88, 2.1),
-        (-66, 75, -10, 72, -103, 2.3),
-        (-40, 77, -8, 78, -105, 2.5),
-        (-10, 76, -6, 80, -101, 2.6),
-        (20, 73, -4, 80, -94, 2.5),
-        (50, 71, -2, 76, -84, 2.3),
-        (66, 69, 0, 70, -76, 2.2),
-        (74, 62, 2, 64, -68, 2.0),
+        (-116, 8, -16, 2, -28, 2.0),
+        (-109, 44, -14, 34, -62, 2.0),
+        (-92, 68, -12, 60, -90, 2.0),
+        (-66, 78, -10, 74, -104, 2.1),
+        (-40, 80, -8, 80, -106, 2.2),
+        (-10, 78, -6, 82, -102, 2.2),
+        (20, 75, -4, 80, -96, 2.2),
+        (50, 74, -4, 74, -90, 2.1),
+        (80, 76, -6, 66, -86, 2.0),
+        (100, 82, -8, 58, -84, 2.0),
+        (112, 84, -10, 50, -80, 2.0),
     ])
-    # side parting on her right (the viewer's left); a soft wave sweeps across the forehead to the other side
-    # the fringe sweeps from the parting to her left and ends in three points over the temple
+    # the fringe sweeps from the parting to her left and ends in points over the temple
     hairline = [(-180, -20), (-90, -20), (-76, -22), (-62, -22), (-52, -16), (-45, -4), (-40, -14), (-34, -22),
                 (-27, -26), (-23, -18), (-19, -28), (-8, -36), (8, -44), (26, -52),
                 (36, -48), (50, -40), (64, -32), (78, -24), (90, -20), (180, -20)]
-    side_z = [(-60, -6), (0, 8), (30, 16), (60, 26), (80, 30)]
-    keep = hairline_keep(hairline, side_z)
+    hl = np.array(hairline, float)
+
+    def keep(X, Y, Z, a):
+        # shoulder-length hair: on her right (x < 0) it frames the cheek, on her left it is tucked behind the ear
+        d = wrapdeg(a)
+        m = Y < np.interp(d, hl[:, 0], hl[:, 1])
+        front_r = np.interp(Y, [-40, 0, 40, 70, 112], [-6, 10, 22, 26, 20])
+        front_l = np.interp(Y, [-40, 0, 40, 70, 112], [-16, -22, -18, -4, 6])
+        m |= np.where(d > 0, Z < front_r, Z < front_l)
+        saw = 1 - np.abs((d / 13) % 2 - 1)          # lock tips along the ends
+        ends = 96 + 12 * saw ** 1.6
+        return m & (Y < ends)
     h.extra_parts.append(lambda hd, res: [shell.part('hair', 'hair', res, keep)])
 
     def locks(hd, e, view):
@@ -127,9 +137,9 @@ def anya():
         ms.append(Mark(c([(29, -111), (28, -100), (26, -86)]), w=0.8, on='hair'))
         return ms
     h.marks.append(face_marks(
-        eye=dict(x=27, y=4, w=12.5, lashes=True, pupil=(4.0, 5.4), lidw=1.45, lid=0.85),
-        brow=dict(x=28, y=-12, len=13, th=1.2, colour='#7a2e14', arch=3.4),
-        mouth=dict(y=sq(54, K), w=12.5, smile=0.25),
+        eye=dict(x=28, y=6, w=14, lashes=True, pupil=(4.6, 6.0), lidw=1.4, lid=0.82),
+        brow=dict(x=29, y=-11, len=13.5, th=1.1, colour='#7a2e14', arch=4.2),
+        mouth=dict(y=sq(54, K), w=11.5, smile=0.3, lower_y=6),
         nose=dict(y=sq(37, K), w=6)))
     h.marks.append(locks)
     colours = {'skin': SKIN, 'hair': '#c4562a'}
@@ -163,25 +173,28 @@ def savely():
                      (73, 0, 10)], K),
         chin=squash([(76, 0, 18), (84, 3, 22), (91, 3, 20), (97, 0, 12)], K),
         brow=[(-22, 0, 46), (-14, 4, 50), (-8, 3, 48), (-2, 0, 34)],
-        neck=dict(z=-12, rx=34, rz=36, y0=40, y1=160),
+        neck=dict(z=-14, rx=46, rz=42, y0=40, y1=160),
         ear=dict(y=12, z=-18, ry=22, rz=12, out=14, tilt=0.15),
     )
     # white hair: a horseshoe round the back and over the ears, fluffy, the dome bald
     shell = Shell([
-        (-80, 64, -14, 40, -88, 2.1),
-        (-60, 78, -12, 60, -104, 2.2),
-        (-40, 83, -10, 66, -108, 2.3),
-        (-16, 84, -8, 70, -106, 2.5),
-        (6, 83, -6, 68, -100, 2.5),
-        (26, 80, -4, 60, -90, 2.3),
-        (40, 72, -2, 50, -80, 2.1),
+        (-80, 62, -14, 40, -86, 2.1),
+        (-60, 76, -12, 60, -102, 2.2),
+        (-40, 80, -10, 66, -105, 2.3),
+        (-16, 81, -8, 70, -103, 2.5),
+        (6, 80, -6, 68, -97, 2.5),
+        (26, 77, -4, 60, -88, 2.3),
+        (40, 70, -2, 50, -78, 2.1),
     ])
 
     def keep(X, Y, Z, a):
-        d = np.abs(wrapdeg(a))
-        top = np.interp(d, [0, 70, 85, 110, 180], [200, 200, -10, -34, -46])
-        bot = np.interp(d, [0, 70, 85, 100, 140, 180], [-200, -200, 10, 22, 32, 34])
-        return (Y > top) & (Y < bot) & (Z < -8)
+        # a fluffy horseshoe round the back, from the temples over the ears; wavy edges
+        dd = wrapdeg(a)
+        d = np.abs(dd)
+        wave = 5 * np.sin(np.radians(dd) * 14)
+        top = np.interp(d, [0, 74, 90, 120, 180], [200, 200, -14, -32, -40]) + wave
+        bot = np.interp(d, [0, 74, 90, 110, 150, 180], [-200, -200, 8, 20, 30, 32]) + wave
+        return (Y > top) & (Y < bot) & (Z < -4 + 0.4 * (Y + 14))
     skull = Shell(h.p['slices'])
 
     def hair_parts(hd, res):
@@ -249,7 +262,7 @@ def tim():
         lips=squash([(48, 0, 14), (51, 1.6, 16), (54, 1.4, 16), (56, 0.3, 16), (59, 2.0, 14), (62, 1.2, 10),
                      (66, 0, 8)], K),
         chin=squash([(72, 0, 14), (82, 2, 16), (90, 2, 14), (95, 0, 8)], K),
-        neck=dict(z=-6, rx=24, rz=26, y0=36, y1=150),
+        neck=dict(z=-8, rx=33, rz=32, y0=36, y1=150),
         ear=dict(y=16, z=-14, ry=18, rz=11, out=17, tilt=0.1),
     )
     shell = Shell([
@@ -264,9 +277,9 @@ def tim():
         (46, 70, 0, 60, -80, 2.1),
     ])
     # straw hair, cut short and uneven: the hairline is a row of points
-    hl = [(-180, 40), (-120, 34), (-96, 8), (-86, -10), (-80, -6), (-74, -28), (-64, -24), (-56, -42),
-          (-44, -34), (-36, -50), (-24, -40), (-14, -54), (-4, -42), (8, -56), (18, -44), (28, -54), (38, -40),
-          (48, -48), (58, -32), (66, -40), (74, -22), (82, -26), (88, -8), (96, 8), (120, 34), (180, 40)]
+    hl = [(-180, 40), (-120, 34), (-96, 8), (-88, -8), (-80, -24), (-70, -20), (-62, -40), (-50, -34),
+          (-40, -40), (-30, -28), (-22, -44), (-8, -50), (2, -34), (12, -52), (26, -50), (36, -36), (46, -48),
+          (60, -46), (68, -30), (78, -34), (86, -14), (96, 8), (120, 34), (180, 40)]
     side_z = [(-60, -12), (0, -10), (40, -8)]
     keep = hairline_keep(hl, side_z)
     skull = Shell(h.p['slices'])
@@ -337,7 +350,7 @@ def vera():
         lips=squash([(49, 0, 15), (52, 1.6, 17), (55, 1.4, 18), (57, 0.3, 18), (60, 1.8, 15), (63, 1.2, 11),
                      (67, 0, 8)], K),
         chin=squash([(72, 0, 14), (81, 3, 17), (89, 3, 15), (95, 0, 9)], K),
-        neck=dict(z=-10, rx=26, rz=29, y0=40, y1=160),
+        neck=dict(z=-12, rx=36, rz=35, y0=40, y1=160),
         ear=dict(y=12, z=-16, ry=17, rz=10, out=10, tilt=0.12),
     )
     # dark hair drawn back tight from a side parting into a knot at the back
@@ -365,9 +378,6 @@ def vera():
         Y = 2 + 24 * np.cos(v)
         Z = -112 + 18 * np.sin(u) * np.sin(v)
         ps.append(r3.Part('knot', 'hair', X, Y, Z))
-        # the grey streak from the parting, swept back
-        ps.append(lock_part(shell, [(4, -63), (12, -76), (26, -88), (50, -88), (80, -70), (110, -46), (135, -22)],
-                            [4, 6, 7, 7, 6, 5, 3], lift=1.2, name='streak', material='grey', res=res))
         return ps
     h.extra_parts.append(hair_parts)
 
@@ -380,6 +390,10 @@ def vera():
                     [(26, -86), (54, -70), (80, -46), (104, -16)],
                     [(-26, -104), (-80, -84), (-130, -50), (-160, -14)]):
             ms.append(Mark(c(pts), w=0.6, on='hair', stroke='#4e5a70'))
+        # grey at the temple: a few light strands swept back from the parting
+        for k in range(3):
+            ms.append(Mark(c([(10 + k * 5, -64 - k * 2), (34 + k * 4, -76 - k * 2), (70 + k * 3, -64 - k * 3),
+                              (100, -38 - k * 4)]), w=1.1, on='hair', stroke='#b9bcc4'))
         # tiredness: a fold under each eye, a line by the mouth
         for s in (1, -1):
             ms.append(F.face_line(hd, s * 19, sq(44, K), [(0, 0), (s * 3, 6), (s * 4, 11)], w=0.45))

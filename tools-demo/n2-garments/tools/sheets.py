@@ -34,15 +34,15 @@ if want('everyday'):
     sheet('everyday.webp', [(fig('outfit-shirt-skirt'), 'рубашка и юбка'), (fig('outfit-shirt-pants'), 'рубашка и брюки'),
                             (fig('outfit-shirt-skirt', 160), 'сзади'), (fig('outfit-shirt-pants', 160), 'сзади')], 4)
 if want('variants'):
-    sheet('variants.webp', [(fig('dress-bell'), 'исходное: suns = 1, длина 0.6'), (fig('var-suns03'), 'suns = 0.3'),
+    sheet('variants.webp', [(fig('dress-bell16'), 'исходное: suns = 1, длина 0.6'), (fig('var-suns03'), 'suns = 0.3'),
                             (fig('var-suns15-short'), 'suns = 1.5, длина 0.35'), (fig('var-vneck-short'), 'V-вырез, длина 0.4')], 4)
 if want('patterns'):
     sheet('patterns.webp', [(pattern('dress-bell'), 'платье-колокол'), (pattern('dress-aline-puff'), 'А-силуэт с фонариком'),
                             (pattern('outfit-shirt-pants'), 'рубашка с брюками'), (pattern('dress-trapeze'), 'прямое свободное')], 2)
 if want('fit'):
-    sheet('fit.webp', [(fig('dress-bell'), 'Anny (наше тело): рост 158, талия 67'),
+    sheet('fit.webp', [(fig('dress-bell16'), 'Anny (наше тело): рост 158, талия 67'),
                        (fig('dress-bell', 20, 'mean_female'), 'тело GarmentCode: рост 166, талия 80')], 2)
 if want('samples'):
     import glob
     sheet('samples-patterns.webp', [(pattern(f'rand{k:02d}', 'samples', (420, 300)), f'{k + 1}') for k in range(12)], 4)
-    sheet('samples-draped.webp', [(fig(f'rand{k}'), f'случайный {int(k) + 1}') for k in ('01', '09', '10')], 3)
+    sheet('samples-draped.webp', [(fig(f'rand{k}'), f'случайный {int(k) + 1}') for k in ('01', '09')], 2)

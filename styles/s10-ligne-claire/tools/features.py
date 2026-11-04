@@ -15,10 +15,10 @@ from head import Mark
 EXPR = {
     'calm': dict(),
     'dream': dict(lid=0.55, brow=1.5, tilt=1.5, smile=0.35, look=(1.5, -0.5)),
-    'joy': dict(lid=0.0, happy=True, brow=3, smile=1.0, open=7, squint=1),
-    'surprise': dict(lid=1.25, brow=7, open=8, round=True, smile=0.0),
-    'sad': dict(lid=0.5, brow=1, tilt=5, smile=-0.8, look=(0, 1.5)),
-    'anger': dict(lid=0.75, brow=-4, tilt=-6, smile=-0.5, open=5, teeth=True, squint=0.6),
+    'joy': dict(lid=0.0, happy=True, brow=3, smile=1.0, open=12, mw=1.35, squint=1),
+    'surprise': dict(lid=1.25, brow=8, open=13, mw=1.2, round=True, smile=0.0),
+    'sad': dict(lid=0.5, brow=1, tilt=5, smile=-1.3, mw=1.1, look=(0, 1.5)),
+    'anger': dict(lid=0.75, brow=-4, tilt=-6, smile=-0.6, open=10, mw=1.35, teeth=True, squint=0.6),
 }
 
 
@@ -113,7 +113,7 @@ def brow_marks(h, side, e, st):
 
 def mouth_marks(h, e, st):
     y = st['y']
-    W = st.get('w', 11)
+    W = st.get('w', 11) * ex(e, 'mw', 1.0)
     sm = ex(e, 'smile', st.get('smile', 0.15))
     op = ex(e, 'open', 0)
     out = []
