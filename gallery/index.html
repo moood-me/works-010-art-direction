@@ -18,6 +18,9 @@
   aside a { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 14px; }
   aside a:hover { background: var(--card); }
   aside a.on { background: var(--card); box-shadow: inset 3px 0 0 var(--accent); }
+  aside a.ovl { font-weight: 600; }
+  .home { display: inline-block; margin-bottom: 10px; color: var(--accent); text-decoration: none; font-size: 14px; }
+  .home:hover { text-decoration: underline; }
   aside a .n { color: var(--accent); font-weight: 700; min-width: 26px; }
   aside a .dot { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; flex: none; background: currentColor; }
   main { flex: 1; min-width: 0; padding: 24px 28px 64px; max-width: 1300px; }
@@ -68,7 +71,7 @@
 </style>
 </head>
 <body>
-<aside id="side"><h1><a href="#" style="padding:0">Art direction</a></h1><p class="sub">Код пути — буква группы и номер (Т5 — тело, путь 5). Картинка — через дефис: «Т5-б».</p></aside>
+<aside id="side"><h1><a href="#" style="padding:0">Art direction</a></h1><p class="sub">Код пути — буква группы и номер (Т5 — тело, путь 5). Картинка — через дефис: «Т5-б».</p><a href="#" id="toOv" class="ovl">Обзор всех путей</a></aside>
 <main><select id="menuSel" aria-label="Путь"></select><div id="view"></div></main>
 <div id="lb" role="dialog" aria-modal="true"><div class="imgbox"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div>
 <button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
@@ -226,7 +229,7 @@ const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'О
 sel.onchange = () => { location.hash = sel.value ? '#' + sel.value : '#'; };
 let cur = null, idx = 0;
 function overview() {
-  cur = null; side.querySelectorAll('a').forEach(a => a.classList.remove('on')); sel.value = '';
+  cur = null; side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.id === 'toOv')); sel.value = '';
   view.innerHTML = '<div class="ov"><h2>Обзор всех путей</h2><p class="what">Каждая карточка — путь. Код: буква группы и номер (Т5). Картинки внутри — через дефис (Т5-б). Цвет — статус: зелёный нравится, жёлтый более-менее, красный тупик.</p></div>';
   const ov = view.firstChild;
   for (const g of groups) {
@@ -271,7 +274,7 @@ function show(id) {
   if (!id) return overview();
   const it = all.find(x => x.id == id) || all[0]; cur = it; sel.value = it.id;
   side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id == it.id));
-  view.innerHTML = `<h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
+  view.innerHTML = `<a class="home" href="#">← Обзор всех путей</a><h2><span class="id">${it.id}</span>${it.name}<span class="st ${it.st}">${it.stt}</span></h2>
     <p class="rel">${it.rel || ''}</p><p class="what">${it.what}</p>${it.verdict ? `<p class="verdict">${it.verdict}</p>` : ''}${VIEW3D[it.id] ? `<div class="tabs"><button data-t="pics">Картинки</button><button data-t="3d">${it.id === 'В1' ? '3D: волосы в движении' : '3D: вращать и двигать'}</button></div>` : ''}<div class="grid"></div><div class="d3"></div>`;
   const grid = view.querySelector('.grid'), d3 = view.querySelector('.d3');
   const setTab = t => {
