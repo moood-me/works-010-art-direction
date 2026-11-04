@@ -9,16 +9,29 @@
 //              it; the lowest point of a standing figure is on the floor
 //   order      layers run in the order they are listed (two orders give two figures; a code layer before a change of
 //              the rest sets its weight); a change of the rest as a layer at weight 1 is the same change on the rest
-//   node engine/check/quality.mjs [--only skin,bones,feet,order] [--print]   (--print: every measure, not only failures)
+//   heads      every character with a head (src/head/): no triangle of the head turned (against its designed form where
+//              it is wrapped on one, else against the body it was made from); no edge of the head and neck stretched past
+//              its limit at the rest, and in motion and in expressions no more than the plain body's skinning stretches it;
+//              no crease where the head meets the neck (the angle between neighbouring triangles where the head's
+//              change fades out down the neck, no sharper than on the plain body); features stay on the skin (painted ones only on the face's front; reliefs at their
+//              lift over the skin in motion); pieces stay on the head in motion (a nose piece's root against the skin)
+//   node engine/check/quality.mjs [--only skin,bones,feet,order,heads] [--print]   (--print: every measure, not only failures)
 import { createEngine } from '../src/engine.js';
 import { read } from './node-read.mjs';
 import { resolve } from '../src/character.js';
 import { turnedOver } from '../src/regions.js';
+import { headShares } from '../src/head/frame.js';
+import { formOnBody } from '../src/head/wrap.js';
+import { gradOf } from '../src/head/shapes.js';
+import { cross } from '../src/math.js';
+import { neighboursOf } from '../src/mesh.js';
 
 const E = await createEngine({ read }), sk = E.skeleton;
 const argv = process.argv.slice(2), only = argv.includes('--only') ? argv[argv.indexOf('--only') + 1].split(',') : null, PRINT = argv.includes('--print');
 const presets = (await E.presets()).presets, chars = (await E.characters()).characters;
-const FULL = chars.filter(c => !['woman', 'man', 'girl', 'boy', 'child', 'oldwoman', 'oldman', 'hero', 'elf', 'princess-toddler-head'].includes(c.id)).map(c => c.id);
+const HEADS = [];
+for (const c of chars) if ((await E.description(c.id)).head) HEADS.push(c.id);
+const FULL = chars.filter(c => !['woman', 'man', 'girl', 'boy', 'child', 'oldwoman', 'oldman', 'hero', 'elf', 'princess-toddler-head'].includes(c.id) && !HEADS.includes(c.id)).map(c => c.id);
 const BODIES = ['moood-woman', 'moood-child', 'moood-oldman', 'anny-m-heavy', 'anny-T-chibi-baby17'];
 const MOMENTS = [['walk', 30], ['run', 20], ['sit', 100], ['jump', 45], ['dance', 60]];
 let failed = 0, passed = 0;
@@ -33,10 +46,12 @@ const pinOf = id => presets.find(p => p.id === id).pin;
 const bodyPin = async id => `${id}@${(await E.body(id)).hash.slice(0, 16)}`;
 
 // the most any edge is stretched: its length in `to` against its length in `from` — or in `also` (another state),
-// whichever is longer (a change of the rest that shortened an edge doesn't make its length in motion a tear)
-function stretch(mesh, from, to, also = null) {
+// whichever is longer (a change of the rest that shortened an edge doesn't make its length in motion a tear); only:
+// which edges count (by their two vertices)
+function stretch(mesh, from, to, also = null, only = null) {
   const T = mesh.triangles, L = (P, a, b) => Math.hypot(P[a] - P[b], P[a + 1] - P[b + 1], P[a + 2] - P[b + 2]); let worst = 0;
   for (let t = 0; t < T.length; t += 3) for (let e = 0; e < 3; e++) {
+    if (only && !only(T[t + e], T[t + (e + 1) % 3])) continue;
     const a = T[t + e] * 3, b = T[t + (e + 1) % 3] * 3, l0 = Math.max(L(from, a, b), also ? L(also, a, b) : 0); if (l0 < 1e-5) continue;
     const r = L(to, a, b) / l0; if (r > worst) worst = r;
   }
@@ -54,6 +69,8 @@ if (!only || only.includes('skin')) {
     const base = await E.body(id), pin = await bodyPin(id), roomy = id.startsWith('moood-');
     for (const p of presets) {
       if (p.group === 'pictogram') continue;
+      // (the head's parts are no changes of a body; a wrap is measured against its own form: below, heads)
+      const content = await E.preset(p.pin); if (!content.changes || content.changes.some(c => c.kind === 'wrap')) continue;
       const r = await E.restBody(await E.expand(resolve({ ...structuredClone(woman), body: pin, rest: [{ kind: 'preset', id: p.pin, frames: 'keep' }] }, sk)));
       check(`${p.id} on ${id}: triangles turned over`, turnedOver(base.mesh.triangles, base.mesh.positions, r.mesh.positions, base.mesh.isUsed).n, roomy ? 0 : PUSHED[p.id] ?? 0);
     }
@@ -71,6 +88,32 @@ if (!only || only.includes('skin')) {
       check(`${c} ${m}${t}: edge stretch in motion against the plain body's`, own / ref, 1.2, '×');
     }
   }
+}
+
+// a piece's nearest points to the skin at the rest (within 4 mm): how much farther from the skin they are now (mm) —
+// the skin's nearest of the head's vertices, against the same at the rest
+function pieceGap(piece, skin, body) {
+  const R = piece.mesh.positions, S = body.mesh.positions, near = [];
+  for (const i of piece.mesh.used) { let b = -1, d = Infinity; for (let j = 0; j < body.mesh.N; j += 1) { if (!body.mesh.isUsed[j]) continue; const e = Math.hypot(R[i * 3] - S[j * 3], R[i * 3 + 1] - S[j * 3 + 1], R[i * 3 + 2] - S[j * 3 + 2]); if (e < d) { d = e; b = j; } } if (d < 0.004) near.push([i, b, d]); if (near.length > 40) break; }
+  let worst = 0; for (const [i, j, d0] of near) { const p = piece.positions, q = skin.positions; worst = Math.max(worst, Math.hypot(p[i * 3] - q[j * 3], p[i * 3 + 1] - q[j * 3 + 1], p[i * 3 + 2] - q[j * 3 + 2]) - d0); }
+  return worst * 1000;
+}
+// a relief: how far its points are from where their lift over the skin puts them (mm)
+function reliefGap(o, host) {
+  const m = o.mesh, T = host.mesh.triangles, P = host.positions; let worst = 0;
+  for (let v = 0; v < m.N; v++) {
+    const t = m.tri[v] * 3, [a, b, c] = [T[t] * 3, T[t + 1] * 3, T[t + 2] * 3], w = [m.bary[v * 3], m.bary[v * 3 + 1], m.bary[v * 3 + 2]];
+    const base = [0, 1, 2].map(k => w[0] * P[a + k] + w[1] * P[b + k] + w[2] * P[c + k]), d = Math.hypot(...[0, 1, 2].map(k => o.positions[v * 3 + k] - base[k]));
+    worst = Math.max(worst, Math.abs(d - m.lift[v]));
+  }
+  return worst * 1000;
+}
+// the sharpest angle (degrees) between two triangles that share an edge, among triangles `in(t)`
+function sharpest(mesh, P, inside) {
+  const T = mesh.triangles, byEdge = new Map(), nrm = t => { const a = T[t] * 3, b = T[t + 1] * 3, c = T[t + 2] * 3, n = cross([P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], [P[c] - P[a], P[c + 1] - P[a + 1], P[c + 2] - P[a + 2]]), l = Math.hypot(...n) || 1; return n.map(v => v / l); };
+  let worst = 0;
+  for (let t = 0; t < T.length; t += 3) { if (!inside(t)) continue; for (let e = 0; e < 3; e++) { const a = T[t + e], b = T[t + (e + 1) % 3], k = Math.min(a, b) + ',' + Math.max(a, b); if (byEdge.has(k)) { const n1 = nrm(byEdge.get(k)), n2 = nrm(t); worst = Math.max(worst, Math.acos(Math.max(-1, Math.min(1, n1[0] * n2[0] + n1[1] * n2[1] + n1[2] * n2[2]))) * 180 / Math.PI); } else byEdge.set(k, t); } }
+  return worst;
 }
 
 // a figure's bones in a moment
@@ -136,6 +179,55 @@ if (!only || only.includes('order')) {
   zero.frame(clip, 30, zero.pose); plain.frame(clip, 30, plain.pose);
   let w = 0; for (const i of plain.outputs[0].mesh.used) w = Math.max(w, Math.hypot(...[0, 1, 2].map(c => zero.positions[i * 3 + c] - plain.positions[i * 3 + c])));
   check('a change of the rest as a layer weighed 0 by a code layer before it: off the plain body', w * 1000, 0.5, ' mm');
+}
+
+if (!only || only.includes('heads')) {
+  const HM = [['walk', 30], ['run', 20], ['look-around', 60], ['dance', 60], ['sit', 100]], EXPR = ['blink', 'open', 'smile', 'browsUp'];
+  for (const c of HEADS) {
+    const spec = await E.character(c), base = await E.body(spec.body), { body } = await E.headBody(spec), mesh = body.mesh, P = mesh.positions, T = mesh.triangles;
+    const { omega } = headShares(mesh, sk), F = body.head.frame, wrap = spec.head.wrap;
+    const inHead = t => Math.min(omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]) > 0.9, band = t => { const w = [omega[T[t]], omega[T[t + 1]], omega[T[t + 2]]]; return Math.max(...w) > 0.05 && Math.max(...w) < 0.7; };
+    // turned triangles
+    let turned = 0;
+    if (wrap) {
+      const G = formOnBody(wrap.form, await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.formAt) }), wrap.neckSlim ?? 0.78), g = [0, 0, 0];
+      for (let t = 0; t < T.length; t += 3) {
+        if (!inHead(t)) continue; const a = T[t] * 3, b = T[t + 1] * 3, d = T[t + 2] * 3;
+        const n = cross([P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], [P[d] - P[a], P[d + 1] - P[a + 1], P[d + 2] - P[a + 2]]);
+        gradOf(G.sdf, ...F.toL((P[a] + P[b] + P[d]) / 3, (P[a + 1] + P[b + 1] + P[d + 1]) / 3, (P[a + 2] + P[b + 2] + P[d + 2]) / 3), 0.004, g);
+        // (under a nose set on as its own piece the skin is hidden: what folds there inside the piece doesn't count)
+        const l = F.toL((P[a] + P[b] + P[d]) / 3, (P[a + 1] + P[b + 1] + P[d + 1]) / 3, (P[a + 2] + P[b + 2] + P[d + 2]) / 3);
+        if (n[0] * g[0] + n[1] * g[1] + n[2] * g[2] < 0 && !(G.piece && G.nose(...l) < 0.05)) turned++;
+      }
+    } else turned = turnedOver(T, base.mesh.positions, P, mesh.isUsed).n;
+    check(`${c}: head triangles turned${wrap ? ' against its designed form' : ''}`, turned, wrap ? 3 : 0);
+    // stretch: the head and neck at the rest against the base, and in motion against the plain body's skinning
+    const headMesh = { triangles: Uint32Array.from([...Array(T.length / 3).keys()].filter(k => Math.max(omega[T[k * 3]], omega[T[k * 3 + 1]], omega[T[k * 3 + 2]]) > 0.05).flatMap(k => [T[k * 3], T[k * 3 + 1], T[k * 3 + 2]])) };
+    check(`${c} at rest: head edge stretch against its base body`, stretch(headMesh, base.mesh.positions, P), wrap ? 12 : 9, '×');   // (a wrap draws Anny's head out onto another form; Anny's own small nose and big eyes stretch her nostrils' and closed eye's own tiny edges up to 8×)
+    const fig = await E.figure(c), plain = await E.figure(resolve({ ...structuredClone(woman), body: spec.body }, sk));
+    for (const [m, t] of HM) {
+      const clip = await E.clip(m); fig.frame(clip, t, fig.pose); plain.frame(clip, t, plain.pose);
+      check(`${c} ${m}${t}: head edge stretch in motion against the plain body's`, stretch(headMesh, P, fig.positions) / stretch(headMesh, base.mesh.positions, plain.positions), 1.3, '×');
+      // a piece's root against the skin: the nose piece's points nearest the skin at the rest stay as near
+      const nose = fig.outputs.find(o => o.name === 'nose');
+      if (nose) check(`${c} ${m}${t}: the nose piece off the skin, beyond its rest`, pieceGap(nose, fig.outputs[0], body), 3, ' mm');
+      for (const o of fig.outputs.filter(o => o.mesh.kind === 'attached')) check(`${c} ${m}${t}: the relief ${o.name} off its lift over the skin`, reliefGap(o, fig.outputs[0]), 0.1, ' mm');
+    }
+    // in the expressions: no edge stretched more than 2.5×
+    // (an open jaw: the lips between what the jaw carries and what it doesn't open — the skin there is the mouth's opening)
+    const { jaw } = headShares(mesh, sk), firm = (a, b) => (jaw[a] < 0.05 && jaw[b] < 0.05) || (jaw[a] > 0.95 && jaw[b] > 0.95);
+    for (const x of EXPR.filter(x => body.head.expressions[x])) {
+      const f = await E.figure({ ...spec, pose: [{ kind: 'expression', name: x, weight: 1 }] }); f.frame(null, 0, f.pose);
+      const jawed = !!body.head.expressions[x].jaw;
+      check(`${c} ${x}: head edge stretch in the expression${jawed ? ' (but the lips that open)' : ''}`, stretch(headMesh, P, f.positions, null, jawed ? firm : null), 2.5, '×');
+    }
+    // no crease at the join: the sharpest angle between neighbouring triangles in the band between head and neck
+    // (the old man's jowls meet his neck in a shelf at the back, under his hood: Г3's form, left as it is)
+    check(`${c}: the sharpest fold where the head meets the neck, beyond the plain body's`, Math.max(0, sharpest(mesh, P, band) - sharpest(mesh, base.mesh.positions, band)), c === 'head-old' ? 60 : 25, '°');
+    // painted features only on the face's front: nothing behind the head (z < −0.15) or down the body shows the drawing
+    let off = 0; for (const i of mesh.used) { const l = F.toL(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); if ((omega[i] <= 0.2 || l[2] <= -0.15) && mesh.paintMask[i] > 0) off++; }
+    check(`${c}: vertices behind the face or on the body that show the face's drawing`, off, 0);
+  }
 }
 
 console.log(failed ? `${failed} of ${passed + failed} contracts broken` : `all ${passed} contracts hold`);

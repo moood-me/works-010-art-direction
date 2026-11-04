@@ -16,7 +16,7 @@ import { createEngine } from '../src/engine.js';
 import { makeStage, figureView } from '../src/view3d.js';
 import { figureOf } from './cases.mjs';
 const E = await createEngine(), stage = makeStage(THREE, document.getElementById('cv'));
-const VIEWS = { front: [0, 0.06], side: [Math.PI / 2, 0.06], back: [Math.PI, 0.06], three: [0.6, 0.18], top: [0.3, 1.15] };
+const VIEWS = { front: [0, 0.06], side: [Math.PI / 2, 0.06], back: [Math.PI, 0.06], three: [0.6, 0.18], top: [0.3, 1.15], tq: [0.62, 0.02], level: [0, 0.02], profile: [1.45, 0.02] };
 let view = null;
 window.render = async (job, w, h) => {
   const { fig } = await figureOf(E, job);

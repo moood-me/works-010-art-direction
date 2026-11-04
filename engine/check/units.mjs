@@ -9,6 +9,7 @@ import { Pose } from '../src/pose.js';
 import { withRest } from '../src/changes.js';
 import { DEFORMERS } from '../src/deform.js';
 import { regionsOf } from '../src/regions.js';
+import { headShares } from '../src/head/frame.js';
 
 const E = await createEngine({ read });
 let failed = 0, passed = 0;
@@ -19,6 +20,10 @@ const woman = await E.description('woman');
 const desc = o => ({ ...structuredClone(woman), ...o });
 const maxApart = (a, b, idx) => { let m = 0; for (const i of idx) m = Math.max(m, Math.hypot(a[i * 3] - b[i * 3], a[i * 3 + 1] - b[i * 3 + 1], a[i * 3 + 2] - b[i * 3 + 2])); return m; };
 const all = n => Array.from({ length: n }, (_, i) => i);
+// the head's deformers, each with what it needs (src/head/)
+const { kind: _wrap, ...wrapCase } = (await E.preset('head-red')).head.form[0];
+const HEAD_CASES = { wrap: wrapCase, face: { changes: { 'nose-scale-vert-incr': 1 } }, headOf: { body: `moood-child@${(await E.body('moood-child')).hash.slice(0, 16)}` },
+  points: { moves: { noseTip: [0, 0, 0.2] } }, cage: { moves: [{ at: [1, 2, 2], by: [0, 0.2, 0] }] }, warps: { warps: [{ kind: 'push', at: [0, -0.6, 0.9], r: 0.3, by: [0, 0, 0.2] }] } };
 
 await test('a description: unknown keys and values refused', async () => {
   await refuses(() => resolve(desc({ colour: 'red' }), E.skeleton), /unknown key "colour"/);
@@ -34,7 +39,7 @@ await test('a description: unknown keys and values refused', async () => {
 await test('a description of an earlier version: refused with the way to upgrade; the upgrade gives the stored preset', async () => {
   const v1 = { format: 'engine/character', version: 1, id: 'woman', label: woman.label, body: 'moood-woman',
     skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} }, look: woman.look };
-  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 3/);
+  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 4/);
   const up = upgrade(v1, { bodyPin: woman.body });
   ok(JSON.stringify(resolve(up, E.skeleton)) === JSON.stringify(resolve(woman, E.skeleton)), 'the upgraded woman is not the preset');
   const v1c = { ...v1, skinning: { method: 'dqs', clavicleShare: 1 / 3 }, motion: { corrections: { armsOff: { degrees: 5 }, dampHeadSpine: { on: false } } } };
@@ -155,7 +160,7 @@ await test('deformers in a description: unknown parameters refused; a deformer t
 await test('every deformer at strength 0 leaves the body as it is (at rest, and as a pose layer)', async () => {
   const b = await E.body(woman.body), clip = await E.clip('walk'), plain = await E.figure('woman'); plain.frame(clip, 30, plain.pose);
   const P = { line: {}, squash: {}, contrapposto: {}, taper: {}, straight: {}, arc: {}, silhouette: { keys: [{ at: 'waist', width: 0.7, depth: 0.8, forward: 0.02 }] }, proportions: { parts: { head: { size: 1.4 }, thigh: { length: 1.3 } } },
-    caricature: {}, anatomy: {}, smooth: {}, contour: { edits: [{ part: 'legs', dir: 'outer', keys: [[0, 1.5], [1, 1]] }] }, masses: { items: [{ shape: 'ellipsoid', at: { from: 'Hips' }, radii: [1, 1, 1] }] }, sign: {} };
+    caricature: {}, anatomy: {}, smooth: {}, contour: { edits: [{ part: 'legs', dir: 'outer', keys: [[0, 1.5], [1, 1]] }] }, masses: { items: [{ shape: 'ellipsoid', at: { from: 'Hips' }, radii: [1, 1, 1] }] }, sign: {}, ...HEAD_CASES };
   for (const kind of Object.keys(DEFORMERS)) {
     ok(kind in P, `no case for the deformer ${kind}`);
     const spec = resolve(desc({ rest: [{ kind, ...P[kind], strength: 0, frames: 'keep' }] }), E.skeleton), r = await E.restBody(spec);
@@ -195,6 +200,7 @@ await test('every preset makes a body, and its index and every character pin it 
   for (const p of index.presets) {
     const now = await E.preset(p.pin);
     ok(now.label.ru && now.label.en && now.about?.ru && now.about?.en, `preset ${p.id} has no label or about in both languages`);
+    if (!now.changes) continue;   // the head's parts: their own contracts (heads.mjs)
     const spec = await E.expand(resolve(desc({ rest: [{ kind: 'preset', id: p.pin, frames: 'keep' }] }), E.skeleton)), r = await E.restBody(spec);
     let bad = 0; for (const i of r.mesh.used) for (let c = 0; c < 3; c++) if (!Number.isFinite(r.mesh.positions[i * 3 + c])) bad++;
     // (a mass smaller than the body's own form there adds nothing: a mass is a union)
@@ -206,7 +212,7 @@ await test('a character that starts from another (a full-body preset as a part):
   const princess = await E.description('disney-princess'), base = await E.base(`disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`);
   ok(base.id === 'disney-princess', 'the base was not read');
   const pin = `disney-princess@${(await import('../src/hash.js')).hashOf([princess]).slice(0, 16)}`;
-  const mine = { format: 'engine/character', version: 3, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
+  const mine = { format: 'engine/character', version: 4, id: 'my-princess', label: { ru: 'моя', en: 'mine' }, base: pin,
     rest: [{ kind: 'squash', stretch: 0.1, frames: 'keep' }], pose: [{ kind: 'armsOff', degrees: 5 }], look: { skin: '#aa8877' } };
   const spec = await E.resolve(mine), p = await E.resolve(princess);
   ok(spec.body === p.body && spec.rest.length === p.rest.length + 1 && spec.rest.at(-1).kind === 'squash' && spec.pose.at(-1).kind === 'armsOff', 'not the base and then its own');
@@ -225,5 +231,54 @@ await test('regions: landmarks in order on every body; parts and limbs of every 
   }
 });
 
+await test('heads: every head preset makes a head on its body; a head is refused where it is wrong; a head from a preset with its own changes', async () => {
+  const index = await E.presets();
+  for (const p of index.presets.filter(p => p.group === 'head')) {
+    const ch = (await E.characters()).characters.find(c => c.id === p.id); if (!ch) continue;
+    const f = await E.figure(ch.id); f.frame(null, 0, f.pose);
+    let bad = 0; for (const o of f.outputs) for (let i = 0; i < o.positions.length; i++) if (!Number.isFinite(o.positions[i])) bad++;
+    ok(!bad && f.body.head && f.outputs[0].mesh.uv, `${p.id}: ${bad} non-numbers, or no head`);
+  }
+  const red = await E.description('head-red'), dr = o => ({ ...structuredClone(red), ...o });
+  await refuses(() => resolve(dr({ head: { ...red.head, features: [{ kind: 'eye', x: 0.4 }] } }), E.skeleton), /"y" is missing/);
+  await refuses(() => resolve(dr({ head: { ...red.head, light: { toon: 'yes' } } }), E.skeleton), /none of the allowed forms/);
+  await refuses(async () => { const f = await E.figure(resolve(dr({ pose: [{ kind: 'expression', name: 'wink', weight: 1 }] }), E.skeleton)); f.frame(null, 0, f.pose); }, /expression "wink": the head has/);
+  await refuses(async () => { const f = await E.figure(resolve({ ...structuredClone(woman), pose: [{ kind: 'expression', name: 'blink', weight: 1 }] }, E.skeleton)); f.frame(null, 0, f.pose); }, /has no head/);
+  // its own: an eye as volume replaces the preset's eyes (by id), the blush taken off, a deformer of the form after the wrap
+  const mine = await E.character('head-red-mine'), base = await E.character('head-red');
+  ok(mine.head.features.find(f => f.id === 'eyes').as === 'volume' && base.head.features.find(f => f.id === 'eyes').as === 'paint', 'its own eyes did not replace the preset\'s');
+  ok(mine.rest.length === base.rest.length + 1 && mine.rest.at(-1).kind === 'points' && mine.rest.at(-2).kind === 'wrap', 'its own form not after the preset\'s');
+  const off = await E.expand(await E.resolve(dr({ head: { ...red.head, features: [{ kind: 'off', id: 'blush' }] } })));
+  ok(!off.head.features.some(f => f.id === 'blush') && off.head.features.length === base.head.features.length - 1, 'a feature taken off stayed');
+});
+await test('heads: an expression at weight 0 leaves the figure as it is; at weight 1 it moves the face only (and what the jaw carries)', async () => {
+  const red = await E.description('head-red'), clip = await E.clip('walk');
+  const plain = await E.figure('head-red'); plain.frame(clip, 30, plain.pose);
+  for (const name of ['blink', 'open', 'smile']) {
+    const zero = await E.figure(await E.resolve({ ...structuredClone(red), pose: [{ kind: 'expression', name, weight: 0 }] })); zero.frame(clip, 30, zero.pose);
+    ok(maxApart(zero.positions, plain.positions, plain.outputs[0].mesh.used) < 1e-6, `${name} at weight 0 moved the figure`);
+    const one = await E.figure(await E.resolve({ ...structuredClone(red), pose: [{ kind: 'expression', name, weight: 1 }] })); one.frame(clip, 30, one.pose);
+    // (the face: the head's skin, and what Anny's jaw weights carry down the throat)
+    const { omega, jaw } = headShares(one.body.mesh, E.skeleton); let face = 0, body = 0;
+    for (const i of one.outputs[0].mesh.used) { const d = Math.hypot(...[0, 1, 2].map(c => one.positions[i * 3 + c] - plain.positions[i * 3 + c])); if (omega[i] > 0.05 || jaw[i] > 0) face = Math.max(face, d); else body = Math.max(body, d); }
+    ok(face > 5e-4 && body < 1e-6, `${name}: the face moved ${face} m, the body ${body} m`);
+    ok(Object.keys(one.ctx.expressions).includes(name), `${name}: what it asks of the drawing is not said`);
+  }
+});
+await test('heads: a face deformer on the rest and as a pose layer is the same; Anny\'s face changes are on her mesh only', async () => {
+  const clip = await E.clip('idle'), c = { kind: 'warps', warps: [{ kind: 'push', at: [0, -0.6, 0.9], r: 0.3, by: [0, 0, 0.2] }] };
+  const lay = await E.figure(resolve(desc({ pose: [c] }), E.skeleton)), rest = await E.figure(resolve(desc({ rest: [{ ...c, frames: 'keep' }] }), E.skeleton));
+  lay.frame(clip, 60, lay.pose); rest.frame(clip, 60, rest.pose);
+  ok(maxApart(lay.positions, rest.positions, lay.outputs[0].mesh.used) < 0.004, 'the layer and the rest change differ');
+  await refuses(() => E.restBody(resolve(desc({ rest: [{ kind: 'face', changes: { 'nose-long-incr': 1 }, frames: 'keep' }] }), E.skeleton)), /Anny has no face change "nose-long-incr"/);
+});
+await test('heads: the head to collide with moves with the Head joint', async () => {
+  const f = await E.figure('head-red'), clip = await E.clip('look-around'); f.step(clip, 0);
+  const shape = f.headShape(), H = E.skeleton.index.Head, P0 = [f.pose.P[H * 3], f.pose.P[H * 3 + 1] + 0.08, f.pose.P[H * 3 + 2]], d0 = shape.distance(...P0);
+  ok(d0 < 0, `a point in the head is outside its shape (${d0})`);
+  f.step(clip, 1); f.step(clip, 2);
+  const P1 = [f.pose.P[H * 3], f.pose.P[H * 3 + 1] + 0.08, f.pose.P[H * 3 + 2]];
+  ok(shape.distance(...P1) < 0, 'the shape did not go with the head');
+});
 console.log(failed ? `${failed} of ${passed + failed} failed` : `all ${passed} hold`);
 process.exit(failed ? 1 : 0);

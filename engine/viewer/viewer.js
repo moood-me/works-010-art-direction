@@ -5,6 +5,10 @@
 // ?bodies adds the bodies' panel (stage 1): the base body of the chosen figure, and its deformers — each a preset with
 // its strength, on the rest (its frames kept or turned) or as a pose layer — added, changed, taken away; &b=<body id>
 // sets the base body, &d=<preset>:<strength>[:pose],… the deformers.
+// ?heads adds the heads' panel (stage 2): the chosen figure's head (a head preset, or none), its form's ways with their
+// strengths (presets of group head-form, after the head's own), each feature painted or as volume, the face's light,
+// an expression and its weight, a close-up of the face; &h=<head preset>&hf=<preset>:<strength>,…&hl=<light preset>
+// &x=<expression>:<weight>&face (the close-up).
 import * as THREE from 'three';
 import { createEngine } from '../src/engine.js';
 import { makeStage, figureView, joinBounds } from '../src/view3d.js';
@@ -13,9 +17,11 @@ const q = new URLSearchParams(location.search);
 const msg = document.getElementById('msg'), canvas = document.getElementById('cv');
 const E = await createEngine();
 const [chars, motions] = await Promise.all([E.characters(), E.motions()]);
-const BODIES = q.has('bodies');
+const BODIES = q.has('bodies'), HEADS = q.has('heads');
 if (BODIES) document.body.classList.add('bodies');
-const [bodyIndex, presetIndex] = BODIES ? await Promise.all([E.bodies(), E.presets()]) : [null, null];
+if (HEADS) document.body.classList.add('heads');
+const [bodyIndex, presetIndex] = BODIES || HEADS ? await Promise.all([E.bodies(), E.presets()]) : [null, null];
+const ofGroup = g => presetIndex.presets.filter(p => p.group === g);
 const presetOf = ref => presetIndex.presets.find(p => p.id === ref.split('@')[0]);
 // presets whose changes give their own skin weights (the pictograms) are changes of the rest only
 const REST_ONLY = new Set(['pictogram']);
@@ -30,10 +36,17 @@ const CLIPS = [...motions.motions.filter(m => !m.after).map(m => ({ id: m.id, la
 const LAYERS = [['armsOff', 'руки от тела'], ['armsOutOfHead', 'руки из головы'], ['amplifyLimbs', 'размах конечностей'], ['dampHeadSpine', 'тише голова и спина']];
 const SPACING = 0.9;   // metres between figures side by side
 
-const S = { clip: q.get('m') ?? 'walk', t: +(q.get('t') || 0), playing: !q.has('paused'), follow: q.get('follow') !== '0', joints: false, capsules: false, cur: 0 };
+const S = { clip: q.get('m') ?? 'walk', t: +(q.get('t') || 0), playing: !q.has('paused'), follow: q.get('follow') !== '0', joints: false, capsules: false, cur: 0, face: q.has('face') };
 // each figure: its character and what the panel changed over its description
 const figs = (q.get('c') || chars.characters[0].id).split(',').map(char => ({ char, over: {} }));
 if (BODIES && q.get('b')) { const b = bodyIndex.bodies.find(b => b.id === q.get('b')); if (!b) throw new Error(`no body ${q.get('b')}`); figs[0].over.body = b.pin; }
+if (HEADS) {
+  const pin = id => { const p = presetIndex.presets.find(p => p.id === id); if (!p) throw new Error(`no preset ${id}`); return p.pin; };
+  if (q.has('h')) figs[0].over.head = { preset: q.get('h') ? pin(q.get('h')) : '' };
+  if (q.has('hf')) figs[0].over.hforms = q.get('hf').split(',').filter(Boolean).map(s => { const [id, k = '1'] = s.split(':'); return { kind: 'preset', id: pin(id), strength: +k }; });
+  if (q.has('hl')) figs[0].over.light = pin(q.get('hl'));
+  if (q.has('x')) { const [name, w = '1'] = q.get('x').split(':'); figs[0].over.expr = { name, weight: +w }; }
+}
 if (BODIES && q.has('d')) figs[0].over.rows = q.get('d').split(',').filter(Boolean).map(s => {
   const [id, k = '1', where = 'rest'] = s.split(':'), p = presetIndex.presets.find(p => p.id === id); if (!p) throw new Error(`no preset ${id}`);
   return { where, c: { kind: 'preset', id: p.pin, strength: +k }, frames: 'keep' };
@@ -49,7 +62,7 @@ panel.innerHTML = `
   <div class="row"><span class="lab">Движение</span></div><div class="mv" id="moves"></div>
   <div class="row"><button id="play" aria-label="Пауза">❚❚</button><input id="time" type="range" min="0" max="0" step="0.01" value="0" aria-label="Время"><span id="flab"></span></div>
   <div class="row"><span class="lab">Камера</span><button id="follow">следует</button><button data-view="front">спереди</button><button data-view="side">сбоку</button><button id="joints">суставы</button><button id="capsules">капсулы</button></div>
-  <details id="skin"${BODIES ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
+  <details id="skin"${BODIES || HEADS ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
   <div class="row"><span class="lab">Скиннинг</span><button data-method="cor">центры вращения</button><button data-method="dqs">двойные кватернионы</button><button data-method="lbs">линейный</button></div>
   <div class="row"><span class="lab">Т7</span><button id="clav">ключица ⅓</button><button id="seam">шов сглажен</button></div>
   <div class="row"><span class="lab">Слои позы</span><span class="mv" id="layers"></span></div>
@@ -59,6 +72,15 @@ panel.innerHTML = `
   <div class="row"><span class="lab">Деформеры</span><span class="hint">по порядку; сила, покой или слой позы</span></div>
   <div id="defs" style="display:grid;gap:4px"></div>
   <div class="row"><select id="addDef" aria-label="Добавить деформер"></select></div>` : ''}
+  ${HEADS ? `<div class="sep"></div>
+  <div class="row"><span class="lab">Голова</span><select id="head" aria-label="Голова" title="готовая голова (пресет группы head) — с неё голова начинается; или без своей"></select><button id="face" title="камера на лицо">лицо</button></div>
+  <div class="row"><span class="lab">Форма</span><span class="hint">способы поверх головы, по порядку, с силой</span></div>
+  <div id="hforms" style="display:grid;gap:4px"></div>
+  <div class="row"><select id="addForm" aria-label="Добавить способ формы"></select></div>
+  <div class="row"><span class="lab">Черты</span><span class="mv" id="feats"></span></div>
+  <div class="row"><span class="lab">Свет лица</span><select id="light" aria-label="Свет лица"></select></div>
+  <div class="row"><span class="lab">Выражение</span><span class="mv" id="exprs"></span></div>
+  <div class="row"><input id="xw" type="range" min="0" max="1" step="0.05" value="1" aria-label="сила выражения"><span id="xwl" class="hint"></span></div>` : ''}
   <div class="hint">мышь: вращать · колесо: ближе · Shift или правая кнопка: сдвинуть</div>`;
 const $ = s => panel.querySelector(s);
 for (const c of chars.characters) { const o = document.createElement('option'); o.value = c.id; o.textContent = c.label.ru; $('#char').appendChild(o); }
@@ -72,7 +94,7 @@ const label = id => chars.characters.find(c => c.id === id)?.label.ru ?? id;
 function press() {
   const f = cur(), spec = f.spec;
   $('#figs').innerHTML = '';
-  figs.forEach((g, i) => { const b = addBtn($('#figs'), String(i), `${i + 1}. ${label(g.char)}`, () => { S.cur = i; press(); showRows(); }); b.setAttribute('aria-pressed', String(i === S.cur)); });
+  figs.forEach((g, i) => { const b = addBtn($('#figs'), String(i), `${i + 1}. ${label(g.char)}`, () => { S.cur = i; press(); showRows(); showHead(); }); b.setAttribute('aria-pressed', String(i === S.cur)); });
   $('#del').disabled = figs.length < 2;
   panel.querySelectorAll('#moves button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === S.clip)));
   panel.querySelectorAll('[data-method]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.method === spec.skinning.method)));
@@ -80,6 +102,7 @@ function press() {
   $('#clav').setAttribute('aria-pressed', String(spec.pose.some(l => l.kind === 'clavicleShare')));
   $('#seam').setAttribute('aria-pressed', String(!!spec.skinning.seam));
   for (const k of ['follow', 'joints', 'capsules']) $('#' + k).setAttribute('aria-pressed', String(S[k]));
+  if (HEADS) $('#face').setAttribute('aria-pressed', String(S.face));
   $('#play').textContent = S.playing ? '❚❚' : '▶';
   $('#char').value = f.char;
   if (BODIES && f.spec) $('#base').value = pinnedId(f.spec.body);
@@ -95,13 +118,23 @@ async function describe(f) {
     if (on) d.pose.push({ kind });
   }
   if (o.body) d.body = o.body;
+  if (HEADS) {
+    if (o.head) { if (o.head.preset) d.head = { ...(d.head || {}), preset: o.head.preset }; else delete d.head; }
+    if (d.head) {
+      if (o.hforms) d.head.form = o.hforms;
+      if (o.light) d.head.light = { kind: 'preset', id: o.light };
+      if (o.featAs && f.spec?.head) d.head.features = [...(d.head.features || []).filter(x => !(x.id in o.featAs)),
+        ...f.spec.head.features.filter(x => (x.id ?? x.kind) in o.featAs).map(x => ({ ...x, as: o.featAs[x.id ?? x.kind] }))];
+      if (o.expr) d.pose = [...(d.pose || []), { kind: 'expression', ...o.expr }];
+    }
+  }
   if (o.rows) {
     d.rest = o.rows.filter(r => r.where === 'rest').map(r => ({ ...r.c, frames: r.frames }));
     d.pose = [...(d.pose || []).filter(l => !isDeform(l)), ...o.rows.filter(r => r.where === 'pose').map(r => { const c = { ...r.c }; delete c.frames; return c; })];
   }
   return E.resolve(d);
 }
-const isDeform = l => l.kind === 'preset' || !['armsOff', 'armsOutOfHead', 'amplifyLimbs', 'dampHeadSpine', 'clavicleShare', 'turn', 'morph'].includes(l.kind);
+const isDeform = l => l.kind === 'preset' || !['armsOff', 'armsOutOfHead', 'amplifyLimbs', 'dampHeadSpine', 'clavicleShare', 'turn', 'morph', 'expression'].includes(l.kind);
 // the figure's deformers as the panel's rows: its rest's, then its pose layers' that are deformers
 async function rowsOf(f) {
   if (f.over.rows) return f.over.rows;
@@ -129,8 +162,39 @@ async function showRows() {
   $('#base').value = pinnedId(f.spec.body);
 }
 const pinnedId = ref => ref.split('@')[0];
+// the heads' panel: the chosen figure's head as it is now
+async function showHead() {
+  if (!HEADS) return;
+  const f = cur(), d = await E.description(f.char), h = f.spec.head, o = f.over;
+  const preset = o.head ? o.head.preset : d.head?.preset ?? '';
+  $('#head').value = preset ? pinnedId(preset) : '';
+  const forms = o.hforms ?? (o.hforms = (d.head?.form || []).map(x => ({ ...x })));
+  const box = $('#hforms'); box.innerHTML = '';
+  forms.forEach((r, k) => {
+    const el = document.createElement('div'); el.className = 'row';
+    el.innerHTML = `<span title="${presetOf(r.id)?.about?.ru ?? ''}">${rowLabel(r)}</span><input type="range" min="0" max="1.5" step="0.05" value="${r.strength ?? 1}" aria-label="сила"><span class="s">${(r.strength ?? 1).toFixed(2)}</span><button class="x" title="убрать">✕</button>`;
+    const range = el.querySelector('input');
+    range.oninput = () => { el.querySelector('.s').textContent = (+range.value).toFixed(2); };
+    range.onchange = () => { forms[k] = { ...r, strength: +range.value }; rebuild([S.cur]); };
+    el.querySelector('.x').onclick = () => { forms.splice(k, 1); rebuild([S.cur]); };
+    box.appendChild(el);
+  });
+  const feats = $('#feats'); feats.innerHTML = '';
+  for (const x of h?.features || []) {
+    if (!['eye', 'brow', 'mouth'].includes(x.kind) || (x.kind === 'mouth' && x.type === 'none')) continue;
+    const as = x.as ?? 'paint', name = { eye: 'глаза', brow: 'брови', mouth: 'рот' }[x.kind];
+    addBtn(feats, x.id ?? x.kind, `${name}: ${as === 'paint' ? 'рисунок' : 'объём'}`, () => { o.featAs = { ...(o.featAs || {}), [x.id ?? x.kind]: as === 'paint' ? 'volume' : 'paint' }; rebuild([S.cur]); }).title = 'нарисованы на коже или объёмом на ней';
+  }
+  const own = o.light ?? (d.head?.light?.kind === 'preset' ? d.head.light.id : null) ?? (preset ? (await E.headPreset(preset)).light?.id : null);
+  $('#light').value = own ? pinnedId(own) : '';
+  const ex = $('#exprs'); ex.innerHTML = '';
+  addBtn(ex, '', 'нет', () => { o.expr = null; rebuild([S.cur]); }).setAttribute('aria-pressed', String(!o.expr));
+  for (const [name, x] of Object.entries(f.fig.body.head?.expressions || {})) addBtn(ex, name, x.label?.ru ?? name, () => { o.expr = { name, weight: +$('#xw').value }; rebuild([S.cur]); }).setAttribute('aria-pressed', String(o.expr?.name === name));
+  $('#xw').value = o.expr?.weight ?? 1; $('#xwl').textContent = o.expr ? (+$('#xw').value).toFixed(2) : '';
+  for (const id of ['head', 'addForm', 'light', 'xw', 'face']) $('#' + id).disabled = id !== 'head' && !h;
+}
 async function build(f, i) {
-  f.spec = await describe(f);
+  f.spec = await E.expand(await describe(f));
   const fig = await E.figure(f.spec, { place: { position: [i * SPACING, 0, 0], heading: 0 } });
   if (f.view) { stage.scene.remove(f.view.group); f.view.dispose(); }
   f.fig = fig; f.view = figureView(THREE, fig, f.spec.look);
@@ -142,7 +206,7 @@ async function rebuild(which = figs.map((_, i) => i)) {
   try { for (const i of which) await build(figs[i], i); }
   catch (e) { msg.textContent = 'не собралось: ' + e.message; throw e; }
   await setClip(S.clip, true);
-  await showRows();
+  await showRows(); await showHead();
   msg.style.display = 'none';
 }
 function toggleLayer(kind) {
@@ -162,12 +226,18 @@ async function setClip(id, keepTime) {
 }
 
 const bounds = () => joinBounds(figs.map(f => f.fig.bounds()));
+// what the camera frames: every figure, or the chosen one's face (a box round its head)
+function framed() {
+  if (!S.face) return bounds();
+  const P = cur().fig.pose.P, H = E.skeleton.index.Head * 3, h = cur().fig.body.measures.headHeight * 0.8, c = [P[H], P[H + 1] + h * 0.6, P[H + 2]];
+  return { center: c, min: c.map(v => v - h), max: c.map(v => v + h), size: [2 * h, 2 * h, 2 * h] };
+}
 function draw(snap) {
   for (const f of figs) { f.fig.step(clip, S.t); f.view.update(); }
-  const b = bounds();
+  const b = framed();
   if (snap) cam.dist = stage.fit(b, cam).dist * 1.15;
   if (S.follow || snap) for (let k = 0; k < 3; k++) cam.target[k] = snap ? b.center[k] : cam.target[k] + (b.center[k] - cam.target[k]) * 0.15;
-  stage.light(b);
+  stage.light(bounds());
   $('#time').value = S.t; $('#flab').textContent = clip ? `${Math.floor(S.t)}/${clip.frames - 1}` + (clip.joins.length ? ` · стык ${clip.joins.map(j => j.at).join(', ')}` : '') : '';
 }
 
@@ -186,6 +256,20 @@ if (BODIES) {
   }
   add.onchange = async () => { if (!add.value) return; (await rowsOf(cur())).push({ where: 'rest', c: { kind: 'preset', id: add.value, strength: 1 }, frames: 'keep' }); add.value = ''; rebuild([S.cur]); };
 }
+if (HEADS) {
+  const hs = $('#head'); hs.innerHTML = '<option value="">без своей головы</option>';
+  for (const p of ofGroup('head')) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; hs.appendChild(o); }
+  hs.onchange = () => { const f = cur(); f.over = { ...f.over, head: { preset: hs.value ? presetIndex.presets.find(p => p.id === hs.value).pin : '' }, hforms: [], featAs: null, light: null, expr: null }; rebuild([S.cur]); };
+  const af = $('#addForm'); af.innerHTML = '<option value="">＋ добавить способ формы…</option>';
+  for (const p of ofGroup('head-form')) { const o = document.createElement('option'); o.value = p.pin; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; af.appendChild(o); }
+  af.onchange = async () => { if (!af.value) return; const f = cur(); await showHead(); f.over.hforms.push({ kind: 'preset', id: af.value, strength: 1 }); af.value = ''; rebuild([S.cur]); };
+  const ls = $('#light'); ls.innerHTML = '<option value="" disabled>свой свет головы</option>';
+  for (const p of ofGroup('face-light')) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label.ru; o.title = p.about?.ru ?? ''; ls.appendChild(o); }
+  ls.onchange = () => { cur().over.light = presetIndex.presets.find(p => p.id === ls.value).pin; rebuild([S.cur]); };
+  $('#xw').oninput = () => { $('#xwl').textContent = (+$('#xw').value).toFixed(2); };
+  $('#xw').onchange = () => { const f = cur(); if (f.over.expr) { f.over.expr = { ...f.over.expr, weight: +$('#xw').value }; rebuild([S.cur]); } };
+  $('#face').onclick = () => { S.face = !S.face; $('#face').setAttribute('aria-pressed', String(S.face)); draw(true); };
+}
 $('#add').onclick = () => { figs.push({ char: cur().char, over: {} }); S.cur = figs.length - 1; rebuild([S.cur]); };
 $('#del').onclick = () => {
   if (figs.length < 2) return;
@@ -202,7 +286,7 @@ $('#clav').onclick = () => toggleLayer('clavicleShare');
 $('#seam').onclick = () => { const f = cur(); f.over.seam = !f.spec.skinning.seam; rebuild([S.cur]); };
 // front and side: from where the chosen figure faces now (its hips' line, turned a quarter)
 const facing = (f = cur()) => { const sk = E.skeleton, P = f.fig.pose.P, l = sk.index.LeftLeg * 3, r = sk.index.RightLeg * 3; return Math.atan2(-(P[l + 2] - P[r + 2]), P[l] - P[r]); };
-panel.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { cam.yaw = facing() + (b.dataset.view === 'side' ? Math.PI / 2 : 0); cam.pitch = 0.06; cam.dist = stage.fit(bounds(), cam).dist * 1.15; });
+panel.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { cam.yaw = facing() + (b.dataset.view === 'side' ? Math.PI / 2 : 0); cam.pitch = 0.06; cam.dist = stage.fit(framed(), cam).dist * 1.15; });
 
 let drag = null;
 canvas.addEventListener('contextmenu', e => e.preventDefault());

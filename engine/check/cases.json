@@ -468,13 +468,13 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "limbs-straight-curved@cc60a757dc61ddae",
+      "id": "limbs-straight-curved@ddab0daca59bfc93",
       "strength": 1,
       "frames": "keep"
      },
      {
       "kind": "preset",
-      "id": "limbs-arcs@5383c4a0261099ef",
+      "id": "limbs-arcs@25e8e7e69db2f6fd",
       "strength": 1,
       "frames": "keep"
      }
@@ -492,7 +492,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "caricature@7f94850304ea81b9",
+      "id": "caricature@527d601146cdede8",
       "strength": 1,
       "frames": "keep"
      }
@@ -510,7 +510,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "line-side-c-forward@1ea64b683c50c894",
+      "id": "line-side-c-forward@f1464ef46c2e791d",
       "strength": 1,
       "frames": "turn"
      }
@@ -527,7 +527,7 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "silhouette-hourglass@96e972703af7d85d",
+      "id": "silhouette-hourglass@565ed08bea30f798",
       "strength": 1,
       "frames": "keep"
      }
@@ -645,7 +645,7 @@
     "pose": [
      {
       "kind": "preset",
-      "id": "smooth-8cm@cdbc5fd832a246fc",
+      "id": "smooth-8cm@d254230a59b49a36",
       "strength": 0.7
      }
     ]
@@ -661,13 +661,13 @@
     "rest": [
      {
       "kind": "preset",
-      "id": "contour-anime@3ac1a771c67569da",
+      "id": "contour-anime@3dff92a902fd4cd8",
       "strength": 0.5,
       "frames": "keep"
      },
      {
       "kind": "preset",
-      "id": "masses-shoulders@7b55ef833e7041f2",
+      "id": "masses-shoulders@5bde23c62a0755e5",
       "strength": 1,
       "frames": "keep"
      }
@@ -684,6 +684,355 @@
    "over": {
     "body": "anny-m-heavy@213d83e01027934d"
    },
+   "picture": true
+  },
+  {
+   "name": "blink",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "blink",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "open",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "open",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "smile",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "smile",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "face",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "look60",
+   "char": "head-red",
+   "clip": "look-around",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "look60-smile",
+   "char": "head-red",
+   "clip": "look-around",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "smile",
+      "weight": 0.7
+     }
+    ]
+   }
+  },
+  {
+   "name": "dqs-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "skinning": {
+     "method": "dqs"
+    }
+   }
+  },
+  {
+   "name": "lbs-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "skinning": {
+     "method": "lbs"
+    }
+   }
+  },
+  {
+   "name": "hourglass-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "silhouette-hourglass@565ed08bea30f798",
+      "strength": 0.8,
+      "frames": "keep"
+     }
+    ]
+   }
+  },
+  {
+   "name": "line-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "preset",
+      "id": "line-side-c-forward@f1464ef46c2e791d",
+      "strength": 1,
+      "space": "upright"
+     }
+    ]
+   }
+  },
+  {
+   "name": "placed-walk60",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 60,
+   "view": "three",
+   "place": {
+    "position": [
+     2,
+     0,
+     -1
+    ],
+    "heading": 1.2
+   }
+  },
+  {
+   "name": "light-plain",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true,
+   "over": {
+    "head": {
+     "preset": "head-red@8f69e32ec83f1ab1",
+     "light": {
+      "kind": "preset",
+      "id": "light-plain@6ab58cddbde93d2c"
+     }
+    }
+   }
+  },
+  {
+   "name": "light-toon",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true,
+   "over": {
+    "head": {
+     "preset": "head-red@8f69e32ec83f1ab1",
+     "light": {
+      "kind": "preset",
+      "id": "light-toon@21d01379abf7249c"
+     }
+    }
+   }
+  },
+  {
+   "name": "light-soft-form",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true,
+   "over": {
+    "head": {
+     "preset": "head-red@8f69e32ec83f1ab1",
+     "light": {
+      "kind": "preset",
+      "id": "light-soft-form@acd10a62c2ad5b5e"
+     }
+    }
+   }
+  },
+  {
+   "name": "run20-face",
+   "char": "head-old",
+   "clip": "run",
+   "t": 20,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "open",
+   "char": "head-old",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-red-mine",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "blink",
+   "char": "head-red-mine",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "blink",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "dance60-face",
+   "char": "head-red-mine",
+   "clip": "dance",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-anny-age",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "smile",
+   "char": "head-points",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "smile",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "face",
+   "char": "head-cage",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-anny-face",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-semi",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "profile",
    "picture": true
   }
  ]
