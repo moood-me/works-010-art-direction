@@ -262,6 +262,7 @@ export class LiveFace {
       for (const b of this.lead.turnBlinks) { if (b > ht) break; blink = Math.max(blink, blinkCurve(ht - b)); }
     }
     const lim = (p.rs * 22) - p.ir * 0.7; look[0] = Math.max(-lim, Math.min(lim, look[0])); look[1] = Math.max(-8, Math.min(8, look[1]));
+    if (this.still) { look = base; blink = 0; }      // a still picture: the expression as drawn
     p.look = look; p.blink = blink * (1 - p.happy);
     // speech over the expression's mouth
     if (this.speech && t >= this.talkFrom && t < (this.talkTo ?? Infinity)) {

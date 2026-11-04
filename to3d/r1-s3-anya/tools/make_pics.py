@@ -48,7 +48,7 @@ cb = dict(mode='ortho', h=1.78, cy=0.84, cx=0)
 bv = [('f', 0.0), ('q', -0.6), ('s', -1.5708)]
 shots('anny.json', bw, bh, [dict(name='an-' + v, set=dict(pose='raw', cam=dict(cb, yaw=y, target=[0, 0.84, 0]))) for v, y in bv], 'an')
 strip(['an-f', 'an-q', 'an-s'], 'step4-body-base.webp', scale=0.8)
-S = dict(pose='stand', poseOpts={'out': 0.08})
+S = dict(pose='stand', poseOpts={'out': 0.08}, still=True)
 cl = ['body', 'head', 'dress', 'collar', 'cardigan', 'sleeveLeft', 'sleeveRight']
 shots('anya.json', bw, bh, [dict(name='bk-' + v, set=dict(S, show=['body', 'head'], cam=dict(cb, yaw=y, target=[0, 0.84, 0]))) for v, y in bv] +
       [dict(name='bc-' + v, set=dict(S, show=cl, cam=dict(cb, yaw=y, target=[0, 0.84, 0]))) for v, y in bv] +
@@ -67,15 +67,15 @@ for n in ('side', 'over'):
 # ---- expressions: the drawing's sheet, then the 3D in three-quarter and front
 E = ['dream', 'joy', 'surprise', 'sad', 'anger']
 ce = dict(mode='ortho', h=0.46, cy=1.40, yaw=-0.6, pitch=0.0, target=[0, 1.40, 0])
-shots('anya.json', 380, 440, [dict(name='e-' + e, set=dict(S, expr=e, cam=ce)) for e in E] +
-      [dict(name='ef-' + e, set=dict(S, expr=e, cam=dict(ce, yaw=0))) for e in E], 'ex')
+shots('anya.json', 380, 440, [dict(name='e-' + e, set=dict(S, exprTrack=[[0, e]], time=2.0, cam=ce)) for e in E] +
+      [dict(name='ef-' + e, set=dict(S, exprTrack=[[0, e]], time=2.0, cam=dict(ce, yaw=0))) for e in E], 'ex')
 strip(['e-' + e for e in E], 'expr-three.webp')
 strip(['ef-' + e for e in E], 'expr-front.webp')
 shutil.copy(os.path.join(HERE, '..', '..', '..', 'styles', 's3-graphic', 'pics', 'expressions-anya.png'), os.path.join(WORK, 'expr-drawing.png'))
 im = Image.open(os.path.join(WORK, 'expr-drawing.png')).convert('RGB'); im.save(os.path.join(PICS, 'expr-drawing.webp'), quality=88)
 
 
-# ---- films
+# ---- films (the motions with the live face: make_live.py)
 def film(name, pack, w, h, set_, frm, to, step, yaw=None, fps=24):
     d = os.path.join(WORK, name)
     shutil.rmtree(d, ignore_errors=True)
@@ -87,6 +87,4 @@ def film(name, pack, w, h, set_, frm, to, step, yaw=None, fps=24):
 
 
 film('turn', 'anya.json', 540, 900, dict(S, cam=dict(cb, yaw=0, target=[0, 0.84, 0])), 0, 71, 1, yaw=[0, -2 * np.pi * 71 / 72])
-film('walk', 'anya.json', 720, 900, dict(clip='walk', cam=dict(mode='persp', dist=6.0, fov=22, yaw=0.75, pitch=0.06, cy=0.82, follow=True)), 0, 119, 1, fps=30)
-film('walk-side', 'anya.json', 720, 900, dict(clip='walk', cam=dict(mode='persp', dist=6.0, fov=22, yaw=1.5708, pitch=0.04, cy=0.82, follow=True)), 0, 119, 1, fps=30)
 print('ok')

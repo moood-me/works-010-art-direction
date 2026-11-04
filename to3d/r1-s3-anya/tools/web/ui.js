@@ -13,7 +13,7 @@ export function ui(A, canvas) {
   #ui .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   #ui select, #ui button { font: inherit; border: 1px solid #d5cec4; background: #fff; border-radius: 6px; padding: 3px 9px; cursor: pointer; color: inherit; }
   #ui button[aria-pressed="true"] { background: #b4532a; border-color: #b4532a; color: #fff; }
-  #ui input[type=range] { flex: 1; min-width: 80px; }
+  #ui input[type=range] { flex: 1; min-width: 80px; accent-color: #b4532a; }
   #ui .lab { color: #75706a; font-size: 12px; min-width: 72px; }
   #ui .hint { color: #75706a; font-size: 12px; }`;
   document.head.appendChild(css);
@@ -31,7 +31,7 @@ export function ui(A, canvas) {
   const t0 = performance.now();
   const clock = () => (performance.now() - t0) / 1000;
   const far = { mode: 'persp', dist: 6.2, fov: 22, cy: 0.84, follow: true, focus: null, yaw: 0.35, pitch: 0.06 };
-  const near = { mode: 'persp', dist: 1.5, fov: 22, follow: false, focus: 'Head', up: 0.04, pitch: 0.02 };
+  const near = { mode: 'persp', dist: 2.3, fov: 22, follow: false, focus: 'Head', up: 0.04, pitch: 0.02 };
   A.set({ liveClock: true, cam: far, pose: 'stand', poseOpts: { out: 0.08 } });
   async function motion(id) {
     await A.set({ clip: id || null, t: 0, time: clock() });

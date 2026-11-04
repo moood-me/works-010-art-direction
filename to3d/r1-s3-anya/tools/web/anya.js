@@ -218,6 +218,7 @@ window.A = {
     // the face's clock (seconds): given, or the clip's time
     if (o.time !== undefined) S.time = o.time; else if (o.t !== undefined && clip && !S.liveClock) S.time = o.t / clip.fps;
     if (o.liveClock !== undefined) S.liveClock = o.liveClock;
+    if (o.still !== undefined) face.still = o.still;
     if (o.exprTrack) { face.exprKeys = [{ t: -10, w: { dream: 1 } }]; for (const [t, w] of o.exprTrack) face.setExpr(t, typeof w === 'string' ? { [w]: 1 } : w); }
     if (o.expr) face.setExpr(S.time, typeof o.expr === 'string' ? { [o.expr]: 1 } : o.expr);
     if (o.talk !== undefined) { face.talk(o.talk ? (o.talkFrom ?? S.time) : null); face.talkTo = o.talkTo ?? null; }

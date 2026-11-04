@@ -24,7 +24,7 @@ h = (yd1 - yd0) * D.K; cy = (D.FLOOR - (yd0 + yd1) / 2) * D.K
 W, H = PW * SC, (Y1 - Y0) * SC
 views = [('front', 0.0), ('three', -0.6), ('side', -1.5708)]
 pose = json.loads(os.environ.get('POSE', '{"out": 0.08}'))
-shots = [dict(name=n, set=dict(pose='stand', poseOpts=pose, expr=expr, cam=dict(mode='ortho', h=h, cy=cy, cx=0, yaw=y, pitch=0, target=[0, cy, 0]))) for n, y in views]
+shots = [dict(name=n, set=dict(pose='stand', poseOpts=pose, still=True, exprTrack=[[0, expr]], time=2.0, cam=dict(mode='ortho', h=h, cy=cy, cx=0, yaw=y, pitch=0, target=[0, cy, 0]))) for n, y in views]
 json.dump(dict(pack=pk, w=W, h=H, shots=shots), open(os.path.join(out, 'jobs.json'), 'w'))
 subprocess.run(['node', os.path.join(HERE, 'shots.mjs'), os.path.join(out, 'jobs.json'), out], check=True,
                env=dict(os.environ, NODE_PATH='/opt/node-tools/node_modules'))

@@ -1,0 +1,185 @@
+{
+"pack": "/cache/to3d-r5-s2-anya/out/anya.json",
+"w": 500,
+"h": 600,
+"shots": [
+{
+"name": "head-f",
+"set": {
+"clip": null,
+"expr": "calm",
+"cam": {
+"mode": "ortho",
+"yaw": 0,
+"pitch": 0,
+"cy": 1.48,
+"h": 0.516,
+"follow": false
+},
+"shadowBox": {
+"c": [
+0,
+1.45,
+0
+],
+"r": 0.3
+},
+"floorY": 2,
+"poseOpts": {
+"down": 0.6
+}
+}
+},
+{
+"name": "head-q",
+"set": {
+"cam": {
+"yaw": 0.9
+}
+}
+},
+{
+"name": "head-s",
+"set": {
+"cam": {
+"yaw": 1.5708
+}
+}
+},
+{
+"name": "e-joy",
+"set": {
+"expr": "joy",
+"cam": {
+"yaw": 0.9
+}
+}
+},
+{
+"name": "e-surprise",
+"set": {
+"expr": "surprise"
+}
+},
+{
+"name": "e-sad",
+"set": {
+"expr": "sad"
+}
+},
+{
+"name": "e-anger",
+"set": {
+"expr": "anger"
+}
+},
+{
+"name": "close",
+"w": 800,
+"h": 800,
+"set": {
+"expr": "calm",
+"cam": {
+"yaw": 0.55,
+"cy": 1.54,
+"h": 0.32
+},
+"shadowBox": {
+"c": [
+0,
+1.5,
+0
+],
+"r": 0.2
+}
+}
+},
+{
+"name": "fig-f",
+"w": 500,
+"h": 900,
+"set": {
+"cam": {
+"yaw": 0,
+"cy": 0.816,
+"h": 1.853
+},
+"shadowBox": null,
+"floorY": 0.94
+}
+},
+{
+"name": "fig-q",
+"set": {
+"cam": {
+"yaw": 0.6
+}
+}
+},
+{
+"name": "fig-s",
+"set": {
+"cam": {
+"yaw": 1.5708
+}
+}
+},
+{
+"name": "turn",
+"w": 480,
+"h": 800,
+"set": {
+"cam": {
+"yaw": 0,
+"cy": 0.86,
+"h": 1.86
+},
+"floorY": 0.93
+},
+"film": {
+"from": 0,
+"to": 71,
+"step": 1,
+"yaw": [
+0,
+6.2832
+]
+}
+},
+{
+"name": "walk",
+"w": 960,
+"h": 540,
+"set": {
+"clip": "walk",
+"floorY": 2,
+"floor3d": true,
+"lightSpace": "world",
+"light": [
+-0.5,
+0.6,
+0.62
+],
+"cam": {
+"mode": "persp",
+"fov": 26,
+"dist": 8.2,
+"yaw": 1.5708,
+"pitch": 0.05,
+"cy": 0.86,
+"follow": false,
+"target": [
+0,
+0.95,
+2.62
+]
+}
+},
+"film": {
+"from": 0,
+"to": 119,
+"step": 1
+}
+}
+]
+}

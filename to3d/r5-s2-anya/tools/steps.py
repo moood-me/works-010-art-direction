@@ -9,10 +9,10 @@ v, P, vis, eL, eR = H.load()
 T = M.triangulate(P)
 box = (-0.15, 0.15, 0.5, 0.9)
 row = [M.raster(np.r_[v, eL, eR], np.r_[T, M.triangulate(M.polys_of(*[np.load(H.HBM)[k] for k in ('eyeL_fs', 'eyeL_f')])) + len(v),
-       M.triangulate(M.polys_of(*[np.load(H.HBM)[k] for k in ('eyeR_fs', 'eyeR_f')])) + len(v) + len(eL)], y, 400, box)[0] for y in (0, 0.7, np.pi / 2)]
+       M.triangulate(M.polys_of(*[np.load(H.HBM)[k] for k in ('eyeR_fs', 'eyeR_f')])) + len(v) + len(eL)], y, 400, box if y < 1 else (-0.2, 0.1, 0.5, 0.9))[0] for y in (0, 0.7, np.pi / 2)]
 Image.fromarray(np.hstack(row)).save(f'{out}/s1-base.png')
 v2, P2, patch = H.blank(v, P); T2 = M.triangulate(P2)
-Image.fromarray(np.hstack([M.raster(v2, T2, y, 400, box)[0] for y in (0, 0.7, np.pi / 2)])).save(f'{out}/s2-closed.png')
+Image.fromarray(np.hstack([M.raster(v2, T2, y, 400, box if y < 1 else (-0.2, 0.1, 0.5, 0.9))[0] for y in (0, 0.7, np.pi / 2)])).save(f'{out}/s2-closed.png')
 V, P3, patch = H.build(); T3 = M.triangulate(P3)
 LH.overlay(V, T3, f'{out}/s3-fitted.png')
 N = M.vertex_normals(V, T3)

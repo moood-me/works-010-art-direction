@@ -422,6 +422,10 @@ function prepare(M) {
   // where the head points, every frame (degrees, in the motion's own frame): for the eyes to lead it
   const fw = new THREE.Vector3(), q = new THREE.Quaternion();
   M.hyaw = new Float32Array(M.n); M.hpitch = new Float32Array(M.n);
+  // how far the chest leans forward on average (Kimodo's waiting motion stoops by ~25°)
+  let lean = 0;
+  for (let f = 0; f < M.n; f++) { const d = M.D.Chest; q.set(d[f * 4], d[f * 4 + 1], d[f * 4 + 2], d[f * 4 + 3]); fw.set(0, 0, 1).applyQuaternion(q); lean += Math.asin(clamp(fw.y, -1, 1)) * 180 / Math.PI; }
+  M.lean = lean / M.n;
   for (let f = 0; f < M.n; f++) { const d = M.D.Head; q.set(d[f * 4], d[f * 4 + 1], d[f * 4 + 2], d[f * 4 + 3]); fw.set(0, 0, 1).applyQuaternion(q); M.hyaw[f] = Math.atan2(fw.x, fw.z) * 180 / Math.PI; M.hpitch[f] = Math.asin(clamp(fw.y, -1, 1)) * 180 / Math.PI; }
   return M;
 }
@@ -435,7 +439,8 @@ const hipsAt = (M, f, k) => { const i = Math.floor(f), j = Math.min(i + 1, M.n -
 const atF = (arr, f, n) => { const i = Math.floor(clamp(f, 0, n - 1)), j = Math.min(i + 1, n - 1); return lerp(arr[i], arr[j], clamp(f, 0, n - 1) - i); };
 function setLocal(I, W) { for (const b of BONES) { const p = PARENT[b]; if (W[b]) I.bones[b].quaternion.copy(p ? W[p].clone().invert().multiply(W[b]) : W[b]); } I.root.updateMatrixWorld(true); }
 // look: an extra turn of the head about the upright, split between the neck (40 %) and the head (60 %), degrees
-function poseFromMotion(I, M, f, travel, look = 0, offset = [0, 0]) {
+const UPPER = new Set(BONES.filter(b => { for (let p = b; p; p = PARENT[p]) if (p === 'Spine1') return true; return false; }));
+function poseFromMotion(I, M, f, travel, look = 0, offset = [0, 0], upright = false) {
   const W = {};
   for (const b of BONES) {
     const p = PARENT[b];
@@ -444,6 +449,11 @@ function poseFromMotion(I, M, f, travel, look = 0, offset = [0, 0]) {
     else w = p ? W[p].clone() : new THREE.Quaternion();
     if (look && (b === 'Neck2' || b === 'Head')) w.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), look * (b === 'Head' ? 1 : 0.4) * Math.PI / 180));
     W[b] = w;
+  }
+  // upright: the clip's average stoop taken out (the whole upper body turned back about the waist), its movement kept
+  if (upright && M.lean) {
+    const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(W.Hips), fix = new THREE.Quaternion().setFromAxisAngle(ax, M.lean * Math.PI / 180);
+    for (const b of UPPER) W[b].premultiply(fix);
   }
   if (I.free) {
     // arms off the coat: the upper arm keeps out to its side (the coat is wide)
@@ -502,8 +512,8 @@ export const CLIPS = {
   stand: { ru: 'стоит' },
   walk: { ru: 'идёт', motion: 'walk', travel: true },
   sit: { ru: 'садится', motion: 'sit', travel: true },
-  idle: { ru: 'ждёт', motion: 'idle' },
-  look: { ru: 'оглядывается', motion: 'idle', look: true },
+  idle: { ru: 'ждёт', motion: 'idle', upright: true },
+  look: { ru: 'оглядывается', motion: 'idle', look: true, upright: true },
   wave: { ru: 'машет (папка в руке)', motion: 'wave', free: true },
 };
 
@@ -532,10 +542,11 @@ function update(I, t, dt) {
     // a clip that travels goes on from where its last loop ended
     const kr = J.Hips[1] / M.hipY, off = I.travel ? [(M.hips[(n - 1) * 3] - M.hips[0]) * kr * loop, (M.hips[(n - 1) * 3 + 2] - M.hips[2]) * kr * loop] : [0, 0];
     const lk = I.look ? lookAt(t % (n / M.fps)) : 0;
-    poseFromMotion(I, M, f, I.travel, lk, off);
+    poseFromMotion(I, M, f, I.travel, lk, off, I.clip.upright);
     const fa = Math.min(f + 0.3 * M.fps, n - 1), y0 = M.hyaw[0];
-    headYaw = atF(M.hyaw, f, n) - y0 + lk; headPitch = atF(M.hpitch, f, n);
-    aheadYaw = atF(M.hyaw, fa, n) - y0 + (I.look ? lookAt((t + 0.3) % (n / M.fps)) : 0); aheadPitch = atF(M.hpitch, fa, n);
+    const up = I.clip.upright ? -M.lean : 0;
+    headYaw = atF(M.hyaw, f, n) - y0 + lk; headPitch = atF(M.hpitch, f, n) + up;
+    aheadYaw = atF(M.hyaw, fa, n) - y0 + (I.look ? lookAt((t + 0.3) % (n / M.fps)) : 0); aheadPitch = atF(M.hpitch, fa, n) + up;
   } else {
     for (const b of BONES) I.bones[b].quaternion.identity();
     I.bones.Hips.position.set(...J.Hips); I.root.updateMatrixWorld(true);
