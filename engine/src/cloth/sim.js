@@ -12,9 +12,8 @@
 // - bending: the angle at each inner edge held toward its angle as the garment was put on (a sleeve is a tube, not a
 //   sheet pressed flat round the arm) with the fabric's bending rigidity B (N·m, Kawabata's; per hinge k = 3·B·e/(h₁+h₂))
 //   — chiffon's bending length is about a centimetre, denim's three, tweed's four;
-// - what holds it on: its waistband, neckline or shoulders (and its cuffs, if it has them held) drawn to where the skin
-//   carries them, as an elastic;
-//   every point no farther from its nearest held point than the cloth between them is long, as a strip of the cloth
+// - what holds it on: its waistband, neckline or shoulders (and a long sleeve's cuff, lightly) drawn to where the skin
+//   carries them, as an elastic; every point no farther from its nearest held point than the cloth between them is long, as a strip of the cloth
 //   one edge wide would hold it (tethers, Kim et al. 2012);
 // - its designed silhouette (src/cloth/shape.js), when it has one: every point pulled toward the designed form as the
 //   body carries it (fitted parts by the skin, what hangs below the hips by the pelvis), as firmly as the garment's
@@ -35,7 +34,7 @@
 // and lets it settle without speed; a loop carries it on across the clip's end, each point moved with the skin under it.
 // What lies over the clothes (hair) meets them through the figure's solids (S.over): the outermost garment's surface
 // where it is, out to its thickness, not past its open edges.
-//   new ClothSim(figure, garments)    garments: [{output, cut, fabric, strength, form?, sim, drawn, pattern, grip, cuffs}] (src/cloth/clothes.js)
+//   new ClothSim(figure, garments)    garments: [{output, cut, fabric, strength, form?, sim, drawn, pattern, home}] (src/cloth/clothes.js)
 //   sim.wind = {speed, dir, gust, turbulence} | null        sim.begin(ctx), sim.substep(was, now), sim.end(left) — the
 //                                                            figure's step; sim.sink: how deep each skin point is drawn
 //                                                            sunk under the cloth now (src/view3d.js)
@@ -133,7 +132,7 @@ export class ClothSim {
       const entry = S.entry(F.pose); this.bodyWas = null; this.bodyMoved(true); this.stepMove = this.bodyMove;
       for (const g of gs) g.enter(entry.pose);
       const n = Math.round(ENTER / H);
-      for (let k = 1; k <= n; k++) { const u = sst(k / n); [m.was, m.now] = [m.now, m.was]; entry.moment(u, m.now); if (k === 1) entry.moment(0, m.was); this.small(m.was, m.now, null, u); }
+      for (let k = 1; k <= n; k++) { const u = sst(k / n), w = m.was; m.was = m.now; m.now = w; entry.moment(u, m.now); if (k === 1) entry.moment(0, m.was); this.small(m.was, m.now, null, u); }
       S.moment(1, m.now); S.moment(1, m.was); this.stepMove = 0;
       for (const g of gs) g.settled();
       for (let k = 0; k < SETTLE; k++) { this.small(m.was, m.now, null); for (const g of gs) g.v.fill(0); }
@@ -287,7 +286,7 @@ export class ClothSim {
 
 // ———— one garment ————
 class Garment {
-  constructor({ output, cut, fabric: F, strength = 0, form = null, sim, drawn, pattern, home, grip = 1, cuffs = 0 }, index, S) {
+  constructor({ output, cut, fabric: F, strength = 0, form = null, sim, drawn, pattern, home }, index, S) {
     const T = cut.triangles, R = form ?? cut.positions, n = R.length / 3, kn = S.KN;
     Object.assign(this, { output, pattern, index, n, tris: T, F, mu: F.friction, self: !!pattern.self, tick: 0, strength, hangs: !!pattern.hangs, home });
     // base: where its points are held at rest (as cut, then as it hangs settled); shape0: its designed form at rest
@@ -303,8 +302,7 @@ class Garment {
     this.touched = new Uint8Array(n); this.pinched = new Uint8Array(n); this.tn = new Float64Array(n * 3); this.tv = new Float64Array(n * 3); this.lies = new Float64Array(n);
     this.uv = [0, 0, 0]; this.nn = [0, 0, 0]; this.kid = new Int32Array(4); this.kd = new Float64Array(4);
     this.pushL = new Float64Array(n); this.pushN = new Float64Array(n * 3); this.pushV = new Float64Array(n * 3);
-    // what holds it on: its pattern's (and its cuffs as asked: src/cloth/patterns.js), as firmly as the garment grips
-    this.hold = Float64Array.from(cut.hold, (h, i) => Math.max(h * grip, cuffs * (cut.cuffs?.[i] ?? 0)));
+    this.hold = Float64Array.from(cut.hold);
     this.shapeK = strength * SHAPE_K;
     // masses from the fabric's weight per square metre (the smallest triangles' points given at least a share of a usual
     // point's mass: the cloth weighs the same within a few per cent, and slivers don't fly off); each point's share of

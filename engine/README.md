@@ -507,34 +507,43 @@ sleeves, legs), 11 outfits `outfit-*` (what the ready heads were drawn in), and 
   is *cut* to that form (its lengths are the form's: a bell has more cloth at the hem), and *pulled toward* it as the
   body carries it with the garment's `strength` (a spring of 2000/s² at 1 — the cloth sags 5 mm from its form under its
   own weight: a stiff petticoat holds the bell — to 0: the cloth hangs freely as it was cut, in the folds of its extra
-  fabric); where the body stands in the form (a knee rising into a bell, sitting, the floor) it is not pulled there
-  but lies on the body (Pavel on О1's: "a weaker pull to the form when sitting"). A garment with no design and a
-  strength is pulled toward its cut (a stiff hood keeps its shell). О1's ladder down to the sign is not carried (the
+  fabric; up to 2, stiffer still); what hangs lets go of the form as the hips leave upright (wholly to 20°, not at all
+  from 70°: lying, rolling, bowing a petticoat does not hold a bell up against gravity) and where it lies on the body or
+  the floor (it drapes over the knees sitting, as О1's — Pavel: "a weaker pull to the form when sitting"). A garment with
+  no design and a strength is pulled toward its cut (a stiff hood keeps its shell, also where it touches the head). О1's
+  ladder down to the sign is not carried (the
   pictogram Т4 keeps the sign).
 - *Carried* by the skin: each point skinned as the skin nearest it is (never a hand's), the weights smoothed over the
   cloth (taken point by point, two points side by side under an arm took a collarbone's and a chest's and were torn
   apart in a pose), what hangs below the hips carried by the pelvis as far as it hangs (a bell's hem swings with the
   hips, not with each thigh, and points between the legs are not torn apart by them). That is where a held point is
   pulled, where the form is, and what `frame()` alone draws (the cut on the skin, as О1's "ride").
-- *Simulated* (`sim.js`, О3's XPBD cloth, the source now) on the figure's step: all of a figure's cloth in one
-  simulation, the innermost garment first in each small step of 1/240 s (always that: what a frame leaves over goes to
-  the next, the cloth drawn carried on by its velocity over it — the same at 20, 30, 60 or 144 frames a second); per
+- *Simulated* (`sim.js`, О3's XPBD cloth, the source now) on the figure's small steps (1/240 s, `figure.js` SMALL —
+  one loop for all of a figure's simulations, hair and cloth, each small step at one moment of the solids made once for
+  all of them; what a frame leaves over goes to the next, the cloth drawn carried on by its velocity over it — the same
+  at 20, 30, 60 or 144 frames a second): all of a figure's cloth in one simulation, the innermost garment first; per
   small step gravity, the fabric's damping and the air (the hair's winds, `src/wind.js`, pressing on each point as its
-  surface faces the flow less its own velocity); lengths three times (each edge holds against stretching with the
+  surface faces the flow less its own velocity); XPBD with each constraint's λ gathered over the small step's passes (so
+  a fabric is as stiff as it is, however many passes): lengths three times (each edge holds against stretching with the
   fabric's stretch, gives way when pushed together, so it folds; the edges ordered by their distance from where the
-  garment hangs, so a pass carries the weight down from the top), bending (Kawabata's rigidity per
-  hinge), what holds it on (a held point an elastic to where the skin carries it, its weight taken up so a waistband of
-  a hundred points carries trousers of five thousand), its form, soft tethers (no farther from a held point than the
-  cloth between is long, a share of the excess a step), its own points kept apart, then the body: the figure's solids
-  (`src/solids.js`), the one collision hair uses too — the skin between the frames at that small step's moment, each
-  point keeping the skin points nearest it (`S.kept`: looked for afresh every other step, of the nearest one's limb
-  only — between the legs, both legs' skin together pushed a skirt sideways through one — but the fingers', on which
-  cloth lies as on a mitten), deep in as deep as the capsules' surface; with the fabric's thickness and as far as the
-  cloth between two points sags in over the body's tightest curve; each triangle's middle out of the skin too (a knee
-  goes between points two or three centimetres apart, though each keeps out); a sleeve or a trouser leg also out of
-  its own limb's skin; the head's designed form; the garments under it where they lie together as dressed, not past
-  their edge; the floor — cloth pressed between the body and the floor left lying on it; friction against the skin's
-  own motion, and no bounce (a point pushed out leaves without the push's speed).
+  garment hangs, so a pass carries the weight down from the top), bending toward the angle each hinge had as the garment
+  was put on (Kawabata's rigidity per hinge; toward flat, a sleeve pressed outward round its arm); what holds it on (a
+  held point an elastic to where the skin carries it, its weight taken up so a waistband of a hundred points carries
+  trousers of five thousand), its form, tethers (no farther from a held point than the cloth between is long, as a
+  strip of the cloth one edge wide would hold it), its own points kept apart, then the body: the figure's solids
+  (`src/solids.js`), the one collision hair uses too — the skin between the frames at that small step's moment, at any
+  depth (no capsules: each point keeping the skin points nearest it, `S.kept`, looked for afresh every other step as far
+  as 15 cm, of the nearest one's limb only — between the legs, both legs' skin together pushed a skirt sideways through
+  one — but the fingers', on which cloth lies as on a mitten); pinched where the skin found anew faces away from the skin
+  it lay by while it is still within its thickness of that one (a knee folded on it, two legs pressed together — О3's:
+  left where it is, not pushed through to the far side); a sleeve's or a trouser leg's point (the hip band's too: each
+  on the limb its nearest skin was dressed) also out of its own limb's skin, which has the last word (О3's); with the
+  fabric's thickness and as far as the cloth between two points sags in over the body's tightest curve; on a sleeve, a
+  trouser leg and what hangs, each triangle's middle out of the skin too where its three corners lie on one limb, their
+  own (a knee goes between points two or three centimetres apart; a triangle across two limbs, or where the trunk meets
+  an arm, was pushed one way and the other, a tremble); the head's designed form; the garments under it where they lie
+  together as dressed, not past their edge; the floor last; friction against the skin's own motion, and no bounce (a
+  point pushed out leaves without the push's speed). Nothing caps its speed.
 - *Its rest*: put on the body at rest (out of the skin and the garments under it; its lengths as it lies then), then
   let hang 1.2 s. A reset (the first step, a new clip, a scrub back) takes it from there carried by the pelvis to where
   the body is, the body going into its pose over 0.4 s along the solids' entry (`S.entry`) with the cloth along it — as
@@ -543,15 +552,21 @@ sleeves, legs), 11 outfits `outfit-*` (what the ready heads were drawn in), and 
 - *Drawn* finer than simulated: MakeHuman's garments, the flared skirt and the hood are simulated as cut (points 2–3 cm
   apart) and drawn with each triangle in four by the butterfly scheme (through the simulated points: Loop's smoothing
   pulled a surface drawn tight over a knee into it); the skin under close cloth drawn sunk 4 mm (О3's: the skin's finer
-  bulges would show between the cloth's points; drawn only); the fabric's sheen and roughness, its inside darker, a
-  toon head's light and outline on its clothes too. Hair lies over the clothes (`S.over`: the cloth's surface, out to
-  its thickness, at the hair's moments — a collar, a blouse's shoulders; what lies under them at rest, under a hood, is
-  the hood's to keep off).
+  bulges would show between the cloth's points; drawn only) — where the cloth is now (`sim.sink`, from the skin points
+  each point of cloth keeps nearest), not where it was at rest; the fabric's sheen and roughness, its inside darker, a
+  toon head's light and outline on its clothes too. Hair lies over the clothes (`S.over`, offered by the cloth,
+  `S.lieOn`): the outermost garment's surface where it is now (the planes of its nearest points, out to its thickness;
+  past its open edge as far as from the edge — a dress's top edge pushed the hair above it off the skin, a shimmer), as
+  near as the hair lay over it at rest; what lies under it at rest, under a hood, is the hood's to keep off.
 Tried and dropped: simulating MakeHuman's garments subdivided (О3's: points a centimetre apart need small steps of 1/960
 s to keep their lengths, 0.1–0.4 s a frame); cloth meeting the skin by one search a point every small step (four times
 the cost: the points kept do it); hard tethers (they fought the body where cloth goes round it and threw it at 60 m/s);
 placing a reset straight in the pose; limiting how far an edge is shortened in a pass where it touches the body (against
-a knee drawn through the cloth: it tore a dress pressed on the legs by the wind instead). A frame of a dressed figure's
+a knee drawn through the cloth: it tore a dress pressed on the legs by the wind instead); the skin's points kept under
+the cloth's triangles (each skin point the garment covers followed to its nearest cloth and held behind it — beyond
+what О3 did; where the trousers' hems meet the feet it pushed the cloth centimetres a step, unstable: dropped, the
+target being О3's level); the held points' pull as an XPBD constraint carrying the garment's weight (soft for a light
+hood, it trembled against its shell). A frame of a dressed figure's
 whole step costs 24–126 ms in node (a dress 24–30, a T-shirt and trousers 65–77, three garments 98–126); several characters at once,
 on the GPU, are the later task — the step allocates nothing and works on flat arrays, garment by garment.
 

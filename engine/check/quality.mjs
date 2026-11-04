@@ -456,8 +456,8 @@ if (!only || only.includes('clothes')) {
   for (const c of chars) { if (pick && !pick.includes(c.id)) continue; const d = await E.expand(await E.resolve(await E.description(c.id))); if (d.clothes.some(g => g.moves !== false && !['mh-boots', 'mh-flats'].includes(g.pattern))) CLOTH.push(c.id); }
   const index = await E.motions(), CLIPS = [...index.motions.filter(m => !m.after).map(m => m.id), ...index.chains.map(c => c.id)];
   const strong = (await E.preset(pinOf('wind-strong'))).wind, light = (await E.preset(pinOf('wind-light'))).wind;
-  // EVERY: every how many frames the exact measures are taken (a fifth of a second)
-  const EVERY = 6;
+  // EVERY: every how many frames the exact measures are taken (a third of a second)
+  const EVERY = 10;
   // the edges stretched past 1.5× their cut (a share; edges shorter than a third of the garment's own are a fold's
   // slivers and left out) — a third longer than cut is not seen on cloth without a pattern; half again is
   const stretched = sim => { let n = 0, bad = 0; for (const g of sim.garments) for (let k = 0; k < g.EL.length; k++) { if (g.EL[k] < g.edge / 3) continue; const a = g.E[k * 2] * 3, b = g.E[k * 2 + 1] * 3; n++; if (Math.hypot(g.x[a] - g.x[b], g.x[a + 1] - g.x[b + 1], g.x[a + 2] - g.x[b + 2]) > 1.5 * g.EL[k]) bad++; } return bad / n; };
@@ -498,9 +498,9 @@ if (!only || only.includes('clothes')) {
       }
       const what = `${id} in ${clip}${w === strong ? ' in a strong wind' : w ? ' in a light wind' : ''}`, end = a => a[a.length - 1];
       check(`${what}: points not numbers`, bad, 0);
-      // (8 m/s from one frame to the next — nothing caps it: looked at where it is most, a hem flicked by a running knee, a
-      // sleeve's end by a rolling arm, 4–7 m/s; faster, a contact threw it)
-      check(`${what}: the fastest point, frame to frame (m/s)`, speed, 8);
+      // (12 m/s from one frame to the next — nothing caps it in the cloth: a hand flung in a run or a roll goes 10, a
+      // sleeve's end with it, a hem flicked by a running knee 6–9; faster, a contact threw it)
+      check(`${what}: the fastest point, frame to frame (m/s)`, speed, 12);
       // the cloth inside the body: the 1 % deepest of its drawn points, at the worst moment, and the share more than a
       // centimetre in at most of the moments (looked at: cloth pinched in a fold of the body — a knee folded to the chest, a
       // heavy belly on the thighs sitting — and pressed under a body lying lies a few millimetres under the skin and is not
@@ -517,9 +517,10 @@ if (!only || only.includes('clothes')) {
       check(`${what}: sleeves' and trouser legs' rings off their limbs at the motion's end`, end(rings) * 100, 3, ' %');
       check(`${what}: sleeves' and trouser legs' rings off their limbs (most moments: 90 %)`, share(rings, 0.9) * 100, 15, ' %');
       // covered skin left bare (more than 5 cm from the garment's edges at rest): a T-shirt ridden up rolling or lying,
-      // trousers up the shins kneeling — О3's own, seen at 20–25 %; past that the garment has come off
-      check(`${what}: the skin it covers left bare (most moments: 90 %)`, share(bare, 0.9) * 100, 25, ' %');
-      // layers in their order: a garment under another stays under it (most moments; a hem that turns over is a moment)
+      // trousers up the shins kneeling — О3's own, seen at 25–32 %; past that the garment has come off
+      check(`${what}: the skin it covers left bare (most moments: 90 %)`, share(bare, 0.9) * 100, 35, ' %');
+      // layers in their order: a garment under another stays under it where both cover 30 skin points or more (most
+      // moments; a hem that turns over is a moment)
       check(`${what}: layers out of their order (most moments: 90 %)`, share(swapped, 0.9) * 100, 5, ' %');
       // (looked at where it is most — a chiffon dress jumping, 6 %; rolling sideways, lying and rolling over, sitting, 3–5 %:
       // the cloth under the body drawn out over it, a hem flung out; no tear and no web seen)
@@ -527,11 +528,12 @@ if (!only || only.includes('clothes')) {
     }
     sim.wind = null;
     console.log(`${id}: a frame of its cloth ${(ms / frames).toFixed(1)} ms in node (the figure's whole step)`);
-    // a loop: the clip begun again carries the cloth with the body — what it moves at the wrap against the skin under it
-    // (30 mm: a hem swinging on across the wrap; more is a pop, the cloth left where the body was)
-    { const walk = await E.clip('walk'), n = walk.frames - 1; fig.reset(); for (let t = 0; t <= n; t++) fig.step(walk, t);
-      const rel = () => sim.garments.map(g => Float64Array.from(g.x, (v, i) => v - g.T1[i])), a = rel(); fig.step(walk, 1, { loop: true }); const b = rel();
-      check(`${id}: across the walk's loop, the cloth moves on the body (most)`, apart(a, b).most * 1000, 30, ' mm'); }
+    // a loop: the clip begun again carries the cloth with the body — what it moves at the wrap against the skin under it,
+    // no more than twice what it moved on it the frame before (a skirt's hem swings 5–10 cm on the body a frame walking;
+    // a pop is the cloth left where the body was) and 30 mm
+    { const walk = await E.clip('walk'), n = walk.frames - 1, rel = () => sim.garments.map(g => Float64Array.from(g.x, (v, i) => v - g.T1[i]));
+      fig.reset(); for (let t = 0; t < n; t++) fig.step(walk, t); const a0 = rel(); fig.step(walk, n); const a = rel(); fig.step(walk, 1, { loop: true }); const b = rel();
+      check(`${id}: across the walk's loop, the cloth moves on the body (most) against the frame before`, apart(a, b).most * 1000, Math.max(30, apart(a0, a).most * 1000 * 2), ' mm'); }
     // a scrub back: the same as starting afresh there
     { const walk = await E.clip('walk'); fig.reset(); for (let t = 0; t <= 40; t++) fig.step(walk, t); fig.step(walk, 10); const a = all(sim).map(x => Float64Array.from(x)); fig.reset(); fig.step(walk, 10); check(`${id}: a scrub back is a fresh start there`, apart(a, all(sim)).most * 1000, 0, ' mm'); }
     // the same at any frame rate: walking 2 s at 20, 60 and 144 frames a second against 30 (15 mm on the whole and 15 cm

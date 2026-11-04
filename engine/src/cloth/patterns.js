@@ -15,6 +15,7 @@
 //   PATTERNS[id] → {label, layer, kind, tubes?, self?, hangs?, trousers?, rides?}   what a garment of it is
 //   cutFor(body, id, E, ctx) → {positions, triangles, hold, near (each point's nearest skin vertex), flat?, drawn?
 //                                (the stencil it is drawn by, subdivided)}
+import { cellHash } from '../cells.js';
 import { normalsOf } from '../mesh.js';
 import { regionsOf } from '../regions.js';
 import { loadPack } from '../pack.js';
@@ -160,20 +161,10 @@ export function along(pos, tris, from) {
   return d;
 }
 const loopStat = (pos, L) => { let x = 0, y = 0, z = 0, ax = 0; for (const v of L) { x += pos[v * 3]; y += pos[v * 3 + 1]; z += pos[v * 3 + 2]; ax += Math.abs(pos[v * 3]); } const k = L.length; return { x: x / k, y: y / k, z: z / k, ax: ax / k, n: k }; };
-// each of Q's points' nearest among P's used points (a hash of 3 cm cells)
+// each of Q's points' nearest among P's used points (src/cells.js, cells of 3 cm; as far as 1.2 m)
 export function nearestOn(P, Q, used) {
-  const cell = 0.03, grid = new Map(), key = (x, y, z) => x + ',' + y + ',' + z, out = new Int32Array(Q.length / 3);
-  for (const i of used) { const k = key(Math.floor(P[i * 3] / cell), Math.floor(P[i * 3 + 1] / cell), Math.floor(P[i * 3 + 2] / cell)); (grid.get(k) || grid.set(k, []).get(k)).push(i); }
-  for (let q = 0; q < out.length; q++) {
-    const x = Q[q * 3], y = Q[q * 3 + 1], z = Q[q * 3 + 2], cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell);
-    let best = -1, bd = Infinity;
-    for (let r = 0; r < 40 && (best < 0 || Math.sqrt(bd) > (r - 1) * cell); r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) for (let dz = -r; dz <= r; dz++) {
-      if (Math.max(Math.abs(dx), Math.abs(dy), Math.abs(dz)) !== r) continue;
-      const a = grid.get(key(cx + dx, cy + dy, cz + dz)); if (!a) continue;
-      for (const i of a) { const d = (P[i * 3] - x) ** 2 + (P[i * 3 + 1] - y) ** 2 + (P[i * 3 + 2] - z) ** 2; if (d < bd) { bd = d; best = i; } }
-    }
-    out[q] = best;
-  }
+  const h = cellHash(0.03).build(P, used.length, used), out = new Int32Array(Q.length / 3);
+  for (let q = 0; q < out.length; q++) out[q] = h.nearest(P, Q[q * 3], Q[q * 3 + 1], Q[q * 3 + 2], 1.2);
   return out;
 }
 

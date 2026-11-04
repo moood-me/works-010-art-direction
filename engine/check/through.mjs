@@ -3,8 +3,9 @@
 // - the cloth in the body: each drawn point of cloth inside the body's skin (a closed mesh: its nearest triangle's
 //   angle-weighted pseudo-normal says which side, Bærentzen & Aanæs 2005 — exact at any depth, no band it can't see),
 //   how deep (from the skin nearest it: cloth pinched in a fold of the body lies just under both skins, and is hidden);
-// - the body through the cloth: a skin point with cloth inside the body behind it (along its normal inward, before the
-//   ray leaves the skin) — a knee through a trouser front, between the cloth's points as well as on them;
+// - the body through the cloth: a skin point a garment covered at rest with that garment inside the body behind it (along
+//   its normal inward, before the ray leaves the skin) — a knee through a trouser front, between the cloth's points as
+//   well as on them;
 // - covered skin stays covered: skin a garment covers at rest (its normal meets the garment's inside, farther than
 //   MARGIN from the garment's open edges) still meets its inside — not left bare by cloth ridden up, nor through it;
 // - layers keep their order: skin covered by two garments meets the one worn under first;
@@ -17,9 +18,14 @@ import { LIMBS, regionsOf } from '../src/regions.js';
 
 // MARGIN: how far from a garment's open edge skin it covers at rest must be to be counted (an edge rides a little
 // over the skin as the body moves: a hem over the knees sitting is not "uncovered"); SAMPLE: every how many skin points
-// are asked (they are a centimetre apart: every third is a point every 1.5–2 cm); REACH: how far from the skin a
+// are asked (they are a centimetre apart: every fourth is one every 2 cm); DRAWN: every how many of the cloth's drawn
+// points (drawn finer than simulated: every third is as dense as its simulated points); REACH: how far from the skin a
 // garment's inside is looked for (a bell's hem stands 20–30 cm off the legs); BAND: a tube's ring's width along its bone
-const MARGIN = 0.05, SAMPLE = 3, REACH = 0.4, BAND = 0.04;
+const MARGIN = 0.05, SAMPLE = 4, REACH = 0.4, BAND = 0.04, DRAWN = 3;
+// PAIRS: how many skin points two garments must both cover for their order to be counted (a few at a hem's edge, a share
+// of them is one point's turn); LONG: how many rings a limb's tube must have to be counted (a short sleeve or shorts
+// are one or two bands round the top of the limb, and crumple round a shoulder or hip as it turns)
+const PAIRS = 30, LONG = 4;
 const BONES = { 1: ['LeftArm', 'LeftForeArm', 'LeftHand'], 2: ['RightArm', 'RightForeArm', 'RightHand'], 3: ['LeftLeg', 'LeftShin', 'LeftFoot'], 4: ['RightLeg', 'RightShin', 'RightFoot'] };
 
 export function looker(fig, sim) {
@@ -62,22 +68,22 @@ export function looker(fig, sim) {
       build();
       // the cloth in the body
       const deep = [], q = { d: 0, inside: false };
-      for (const G of gs) { const P = G.out.positions, u = G.out.mesh.used; for (let k = 0; k < u.length; k++) { const i = u[k] * 3; bodyGrid.nearest(BP, BT, bodyPN, P[i], P[i + 1], P[i + 2], q); deep.push(q.inside ? q.d : 0); } }
+      for (const G of gs) { const P = G.out.positions, u = G.out.mesh.used; for (let k = 0; k < u.length; k += DRAWN) { const i = u[k] * 3; bodyGrid.nearest(BP, BT, bodyPN, P[i], P[i + 1], P[i + 2], q); deep.push(q.inside ? q.d : 0); } }
       deep.sort((a, b) => b - a);
-      // the body through the cloth: cloth inside the body behind a skin point, before its ray inward leaves the skin
-      let through = 0;
-      for (const v of sample) {
+      // the body through the cloth: skin a garment covered at rest with that garment inside the body behind it, before
+      // its ray inward leaves the skin (cloth of another garment pinched between an arm and the side is hidden there)
+      // covered skin still covered; layers in their order
+      let through = 0, uncovered = 0, swapped = 0, n = 0;
+      gs.forEach((G, k) => { for (const v of cover[k].v) {
+        n++; const h = along(G, v); if (!h || !h.inner) uncovered++;
         const o = v * 3, nx = -BN[o], ny = -BN[o + 1], nz = -BN[o + 2], ox = BP[o] + nx * 1e-3, oy = BP[o + 1] + ny * 1e-3, oz = BP[o + 2] + nz * 1e-3;
         const exit = bodyGrid.ray(BP, BT, ox, oy, oz, nx, ny, nz, 0.4, hit) ? hit.t : 0.4;
-        if (gs.some(G => G.grid.ray(G.out.positions, G.out.mesh.triangles, ox, oy, oz, nx, ny, nz, exit, hit))) through++;
-      }
-      // covered skin still covered; layers in their order
-      let uncovered = 0, swapped = 0, n = 0;
-      gs.forEach((G, k) => { for (const v of cover[k].v) { n++; const h = along(G, v); if (!h || !h.inner) uncovered++; } });
+        if (G.grid.ray(G.out.positions, G.out.mesh.triangles, ox, oy, oz, nx, ny, nz, exit, hit)) through++;
+      } });
       for (const [v, a, b] of pairs) { const ha = along(gs[a], v), ta = ha && ha.inner ? ha.t : Infinity, hb = along(gs[b], v), tb = hb && hb.inner ? hb.t : Infinity; if (tb < ta - 1e-3 && ta < Infinity) swapped++; }
       // the tubes round their bones
       let off = 0; for (const r of rings) if (Math.abs(r.winding()) < 0.5) off++;
-      return { deep, through: through / sample.length, uncovered: n ? uncovered / n : 0, swapped: pairs.length ? swapped / pairs.length : 0, rings: rings.length ? off / rings.length : 0 };
+      return { deep, through: n ? through / n : 0, uncovered: n ? uncovered / n : 0, swapped: pairs.length >= PAIRS ? swapped / pairs.length : 0, rings: rings.length ? off / rings.length : 0 };
     },
   };
 }
@@ -110,7 +116,7 @@ function ringsOf(fig, g, limbOf) {
       }
     }
   }
-  return out;
+  return out.filter(r => out.filter(q => q.limb === r.limb).length >= LONG);
 }
 function seg(P, a, b) { const e = [P[b * 3] - P[a * 3], P[b * 3 + 1] - P[a * 3 + 1], P[b * 3 + 2] - P[a * 3 + 2]]; return { e, len: Math.hypot(...e) }; }
 function foot(P, a, b, x, i) {

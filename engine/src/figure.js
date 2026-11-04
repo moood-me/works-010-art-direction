@@ -162,9 +162,10 @@ export class Figure {
     if (reset || on) this.previous.copy(this.pose);
     this.state = { clip, t };
     const jump = !reset && !!on, sims = this.simulations;
-    if (!sims.length) return this.pose;
-    const solids = this.solids();
+    const solids = sims.length ? this.solids() : this._solids;
+    if (!solids) return this.pose;
     solids.update(this.previous, this.pose, reset ? 'reset' : jump ? 'jump' : 'go', dt);
+    if (!sims.length) return this.pose;
     // (each simulation as the frame begins: a reset, a jump; then the small steps, the same for all of them — each at
     // its moment of the solids, made once for all —, from where the last frame left them (this.left behind it) up to
     // this frame; then each draws itself at the frame's own moment)
@@ -175,7 +176,7 @@ export class Figure {
       if (jump) solids.moment(0, m.now);
       const lag = this.left, n = Math.floor((lag + dt) / SMALL + 1e-9);
       for (let s = 1; s <= n; s++) {
-        [m.was, m.now] = [m.now, m.was]; solids.moment(Math.max(0, Math.min(1, (s * SMALL - lag) / dt)), m.now);
+        const w = m.was; m.was = m.now; m.now = w; solids.moment(Math.max(0, Math.min(1, (s * SMALL - lag) / dt)), m.now);
         for (const sim of sims) sim.substep(m.was, m.now);
       }
       this.left = lag + dt - n * SMALL;
