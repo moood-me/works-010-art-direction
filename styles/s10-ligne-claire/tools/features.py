@@ -69,8 +69,8 @@ def eye_marks(h, side, e, st):
     out.append(Mark(h.on_face(x, y, pupil, flip), kind='shape', fill=lc.INK, w=0))
     out.append(Mark(h.on_face(x, y, lidc, flip), w=st.get('lidw', 1.35)))
     if st.get('lashes'):
-        out.append(Mark(h.on_face(x, y, [(W * 0.95, -0.3), (W * 1.3, -2.6)], flip), w=1.0))
-        out.append(Mark(h.on_face(x, y, [(W * 0.7, top * 0.75), (W * 0.95, top * 0.75 - 2.4)], flip), w=0.9))
+        # one small flick at the outer end, as Floc'h and Chaland draw women's eyes
+        out.append(Mark(h.on_face(x, y, [(W * 0.75, top * 0.6), (W * 1.15, -1.0), (W * 1.45, -3.0)], flip), w=1.2))
     sq = ex(e, 'squint', 0)
     if lower and not ex(e, 'round'):
         lv = 5.0 - sq * 1.8
@@ -160,7 +160,7 @@ def nose_marks(h, e, st, view_yaw):
     W = st.get('w', 7)
     if abs(view_yaw) < 25:
         s = 1 if view_yaw >= 0 else -1
-        out.append(Mark(h.on_face(0, y, [(-W * s, -4), (-W * 1.05 * s, -0.5), (-W * 0.5 * s, 1.5), (0, 1.6),
-                                           (W * 0.45 * s, 1.0)]), w=0.85))
-        out.append(Mark(h.on_face(0, y, [(W * 0.85 * s, -1.6), (W * 1.0 * s, 0.4)]), w=0.7))
+        # one small hook on the shadow side of the tip, the way Hergé closes a nose seen from the front
+        out.append(Mark(h.on_face(0, y, [(-W * 0.75 * s, -5), (-W * 0.95 * s, -1.5), (-W * 0.55 * s, 1.2),
+                                           (W * 0.1 * s, 1.8)]), w=0.85))
     return out

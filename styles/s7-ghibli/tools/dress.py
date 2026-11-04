@@ -78,7 +78,8 @@ def draw_figure(d, view, F, spec, head_fn, crop_y=None):
     tz = float(view.depth(np.array([J['pelvis'] * 0.5 + (J['shl'] + J['shr']) * 0.25]))[0])
     items = []          # (depth, order, fn)
 
-    # ---- hair behind everything
+    # ---- place the head (its outline casts a shadow on the neck), hair behind everything
+    head_fn(d, view, F, 'prepare')
     items.append((-1e9, 0, lambda: head_fn(d, view, F, True)))
 
     # ---- legs (under a skirt they always go first)
@@ -179,6 +180,8 @@ def draw_torso(d, view, F, S, torso, k):
     B, J = F.B, F.J
     lw = d.lw
     top, over, bot = S.get('top'), S.get('over'), S.get('bottom', {})
+    # the neck first: the garments' necklines cut across it
+    draw_neck(d, view, F, S, F.head_g)
     # skin under the neckline
     y_neck = B['torso'][-1][0]
     skin_t = torso.shape(view, B['chest_y'], y_neck)
@@ -230,8 +233,7 @@ def draw_torso(d, view, F, S, torso, k):
         for m in over.get('marks', []):
             m(d, view, F, g)
     if top and top.get('collar'):
-        # the collar lies over the neck: drawn right after it
-        F.after_neck.append(lambda: collar(d, view, F, top['collar'], top['c'], k))
+        collar(d, view, F, top['collar'], top['c'], k)
     if bot.get('kind') in ('trousers', 'shorts') and bot.get('belt'):
         pass
     if S.get('apron'):
@@ -360,14 +362,13 @@ def head_drawer(head, hair, skin, hair_c, iris_c, E, head_c=None, extra=None):
         if 'hair' not in state:
             state['hair'] = hair.build(view) if hair else (None, None, [])
         Fh, Bh, st = state['hair']
+        if back == 'prepare':
+            F.head_g = head.skull(view)
+            return
         if back:
             if Bh is not None:
                 hair.draw(d, view, Bh, hair_c)
             return
-        hg = head.skull(view)
-        draw_neck(d, view, F, {'skin': skin}, hg)
-        for fn_ in getattr(F, 'after_neck', []):
-            fn_()
         sk = head.draw_face(d, view, E, skin, hair_c, iris_c, hair_front=Fh)
         if Fh is not None:
             hair.draw(d, view, Fh, hair_c, st)

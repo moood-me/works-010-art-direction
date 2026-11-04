@@ -19,3 +19,5 @@ each style of `styles/`.
 
 **Seen.** Shape from all sides guessed right; body, clothes, hair separate; but blotchy colour, holes in sleeves,
 smeared faces, a bald back of the head on Тим. The symbolic silhouette (С6) failed at reconstruction (empty mesh).
+
+**Second try (Pavel: if the five are poor, try to fix one or two before running the rest).** Tim and Anya (С1) re-rendered from their SVG with the background removed, cropped to a white square like the authors' examples, run with seeds 52/50 and 7/11. Anya improved (whole hair, fewer holes); Tim kept a bald, blotchy back of the head. Not good enough to call good 3D, so the remaining styles were not run. The Space is paused.

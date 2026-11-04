@@ -111,6 +111,11 @@ class Head:
         db = (zm - float(self.zb(y))) * scale + push
         s, c = np.sin(t), np.cos(t)
         x = a * np.sign(s) * np.abs(s) ** (2 / self.n)
+        ch = self.P.get('cheek')
+        if ch:
+            # the cheekbone: the front half of the face a little fuller at cheek height
+            yc, amt, wy = ch
+            x = x * (1 + amt * np.exp(-((y - yc) / wy) ** 2) * np.clip(c, 0, 1) ** 0.7)
         z = zm + np.where(c > 0, df, db) * np.sign(c) * np.abs(c) ** (2 / self.n)
         z = z + np.where(c > 0, float(self.pr(y)) * np.exp(-(x / max(float(self.sg(y)), 1e-3)) ** 2), 0)
         return np.stack([x, np.full_like(x, y), z], 1)

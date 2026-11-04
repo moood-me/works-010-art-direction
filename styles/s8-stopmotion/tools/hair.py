@@ -75,27 +75,53 @@ def cap_polys(h, k, line, y_back=None, rows=44, cols=120):
     for r in range(rows):
         ya, yb = ys[r], ys[r + 1]
         ym = (ya + yb) / 2
-        run, run_front = [], None
+        dp = 2 * math.pi / cols
+
+        def cross(p_in, p_out, y):
+            """phi where the hairline passes height y, between an inside and an outside phi."""
+            for _ in range(18):
+                m = (p_in + p_out) / 2
+                if y <= line(m):
+                    p_in = m
+                else:
+                    p_out = m
+            return p_in
+
+        def strip(run, open_l, open_r):
+            # top edge at ya, bottom at yb; ends cut exactly at the hairline where the run meets it
+            a0, a1 = run[0], run[-1]
+            tl = cross(a0, a0 - dp, ya) if open_l else a0
+            tr = cross(a1, a1 + dp, ya) if open_r else a1
+            bl = cross(a0, a0 - dp, yb) if open_l and yb > line(a0) else (cross(a0, a0 - dp, yb) if open_l else a0)
+            br = cross(a1, a1 + dp, yb) if open_r and yb > line(a1) else (cross(a1, a1 + dp, yb) if open_r else a1)
+            if open_l and yb > line(a0):
+                bl = a0
+            if open_r and yb > line(a1):
+                br = a1
+            n = max(2, len(run))
+            top = [h.P(h.surf(tl + (tr - tl) * i / (n - 1), ya - 0.004, 0, k)) for i in range(n)]
+            bot = [h.P(h.surf(bl + (br - bl) * i / (n - 1), yb + 0.004, 0, k)) for i in range(n)]
+            return top + bot[::-1]
+
+        run, run_front, open_l = [], None, False
+        prev_inside = False
         for j in range(cols + 1):
-            phi = -math.pi + 2 * math.pi * j / cols
+            phi = -math.pi + dp * j
             inside = ym <= line(phi)
             fr = h.facing(phi, ym) >= 0 if inside else None
             if run and (not inside or fr != run_front):
                 if len(run) > 1:
-                    (front if run_front else back).append(run)
+                    (front if run_front else back).append(strip(run, open_l, not inside))
+                open_l = False
                 run = [run[-1]] if inside else []
             if inside:
+                if not run:
+                    open_l = not prev_inside and j > 0
                 run.append(phi)
                 run_front = fr
+            prev_inside = inside
         if len(run) > 1:
-            (front if run_front else back).append(run)
-        # turn phi runs into strip polygons (a hair wider, so strips overlap)
-        for lst in (front, back):
-            for i, item in enumerate(lst):
-                if isinstance(item, list) and item and isinstance(item[0], float):
-                    top = [h.P(h.surf(p, ya - 0.004, 0, k)) for p in item]
-                    bot = [h.P(h.surf(p, yb + 0.004, 0, k)) for p in item]
-                    lst[i] = top + bot[::-1]
+            (front if run_front else back).append(strip(run, open_l, False))
     return back, front
 
 

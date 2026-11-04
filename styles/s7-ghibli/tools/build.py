@@ -108,7 +108,7 @@ def portrait(name, key='calm'):
     d = Doc(W, H, lw=2.6)
     place(d, W, H, where, seed=7)
     F = Figure(m.B, m.POSES[pp])
-    v = view_at(22, 12.5 * 23.5 / m.B['head_h'], F.J['head'], W * 0.5, H * 0.36)
+    v = view_at(22, 14.0 * 23.5 / m.B['head_h'], F.J['head'], W * 0.5, H * 0.38)
     person(d, v, name, pp, expr_of(name, key))
     return d
 

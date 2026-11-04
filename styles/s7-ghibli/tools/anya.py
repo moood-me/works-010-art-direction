@@ -18,34 +18,33 @@ FACE = dict(
     sigma=[(0.2, 0.10), (-0.3, 0.07), (-0.5, 0.16), (-0.8, 0.22)],
     eye_x=0.27, eye_y=-0.09, eye_w=0.27, eye_h=0.185, iris_w=0.082, iris_h=0.10, lashes=0, flick=1.0, lid_w=1.5,
     brow_y=0.25, brow_w=0.25, brow_th=2.0, brow_arch=0.05, nose_y=-0.50, nose='hook', nose_len=0.13, mouth_y=-0.72, mouth_w=0.10, mouth_curve=0.0,
-    lower_lip=0.04, ear_z=0.04, ear=(-0.04, -0.38), blush=0.15,
+    lower_lip=0.04, cheek=(-0.32, 0.07, 0.22), ear_z=0.04, ear=(-0.04, -0.38), blush=0.15,
 )
 
-# shoulder-length hair in clumps with pointed ends, a soft parted fringe
-_back = []
-for i, t in enumerate(range(100, 261, 20)):
-    tt = t if t <= 180 else t - 360
-    side = 1 if tt > 0 else -1
-    out = 0.18 * side if abs(tt) < 170 else 0.0
-    ln = 1.05 + 0.12 * ((i * 37) % 5) / 4
-    _back.append(dict(root=(tt, 0.2), to=[(out * 0.6, -0.5, -0.05), (out, -ln, 0.0)], w=0.42, prof=2.5,
-                      back=abs(tt) > 125, line=('l' if i % 2 else 'r') if abs(tt) <= 125 else None))
-
+# a soft fringe, locks framing the face to the chin, the rest gathered low into a loose tail over the left
+# shoulder, tied with a ribbon
 HAIRDEF = dict(
-    hairline=[(0, 0.55), (30, 0.50), (60, 0.32), (85, 0.10), (100, -0.05), (130, -0.4), (180, -0.6)],
-    volume=[(-1, 0.10), (0, 0.11), (1, 0.15)],
-    flow=[[(150, 0.95), (120, 0.6), (110, 0.25)], [(-150, 0.95), (-120, 0.6), (-110, 0.25)],
-          [(100, 0.9), (90, 0.55)], [(-100, 0.9), (-90, 0.55)]],
+    hairline=[(0, 0.66), (30, 0.60), (60, 0.38), (85, 0.10), (100, -0.05), (130, -0.4), (180, -0.6)],
+    volume=[(-1, 0.06), (-0.3, 0.07), (0.3, 0.08), (1, 0.10)],
+    flow=[[(150, 0.95), (125, 0.6), (115, 0.25)], [(-150, 0.95), (-125, 0.6), (-115, 0.25)],
+          [(170, 0.9), (165, 0.3), (160, -0.3)], [(-170, 0.9), (-165, 0.3), (-160, -0.3)]],
     locks=[
-        # fringe: a few broad soft clumps with pointed ends, parted a little to the character's right
-        dict(root=(-45, 0.80), to=[(-0.06, -0.25, 0.16), (-0.20, -0.62, 0.18)], w=0.34, line='r'),
-        dict(root=(-18, 0.90), to=[(0.0, -0.30, 0.22), (-0.10, -0.80, 0.26)], w=0.34, line='r'),
-        dict(root=(10, 0.90), to=[(0.06, -0.30, 0.24), (0.10, -0.72, 0.26)], w=0.30, line='l'),
-        dict(root=(38, 0.80), to=[(0.10, -0.26, 0.20), (0.22, -0.66, 0.18)], w=0.32, line='l'),
-        # locks over the ears framing the cheeks
-        dict(root=(100, 0.45), to=[(0.10, -0.45, 0.0), (0.10, -1.05, -0.02), (0.06, -1.45, -0.05)], w=0.34, line='l', prof=2),
-        dict(root=(-100, 0.45), to=[(-0.10, -0.45, 0.0), (-0.10, -1.0, -0.02), (-0.08, -1.40, -0.05)], w=0.34, line='r', prof=2),
-    ] + _back,
+        # fringe: a few soft clumps, curved, pointed, parted a little to the character's right
+        dict(root=(-46, 0.84), to=[(-0.10, -0.30, 0.18), (-0.22, -0.80, 0.14)], w=0.30, line='r'),
+        dict(root=(-22, 0.92), to=[(0.04, -0.36, 0.24), (-0.10, -0.90, 0.24)], w=0.32, line='r'),
+        dict(root=(4, 0.94), to=[(0.10, -0.34, 0.26), (0.12, -0.82, 0.26)], w=0.28, line='l'),
+        dict(root=(30, 0.88), to=[(0.14, -0.30, 0.24), (0.26, -0.78, 0.20)], w=0.30, line='l'),
+        dict(root=(52, 0.76), to=[(0.10, -0.30, 0.16), (0.24, -0.82, 0.08)], w=0.26),
+        # locks over the ears framing the cheeks, to the jaw
+        dict(root=(82, 0.50), to=[(0.10, -0.45, 0.06), (0.08, -0.95, 0.06), (0.03, -1.30, 0.04)], w=0.30, line='l', prof=1.8),
+        dict(root=(-82, 0.50), to=[(-0.10, -0.45, 0.06), (-0.08, -0.95, 0.06), (-0.04, -1.28, 0.04)], w=0.30, line='r', prof=1.8),
+        # the gathered hair at the nape
+        dict(root=(160, -0.2), to=[(0.10, -0.35, -0.10), (0.25, -0.55, -0.05)], w=0.55, prof=1.0, back=True),
+        dict(root=(-160, -0.2), to=[(-0.05, -0.35, -0.10), (0.10, -0.55, -0.05)], w=0.55, prof=1.0, back=True),
+        # the tail over the left shoulder, in front
+        dict(root=(-140, -0.45), to=[(-0.25, -0.35, 0.10), (-0.42, -0.90, 0.45), (-0.40, -1.70, 0.70), (-0.28, -2.40, 0.70)],
+             w=0.36, prof=0.9, line='r', front=True),
+    ],
 )
 
 
@@ -59,11 +58,11 @@ def hair(h):
 
 # ---------------------------------------------------------------- body
 B = dict(
-    hip_y=84, hip_x=8.5, thigh=40, shin=37.5, shoulder=(14.2, 131, -1.0), upper=27, fore=23, hand=15,
-    arm_r=[3.9, 3.3, 2.9, 2.3], hand_r=2.1, leg_r=[7.4, 6.2, 4.6, 4.0, 4.6, 4.2, 3.0, 2.8], neck=(136.0, 143, -1.0, 0.5),
-    neck_r=3.5, head_c=(0, 149.2, 1.8), head_h=24.0, chest_y=118,
+    hip_y=84, hip_x=8.5, thigh=40, shin=37.5, shoulder=(13.4, 131, -1.0), upper=27, fore=23, hand=15,
+    arm_r=[3.5, 3.0, 2.6, 2.1], hand_r=2.0, leg_r=[7.4, 6.2, 4.6, 4.0, 4.6, 4.2, 3.0, 2.8], neck=(136.0, 143, -1.0, 0.5),
+    neck_r=3.2, head_c=(0, 150.2, 1.8), head_h=24.0, chest_y=118,
     torso=[(76, 10.5, 7, -7), (84, 16.5, 8.5, -9.5), (93, 15.5, 8, -9), (103, 12.8, 7.2, -7.2), (112, 14.2, 9, -7.8),
-           (120, 15.2, 10.5, -8.3), (126, 16.6, 9.4, -8.3), (130, 17.8, 7.6, -7.4), (133, 15.6, 6.0, -6.5), (135.5, 10.5, 4.6, -5.6), (137.5, 5.5, 3.6, -4.8)],
+           (120, 15.2, 10.5, -8.3), (126, 15.8, 9.4, -8.3), (130, 16.6, 7.6, -7.4), (133, 14.6, 6.0, -6.5), (135.5, 10.5, 4.6, -5.6), (137.5, 5.5, 3.6, -4.8)],
 )
 
 POSES = dict(
@@ -85,8 +84,8 @@ POSES = dict(
 
 SPEC = dict(
     skin=SKIN,
-    top=dict(c='#f3ead6', ease=0.6, hem=86, sleeve=dict(upto=1.0, ease=0.8), collar=3.0),
-    over=dict(c='#8d9a62', ease=1.5, hem=88, open=(0.10, 0.42), sleeve=dict(upto=1.0, ease=1.3)),
+    top=dict(c='#f3ead6', ease=0.5, hem=86, sleeve=dict(upto=1.0, ease=0.6), neck_cut=(5.5, 0.55)),
+    over=dict(c='#8d9a62', ease=1.0, hem=88, open=(0.12, 0.46), sleeve=dict(upto=1.0, ease=0.9)),
     bottom=dict(kind='skirt', c='#b8664a', waist=103,
                 rings=[(40, 25, 19, -19), (60, 21.5, 15.5, -16), (88, 17.5, 10.5, -11), (103, 13.8, 8, -8)],
                 wave=(1.6, 7, 80),

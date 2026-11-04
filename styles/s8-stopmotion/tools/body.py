@@ -168,8 +168,9 @@ def bust(d, P, B, ex, S, cx, cy, yaw=30, roll=0, body_yaw=None, extra=None):
         if B.get('ribs'):
             s += ribs(d, A, y_arm0 + 0.06, y_arm1, B.get('sleeve', cloth), step=B['ribs'], clip_outline=o)
         return s
-    for z, side, A in arms:
-        out.append(arm(A))
+    if B.get('bust_arms', False):
+        for z, side, A in arms:
+            out.append(arm(A))
     # neck
     nk = N.outline(y0=B['neck_y'][0], y1=B['neck_y'][1], n=20)
     out.append(d.shape(pts(nk), mix(P['skin'], '#c08070', 0.15), S * 0.3, 'clay', 0.04, shade=P.get('shade', '#5a2438'), depth=0.7))

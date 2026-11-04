@@ -113,7 +113,7 @@ class Hair:
             (front if fz >= 0 else back).append(g)
         for L in self.P.get('locks', []):
             for g, c, w, fz in self.lock(view, L):
-                isback = L.get('back') or (fz < -0.02 * self.h.k * 0 - 0.002 and not L.get('front'))
+                isback = L.get('back') or (fz < -0.002 and not L.get('front'))
                 (back if isback else front).append(g)
                 if isback:
                     continue

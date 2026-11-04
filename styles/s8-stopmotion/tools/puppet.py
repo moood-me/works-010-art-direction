@@ -38,7 +38,8 @@ def draw_head(d, P, ex, S, cx, cy, yaw=30, roll=0):
     o = h.outline()
     face = d.rad([(0, mix(skin, '#fff1e2', 0.22), 1), (0.6, skin, 1), (1, mix(skin, P.get('skin_shade', '#a0505a'), 0.3), 1)],
                  cx=0.42, cy=0.55, r=0.62)
-    fid = d.form(S * 0.9, shade=P.get('shade', '#5a2438'), depth=P.get('shade_depth', 0.9), ao=0.3, sheen=0.18, rim=0.2)
+    fid = d.form(S * 0.9, shade=P.get('shade', '#5a2438'), depth=P.get('shade_depth', 0.75), ao=0.3, sheen=0.2, rim=0.2,
+                 warm=P.get('warm', '#d0503a'), reach=0.34)
     front.append(f'<path d="{pts(o)}" fill="url(#{face})" filter="url(#{fid})"/>')
     tid = d.tex('clay', 1.0, P.get('skin_tex', 0.10), seed=5)
     front.append(f'<path d="{pts(o)}" fill="{skin}" filter="url(#{tid})"/>')

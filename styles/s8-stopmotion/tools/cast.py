@@ -59,7 +59,7 @@ ANYA = dict(
                (0.2, 0.37), (0.3, 0.345), (0.4, 0.31), (0.46, 0.27), (0.5, 0.2)],
         back=[(-0.5, -0.02), (-0.46, -0.24), (-0.38, -0.38), (-0.25, -0.46), (-0.1, -0.47), (0.0, -0.44), (0.1, -0.36),
               (0.2, -0.22), (0.3, -0.08), (0.4, 0.04), (0.46, 0.1), (0.5, 0.13)]),
-    skin='#f0c4a4', skin_shade='#b0606a', shade='#5a2a40', blush=0.38, freckles=16, skin_tex=0.05,
+    skin='#f0cbb2', skin_shade='#b0707a', shade='#5a2a40', blush=0.34, freckles=16, skin_tex=0.05,
     eye_phi=0.43, eye_y=0.11, eye_r=0.082, eye_w=0.092, eye_open=0.92, eye_tilt=0.006, iris_r=0.056, iris='#5a7a4a',
     lash='#24120e', lash_w=0.015, wing=1.5, lid_paint='#b0607a', lid_paint_a=0.35, socket_a=0.25,
     brow_gap=0.1, brow_w=0.072, brow_th=0.012, brow_col='#7a3a22', brow_arch=0.014,
@@ -100,54 +100,54 @@ from body import tx, front_patch, stripes
 
 
 def savely_hair(h, d, P, ex):
-    """Bald dome; a horseshoe of white tufts over the ears and round the back, sticking out a little."""
+    """Bald dome; fluffy white tufts over the ears and round the back, sticking out and curling up."""
     locks = []
     for side in (-1, 1):
-        for k in range(4):
-            phi0 = side * (1.15 + 0.32 * k)
-            p = H.surf_path(h, [(phi0, -0.2 + 0.03 * k), (phi0 + side * 0.12, 0.0 + 0.03 * k)], out=(0.0, 0.03), k=1.0)
-            p += H.fall(p[-1], 0.08, n=3, side=side, out_x=0.06, back_z=-0.02, flick=0.03)
-            locks.append(H.Lock(p, 0.16, 0.0, taper=1.0, root=0.7, strands=4, z_bias=0.0))
-    for k, ph in enumerate((2.5, 2.85, -2.85, -2.5, 3.14)):
-        p = H.surf_path(h, [(ph, -0.18), (ph, 0.12)], out=(0.0, 0.025), k=1.0)
-        locks.append(H.Lock(p, 0.24, 0.05, taper=1.0, root=0.7, strands=5, z_bias=-0.3))
+        for k in range(5):
+            phi0 = side * (1.0 + 0.3 * k)
+            y0 = -0.2 + 0.035 * k
+            p = H.surf_path(h, [(phi0, y0), (phi0 + side * 0.1, y0 + 0.14)], out=(0.0, 0.03), k=1.0)
+            p += H.fall(p[-1], 0.05, n=3, side=side, out_x=0.06 - 0.008 * k, back_z=-0.02, flick=0.04)
+            p += [(p[-1][0] + side * 0.03, p[-1][1] - 0.04, p[-1][2])]
+            locks.append(H.Lock(p, 0.13, 0.0, taper=1.0, root=0.7, strands=4, z_bias=0.0))
+    for k, ph in enumerate((2.45, 2.8, -2.8, -2.45, 3.14)):
+        p = H.surf_path(h, [(ph, -0.17), (ph, 0.1)], out=(0.0, 0.025), k=1.0)
+        locks.append(H.Lock(p, 0.26, 0.05, taper=1.0, root=0.7, strands=5, z_bias=-0.3))
     return dict(col=P['hair_col'], locks=locks, cap=None)
 
 
 def savely_under_nose(h, d, P, ex):
-    return props.moustache(h, d, P, '#d8d0c4', w=0.17, droop=0.07, thick=0.085, ex=ex)
+    return props.moustache(h, d, P, '#e4ded4', w=0.2, droop=0.08, thick=0.1, ex=ex)
 
 
 def savely_over(h, d, P, ex):
-    return props.glasses(h, d, P, 'round', rw=0.078, rh=0.068, out=0.075, col='#8a6a3a', lw=0.009, y_off=0.035)
+    return props.glasses(h, d, P, 'half', rw=0.075, rh=0.05, out=0.1, col='#b08a4a', lw=0.008, y_off=0.075)
 
 
 SAVELY = dict(
     name='savely',
     shape=dict(
-        a=[(-0.5, 0.03), (-0.46, 0.22), (-0.38, 0.33), (-0.25, 0.385), (-0.1, 0.39), (0.0, 0.38), (0.1, 0.375),
-           (0.2, 0.37), (0.3, 0.345), (0.4, 0.28), (0.46, 0.2), (0.5, 0.1)],
-        front=[(-0.5, -0.02), (-0.46, 0.2), (-0.38, 0.33), (-0.25, 0.4), (-0.12, 0.42), (0.0, 0.4), (0.1, 0.39),
-               (0.2, 0.38), (0.3, 0.36), (0.4, 0.33), (0.46, 0.29), (0.5, 0.22)],
-        back=[(-0.5, -0.02), (-0.46, -0.24), (-0.38, -0.38), (-0.25, -0.45), (-0.1, -0.46), (0.0, -0.43), (0.1, -0.35),
-              (0.2, -0.22), (0.3, -0.1), (0.4, 0.0), (0.46, 0.06), (0.5, 0.1)],
-        bumps=[(1.0, 0.33, 0.06, 0.4, 0.1), (0.0, 0.45, 0.04, 0.4, 0.05), (0.38, -0.02, 0.04, 0.35, 0.05)]),
-    skin='#e6a886', skin_shade='#a04a48', shade='#5a2030', blush=0.4, blush_col='#d8505a', skin_tex=0.08,
-    eye_phi=0.42, eye_y=0.06, eye_r=0.066, eye_w=0.075, eye_open=0.7, eye_tilt=-0.008, iris_r=0.045, iris='#4a6a8a',
-    lash='#3a2420', lash_w=0.01, wing=0.4, socket_a=0.4, bags=2, lid_top=0.7, lid_bot=0.4,
-    brow_gap=0.085, brow_w=0.095, brow_th=0.04, brow_col='#e8e2d8', brow_arch=0.004,
-    nose_root=0.07, nose_tip=0.25, nose_len=0.1, nose_w=0.068, nose_tint='#d0504a', nose_fade=0.4,
-    mouth_y=0.36, mouth_w=0.075, lip='#b05a58', upper_lip=0.008, lower_lip=0.016,
-    ear_phi=1.48, ear_y=0.12, ear_w=0.1, ear_h=0.2, ear_out=28, ear_tint='#d06060',
-    hair=savely_hair, hair_col='#e8e2d8', hair_shade='#6a5a5a', hair_split=-0.15,
+        a=[(-0.5, 0.03), (-0.46, 0.18), (-0.38, 0.27), (-0.25, 0.32), (-0.1, 0.345), (0.0, 0.355), (0.1, 0.37),
+           (0.2, 0.38), (0.3, 0.37), (0.38, 0.33), (0.45, 0.25), (0.5, 0.13)],
+        front=[(-0.5, -0.02), (-0.46, 0.2), (-0.38, 0.32), (-0.25, 0.39), (-0.12, 0.41), (0.0, 0.39), (0.1, 0.38),
+               (0.2, 0.38), (0.3, 0.37), (0.4, 0.34), (0.46, 0.3), (0.5, 0.22)],
+        back=[(-0.5, -0.02), (-0.46, -0.24), (-0.38, -0.37), (-0.25, -0.43), (-0.1, -0.44), (0.0, -0.42), (0.1, -0.35),
+              (0.2, -0.24), (0.3, -0.12), (0.4, -0.02), (0.46, 0.05), (0.5, 0.1)],
+        bumps=[(1.05, 0.3, 0.06, 0.45, 0.1), (0.0, 0.45, 0.03, 0.4, 0.05), (0.38, -0.04, 0.05, 0.35, 0.05)]),
+    skin='#dcaa90', skin_shade='#9a5a50', shade='#5a2a34', warm='#c84a3a', blush=0.32, blush_col='#d0585a', skin_tex=0.08,
+    eye_phi=0.4, eye_y=0.04, eye_r=0.07, eye_w=0.078, eye_open=0.72, eye_tilt=-0.01, iris_r=0.05, iris='#4a6a8a',
+    lash='#3a2420', lash_w=0.011, wing=0.4, socket_a=0.4, bags=2, lid_top=0.72, lid_bot=0.42,
+    brow_gap=0.085, brow_w=0.1, brow_th=0.06, brow_col='#ece6dc', brow_arch=0.0, brow_taper=0.3, brow_bushy=True, brow_droop=0.03,
+    nose_root=0.06, nose_tip=0.235, nose_len=0.12, nose_w=0.085, nose_tint='#d0504a', nose_fade=0.45,
+    mouth_y=0.37, mouth_w=0.08, lip='#b05a58', upper_lip=0.006, lower_lip=0.016,
+    ear_phi=1.48, ear_y=0.12, ear_w=0.11, ear_h=0.21, ear_out=30, ear_tint='#d06060',
+    hair=savely_hair, hair_col='#e4ded4', hair_shade='#6a5a5a', hair_split=-0.15,
     under_nose=savely_under_nose, over_all=savely_over,
-    wrinkles=[(0.0, -0.2, [(-0.16, 0.0), (0.0, -0.012), (0.16, 0.0)], 0.007),
-              (0.0, -0.25, [(-0.13, 0.0), (0.0, -0.01), (0.13, 0.0)], 0.006),
-              (0.0, -0.15, [(-0.12, 0.0), (0.0, -0.008), (0.12, 0.0)], 0.006),
-              (0.7, 0.07, [(0.0, -0.03), (0.03, 0.0), (0.0, 0.03)], 0.005),
-              (-0.7, 0.07, [(0.0, -0.03), (-0.03, 0.0), (0.0, 0.03)], 0.005),
-              (0.32, 0.3, [(0.0, -0.06), (0.03, 0.0), (0.05, 0.07)], 0.008),
-              (-0.32, 0.3, [(0.0, -0.06), (-0.03, 0.0), (-0.05, 0.07)], 0.008)],
+    wrinkles=[(0.0, -0.22, [(-0.16, 0.0), (0.0, -0.012), (0.16, 0.0)], 0.007),
+              (0.0, -0.27, [(-0.13, 0.0), (0.0, -0.01), (0.13, 0.0)], 0.006),
+              (0.0, -0.17, [(-0.12, 0.0), (0.0, -0.008), (0.12, 0.0)], 0.006),
+              (0.72, 0.05, [(0.0, -0.035), (0.035, 0.0), (0.0, 0.035)], 0.005),
+              (-0.72, 0.05, [(0.0, -0.035), (-0.035, 0.0), (0.0, 0.035)], 0.005)],
     gaze=(0.0, 0.05),
 )
 
@@ -188,12 +188,12 @@ def savely_details(d, T, N, P, B, S):
 
 SAVELY_BODY = dict(
     torso=dict(
-        a=[(0.58, 0.14), (0.63, 0.34), (0.7, 0.46), (0.8, 0.53), (0.95, 0.56), (1.2, 0.6), (1.5, 0.63), (1.8, 0.6), (2.0, 0.56)],
+        a=[(0.55, 0.16), (0.6, 0.36), (0.68, 0.48), (0.8, 0.55), (0.95, 0.58), (1.2, 0.61), (1.5, 0.63), (1.8, 0.6), (2.0, 0.56)],
         front=[(0.58, 0.04), (0.7, 0.15), (0.9, 0.24), (1.2, 0.36), (1.45, 0.42), (1.7, 0.38), (2.0, 0.3)],
         back=[(0.58, -0.16), (0.7, -0.25), (0.9, -0.3), (1.2, -0.28), (1.5, -0.25), (2.0, -0.22)]),
-    torso_y=(0.58, 2.0),
-    neck=dict(a=[(0.2, 0.15), (0.75, 0.16)], front=[(0.2, 0.08), (0.75, 0.1)], back=[(0.2, -0.15), (0.75, -0.17)]),
-    neck_y=(0.3, 0.75),
+    torso_y=(0.55, 2.0),
+    neck=dict(a=[(0.2, 0.17), (0.7, 0.19)], front=[(0.2, 0.1), (0.7, 0.12)], back=[(0.2, -0.16), (0.7, -0.18)]),
+    neck_y=(0.3, 0.7),
     arm=dict(a=[(0.78, 0.07), (0.84, 0.13), (1.4, 0.125), (2.0, 0.11)],
              front=[(0.78, 0.06), (0.88, 0.12), (2.0, 0.11)], back=[(0.78, -0.07), (0.88, -0.13), (2.0, -0.11)]),
     arm_x=0.5, arm_y=(0.78, 2.0),
@@ -246,7 +246,7 @@ TIM = dict(
         back=[(-0.5, -0.02), (-0.46, -0.25), (-0.38, -0.39), (-0.25, -0.46), (-0.1, -0.47), (0.0, -0.44), (0.1, -0.36),
               (0.2, -0.22), (0.3, -0.08), (0.4, 0.04), (0.46, 0.1), (0.5, 0.13)],
         bumps=[(0.95, 0.22, 0.06, 0.45, 0.1)]),
-    skin='#f2c09a', skin_shade='#b8606a', shade='#5a2a40', blush=0.45, blush_col='#e85a5a', freckles=26, skin_tex=0.05,
+    skin='#eec4a4', skin_shade='#b0686a', shade='#5a2a40', blush=0.45, blush_col='#e85a5a', freckles=26, skin_tex=0.05,
     eye_phi=0.44, eye_y=0.1, eye_r=0.088, eye_w=0.092, eye_open=1.05, eye_tilt=0.0, iris_r=0.062, iris='#6a4a2a',
     lash='#2a1810', lash_w=0.012, wing=0.6, socket_a=0.2, lid_top=0.82, lid_bot=0.45,
     brow_gap=0.1, brow_w=0.075, brow_th=0.022, brow_col='#5a3018', brow_arch=0.006,
@@ -325,7 +325,7 @@ VERA = dict(
         back=[(-0.5, -0.02), (-0.46, -0.23), (-0.38, -0.37), (-0.25, -0.45), (-0.1, -0.46), (0.0, -0.43), (0.1, -0.35),
               (0.2, -0.22), (0.3, -0.08), (0.4, 0.04), (0.46, 0.1), (0.5, 0.13)],
         bumps=[(0.92, 0.08, 0.07, 0.3, 0.07), (0.0, 0.46, 0.04, 0.3, 0.04)]),
-    skin='#ecc2a6', skin_shade='#9a5a6a', shade='#3a2440', blush=0.18, blush_col='#c86070', skin_tex=0.05,
+    skin='#e4c6b2', skin_shade='#8a5a6a', shade='#3a2440', blush=0.18, blush_col='#c86070', skin_tex=0.05,
     eye_phi=0.43, eye_y=0.07, eye_r=0.07, eye_w=0.085, eye_open=0.66, eye_tilt=0.014, iris_r=0.046, iris='#3a4a3a',
     lash='#1a1014', lash_w=0.014, wing=1.6, socket_a=0.45, bags=1, lid_top=0.72, lid_bot=0.4,
     lid_paint='#7a5a7a', lid_paint_a=0.35,

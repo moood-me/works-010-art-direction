@@ -91,13 +91,13 @@ class Doc:
 
     # ---------- filters ----------
 
-    def form(self, size, shade='#3a2440', depth=0.55, ao=0.35, sheen=0.22, rim=0.25, rim_col='#9fc4ff'):
+    def form(self, size, shade='#3a2440', depth=0.55, ao=0.35, sheen=0.22, rim=0.25, rim_col='#9fc4ff', warm=None, reach=0.32):
         """Volume for a big shape of about `size` px across (see module doc)."""
         size = max(8, round(size / 4) * 4)
-        key = ('form', size, shade, depth, ao, sheen, rim, rim_col)
+        key = ('form', size, shade, depth, ao, sheen, rim, rim_col, warm, reach)
 
         def make(i):
-            d, b = size * 0.32, size * 0.17
+            d, b = size * reach, size * 0.17
             e = size * 0.05
             hb = size * 0.22
             rw = max(1.5, size * 0.018)
@@ -122,7 +122,12 @@ class Doc:
                     f'<feComposite in="SourceAlpha" in2="rob" operator="out" result="rim"/>'
                     f'<feFlood flood-color="{rim_col}" flood-opacity="{rim}"/>'
                     f'<feComposite in2="rim" operator="in" result="rimc"/>'
-                    f'<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="shc"/><feMergeNode in="aoc"/>'
+                    + (f'<feOffset in="SourceAlpha" dx="{f(LX*d*0.55)}" dy="{f(LY*d*0.55)}" result="wo"/>'
+                       f'<feGaussianBlur in="wo" stdDeviation="{f(b*0.8)}" result="wob"/>'
+                       f'<feComposite in="SourceAlpha" in2="wob" operator="out" result="ws"/>'
+                       f'<feFlood flood-color="{warm}" flood-opacity="0.35"/>'
+                       f'<feComposite in2="ws" operator="in" result="wsc"/>' if warm else '<feFlood flood-opacity="0" result="wsc"/>') +
+                    f'<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="wsc"/><feMergeNode in="shc"/><feMergeNode in="aoc"/>'
                     f'<feMergeNode in="hlc"/><feMergeNode in="rimc"/></feMerge></filter>')
         return self.define(key, make)
 

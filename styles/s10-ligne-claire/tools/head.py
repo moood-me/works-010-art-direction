@@ -123,8 +123,15 @@ class Head:
                 Z = Z + np.where(front, self.bump('brow', X, y), 0)
             return X, y, Z
         X, Y, Z = r3.grid(fn, nu, nv)
-        # close the top
-        return r3.Part('skull', 'skin', X, Y, Z)
+
+        def front(u, v):     # the superellipse angle is sparse at the middle of the face: add even-x samples
+            y = self.ymin + (self.ymax - self.ymin) * v
+            w = self.sl(y)[0]
+            x = (u * 2 - 1) * w
+            return x, y, self.base_z(x, y) + self.bump('brow', x, y)
+        X2, Y2, Z2 = r3.grid(front, int(160 * res), nv)
+        return r3.Part('skull', 'skin', np.concatenate([X.ravel(), X2.ravel()]),
+                       np.concatenate([Y.ravel(), Y2.ravel()]), np.concatenate([Z.ravel(), Z2.ravel()]))
 
     def bump_part(self, k, name=None, res=2.4):
         y0, y1, h, hw = self.bumps[k]
@@ -208,6 +215,13 @@ class Shell:
         nu, nv = int(2 * np.pi * size * res * 1.3) + 8, int((y1 - y0) * res * 1.5) + 4
         u, v = np.meshgrid(np.linspace(0, 2 * np.pi, nu), np.linspace(y0, y1, nv), indexing='ij')
         X, Y, Z = self.point(u, v)
+        # even-x samples on the front, where the superellipse angle is sparse
+        uf, vf = np.meshgrid(np.linspace(-1, 1, int(nu * 0.4)), np.linspace(y0, y1, nv), indexing='ij')
+        w, zm, zf, zb, n = self.sl(vf)
+        Xf = uf * w
+        Zf = zm + (zf - zm) * (1 - np.abs(uf) ** n) ** (1 / n)
+        Af = np.arccos(np.clip(np.sign(uf) * np.abs(uf) ** (n / 2), -1, 1))
+        X, Y, Z, u = (np.concatenate([a.ravel(), b.ravel()]) for a, b in ((X, Xf), (Y, vf), (Z, Zf), (u, Af)))
         if keep is not None:
             m = keep(X, Y, Z, u)
             X, Y, Z = X[m], Y[m], Z[m]

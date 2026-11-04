@@ -295,13 +295,24 @@ def brow(h, d, side, P, ex, out):
         t = i / n
         x = inner_x + (outer_x - inner_x) * t
         y = -lift_in * (1 - t) - lift_out * t - arch * math.sin(math.pi * min(1, t * 1.2)) + 0.004 * t
-        thick = th * (1.0 - 0.75 * t ** 1.3) * (0.8 + 0.2 * math.sin(math.pi * min(1, t * 2)))
+        taper = P.get('brow_taper', 0.75)
+        thick = th * (1.0 - taper * t ** 1.3) * (0.8 + 0.2 * math.sin(math.pi * min(1, t * 2)))
         top.append((x, y - thick * 0.6))
-        bot.append((x, y + thick * 0.4))
+        bot.append((x, y + thick * 0.4 + P.get('brow_droop', 0.0) * t ** 2))
     shape = top + bot[::-1]
     col = P['brow_col']
-    out.append(d.bump(pts(shape), col, soft=max(1.5, h.S * 0.007), height=max(2, h.S * 0.016), spec=0.3, shine=14,
-                      tr=tr))
+    soft = max(1.5, h.S * (0.012 if P.get('brow_bushy') else 0.007))
+    out.append(d.bump(pts(shape), col, soft=soft, height=max(2, h.S * 0.016), spec=0.3, shine=14, tr=tr))
+    if P.get('brow_bushy'):
+        # tufts: cuts along the brow, flicking up at the inner end and down at the outer
+        gid = d.relief(1.0, -max(1.5, round(h.S * 0.006, 1)), 0, 20)
+        st = ''
+        for k in range(6):
+            o = -0.5 + 0.2 * k
+            line = [(top[i][0] + (bot[i][0] - top[i][0]) * (0.5 + o * 0.8), top[i][1] + (bot[i][1] - top[i][1]) * (0.5 + o * 0.8))
+                    for i in range(1, n)]
+            st += f'<path d="{pts(line, close=False)}" transform="{tr}" fill="none" stroke="{mix(col, "#000000", 0.12)}" stroke-width="0.004"/>'
+        out.append(f'<g filter="url(#{gid})">{st}</g>')
 
 
 def nose(h, d, P, out):
