@@ -5,10 +5,8 @@ drawn far-to-near with one shadow tone and an outline.
 Model space is centimetres, y up, +x is the character's left (the viewer's right when it faces us), +z forward."""
 import math
 import numpy as np
-from shapely.geometry import Point, Polygon, LineString
 from shapely.ops import unary_union
-from geo import (poly, hull_union, tube, tube2d, ribbon, bezier, spline, shift, smooth, polys, lines, resample)
-from svgdoc import INK, mix, shade
+from geo import hull_union, tube, smooth, poly
 
 
 def table(pairs):
@@ -195,16 +193,3 @@ class Figure:
         from shapely.geometry import box
         g = g.intersection(box(-1e4, -1e4, 1e4, view.xy(np.array([an * [1, 0, 1]]))[0][1] + 0.3))
         return g
-
-
-def draw_part(d, g, c, light=(-1, -0.6), k=6.0, extra=None, line=True, w=None):
-    """a flat shape with its one shadow tone (the side away from the light, plus any cast shadows)."""
-    if g is None or g.is_empty:
-        return
-    sh = g.difference(shift(g, light[0] * k, light[1] * k))
-    if extra is not None:
-        sh = sh.union(extra)
-    d.fill(g, c)
-    d.fill(smooth(sh, 0.4).intersection(g), shade(c))
-    if line:
-        d.outline(g, w)

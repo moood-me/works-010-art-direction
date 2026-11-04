@@ -106,6 +106,12 @@ class Head:
             out.append([px, py, float(self.face_z(px, py)) + 0.6])
         return np.array(out)
 
+    def get_marks(self, expr, view):
+        out = []
+        for f in self.marks:
+            out += f(self, expr, view)
+        return out
+
     # ---------------------------------------------------------------- parts
     def skull_part(self, res=2.4):
         nu, nv = int(2 * np.pi * 85 * res * 1.3), int((self.ymax - self.ymin) * res * 1.5)
@@ -299,6 +305,7 @@ def lock_part(shell, path, widths, lift=3.0, name='lock', material='hair', res=2
     ang = np.interp(tt, t, path[:, 0])
     yy = np.interp(tt, t, path[:, 1])
     wv = np.interp(tt, np.linspace(0, 1, len(widths)), widths)
+    lift = np.interp(tt, np.linspace(0, 1, len(np.atleast_1d(lift))), np.atleast_1d(lift).astype(float))[:, None]
     X, Y, Z = shell.point(np.radians(ang + 90), yy)
     C = np.stack([X, Y, Z], 1)
     zm = shell.sl(yy)[1]
@@ -311,8 +318,7 @@ def lock_part(shell, path, widths, lift=3.0, name='lock', material='hair', res=2
     Bn /= np.linalg.norm(Bn, axis=1, keepdims=True) + 1e-9
     m = int(max(8, wv.max() * 2 * res * 1.5))
     s = np.linspace(-1, 1, m)
-    P = (C[:, None, :] + N[:, None, :] * (lift - curl * s[None, :, None] ** 2 * 0 + 0)
-         + Bn[:, None, :] * (wv[:, None, None] * s[None, :, None]))
+    P = C[:, None, :] + N[:, None, :] * lift[:, :, None] + Bn[:, None, :] * (wv[:, None, None] * s[None, :, None])
     if curl:
         P = P - N[:, None, :] * (curl * (s[None, :, None] ** 2) * wv[:, None, None] / max(wv.max(), 1e-6))
     P = P.reshape(-1, 3)

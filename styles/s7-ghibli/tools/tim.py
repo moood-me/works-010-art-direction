@@ -1,9 +1,8 @@
 """Тим, about 8 — mischievous, curious. A round head, big round eyes, a dash of a nose, a wide mouth; thick dark hair
 that sticks up in spikes with a cowlick on the crown; a plaster on the cheek."""
 import numpy as np
-from head import Head, Expr, profile
+from head import Head, profile
 from hair import Hair
-from svgdoc import INK, mix, shade
 
 SKIN = '#f5d0b0'
 HAIR = '#3d2d27'

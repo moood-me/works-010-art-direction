@@ -5,7 +5,6 @@ import numpy as np
 from shapely.geometry import Point, box, Polygon
 from shapely.ops import unary_union
 from backdrop import grad, painted, cloud, foliage, grass, flowers, sky
-from svgdoc import mix
 
 
 def meadow(d, w, h, horizon=0.62, seed=1, far=True):
@@ -13,8 +12,9 @@ def meadow(d, w, h, horizon=0.62, seed=1, far=True):
     ro = d.rough(0.02, 7, seed)
     ro2 = d.rough(0.05, 4, seed + 1)
     sky(d, w, h * horizon + 40, '#4f8fcf', '#d8e8ee')
-    for cx, cy, cw, ch in ((0.18, 0.40, 0.42, 0.30), (0.72, 0.46, 0.55, 0.40), (1.02, 0.30, 0.30, 0.18),
-                           (0.45, 0.55, 0.30, 0.12)):
+    # a tall cumulus heap on one side, smaller ones drifting, flat thin ones low near the horizon
+    for cx, cy, cw, ch in ((0.74, 0.50, 0.42, 0.40), (0.16, 0.30, 0.22, 0.12), (0.40, 0.18, 0.14, 0.06),
+                           (0.30, 0.54, 0.34, 0.10), (0.98, 0.26, 0.18, 0.10), (0.55, 0.58, 0.20, 0.05)):
         cloud(d, cx * w, cy * h * horizon / 0.62, cw * w, ch * h, rnd, ro)
     hy = h * horizon
     if far:

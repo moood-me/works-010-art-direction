@@ -1,6 +1,6 @@
 # Render every draped garment that has no picture yet (Blender, Cycles CPU), and copy the meshes to out/.
 GC=/home/user/cache/n2-garments; T=$(dirname "$(readlink -f "$0")"); B=/home/user/cache/blender/blender
-declare -A COL=([dress-bell]=1f6b5c [dress-aline-puff]=8a3a5c [dress-trapeze]=c8902a [skirt-circle]=2c3a5c
+declare -A COL=([dress-bell]=1f6b5c [dress-bell16]=1f6b5c [dress-aline-puff]=8a3a5c [dress-trapeze]=c8902a [skirt-circle]=2c3a5c
   [shirt-long]=b5523b [pants]=2b3147 [var-suns03]=1f6b5c [var-suns15-long]=1f6b5c [var-sleeve-puff]=1f6b5c
   [outfit-shirt-pants]=e8e2d4/2b3147 [outfit-shirt-skirt]=b5523b/2c3a5c [var-suns15-short]=1f6b5c [var-vneck-short]=1f6b5c [rand01]=6b4a8a [rand09]=3a6b8a [rand10]=8a6b3a)
 mkdir -p $GC/renders $GC/out

@@ -2,9 +2,8 @@
 out over the ears, bushy white brows, a drooping white moustache, a round fleshy nose, small eyes in deep wrinkles,
 little round reading glasses low on the nose, a watchmaker's loupe on a band across the forehead."""
 import numpy as np
-from head import Head, Expr, profile
+from head import Head, profile
 from hair import Hair
-from svgdoc import INK, mix, shade
 
 SKIN = '#efc4a2'
 HAIR = '#ece7df'

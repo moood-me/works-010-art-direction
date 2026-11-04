@@ -2,8 +2,7 @@
 outline), painted watercolour-like backdrops, film grain, and rendering to PNG with headless Chrome."""
 import os
 import subprocess
-import random
-from geo import path_of, line_of, polys
+from geo import path_of, line_of
 
 INK = '#2e2320'          # the line: dark warm brown, never pure black
 MODE = 'full'            # 'full'; 'flat' — colours without the shadow tone; 'line' — only the line (for the rules)
@@ -61,14 +60,6 @@ class Doc:
             o = f' opacity="{op}"' if op < 1 else ''
             self.add(f'<path d="{d}" fill="none" stroke="{c}" stroke-width="{w or self.lw}" '
                      f'stroke-linejoin="round" stroke-linecap="round"{o}/>')
-
-    def part(self, g, c, shadow=None, sc=None, line=True, w=None):
-        """a flat shape: colour, then its shadow tone, then the line."""
-        self.fill(g, c)
-        if shadow is not None and not shadow.is_empty:
-            self.fill(shadow.intersection(g), sc or shade(c))
-        if line:
-            self.outline(g, w)
 
     # ---- backdrops
     def rough(self, scale=0.012, amount=10, seed=1):

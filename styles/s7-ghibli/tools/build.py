@@ -8,7 +8,7 @@ import sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from geo import View
-from svgdoc import Doc, render, mix
+from svgdoc import Doc, render
 from head import Expr
 from body import Figure
 from dress import draw_figure, head_drawer
@@ -52,7 +52,11 @@ def save(d, name):
     d.grain(0.06)
     p = os.path.join(SVG, name + '.svg')
     d.save(p)
-    render(p, os.path.join(PNG, name + '.png'), d.w, d.h)
+    png = os.path.join(PNG, name + '.png')
+    render(p, png, d.w, d.h)
+    from PIL import Image
+    Image.open(png).convert('RGB').save(os.path.join(PNG, name + '.jpg'), quality=88)
+    os.remove(png)
     print(name, flush=True)
 
 
@@ -160,12 +164,13 @@ def cast():
     W, H = 1800, 1000
     d = Doc(W, H, lw=1.9)
     scenes.meadow(d, W, H, horizon=0.58, seed=11)
-    floor = H - 80
-    places = [('vera', 330, 'crossed', 16), ('savely', 700, 'watch', 28), ('anya', 1080, 'hat', 26), ('tim', 1440, 'hips', 18)]
-    for name, x, pose, yaw in places:
+    # two grown-ups a step behind, Аня and Тим in front
+    places = [('vera', 560, 880, 4.7, 'crossed', 14), ('savely', 900, 868, 4.7, 'watch', 30),
+              ('anya', 1190, 950, 5.3, 'hat', 24), ('tim', 1470, 966, 5.4, 'hips', 16)]
+    for name, x, floor, s, pose, yaw in places:
         m = CAST[name][0]
         F = Figure(m.B, m.POSES[pose])
-        v = view_at(yaw, 5.0, (0, 0, 0), x, floor)
+        v = view_at(yaw, s, (0, 0, 0), x, floor)
         scenes.ground_shadow(d, v, F)
         person(d, v, name, pose, expr_of(name, 'calm'))
     scenes.meadow_front(d, W, H)

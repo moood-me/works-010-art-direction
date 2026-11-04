@@ -2,9 +2,8 @@
 lids, thin straight brows, a straighter nose, a mouth with its corners a little down; dark hair parted on the side
 and pulled back into a low knot, one strand fallen loose; small earrings."""
 import numpy as np
-from head import Head, Expr, profile
+from head import Head, profile
 from hair import Hair
-from svgdoc import INK, mix, shade
 
 SKIN = '#f1d0b6'
 HAIR = '#3a2c2e'

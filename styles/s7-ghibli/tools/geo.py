@@ -6,7 +6,7 @@ Model space: centimetres, y up, the character faces +z at yaw 0. A View turns it
 the viewer's right), tilts the camera down by `pitch`, scales by `s` px/cm and places the origin at (ox, oy) px."""
 import math
 import numpy as np
-from shapely.geometry import Polygon, MultiPolygon, LineString, Point, box
+from shapely.geometry import Polygon, LineString, Point
 from shapely.ops import unary_union
 from shapely import affinity
 
@@ -178,6 +178,7 @@ def path_of(g, min_area=0.5):
     for p in polys(g):
         if p.area < min_area:
             continue
+        p = p.simplify(0.3, preserve_topology=True)
         for ring in [p.exterior] + list(p.interiors):
             c = np.asarray(ring.coords)
             out.append('M' + ' '.join(f'{_fmt(x)},{_fmt(y)}' for x, y in c[:-1]) + 'Z')
@@ -188,4 +189,6 @@ def line_of(pts):
     P = np.asarray(pts, float)
     if len(P) < 2:
         return ''
+    if len(P) > 3:
+        P = np.asarray(LineString(P).simplify(0.25).coords)
     return 'M' + ' '.join(f'{_fmt(x)},{_fmt(y)}' for x, y in P)

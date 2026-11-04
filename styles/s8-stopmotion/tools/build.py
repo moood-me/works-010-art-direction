@@ -109,14 +109,16 @@ def together():
     d = Doc(1800, 1000)
     studio(d, top='#241c1c', floor='#3a2c22', glow='#e0a050', gx=0.45, gy=0.35, horizon=0.8, bokeh='auto', seed=21)
     floor = 940
-    place = [('vera', 1430, -22, 'tired', 150), ('anya', 360, 25, 'dream', 165), ('savely', 820, 12, 'grumpy', 190),
-             ('tim', 1120, -28, 'joy', 200)]
+    place = [('vera', 1400, -30, dict(cast.EXPR['tired'], at_camera=False, gaze=(-0.15, 0.12)), 150),
+             ('anya', 400, 30, dict(cast.EXPR['dream'], at_camera=False, gaze=(0.25, 0.05)), 165),
+             ('savely', 820, 15, dict(cast.EXPR['grumpy'], at_camera=False, gaze=(0.2, 0.25)), 190),
+             ('tim', 1110, -32, dict(cast.EXPR['joy'], at_camera=False, gaze=(-0.25, 0.15)), 200)]
     for n, x, yaw, e, S in place:
         P, B, F = CH[n]
         feet = FIG[n][1]
         cy = floor - feet * S
         d.add(shadow_on_floor(d, x + S * 0.15, floor, S * 0.75, S * 0.12))
-        out, T = figure(d, P, B, F, cast.EXPR[e], S, x, cy, yaw)
+        out, T = figure(d, P, B, F, e, S, x, cy, yaw)
         d.add(puppet(d, ''.join(out), S))
     keylight(d, 700, 250, 1500)
     return d
@@ -141,7 +143,7 @@ if __name__ == '__main__':
             save(portrait(n), 'portrait-' + n)
         if want('figure-' + n):
             save(full(n), 'figure-' + n)
-    for n in ('anya', 'savely', 'tim'):
+    for n in ('anya', 'tim'):
         if want('turn-' + n):
             save(turnaround(n), 'turn-' + n)
     for n in ('tim', 'anya'):

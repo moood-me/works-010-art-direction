@@ -4,13 +4,12 @@ A character file gives `B` (body measures), poses, a garment `spec` and a `head_
 Garment kinds: top (blouse/shirt/tee/sweater with sleeves, collar, buttons), over (cardigan/vest/jacket — an
 opening at the front), bottom (skirt / trousers / shorts), apron, shoes. Small marks (folds, pockets, cuffs) are
 lines laid on the 3D surface, drawn only where it faces the camera."""
-import math
 import numpy as np
 from shapely.geometry import Point, LineString, box
 from shapely.ops import unary_union
-from geo import poly, tube, ribbon, bezier, spline, shift, smooth, polys, lines
+from geo import tube, shift, smooth, polys, lines
 from svgdoc import INK, mix, shade
-from body import Figure, Loft, draw_part, unit
+from body import Loft, unit
 
 LIGHT = (-1, -0.6)
 
@@ -66,11 +65,10 @@ def _emit(d, run, w, c, clip):
         d.line(np.asarray(s.coords), w, c)
 
 
-def draw_figure(d, view, F, spec, head_fn, crop_y=None):
-    """F: a posed Figure. head_fn(d, view, F, back) draws the hair behind (back=True) or the head (back=False).
-    crop_y: for a bust, nothing below this model height is built (saves work)."""
+def draw_figure(d, view, F, spec, head_fn):
+    """F: a posed Figure. head_fn(d, view, F, back) places the head (back='prepare'), draws the hair behind
+    (back=True) or the head and front hair (back=False)."""
     B, J, S = F.B, F.J, spec
-    F.after_neck = []
     lw = d.lw
     k_sh = 0.10 * view.s * 10      # shadow offset for body parts, px
     skin = S['skin']
@@ -163,11 +161,9 @@ def trousers(d, view, F, S, k):
             d.line(a, lw * 0.5)
 
 
-def draw_shoe(d, view, F, S, side, top_only=False):
+def draw_shoe(d, view, F, S, side):
     sh = S['shoes']
     g = F.shoe(view, side, sh)
-    if top_only:
-        return
     fill_part(d, g, sh['c'], 3)
     if sh.get('sole'):
         b = g.bounds
@@ -246,8 +242,6 @@ def draw_torso(d, view, F, S, torso, k):
                                  for x, z in [(-r, 0.0), (-r * 0.7, r * 0.7), (0, r), (r * 0.7, r * 0.7), (r, 0)]]))
         from geo import spline as _sp
         d.line(_sp(fold, 20), lw * 0.6)
-    if bot.get('kind') in ('trousers', 'shorts') and bot.get('belt'):
-        pass
     if S.get('apron'):
         S['apron'](d, view, F)
 
@@ -271,8 +265,6 @@ def neck_cut(view, F, cut):
     lo = F.torso_loft(push=0.8)
     y1 = F.B['torso'][-1][0]
     depth, wid = cut
-    ts = list(np.linspace(-wid, wid, 15)) + [0.0]
-    ys = [y1 + 3] * 15 + [y1 - depth]
     ts = [-wid, -wid * 0.6, 0.0, wid * 0.6, wid, wid + 0.4, -wid - 0.4]
     ys = [y1 - 1, y1 - depth * 0.6, y1 - depth, y1 - depth * 0.6, y1 - 1, y1 + 6, y1 + 6]
     return lo.region(view, ts, ys, push=0.8)
@@ -325,8 +317,6 @@ def draw_arm(d, view, F, S, side, torso, k):
     shp = view.xy(np.array([J['sh' + side]]))[0]
     tor = F.torso_loft(push=(sleeve_src or {}).get('ease', 0.7)).shape(view, B['chest_y'] - 6, B['torso'][-1][0])
     R = B['arm_r'][0] * view.s * 2.2
-    cap = box(shp[0] - R, shp[1] - R * 1.5, shp[0] + R, shp[1] + R * 0.1).difference(tor)
-    cap = cap.difference(box(shp[0] - R, shp[1] - R * 0.15, shp[0] + R, shp[1] + R)) if False else cap
     above = box(shp[0] - R, shp[1] - R * 1.5, shp[0] + R, shp[1] + R * 0.25)
     sg = sg.difference(above.difference(tor))
     sg = unary_union([p for p in polys(sg) if p.area > 4]) if polys(sg) else sg
@@ -355,7 +345,6 @@ def draw_neck(d, view, F, S, head_g):
     B, J = F.B, F.J
     r = B['neck_r']
     g = tube(view, [J['neck0'], J['neck1']], [r * 1.05, r])
-    g = g.difference(head_g) if False else g
     k = view.s * 1.0
     cast = shift(head_g, 0.2 * k, 1.2 * k).intersection(g)
     fill_part(d, g, S['skin'], 0.5 * k, extra=cast)

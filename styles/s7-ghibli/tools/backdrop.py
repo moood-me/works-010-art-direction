@@ -2,10 +2,9 @@
 many leaf clumps in three tones, washes of colour with uneven pooling, edges softened as gouache on paper.
 Everything is SVG shapes passed through a displacement filter — no images."""
 import random
-import numpy as np
 from shapely.geometry import Point, box
 from shapely.ops import unary_union
-from geo import path_of, shift, smooth
+from geo import path_of, shift
 from svgdoc import mix
 
 
@@ -28,19 +27,20 @@ def painted(d, g, c, rough=None, op=1.0):
 def cloud(d, cx, cy, w, h, rnd, rough, top='#fbfaf6', shadow='#b9c3d6', mid='#e3e6ee'):
     """a cumulus: a heap of round puffs on a flat base; lit tops, a lavender-grey belly."""
     puffs = []
-    n = int(10 + w / 30)
+    n = int(14 + w / 20)
     for i in range(n):
         t = rnd.random()
         x = cx + (t - 0.5) * w * 0.9
-        hh = h * (1 - abs(t - 0.5) * 1.5) * rnd.uniform(0.6, 1.0)
-        r = rnd.uniform(0.18, 0.32) * w * (0.5 + 0.5 * (1 - abs(t - 0.5) * 2))
+        hh = h * (1 - abs(t - 0.5) * 1.6) * rnd.uniform(0.5, 1.0)
+        r = min(rnd.uniform(0.07, 0.16) * w, h * 0.45) * (0.6 + 0.4 * (1 - abs(t - 0.5) * 2))
         y = cy - max(hh, r * 0.5) + r * 0.6
         puffs.append(Point(x, y).buffer(r, 24))
     g = unary_union(puffs).intersection(box(cx - w, cy - h * 2, cx + w, cy))
     painted(d, g, shadow, rough)
-    lit = g.intersection(shift(g, 0.04 * w, 0.22 * h))
+    # lit from above: the top of every puff is white, the belly stays lavender-grey
+    lit = g.intersection(shift(g, 0.02 * w, -0.10 * h))
     painted(d, lit, mid, rough)
-    lit2 = g.intersection(shift(g, 0.07 * w, 0.42 * h))
+    lit2 = g.intersection(shift(g, 0.035 * w, -0.22 * h))
     painted(d, lit2, top, rough)
 
 

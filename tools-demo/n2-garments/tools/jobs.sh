@@ -14,6 +14,8 @@ NOSLV="sleeve.sleeveless=true"
 BELL="meta.upper=FittedShirt meta.bottom=SkirtCircle flare-skirt.suns=1.0 flare-skirt.length=0.6 collar.f_collar=CurvyNeckHalf collar.fc_depth=0.6 collar.width=0.3 shirt.strapless=false"
 # dresses with designed silhouettes
 run dress-bell $A $BELL $NOSLV
+# the same at the coarser resolution of its variants (the one above ran into the 50-minute cap at frame 552)
+R=1.6 run dress-bell16 $A $BELL $NOSLV
 run dress-aline-puff $A meta.upper=FittedShirt meta.bottom=PencilSkirt pencil-skirt.flare=1.5 pencil-skirt.length=0.6 sleeve.sleeveless=false sleeve.length=0.3 sleeve.connect_ruffle=1.8 sleeve.end_width=1.4 sleeve.cuff.type=CuffBand sleeve.cuff.top_ruffle=1.8 collar.f_collar=CircleNeckHalf
 run dress-trapeze $A meta.upper=Shirt shirt.length=2.7 shirt.flare=1.5 shirt.width=1.0 sleeve.sleeveless=false sleeve.length=0.25 collar.f_collar=SquareNeckHalf collar.fc_depth=0.5
 # a skirt, a shirt with sleeves, trousers

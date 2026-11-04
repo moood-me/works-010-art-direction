@@ -1,6 +1,6 @@
 """Аня, about 20 — warm, trusting, dreamy. Long chestnut hair with a soft clumpy fringe, a round soft face, big calm
 eyes; a cream blouse, a moss-green cardigan, a long rust skirt."""
-from head import Head, Expr, profile
+from head import Head, profile
 from hair import Hair
 
 SKIN = '#f6d6bb'

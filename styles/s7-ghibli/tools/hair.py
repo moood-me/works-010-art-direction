@@ -5,9 +5,9 @@ import math
 import numpy as np
 from shapely.geometry import LineString
 from shapely.ops import unary_union
-from geo import poly, ribbon, bezier, smooth, shift, lines, resample
+from geo import poly, ribbon, bezier, smooth, shift, lines
 from head import table
-from svgdoc import INK, shade
+from svgdoc import shade
 
 
 def periodic(pairs, mirror=True):

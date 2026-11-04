@@ -109,9 +109,8 @@ def savely_hair(h, d, P, ex):
             phi0 = side * (1.0 + 0.2 * k)
             y0 = -0.21 + 0.025 * k + 0.02 * (k % 2)
             p = H.surf_path(h, [(phi0, y0), (phi0 + side * 0.08, y0 + 0.1)], out=(0.0, 0.03), k=1.0)
-            p += H.fall(p[-1], 0.04, n=3, side=side, out_x=0.05 - 0.004 * k + 0.02 * (k % 2), back_z=-0.02, flick=0.03)
-            p += [(p[-1][0] + side * 0.035, p[-1][1] - 0.05 - 0.02 * (k % 2), p[-1][2])]
-            locks.append(H.Lock(p, 0.1, 0.0, taper=0.8, root=0.7, strands=3, z_bias=0.0, sheen=(0.3, 0.7)))
+            p += H.fall(p[-1], 0.06, n=3, side=side, out_x=0.05 - 0.004 * k + 0.02 * (k % 2), back_z=-0.02, flick=0.04)
+            locks.append(H.Lock(p, 0.12, 0.0, taper=1.0, root=0.8, strands=3, z_bias=0.0, sheen=(0.3, 0.7)))
     for k, ph in enumerate((2.45, 2.8, -2.8, -2.45, 3.14)):
         p = H.surf_path(h, [(ph, -0.17), (ph, 0.1)], out=(0.0, 0.025), k=1.0)
         locks.append(H.Lock(p, 0.26, 0.05, taper=1.0, root=0.7, strands=5, z_bias=-0.3))
@@ -465,7 +464,7 @@ TIM_FIG = dict(
                        dict(path=[(side * 0.16, 1.95, 0.02), (side * 0.18 + (0.05 if side > 0 else 0), 2.35, 0.03), (side * 0.17 + (0.08 if side > 0 else 0), 2.72, 0.0)],
                             r0=0.075, r1=0.06, col='#eec4a4', z=-0.3),
                        dict(path=[(side * 0.17 + (0.08 if side > 0 else 0), 2.5, 0.0), (side * 0.17 + (0.08 if side > 0 else 0), 2.72, 0.0)],
-                            r0=0.07, r1=0.068, col='#e8e0d0', tex='knit', tex_amount=0.15, z=-0.29, ribs=True)],
+                            r0=0.07, r1=0.068, col='#e8e0d0', tex='knit', tex_amount=0.15, z=-0.15, ribs=True)],
     shoe=lambda side: dict(ankle=(side * 0.17 + (0.08 if side > 0 else 0), 2.74, 0.0), len=0.34, col='#c83a2a', h=0.11, w=0.1, toe_up=0.02),
     arms=lambda side: [dict(path=[(side * 0.4, 0.75, -0.02), (side * 0.56, 1.25, 0.0), (side * 0.44, 1.7, 0.1)] if side < 0 else
                             [(side * 0.4, 0.75, -0.02), (side * 0.7, 1.1, 0.05), (side * 0.62, 0.62, 0.15)],

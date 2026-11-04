@@ -31,6 +31,15 @@ def hairline_keep(hairline, side_z=None, cut_y=None):
     return keep
 
 
+def Shell_lift(shell, pts, d):
+    """Offsets that lift points of shell.curve(pts) by d along the shell's outward direction."""
+    P = shell.curve(pts)
+    zm = shell.sl(P[:, 1])[1]
+    N = P - np.stack([0 * P[:, 0], P[:, 1], zm], 1)
+    N /= np.linalg.norm(N, axis=1, keepdims=True) + 1e-9
+    return N * d
+
+
 def face_marks(eye, brow, mouth, nose, extra=None):
     def fn(h, e, view):
         out = []
@@ -160,20 +169,31 @@ def savely():
     # white hair: a horseshoe round the back and over the ears, fluffy, the dome bald
     shell = Shell([
         (-80, 64, -14, 40, -88, 2.1),
-        (-60, 82, -12, 60, -106, 2.2),
-        (-40, 88, -10, 66, -112, 2.3),
-        (-16, 89, -8, 70, -110, 2.5),
-        (6, 88, -6, 68, -104, 2.5),
-        (26, 84, -4, 60, -94, 2.3),
-        (40, 76, -2, 50, -84, 2.1),
+        (-60, 78, -12, 60, -104, 2.2),
+        (-40, 83, -10, 66, -108, 2.3),
+        (-16, 84, -8, 70, -106, 2.5),
+        (6, 83, -6, 68, -100, 2.5),
+        (26, 80, -4, 60, -90, 2.3),
+        (40, 72, -2, 50, -80, 2.1),
     ])
 
     def keep(X, Y, Z, a):
         d = np.abs(wrapdeg(a))
-        top = np.interp(d, [0, 70, 85, 110, 180], [200, 200, -14, -40, -52])
-        bot = np.interp(d, [0, 70, 85, 100, 140, 180], [-200, -200, 14, 26, 36, 38])
-        return (Y > top) & (Y < bot) & (Z < 6)
-    h.extra_parts.append(lambda hd, res: [shell.part('hair', 'hair', res, keep)])
+        top = np.interp(d, [0, 70, 85, 110, 180], [200, 200, -10, -34, -46])
+        bot = np.interp(d, [0, 70, 85, 100, 140, 180], [-200, -200, 10, 22, 32, 34])
+        return (Y > top) & (Y < bot) & (Z < -8)
+    skull = Shell(h.p['slices'])
+
+    def hair_parts(hd, res):
+        ps = [shell.part('hair', 'hair', res, keep)]
+        # moustache: two drooping wings over the upper lip, standing off the face
+        for s in (1, -1):
+            ps.append(lock_part(skull, [(0, sq(51, K)), (s * -12, sq(52, K)), (s * -24, sq(56, K)),
+                                        (s * -32, sq(63, K)), (s * -34, sq(68, K))],
+                                [5, 7, 7, 5, 0], lift=[10, 9, 6, 4, 3], name=f'stache{s}', material='stache',
+                                res=res, curl=2))
+        return ps
+    h.extra_parts.append(hair_parts)
 
     def details(hd, e, view):
         c = shell.curve
@@ -184,11 +204,9 @@ def savely():
                         [(s * 120, -34), (s * 126, -10), (s * 124, 16)],
                         [(s * 150, -40), (s * 154, -10), (s * 150, 22)]):
                 ms.append(Mark(c(pts), w=0.6, on='hair'))
-        # moustache: two drooping wings over the upper lip, white
-        for s in (1, -1):
-            wing = [(0, -2), (s * 8, -4.5), (s * 18, -2.5), (s * 25, 4), (s * 27, 11), (s * 21, 8), (s * 13, 4.5),
-                    (s * 5, 4), (0, 3.5)]
-            ms.append(F.face_shape(hd, 0, sq(53, K), wing, '#f2f0ea', w=0.9))
+        for pts in ([(-4, sq(54, K)), (-16, sq(57, K)), (-26, sq(63, K))], [(4, sq(54, K)), (16, sq(57, K)),
+                                                                              (26, sq(63, K))]):
+            ms.append(Mark(skull.curve(pts) + Shell_lift(skull, pts, 8.5), w=0.5, on='stache'))
         # brows: bushy, white, frowning
         # forehead lines, nasolabial folds, bags
         for yy, ww in ((-40, 22), (-48, 26), (-56, 20)):
@@ -196,17 +214,6 @@ def savely():
         for s in (1, -1):
             ms.append(F.face_line(hd, s * 22, sq(42, K), [(0, 0), (s * 6, 10), (s * 8, 20)], w=0.6))
         ms += F.glasses_marks(hd, dict(x=27, y=3, rx=14, ry=13, lift=12, w=1.0))
-        # the watchmaker's loupe, pushed up on the forehead, and its band
-        P, T, B, N = hd.frame(-18, -42, 0)
-        ring = [P + N * (2 + 9 * k) + T * 9 * np.cos(a) + B * 9 * np.sin(a)
-                for k in (0, 1) for a in np.linspace(0, 2 * np.pi, 25)[:-1]]
-        ring = np.array(ring)
-        ms.append(Mark(ring[24:], kind='shape', fill='#2b2b30', w=1.0, on='glasses', tol=30))
-        ms.append(Mark(np.array([P + N * 11 + T * 5 * np.cos(a) + B * 5 * np.sin(a)
-                                 for a in np.linspace(0, 2 * np.pi, 25)[:-1]]), kind='shape', fill='#8fb4c8', w=0.8,
-                       on='glasses', tol=30))
-        band = Shell(hd.p['slices']).curve([(d, -48 + 6 * np.cos(np.radians(d))) for d in range(-180, 181, 6)])
-        ms.append(Mark(band, w=2.6, stroke='#3a2e28', on='skin', tol=3))
         return ms
     h.marks.append(face_marks(
         eye=dict(x=27, y=3, w=10, pupil=(3.2, 4.0), lidw=1.4, lid=0.7, bags=True, crowsfeet=True),
@@ -214,7 +221,7 @@ def savely():
         mouth=dict(y=sq(62, K), w=12, smile=-0.2, lower_y=7),
         nose=dict(y=sq(46, K), w=10)))
     h.marks.append(details)
-    colours = {'skin': '#f1c6a0', 'hair': '#efece6'}
+    colours = {'skin': '#f1c6a0', 'hair': '#efece6', 'stache': '#efece6'}
     return h, colours
 
 
@@ -268,20 +275,11 @@ def tim():
 
     def hair_parts(hd, res):
         ps = [shell.part('hair', 'hair', res, keep)]
-        ps.append(lock_part(shell, [(-8, -98), (-10, -104)], [8, 7], lift=1, name='cowbase', res=res))
-        # a raised tuft: built as a ribbon above the shell
-        P = []
-        for t in np.linspace(0, 1, 60):
-            for s in np.linspace(-1, 1, 30):
-                ang = np.radians(-6 + 90)
-                X, Y, Z = shell.point(np.array([ang]), np.array([-100.0]))
-                base = np.array([X[0], Y[0], Z[0]])
-                tip = base + np.array([14 + 0 * t, -26, -6])
-                ctrl = base + np.array([-6, -24, 2])
-                q = (1 - t) ** 2 * base + 2 * (1 - t) * t * ctrl + t ** 2 * tip
-                P.append(q + np.array([s * 7 * (1 - t) ** 0.8, 0, s * 2 * (1 - t)]))
-        P = np.array(P)
-        ps.append(r3.Part('cowlick', 'hair', P[:, 0], P[:, 1], P[:, 2]))
+        # the cowlick: two tufts that stand up at the crown
+        ps.append(lock_part(shell, [(-4, -96), (-6, -104), (-10, -110), (-4, -114)], [7, 6, 4, 0],
+                            lift=[1, 6, 14, 22], name='cow1', res=res))
+        ps.append(lock_part(shell, [(6, -98), (8, -106), (14, -110), (20, -108)], [6, 5, 3, 0],
+                            lift=[1, 5, 11, 16], name='cow2', res=res))
         return ps
     h.extra_parts.append(hair_parts)
 
@@ -300,7 +298,7 @@ def tim():
             for k in range(7):
                 fx = s * (16 + rng.uniform(0, 18))
                 fy = sq(28, K) + rng.uniform(-6, 5)
-                P = hd.on_face(fx, fy, [(0, 0), (0.9, 0), (0.9, 0.9), (0, 0.9)])
+                P = hd.on_face(fx, fy, [(0, 0), (1.4, 0), (1.4, 1.4), (0, 1.4)])
                 ms.append(Mark(P, kind='shape', fill='#c4703a', w=0))
         return ms
     h.marks.append(face_marks(
@@ -368,8 +366,8 @@ def vera():
         Z = -112 + 18 * np.sin(u) * np.sin(v)
         ps.append(r3.Part('knot', 'hair', X, Y, Z))
         # the grey streak from the parting, swept back
-        ps.append(lock_part(shell, [(20, -66), (40, -70), (70, -60), (100, -40), (130, -20), (150, -4)],
-                            [5, 7, 7, 6, 5, 3], lift=1.2, name='streak', material='grey', res=res))
+        ps.append(lock_part(shell, [(4, -63), (12, -76), (26, -88), (50, -88), (80, -70), (110, -46), (135, -22)],
+                            [4, 6, 7, 7, 6, 5, 3], lift=1.2, name='streak', material='grey', res=res))
         return ps
     h.extra_parts.append(hair_parts)
 
@@ -384,7 +382,7 @@ def vera():
             ms.append(Mark(c(pts), w=0.6, on='hair', stroke='#4e5a70'))
         # tiredness: a fold under each eye, a line by the mouth
         for s in (1, -1):
-            ms.append(F.face_line(hd, s * 21, sq(46, K), [(0, 0), (s * 4, 8), (s * 5, 16)], w=0.55))
+            ms.append(F.face_line(hd, s * 19, sq(44, K), [(0, 0), (s * 3, 6), (s * 4, 11)], w=0.45))
         ms += F.glasses_marks(hd, dict(x=27, y=3, rx=15, ry=9, lift=11, w=1.1, shape='rect', colour='#2a1a12'))
         return ms
     h.marks.append(face_marks(

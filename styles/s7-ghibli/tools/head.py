@@ -7,9 +7,9 @@ Head-local units: the head is 2 tall (crown y=+1, chin y=-1), x to the character
 import math
 import numpy as np
 from scipy.interpolate import PchipInterpolator
-from shapely.geometry import Point, Polygon, LineString
+from shapely.geometry import Point, LineString
 from shapely.ops import unary_union
-from geo import poly, hull_union, ribbon, bezier, spline, shift, polys, smooth, resample
+from geo import poly, hull_union, ribbon, bezier, spline, shift, smooth
 from svgdoc import INK, mix, shade
 
 
@@ -190,9 +190,6 @@ class Head:
                 d.line(ei, lw * 0.8)
         self.features(d, view, E, skin, hair, iris_c, brow_c or mix(hair, INK, 0.35), skin_g)
         return skin_g
-
-    def visible(self, view, x, y):
-        return self.facing(view, x, y)
 
     def features(self, d, view, E, skin, hair, iris_c, brow_c, skin_g):
         P = self.P
@@ -416,8 +413,6 @@ class Head:
             th = lw * (0.45 + 0.55 * np.sin(s * np.pi))
             g = ribbon(pts, th).intersection(inside.buffer(0.6 * lw))
             d.fill(g, INK)
-            if E.smile < -0.3:
-                pass
         else:
             mo = E.mouth_open * 0.11
             u = np.linspace(-mw, mw, 24)

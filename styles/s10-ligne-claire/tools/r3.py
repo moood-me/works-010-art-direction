@@ -195,7 +195,7 @@ class Render:
         px = np.clip(np.round((x - self.x0) * self.ss).astype(int), 0, self.W - 1)
         py = np.clip(np.round((y - self.y0) * self.ss).astype(int), 0, self.H - 1)
         d = self.depth[py, px]
-        return (z >= d - tol) & (self.ids[py, px] >= 0), x, y
+        return (z >= d - tol) | (self.ids[py, px] < 0), x, y
 
 
 def runs(keep, closed):
