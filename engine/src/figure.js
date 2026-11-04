@@ -19,20 +19,22 @@
 //      along the surface, mesh.shading.tangents: hair's strands, turned the same, into output.tangents)
 //   7. attached meshes laid on their host (a feature as volume on the skin), and their normals
 // `frame(clip, t, pose?)` does that for a moment, into the pose it is given (or a new one) and into the meshes'
-// buffers (figure.outputs) — it keeps nothing between calls. `step(clip, t)` is the stateful frame for simulations
-// (hair, cloth): it keeps the current and the previous pose (figure.pose, figure.previous: valid until the next step;
-// clone() to keep one), the time step, and resets — on the first step, a new clip, a jump back (a loop, a scrub) or a
-// jump ahead of more than `maxGap` frames — then runs each simulation with {figure, pose, previous, dt, reset, t,
-// collider}; simulations run after the floor and don't count for it.
+// buffers (figure.outputs) — it keeps nothing between calls. `step(clip, t, {loop})` is the stateful frame for
+// simulations (hair, cloth): it keeps the current and the previous pose (figure.pose, figure.previous: valid until the
+// next step; clone() to keep one) and the time step; it resets on the first step, a new clip, a jump back (a scrub) or
+// a jump ahead of more than `maxGap` frames; `loop` says this step goes on across the clip's end, the clip begun again
+// (t is its new moment: the time goes on, the body jumps to the clip's start and the simulations carry on from where
+// they were on it). Then the body's solids (src/solids.js: what simulations meet, made when one asks for them) are
+// updated once, and each simulation runs with {figure, pose, previous, dt, reset, jump, t, solids}; simulations run
+// after the floor and don't count for it.
 import { makeRetarget, place } from './retarget.js';
 import { Skinner } from './skin.js';
 import { morphed, normalsOf } from './mesh.js';
 import { Pose, build, hipOf } from './pose.js';
 import { LAYERS, NO_REBUILD } from './layers.js';
-import { makeCollider } from './collision.js';
 import { makeSolids } from './solids.js';
 import { newSample } from './motion.js';
-import { qRot, qRot3, clamp, sst } from './math.js';
+import { qRot3 } from './math.js';
 
 export class Figure {
   // rig; meshes: [{mesh, name?, skinning?: {method, sigma, seam}}] (the first is the body's, named 'body'); layers: resolved pose layers;
@@ -87,8 +89,7 @@ export class Figure {
   get normals() { return this.outputs[0].normals; }
   // a simulation, and the meshes it writes on each step (sim.outputs: what the step's frame leaves to it)
   addSimulation(sim) { this.simulations.push(sim); for (const o of sim.outputs || []) this.driven.add(o); return sim; }
-  collider(options) { return (this._collider ??= makeCollider(this.rig, this.body ? this.body.mesh : this.outputs[0].mesh, options)); }
-  // the body as hair and clothes meet it: the head's shape and the body's capsules, moving within a step (src/solids.js)
+  // the body as hair and clothes meet it: the head's shape, the skin between two frames, its inside (src/solids.js)
   solids() { return (this._solids ??= makeSolids(this)); }
 
   // the pose at moment t (frames) of a clip (null: at rest), before the meshes: steps 1–3
@@ -143,46 +144,20 @@ export class Figure {
   }
 
   // the stateful frame (see the top)
-  step(clip, t) {
-    const s = this.state, fps = clip ? clip.fps : 30;
-    const reset = !s || s.clip !== clip || t < s.t || t - s.t > this.maxGap;
-    const dt = reset ? 0 : (t - s.t) / fps;
+  step(clip, t, { loop = false } = {}) {
+    const s = this.state, fps = clip ? clip.fps : 30, on = loop && s && s.clip === clip && clip;
+    const reset = !s || s.clip !== clip || (!on && (t < s.t || t - s.t > this.maxGap));
+    const dt = reset ? 0 : on ? (clip.frames - 1 - s.t + t) / fps : (t - s.t) / fps;
     [this.pose, this.previous] = [this.previous, this.pose];
     this.frame(clip, t, this.pose, this.driven);
-    if (reset) this.previous.copy(this.pose);
+    if (reset || on) this.previous.copy(this.pose);
     this.state = { clip, t };
-    if (this.simulations.length) {
-      const collider = this._collider ? this._collider.update(this.pose) : null;
-      for (const sim of this.simulations) sim.step({ figure: this, pose: this.pose, previous: this.previous, dt, reset, t, collider });
-    }
+    const solids = this._solids ?? null, jump = !reset && !!on;
+    if (solids) solids.update(this.previous, this.pose, reset ? 'reset' : jump ? 'jump' : 'go', dt);
+    for (const sim of this.simulations) sim.step({ figure: this, pose: this.pose, previous: this.previous, dt, reset, jump, t, solids });
     return this.pose;
   }
   reset() { this.state = null; }
-
-  // the head to collide with (hair, a hood) in a pose — the one a frame wrote (figure.frame(clip, t, pose)) or the step's
-  // (figure.pose): its shape (src/head/head.js: the designed form, or a ball fitted to the head) carried by the Head
-  // joint, and the jaw's part of it (below the mouth, in front of the ears) by the Jaw joint, so an open mouth opens it
-  // too. distance(x, y, z) in metres, negative inside; normal(x, y, z) outwards. (The expressions' morphs move the face's
-  // skin by millimetres and are not in it.)
-  headShape(pose) {
-    const shape = this.body?.head?.shape; if (!shape) throw new Error('a figure without a head (its character has no "head")');
-    if (!pose) throw new Error('headShape(pose): the pose it is in (figure.pose after a step, or the one a frame was given)');
-    const sk = this.rig.skeleton, F = shape.frame, J = this.rig.joints, back = j => { const q = [-pose.Q[j * 4], -pose.Q[j * 4 + 1], -pose.Q[j * 4 + 2], pose.Q[j * 4 + 3]]; return (x, y, z) => { const v = qRot(q, [x - pose.P[j * 3], y - pose.P[j * 3 + 1], z - pose.P[j * 3 + 2]]); return F.toL(v[0] + J[j * 3], v[1] + J[j * 3 + 1], v[2] + J[j * 3 + 2]); }; };
-    const head = back(sk.index.Head), jaw = back(sk.index.Jaw), { y: jy, z: jz } = shape.jaw;
-    const distance = (x, y, z) => {
-      const h = head(x, y, z), w = sst(clamp((jy - h[1]) / 0.15, 0, 1)) * sst(clamp((h[2] - jz) / 0.3, 0, 1)); if (!w) return shape.sdf(...h) * F.R;
-      const j = jaw(x, y, z); return shape.sdf(h[0] + (j[0] - h[0]) * w, h[1] + (j[1] - h[1]) * w, h[2] + (j[2] - h[2]) * w) * F.R;
-    };
-    const e = 0.001;
-    return { distance, normal: (x, y, z) => { const n = [distance(x + e, y, z) - distance(x - e, y, z), distance(x, y + e, z) - distance(x, y - e, z), distance(x, y, z + e) - distance(x, y, z - e)], l = Math.hypot(...n) || 1; return n.map(v => v / l); } };
-  }
-  // the neck to collide with (a collar) in a pose: the body's capsules of its neck bones (src/collision.js) — distance(x,
-  // out?) in metres, negative inside, out.normal outwards
-  neckShape(pose) {
-    const sk = this.rig.skeleton, C = makeCollider(this.rig, this.body ? this.body.mesh : this.outputs[0].mesh), neck = new Set(['Neck1', 'Neck2'].map(n => sk.index[n]));
-    C.update(pose); const caps = C.capsules.filter(c => neck.has(c.joint)); if (!caps.length) throw new Error('a body without neck bones to collide with');
-    return { distance: (x, out) => { let best = Infinity; for (const c of caps) { const ab = [c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]], L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2, t = clamp(((x[0] - c.a[0]) * ab[0] + (x[1] - c.a[1]) * ab[1] + (x[2] - c.a[2]) * ab[2]) / (L2 || 1), 0, 1), p = [x[0] - c.a[0] - ab[0] * t, x[1] - c.a[1] - ab[1] * t, x[2] - c.a[2] - ab[2] * t], l = Math.hypot(...p), d = l - (c.ra + (c.rb - c.ra) * t); if (d < best) { best = d; if (out) out.normal = l > 1e-9 ? p.map(v => v / l) : [0, 1, 0]; } } return best; } };
-  }
 
   // the box around everything drawn (the used vertices of every mesh)
   bounds() {

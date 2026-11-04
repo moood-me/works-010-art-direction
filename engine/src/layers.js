@@ -22,7 +22,7 @@
 //                                       features (ctx.expressions: read by whoever draws them) — each by the weight
 import { qPow, qRot, qMul, qConj, qAxisAngle, getQ, setQ, getV, sub, add, scale, cross, len, normalize } from './math.js';
 import { localOf, setLocal, turnUnder } from './pose.js';
-import { makeCollider } from './collision.js';
+import { fitCapsules } from './capsules.js';
 
 const SIDES = ['Left', 'Right'];
 
@@ -134,12 +134,12 @@ export function headBall(body) {
   return ball;
 }
 
-// the hips' and thighs' capsules of a body (its skin's 90th percentile round each bone, src/collision.js) and how thick
+// the hips' and thighs' capsules of a body (its skin's 90th percentile round each bone, src/capsules.js) and how thick
 // its hand is — what armsOff keeps the arms clear of (cached per body)
 const NEAR = new WeakMap();
 function bodyNear(ctx) {
   const b = ctx.body; if (NEAR.has(b)) return NEAR.get(b);
-  const sk = ctx.rig.skeleton, C = makeCollider(ctx.rig, b.mesh, { fit: 0.9 }).rest, want = new Set(['Hips', 'LeftLeg', 'RightLeg'].map(n => sk.index[n]));
+  const sk = ctx.rig.skeleton, C = fitCapsules(ctx.rig, b.mesh, { fit: 0.9 }), want = new Set(['Hips', 'LeftLeg', 'RightLeg'].map(n => sk.index[n]));
   const hc = C.find(c => c.joint === sk.index.LeftHand);
   const out = { hips: C.filter(c => want.has(c.joint)).map(c => ({ ...c })), hand: hc ? (hc.ra + hc.rb) / 2 : 0.012 * b.measures.height };
   NEAR.set(b, out);

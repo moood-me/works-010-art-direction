@@ -28,19 +28,21 @@ export function qRot3(q, vx, vy, vz, out) {
   return out;
 }
 export function qAxisAngle(axis, a) { const l = Math.hypot(...axis) || 1, s = Math.sin(a / 2) / l; return [axis[0] * s, axis[1] * s, axis[2] * s, Math.cos(a / 2)]; }
-// the smallest turn carrying unit direction a to unit direction b
-export function qBetween(a, b) {
-  const d = dot(a, b);
-  if (d < -0.999999) { const ax = Math.abs(a[0]) < 0.9 ? cross(a, [1, 0, 0]) : cross(a, [0, 1, 0]); return qAxisAngle(ax, Math.PI); }
-  const c = cross(a, b);
-  return qNorm([c[0], c[1], c[2], 1 + d]);
+// the smallest turn carrying unit direction a to unit direction b (into out, if given)
+export function qBetween(a, b, out = [0, 0, 0, 0]) {
+  const d = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  if (d < -0.999999) { const ax = Math.abs(a[0]) < 0.9 ? cross(a, [1, 0, 0]) : cross(a, [0, 1, 0]), q = qAxisAngle(ax, Math.PI); for (let k = 0; k < 4; k++) out[k] = q[k]; return out; }
+  const cx = a[1] * b[2] - a[2] * b[1], cy = a[2] * b[0] - a[0] * b[2], cz = a[0] * b[1] - a[1] * b[0], w = 1 + d, l = Math.hypot(cx, cy, cz, w) || 1;
+  out[0] = cx / l; out[1] = cy / l; out[2] = cz / l; out[3] = w / l; return out;
 }
-export function qSlerp(a, b, t) {
-  let [bx, by, bz, bw] = b, c = a[0] * bx + a[1] * by + a[2] * bz + a[3] * bw;
+export function qSlerp(a, b, t, out = [0, 0, 0, 0]) {
+  let bx = b[0], by = b[1], bz = b[2], bw = b[3], c = a[0] * bx + a[1] * by + a[2] * bz + a[3] * bw;
   if (c < 0) { bx = -bx; by = -by; bz = -bz; bw = -bw; c = -c; }
-  if (c > 0.9995) return qNorm([a[0] + (bx - a[0]) * t, a[1] + (by - a[1]) * t, a[2] + (bz - a[2]) * t, a[3] + (bw - a[3]) * t]);
-  const th = Math.acos(c), s = Math.sin(th), ka = Math.sin((1 - t) * th) / s, kb = Math.sin(t * th) / s;
-  return [a[0] * ka + bx * kb, a[1] * ka + by * kb, a[2] * ka + bz * kb, a[3] * ka + bw * kb];
+  let ka = 1 - t, kb = t;
+  if (c <= 0.9995) { const th = Math.acos(c), s = Math.sin(th); ka = Math.sin((1 - t) * th) / s; kb = Math.sin(t * th) / s; }
+  out[0] = a[0] * ka + bx * kb; out[1] = a[1] * ka + by * kb; out[2] = a[2] * ka + bz * kb; out[3] = a[3] * ka + bw * kb;
+  if (c > 0.9995) { const l = Math.hypot(out[0], out[1], out[2], out[3]) || 1; for (let k = 0; k < 4; k++) out[k] /= l; }
+  return out;
 }
 // a turn taken t times (t < 1 less of it, t > 1 more): about the same axis
 export function qPow(q, t) {

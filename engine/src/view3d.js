@@ -134,7 +134,6 @@ export function figureView(THREE, figure, look) {
   dots.renderOrder = 10; dots.visible = false; dots.frustumCulled = false; group.add(dots);
   const caps = new THREE.Group(); caps.visible = false; group.add(caps);
   const m = new THREE.Matrix4(), capMat = new THREE.MeshBasicMaterial({ color: '#2a7ab4', wireframe: true, transparent: true, opacity: 0.35 });
-  let collider = null;
   return {
     group, dots, caps, parts,
     update() {
@@ -143,10 +142,10 @@ export function figureView(THREE, figure, look) {
       const P = figure.pose.P;
       if (dots.visible) { for (let j = 0; j < J; j++) dots.setMatrixAt(j, m.makeTranslation(P[j * 3], P[j * 3 + 1], P[j * 3 + 2])); dots.instanceMatrix.needsUpdate = true; }
       if (caps.visible) {
-        collider ??= figure.collider();
-        collider.update(figure.pose);
-        if (!caps.children.length) for (const c of collider.capsules) caps.add(new THREE.Mesh(capsuleGeometry(THREE, c), capMat));
-        collider.capsules.forEach((c, n) => placeCapsule(THREE, caps.children[n], c));
+        // (the body's inside as its solids have it this frame; a figure that was only drawn, never stepped, at its rest)
+        const solids = figure.solids(), now = solids.capsules(solids.moment(1));
+        if (!caps.children.length) for (const c of now) caps.add(new THREE.Mesh(capsuleGeometry(THREE, c), capMat));
+        now.forEach((c, n) => placeCapsule(THREE, caps.children[n], c));
       }
     },
     dispose() {

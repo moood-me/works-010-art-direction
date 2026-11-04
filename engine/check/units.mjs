@@ -5,6 +5,7 @@ import { createEngine } from '../src/engine.js';
 import { read } from './node-read.mjs';
 import { resolve, upgrade } from '../src/character.js';
 import { makeMesh } from '../src/mesh.js';
+import { qRot3 } from '../src/math.js';
 import { Pose } from '../src/pose.js';
 import { withRest } from '../src/changes.js';
 import { DEFORMERS, complete } from '../src/deform.js';
@@ -136,15 +137,25 @@ await test('a rest change: frames kept ride along in motion; frames turned are a
   let d = 0; for (let i = 0; i < b.rig.frames.length; i++) d = Math.max(d, Math.abs(Math.abs(same.rig.frames[i]) - Math.abs(b.rig.frames[i])));
   ok(d < 1e-4, 'frames turned for an unchanged body moved ' + d);
 });
-await test('the collision shape: capsules on the body, moving with the pose', async () => {
-  const fig = await E.figure('man'), clip = await E.clip('walk'); fig.frame(clip, 30, fig.pose);
-  const C = fig.collider().update(fig.pose), sk = E.skeleton, P = fig.pose.P, H = sk.index.Hips, out = {};
-  ok(C.capsules.length >= 15, `only ${C.capsules.length} capsules`);
-  const sp = sk.index.Spine2, inside = C.distance([P[sp * 3], P[sp * 3 + 1], P[sp * 3 + 2]], out);
-  ok(inside < -0.05, `the spine is not inside the body (${inside})`);
-  const far = C.distance([P[H * 3] + 2, P[H * 3 + 1], P[H * 3 + 2]], out);
-  ok(far > 1.5 && far < 2, `a point 2 m aside is ${far} m away`);
-  ok(Math.abs(Math.hypot(...out.normal) - 1) < 1e-9, 'no normal');
+await test('the body\'s solids: the skin between two frames, its inside deep in, updated once a step and read by many', async () => {
+  const fig = await E.figure('man'), clip = await E.clip('walk'), S = fig.solids(), sk = E.skeleton, out = { n: [0, 0, 0], v: [0, 0, 0] };
+  for (let t = 0; t <= 30; t++) fig.step(clip, t);
+  const P = fig.pose.P, at = (j, dx = 0) => [P[j * 3] + dx, P[j * 3 + 1], P[j * 3 + 2]], m = S.moment(1);
+  ok(S.capsules(m).length >= 15, `only ${S.capsules(m).length} capsules`);
+  // deep in the trunk (farther than the skin's points reach): inside, and which way is out
+  const sp = at(sk.index.Spine2), d = S.skin(m, ...sp, out);
+  ok(d < -0.05 && Math.abs(Math.hypot(...out.n) - 1) < 1e-6, `the spine is not deep inside the body (${d})`);
+  ok(S.skin(m, ...at(sk.index.Hips, 2), out) === Infinity, 'a point 2 m aside is not out of reach');
+  // just outside the hand, the skin's velocity is the hand's
+  const hand = sk.index.RightHand, h1 = at(hand); fig.step(clip, 31); const h2 = [0, 1, 2].map(k => fig.pose.P[hand * 3 + k]), v = h2.map((x, k) => (x - h1[k]) * clip.fps);
+  const top = fig.outputs[0].positions, near = Array.from(fig.outputs[0].mesh.used).reduce((b, i) => { const dd = Math.hypot(top[i * 3] - h2[0], top[i * 3 + 1] - h2[1], top[i * 3 + 2] - h2[2]); return dd < b[0] ? [dd, i] : b; }, [Infinity, -1])[1];
+  S.skin(S.moment(1), top[near * 3], top[near * 3 + 1], top[near * 3 + 2], out);
+  ok(Math.hypot(out.v[0] - v[0], out.v[1] - v[1], out.v[2] - v[2]) < 0.35 * Math.hypot(...v) + 0.05, `the skin's velocity at the hand ${out.v.map(x => x.toFixed(2))} against the hand's ${v.map(x => x.toFixed(2))}`);
+  // between the frames the skin is where it was in between (a point on the hand halfway is on the skin at u = 0.5)
+  const mid = [0, 1, 2].map(k => (fig.previous.P[hand * 3 + k] + fig.pose.P[hand * 3 + k]) / 2), dm = S.skin(S.moment(0.5), ...mid, out), d1 = S.skin(S.moment(1), ...mid, out);
+  ok(dm < 0 && (d1 > dm || d1 === Infinity), `halfway the hand is not where it was halfway (${dm} at 0.5, ${d1} at 1)`);
+  // two readers at once: asking at one moment changes nothing another sees
+  const a = S.moment(0.25), b = S.moment(0.75), x = mid, da = S.skin(a, ...x, out); S.skin(b, ...x, out); ok(S.skin(a, ...x, out) === da, 'one reader changed what another sees');
 });
 
 await test('deformers in a description: unknown parameters refused; a deformer that moves joints is a rest change only', async () => {
@@ -274,19 +285,16 @@ await test('heads: a face deformer on the rest and as a pose layer is the same; 
   ok(maxApart(lay.positions, rest.positions, lay.outputs[0].mesh.used) < 0.004, 'the layer and the rest change differ');
   await refuses(() => E.restBody(resolve(desc({ rest: [{ kind: 'face', changes: { 'nose-long-incr': 1 }, frames: 'keep' }] }), E.skeleton)), /Anny has no face change "nose-long-incr"/);
 });
-await test('heads: the head to collide with is in the pose it is given, its jaw with the Jaw joint; the neck to collide with', async () => {
-  const f = await E.figure('head-red'), clip = await E.clip('look-around'), H = E.skeleton.index.Head, p = new Pose(f.rig.J);
-  f.frame(clip, 60, p);
-  const inHead = [p.P[H * 3], p.P[H * 3 + 1] + 0.08, p.P[H * 3 + 2]], s = f.headShape(p);
-  ok(s.distance(...inHead) < 0, `a point in the head is outside its shape (${s.distance(...inHead)})`);
-  const n = s.normal(inHead[0], inHead[1] + 0.2, inHead[2]); ok(n[1] > 0.7, `the shape's normal above the head points ${n}`);
-  await refuses(async () => f.headShape(), /the pose it is in/);
+await test('heads: the head\'s solid is where the head is, its jaw with the Jaw joint', async () => {
+  const f = await E.figure('head-red'), clip = await E.clip('look-around'), H = E.skeleton.index.Head, S = f.solids(), l = [0, 0, 0], n = [0, 0, 0];
+  for (let t = 0; t <= 60; t++) f.step(clip, t);
+  const p = f.pose, m = S.moment(1), inHead = [p.P[H * 3], p.P[H * 3 + 1] + 0.08, p.P[H * 3 + 2]];
+  const d = S.head.distance(S.head.local(m, inHead, l)); ok(d < 0, `a point in the head is outside its shape (${d})`);
+  S.head.turn(m, S.head.normal(S.head.local(m, [inHead[0], inHead[1] + 0.2, inHead[2]], l), n), n); ok(n[1] > 0.7, `the shape's normal above the head points ${n}`);
   // an open mouth: a point just under the chin at rest is inside the shape once the jaw opens
   const shut = await E.figure('head-red'), open = await E.figure({ ...await E.character('head-red'), pose: [{ kind: 'expression', name: 'open', weight: 2 }] });
-  shut.frame(null, 0, shut.pose); open.frame(null, 0, open.pose);
-  const F = shut.body.head.frame, chin = F.toW(0, -1.12, 0.45), d0 = shut.headShape(shut.pose).distance(...chin), d1 = open.headShape(open.pose).distance(...chin);
+  const F = shut.body.head.frame, chin = F.toW(0, -1.12, 0.45), under = g => { g.step(null, 0); const s = g.solids(); return s.head.distance(s.head.local(s.moment(1), chin, l)); }, d0 = under(shut), d1 = under(open);
   ok(Math.abs(d1 - d0) > 0.002, `the jaw's part of the shape did not move with the jaw (${d0} → ${d1})`);
-  const neck = f.neckShape(p), N2 = E.skeleton.index.Neck2; ok(neck.distance([p.P[N2 * 3], p.P[N2 * 3 + 1], p.P[N2 * 3 + 2]]) < 0, 'the neck joint is outside the neck');
 });
 await test('heads: a wrapped head is stored for every character, and what is stored is what the wrap makes now', async () => {
   for (const c of (await E.characters()).characters) {
@@ -335,7 +343,7 @@ await test('hair: a hairstyle changed by its groups, colour and physics; refused
   const still = await hairOn({ pieces: [{ kind: 'preset', id: gwen }, { id: 'hair', moves: false }] });
   ok(!still.simulations.length, 'hair that does not move still simulated');
 });
-await test('hair: the step — reset on loop and scrub gives the same as a fresh start; the same moment again moves nothing; frame keeps nothing', async () => {
+await test('hair: the step — a scrub back is a fresh start; a loop goes on from where the hair was on the head; the same moment again moves nothing; frame keeps nothing', async () => {
   const f = await hairOn({ pieces: [{ kind: 'preset', id: await hairPin('hair-v1-alva') }] }), clip = await E.clip('walk'), sim = f.simulations[0];
   for (let t = 0; t <= 20; t++) f.step(clip, t);
   const at20 = Float64Array.from(sim.x); f.step(clip, 20); ok(apart(at20, sim.x) === 0, 'the same moment again moved the hair');
@@ -344,7 +352,17 @@ await test('hair: the step — reset on loop and scrub gives the same as a fresh
   ok(apart(back, g.simulations[0].x) < 1e-9, 'a scrub back to the start is not a fresh start');
   for (let t = 1; t <= 20; t++) f.step(clip, t);
   ok(apart(at20, sim.x) < 1e-9, 'played again, the hair is not where it was');
-  const o = f.outputs.find(o => o.mesh.sim), before = Float32Array.from(o.positions); f.frame(clip, 5); ok(apart(before, o.positions) > 0, 'frame did not draw the hair (at rest on the head)');
+  // a loop: across the clip's end the hair goes on as it was on the head (carried by the head's jump, swinging on as it
+  // swung on it) — on the head it moves, on the whole, no more than in a frame of the motion, where starting afresh
+  // would set it anew (a wave: its body jumps little against the head across the end)
+  const wave = await E.clip('wave'), H = E.skeleton.index.Head, free = sim.chains.filter(c => !c.head).flatMap(c => Array.from({ length: c.n }, (_, k) => (c.at + k) * 3));
+  const inHead = fig => { const Q = fig.pose.Q, P = fig.pose.P, q = [-Q[H * 4], -Q[H * 4 + 1], -Q[H * 4 + 2], Q[H * 4 + 3]], o = [0, 0, 0], x = fig.simulations[0].x, out = new Float64Array(x.length); for (const i of free) { qRot3(q, x[i] - P[H * 3], x[i + 1] - P[H * 3 + 1], x[i + 2] - P[H * 3 + 2], o); out.set(o, i); } return out; };
+  const mean = (a, b) => free.reduce((s, i) => s + Math.hypot(a[i] - b[i], a[i + 1] - b[i + 1], a[i + 2] - b[i + 2]), 0) / free.length;
+  let frame = 0, prev = null;
+  for (let t = 0; t < wave.frames; t++) { f.step(wave, t); const now = inHead(f); if (t > 10) frame = Math.max(frame, mean(prev, now)); prev = now; }
+  f.step(wave, 1, { loop: true }); const pop = mean(prev, inHead(f)); f.step(wave, 0); const fresh = mean(prev, inHead(f));
+  ok(pop <= frame && pop < fresh, `across the loop the hair moved ${(pop * 1000).toFixed(1)} mm on the head (the mean); in a frame of the wave at most ${(frame * 1000).toFixed(1)}, set anew ${(fresh * 1000).toFixed(1)}`);
+  const o = f.outputs.find(o => o.mesh.sim), before2 = Float32Array.from(o.positions); f.frame(clip, 5); ok(apart(before2, o.positions) > 0, 'frame did not draw the hair (at rest on the head)');
 });
 await test('hair: a ready head\'s hair as it was (rigid) unless it moves; moving, at rest it keeps its look', async () => {
   const rigid = await E.figure('head-red'), moving = await E.figure('hair-g3-red');
