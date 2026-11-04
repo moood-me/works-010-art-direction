@@ -110,3 +110,6 @@ within the work; the stills use frame 0 of the engine's `bow` (standing upright 
 - **Viewer** (`tools/web/tim.html` + `ui.js`): the model in `model/tim.json` (written by build.py); paths relative, so
   it runs from the repository's root; `?shots=1` turns the controls off for `shots.mjs`. `viewer_check.mjs` opens it
   as the site serves it and takes a picture.
+- The engine's correction `armsOutOfHead` (margin 0.03) is on for him (a big head); the model pack carries a `parts`
+  array with the head's share so the correction finds the head's ball. In the wave the hand still waves by his ear:
+  that is his short arms, not the hand going into the head.

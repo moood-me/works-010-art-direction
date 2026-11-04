@@ -156,7 +156,7 @@ function headTrack(c) {
   return { dt, yaw, pitch };
 }
 // the skirt kept off the legs: each skirt point inside a leg's capsule (thigh, shin) is put on its surface
-const dressR = H.pieces.dress, skirt = [];
+const dressR = H.pieces?.dress ?? [0, 0], skirt = [];      // a pack without a dress has no skirt to keep off the legs
 for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.62) skirt.push(i);
 const CAPS = [['LeftLeg', 'LeftShin', 0.06], ['LeftShin', 'LeftFoot', 0.048], ['RightLeg', 'RightShin', 0.06], ['RightShin', 'RightFoot', 0.048]]
   .map(([a, b, r]) => [I[a], I[b], r]);
