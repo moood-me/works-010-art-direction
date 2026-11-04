@@ -28,7 +28,7 @@ def build(ctx):
     zf_top = np.nan_to_num(side[:, 1], nan=40)
     # the face's window: the curtains' inner edge (a little wider, so more face shows as in the profile)
     inner = np.where(np.isnan(curt[:, 1]), 0, -curt[:, 1])        # CURT_F is the image-left curtain: its inner edge is x<0
-    w_t = np.where(ys < -112, 0, np.clip(-inner, 0, None) + 5)
+    w_t = np.where(ys < -112, 0, np.clip(inner, 0, None) + 5)
     w_t = np.where(ys > 236, np.nan, w_t)
     w_t = np.interp(ys, ys[~np.isnan(w_t)], w_t[~np.isnan(w_t)])
     # where the window's edge lies: on the face (its front at that width), below the chin by the neck

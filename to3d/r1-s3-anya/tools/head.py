@@ -135,6 +135,13 @@ def fit(v, ears_mask, extra=()):
         A, B = np.interp(y, bins, zb_t), np.interp(y, bins, zf_t)
         z = A + (V[:, 2] - a) / (b - a) * (B - A)
         out.append(np.c_[x, (D.FLOOR - y) * D.K, z])
+    # the ears smaller and closer to the head (under the hair; the drawing shows only a bit of one in profile)
+    e = ears_mask
+    c = out[0][e].mean(0) * [0, 1, 1]
+    for s_ in (1, -1):
+        m = e & (np.sign(out[0][:, 0]) == s_)
+        root = np.array([s_ * 0.075, c[1], c[2]])
+        out[0][m] = root + (out[0][m] - root) * [0.55, 0.75, 0.75]
     return out
 
 

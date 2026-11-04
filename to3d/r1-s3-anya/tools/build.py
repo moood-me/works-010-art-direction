@@ -266,7 +266,7 @@ def tube(path, radii, cols=24):
         n1 = ref - tg * (ref @ tg); n1 /= np.linalg.norm(n1); n2 = np.cross(tg, n1)
         for th in np.linspace(0, 2 * np.pi, cols, endpoint=False):
             V.append(p + radii[i] * (np.cos(th) * n1 + np.sin(th) * n2))
-    return np.array(V), grid(len(path), cols, True)
+    return np.array(V), grid(len(path), cols, True)[:, ::-1]
 
 
 def catmull(pts, n):

@@ -62,9 +62,9 @@ async function texture(name) {
 }
 const U = {
   L: { value: new THREE.Vector3(0.55, 0.62, 0.56).normalize() },
-  thr: { value: Number(q.get('thr') ?? 0.0) },
+  thr: { value: Number(q.get('thr') ?? -0.18) },
   face: { value: await texture('dream') },
-  width: { value: Number(q.get('line') ?? 0.0022) },
+  width: { value: Number(q.get('line') ?? 0.0028) },
   R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) },
 };
 const toon = new THREE.ShaderMaterial({
@@ -86,14 +86,15 @@ const toon = new THREE.ShaderMaterial({
       if (vTex > 0.5) { vec4 t = texture2D(face, vUv); c = mix(c, t.rgb, t.a); }
       gl_FragColor = vec4(c, 1.0);
     }`,
-  side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
+  side: THREE.DoubleSide,
 });
 const hull = new THREE.ShaderMaterial({
   uniforms: U, side: THREE.BackSide,
   vertexShader: `
-    attribute vec3 lin; attribute float ow; uniform float width; varying vec3 vC;
-    void main() { vC = lin; gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * width * ow, 1.0); }`,
-  fragmentShader: `varying vec3 vC; void main() { gl_FragColor = vec4(vC, 1.0); }`,
+    attribute vec3 lin; attribute float ow; uniform float width; varying vec3 vC; varying float vOw;
+    void main() { vC = lin; vOw = ow; gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * width * ow, 1.0);
+      gl_Position.z += 0.0004 * gl_Position.w; }`,
+  fragmentShader: `varying vec3 vC; varying float vOw; void main() { if (vOw < 0.35) discard; gl_FragColor = vec4(vC, 1.0); }`,
 });
 const mesh = new THREE.Mesh(g, toon), line = new THREE.Mesh(g, hull);
 mesh.frustumCulled = line.frustumCulled = false;

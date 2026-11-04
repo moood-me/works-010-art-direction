@@ -98,6 +98,8 @@ def mesh_obj(name, V, F, colour, lined=True, smooth=True, solidify=0.0, coll=Non
 
 
 for ob in meta['objects']:
+    if ob.get('baked') and not job.get('frames'):
+        continue                 # marks baked for moving pictures; a still draws them at its own line width
     V, F = SC['obj_' + ob['name'] + '_v'], SC['obj_' + ob['name'] + '_f']
     o = mesh_obj(ob['name'], V, F, job.get('debug_colours', {}).get(ob['name'], ob['colour']), ob.get('line', True), ob.get('smooth', True), ob.get('solidify', 0))
     if ob.get('subsurf'):
