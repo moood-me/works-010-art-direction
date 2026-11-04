@@ -283,7 +283,7 @@ def vest_margin(X, Y, Z, U, V):
     return np.minimum(np.minimum(vee, arm_hole(X, Y, Z, 33)), hem)
 
 
-Vv, Fv = shell_mesh(VEST, 122, 480, vest_margin, nu=160, nv=84)
+Vv, Fv = shell_mesh(VEST, 122, 480, vest_margin, nu=128, nv=64)
 
 
 def tuck(V):
@@ -302,13 +302,13 @@ add('vest', Vv, Fv, COL['vest'], sj, sw)
 vest_shell = H.Shell(VEST)
 
 # shirt body: the torso shell 6 in, from the collar down into the trousers, with arm holes
-Vs, Fs = shell_mesh(inset(TORSO, 6), 122, 440, lambda X, Y, Z, U, V: arm_hole(X, Y, Z, 34), nu=120, nv=60)
+Vs, Fs = shell_mesh(inset(TORSO, 6), 122, 440, lambda X, Y, Z, U, V: arm_hole(X, Y, Z, 34), nu=80, nv=44)
 sj, sw = weights_nearest(Vs, trunk)
 add('shirt', Vs, Fs, COL['shirt'], sj, sw)
 shirt_shell = H.Shell(inset(TORSO, 6))
 
 # trouser top: the hips shell
-Vh, Fh = shell_mesh(HIPS, 420, 540, None, nu=120, nv=24)
+Vh, Fh = shell_mesh(HIPS, 420, 540, None, nu=96, nv=16)
 sj, sw = weights_nearest(Vh, trunk | leg)
 add('trousers', Vh, Fh, COL['trousers'], sj, sw)
 

@@ -67,7 +67,7 @@ def main():
         top = np.interp(d, [0, 74, 90, 120, 180], [200, 200, -14, -32, -40]) + wave
         bot = np.interp(d, [0, 74, 90, 110, 150, 180], [-200, -200, 8, 20, 30, 32]) + wave
         return np.minimum(np.minimum(Y - top, bot - Y), (-4 + 0.4 * (Y + 14)) - Z)
-    nu, nv = 480, 120
+    nu, nv = 320, 80
     u, v = np.meshgrid(np.linspace(0, 2 * np.pi, nu, endpoint=False), np.linspace(shell.ymin, shell.ymax, nv),
                        indexing='ij')
     X, Y, Z = shell.point(u, v)

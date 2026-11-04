@@ -210,9 +210,10 @@ if WITH_BODY:
     lw = float(os.environ.get('BAKE_LW', '3.4'))
     k = 0
     for mk in marks['calm']:
-        if mk['group'] == 'nose':
+        # baked for the live face: the 3D lids, eyes and mouth draw themselves; the nose hook is for still fronts
+        if mk['group'] in ('nose', 'mouth') or (mk['group'] == 'eye' and mk['kind'] == 'shape'):
             continue
-        if mk['group'] == 'eye' and mk['kind'] == 'shape' and mk.get('fill') == '#1b1714':
+        if mk['group'] == 'eye' and mk['w'] >= 1.0:          # the heavy lid stroke: the 3D lid's contour is it
             continue
         P = np.array(mk['pts'])
         r = (mk['w'] or 0) * lw / 2
@@ -226,6 +227,15 @@ if WITH_BODY:
             add(f'bm{k}', Vt, Ft, mk.get('stroke') or '#1b1714', line=False, baked=True)
             RIG[f'bm{k}'] = rigid(Vt); k += 1
     pack_engine.write(C, objs, arrays, RIG, J1, K, FLOOR)
+    # what the live face (face.mjs) needs: where its pieces are in the body's vertices, and the face's measures
+    offs = json.load(open(os.path.join(C, 'engine/offsets.json')))
+    json.dump(dict(K=K, floor=FLOOR, eyes=[np.asarray(hf['sclera' + s + '_v']).mean(0).tolist() for s in 'LR'],
+                   rb=float(np.linalg.norm(hf['scleraL_v'] - np.asarray(hf['scleraL_v']).mean(0), axis=1).mean()),
+                   mouthY=81.0, jaw=[0.0, 30.0, -25.0],
+                   pieces={n: offs[n] for n in offs if n in ('head', 'irisL', 'irisR', 'stache0', 'stache1')},
+                   marks=[offs[n] for n in offs if n.startswith('bm')],
+                   colours={o['name']: o.get('colours', [o['colour']]) for o in objs}),
+              open(os.path.join(C, 'engine/face.json'), 'w'))
 
 json.dump(dict(objects=objs, marks=marks, k=K, floor=FLOOR, skip=['pupil']), open(os.path.join(C, 'scene.json'), 'w'))
 np.savez(os.path.join(C, 'scene.npz'), **arrays)

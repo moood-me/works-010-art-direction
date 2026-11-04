@@ -60,6 +60,55 @@ r160 to the local copy in `/home/user/cache/n3-cloth/node_modules/three`, and ca
 Files: `tools/web/forms.js` — the constructor's forms and mesher, copied unchanged from `experiments/indie/index.html`;
 `tools/web/vera.js` — Вера, the look, the skeleton, the motion; `tools/web/view.html` — the page.
 
+## Second round: alive (asked by Pavel through the coordinator, for the good ones)
+
+What was asked: the face alive in its own drawn way (blinks at uneven times and on head turns, the eyes jumping in
+small quick saccades and leading a head turn, mouth shapes for speech, smooth changes between the sheet's expressions
+and mixes of them — timing from how real eyes and faces move, not sines); a few Kimodo motions from `engine/motions`
+with the live face (walk, sit, look round, one with the arms free), framed so she is big; the 3D viewer able to show
+it all (turn with the mouse, motion, expression, play/pause/scrub, speech on/off) for the site's 3D tab.
+
+How:
+- **The face is drawn live.** `tools/web/face.js` is a port of the drawing's face code (`face.py` `eye`/`brow`/`mouth`
+  and `cast.vera`'s placement at yaw 0) to a 2D canvas, but from continuous numbers instead of named cases: lids
+  (inner, outer cut), a "happy" amount that shuts the eye into the joy arc, eye size and highlight size, the drawing's
+  highlight shift, brows (height, tilt), the tear, and the mouth as one closed shape of two cubic curves (every
+  quadratic curve of the drawing turned into the cubic one exactly; the `o` mouth as a cubic ellipse; teeth and tongue
+  as amounts). Each sheet expression is one set of these numbers; a mix is their weighted mean. `face_check.mjs`
+  draws the five expressions with it beside the SVG-rendered textures (`tex/`) and overlays them: they match line for
+  line. The head now carries a canvas texture (6 px per unit) redrawn every frame.
+- **Timing** (`tools/web/live.js`, all random events seeded, so a film is the same every time):
+  blinks — spontaneous intervals log-normal around 2.8 s (0.35–8 s), 12 % doubled, 12 % shallow; each closes in
+  65–95 ms (accelerating), stays shut 25–55 ms, opens in 120–190 ms (decelerating); gaze shifts over ~16° bring a blink
+  (more likely the bigger), and the end of a spoken sentence does half the time. Gaze — fixations log-normal around
+  0.55 s (0.18–1.6 s), then a jump to a nearby point; the eyes reach a new target in ~2 frames (time constant 16 ms);
+  while the head turns, they keep the same target (they turn back against the head). The eyes lead the head: when the
+  head's direction 0.3 s ahead (read from the motion) differs from the gaze by >7°, they jump there first. The upper
+  lid follows the eye down. Expressions — every number follows by a critically damped spring (brows ω 16, lids 19,
+  mouth 24, the tear 5 per second); the head's tilt of each expression follows too. Speech — a few Russian phrases read
+  letter by letter into mouth shapes (а/я→A, о/ё→O, у/ю→U, е/э→E, и/ы→I, м/б/п→closed, в/ф→teeth, other consonants
+  a half-open shape), vowels 85–145 ms, consonants 50–100 ms, commas 0.22–0.32 s and full stops 0.6–0.95 s of rest; the
+  shapes follow by a fast spring (ω 42) so they run into each other; the brows lift a little at a phrase's start.
+  Without sound: the timing is the text's, not a voice's.
+- **Motions** are converted from `engine/motions` (`tools/conv.py`, same maths as `experiments/indie/conv.py`) into
+  `tools/motions/`. Clips: walk (the camera goes along; travel goes on across loops), sit (Kimodo's sit on the floor;
+  the coat that would go under the floor lies on it: no vertex goes below the floor), wait and look round, wave.
+  Engine/motions has no "look round": it is Kimodo's waiting motion with the head turned left and right on top
+  (minimum-jerk turns of 0.55–0.65 s with rests; 60 % head, 40 % neck); the eyes lead it as above. Kimodo's waiting
+  motion stoops ~25° forward on average; for Вера 85 % of that average lean is taken out (the upper body turned back
+  about the waist by a constant), its movement kept.
+- **Arms free** (wave): a second set of sleeves/hands on the arm bones, retargeted like the legs (a fixed turn from our
+  bone to SOMA's rest direction), kept off the coat (upper arm at least ~25° out to the side) and out of the head; the
+  folder hangs from the left hand on an upright joint of its own (`LeftProp`, not SOMA's, as in experiments/indie).
+  Holding the folder (all other clips) the arms go with the body as before.
+- **The coat's skirt front** below the hips now goes partly (up to 60 %) with the thigh behind it, so a stepping leg
+  or a rising knee carries the coat front instead of going through it.
+- **Viewer** (`tools/web/view.html` + `ui.js`): drag to turn (two fingers / wheel to come closer), the motions, the
+  five expressions or a mix (sliders), speech on/off, play/pause and a scrub bar; the picture is centred above the
+  controls, which fold away. `?shots` turns the controls off (used by `shots.mjs`).
+
+Repeat: `python3 tools/make.py walk sit look wave face` (≈ 2.3 s a frame on swiftshader); `node tools/face_check.mjs <dir>`.
+
 ## What is weak (honestly)
 
 - The drawing's turnaround cheats: the face turns ~0.38·sin(yaw) further than the skull, so in three-quarter and
