@@ -20,7 +20,8 @@
    },
    {
     "kind": "preset",
-    "id": "face-anny-soft-chin@9ed28e85f8aa7bc2"
+    "id": "face-anny-soft-chin@9ed28e85f8aa7bc2",
+    "strength": 0.3
    }
   ],
   "features": [
