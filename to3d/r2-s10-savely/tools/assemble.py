@@ -46,8 +46,12 @@ if WITH_BODY:
     for name in b['names']:
         meta = json.loads(str(b[name + '_meta']))
         add(name, b[name + '_v'], b[name + '_f'], meta['colour'], **{k: v for k, v in meta.items() if k != 'colour'})
+    # the base head's shoulders are cut off: its neck ends inside the shirt's collar
+    F = np.asarray(hf['f'])
+    low = np.asarray(hf['low'])
+    keepf = ~low[np.maximum(F, 0)].any(1)
+    add('head', hf['v'], F[keepf], col['skin'], subsurf=1)
 else:
-    keep = ~hf['low']
     add('head', hf['v'], hf['f'], col['skin'], subsurf=1)
 for s in 'LR':
     add('sclera' + s, hf['sclera' + s + '_v'], hf['sclera' + s + '_f'], SCLERA)

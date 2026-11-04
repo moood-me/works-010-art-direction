@@ -48,6 +48,10 @@ g.setAttribute('lin', new THREE.BufferAttribute(a.lin, 3, true));
 g.setAttribute('ow', new THREE.BufferAttribute(a.ow, 1, true));
 g.setAttribute('uv', new THREE.BufferAttribute(a.uv, 2));
 g.setAttribute('tex', new THREE.BufferAttribute(a.tex, 1));
+g.setAttribute('pn', new THREE.BufferAttribute(a.pn, 3));
+g.setAttribute('pw', new THREE.BufferAttribute(a.pw, 1, true));
+g.setAttribute('pj', new THREE.BufferAttribute(a.pj, 1));
+g.setAttribute('two', new THREE.BufferAttribute(a.two, 1));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 
 const loader = new THREE.TextureLoader();
@@ -61,25 +65,28 @@ const U = {
   thr: { value: Number(q.get('thr') ?? 0.0) },
   face: { value: await texture('dream') },
   width: { value: Number(q.get('line') ?? 0.0022) },
+  R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) },
 };
 const toon = new THREE.ShaderMaterial({
   uniforms: U,
   vertexShader: `
-    attribute vec3 col; attribute vec3 shd; attribute float tex;
-    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex;
-    void main() { vN = normal; vCol = col; vShd = shd; vUv = uv; vTex = tex;
+    attribute vec3 col; attribute vec3 shd; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two;
+    uniform mat3 R[${sk.J}];
+    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo;
+    void main() { vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: `
     uniform vec3 L; uniform float thr; uniform sampler2D face;
-    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex;
+    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo;
     void main() {
+      if (!gl_FrontFacing) { if (vTwo < 0.5) discard; gl_FragColor = vec4(vShd * 0.92, 1.0); return; }
       float d = dot(normalize(vN), L);
       float lit = smoothstep(thr - 0.015, thr + 0.015, d);
       vec3 c = mix(vShd, vCol, lit);
       if (vTex > 0.5) { vec4 t = texture2D(face, vUv); c = mix(c, t.rgb, t.a); }
       gl_FragColor = vec4(c, 1.0);
     }`,
-  polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
+  side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
 });
 const hull = new THREE.ShaderMaterial({
   uniforms: U, side: THREE.BackSide,
@@ -132,6 +139,9 @@ function frame() {
     normalsOf(fig.positions, body.triangles, fig.normals);
   }
   g.attributes.position.needsUpdate = true; g.attributes.normal.needsUpdate = true;
+  const Q = fig.pose.Q;
+  for (let j = 0; j < J; j++) { const [x, y, z, w] = [Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]];
+    U.R.value[j].set(1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)); }
   const P = fig.pose.P; shadow.position.x = P[I.Hips * 3]; shadow.position.z = P[I.Hips * 3 + 2];
 }
 function facing() { // where the pelvis faces now (yaw about y; 0 — +z)
@@ -151,7 +161,7 @@ window.A = {
     for (const k of ['t', 'pose', 'poseOpts', 'morph']) if (o[k] !== undefined) S[k] = o[k];
     if (o.expr && o.expr !== S.expr) { S.expr = o.expr; U.face.value = await texture(o.expr); }
     if (o.cam) Object.assign(S.cam, o.cam);
-    if (o.light) U.L.value.set(...o.light).normalize();
+    if (o.light) S.light = o.light;
     if (o.thr !== undefined) U.thr.value = o.thr;
     if (o.width !== undefined) U.width.value = o.width;
     if (o.bg) scene.background = new THREE.Color(o.bg);
@@ -175,6 +185,10 @@ window.A = {
       persp.position.set(tg[0] + dir[0] * c.dist, tg[1] + dir[1] * c.dist, tg[2] + dir[2] * c.dist);
     }
     camera.lookAt(tg[0], tg[1], tg[2]);
+    // the light as in the drawing: from above, in front, from the picture's right
+    camera.updateMatrixWorld();
+    const e = camera.matrixWorld.elements, l = S.light || [0.55, 0.62, 0.56];
+    U.L.value.set(e[0] * l[0] + e[4] * l[1] + e[8] * l[2], e[1] * l[0] + e[5] * l[1] + e[9] * l[2], e[2] * l[0] + e[6] * l[1] + e[10] * l[2]).normalize();
     renderer.render(scene, camera);
   },
 };
