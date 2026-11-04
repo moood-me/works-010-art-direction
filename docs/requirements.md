@@ -113,6 +113,10 @@ started automatically either — only when Pavel asks (2026-11-04).
   and by eye; pictures and animations in the gallery; history.
 - On the way: find your bearings and use common sense; don't take on overly complex tasks; try to do it well and in
   the spirit of these requirements, as far as possible (Pavel, 2026-11-04).
+- Borderline tasks — ones that may take days and still not be done — aren't aimed better than the earlier
+  experiments did ("иначе это просто какая-то нереалистичная хрень, которая может делаться ещё 3 дня и в итоге так и
+  не сделаться"). E.g. clothes in rolls and lying: О3's level is the target. No new workarounds; old ones removed only
+  where that's realistic (Pavel, 2026-11-04).
 - Add what Pavel asks to this file, so it isn't lost.
 
 ## Not now
