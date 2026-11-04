@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Рисунок в 3D</title>
+<style>
+  :root { --bg: #f4f1ec; --card: #fffdf9; --ink: #26231f; --muted: #75706a; --line: #e2ddd5; --accent: #b4532a; --good: #2f7d4f; --mid: #a37a1c; --bad: #a33a3a; --side: #ebe6de; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; --side: #201f1c; } }
+  :root[data-theme="dark"] { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6cc18f; --mid: #d7b25a; --bad: #e07a7a; --side: #201f1c; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; display: flex; }
+  aside { width: 290px; flex: none; height: 100vh; position: sticky; top: 0; overflow-y: auto; background: var(--side); border-right: 1px solid var(--line); padding: 18px 10px 24px; }
+  aside h1 { font-size: 17px; margin: 0 8px 2px; }
+  aside .sub { color: var(--muted); font-size: 12px; margin: 0 8px 14px; }
+  .gt { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 16px 8px 4px; }
+  aside a { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 14px; }
+  aside a:hover { background: var(--card); }
+  aside a.on { background: var(--card); box-shadow: inset 3px 0 0 var(--accent); }
+  aside a .n { color: var(--accent); font-weight: 700; min-width: 26px; }
+  aside a .dot { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; flex: none; background: currentColor; }
+  main { flex: 1; min-width: 0; padding: 24px 28px 64px; max-width: 1300px; }
+  h2 { font-size: 24px; margin: 0 0 6px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .id { color: var(--accent); font-weight: 700; }
+  .st { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; }
+  .good { color: var(--good); } .mid { color: var(--mid); } .bad { color: var(--bad); }
+  .rel { margin: 0 0 6px; font-size: 13px; padding: 6px 10px; border-left: 3px solid var(--accent); background: var(--card); max-width: 900px; }
+  .ov h3 { margin: 26px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .ov .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .ov figure img { height: 150px; }
+  .ov figcaption .s { display: block; font-size: 12px; margin-top: 2px; }
+  .tabs { display: flex; gap: 6px; margin: 4px 0 14px; }
+  .tabs button { font: inherit; font-size: 14px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .d3.on { position: fixed; top: 0; right: 0; bottom: 0; left: 290px; z-index: 9; background: #d8d2c8; display: flex; flex-direction: column; }
+  .d3bar { display: flex; gap: 12px; align-items: center; padding: 8px 14px; background: var(--bg); border-bottom: 1px solid var(--line); font-size: 14px; }
+  .d3bar b { color: var(--accent); }
+  .d3bar .note { color: var(--muted); font-size: 13px; flex: 1; min-width: 0; }
+  .d3bar button { font: inherit; font-size: 14px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; white-space: nowrap; }
+  .d3box { position: relative; flex: 1; min-height: 0; }
+  .v3d { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #d8d2c8; }
+  .v3dwait { position: absolute; inset: 0; display: grid; place-items: center; background: #d8d2c8; color: #4a4640; font: italic 20px Georgia, serif; text-align: center; padding: 20px; }
+  @media (max-width: 760px) { .d3.on { left: 0; } }
+  .what { color: var(--muted); margin: 0 0 6px; max-width: 900px; }
+  .verdict { margin: 0 0 16px; max-width: 900px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; cursor: zoom-in; }
+  figure img { display: block; width: 100%; height: 260px; object-fit: contain; background: #d9d4cb; }
+  figure:hover { border-color: var(--accent); }
+  figcaption { padding: 8px 10px; font-size: 13px; }
+  figcaption b { color: var(--accent); margin-right: 4px; }
+  #menuSel { display: none; }
+  #lb { position: fixed; inset: 0; background: rgba(12,11,10,.92); display: none; z-index: 10; flex-direction: column; }
+  #lb.on { display: flex; }
+  #lb .imgbox { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 16px 64px 0; }
+  #lb img { max-width: 100%; max-height: 100%; object-fit: contain; background: #d9d4cb; border-radius: 4px; }
+  #lb .cap { color: #eee; text-align: center; padding: 10px 16px 16px; font-size: 14px; }
+  #lb .cap b { color: #f0a070; margin-right: 6px; }
+  #lb button { position: absolute; background: rgba(255,255,255,.12); color: #fff; border: 0; border-radius: 50%; width: 44px; height: 44px; font-size: 22px; cursor: pointer; }
+  #lb button:hover { background: rgba(255,255,255,.25); }
+  #lbPrev { left: 12px; top: 50%; } #lbNext { right: 12px; top: 50%; } #lbClose { right: 12px; top: 12px; }
+  @media (max-width: 760px) {
+    body { display: block; } aside { display: none; }
+    #menuSel { display: block; width: 100%; padding: 10px; font-size: 15px; margin-bottom: 16px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
+    main { padding: 16px; } #lb .imgbox { padding: 12px 8px 0; } #lbPrev, #lbNext { top: auto; bottom: 56px; }
+  }
+
+  .cmp { margin: 22px 0 8px; }
+  .cmp > h3 { font-size: 18px; margin: 0 0 10px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .col { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; min-width: 0; }
+  .col h4 { margin: 0 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+  .col.now h4 { color: var(--muted); } .col.with h4 { color: var(--accent); }
+  .col p { margin: 0 0 10px; font-size: 14px; }
+  .col .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .col figure img { height: 220px; }
+  .col video { width: 100%; display: block; border-radius: 6px; background: #d9d4cb; }
+  .tool { font-size: 14px; margin: 0 0 6px; } .tool a { color: var(--accent); }
+  @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+
+  .blk { margin: 26px 0 8px; }
+  .blk > h3 { font-size: 18px; margin: 0 0 6px; }
+  .blk ul { margin: 4px 0 12px; padding-left: 20px; max-width: 900px; } .blk li { margin: 3px 0; }
+  .refs a { color: var(--accent); }
+</style>
+</head>
+<body>
+<aside id="side"><h1><a href="#" style="padding:0">Рисунок в 3D</a></h1><p class="sub">Наш рисунок — задание; 3D собирается из хороших готовых основ и подгоняется под него. Код — Р и номер, картинка — через дефис: «Р1-б».</p></aside>
+<main><select id="menuSel" aria-label="Персонаж"></select><div id="view"></div></main>
+<div id="lb" role="dialog" aria-modal="true"><div class="imgbox"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div>
+<button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
+<script>
+// Each style lives in its own folder: <folder>/entry.json (format in README.md); picture paths are relative to the folder.
+const ITEMS = [
+  ['Р1', 'r1-s3-anya'], ['Р2', 'r2-s10-savely'],
+];
+const letters = 'абвгдежзиклмнопрстуфхцчшэюя';
+const side = document.getElementById('side'), view = document.getElementById('view'), sel = document.getElementById('menuSel');
+const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+let all = [], cur = null, pics = [], idx = 0;
+const isVideo = s => /\.(mp4|webm)$/i.test(s);
+async function load() {
+  all = await Promise.all(ITEMS.map(async ([id, dir]) => {
+    try { const r = await fetch(dir + '/entry.json', { cache: 'no-cache' }); if (!r.ok) throw 0; return { ...(await r.json()), id, dir }; }
+    catch (e) { return { id, dir, name: dir, missing: true }; }
+  }));
+  const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Обзор'; sel.appendChild(o0);
+  for (const it of all) {
+    const a = document.createElement('a'); a.href = '#' + it.id; a.dataset.id = it.id;
+    a.innerHTML = `<span class="n">${it.id}</span><span>${esc(it.name)}</span><span class="dot ${it.status || ''}" title="${esc(it.statusText)}"></span>`;
+    side.appendChild(a);
+    const o = document.createElement('option'); o.value = it.id; o.textContent = it.id + '. ' + it.name; sel.appendChild(o);
+  }
+  sel.onchange = () => { location.hash = sel.value ? '#' + sel.value : '#'; };
+  addEventListener('hashchange', () => show(decodeURIComponent(location.hash.slice(1))));
+  show(decodeURIComponent(location.hash.slice(1)));
+}
+function overview() {
+  cur = null; side.querySelectorAll('a').forEach(a => a.classList.remove('on')); sel.value = '';
+  view.innerHTML = `<div class="ov"><h2>Рисунок в 3D</h2><p class="what">Каждая страница — один наш рисунок из «Стилей персонажей», превращённый в 3D-персонажа: тело Anny со скелетом SOMA и движениями Kimodo, голова от хорошей основы, цвет и черты с нашего рисунка, свой материал под стиль. Рядом с рисунком, в тех же ракурсах. Цвет — насколько вышло похоже и красиво.</p><div class="grid"></div></div>`;
+  const grid = view.querySelector('.grid');
+  for (const it of all) {
+    const f = document.createElement('figure');
+    f.innerHTML = `<img loading="lazy" src="${it.cover ? it.dir + '/' + it.cover : ''}" alt=""><figcaption><b>${it.id}</b>${esc(it.name)}<span class="s ${it.status || ''}">${it.missing ? 'ещё не готово' : '● ' + esc(it.statusText)}</span></figcaption>`;
+    f.onclick = () => { location.hash = '#' + it.id; }; grid.appendChild(f);
+  }
+  window.scrollTo(0, 0);
+}
+function figs(it, list) {
+  return (list || []).map(([src, cap]) => {
+    const k = pics.length; pics.push([it.dir + '/' + src, cap]); const code = `${it.id}-${letters[k] || k}`;
+    if (isVideo(src)) return `<figure style="cursor:default"><video src="${it.dir}/${src}" controls loop muted playsinline preload="metadata" style="width:100%;display:block"></video><figcaption><b>${code}</b>${esc(cap)}</figcaption></figure>`;
+    return `<figure data-k="${k}"><img loading="lazy" src="${it.dir}/${src}" alt="${esc(cap)}"><figcaption><b>${code}</b>${esc(cap)}</figcaption></figure>`;
+  }).join('');
+}
+function show(id) {
+  if (!id) return overview();
+  const it = all.find(x => x.id == id) || all[0]; cur = it; pics = []; sel.value = it.id;
+  side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id == it.id));
+  if (it.missing) { view.innerHTML = `<h2><span class="id">${it.id}</span>ещё не готово</h2>`; return; }
+  const src = (it.sources || []).map(t => `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.name)}</a>`).join(', ');
+  view.innerHTML = `<h2><span class="id">${it.id}</span>${esc(it.name)}<span class="st ${it.status}">${esc(it.statusText)}</span></h2>
+    ${src ? `<p class="tool refs">Исходное: ${src}</p>` : ''}<p class="what">${esc(it.what)}</p>${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ''}
+    ${(it.blocks || []).map(b => `<section class="blk"><h3>${esc(b.title)}</h3>${b.text ? `<p class="what">${esc(b.text)}</p>` : ''}${(b.list || []).length ? `<ul>${b.list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}${(b.pics || []).length ? `<div class="grid">${figs(it, b.pics)}</div>` : ''}</section>`).join('')}`;
+  view.querySelectorAll('figure[data-k]').forEach(f => f.onclick = () => openLb(+f.dataset.k));
+  window.scrollTo(0, 0);
+}
+const still = () => pics.map((p, i) => i).filter(i => !isVideo(pics[i][0]));
+function openLb(k) { const s = still(); if (!s.length) return; idx = s.includes(k) ? k : s[0]; const [src, cap] = pics[idx]; lbImg.src = src; lbCap.innerHTML = `<b>${cur.id}-${letters[idx] || idx}</b>${esc(cap)}`; lb.classList.add('on'); }
+function step(d) { const s = still(); openLb(s[(s.indexOf(idx) + d + s.length) % s.length]); }
+function closeLb() { lb.classList.remove('on'); lbImg.removeAttribute('src'); }
+document.getElementById('lbPrev').onclick = e => { e.stopPropagation(); step(-1); };
+document.getElementById('lbNext').onclick = e => { e.stopPropagation(); step(1); };
+document.getElementById('lbClose').onclick = closeLb;
+lb.onclick = e => { if (e.target === lb || e.target.classList.contains('imgbox')) closeLb(); };
+addEventListener('keydown', e => { if (!lb.classList.contains('on')) return; if (e.key === 'Escape') closeLb(); if (e.key === 'ArrowLeft') step(-1); if (e.key === 'ArrowRight') step(1); });
+load();
+</script>
+</body>
+</html>
