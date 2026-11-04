@@ -10,7 +10,7 @@ import { Figure } from '../../../../engine/src/figure.js';
 import { loadPack } from '../../../../engine/src/pack.js';
 import { build, turnUnder } from '../../../../engine/src/retarget.js';
 import { normalsOf } from '../../../../engine/src/skin.js';
-import { qAxisAngle, getQ, getV } from '../../../../engine/src/math.js';
+import { qAxisAngle, qBetween, getQ, getV, normalize, sub } from '../../../../engine/src/math.js';
 
 const q = new URLSearchParams(location.search);
 const packUrl = new URL(q.get('pack'), location.href);
@@ -114,13 +114,15 @@ const J = sk.J, I = sk.index;
 // standing as drawn: the rest with the arms let down along the body (a pose layer, for the drawing's views)
 function standPose(o = {}) {
   const pose = fig.restPose();
-  const down = o.down ?? 0.82, fwd = o.fwd ?? 0.0;
-  for (const [s, sg] of [['Left', -1], ['Right', 1]]) {
-    turnUnder(pose, sk, I[s + 'Arm'], qAxisAngle([0, 0, 1], sg * down));
-    if (fwd) turnUnder(pose, sk, I[s + 'Arm'], qAxisAngle([1, 0, 0], -fwd));
-    if (o.elbow) turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle([0, 0, 1], sg * o.elbow));
+  const out = o.out ?? 0.13, fwd = o.fwd ?? 0.03;
+  for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
+    const A = I[s + 'Arm'], Hd = I[s + 'Hand'];
+    const cur = normalize(sub(getV(pose.P, Hd), getV(pose.P, A)));
+    turnUnder(pose, sk, A, qBetween(cur, normalize([sg * out, -1, fwd])));
+    build(pose, body, getV(pose.P, I.Hips));
+    if (o.twist) turnUnder(pose, sk, A, qAxisAngle(normalize(sub(getV(pose.P, Hd), getV(pose.P, A))), sg * o.twist));
+    build(pose, body, getV(pose.P, I.Hips));
   }
-  build(pose, body, getV(pose.P, I.Hips));
   return pose;
 }
 

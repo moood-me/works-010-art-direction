@@ -251,12 +251,36 @@ def set_view(v):
     lst.thickness = v.get('lw', 2.2)
 
 
-frames = np.load(job['frames']) if job.get('frames') else None
 os.makedirs(job['out'], exist_ok=True)
-for v in job['views']:
-    set_view(v)
-    build_marks(v.get('expr', job.get('marks_expr', 'calm')), v.get('lw', 2.2) / v['s'], v.get('yaw', 0))
-    if frames is None:
+if not job.get('frames'):
+    for v in job['views']:
+        set_view(v)
+        build_marks(v.get('expr', job.get('marks_expr', 'calm')), v.get('lw', 2.2) / v['s'], v.get('yaw', 0))
         sc.render.filepath = os.path.join(job['out'], v['name'] + '.png')
         bpy.ops.render.render(write_still=True)
-        continue
+else:
+    # moving: every piece's vertices each frame from the engine (move.mjs), the face's marks baked in the mesh
+    fj = json.load(open(job['frames'].replace('.bin', '.json')))
+    offs = json.load(open(job['offsets']))
+    N, nf = fj['N'], fj['frames']
+    data = np.memmap(job['frames'], np.float32, 'r', shape=(nf, N, 3))
+    a, b = job.get('frame_range', [0, nf])
+    for v in job['views']:
+        for fi in range(a, min(b, nf)):
+            P = np.array(data[fi], float)
+            D = np.stack([P[:, 0] / K, FLOOR - P[:, 1] / K, P[:, 2] / K], 1)     # back to the drawing's units
+            for name, o in OBJ.items():
+                if name not in offs:
+                    continue
+                i0, i1 = offs[name]
+                o.data.vertices.foreach_set('co', to_b(D[i0:i1]).astype(np.float32).ravel())
+                o.data.update()
+            vv = dict(v)
+            if v.get('follow'):
+                hx, hy, hz = fj['hips'][fi]
+                R = view_matrix(v.get('yaw', 0), v.get('pitch', 0))
+                hp = R @ np.array([hx / K, 0.0, hz / K])
+                vv['cx'] = v['cx'] - hp[0] * v['s']
+            set_view(vv)
+            sc.render.filepath = os.path.join(job['out'], f"{v['name']}_{fi:04d}.png")
+            bpy.ops.render.render(write_still=True)

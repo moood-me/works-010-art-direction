@@ -113,7 +113,12 @@ nb = len(bi)
 by = B['V'][:, 1]
 isfoot = np.array([('Foot' in n or 'Toe' in n) for n in dn[bi]]) | (by < 0.06)
 nrm = M.vertex_normals(B['V'], B['T'])
-B['V'][isfoot] += nrm[isfoot] * 0.005
+# a shoe: the foot smoothed into one rounded form (no toes), a little fuller
+Ab = M.adjacency(nb, [list(t_) for t_ in B['T']])
+fz = isfoot & (by < 0.07)
+B['V'] = M.smooth(B['V'], Ab, fz, iters=40, lam=0.5)
+nrm = M.vertex_normals(B['V'], B['T'])
+B['V'][isfoot] += nrm[isfoot] * 0.006
 B['col'] = np.tile(C['skin'], (nb, 1)); B['shd'] = np.tile(C['shade'], (nb, 1)); B['lin'] = np.tile(C['line'], (nb, 1))
 sock = (by < y3(1252)) & ~isfoot
 B['col'][sock] = C['sock']; B['shd'][sock] = rgb('#e2d6c4'); B['lin'][sock] = rgb('#9c8a76')
@@ -198,7 +203,7 @@ def front_half(name, yy):
 
 # the dress: drawn front width, drawn profile; at the top a small yoke into the neck
 drows = []
-for yy in np.r_[np.linspace(190, 204, 4), np.arange(210, 1142, 8.0), 1142]:
+for yy in np.unique(np.r_[np.linspace(190, 204, 4), np.arange(210, 1142, 8.0), 1142, 403, 404.5, 433.5, 435]):
     if yy < 204:   # yoke: from the neck to the dress's top ring
         t_ = (204 - yy) / 14
         a_ = 58 * (1 - t_) + 33 * t_; f_ = 41 * (1 - t_) + 33 * t_; b_ = -41 * (1 - t_) - 39 * t_

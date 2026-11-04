@@ -41,14 +41,19 @@ def build(ctx):
     zc_t = np.interp(ys, [-142, -100, 90, 160, 262], [10, -8, -8, -40, -46])
 
     def shape(y):
+        # the crown: a dome over the ring at −126
+        k = 1.0
+        if y < -126:
+            k = np.sqrt(max(1 - ((-126 - y) / 16.5) ** 2, 0.0004)); y = -126
         g = lambda arr: np.interp(y, ys, arr)
-        return g(a_t), g(zc_t), g(zb_t), g(w_t), g(ze), g(zf_top)
+        zc = g(zc_t)
+        return k * g(a_t), zc, zc - k * (zc - g(zb_t)), g(w_t), g(ze), zc + k * (g(zf_top) - zc)
 
     rows, cols = 90, 80
     V = np.zeros((rows, cols, 3)); TH = np.zeros((rows, cols))
     for r in range(rows):
         v = r / (rows - 1)
-        y0 = -141 + (256 + 141) * v
+        y0 = -142.4 + (256 + 142.4) * v
         a, zc, zb, w, z_e, zft = shape(y0)
         a = max(a, 1.0)
         thw = np.arcsin(min((w / a), 0.98) ** (P / 2)) if w > 0 else 0.0
