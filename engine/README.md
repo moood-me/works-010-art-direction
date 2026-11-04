@@ -550,7 +550,9 @@ sleeves, legs), 11 outfits `outfit-*` (what the ready heads were drawn in), and 
 Tried and dropped: simulating MakeHuman's garments subdivided (О3's: points a centimetre apart need small steps of 1/960
 s to keep their lengths, 0.1–0.4 s a frame); cloth meeting the skin by one search a point every small step (four times
 the cost: the points kept do it); hard tethers (they fought the body where cloth goes round it and threw it at 60 m/s);
-placing a reset straight in the pose. A frame of a dressed figure costs 30–90 ms in node (MEASURED); several characters at once,
+placing a reset straight in the pose; limiting how far an edge is shortened in a pass where it touches the body (against
+a knee drawn through the cloth: it tore a dress pressed on the legs by the wind instead). A frame of a dressed figure's
+whole step costs 24–115 ms in node (a dress 24–36, a T-shirt and trousers 65–78, three garments 100–115); several characters at once,
 on the GPU, are the later task — the step allocates nothing and works on flat arrays, garment by garment.
 
 **Chains** (`clipOf`). A motion made with `make_motion(after: {key, frames})` begins with the other's last frames.
@@ -662,8 +664,11 @@ nothing, a scrub back is a fresh start, `frame()` draws the cloth on the skin); 
 kept nearest, the cover hair lies over). `quality.mjs --only clothes` (every dressed character, every motion and chain
 whole, a strong wind, a light wind walking; `--chars a,b` for some), each limit saying what looks right: at strength 1
 hanging off its designed form no more than 1 cm on the whole; standing still it leaves where it settled no more than 12
-mm in 8 s and moves no more than 1 mm a frame; no point not a number, none faster than 10 m/s from frame to frame;
-the cloth in the body (LIMITS); walking at 20, 60 and 144 frames a second as at 30 (5 mm on the whole, 3 cm at most);
+mm in 8 s and moves no more than 2 mm a frame (a pixel of a figure shown whole); no point not a number, none faster than
+15 m/s from frame to frame; the cloth in the body — the 1 % deepest 35 mm (pinched in a fold of a heavy body bowing or
+sitting), more than 1 cm in 3 % —, edges past 1.5× their cut 7 % (cloth under a rolling body drawn out over it; no tear
+seen); walking at 20, 60 and 144 frames a second as at 30 (15 mm on the whole, 15 cm for the 1 % farthest: a fold or a
+hem's swing a little earlier or later, looked at side by side);
 across a loop it moves on the body no more than three of the next frames do (or 3 cm); a scrub back is a fresh start.
 The time a frame of each dressed character's step takes is printed.
 `pictures.mjs --jobs jobs.json outdir` makes pictures of any moments (`focus` on a joint for a close-up).
@@ -775,7 +780,11 @@ a top over trousers), not buttons or pockets. Cloth lies on the fingers as on a 
 and is not carried by the hand. The hood is cloth round the head and over its rigid hair, which it does not meet; hair
 lies over the clothes but clothes don't feel the hair. О1's ladder down to the sign is not carried (the pictogram Т4
 has the sign); О1's "the form recomputed round the axes each frame" is not either (the cloth is the form's rest).
-Gloves, belts, buttons and openings that close are not made. A frame of a dressed figure costs 30–90 ms in node:
+Standing still, most cloth keeps within a millimetre or two a frame, but not all: the heavy man's sweater and trousers
+(between his thighs, which touch: no room; on his back, where the cloth stands about 3 cm off the skin) tremble by
+1–3 cm, an oversized
+sweater standing off the body and a trouser hem at the ankle (over a rigid boot the cloth does not meet) by up to 9 mm
+at a few points. Gloves, belts, buttons and openings that close are not made. A frame of a dressed figure costs 24–115 ms in node:
 several characters at once (the GPU) are the later task.
 
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole

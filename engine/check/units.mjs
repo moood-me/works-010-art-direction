@@ -421,7 +421,8 @@ await test('clothes: over a base by id — taken away, changed by its keys, repl
 await test('clothes: the silhouette — the cloth cut to its designed form and pulled toward it as firmly as its strength', async () => {
   const bell = async k => (await dressed([await garment('mh-dress', 'poplin', { shape: await presetPin('shape-bell'), strength: k })])).simulations.find(s => s instanceof ClothSim).garments[0];
   const plain = (await dressed([await garment('mh-dress', 'poplin')])).simulations[0].garments[0], free = await bell(0), firm = await bell(1);
-  const hem = g => { let lo = Infinity; for (let i = 1; i < g.cut.length; i += 3) lo = Math.min(lo, g.cut[i]); let r = 0, n = 0; for (let i = 0; i < g.n; i++) if (g.cut[i * 3 + 1] < lo + 0.05) { r += Math.hypot(g.cut[i * 3], g.cut[i * 3 + 2]); n++; } return r / n; };
+  // (the hem as cut: its designed form — as it hangs at strength 0 the cloth more than the dress's own falls in folds)
+  const hem = g => { const c = g.form ?? g.cut; let lo = Infinity; for (let i = 1; i < c.length; i += 3) lo = Math.min(lo, c[i]); let r = 0, n = 0; for (let i = 0; i < g.n; i++) if (c[i * 3 + 1] < lo + 0.05) { r += Math.hypot(c[i * 3], c[i * 3 + 2]); n++; } return r / n; };
   ok(hem(free) > hem(plain) * 1.3, `the bell's hem ${hem(free).toFixed(3)} m round, the dress's own ${hem(plain).toFixed(3)}`);
   ok(free.shapeK === 0 && firm.shapeK > 0, 'strength 0 pulls (it should hang freely as cut)');
   const off = g => { let s = 0; for (let i = 0; i < g.R0.length; i++) s += Math.abs(g.R0[i] - g.form[i]); return s / g.n; };

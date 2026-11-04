@@ -18,7 +18,7 @@
   {
    "id": "skirt",
    "kind": "garment",
-   "pattern": "mh-skirt",
+   "pattern": "flared-skirt",
    "fabric": "fabric-suiting@cfe77341b470ad80",
    "color": "#4b4a42",
    "shape": "shape-pleated@53c8fc2c03626702",

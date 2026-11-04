@@ -265,10 +265,13 @@ function planes(P, N, V, bi, bd, x, y, z, out, HP, LP) {
   out.head = HP ? HP[bi[0]] : 0; out.limb = LP ? LP[bi[0]] : 0;
   const h2 = Math.max(bd[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0, nx = 0, ny = 0, nz = 0, vx = 0, vy = 0, vz = 0;
   for (let q = 0; q < KN; q++) {
-    const k = bi[q]; if (k < 0) break; const k3 = k * 3, w = Math.exp(-bd[q] / h2);
+    // (fading to nothing at the reach: a point as far from the skin as that, its nearest points coming into reach and
+    // leaving it, read inside and out a step at a time — an oversized sweater standing that far off, a flicker of 9 mm)
+    const k = bi[q]; if (k < 0) break; const k3 = k * 3, w = Math.exp(-bd[q] / h2) * Math.max(0, 1 - bd[q] / REACH) ** 2;
     sw += w; sd += w * ((x - P[k3]) * N[k3] + (y - P[k3 + 1]) * N[k3 + 1] + (z - P[k3 + 2]) * N[k3 + 2]);
     nx += w * N[k3]; ny += w * N[k3 + 1]; nz += w * N[k3 + 2]; if (V) { vx += w * V[k3]; vy += w * V[k3 + 1]; vz += w * V[k3 + 2]; }
   }
+  if (!(sw > 1e-12)) return Infinity;
   const l = Math.hypot(nx, ny, nz) || 1; out.n[0] = nx / l; out.n[1] = ny / l; out.n[2] = nz / l; out.v[0] = vx / sw; out.v[1] = vy / sw; out.v[2] = vz / sw;
   return sd / sw;
 }

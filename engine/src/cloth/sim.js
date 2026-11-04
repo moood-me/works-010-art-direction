@@ -61,6 +61,9 @@ const SELF = 0.008;
 // AGAINST: the share of its depth in a garment under it a point is pushed out of it in a small step (all of it at once,
 // a hem lying on a waistband was thrown off it and fell back, a shimmer)
 const AGAINST = 0.5;
+// ON_SKIN: how near the skin a point is not drawn into it by its form (m): touching or not as it is pushed out, a point
+// was drawn in and out a step at a time, a shimmer
+const ON_SKIN = 0.005;
 // RIM: how far past a garment's edge one over it stops meeting it (m)
 const RIM = 0.015;
 // TOUCH: how near the skin a corner of a triangle is, for its middle to be asked too (m)
@@ -184,7 +187,7 @@ export class ClothSim {
         const d0 = S.kept(mn, x[i3], x[i3 + 1], x[i3 + 2], at, g.near, i * S.KN, !moving || ((i + g.tick) & 1) === 0);
         const d = d0 < thick && at.n[1] < -0.5 && x[i3 + 1] < thick + PRESSED ? thick : d0;
         // (beyond the skin's reach it is at least that far from it)
-        g.clear[i] = (d === Infinity ? S.FAR : d) - thick;
+        g.clear[i] = (d === Infinity ? S.FAR : d) - thick; if (d !== Infinity) { g.sn[i3] = at.n[0]; g.sn[i3 + 1] = at.n[1]; g.sn[i3 + 2] = at.n[2]; }
         if (d < thick) this.contact(g, i3, at, thick - d, mu);
         // a sleeve or a trouser leg: outside its own limb too, which has the last word
         const home = g.home[i];
@@ -265,7 +268,7 @@ class Garment {
     // the skin points nearest each point (src/solids.js kept: looked for afresh every other small step, half the points
     // each time)
     this.nrm = new Float64Array(n * 3); this.clear = new Float64Array(n); this.near = new Int32Array(n * kn).fill(-1);
-    this.touched = new Uint8Array(n); this.tn = new Float64Array(n * 3); this.tv = new Float64Array(n * 3);
+    this.sn = new Float64Array(n * 3); this.touched = new Uint8Array(n); this.tn = new Float64Array(n * 3); this.tv = new Float64Array(n * 3);
     this.uv = [0, 0, 0]; this.kid = new Int32Array(4); this.kd = new Float64Array(4);
     this.pushL = new Float64Array(n); this.pushN = new Float64Array(n * 3); this.pushV = new Float64Array(n * 3);
     this.hold = Float64Array.from(cut.hold); this.shapeK = strength * SHAPE_K;
@@ -341,7 +344,7 @@ class Garment {
     const b = this.buf; this.skinner.skin(pose, b, this.base); for (let i = 0; i < b.length; i++) this.x[i] = this.p[i] = b[i];
     this.T0.set(this.x); if (this.shape0) { this.skinner.skin(pose, b, this.shape0); for (let i = 0; i < b.length; i++) this.S0[i] = b[i]; }
     // (nothing of before kept: a reset is the same however it is come to)
-    this.v.fill(0); this.clear.fill(0); this.near.fill(-1); this.touched.fill(0); this.tick = 0;
+    this.v.fill(0); this.clear.fill(0); this.sn.fill(0); this.near.fill(-1); this.touched.fill(0); this.tick = 0;
   }
   // the clip begun again: each point moved as the skin under it jumped (T0: before, T1: after)
   jump() { const { x, p, T0, T1 } = this; for (let i = 0; i < x.length; i++) { const d = T1[i] - T0[i]; x[i] += d; p[i] += d; } this.clear.fill(0); }
@@ -430,15 +433,15 @@ class Garment {
       for (let c = i * 3; c < i * 3 + 3; c++) x[c] += (T0[c] + (T1[c] - T0[c]) * u - x[c]) * f;
     }
   }
-  // toward the designed form, as firmly as the garment's strength says — but not into the body: where a point lay on the
-  // skin the small step before and its form is behind that (a knee rising into a bell, sitting, the floor), it is drawn
+  // toward the designed form, as firmly as the garment's strength says — but not into the body: where a point lies within
+  // ON_SKIN of the skin (as it was last asked) and its form is behind that (a knee rising into a bell, sitting, the floor), it is drawn
   // along the skin only, and lies on the body instead (О1's: "a weaker pull to the form when sitting")
   pull() {
     if (!this.shapeF) return;
-    const { x, S0, S1, u, touched: T, tn } = this, f = this.shapeF;
+    const { x, S0, S1, u, clear: C, sn } = this, f = this.shapeF;
     for (let i = 0; i < this.n; i++) {
       const i3 = i * 3; let dx = (S0[i3] + (S1[i3] - S0[i3]) * u - x[i3]) * f, dy = (S0[i3 + 1] + (S1[i3 + 1] - S0[i3 + 1]) * u - x[i3 + 1]) * f, dz = (S0[i3 + 2] + (S1[i3 + 2] - S0[i3 + 2]) * u - x[i3 + 2]) * f;
-      if (T[i]) { const dn = dx * tn[i3] + dy * tn[i3 + 1] + dz * tn[i3 + 2]; if (dn < 0) { dx -= dn * tn[i3]; dy -= dn * tn[i3 + 1]; dz -= dn * tn[i3 + 2]; } }
+      if (C[i] < ON_SKIN) { const dn = dx * sn[i3] + dy * sn[i3 + 1] + dz * sn[i3 + 2]; if (dn < 0) { dx -= dn * sn[i3]; dy -= dn * sn[i3 + 1]; dz -= dn * sn[i3 + 2]; } }
       x[i3] += dx; x[i3 + 1] += dy; x[i3 + 2] += dz;
     }
   }
