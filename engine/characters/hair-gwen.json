@@ -1,0 +1,20 @@
+{
+ "format": "engine/character",
+ "version": 6,
+ "id": "hair-gwen",
+ "label": {
+  "ru": "Волосы: Гвен (В1) на женщине",
+  "en": "Hair: Gwen (В1) on the woman"
+ },
+ "base": "woman@9fa4908bfefffd02",
+ "head": {
+  "pieces": [
+   {
+    "kind": "preset",
+    "id": "hair-v1-gwen@773f3e2b671d4505"
+   }
+  ]
+ },
+ "rest": [],
+ "pose": []
+}

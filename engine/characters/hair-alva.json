@@ -1,0 +1,20 @@
+{
+ "format": "engine/character",
+ "version": 6,
+ "id": "hair-alva",
+ "label": {
+  "ru": "Волосы: шторка (В1) на женщине",
+  "en": "Hair: the curtain (В1) on the woman"
+ },
+ "base": "woman@9fa4908bfefffd02",
+ "head": {
+  "pieces": [
+   {
+    "kind": "preset",
+    "id": "hair-v1-alva@f0b01bbc541ee122"
+   }
+  ]
+ },
+ "rest": [],
+ "pose": []
+}

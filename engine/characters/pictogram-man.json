@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 5,
+ "version": 6,
  "id": "pictogram-man",
  "label": {
   "ru": "Пиктограмма: мужчина",
@@ -10,7 +10,7 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "pictogram-rectangle@5ed22b796191b1a6",
+   "id": "pictogram-rectangle@013de786ed5a7bae",
    "strength": 1,
    "frames": "keep"
   }

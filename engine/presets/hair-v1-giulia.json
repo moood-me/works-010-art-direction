@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "hair-v1-giulia",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: Джулия: кудри под шапкой",
+  "en": "В1 hairstyle: Giulia: curls under a beanie"
+ },
+ "about": {
+  "ru": "крупные рыжие локоны-спирали, шапка сдвинута назад — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "big red ringlets, a beanie pushed back on the head — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "giulia",
+   "physics": {
+    "hold": 1,
+    "bend": 1,
+    "drag": 1,
+    "wind": 1
+   }
+  }
+ ]
+}

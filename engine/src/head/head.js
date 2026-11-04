@@ -80,7 +80,7 @@ export function buildHead({ pre, laid, drawn, post }, head) {
   body.head = info;
   const cranium = wrap?.form.kind === 'curves' ? { w: 1, h: 1, d: 1.05, ...wrap.form.cranium } : { w: 1, h: 1, d: 1.05 };
   // (a piece on the face, a nose, takes no cast shadows when the face doesn't)
-  const pieces = piecesOf(head.pieces, { form: G, frame, body, sk, skin: head.skin, features, cranium }).map(m => m.onFace && face ? { ...m, noShadow: new Float32Array(m.positions.length / 3).fill(1) } : m);
+  const pieces = piecesOf(head.pieces, { form: G, frame, body, sk, skin: head.skin, features, cranium, styles: head.styles }).map(m => m.onFace && face ? { ...m, noShadow: new Float32Array(m.positions.length / 3).fill(1) } : m);
   const meshes = [...pieces, ...reliefsOf(features, { drawn, frame: drawnFrame, pic, omega })];
   return { body, meshes };
 }

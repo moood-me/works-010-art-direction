@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "hair-v1-ariel",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: рыжая девушка: длинные волны",
+  "en": "В1 hairstyle: red-haired girl: long waves"
+ },
+ "about": {
+  "ru": "длинные красные, объём на макушке, большая волна набок, волны до пояса — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "long red hair, volume at the crown, a big swoop to one side, waves to the waist — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "ariel",
+   "physics": {
+    "hold": 1,
+    "bend": 1,
+    "drag": 1,
+    "wind": 1
+   }
+  }
+ ]
+}

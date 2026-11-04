@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "hair-v1-anime",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: аниме: чёлка и длинные",
+  "en": "В1 hairstyle: anime: bangs and long hair"
+ },
+ "about": {
+  "ru": "ровная чёлка острыми прядями, длинные прямые, пряди у лица — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "blunt bangs in a few pointed clumps, long straight hair, locks framing the face — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "anime",
+   "physics": {
+    "hold": 1,
+    "bend": 1,
+    "drag": 1,
+    "wind": 1
+   }
+  }
+ ]
+}

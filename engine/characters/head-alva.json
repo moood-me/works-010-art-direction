@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 5,
+ "version": 6,
  "id": "head-alva",
  "label": {
   "ru": "Голова: Альва",
@@ -8,7 +8,7 @@
  },
  "body": "moood-woman@271c46992b9495aa",
  "head": {
-  "preset": "head-alva@c4c30486794a606e"
+  "preset": "head-alva@2baa3ae92cca28ea"
  },
  "look": {
   "skin": "#f2c9b6",

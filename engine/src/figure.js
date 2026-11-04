@@ -14,8 +14,9 @@
 //      weighed in, about this frame's joints and centres of rotation; rigid; rebuilt (sweeps)
 //   5. the floor (motion.floor 'lowest'): the lowest of all meshes that count for it, over the vertices their triangles
 //      use, set as high as the pose says — everything (meshes and pose) moved up by that one shift (pose.shift)
-//   6. normals; where a mesh shades by a designed form (mesh.shading: a head's light, src/head/head.js), its normals
-//      are that form's, turned as the skin's joints turned it, weighed in by its weights
+//   6. normals; where a mesh shades by a designed form (mesh.shading: a head's light, src/head/head.js; hair), its
+//      normals are that form's, turned as the skin's joints turned it, weighed in by its weights (and its directions
+//      along the surface, mesh.shading.tangents: hair's strands, turned the same, into output.tangents)
 //   7. attached meshes laid on their host (a feature as volume on the skin), and their normals
 // `frame(clip, t, pose?)` does that for a moment, into the pose it is given (or a new one) and into the meshes'
 // buffers (figure.outputs) — it keeps nothing between calls. `step(clip, t)` is the stateful frame for simulations
@@ -29,8 +30,9 @@ import { morphed, normalsOf } from './mesh.js';
 import { Pose, build, hipOf } from './pose.js';
 import { LAYERS, NO_REBUILD } from './layers.js';
 import { makeCollider } from './collision.js';
+import { makeSolids } from './solids.js';
 import { newSample } from './motion.js';
-import { qRot, clamp, sst } from './math.js';
+import { qRot, qRot3, clamp, sst } from './math.js';
 
 export class Figure {
   // rig; meshes: [{mesh, name?, skinning?: {method, sigma, seam}}] (the first is the body's, named 'body'); layers: resolved pose layers;
@@ -42,7 +44,7 @@ export class Figure {
       if (l.kind === 'rest' && !(l.joints && l.body && l.forMesh)) throw new Error('a change of the rest as a layer is made by src/deform.js: restLayer');
       if (l.kind !== 'code' && l.kind !== 'rest' && !LAYERS[l.kind]) throw new Error(`no pose layer "${l.kind}"`);
     }
-    Object.assign(this, { rig, body, layers, floorMode: floor, maxGap: 3, simulations: [] });
+    Object.assign(this, { rig, body, layers, floorMode: floor, maxGap: 3, simulations: [], driven: new Set() });
     this.restLayers = layers.filter(l => l.kind === 'rest');
     this.place = { position: [0, 0, 0], heading: 0, ...where };
     this.retarget = makeRetarget(rig);
@@ -60,6 +62,8 @@ export class Figure {
   addMesh(mesh, { skinning = {}, name = mesh.id } = {}) {
     if (this.outputs.some(o => o.name === name)) throw new Error(`a figure with two meshes named "${name}"`);
     const o = { name, mesh, positions: new Float32Array(mesh.N * 3), normals: new Float32Array(mesh.N * 3) };
+    // (a mesh shaded by a designed form that carries directions along it too — hair's strands — has them turned the same)
+    if (mesh.shading?.tangents) o.tangents = new Float32Array(mesh.N * 3);
     if (mesh.kind === 'skinned') {
       o.skinner = new Skinner(mesh, this.rig, skinning);
       // what each change of the rest does to this mesh: the body's own as the change made it, another's by its field
@@ -81,8 +85,11 @@ export class Figure {
   removeMesh(mesh) { this.outputs = this.outputs.filter(o => o.mesh !== mesh); }
   get positions() { return this.outputs[0].positions; }
   get normals() { return this.outputs[0].normals; }
-  addSimulation(sim) { this.simulations.push(sim); return sim; }
+  // a simulation, and the meshes it writes on each step (sim.outputs: what the step's frame leaves to it)
+  addSimulation(sim) { this.simulations.push(sim); for (const o of sim.outputs || []) this.driven.add(o); return sim; }
   collider(options) { return (this._collider ??= makeCollider(this.rig, this.body ? this.body.mesh : this.outputs[0].mesh, options)); }
+  // the body as hair and clothes meet it: the head's shape and the body's capsules, moving within a step (src/solids.js)
+  solids() { return (this._solids ??= makeSolids(this)); }
 
   // the pose at moment t (frames) of a clip (null: at rest), before the meshes: steps 1–3
   poseAt(clip, t, pose = new Pose(this.rig.J)) {
@@ -107,12 +114,13 @@ export class Figure {
     return place(pose, this.rig, this.place);
   }
 
-  // the figure at moment t: the pose (into `pose`), every mesh, the floor, normals
-  frame(clip, t, pose = new Pose(this.rig.J)) {
+  // the figure at moment t: the pose (into `pose`), every mesh, the floor, normals — but those in `skip` (the step's
+  // simulations write theirs after it)
+  frame(clip, t, pose = new Pose(this.rig.J), skip = null) {
     this.poseAt(clip, t, pose);
     const { morphs, rest, applied } = this.ctx;
     for (const o of this.outputs) {
-      const m = o.mesh;
+      const m = o.mesh; if (skip?.has(o)) continue;
       if (m.kind === 'skinned') o.skinner.skin(pose, o.positions, m.follow ? followed(o) : o.rest ? restOf(o, morphs[o.name] || {}, applied) : m.positions, rest, o.cor ? centresOf(o, applied) : o.skinner.cor);
       else if (m.kind === 'rigid') rigid(o, pose, this.rig);
       else if (m.build) m.build(pose, this.rig, o.positions);
@@ -123,12 +131,13 @@ export class Figure {
       for (const o of this.outputs) if (o.mesh.floor && o.mesh.kind !== 'attached') { const u = o.mesh.used, p = o.positions; for (let k = 0; k < u.length; k++) { const y = p[u[k] * 3 + 1]; if (y < lo) lo = y; } }
       if (lo < Infinity) {
         const shift = pose.floor - lo;
-        for (const o of this.outputs) { if (o.mesh.kind === 'attached') continue; const u = o.mesh.used, p = o.positions; for (let k = 0; k < u.length; k++) p[u[k] * 3 + 1] += shift; }
+        for (const o of this.outputs) { if (o.mesh.kind === 'attached' || skip?.has(o)) continue; const u = o.mesh.used, p = o.positions; for (let k = 0; k < u.length; k++) p[u[k] * 3 + 1] += shift; }
         for (let j = 0; j < this.rig.J; j++) pose.P[j * 3 + 1] += shift;
         pose.shift = shift;
       }
     }
-    for (const o of this.outputs) if (o.mesh.kind !== 'attached') { normalsOf(o.positions, o.mesh.triangles, o.normals, o.mesh.used); if (o.mesh.shading) shadeByForm(o, pose); }
+    // (a mesh shaded wholly by its design takes no normals of its own)
+    for (const o of this.outputs) if (o.mesh.kind !== 'attached' && !skip?.has(o)) { if (!o.mesh.shading?.whole) normalsOf(o.positions, o.mesh.triangles, o.normals, o.mesh.used); if (o.mesh.shading) shadeByForm(o, pose); }
     for (const o of this.outputs) if (o.mesh.kind === 'attached') { attach(o, this.outputs.find(h => h.name === o.mesh.host)); normalsOf(o.positions, o.mesh.triangles, o.normals, o.mesh.used); }
     return pose;
   }
@@ -139,7 +148,7 @@ export class Figure {
     const reset = !s || s.clip !== clip || t < s.t || t - s.t > this.maxGap;
     const dt = reset ? 0 : (t - s.t) / fps;
     [this.pose, this.previous] = [this.previous, this.pose];
-    this.frame(clip, t, this.pose);
+    this.frame(clip, t, this.pose, this.driven);
     if (reset) this.previous.copy(this.pose);
     this.state = { clip, t };
     if (this.simulations.length) {
@@ -248,19 +257,22 @@ function rigid(o, pose, rig) {
 }
 
 // a mesh shaded by a designed form: each vertex's normal there is the form's normal at its rest, turned as its joints
-// turned (their turns blended by its skin's weights), weighed in by its weight
+// turned (their turns blended by its skin's weights), weighed in by its weight; its directions along it the same
 function shadeByForm(o, pose) {
-  const m = o.mesh, { normals: D, weight: W } = m.shading, K = m.skin.K, SJ = m.skin.joints, SW = m.skin.weights, Q = pose.Q, n = o.normals, r = [0, 0, 0];
+  const m = o.mesh, { normals: D, weight: W, tangents: TD } = m.shading, K = m.skin.K, SJ = m.skin.joints, SW = m.skin.weights, Q = pose.Q, n = o.normals, T = o.tangents, r = [0, 0, 0];
+  const qs = o.qs ??= Array.from({ length: Q.length / 4 }, () => [0, 0, 0, 1]);
+  for (let j = 0; j < qs.length; j++) for (let k = 0; k < 4; k++) qs[j][k] = Q[j * 4 + k];
   for (const i of m.used) {
-    const w = W[i]; if (!w) continue;
-    let x = 0, y = 0, z = 0;
-    for (let k = 0; k < K; k++) {
-      const a = SW[i * K + k]; if (!a) continue; const j = SJ[i * K + k];
-      qRot([Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]], [D[i * 3], D[i * 3 + 1], D[i * 3 + 2]], r); x += a * r[0]; y += a * r[1]; z += a * r[2];
+    const w = W[i];
+    for (let pass = TD ? 0 : 1; pass < 2; pass++) {
+      if (pass && !w) continue;
+      const V = pass ? D : TD; let x = 0, y = 0, z = 0;
+      for (let k = 0; k < K; k++) { const a = SW[i * K + k]; if (!a) continue; qRot3(qs[SJ[i * K + k]], V[i * 3], V[i * 3 + 1], V[i * 3 + 2], r); x += a * r[0]; y += a * r[1]; z += a * r[2]; }
+      const l = Math.hypot(x, y, z) || 1;
+      if (!pass) { T[i * 3] = x / l; T[i * 3 + 1] = y / l; T[i * 3 + 2] = z / l; continue; }
+      x = n[i * 3] + (x / l - n[i * 3]) * w; y = n[i * 3 + 1] + (y / l - n[i * 3 + 1]) * w; z = n[i * 3 + 2] + (z / l - n[i * 3 + 2]) * w;
+      const L = Math.hypot(x, y, z) || 1; n[i * 3] = x / L; n[i * 3 + 1] = y / L; n[i * 3 + 2] = z / L;
     }
-    const l = Math.hypot(x, y, z) || 1;
-    x = n[i * 3] + (x / l - n[i * 3]) * w; y = n[i * 3 + 1] + (y / l - n[i * 3 + 1]) * w; z = n[i * 3 + 2] + (z / l - n[i * 3 + 2]) * w;
-    const L = Math.hypot(x, y, z) || 1; n[i * 3] = x / L; n[i * 3 + 1] = y / L; n[i * 3 + 2] = z / L;
   }
 }
 // an attached mesh on its host this frame: each vertex at its place in its host triangle, lifted along the normal there

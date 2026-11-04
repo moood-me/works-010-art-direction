@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "hair-v1-doll",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: девочка-кукла: фиолетовые",
+  "en": "В1 hairstyle: doll girl: violet"
+ },
+ "about": {
+  "ru": "пышные фиолетовые, чёлка волной через бровь, пряди до плеч, кончики наружу — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "voluminous violet hair, a swooping fringe over one brow, locks to the shoulders flicking out — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "doll",
+   "physics": {
+    "hold": 1,
+    "bend": 1,
+    "drag": 1,
+    "wind": 1
+   }
+  }
+ ]
+}

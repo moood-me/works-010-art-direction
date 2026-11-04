@@ -95,7 +95,7 @@ register({
   // the wrapped head as stored, if it is (else made here: an author's new form, or a body not wrapped before)
   prepare: (p, E, body) => E.stored('wraps', wrapKey(p, body)),
   rest(p, R, { body, data }) {
-    const wrapped = data?.positions ?? wrapHead(body, p.form, p.marks, p.neckSlim, p.onto), P0 = body.mesh.positions, k = p.strength;
+    const wrapped = data?.arrays.positions ?? wrapHead(body, p.form, p.marks, p.neckSlim, p.onto), P0 = body.mesh.positions, k = p.strength;
     return { positions: Float32Array.from(P0, (v, i) => v + (wrapped[i] - v) * k) };
   },
 });

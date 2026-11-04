@@ -12,6 +12,9 @@
 //   node engine/tools/characters.mjs wraps            store every wrapped head the characters and the cases make
 //                                                      (data/wraps/: by the key of what each is made from), drop the
 //                                                      ones nothing makes now
+//   node engine/tools/characters.mjs hair             store every hairstyle the presets, characters and cases take
+//                                                      (data/hair/: built in its design space, by the key of what it is
+//                                                      built from), drop the ones nothing takes now
 // `pin` also pins the presets a character takes, and the character it starts from (`base`), as they are now.
 // No ids: every character of characters/index.json.
 import { readFile, writeFile, readdir, rm } from 'node:fs/promises';
@@ -24,6 +27,7 @@ import { jobsOf } from '../check/cases.mjs';
 import { complete } from '../src/deform.js';
 import { wrapKey, wrapHead } from '../src/head/wrap.js';
 import { packOf } from '../src/pack.js';
+import { buildStyle, styleKey } from '../src/hair/hair.js';
 
 const ROOT = new URL('../', import.meta.url), E = await createEngine({ root: ROOT, read });
 const [what, ...ids] = process.argv.slice(2);
@@ -87,6 +91,25 @@ if (what === 'upgrade' || what === 'pin') {
   for (const key of index.keys) if (!keys.has(key)) { await rm(dir + key + '.json'); await rm(dir + key + '.bin'); console.log(`${key}: nothing makes it now — dropped`); }
   await save(dir + 'index.json', { ...index, keys: [...keys].sort() });
   console.log(`${keys.size} wraps stored`);
+} else if (what === 'hair') {
+  const dir = fileURLToPath(new URL('data/hair/', ROOT)), index = JSON.parse(await readFile(dir + 'index.json', 'utf8'));
+  const cases = JSON.parse(await readFile(fileURLToPath(new URL('check/cases.json', ROOT)), 'utf8')), chars = (await E.characters()).characters;
+  const descs = [...await Promise.all(chars.map(c => E.description(c.id))), ...await Promise.all(jobsOf(cases, chars, null).filter(j => j.over).map(async j => ({ ...structuredClone(await E.description(j.char)), ...j.over })))];
+  // every hair piece: the presets' own, and each head's (its pieces over its presets')
+  const pieces = (await E.presets()).presets.filter(p => p.group === 'hair').map(p => p.id);
+  const list = [...(await Promise.all(pieces.map(async id => (await E.preset(id)).pieces))).flat()];
+  for (const d of descs) { const spec = await E.expand(await E.resolve(d)); if (spec.head) list.push(...spec.head.pieces); }
+  const keys = new Set();
+  for (const p of list.filter(p => p.kind === 'style')) {
+    const key = styleKey(p); if (keys.has(key)) continue; keys.add(key);
+    if (index.keys.includes(key)) continue;
+    const t = Date.now(), { header, arrays } = buildStyle(p), { json, bin } = packOf({ ...header, about: `${p.style}: built in its design space (src/hair/hair.js), by styleKey` }, arrays, key + '.bin');
+    await writeFile(dir + key + '.json', json); await writeFile(dir + key + '.bin', bin);
+    console.log(`${p.style}${p.off?.length ? ' without ' + p.off.join(', ') : ''}${p.only ? ' only ' + p.only.join(', ') : ''}: built and stored as ${key} (${((Date.now() - t) / 1000).toFixed(1)} s)`);
+  }
+  for (const key of index.keys) if (!keys.has(key)) { await rm(dir + key + '.json'); await rm(dir + key + '.bin'); console.log(`${key}: nothing takes it now — dropped`); }
+  await save(dir + 'index.json', { ...index, keys: [...keys].sort() });
+  console.log(`${keys.size} hairstyles stored`);
 } else if (what === 'chains') {
   const path = fileURLToPath(new URL('motions/index.json', ROOT)), index = JSON.parse(await readFile(path, 'utf8'));
   for (const c of index.chains) {
@@ -112,7 +135,7 @@ if (what === 'upgrade' || what === 'pin') {
     checkPreset(p); await save(dir + id + '.json', p);
   }
   for (const f of files) { const id = f.slice(0, -5), p = await E.preset(id); list.push({ id, pin: pinOf(id, p.hash), group: p.group, label: p.label, about: p.about }); }
-  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram', 'head', 'head-form', 'features', 'hair', 'headwear', 'expressions', 'face-light'];
+  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram', 'head', 'head-form', 'features', 'hair', 'headwear', 'expressions', 'face-light', 'wind'];
   const rank = g => ORDER.includes(g) ? ORDER.indexOf(g) : ORDER.length;
   list.sort((a, b) => rank(a.group) - rank(b.group) || a.id.localeCompare(b.id));
   await save(dir + 'index.json', { format: 'engine/presets', version: 1, about: 'Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: "preset", id: "<pin>", strength, frames | space}; heads a character or another head takes by head.preset; a head\'s features, expressions and light. Written by engine/tools/characters.mjs presets.', groups: ORDER, presets: list });
@@ -130,6 +153,6 @@ if (what === 'upgrade' || what === 'pin') {
   await save(fileURLToPath(new URL('data/bodies/index.json', ROOT)), { format: 'engine/bodies', version: 1, about: 'Every body (data/bodies/<id>.json), by group, pinned. Written by engine/tools/characters.mjs bodies.', groups: ORDER.map(g => ({ id: g, label: GROUPS[g] })), bodies: list });
   console.log(`${list.length} bodies`);
 } else {
-  console.log('node engine/tools/characters.mjs upgrade|pin [ids…] | chains | presets | bodies | cases | wraps');
+  console.log('node engine/tools/characters.mjs upgrade|pin [ids…] | chains | presets | bodies | cases | wraps | hair');
   process.exit(1);
 }

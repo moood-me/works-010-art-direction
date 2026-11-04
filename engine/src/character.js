@@ -49,7 +49,7 @@ import { EXPRESSION_SCHEMA } from './head/expressions.js';
 import { PIECE_SCHEMA } from './head/pieces.js';
 import { LIGHT_SCHEMA } from './head/head.js';
 
-export const FORMAT = 'engine/character', VERSION = 5;
+export const FORMAT = 'engine/character', VERSION = 6;
 
 const PARTS = ['pelvis', 'spine', 'neck', 'head', 'eye', 'clavicle', 'upperArm', 'foreArm', 'hand', 'finger', 'thigh', 'shin', 'foot', 'toe'];
 // the defaults, the one place they are kept: a missing key takes these
@@ -147,11 +147,14 @@ export function headSchema(change) {
 //                                that a character or another head takes by head.preset and changes
 //    features: [feature…]        a head's features (src/head/features.js)
 //    expressions: [expression…]  a head's expressions (src/head/expressions.js)
-//    light: {…}                  a head's light (src/head/head.js)}
-// (version 3: the head's parts; version 2: a silhouette's keys are {at, width, depth, forward}; version 1 had
+//    light: {…}                  a head's light (src/head/head.js)
+//    wind: {speed, dir, gust, turbulence}   the air hair moves in (src/hair/sim.js): metres a second, the way it
+//                                blows, how much it gusts and how much it swirls round each lock (1: as В1's)}
+// (version 5: the wind, and hair's pieces; version 4: pieces; version 3: the head's parts; version 2: a silhouette's keys are {at, width, depth, forward}; version 1 had
 // [at, width, depth, forward] — upgradePreset, run by tools/characters.mjs presets)
-export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 4;
-export const PRESET_CONTENT = ['changes', 'head', 'features', 'expressions', 'pieces', 'light'];
+export const PRESET_FORMAT = 'engine/preset', PRESET_VERSION = 5;
+export const PRESET_CONTENT = ['changes', 'head', 'features', 'expressions', 'pieces', 'light', 'wind'];
+export const WIND_SCHEMA = { type: 'object', required: ['speed', 'dir'], props: { speed: num(0, 40), dir: { type: 'array', min: 3, max: 3, items: num(-1, 1) }, gust: num(0, 3), turbulence: num(0, 3) } };
 export function presetSchemaOf() {
   const ref = { type: 'object', props: { kind: { const: 'preset' }, id: pin, strength: num(-3, 3) }, required: ['kind', 'id'] };
   const change = { type: 'union', key: 'kind', cases: { preset: ref,
@@ -169,6 +172,7 @@ export function presetSchemaOf() {
       expressions: { type: 'array', min: 1, items: EXPRESSION_SCHEMA },
       pieces: { type: 'array', min: 1, items: PIECE_SCHEMA },
       light: LIGHT_SCHEMA,
+      wind: WIND_SCHEMA,
     },
   };
 }
@@ -188,6 +192,7 @@ export function upgradePreset(p) {
   if (d.version === 1) { d.changes = d.changes.map(namedKeys); d.version = 2; }
   if (d.version === 2) d.version = 3;   // 2 → 3 added the head's parts: a preset of changes is as it was
   if (d.version === 3) d.version = 4;   // 3 → 4 added pieces as a preset's content, and a head's parts changed by their id or name: as it was
+  if (d.version === 4) d.version = 5;   // 4 → 5 added the wind as a preset's content, and hair's pieces: as it was
   if (d.version !== PRESET_VERSION) throw new Error(`${d.id}: no way from preset version ${d.version} to ${PRESET_VERSION}`);
   return d;
 }
@@ -252,6 +257,7 @@ export function upgrade(desc, { bodyPin }) {
   }
   if (d.version === 3) d.version = 4;   // 3 → 4 added the head: a character without one is as it was
   if (d.version === 4) d.version = 5;   // 4 → 5: a head's parts changed by their id or name, its form's strength: as it was
+  if (d.version === 5) d.version = 6;   // 5 → 6 added hair (pieces of kind "style", hair that moves): as it was
   if (d.version !== VERSION) throw new Error(`${d.id}: no way from version ${d.version} to ${VERSION}`);
   return d;
 }

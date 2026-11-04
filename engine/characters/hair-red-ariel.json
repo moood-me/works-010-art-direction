@@ -1,0 +1,24 @@
+{
+ "format": "engine/character",
+ "version": 6,
+ "id": "hair-red-ariel",
+ "label": {
+  "ru": "Волосы: рыжая девушка с волнами (В1)",
+  "en": "Hair: the red-haired girl with waves (В1)"
+ },
+ "base": "head-red@a1375ded0ce8a460",
+ "head": {
+  "pieces": [
+   {
+    "kind": "off",
+    "id": "hair"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-v1-ariel@244dee768b1be50a"
+   }
+  ]
+ },
+ "rest": [],
+ "pose": []
+}

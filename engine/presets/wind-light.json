@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "wind-light",
+ "group": "wind",
+ "label": {
+  "ru": "ветер: лёгкий ветер",
+  "en": "wind: light wind"
+ },
+ "about": {
+  "ru": "лёгкий ветер с порывами: длинные волосы клонятся на 20° (дует спереди справа)",
+  "en": "a light wind with gusts: long hair leans some 20° (blowing from the front right)"
+ },
+ "wind": {
+  "speed": 3,
+  "dir": [
+   0.42,
+   0,
+   -0.91
+  ],
+  "gust": 1,
+  "turbulence": 1
+ }
+}

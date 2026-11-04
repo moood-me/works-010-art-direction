@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 4,
+ "version": 5,
  "id": "line-side-s",
  "label": {
   "ru": "линия действия: сбоку S",

@@ -22,6 +22,7 @@ import { EXPRESSION_SCHEMA } from './head/expressions.js';
 import { PIECE_SCHEMA } from './head/pieces.js';
 import { validate } from './schema.js';
 import { makeMesh } from './mesh.js';
+import { stylesOf, hairSims } from './hair/hair.js';
 
 // a way of a head's form by its name: its own, or a preset's id, or a deformer's kind
 const wayName = c => c.name ?? (c.kind === 'preset' ? pinned(c.id).id : c.kind);
@@ -51,10 +52,11 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       return { unit: h.unit, topology: h.topology, changes: Object.fromEntries(h.changes.map(c => [c.name, { i: a['i' + c.key], p: a['p' + c.key], n: a['n' + c.key] }])) };
     }),
     // what is slow to make, stored by the key of all it is made from (data/<kind>/index.json lists the keys stored, each
-    // a pack data/<kind>/<key>.json): its arrays, or null when it is not stored (then it is made where it is needed)
+    // a pack data/<kind>/<key>.json): the pack ({header, arrays}), or null when it is not stored (then it is made where
+    // it is needed)
     stored: async (kind, key) => {
       const index = await once('stored:' + kind, () => readJSON(new URL(`data/${kind}/index.json`, root), read));
-      return index.keys.includes(key) ? (await loadPack(new URL(`data/${kind}/${key}.json`, root).href, read)).arrays : null;
+      return index.keys.includes(key) ? loadPack(new URL(`data/${kind}/${key}.json`, root).href, read) : null;
     },
     // presets (presets/<id>.json, presets/index.json): checked, pinned like bodies
     presets: () => once('pi', () => readJSON(new URL('presets/index.json', root), read)),
@@ -120,7 +122,8 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       if (!spec.head) return E.restBody(spec).then(body => ({ body, meshes: [] }));
       return once('head:' + spec.body + canonical(spec.rest) + canonical(spec.head), async () => {
         const upTo = n => E.restBody({ ...spec, rest: spec.rest.slice(0, n) }), { formAt, wrapAt } = spec.head, pre = await upTo(formAt);
-        const { body, meshes } = buildHead({ pre, laid: wrapAt == null ? null : await upTo(wrapAt), drawn: wrapAt == null ? pre : await upTo(wrapAt + 1), post: await E.restBody(spec) }, spec.head);
+        const styles = await stylesOf(spec.head.pieces, E);
+        const { body, meshes } = buildHead({ pre, laid: wrapAt == null ? null : await upTo(wrapAt), drawn: wrapAt == null ? pre : await upTo(wrapAt + 1), post: await E.restBody(spec) }, { ...spec.head, styles });
         return { body, meshes: meshes.map(m => makeMesh(m)) };
       });
     },
@@ -165,10 +168,13 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
         list.push(restLayer(`${k}:${l.kind}`, l, from, to, spec.skinning.sigma));
         from = to;
       }
-      return new Figure({
+      const figure = new Figure({
         rig: body.rig, body, place, floor: spec.motion.floor, layers: [...list, ...layers],
         meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...head.map(mesh => ({ mesh, name: mesh.id, skinning: mesh.skinning ?? spec.skinning })), ...meshes],
       });
+      // hair that moves: a simulation of its own on the figure's step (src/hair/sim.js)
+      for (const sim of hairSims(figure)) figure.addSimulation(sim);
+      return figure;
     },
     // the character's rest with the changes of the rest among its pose layers made, up to the last of `chain` (kept)
     layerBody(spec, chain) {

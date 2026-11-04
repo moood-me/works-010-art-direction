@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 4,
+ "version": 5,
  "id": "line-front-c",
  "label": {
   "ru": "линия действия: спереди C",

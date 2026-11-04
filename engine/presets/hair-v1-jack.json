@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "hair-v1-jack",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: Джек: растрёпанные белые",
+  "en": "В1 hairstyle: Jack: tousled white"
+ },
+ "about": {
+  "ru": "короткие белые, вихры вперёд и в стороны — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "short white hair, tufts flopping forward and to the sides — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "jack",
+   "physics": {
+    "hold": 1,
+    "bend": 1,
+    "drag": 1,
+    "wind": 1
+   }
+  }
+ ]
+}

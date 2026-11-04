@@ -1,0 +1,20 @@
+{
+ "format": "engine/character",
+ "version": 6,
+ "id": "hair-g3-red",
+ "label": {
+  "ru": "Волосы: рыжая девушка (Г3), движутся",
+  "en": "Hair: the red-haired girl (Г3), moving"
+ },
+ "base": "head-red@a1375ded0ce8a460",
+ "head": {
+  "pieces": [
+   {
+    "id": "hair",
+    "moves": true
+   }
+  ]
+ },
+ "rest": [],
+ "pose": []
+}

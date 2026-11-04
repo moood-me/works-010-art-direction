@@ -294,7 +294,7 @@ await test('heads: a wrapped head is stored for every character, and what is sto
     ok(await E.stored('wraps', wrapKey(complete(spec.head.wrap), body)), `${c.id}: its wrap is not stored (node engine/tools/characters.mjs wraps)`);
   }
   const spec = await E.character('head-mask'), w = complete(spec.head.wrap), body = await E.restBody({ ...spec, rest: spec.rest.slice(0, spec.head.wrapAt) });
-  const stored = (await E.stored('wraps', wrapKey(w, body))).positions, made = wrapHead(body, w.form, w.marks, w.neckSlim, w.onto);
+  const stored = (await E.stored('wraps', wrapKey(w, body))).arrays.positions, made = wrapHead(body, w.form, w.marks, w.neckSlim, w.onto);
   ok(maxApart(stored, made, body.mesh.used) < 1e-6, 'the stored wrap is not what the wrap makes now — its version (src/head/version.js) was not raised');
 });
 await test('heads: a head taken as a part — its form weakened, a way taken away, a feature changed by its id, features from a preset', async () => {

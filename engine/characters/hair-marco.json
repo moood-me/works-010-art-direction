@@ -1,0 +1,20 @@
+{
+ "format": "engine/character",
+ "version": 6,
+ "id": "hair-marco",
+ "label": {
+  "ru": "Волосы: Марко (В1) на ребёнке",
+  "en": "Hair: Marco (В1) on the child"
+ },
+ "base": "child@0e16513bdc877a5b",
+ "head": {
+  "pieces": [
+   {
+    "kind": "preset",
+    "id": "hair-v1-marco@e4b46afd057da2a1"
+   }
+  ]
+ },
+ "rest": [],
+ "pose": []
+}

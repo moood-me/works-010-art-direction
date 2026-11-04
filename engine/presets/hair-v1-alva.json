@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "hair-v1-alva",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: Альва: шторка",
+  "en": "В1 hairstyle: Alva: a curtain"
+ },
+ "about": {
+  "ru": "длинные с прямым пробором, тяжёлая шторка у лица, кончики наружу — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "long, centre-parted, a heavy curtain framing the face, flicking out at the ends — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "alva",
+   "physics": {
+    "hold": 1,
+    "bend": 1,
+    "drag": 1,
+    "wind": 1
+   }
+  }
+ ]
+}

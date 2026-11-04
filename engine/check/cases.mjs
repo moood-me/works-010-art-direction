@@ -18,14 +18,21 @@ export function jobsOf(cases, characters, only) {
   return picked;
 }
 
-// the job's character: its description with the case's keys replaced, checked like any
+// the job's character: its description with the case's keys replaced, checked like any — at its moment: a figure with
+// simulations (hair that moves) stepped there frame by frame from the start (the wind a preset's: job.wind), else
+// that moment's frame
 export async function figureOf(E, job) {
   const d = structuredClone(await E.description(job.char));
   for (const [k, v] of Object.entries(job.over || {})) d[k] = v;
   const spec = await E.resolve(d);
   const fig = await E.figure(spec, { place: job.place });
   const clip = job.clip ? await E.clip(job.clip) : null;
-  fig.frame(clip, job.t, fig.pose);
+  if (fig.simulations.length) {
+    const wind = job.wind ? (await E.preset(job.wind)).wind : null;
+    for (const s of fig.simulations) s.wind = wind;
+    for (let k = 0; k < job.t; k++) fig.step(clip, k);
+    fig.step(clip, job.t);
+  } else fig.frame(clip, job.t, fig.pose);
   return { fig, clip, spec, description: d };
 }
 

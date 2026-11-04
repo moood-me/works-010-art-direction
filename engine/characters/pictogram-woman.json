@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 5,
+ "version": 6,
  "id": "pictogram-woman",
  "label": {
   "ru": "Пиктограмма: женщина",
@@ -10,7 +10,7 @@
  "rest": [
   {
    "kind": "preset",
-   "id": "pictogram-oval@ef2fc8b535374d45",
+   "id": "pictogram-oval@f9ba4c8b62afbd7a",
    "strength": 1,
    "frames": "keep"
   }

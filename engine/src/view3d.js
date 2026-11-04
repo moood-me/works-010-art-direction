@@ -4,6 +4,7 @@
 // The camera is framed by a box (fit): what is seen is the figures, whatever the page around them is.
 import { paintFace } from './head/paint.js';
 import { paintState } from './head/expressions.js';
+import { hairMaterial, hairInk } from './hair/shade.js';
 
 export function makeStage(THREE, canvas, { background = '#cfc8bd', pixelRatio = 1 } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
@@ -100,6 +101,18 @@ export function figureView(THREE, figure, look) {
     g.setIndex(new THREE.BufferAttribute(m.triangles, 1));
     if (m.uv) g.setAttribute('uv', new THREE.BufferAttribute(m.uv, 2));
     if (m.colors) g.setAttribute('color', new THREE.BufferAttribute(m.colors, 3));
+    // hair (src/hair/hair.js): its own shading, its strands' directions turned each frame; its locks outlined
+    if (m.hair) {
+      g.setAttribute('hairT', new THREE.BufferAttribute(o.tangents, 3)); g.setAttribute('hairUV', new THREE.BufferAttribute(m.hair.uv, 2));
+      g.setAttribute('seed', new THREE.BufferAttribute(m.hair.seed, 1)); g.setAttribute('ao', new THREE.BufferAttribute(m.hair.ao, 1));
+      const mesh = new THREE.Mesh(g, hairMaterial(THREE, m.hair)); mesh.castShadow = true; mesh.frustumCulled = false;
+      group.add(mesh); parts.push({ o, g, mesh, hair: true });
+      if (m.hair.layer === 'locks' && m.hair.shading.ink > 0) {
+        g.setAttribute('inkw', new THREE.BufferAttribute(Float32Array.from(m.hair.width, w => w * m.hair.shading.ink), 1));
+        const om = new THREE.Mesh(g, hairInk(THREE, m.ink?.color)); om.frustumCulled = false; group.add(om); parts.push({ o, g, mesh: om, ink: true });
+      }
+      continue;
+    }
     const color = o.name === 'body' || m.painted ? (head?.skin ?? look.skin) : (m.color || '#8a8f99'), map = m.uv && face ? face.texture : null;
     const toon = !!light?.toon, side = m.double ? THREE.DoubleSide : THREE.FrontSide;
     const mat = toon ? new THREE.MeshToonMaterial({ color: map || m.colors ? '#ffffff' : color, gradientMap: toonRamp(THREE, light.soft, light.shade), map, vertexColors: !!m.colors, side })
@@ -125,7 +138,7 @@ export function figureView(THREE, figure, look) {
   return {
     group, dots, caps, parts,
     update() {
-      for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; }
+      for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; if (p.hair) p.g.attributes.hairT.needsUpdate = true; }
       if (face) face.paint(figure.ctx.expressions);
       const P = figure.pose.P;
       if (dots.visible) { for (let j = 0; j < J; j++) dots.setMatrixAt(j, m.makeTranslation(P[j * 3], P[j * 3 + 1], P[j * 3 + 2])); dots.instanceMatrix.needsUpdate = true; }

@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 5,
+ "id": "hair-v1-kbraid",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: K-pop: коса",
+  "en": "В1 hairstyle: K-pop: a braid"
+ },
+ "about": {
+  "ru": "гладко назад со лба в одну длинную косу, тяжёлую — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "swept back sleek from the forehead into one long heavy braid — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "kbraid",
+   "physics": {
+    "hold": 1,
+    "bend": 1,
+    "drag": 1,
+    "wind": 1
+   }
+  }
+ ]
+}

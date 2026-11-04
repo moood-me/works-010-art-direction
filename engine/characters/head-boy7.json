@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 5,
+ "version": 6,
  "id": "head-boy7",
  "label": {
   "ru": "Голова: мальчик с каре",
@@ -8,7 +8,7 @@
  },
  "body": "moood-child@5c187b05e70b6a54",
  "head": {
-  "preset": "head-boy7@d9e7e8b27cf248fa"
+  "preset": "head-boy7@a63f6ba307fa7efd"
  },
  "look": {
   "skin": "#f6d6be",
