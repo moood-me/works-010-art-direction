@@ -3,9 +3,12 @@
 Shared by every character. Nothing here knows about a particular person.
 
 - Doc: one picture. Holds a transform stack (so a head drawn in its own units can be placed, scaled, turned or
-  mirrored), and three layers: washes (multiplied, like glazes), ink (multiplied), paper.
+  mirrored, or a body leaned with turn()), and layers: paper, washes (multiplied, like glazes), whites (paper left
+  unpainted inside a wash: the white of an eye), ink (multiplied). Doc.fade thins the washes out toward the bottom,
+  as a vignette on a book page.
 - ink(): a pen stroke — a centre line through hand-placed points, given width that swells and tapers, a slow wobble
   and a fine tremor, sometimes skipping like a dry nib.
+- dot(), white(), blot(): an ink dot; a round of paper left white; a soft touch of colour (a cheek).
 - hatch(): loose parallel pen strokes inside a shape (shadow, texture) — shorter than the shape, never ruled.
 - wash(): a watercolour patch — a soft irregular shape, its edge pushed about by noise, pigment uneven inside,
   darker where it dried at the rim, grainy; placed a little off the line, as a painter's wash is.
