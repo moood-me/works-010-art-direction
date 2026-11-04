@@ -182,7 +182,7 @@ def loft(rows, cols=72, closed=True, gap=None):
     V = []
     for i, (yy, aa, zc, df, db) in enumerate(rows):
         g = 0 if gap is None else gap[i]
-        th = np.linspace(g, 2 * np.pi - g, cols, endpoint=not closed if False else False) if closed else np.linspace(g, 2 * np.pi - g, cols)
+        th = np.linspace(0, 2 * np.pi, cols, endpoint=False) if closed else np.linspace(g, 2 * np.pi - g, cols)
         x, z = ring(aa, zc, df, db, th)
         V += list(np.c_[x, np.full(cols, yy), z])
     return np.array(V), grid(len(rows), cols, closed)
@@ -197,7 +197,6 @@ def front_half(name, yy):
 
 
 # the dress: drawn front width, drawn profile; at the top a small yoke into the neck
-NECK = lambda yy: (front_half('face', yy) if False else np.interp(yy, [80, 178, 230], [26, 30, 40]))
 drows = []
 for yy in np.r_[np.linspace(190, 204, 4), np.arange(210, 1142, 8.0), 1142]:
     if yy < 204:   # yoke: from the neck to the dress's top ring
@@ -207,7 +206,6 @@ for yy in np.r_[np.linspace(190, 204, 4), np.arange(210, 1142, 8.0), 1142]:
     else:
         a_ = front_half('dress', yy); s = side_span('dress', yy); f_, b_ = s[1], s[0]; yv = yy
     drows.append((y3(yv), u(a_), u((f_ + b_) / 2), u((f_ - b_) / 2), u((f_ - b_) / 2)))
-drows = drows[::-1][::-1]
 DV, DT = loft(drows, 72, True)
 nd = len(DV)
 dyd = ydr(DV[:, 1])
