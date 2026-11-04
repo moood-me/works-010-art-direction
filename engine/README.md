@@ -42,7 +42,8 @@ src/       engine.js      the entry: createEngine({root?, read?}) → body(ref),
                           of a shape), forms.js (designed forms: curves, solid), wrap.js (the wrap deformer), face.js (Anny's
                           face, a head of another age, points, cage, warps), features.js (painted and volume features),
                           paint.js (the face's drawing), expressions.js, pieces.js (noses, Г1's hair, headwear), head.js
-                          (a head made on its body: picture, morphs, shading, pieces, its shape to collide with)
+                          (a head made on its body: picture, morphs, shading, pieces, its shape to collide with),
+                          version.js (how heads are built, versioned)
            skin.js        skinning (centres of rotation / dual quaternions / linear), Т7's seam fix
            collision.js   the body as tapered capsules per bone, moved by the pose: distance and normal
            figure.js      a rig with its meshes: pose → layers (turns, changes of the rest, morphs) → place → meshes →
@@ -53,7 +54,8 @@ src/       engine.js      the entry: createEngine({root?, read?}) → body(ref),
 data/      skeleton.json, soma/ (Kimodo's SOMA skin, Apache-2.0: NOTICE), topology/anny-moood.*, bodies/*.json + .bin,
            kimodo/ (the studio's asks, asks.json, and data of motions not kept in experiments/motions-raw)
            anny/specs.json (the new bodies' Anny settings), bodies/index.json (every body by group, pinned),
-           anny/face.json + .bin (Anny's 129 changes of the face on moood's mesh, tools/face_targets.py)
+           anny/face.json + .bin (Anny's 129 changes of the face on moood's mesh, tools/face_targets.py),
+           wraps/ (wrapped heads stored by the key of what they are made from, tools/characters.mjs wraps)
 motions/   <id>.json, index.json (motions and chains)
 characters/<id>.json, index.json
 presets/   <id>.json, index.json — presets of parts (deformers with their parameters), by group, pinned
@@ -470,13 +472,21 @@ path is scaled by, so where the figure is moves with it. The contour deformer ke
 
 Heads (stage 2): Anny's mouth is closed skin, so an open jaw stretches the skin between the lips into a dark membrane
 (painted as the mouth's inside), no teeth or tongue; eyes are painted (or a relief), not eyeballs under cut lids (Г2
-cut lids along mesh edges in Python — not carried: a cut changes the topology every body shares). Г2's solids come
-over wrapped Г3's way and read rougher than Г2's own build (a crease at the throat, the face rougher): Г2's heads are
-not ready heads here, only Giulia's solid as a way of the form. Г1's hair is carried as
-rigid pieces on the head (it goes through the shoulders in big motions; hair is stage 3), and no clothes are carried
-(the outfits and Г1's turtleneck: stage 4). Expressions are one at a time (blending them, mouth shapes for speech, a
-gaze that follows: not now); a closing eye is drawn graded by its weight, a smile's happy eyes switch at half.
-Toon light on a head without a designed form (Anny's own, deformed) shows the mesh's small forms as hard tones.
+cut lids along mesh edges in Python — not carried: a cut changes the topology every body shares). moood's face differs
+from Anny's in kind — its eyes are closed slits, its nostrils and lips softer — so Anny's changes of the eye's opening
+and the nostrils act on forms moood's mesh hasn't: they read rougher there (the slit's sub-millimetre edges pulled open),
+whatever map carries them. Г2's solids come over wrapped Г3's way and read rougher than Г2's own build (a crease at the
+throat, the face rougher): Г2's heads are not ready heads here, only Giulia's solid as a way of the form. Г1's hair is
+carried as rigid pieces on the head (it goes through the shoulders in big motions; hair is stage 3); headwear (hoods,
+hats) is a coarse shell on the head that goes through the shoulders in motion and follows a bigger head only roughly —
+the clothes' stage makes garments of it (stage 4), and no clothes are carried (the outfits and Г1's turtleneck). A piece
+is carried as one (by the affine change of the skin under it): it can't follow the head's own unevenness — a bigger
+head grows its cranium more than its face, a piece's far side lags by a few millimetres. The old man's nape and jowls
+keep the ledge his Г3 form has (his cranium over a thick neck, jowls over it). A drawn mouth is set on where its lips
+part after the wrap's easing (up to ~5 mm from its design on the long-nosed man). Expressions are one at a time
+(blending them, mouth shapes for speech, a gaze that follows: not now); a closing eye is drawn graded by its weight, a
+smile's happy eyes switch at half. Toon light on a head without a designed form (Anny's own, deformed) shows the mesh's
+small forms as hard tones.
 
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole
 (no foot contacts); the arm can press into the chest's side at the armpit when it hangs close (Anny's weights;

@@ -1543,6 +1543,109 @@
      }
     }
    ]
+  },
+  {
+   "name": "fixes",
+   "out": "docs/pictures/engine/heads/fixes.png",
+   "title": "После ревью 2: лицо Anny, открытый рот, куски за головой",
+   "cols": 4,
+   "w": 280,
+   "h": 280,
+   "items": [
+    {
+     "label": "лицо Anny ползунками",
+     "char": "head-anny-face",
+     "focus": "Head",
+     "size": 0.24,
+     "view": "level"
+    },
+    {
+     "label": "три четверти",
+     "char": "head-anny-face",
+     "focus": "Head",
+     "size": 0.24,
+     "view": "tq"
+    },
+    {
+     "label": "старик: рот открыт",
+     "char": "head-old",
+     "focus": "Head",
+     "size": 0.2,
+     "view": "level",
+     "pose": [
+      {
+       "kind": "expression",
+       "name": "open",
+       "weight": 1
+      }
+     ],
+     "head": {
+      "preset": "head-old",
+      "pieces": [
+       {
+        "kind": "off",
+        "id": "hood"
+       }
+      ]
+     }
+    },
+    {
+     "label": "своя рыжая: рот открыт",
+     "char": "head-red-mine",
+     "focus": "Head",
+     "size": 0.2,
+     "view": "level",
+     "pose": [
+      {
+       "kind": "expression",
+       "name": "open",
+       "weight": 1
+      }
+     ]
+    },
+    {
+     "label": "голова больше слоем",
+     "char": "head-red",
+     "focus": "Head",
+     "size": 0.5,
+     "view": "tq",
+     "pose": [
+      {
+       "kind": "preset",
+       "id": "proportions-big-head",
+       "strength": 1
+      }
+     ]
+    },
+    {
+     "label": "нос Джеспера",
+     "char": "head-jesper",
+     "focus": "Head",
+     "size": 0.24,
+     "view": "tq"
+    },
+    {
+     "label": "точки на её глазах",
+     "char": "head-cage",
+     "focus": "Head",
+     "size": 0.24,
+     "view": "level"
+    },
+    {
+     "label": "объём: рот открыт",
+     "char": "head-points",
+     "focus": "Head",
+     "size": 0.16,
+     "view": "level",
+     "pose": [
+      {
+       "kind": "expression",
+       "name": "open",
+       "weight": 1
+      }
+     ]
+    }
+   ]
   }
  ]
 }
