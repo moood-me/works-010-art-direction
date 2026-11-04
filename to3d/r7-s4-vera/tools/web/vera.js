@@ -363,18 +363,26 @@ let folderLocal = null;
 const SK = H.ranges.skirt;
 function pushSkirt() {
   const P = fig.pose.P, X = fig.positions;
-  const caps = [];
+  const hc = getV(P, I.Hips), caps = [];
   for (const s of ['Left', 'Right']) {
     const a0 = getV(P, I[s + 'Leg']), k = getV(P, I[s + 'Shin']), f = getV(P, I[s + 'Foot']);
-    caps.push([a0, k, 0.078, 0.062], [k, f, 0.06, 0.046]);
+    caps.push([a0, k, 0.095, 0.082, 1], [k, f, 0.08, 0.058, 0]);
   }
   for (let i = SK[0]; i < SK[1]; i++) {
     const p = [X[i * 3], X[i * 3 + 1], X[i * 3 + 2]];
-    for (const [A, B, r0, r1] of caps) {
+    // the skirt's outside here: away from the body's vertical axis
+    let dir = [p[0] - hc[0], 0, p[2] - hc[2]]; const dl = Math.hypot(dir[0], dir[2]) || 1; dir = [dir[0] / dl, 0, dir[2] / dl];
+    for (const [A, B, r0, r1, thigh] of caps) {
       const ab = sub(B, A), t = Math.max(0, Math.min(1, dot(sub(p, A), ab) / dot(ab, ab)));
-      const c = add(A, scale(ab, t)), d = sub(p, c), l = len(d), r = r0 + (r1 - r0) * t;
-      const wgt = Math.min(1, Math.max(0, (A[1] - 0.06 - p[1]) / 0.12));      // not round the hip joint itself
-      if (l < r && l > 1e-6 && wgt > 0) { const q = add(c, scale(d, r / l)); p[0] += (q[0] - p[0]) * wgt; p[1] += (q[1] - p[1]) * wgt; p[2] += (q[2] - p[2]) * wgt; }
+      const wgt = thigh ? Math.min(1, Math.max(0, (t - 0.12) / 0.2)) : 1;          // not round the hip joint itself
+      if (wgt <= 0) continue;
+      const c = add(A, scale(ab, t)), d = sub(p, c), r = r0 + (r1 - r0) * t;
+      const along = dot(d, dir), lat = sub(d, scale(dir, along)), ll = len(lat);
+      if (ll >= r) continue;
+      const need = Math.sqrt(r * r - ll * ll);          // the leg's surface on the skirt's outside, at this lateral place
+      if (along >= need) continue;
+      const q = add(c, add(lat, scale(dir, need)));
+      p[0] += (q[0] - p[0]) * wgt; p[1] += (q[1] - p[1]) * wgt; p[2] += (q[2] - p[2]) * wgt;
     }
     X[i * 3] = p[0]; X[i * 3 + 1] = p[1]; X[i * 3 + 2] = p[2];
   }

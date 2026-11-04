@@ -51,7 +51,7 @@ BUST = dict(mode='ortho', h=0.695, cy=1.397, pitch=0, follow=False)        # the
 
 if on('compare', 'stills'):
     # the figure as drawn: three-quarter, the head tilted and turned to her right, flowers at the chest
-    pose = dict(STAND, poseOpts={'out': 0.06, 'hold': True, 'headTilt': 0.12, 'headTurn': 0.4}, flowers=True, exprTrack=[[0, 'dream']])
+    pose = dict(STAND, poseOpts={'out': 0.06, 'hold': True, 'headTilt': 0.12, 'headTurn': -0.45}, flowers=True, exprTrack=[[0, 'dream']])
     shots(600, 1000, [dict(name='fig', set=dict(pose, cam=dict(FIG, yaw=0.6)))], 'fig')
     a, d = im('fig'), Image.open(os.path.join(STY, 'figure-anya.jpg')).convert('RGB').resize((600, 1000))
     row([d, a], 'compare-figure.jpg', 0.8)

@@ -52,6 +52,9 @@ def neck(X):
 
 
 HV = neck(HV)
+# the neck smoothed where the reshaping left folds (the nape, under the jaw), the face and ears left as they are
+nm = sstep(-HV[:, 1], 40, 50) * (1 - sstep(HV[:, 2], 18, 26)) * (np.abs(HV[:, 0]) < 26)
+HV = smooth(HV, HT, it=20, lam=0.5, mask=nm.astype(float))
 HW = H2W(HV)
 # the head's joints where the drawn head is (frames kept)
 J2 = J.copy()

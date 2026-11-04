@@ -30,7 +30,7 @@ export function ui(A, canvas) {
   let playing = true, t = 0, last = performance.now(), frames = 0, fps = 30;
   const t0 = performance.now();
   const clock = () => (performance.now() - t0) / 1000;
-  const far = { mode: 'persp', dist: 6.2, fov: 22, cy: 0.84, follow: true, focus: null, yaw: 0.35, pitch: 0.06 };
+  const far = { mode: 'persp', dist: 4.8, fov: 22, cy: 0.84, follow: true, focus: null, yaw: 0.35, pitch: 0.06 };
   const near = { mode: 'persp', dist: 2.3, fov: 22, follow: false, focus: 'Head', up: 0.04, pitch: 0.02 };
   A.set({ liveClock: true, cam: far, pose: 'stand', });
   async function motion(id) {

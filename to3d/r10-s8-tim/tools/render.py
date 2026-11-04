@@ -7,24 +7,28 @@ socks, red shoes with a rubber sole. One warm key from the upper left, a cool ri
 behind him a dark set with out-of-focus lamps (real bokeh: small lights far behind, a lens with a shallow focus).
 
 usage: blender -b -P render.py -- JOB.json
-JOB: {scene: CACHE/scene.npz, out: dir, samples, views: [{name, W, H, cam, at?, frame?}], frames?: path.bin,
+JOB: {out: dir, samples, views: [{name, W, H, cam, at?, frame?}], frames?: path.bin,
       frame_ids?: [...], stage?: {...}}
 cam: {type: 'view', yaw, S, cx, cy, at: [x,y,z], fstop?}  — the drawing's view: S px per head unit, the point `at`
      (engine metres) on pixel (cx, cy), seen through a long lens from far; or {type: 'persp', pos, target, lens, fstop, focus?}.
-scene.npz: <name>_V (N×3 engine metres: x his left, y up, z forward), <name>_T, optional <name>_uv, <name>_pat;
-scene.json: {objects: [{name, mat}], HH}.
-frames (optional): float32 frames × N × 3 of the whole model in scene order (see move.mjs), replacing the rest."""
+The model: CACHE/engine/data/{bodies,topology}/tim8.* (build.py), its pieces and materials in CACHE/model.json,
+the paint coordinates in CACHE/rest.npz. frames (optional): float32 frames × N × 3 (move.mjs), replacing the rest."""
 import bpy, sys, json, math, os
 import numpy as np
 from mathutils import Vector, Matrix
 
 args = sys.argv[sys.argv.index('--') + 1:]
 job = json.load(open(args[0]))
-SC = np.load(job['scene'])
-meta = json.load(open(job['scene'].replace('.npz', '.json')))
+CACHE = job.get('cache', '/home/user/cache/to3d-r10-s8-tim')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../engine/tools'))
+import pack  # noqa: E402
+meta = json.load(open(os.path.join(CACHE, 'model.json')))
+_, BA = pack.read(os.path.join(CACHE, 'engine/data/bodies/tim8.json'))
+_, TA = pack.read(os.path.join(CACHE, 'engine/data/topology/tim8.json'))
+RA = np.load(os.path.join(CACHE, 'rest.npz'))
 TEX = meta['tex']
 HH = meta['HH']
-
+NTOT = len(BA['positions'])
 
 def lin(h):
     h = h.lstrip('#'); c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
@@ -257,26 +261,28 @@ def material(name):
 
 # ------------------------------------------------------------------ the puppet
 OBJ = {}
-for o in meta['objects']:
-    n = o['name']
-    V = B(SC[n + '_V']); T = SC[n + '_T'].astype(int)
+TRI = TA['triangles'].astype(np.int64)
+SKIP = set(job.get('hide', []))
+for o in meta['pieces']:
+    n, s0, cnt = o['name'], o['start'], o['count']
+    if n in SKIP: continue
+    m = (TRI[:, 0] >= s0) & (TRI[:, 0] < s0 + cnt)
+    T = TRI[m] - s0
+    V = B(BA['positions'][s0:s0 + cnt])
     me = bpy.data.meshes.new(n)
     me.from_pydata(V.tolist(), [], T.tolist())
-    for key in ('uv', 'pat', 'tint'):  # stored as tuv, pat, tint ("uv" is taken by UV maps)
-        if n + '_' + key in SC:
-            a = SC[n + '_' + key]
-            if key == 'tint':
-                at = me.attributes.new('tint', 'FLOAT', 'POINT'); at.data.foreach_set('value', a.astype(float).ravel())
-            else:
-                a3 = np.c_[a, np.zeros((len(a), 3 - a.shape[1]))] if a.shape[1] < 3 else a
-                at = me.attributes.new('tuv' if key == 'uv' else key, 'FLOAT_VECTOR', 'POINT'); at.data.foreach_set('vector', a3.astype(float).ravel())
+    for key, arr in (('tuv', RA['uv']), ('pat', RA['pat'])):
+        a = arr[s0:s0 + cnt]
+        a3 = np.c_[a, np.zeros((len(a), 3 - a.shape[1]))] if a.shape[1] < 3 else a
+        at = me.attributes.new(key, 'FLOAT_VECTOR', 'POINT'); at.data.foreach_set('vector', a3.astype(float).ravel())
+    at = me.attributes.new('tint', 'FLOAT', 'POINT'); at.data.foreach_set('value', RA['tint'][s0:s0 + cnt].astype(float))
     me.polygons.foreach_set('use_smooth', [True] * len(me.polygons))
     me.update()
     ob = bpy.data.objects.new(n, me); sc.collection.objects.link(ob)
     ob.data.materials.append(material(o['mat']))
-    if o.get('subdiv'):
-        s = ob.modifiers.new('s', 'SUBSURF'); s.levels = s.render_levels = o['subdiv']
-    OBJ[n] = (ob, len(V))
+    if o.get('subdiv') and not job.get('nosubdiv'):
+        sd = ob.modifiers.new('s', 'SUBSURF'); sd.levels = sd.render_levels = o['subdiv']
+    OBJ[n] = (ob, s0, cnt)
 
 # ------------------------------------------------------------------ the set
 st = dict(dict(floor='#2e2a2a', back='#1e2430', glow='#d89a60', seed=8), **job.get('stage', {}))
@@ -300,24 +306,52 @@ bm, bnt, bb = nodes('backdrop')
 bnt.links.new(bnt.nodes.new('ShaderNodeRGB').outputs[0], bb.inputs['Base Color'])
 bb.inputs['Base Color'].links[0].from_node.outputs[0].default_value = lin(st['back'])
 set_(bb, rough=0.9)
-plane('back', 40, (0, 6.0, 4), (math.radians(90), 0, 0), bm)
-
-# bokeh: small warm and cool lamps scattered far behind (out of focus they become discs)
-rng = np.random.default_rng(st['seed'])
-cols = ['#ffcf8a', '#ffb070', '#ffe0b0', '#9ab8ff', '#ff9a70']
-for i in range(26):
-    x = rng.uniform(-3.2, 3.2); z = rng.uniform(0.4, 3.0); y = rng.uniform(3.5, 5.5)
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=rng.uniform(0.02, 0.05), location=(x, y, z), segments=12, ring_count=6)
-    s = bpy.context.active_object
-    em = bpy.data.materials.new(f'bk{i}'); em.use_nodes = True
+LAMP_MATS = []
+for i, c in enumerate(['#ffcf8a', '#ffb070', '#ffe0b0', '#9ab8ff', '#ff9a70']):
+    em = bpy.data.materials.new(f'lamp{i}'); em.use_nodes = True
     e = em.node_tree.nodes; o_ = e['Material Output']
     for n in list(e):
         if n != o_: e.remove(n)
-    E = e.new('ShaderNodeEmission'); E.inputs[0].default_value = lin(cols[rng.integers(len(cols))])
-    E.inputs[1].default_value = rng.uniform(8, 30)
+    E = e.new('ShaderNodeEmission'); E.inputs[0].default_value = lin(c); E.inputs[1].default_value = 12.0
     em.node_tree.links.new(E.outputs[0], o_.inputs[0])
-    s.data.materials.append(em)
-    s.visible_shadow = False; s.visible_diffuse = False; s.visible_glossy = False
+    LAMP_MATS.append(em)
+SET = []
+
+
+def set_behind(at, fwd, d, W, H, pxm):
+    """the set behind him for this view: a backdrop across the view, and small lamps scattered between, far enough
+    behind to go out of focus (the bokeh of the drawing's set)"""
+    for ob in SET:
+        try: bpy.data.objects.remove(ob)
+        except ReferenceError: pass
+    SET.clear()
+    at, fwd = np.asarray(at), np.asarray(fwd)           # Blender axes; fwd points toward the camera
+    right = np.cross([0, 0, 1.0], fwd); right /= np.linalg.norm(right)
+    back = 3.0
+    bpy.ops.mesh.primitive_plane_add(size=1)
+    bd = bpy.context.active_object; bd.data.materials.append(bm); SET.append(bd)
+    span = (d + back + 1.0) / d * max(W, H) / pxm * 1.4
+    bd.scale = (span, span, 1)
+    bd.location = Vector(at - fwd * (back + 1.0))
+    bd.rotation_euler = Vector(fwd).to_track_quat('Z', 'Y').to_euler()
+    rng = np.random.default_rng(st['seed'])
+    wv = (d + back) / d * W / pxm; hv = (d + back) / d * H / pxm
+    for i in range(int(st.get('lamps', 18))):
+        x, y = rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.42)
+        if abs(x) < 0.2 and y < 0.3: x += 0.3 * np.sign(x or 1)
+        p = at - fwd * back + right * x * wv + np.array([0, 0, 1.0]) * y * hv
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=rng.uniform(0.004, 0.012) * (d + back) / 4, location=tuple(p), segments=10, ring_count=5)
+        s_ = bpy.context.active_object
+        s_.data.materials.append(LAMP_MATS[rng.integers(len(LAMP_MATS))])
+        s_.visible_shadow = False; s_.visible_diffuse = False; s_.visible_glossy = False
+        SET.append(s_)
+    # the warm pool of light on the backdrop, upper left of the picture
+    l = bpy.data.lights.new('pool', 'SPOT'); l.energy = 600 * job.get('light', 1.0) * (d + back) ** 2 / 16
+    l.color = lin(st['glow'])[:3]; l.spot_size = math.radians(40); l.spot_blend = 1.0
+    ob = bpy.data.objects.new('pool', l); sc.collection.objects.link(ob); SET.append(ob)
+    tgt = at - fwd * (back + 1.0) - right * 0.35 * wv + np.array([0, 0, 0.25 * hv])
+    ob.location = Vector(tgt + fwd * 2.0 + np.array([0, 0, 0.5]))
+    ob.rotation_euler = (Vector(tgt) - ob.location).to_track_quat('-Z', 'Y').to_euler()
 
 
 def area(name, loc, target, size, power, col):
@@ -337,7 +371,6 @@ def lights(centre, yaw=0.0):
     area('key', c + R @ Vector((-1.6, -1.8, 1.9)), c, 0.9, 260 * k, '#ffd8a8')
     area('rim', c + R @ Vector((1.5, 1.6, 1.1)), c, 0.6, 160 * k, '#a8c4ff')
     area('fill', c + R @ Vector((1.8, -1.6, 0.2)), c, 1.6, 30 * k, '#b8c0d8')
-    area('glow', Vector((-0.8, 5.0, 2.4)), Vector((0, 6.0, 2.0)), 3.0, 900 * k, st['glow'])
 
 
 # ------------------------------------------------------------------ cameras and output
@@ -364,6 +397,7 @@ def set_cam(c, W, H):
         cd.clip_end = 200
         cd.dof.use_dof = True; cd.dof.focus_distance = d; cd.dof.aperture_fstop = c.get('fstop', 8.0)
         lights(B(at), yaw)
+        set_behind(B(at), B(fwd), d, W, H, pxm)
     else:
         pos, tgt = np.array(c['pos']), np.array(c['target'])
         cd.type = 'PERSP'; cd.lens = c.get('lens', 50); cd.sensor_width = 36
@@ -373,24 +407,22 @@ def set_cam(c, W, H):
         cd.dof.focus_distance = c.get('focus', float(np.linalg.norm(tgt - pos)))
         cd.dof.aperture_fstop = c.get('fstop', 2.8)
         cd.clip_start = 0.05
-        d = pos - tgt
-        lights(B(c.get('light_at', tgt)), c.get('light_yaw', math.atan2(d[0], d[2])))
+        dv = pos - tgt; dist = float(np.linalg.norm(dv))
+        lights(B(c.get('light_at', tgt)), c.get('light_yaw', math.atan2(dv[0], dv[2])))
+        f_ = np.array([dv[0], 0, dv[2]]); f_ /= np.linalg.norm(f_)
+        pxm = W / (36e-3 / (cd.lens * 1e-3) * dist)
+        set_behind(B(tgt), B(f_), dist, W, H, pxm)
 
 
 os.makedirs(job['out'], exist_ok=True)
 frames = None
 if job.get('frames'):
-    fr = np.fromfile(job['frames'], np.float32)
-    NTOT = sum(n for _, n in OBJ.values())
-    frames = fr.reshape(-1, NTOT, 3)
+    frames = np.fromfile(job['frames'], np.float32).reshape(-1, NTOT, 3)
 
 
 def apply_frame(i):
-    off = 0
-    for o in meta['objects']:
-        ob, n = OBJ[o['name']]
-        P = B(frames[i, off:off + n]); off += n
-        ob.data.vertices.foreach_set('co', P.astype(np.float32).ravel())
+    for ob, s0, cnt in OBJ.values():
+        ob.data.vertices.foreach_set('co', B(frames[i, s0:s0 + cnt]).astype(np.float32).ravel())
         ob.data.update()
 
 

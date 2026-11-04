@@ -9,7 +9,7 @@ import numpy as np
 import drawing
 from drawing import H0, P
 from common import CACHE, hu
-import hair as Hs          # the style's hair module (styles/s8-stopmotion/tools/hair.py)
+
 
 
 def smooth_path(p, n=28):

@@ -65,7 +65,9 @@ drawing's head of 234 units is then a real 227 mm head, its eyes 62 units apart 
    are reproduced exactly (`draw: {yaw, s, cx, cy}` = `View(yaw, s, cx, cy)`), so the overlays are true.
    - Stand pose: arms hang by a two-bone reach; the left hand brings the folder to the chest as drawn (the folder is a
      separate object on the left hand's joint, set once from the standing pose, so in motions it is carried in the hand).
-   - The skirt is not cloth: after skinning, its points inside a leg's capsule (thigh, shin) are put on the capsule.
+   - The skirt is not cloth: after skinning, its points that a leg (a capsule round the thigh and the shin) reaches
+     are put on the leg's outside — the side away from the body's axis — so a stepping leg carries the skirt forward
+     (pushing to the nearest capsule point left the skirt behind a leg that had swung through it).
 7. `web/face.js` (after Р2's face.mjs) — the 3D face moved by a few numbers: lids turned over the ball (blink, squint,
    wide), jaw, mouth corners (smile, wide, pucker), brows (lift, inner ends, knit), irises (gaze). The painted layer
    rides on the vertices, so brows and the lid line move with the skin. The five expressions = the drawing's

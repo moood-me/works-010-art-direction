@@ -54,15 +54,16 @@ if 'stills' in WHAT:
     S += [dict(name='e-' + e, set=dict(ST, exprTrack=[[0, e]], cam=ce)) for e in EX]
     S += [dict(name='ef-' + e, set=dict(ST, exprTrack=[[0, e]], cam=dict(ce, yaw=0))) for e in EX]
     S += [dict(name='portrait', set=dict(ST, exprTrack=[[0, 'dream']], cam=dict(mode='persp', dist=1.6, fov=22, yaw=-0.31, pitch=0.05, target=[0, 1.42, 0])))]
-    shots('anya.json', 400, 480, S[:3 * 3 + 5], 'heads')
+    pick = lambda *pre: [x for x in S if x['name'].split('-')[0] in pre or x['name'] in pre]
+    shots('anya.json', 400, 480, pick('hf', 'hp', 'hh'), 'heads')
     strip(['hf-f', 'hf-q', 'hf-s'], 'step2-head-fitted.webp')
     strip(['hp-f', 'hp-q', 'hp-s'], 'step3-head-painted.webp')
     strip(['hh-f', 'hh-q', 'hh-s', 'hh-qb', 'hh-b'], 'head-hair.webp')
-    shots('anya.json', 380, 820, S[14:14 + 9], 'figs')
+    shots('anya.json', 380, 820, pick('bk', 'bc', 'bb'), 'figs')
     strip(['bk-f', 'bk-q', 'bk-s'], 'step5-body-kept.webp', 0.8)
     strip(['bc-f', 'bc-q', 'bc-s'], 'step6-clothes.webp', 0.8)
     strip(['bb-qb', 'bb-b', 'bb-r'], 'back.webp', 0.8)
-    shots('anya.json', 500, 620, S[23:], 'ex')
+    shots('anya.json', 500, 620, pick('e', 'ef', 'portrait'), 'ex')
     strip(['e-' + e for e in EX], 'expr-three.webp')
     strip(['ef-' + e for e in EX], 'expr-front.webp')
     Image.open(os.path.join(WORK, 'portrait.png')).convert('RGB').save(os.path.join(PICS, 'portrait-3d.webp'), quality=88)

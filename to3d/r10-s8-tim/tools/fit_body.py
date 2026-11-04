@@ -54,6 +54,9 @@ def maps():
     return S
 
 
+LEG_X = 0.058
+
+
 def fit(hips_y=0.47):
     S = maps()
     new = np.zeros_like(OLD)
@@ -61,6 +64,14 @@ def fit(hips_y=0.47):
         p = PARENT[j]
         if p < 0: new[j] = [OLD[j, 0], hips_y, OLD[j, 2]]
         else: new[j] = new[p] + S[p] @ (OLD[j] - OLD[p])
+    # the legs closer together (the drawing's stand: feet ±0.17 head apart), carried down each leg
+    shift = np.zeros_like(OLD)
+    for pre, s in (('Left', 1), ('Right', -1)):
+        dx = s * LEG_X - new[IX[pre + 'Leg'], 0]
+        for n in NAMES:
+            if n.startswith(pre) and any(k in n for k in ('Leg', 'Shin', 'Foot', 'Toe')):
+                shift[IX[n], 0] = dx
+    new = new + shift
     V = B['positions']
     out = np.zeros_like(V)
     for k in range(4):
