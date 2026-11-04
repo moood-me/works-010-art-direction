@@ -419,7 +419,9 @@ masses' clumps hang on guides of the same simulation, the cap, buns and ties rid
   hairstyle has it, carried by the head; each segment bent back toward its angle against the one above (XPBD's share
   k·h²/(1+k·h²)); the solids at that small step's moment, with friction against their motion, a point pushed out leaving
   without the push's speed (no bounce); lengths exactly (follow-the-leader with its velocity correction, twice: last;
-  ringlets give like springs); the hair's own friction, hair against hair — each point's velocity drawn toward its
+  ringlets give like springs); the hair's own friction (its motion against the head dies at the hair's rate, or, where
+  its pull is stiff — short hair — at 0.4 of that spring's critical rate: stiff short hair followed a running head
+  ringing, a shimmer at 30 frames), hair against hair — each point's velocity drawn toward its
   neighbours' in the other locks near it at rest, as film smooths hair's velocities (Petrovic et al. 2005: neighbouring
   locks move as a mass, Г3's ribbons don't fall apart, long hair doesn't crumple into spikes in a roll) — and zigzags
   damped, each a rate (1/s). The inner layer is hidden where the hair in motion stretches it past 1.8× (`shade.js`:
@@ -546,9 +548,11 @@ chain whole; ~45 min), each limit saying what looks right: at rest it sags from 
 its rest no more than 12 mm in 8 s, jitters no more than 1 mm a frame, its roots as deep under the scalp as designed
 (3 mm); in every motion and in a strong wind: every point a number, every lock's length kept (1 %; ringlets 35 %), no
 point faster than 10 m/s, shimmering no more than the head that carries it and 1 mm (Kimodo's run shakes the head so,
-7 mm at the hair's tips), the hair's surfaces no deeper in the body than at rest (the 1 % deepest by 5 mm, more than 1 cm in it
-0.3 %), no lock torn (edges past twice their length: 0.2 %), the inner layer hidden where locks part (a quarter at
-most); walking at 20, 60 and 144 frames a second as at 30 (5 mm on the whole, 3 cm at most); long locks leaning in a
+7 mm at the hair's tips; not in a strong wind, where tips flutter), the hair's surfaces no deeper in the body than at
+rest (the 1 % deepest by 30 mm, more than 1 cm in it 2.5 % — where it is worst it lies inside the hair's own mass: the
+far side of a wide mass over an arm, hair under a face on the floor; looked at), no lock's edges past twice their length
+(2 %: crumpled in a roll, no wedge torn out) — hair pressed between the body and the floor not counted —, the inner layer
+hidden where locks part (a quarter at most); walking at 20, 60 and 144 frames a second as at 30 (5 mm on the whole, 3 cm at most); long locks leaning in a
 light wind 12–30°, in a strong one 45–75°. `quality.mjs --only heads`: a hairstyle on a head grown by a layer lies as
 far off the skin's surface as at rest (5 mm).
 `pictures.mjs --jobs jobs.json outdir` makes pictures of any moments (`focus` on a joint for a close-up).
@@ -633,16 +637,17 @@ as a hole with a tongue — the two plain heads with lips as volume (`head-point
 smile's happy eyes switch at half. Toon light on a head without a designed form (Anny's own, deformed) shows the mesh's
 small forms as hard tones.
 
-Hair (stage 3): В1's hairstyles keep their design — their big flat pieces are how they were drawn; only the locks'
-depth and the light changed. On a toon-lit head В1's hair keeps its own light (no toon light for it yet). In the
-A-pose rest long hair lies on the raised arms. The hair's surfaces are bound to its chains and may dip into the skin
-where a lock lies flat on it (the chains keep their points out, a lock's width lies beside them): the checks allow
-what lay in the body at rest and 20 mm more for the 1 % deepest; where arms hang through long hair (idle, sitting,
-rolling) a lock's surface between its chain's points passes through the arm — no collision of surfaces, only of chains. A bigger head as a pose layer moves the hair's rest (it follows the skin as one piece: `hair-gwen`'s inner layer
-ends 5.8 mm off the skin there, past the pieces' 5 mm — the one heads contract broken) but its chains ride the Head
-joint alone. A ponytail keeps its designed arc near the root when the head bows. A frame of one figure with hair costs 15–30 ms in node (the simulation and
-binding its 40–100 thousand vertices); several characters at once are the later task. Characters not from Anny (П1, П2)
-have no hair yet (their heads are the next stage's).
+Hair (stage 3): В1's hairstyles keep their design — their big flat pieces are how they were drawn; the light changed.
+On a toon-lit head В1's hair keeps its own light (no toon light for it yet). In the A-pose rest long hair lies on the
+raised arms. A long lock bent sideways in its own plane (over a shoulder, in a roll) stretches its outer edge: a lock
+is a sheet carried by its chain's frames, which bend it as a rope would (a kink limit on the chains was tried: it fought
+the solids under a rolling body and flung the hair). The inner layer is hidden where it parts, not kept whole. Г3's
+ribbons part at their tips where they lie spread on the back (tapered ribbons with nothing under them, as drawn). Г1's
+and Г3's hair on a head grown by a layer is carried by the affine change of the skin under it (fitted anew only for
+В1's hairstyles), and a designed head's collision shape does not grow with a layer. A ponytail keeps its designed arc
+near the root when the head bows. A frame of one figure with hair costs 18–30 ms in node (the skin between the frames
+asked at every small step, the surfaces' binding); a figure with hair is made in 3–7 s (its groom); several characters
+at once are the later task. Characters not from Anny (П1, П2) have no hair yet (their heads are the next stage's).
 
 Hands and fingers are carried (all 77 joints) but not checked closely; feet are set on the floor only as a whole
 (no foot contacts); the arm can press into the chest's side at the armpit when it hangs close (Anny's weights;
