@@ -206,7 +206,7 @@ sp = shirt['pat']
 parts += split(shirt, sp[:, 1] - (coll - 0.008 - 0.010 * np.clip(sp[:, 2] / 0.05, 0, 1)), 'collar')
 # shorts: from the waist to just below the crotch, wide legs
 tl = np.maximum(bone_t(V, 'LeftLeg', 'LeftShin') * (V[:, 0] > 0), bone_t(V, 'RightLeg', 'RightShin') * (V[:, 0] < 0))
-f_shorts = np.maximum(y - 0.552, tl - 0.42)
+f_shorts = np.maximum(y - 0.574, tl - 0.42)
 off_p = 0.005 + 0.012 * np.clip(tl / 0.42, 0, 1) ** 1.5
 parts.append(shell(f_shorts, off_p, 'shorts', smooth_it=8))
 # shoes: the foot below the ankle, puffed and smoothed
@@ -223,4 +223,4 @@ v, t, a, _ = cut(V, T, f_skin, D)
 sj, sw = top4(a)
 parts += split(part(v, t, sj, sw, 'skin'), 0.168 - v[:, 1], 'sock')
 
-write('tim', parts, J2, B['frames'], extra=dict(stripes=dict(y0=0.5, period=0.034, width=0.42, top=0.773), sockBand=[0.148, 0.158]))
+write('tim', parts, J2, B['frames'], extra=dict(stripes=dict(y0=0.5, period=0.034, width=0.42, top=0.79), sockBand=[0.148, 0.158]))

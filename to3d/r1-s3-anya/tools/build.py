@@ -353,7 +353,7 @@ def transfer(V, k=6):
 
 def skirt_rule(V):
     yd_ = ydr(V[:, 1]); W = np.zeros((len(V), NJ))
-    L = 0.78 * smooth((yd_ - 600) / 540)
+    L = 0.55 * smooth((yd_ - 600) / 540)
     side = 1 / (1 + np.exp(-V[:, 0] / 0.035))
     W[:, I['LeftLeg']] = L * side; W[:, I['RightLeg']] = L * (1 - side); W[:, I['Hips']] = 1 - L
     return W

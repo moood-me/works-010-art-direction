@@ -11,190 +11,222 @@
  "pieces": {
   "body": [
    0,
-   6346
+   3154
   ],
   "head": [
-   6346,
-   12068
+   3154,
+   8876
   ],
   "dress": [
-   12068,
-   21140
+   8876,
+   17948
   ],
   "collar": [
-   21140,
-   21500
+   17948,
+   18308
   ],
   "cardigan": [
-   21500,
-   25468
+   18308,
+   22276
+  ],
+  "handLeft": [
+   22276,
+   22848
+  ],
+  "handRight": [
+   22848,
+   23420
+  ],
+  "sockLeft": [
+   23420,
+   23700
+  ],
+  "sockRight": [
+   23700,
+   23980
   ],
   "sleeveLeft": [
-   25468,
-   26212
+   23980,
+   24724
   ],
   "sleeveRight": [
-   26212,
-   26956
+   24724,
+   25468
   ],
   "hair": [
-   26956,
-   43456
+   25468,
+   41968
   ]
  },
  "trianglePieces": {
   "body": [
    0,
-   11506
+   5084
   ],
   "head": [
-   11506,
-   22938
+   5084,
+   16516
   ],
   "dress": [
-   22938,
-   40938
+   16516,
+   34516
   ],
   "collar": [
-   40938,
-   41538
+   34516,
+   35116
   ],
   "cardigan": [
-   41538,
-   49224
+   35116,
+   42802
+  ],
+  "handLeft": [
+   42802,
+   43902
+  ],
+  "handRight": [
+   43902,
+   45002
+  ],
+  "sockLeft": [
+   45002,
+   45506
+  ],
+  "sockRight": [
+   45506,
+   46010
   ],
   "sleeveLeft": [
-   49224,
-   50664
+   46010,
+   47450
   ],
   "sleeveRight": [
-   50664,
-   52104
+   47450,
+   48890
   ],
   "hair": [
-   52104,
-   84586
+   48890,
+   81372
   ]
  },
  "arrays": {
   "positions": {
    "dtype": "float32",
    "shape": [
-    130368
+    125904
    ],
    "offset": 0
   },
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    253758
+    244116
    ],
-   "offset": 521472
+   "offset": 503616
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    43456,
+    41968,
     4
    ],
-   "offset": 1536504
+   "offset": 1480080
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    43456,
+    41968,
     4
    ],
-   "offset": 1710328
+   "offset": 1647952
   },
   "joints": {
    "dtype": "float32",
    "shape": [
     231
    ],
-   "offset": 2405624
+   "offset": 2319440
   },
   "frames": {
    "dtype": "float32",
    "shape": [
     308
    ],
-   "offset": 2406552
+   "offset": 2320368
   },
   "col": {
    "dtype": "uint8",
    "shape": [
-    43456,
+    41968,
     3
    ],
-   "offset": 2407784
+   "offset": 2321600
   },
   "shd": {
    "dtype": "uint8",
    "shape": [
-    43456,
+    41968,
     3
    ],
-   "offset": 2538152
+   "offset": 2447504
   },
   "lin": {
    "dtype": "uint8",
    "shape": [
-    43456,
+    41968,
     3
    ],
-   "offset": 2668520
+   "offset": 2573408
   },
   "ow": {
    "dtype": "uint8",
    "shape": [
-    43456
+    41968
    ],
-   "offset": 2798888
+   "offset": 2699312
   },
   "uv": {
    "dtype": "float32",
    "shape": [
-    43456,
+    41968,
     2
    ],
-   "offset": 2842344
+   "offset": 2741280
   },
   "tex": {
    "dtype": "uint8",
    "shape": [
-    43456
+    41968
    ],
-   "offset": 3189992
+   "offset": 3077024
   },
   "pn": {
    "dtype": "float32",
    "shape": [
-    43456,
+    41968,
     3
    ],
-   "offset": 3233448
+   "offset": 3118992
   },
   "pw": {
    "dtype": "uint8",
    "shape": [
-    43456
+    41968
    ],
-   "offset": 3754920
+   "offset": 3622608
   },
   "pj": {
    "dtype": "float32",
    "shape": [
-    43456
+    41968
    ],
-   "offset": 3798376
+   "offset": 3664576
   },
   "two": {
    "dtype": "uint8",
    "shape": [
-    43456
+    41968
    ],
-   "offset": 3972200
+   "offset": 3832448
   }
  },
  "bin": "anya.bin"
