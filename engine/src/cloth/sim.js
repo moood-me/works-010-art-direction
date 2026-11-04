@@ -60,6 +60,8 @@ const CURVE = 0.04;
 const CLEAR = 0.02;
 // GIVE: the most an edge is shortened in a pass of the lengths (m)
 const GIVE = 0.004;
+// RIM: how far past a garment's edge one over it stops meeting it (m)
+const RIM = 0.015;
 // TOUCH: how near the skin a corner of a triangle is, for its middle to be asked too (m)
 const TOUCH = 0.004;
 // PRESSED: how near the floor a point lies pressed between the body and it
@@ -81,18 +83,23 @@ export class ClothSim {
   // ———— the rest it hangs in ————
   rest() {
     const mr = this.m.rest, gs = this.garments;
-    for (const g of gs) { g.T0.set(g.cut); g.T1.set(g.cut); }
+    for (const g of gs) { g.T0.set(g.cut); g.T1.set(g.cut); if (g.shape0) { g.S0.set(g.shape0); g.S1.set(g.shape0); } }
     // put on, innermost first: out of the skin and the garments under it before its lengths are its own (the masks: where
     // it lies together with each one under it)
     for (const [k, g] of gs.entries()) {
       g.masks = gs.slice(0, k).map(u => g.over(u));
       for (let it = 0; it < PREPARE; it++) { g.p.set(g.x); this.collide(g, k, mr, mr, false); }
       g.fitted(); g.normals(); g.publish();
+      // (the head's designed form is met only where the cloth lies outside it as it is put on — a hood round it; a
+      // form reaching down the neck stands in the collar of a dress, which is the skin's to meet)
+      if (this.solids.head) { const H = this.solids.head, l = this.hl, q = this.hp; g.onForm = Uint8Array.from({ length: g.n }, (_, i) => { q[0] = g.x[i * 3]; q[1] = g.x[i * 3 + 1]; q[2] = g.x[i * 3 + 2]; return H.distance(H.local(mr, q, l)) > g.thick ? 1 : 0; }); }
     }
     // let hang on the body at rest
     const n = Math.round(REST_TIME / H);
     for (let s = 0; s < n; s++) this.substep(mr, mr, 1, null);
-    for (const g of gs) { g.R0 = Float64Array.from(g.x); g.v.fill(0); g.normals(); }
+    // (and that is where it is held: where it hangs, not as it was cut — held as cut, a point the skin pushed out was
+    // drawn back into it for ever, a standing tug at a strap that shimmered)
+    for (const g of gs) { g.R0 = Float64Array.from(g.x); g.base.set(g.x); g.v.fill(0); g.normals(); }
     // the clothes as what lies over them meets them (hair: src/solids.js cover), at rest
     this.coverP = new Float32Array(gs.reduce((s, g) => s + g.n * 3, 0)); this.coverN = new Float32Array(this.coverP.length);
     this.cover = this.solids.cover(this.coverP.length / 3); this.covered(); this.cover.rest(this.coverP, this.coverN);
@@ -182,7 +189,7 @@ export class ClothSim {
         if (home && d !== Infinity && at.limb !== home) { const e = S.skin(mn, x[i3], x[i3 + 1], x[i3 + 2], at2, home); if (e < thick) this.contact(g, i3, at2, thick - e, mu); }
       }
       // the head's designed form (in its rest space, carried by the head and the jaw)
-      if (head && (x[i3] - hp[0]) ** 2 + (x[i3 + 1] - hp[1]) ** 2 + (x[i3 + 2] - hp[2]) ** 2 < HEAD_REACH * HEAD_REACH) this.onHead(g, i3, mw, mn, moving);
+      if (head && g.onForm?.[i] && (x[i3] - hp[0]) ** 2 + (x[i3 + 1] - hp[1]) ** 2 + (x[i3 + 2] - hp[2]) ** 2 < HEAD_REACH * HEAD_REACH) this.onHead(g, i3, mw, mn, moving);
       // the floor
       if (x[i3 + 1] < thick) {
         const pen = thick - x[i3 + 1]; x[i3 + 1] = thick;
@@ -246,7 +253,10 @@ class Garment {
   constructor({ output, cut, fabric: F, strength = 0, form = null, sim, drawn, pattern, home }, index, kn) {
     const T = cut.triangles, R = form ?? cut.positions, n = R.length / 3;
     Object.assign(this, { output, pattern, index, n, tris: T, F, mu: F.friction, self: !!pattern.self, home, tick: 0 });
-    this.skinner = sim; this.drawn = drawn; this.base = Float32Array.from(R);
+    // base: where its points are held at rest (as cut, then as it hangs settled); shape0: its designed form at rest
+    // (what it is pulled toward), if it has one
+    this.skinner = sim; this.drawn = drawn; this.base = Float32Array.from(R); this.shape0 = form ? Float32Array.from(form) : null;
+    if (form) { this.S0 = new Float64Array(n * 3); this.S1 = new Float64Array(n * 3); }
     this.cut = Float64Array.from(R); this.form = form ? Float64Array.from(form) : null;
     this.x = Float64Array.from(R); this.p = Float64Array.from(R); this.v = new Float64Array(n * 3);
     this.T0 = new Float64Array(n * 3); this.T1 = new Float64Array(n * 3); this.u = 1; this.buf = new Float32Array(n * 3);
@@ -254,7 +264,7 @@ class Garment {
     // each time)
     this.nrm = new Float64Array(n * 3); this.clear = new Float64Array(n); this.near = new Int32Array(n * kn).fill(-1);
     this.touched = new Uint8Array(n); this.tn = new Float64Array(n * 3); this.tv = new Float64Array(n * 3);
-    this.free = new Float64Array(n).fill(1);
+    this.free = new Float64Array(n).fill(1); this.uv = [0, 0, 0]; this.kid = new Int32Array(4); this.kd = new Float64Array(4);
     this.pushL = new Float64Array(n); this.pushN = new Float64Array(n * 3); this.pushV = new Float64Array(n * 3);
     this.hold = Float64Array.from(cut.hold); this.shapeK = strength * SHAPE_K;
     // masses from the fabric's weight per square metre (the smallest triangles' points given at least a share of a usual
@@ -309,24 +319,24 @@ class Garment {
     order.sort((a, b) => far(a) - far(b));
     this.E = Uint32Array.from(order.flatMap(k => [this.E[k * 2], this.E[k * 2 + 1]])); this.EL = Float64Array.from(order, k => this.EL[k]);
   }
-  // where the skin carries it at this frame's end (T1): its rest (with this frame's changes of the rest — its designed
-  // form, when it has one) skinned by its own skin
+  // where the skin carries it at this frame's end (T1), and its designed form (S1): its rest (with this frame's changes of
+  // the rest) skinned by its own skin
   carry(F) {
-    const b = this.buf; this.skinner.skin(F.pose, b, this.restNow(F), F.ctx.rest); for (let i = 0; i < b.length; i++) this.T1[i] = b[i];
+    const b = this.buf; this.skinner.skin(F.pose, b, this.moved(this.base, 'bm'), F.ctx.rest); for (let i = 0; i < b.length; i++) this.T1[i] = b[i];
+    if (this.shape0) { this.skinner.skin(F.pose, b, this.moved(this.shape0, 'sm'), F.ctx.rest); for (let i = 0; i < b.length; i++) this.S1[i] = b[i]; }
   }
-  // its rest this frame: as cut, moved by what moved the drawn mesh's rest (a change of the rest as a pose layer: the
-  // drawn mesh's first points are the cut's own, src/cloth/patterns.js loopStencil)
-  restNow(F) {
-    const o = this.output, r = this.rest ??= Float32Array.from(this.base);
-    if (!(o.rest && o.moved)) return this.base;
-    for (let i = 0; i < r.length; i++) r[i] = this.base[i] + o.rest[i] - o.mesh.positions[i];
+  // a rest of it this frame, moved by what moved the drawn mesh's rest (a change of the rest as a pose layer: the drawn
+  // mesh's first points are the cut's own, src/cloth/patterns.js drawnStencil)
+  moved(R, key) {
+    const o = this.output; if (!(o.rest && o.moved)) return R;
+    const r = this[key] ??= new Float32Array(R.length); for (let i = 0; i < r.length; i++) r[i] = R[i] + o.rest[i] - o.mesh.positions[i];
     return r;
   }
   // placed where it hangs at rest, carried whole by the pelvis as the entry pose has it (a reset), its targets from
   // there (to this frame's, T1)
   enter(pose) {
-    const b = this.buf; this.skinner.skin(pose, b, this.R0f ??= Float32Array.from(this.R0)); for (let i = 0; i < b.length; i++) this.x[i] = this.p[i] = b[i];
-    this.skinner.skin(pose, b, this.base); this.T0.set(b);
+    const b = this.buf; this.skinner.skin(pose, b, this.base); for (let i = 0; i < b.length; i++) this.x[i] = this.p[i] = b[i];
+    this.T0.set(this.x); if (this.shape0) { this.skinner.skin(pose, b, this.shape0); for (let i = 0; i < b.length; i++) this.S0[i] = b[i]; }
     // (nothing of before kept: a reset is the same however it is come to)
     this.v.fill(0); this.clear.fill(0); this.near.fill(-1); this.tick = 0;
   }
@@ -339,10 +349,11 @@ class Garment {
     if (!this.flat) for (let k = 0; k < this.EL.length; k++) this.EL[k] = dist(this.x, this.E[k * 2], this.E[k * 2 + 1]) * this.tight;
     // (where the skin carries it is where it lies now)
     this.cut.set(this.x); this.p.set(this.x); this.T0.set(this.x); this.T1.set(this.x); this.base.set(this.x);
+    if (this.shape0) { this.S0.set(this.shape0); this.S1.set(this.shape0); }
     this.tether();
   }
   // the targets as they are at the frame's end, from its start too (nothing to go between)
-  settled() { this.T0.set(this.T1); }
+  settled() { this.T0.set(this.T1); if (this.shape0) this.S0.set(this.S1); }
   // gravity, damping, the air; then each point carried on by its velocity
   integrate(wind, t, W) {
     const { n, x, v, p, nrm, area, mass, F } = this, damp = this.damp, odd = (++this.tick) & 1, air = F.air;
@@ -423,12 +434,12 @@ class Garment {
   // instead of being drawn into it (О1's: "a weaker pull to the form when sitting")
   pull() {
     if (!this.shapeF) return;
-    const { x, T0, T1, u, free: W } = this, f = this.shapeF;
-    for (let i = 0; i < this.n; i++) { const k = f * W[i]; if (!k) continue; for (let c = i * 3; c < i * 3 + 3; c++) x[c] += (T0[c] + (T1[c] - T0[c]) * u - x[c]) * k; }
+    const { x, S0, S1, u, free: W } = this, f = this.shapeF;
+    for (let i = 0; i < this.n; i++) { const k = f * W[i]; if (!k) continue; for (let c = i * 3; c < i * 3 + 3; c++) x[c] += (S0[c] + (S1[c] - S0[c]) * u - x[c]) * k; }
   }
   // how clear of the body each point's form is at the frame's end (1 clear by CLEAR, 0 in it or on it)
   clearOfBody(S, m) {
-    S.moment(1, m); const T = this.T1, at = this.at ??= { n: [0, 0, 0], v: [0, 0, 0] }, W = this.free;
+    S.moment(1, m); const T = this.S1, at = this.at ??= { n: [0, 0, 0], v: [0, 0, 0] }, W = this.free;
     for (let i = 0; i < this.n; i++) { const d = T[i * 3 + 1] < this.thick ? 0 : S.skin(m, T[i * 3], T[i * 3 + 1], T[i * 3 + 2], at); W[i] = d === Infinity ? 1 : Math.max(0, Math.min(1, (d - this.thick) / CLEAR)); }
   }
   tethers() {
@@ -511,25 +522,50 @@ class Garment {
     }
     return best;
   }
-  // its points against garment u under it, where they lie together: out to both thicknesses along u's normal there, not
-  // past u's edge, the slide over it held back by friction
+  // the NEAR nearest points of this garment within r of (x, y, z) into ids/ds (squared distances, nearest first; −1 past
+  // the last), how many
+  nearestK(x, y, z, r, ids, ds) {
+    const g = this.grid, inv = 1 / g.cell, cx = Math.floor(x * inv), cy = Math.floor(y * inv), cz = Math.floor(z * inv), P = this.x, K = ids.length;
+    ids.fill(-1); ds.fill(r * r); let n = 0;
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) {
+      const h = g.key(cx + dx, cy + dy, cz + dz), e = g.start[h + 1];
+      for (let k = g.start[h]; k < e; k++) {
+        const i = g.items[k], d = (P[i * 3] - x) ** 2 + (P[i * 3 + 1] - y) ** 2 + (P[i * 3 + 2] - z) ** 2; if (d >= ds[K - 1]) continue;
+        let q = K - 1; while (q > 0 && ds[q - 1] > d) { ds[q] = ds[q - 1]; ids[q] = ids[q - 1]; q--; } ds[q] = d; ids[q] = i; if (n < K) n++;
+      }
+    }
+    return n;
+  }
+  // its points against garment u under it, where they lie together: out to both thicknesses from u's surface there (the
+  // planes of its nearest points, weighed by nearness: one nearest point's plane jumps where it changes, and the cloth
+  // over it shimmered), not past u's edge, the slide over it held back by friction, no bounce
   against(u, mask) {
-    const { x, p, n, mu } = this, P = u.x, N = u.nrm, Q = u.p, R = u.rim, want = this.thick + u.thick, reach = Math.min(u.grid.cell * 1.5, want + 0.02);
+    const { x, p, n, mu } = this, P = u.x, N = u.nrm, Q = u.p, R = u.rim, want = this.thick + u.thick, reach = Math.min(u.grid.cell * 1.5, want + 0.02), ids = this.kid, ds = this.kd, nn = [0, 0, 0], uv = this.uv;
     for (let i = 0; i < n; i++) {
       if (!mask[i]) continue;
-      const k = i * 3, b = u.nearest(x[k], x[k + 1], x[k + 2], reach); if (b < 0) continue;
-      const bk = b * 3, ex = x[k] - P[bk], ey = x[k + 1] - P[bk + 1], ez = x[k + 2] - P[bk + 2];
-      if ((R[bk] || R[bk + 1] || R[bk + 2]) && ex * R[bk] + ey * R[bk + 1] + ez * R[bk + 2] > 0) continue;
-      const d = ex * N[bk] + ey * N[bk + 1] + ez * N[bk + 2]; if (d >= want) continue;
-      const pen = want - d;
-      x[k] += N[bk] * pen; x[k + 1] += N[bk + 1] * pen; x[k + 2] += N[bk + 2] * pen;
-      let tx = (x[k] - p[k]) - (P[bk] - Q[bk]), ty = (x[k + 1] - p[k + 1]) - (P[bk + 1] - Q[bk + 1]), tz = (x[k + 2] - p[k + 2]) - (P[bk + 2] - Q[bk + 2]);
-      const dn = tx * N[bk] + ty * N[bk + 1] + tz * N[bk + 2]; tx -= dn * N[bk]; ty -= dn * N[bk + 1]; tz -= dn * N[bk + 2];
+      const k = i * 3, m = u.nearestK(x[k], x[k + 1], x[k + 2], reach, ids, ds); if (!m) continue;
+      const b0 = ids[0] * 3;
+      // (past its edge what lies beyond is not under it: met less the farther past it, gone RIM past — met or not as
+      // its nearest point changes along the edge, a hem lying over a waistband shimmered)
+      const rl = Math.hypot(R[b0], R[b0 + 1], R[b0 + 2]), past = rl ? ((x[k] - P[b0]) * R[b0] + (x[k + 1] - P[b0 + 1]) * R[b0 + 1] + (x[k + 2] - P[b0 + 2]) * R[b0 + 2]) / rl : 0, keep = past > 0 ? 1 - past / RIM : 1;
+      if (keep <= 0) continue;
+      const h2 = Math.max(ds[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0; nn[0] = nn[1] = nn[2] = 0; uv[0] = uv[1] = uv[2] = 0;
+      for (let q = 0; q < m; q++) { const b = ids[q] * 3, w = Math.exp(-ds[q] / h2); sw += w; sd += w * ((x[k] - P[b]) * N[b] + (x[k + 1] - P[b + 1]) * N[b + 1] + (x[k + 2] - P[b + 2]) * N[b + 2]); for (let c = 0; c < 3; c++) { nn[c] += w * N[b + c]; uv[c] += w * (P[b + c] - Q[b + c]); } }
+      const d = sd / sw, l = Math.hypot(nn[0], nn[1], nn[2]) || 1; for (let c = 0; c < 3; c++) { nn[c] /= l; uv[c] /= sw; }
+      // (far under it — tucked in under a waistband — it stays there)
+      if (d >= want || d < -want) continue;
+      const pen = (want - d) * keep;
+      x[k] += nn[0] * pen; x[k + 1] += nn[1] * pen; x[k + 2] += nn[2] * pen;
+      let tx = (x[k] - p[k]) - uv[0], ty = (x[k + 1] - p[k + 1]) - uv[1], tz = (x[k + 2] - p[k + 2]) - uv[2];
+      const dn = tx * nn[0] + ty * nn[1] + tz * nn[2]; tx -= dn * nn[0]; ty -= dn * nn[1]; tz -= dn * nn[2];
       const tl = Math.sqrt(tx * tx + ty * ty + tz * tz);
       if (tl > 1e-12) { const f = tl < mu * pen ? 1 : mu * pen / tl; x[k] -= tx * f; x[k + 1] -= ty * f; x[k + 2] -= tz * f; }
+      for (let c = 0; c < 3; c++) uv[c] /= H;
+      this.touch(k, nn, uv);
     }
   }
 }
+
 
 // a spatial hash: points into cells (counting sort into flat arrays, kept and refilled)
 class Grid {

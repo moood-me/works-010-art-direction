@@ -3,9 +3,9 @@
 // (check/render.html) and tiled with their labels (tools/sheet.py).
 //   node engine/tools/sheets.mjs engine/tools/sheets/bodies.json [sheet names…]
 // A sheet: {name, out (from the repository's root), title, cols, w, h, items: [{label, char, body?, rest?, pose?, head?,
-// skin? (a skinning method), clip?, t?, view?, w?, h?, place?, focus?, size?, wind? (a wind preset: hair that moves is
-// stepped to its moment in it)}]} — rest, pose and head as in a character, with presets named by id
-// alone (pinned here as they are now) and bodies by id.
+// skin? (a skinning method), clothes?, clip?, t?, view?, w?, h?, place?, focus?, size?, wind? (a wind preset: hair and
+// clothes that move are stepped to their moment in it)}]} — rest, pose, head and clothes as in a character, with
+// presets named by id alone (pinned here as they are now) and bodies by id.
 import { readFile, writeFile, mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -32,6 +32,8 @@ for (const s of spec.sheets) {
     if (it.pose) over.pose = changes(it.pose);
     if (it.head) over.head = headOf(it.head);
     if (it.skin) over.skinning = { method: it.skin };
+    if (it.clothes) over.clothes = it.clothes.map(g => g.kind === 'preset' ? { ...g, id: pin(presets, g.id, 'preset') } : g.kind === 'off' || !g.kind ? g
+      : { ...g, ...(typeof g.fabric === 'string' ? { fabric: pin(presets, g.fabric, 'preset') } : {}), ...(typeof g.shape === 'string' ? { shape: pin(presets, g.shape, 'preset') } : {}) });
     return { name: 'p' + k, char: it.char || 'woman', clip: it.clip ?? null, t: it.t ?? 0, view: it.view || 'front', over, wind: it.wind ? pin(presets, it.wind, 'preset') : undefined, place: it.place, focus: it.focus, size: it.size, w: it.w || s.w || 300, h: it.h || s.h || 440 };
   });
   await shoot(jobs, dir);

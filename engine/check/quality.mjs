@@ -476,16 +476,20 @@ if (!only || only.includes('clothes')) {
     let ms = 0, frames = 0;
     for (const [clip, w] of [...CLIPS.map(c => [c, null]), ['idle', strong], ['walk', light]]) {
       const C = await E.clip(clip); sim.wind = w; fig.reset();
-      let bad = 0, speed = 0, deep = 0, share = 0, tear = 0;
+      let bad = 0, speed = 0, deep = 0, share = 0, tear = 0, was = null;
       for (let t = 0; t < C.frames; t++) {
         const a = performance.now(); fig.step(C, t); if (t) { ms += performance.now() - a; frames++; }
-        for (const g of sim.garments) for (let i = 0; i < g.x.length; i += 3) { if (!Number.isFinite(g.x[i] + g.x[i + 1] + g.x[i + 2])) bad++; speed = Math.max(speed, Math.hypot(g.v[i], g.v[i + 1], g.v[i + 2])); }
+        // (how fast each point went from the frame before: what is seen)
+        const now = all(sim).map(x => Float64Array.from(x));
+        for (const g of sim.garments) for (let i = 0; i < g.x.length; i += 3) if (!Number.isFinite(g.x[i] + g.x[i + 1] + g.x[i + 2])) bad++;
+        if (was) speed = Math.max(speed, apart(now, was).most * C.fps);
+        was = now;
         if (t % 3 === 0) { const d = inBody(sim); deep = Math.max(deep, d[Math.floor(d.length * 0.01)]); share = Math.max(share, d.filter(x => x > 0.01).length / d.length); tear = Math.max(tear, stretched(sim)); }
       }
       const what = `${id} in ${clip}${w === strong ? ' in a strong wind' : w ? ' in a light wind' : ''}`;
       check(`${what}: points not numbers`, bad, 0);
-      // (10 m/s: cloth is flung by a hand or a foot at most so fast; faster, a contact threw it)
-      check(`${what}: the fastest point (m/s)`, speed, 10);
+      // (10 m/s from one frame to the next: cloth is flung by a hand or a foot at most so fast; faster, a contact threw it)
+      check(`${what}: the fastest point, frame to frame (m/s)`, speed, 10);
       // LIMITS (set from looking)
       check(`${what}: the cloth in the body (the 1% deepest)`, deep * 1000, 20, ' mm');
       check(`${what}: the share of the cloth more than 1 cm in the body`, share * 100, 3, ' %');

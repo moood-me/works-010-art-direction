@@ -20,6 +20,9 @@ strengths, each feature painted or as volume, the face's light, an expression an
 With `?hair` (Д8–Д10) the hair's panel: the chosen figure's hairstyle (a preset of group hair — В1's, or a ready head's —
 its own, or none), whether it moves, how firmly it holds its shape, the wind every figure stands in, a close-up of the
 head; `&hs=<hair preset>|none&hm=0|1&hh=<hold>&w=<wind preset>&face`.
+With `?clothes` (Д11–Д13) the clothes' panel: what the chosen figure wears — each garment's fabric, its silhouette and
+how firmly the cloth holds it, taken off, a garment put on — and the wind; `&g=<pattern>:<fabric>[:<silhouette>[:<strength>]],…`
+(presets by id; `-` no silhouette) dresses the first figure in these alone, `&w=<wind preset>`.
 
 ## Layout
 
@@ -52,6 +55,12 @@ src/       engine.js      the entry: createEngine({root?, read?}) → body(ref),
                           styles.js (В1's 14 hairstyles, their groups named), fit.js (a hairstyle onto a head), sim.js
                           (hair in motion), hair.js (hair as a head's piece, stored builds, the simulations a figure's
                           meshes ask for), shade.js (how hair takes the light, three.js given)
+           cloth/         clothes (stage 4): patterns.js (how each garment is cut for a body: MakeHuman's source meshes,
+                          О3's made on the body, the hood; what holds it on; drawn finer than simulated), shape.js (О1's
+                          designed silhouettes), sim.js (О3's cloth on the figure's step), clothes.js (a character's
+                          clothes: fabrics, garments, their meshes and simulation)
+           wind.js        the air hair and clothes move in (a wind preset at a point and moment)
+           parts.js       parts over the parts they start from, by id (a head's, a character's clothes)
            solids.js      the body as hair and clothes meet it — the one collision a figure offers: the head's shape
                           with its jaw, the body's skin between two frames, its inside deep in; updated once a step,
                           read by any number of simulations
@@ -68,7 +77,8 @@ data/      skeleton.json, soma/ (Kimodo's SOMA skin, Apache-2.0: NOTICE), topolo
            anny/specs.json (the new bodies' Anny settings), bodies/index.json (every body by group, pinned),
            anny/face.json + .bin (Anny's 129 changes of the face on moood's mesh, tools/face_targets.py),
            wraps/ (wrapped heads stored by the key of what they are made from, tools/characters.mjs wraps),
-           hair/ (В1's hairstyles built in their design space, stored by their key, tools/characters.mjs hair)
+           hair/ (В1's hairstyles built in their design space, stored by their key, tools/characters.mjs hair),
+           garments/ (MakeHuman's garments as source meshes on Anny's mesh, tools/garments.mjs)
 motions/   <id>.json, index.json (motions and chains)
 characters/<id>.json, index.json
 presets/   <id>.json, index.json — presets of parts (deformers with their parameters), by group, pinned
@@ -79,8 +89,8 @@ check/     numbers.mjs (the numeric check), pictures.mjs + render.html (the pict
 tools/     Python that makes data/ and motions/: soma.py, bodies_moood.py, bodies_anny.py, bodies_new.py, motions.py,
            pack.py; characters.mjs (upgrade characters, pin bodies, presets, chains and the cases; index presets and
            bodies); sheets.mjs + sheet.py + sheets/ (labelled sheets of moments for the docs); face_targets.py (Anny's
-           face changes); heads.mjs (our heads Г1, Г3, Г2 as head presets); overlay.mjs + overlay.html (the overlay
-           check against a picture)
+           face changes); heads.mjs (our heads Г1, Г3, Г2 as head presets, the outfits they were drawn in); overlay.mjs +
+           overlay.html (the overlay check against a picture); garments.mjs (MakeHuman's garments into data/garments)
 vendor/    three.js
 ```
 
@@ -150,6 +160,19 @@ them are quick and made where the hairstyle is used. 4.6 MB for the 14 styles (v
 `index.json` keeps the hash of the code they are built by (`source`, `BUILD_SOURCES`): when it changed,
 `tools/characters.mjs hair` builds every stored one again and refuses if one comes out otherwise (then
 `HEAD_BUILD.hair` goes up, and they are stored anew — rarely: each version is a copy in git).
+
+**Garments** `data/garments/mh-<name>` (`engine/garment` 1, a pack on `anny-moood`): MakeHuman's garments (CC0) as moood
+bakes them — each point's three vertices of Anny's mesh (`refs`), its place among them (`bary`), an offset (`offset`,
+int16 × `unit` m) scaled by the body's own measures (`measure`: three pairs of vertices, `span`: their distances on the
+body it was made for), the triangles; `index.json` lists them. Written by `tools/garments.mjs` from experiments/data.
+
+Version 7 (character) and 6 (preset) add clothes: a character's `clothes: [garment…]` — `{kind: "garment", id?, pattern,
+fabric, color, shape?, strength?, moves?, wide?}`, an outfit `{kind: "preset", id}`, `{kind: "off", id}`, or `{id, …keys}` —
+over its base's by id (`src/parts.js`, as a head's pieces); a preset's content `clothes` (group outfit), `fabric` (group
+fabric: `{density, stretch, compress, bend, damping, friction, thick, air, sheen, rough, opacity}`) or `shape` (group
+garment-shape: О1's design keys, `src/cloth/shape.js` SHAPE); earlier files were upgraded (only their versions changed).
+The hoods the ready heads wore as rigid pieces (`wear-hood`, `wear-old`, the piece kind `hood`) are gone: they are
+garments of the outfits `outfit-hood`, `outfit-old` (tools/heads.mjs).
 
 **Bodies' index** `data/bodies/index.json`: every body with its pin, group (moood, t8, t8-head, age, build, origin),
 label and height. **Anny's settings** `data/anny/specs.json`: per new body its phenotype (`ph`), local changes (`lc`)
@@ -457,6 +480,79 @@ masses' clumps hang on guides of the same simulation, the cap, buns and ties rid
   darker roots and inner layer, the diffuse light taken partly along the strands (Kajiya-Kay), a two-lobe highlight
   along the strands broken by the bundles, light through the thin edges against the light, the colour richer in shade;
   the locks outlined in a dark of their own colour (В1's black), the inner layer not.
+
+**Clothes** (stage 4, `src/cloth/`). One clothing system, as agreed with Pavel: О3's real cloth as the base (garments,
+fabrics with their properties, collisions, wind, every motion), О1's designed silhouette of a garment as the shape the
+cloth is pulled toward with a strength, О2's MakeHuman garments as source meshes. A character wears `clothes` — garments,
+each of a pattern in a fabric with a colour, and outfits (presets of them) — taken, changed and taken off by id over
+its base's, as a head's pieces are; 16 fabrics `fabric-*` (О3's), 22 silhouettes `shape-*` (О1's dresses, skirts,
+sleeves, legs), 11 outfits `outfit-*` (what the ready heads were drawn in), and 10 dressed characters `clothes-*`.
+- *Cut* for the body (`patterns.js`, the source now; О3's copy stays for its page): MakeHuman's garments (dress, T-shirt,
+  sweater, polo, oversized top, tunic, robe, hooded top, trousers, shorts, skirt, wide trousers, apron, boots, flats) laid
+  on any body of Anny's mesh by their three vertices and offsets scaled by its measures (its rest changes made, its head
+  made — a deformed body, a ready head's character); О3's made on the skin itself (blouse, cardigan, jacket, swimsuit:
+  the skin's region offset by the garment's ease, smoothed so the cloth bridges the hollows, the cut points moved onto
+  the cut lines), a flared skirt (a tube that clears the hips and legs), a scarf (a strip laid round the neck, its flat
+  lengths kept); Г1's turtleneck (the neck's skin); the heads' hood (its shell round the designed head, the face open,
+  cut where it meets the shoulders) — the hoods the ready heads wore as rigid shells are cloth now, and don't go
+  through the shoulders. Each says what holds it on (a waistband, a neckline, a cuff lightly, a dress over the
+  shoulders and its openings above the chest; 1 where the skin carries it, fading along the cloth), its layer (worn
+  under what), whether its sleeves and legs belong to limbs, whether it can fold onto itself, whether it hangs. Shoes
+  ride the skin (`moves: false`, which any garment can take).
+- *Its silhouette* (`shape.js`, О1's `tailor`, the source now): the garment read round an axis (the trunk, each arm,
+  each leg) as rings of radius by height and angle, and on them its design drawn — how stiff it is (each ring toward
+  its convex hull), where it hangs from and falls straight from its widest ring, its silhouette below that (A-line,
+  bell, full, tulip, pencil, trapeze, bubble; sleeves fitted, straight, puff, bell, bishop, cap; legs straight, wide,
+  flare, taper, balloon), its section (round to square), its length, folds as a drawn rhythm round the hem. The cloth
+  is *cut* to that form (its lengths are the form's: a bell has more cloth at the hem), and *pulled toward* it as the
+  body carries it with the garment's `strength` (a spring of 2000/s² at 1 — the cloth sags 5 mm from its form under its
+  own weight: a stiff petticoat holds the bell — to 0: the cloth hangs freely as it was cut, in the folds of its extra
+  fabric); where the body stands in the form (a knee rising into a bell, sitting, the floor) it is not pulled there
+  but lies on the body (Pavel on О1's: "a weaker pull to the form when sitting"). A garment with no design and a
+  strength is pulled toward its cut (a stiff hood keeps its shell). О1's ladder down to the sign is not carried (the
+  pictogram Т4 keeps the sign).
+- *Carried* by the skin: each point skinned as the skin nearest it is (never a hand's), the weights smoothed over the
+  cloth (taken point by point, two points side by side under an arm took a collarbone's and a chest's and were torn
+  apart in a pose), what hangs below the hips carried by the pelvis as far as it hangs (a bell's hem swings with the
+  hips, not with each thigh, and points between the legs are not torn apart by them). That is where a held point is
+  pulled, where the form is, and what `frame()` alone draws (the cut on the skin, as О1's "ride").
+- *Simulated* (`sim.js`, О3's XPBD cloth, the source now) on the figure's step: all of a figure's cloth in one
+  simulation, the innermost garment first in each small step of 1/240 s (always that: what a frame leaves over goes to
+  the next, the cloth drawn carried on by its velocity over it — the same at 20, 30, 60 or 144 frames a second); per
+  small step gravity, the fabric's damping and the air (the hair's winds, `src/wind.js`, pressing on each point as its
+  surface faces the flow less its own velocity); lengths three times (each edge holds against stretching with the
+  fabric's stretch, gives way when pushed together, so it folds; the edges ordered by their distance from where the
+  garment hangs, so a pass carries the weight down from the top; an edge pulled across the body gives no more than 4 mm
+  a pass — the cloth stretches over a knee rather than being drawn through it), bending (Kawabata's rigidity per
+  hinge), what holds it on (a held point an elastic to where the skin carries it, its weight taken up so a waistband of
+  a hundred points carries trousers of five thousand), its form, soft tethers (no farther from a held point than the
+  cloth between is long, a share of the excess a step), its own points kept apart, then the body: the figure's solids
+  (`src/solids.js`), the one collision hair uses too — the skin between the frames at that small step's moment, each
+  point keeping the skin points nearest it (`S.kept`: looked for afresh every other step, of the nearest one's limb
+  only — between the legs, both legs' skin together pushed a skirt sideways through one — but the fingers', on which
+  cloth lies as on a mitten), deep in as deep as the capsules' surface; with the fabric's thickness and as far as the
+  cloth between two points sags in over the body's tightest curve; each triangle's middle out of the skin too (a knee
+  goes between points two or three centimetres apart, though each keeps out); a sleeve or a trouser leg also out of
+  its own limb's skin; the head's designed form; the garments under it where they lie together as dressed, not past
+  their edge; the floor — cloth pressed between the body and the floor left lying on it; friction against the skin's
+  own motion, and no bounce (a point pushed out leaves without the push's speed).
+- *Its rest*: put on the body at rest (out of the skin and the garments under it; its lengths as it lies then), then
+  let hang 1.2 s. A reset (the first step, a new clip, a scrub back) takes it from there carried by the pelvis to where
+  the body is, the body going into its pose over 0.4 s along the solids' entry (`S.entry`) with the cloth along it — as
+  a person dressed standing goes into a stride (placed straight into a stride, a skirt's hem was left round a leg
+  that should be inside it) — then 30 small steps without speed; a loop carries every point with the skin under it.
+- *Drawn* finer than simulated: MakeHuman's garments, the flared skirt and the hood are simulated as cut (points 2–3 cm
+  apart) and drawn with each triangle in four by the butterfly scheme (through the simulated points: Loop's smoothing
+  pulled a surface drawn tight over a knee into it); the skin under close cloth drawn sunk 4 mm (О3's: the skin's finer
+  bulges would show between the cloth's points; drawn only); the fabric's sheen and roughness, its inside darker, a
+  toon head's light and outline on its clothes too. Hair lies over the clothes (`S.over`: the cloth's surface, out to
+  its thickness, at the hair's moments — a collar, a blouse's shoulders; what lies under them at rest, under a hood, is
+  the hood's to keep off).
+Tried and dropped: simulating MakeHuman's garments subdivided (О3's: points a centimetre apart need small steps of 1/960
+s to keep their lengths, 0.1–0.4 s a frame); cloth meeting the skin by one search a point every small step (four times
+the cost: the points kept do it); hard tethers (they fought the body where cloth goes round it and threw it at 60 m/s);
+placing a reset straight in the pose. A frame of a dressed figure costs 30–90 ms in node (MEASURED); several characters at once,
+on the GPU, are the later task — the step allocates nothing and works on flat arrays, garment by garment.
 
 **Chains** (`clipOf`). A motion made with `make_motion(after: {key, frames})` begins with the other's last frames.
 Where it stands and which way it faces in the other's space is measured from those shared frames (the same pose in

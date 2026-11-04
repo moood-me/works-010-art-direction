@@ -1110,6 +1110,180 @@
    "size": 0.5,
    "view": "tq",
    "picture": true
+  },
+  {
+   "name": "wind-idle90",
+   "char": "clothes-wind",
+   "clip": "idle",
+   "t": 90,
+   "view": "three",
+   "picture": true,
+   "wind": "wind-strong@64bb0a2cb59fea0d"
+  },
+  {
+   "name": "light-walk40",
+   "char": "clothes-wind",
+   "clip": "walk",
+   "t": 40,
+   "view": "side",
+   "picture": true,
+   "wind": "wind-light@ecb351e6471f5e97"
+  },
+  {
+   "name": "free-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-poplin@d20ecf344a94963e",
+      "color": "#3d5f8c",
+      "shape": "shape-bell@3ec8e4c677e97227",
+      "strength": 0
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "half-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-poplin@d20ecf344a94963e",
+      "color": "#3d5f8c",
+      "shape": "shape-bell@3ec8e4c677e97227",
+      "strength": 0.5
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "chiffon-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-chiffon@f305643886762bd4",
+      "color": "#3d5f8c"
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "denim-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-denim@08106be05917918a",
+      "color": "#3d5f8c"
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "jump40",
+   "char": "clothes-child",
+   "clip": "jump",
+   "t": 40,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "dance60",
+   "char": "clothes-jacket",
+   "clip": "dance",
+   "t": 60,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "roll40",
+   "char": "clothes-jeans",
+   "clip": "roll",
+   "t": 40,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "bow50",
+   "char": "clothes-granny",
+   "clip": "bow",
+   "t": 50,
+   "view": "side",
+   "picture": true
+  },
+  {
+   "name": "look60",
+   "char": "head-hood",
+   "clip": "look-around",
+   "t": 60,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "hair-walk40",
+   "char": "clothes-hair",
+   "clip": "walk",
+   "t": 40,
+   "view": "back",
+   "picture": true
   }
  ]
 }

@@ -5,7 +5,7 @@
 // Two kinds, as О3 had them (experiments/cloth/wardrobe.js; this is the source now, О3's copy stays for its page):
 // - MakeHuman's garments (CC0, data/garments/mh-*: tools/garments.mjs) — each point on three vertices of Anny's mesh, its
 //   offset scaled by the body's own measures, so it is laid on any body of that mesh, its rest changes made: simulated
-//   as they are (points 2–3 cm apart), drawn with each triangle in four (Loop) — finer cloth would need smaller steps
+//   as they are (points 2–3 cm apart), drawn with each triangle in four (drawnStencil) — finer cloth would need smaller steps
 //   to keep its lengths (src/cloth/sim.js) and cost four times as much;
 // - made on the body itself: a blouse, a cardigan, a jacket, a swimsuit (the skin's region offset by the garment's ease,
 //   smoothed so the cloth bridges the hollows, the cut points moved onto the cut lines so hem, cuffs, neckline and the
@@ -74,7 +74,7 @@ async function made(body, id, P, E, ctx) {
   const nrm = normalsOf(pos, tris); let out = 0;
   for (let i = 0; i < pos.length / 3; i++) { const b = near[i]; out += Math.sign(nrm[i * 3] * B.nrm[b * 3] + nrm[i * 3 + 1] * B.nrm[b * 3 + 1] + nrm[i * 3 + 2] * B.nrm[b * 3 + 2]); }
   if (out < 0 && !g.flat) for (let t = 0; t < tris.length; t += 3) { const b = tris[t + 1]; tris[t + 1] = tris[t + 2]; tris[t + 2] = b; }
-  return { positions: pos, triangles: tris, hold, near, flat: g.flat ?? null, drawn: g.drawn ? loopStencil(pos.length / 3, tris) : null };
+  return { positions: pos, triangles: tris, hold, near, flat: g.flat ?? null, drawn: g.drawn ? drawnStencil(pos.length / 3, tris) : null };
 }
 // MakeHuman's source meshes, read once
 const SOURCES = new Map();
@@ -112,29 +112,25 @@ export function edgesOf(tris) {
   return m;
 }
 const ends = key => [Math.floor(key / 4194304), key % 4194304];
-// Loop subdivision as a stencil: each triangle in four, every point of the finer mesh a weighed sum of the coarse
-// mesh's points (toward the smooth surface; open edges kept as curves of their own) — so the cloth is simulated coarse
-// and drawn smooth: {triangles, N, start, idx, w} (the finer points' weights, compressed rows)
-export function loopStencil(n, tris) {
-  const E = edgesOf(tris), opp = new Map(), mid = new Map(), rows = [];
-  for (let t = 0; t < tris.length; t += 3) for (let k = 0; k < 3; k++) {
-    const a = tris[t + k], b = tris[t + (k + 1) % 3], c = tris[t + (k + 2) % 3], key = a < b ? a * 4194304 + b : b * 4194304 + a;
-    (opp.get(key) || opp.set(key, []).get(key)).push(c);
+// The cloth drawn finer than it is simulated, as a stencil: each triangle in four by the butterfly scheme (Dyn et al.
+// 1990) — the points kept where they are, a new one on each edge from its two ends, the two points across it and the
+// four beyond those (1/2, 1/8, −1/16) — so the drawn surface goes through the simulated points: where the cloth is
+// drawn tight over a knee, a smoothing (Loop's) pulls the surface between them into the knee; on an open edge, its
+// middle. {triangles, N, start, idx, w} (the finer points' weights, compressed rows)
+export function drawnStencil(n, tris) {
+  const E = edgesOf(tris), opp = new Map(), mid = new Map(), rows = [], key = (a, b) => a < b ? a * 4194304 + b : b * 4194304 + a;
+  for (let t = 0; t < tris.length; t += 3) for (let k = 0; k < 3; k++) { const a = tris[t + k], b = tris[t + (k + 1) % 3], c = tris[t + (k + 2) % 3]; (opp.get(key(a, b)) || opp.set(key(a, b), []).get(key(a, b))).push(c); }
+  for (let i = 0; i < n; i++) rows.push([[i, 1]]);
+  // (the point across edge (a, c) from b, if there is one)
+  const wing = (a, c, b) => (opp.get(key(a, c)) || []).find(v => v !== b) ?? -1;
+  for (const [k, count] of E) {
+    const [a, b] = ends(k), o = opp.get(k);
+    mid.set(k, rows.length);
+    if (count !== 2) { rows.push([[a, 0.5], [b, 0.5]]); continue; }
+    const [c, d] = o, ws = [wing(a, c, b), wing(b, c, a), wing(a, d, b), wing(b, d, a)];
+    rows.push(ws.every(w => w >= 0) ? [[a, 0.5], [b, 0.5], [c, 0.125], [d, 0.125], ...ws.map(w => [w, -0.0625])] : [[a, 0.375], [b, 0.375], [c, 0.125], [d, 0.125]]);
   }
-  const nb = Array.from({ length: n }, () => new Set()), bnb = Array.from({ length: n }, () => new Set());
-  for (const [key, c] of E) { const [a, b] = ends(key); nb[a].add(b); nb[b].add(a); if (c !== 2) { bnb[a].add(b); bnb[b].add(a); } }
-  for (let i = 0; i < n; i++) {
-    if (bnb[i].size === 2) { const [a, b] = [...bnb[i]]; rows.push([[i, 0.75], [a, 0.125], [b, 0.125]]); continue; }
-    if (bnb[i].size > 2 || !nb[i].size) { rows.push([[i, 1]]); continue; }
-    const k = nb[i].size, beta = k === 3 ? 3 / 16 : 3 / (8 * k);
-    rows.push([[i, 1 - k * beta], ...[...nb[i]].map(j => [j, beta])]);
-  }
-  for (const [key, c] of E) {
-    const [a, b] = ends(key), o = opp.get(key);
-    mid.set(key, rows.length);
-    rows.push(c === 2 ? [[a, 0.375], [b, 0.375], [o[0], 0.125], [o[1], 0.125]] : [[a, 0.5], [b, 0.5]]);
-  }
-  const T = [], M = (a, b) => mid.get(a < b ? a * 4194304 + b : b * 4194304 + a);
+  const T = [], M = (a, b) => mid.get(key(a, b));
   for (let t = 0; t < tris.length; t += 3) { const a = tris[t], b = tris[t + 1], c = tris[t + 2], ab = M(a, b), bc = M(b, c), ca = M(c, a); T.push(a, ab, ca, ab, b, bc, ca, bc, c, ab, bc, ca); }
   const start = new Int32Array(rows.length + 1); rows.forEach((r, i) => { start[i + 1] = start[i] + r.length; });
   const idx = new Int32Array(start[rows.length]), w = new Float32Array(start[rows.length]);
