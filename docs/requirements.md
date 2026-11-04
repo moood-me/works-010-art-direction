@@ -107,6 +107,8 @@ movements by themselves; speed of cloth and hair for several characters.
   bends, lifts, carries, maybe puts down; the carried one attached, posed by Kimodo); if Kimodo understands some
   badly — similar ones (a handshake, a hug, leading by the hand). Checked by numbers (touches, no passing through)
   and by eye; pictures and animations in the gallery; history.
+- On the way: find your bearings and use common sense; don't take on overly complex tasks; try to do it well and in
+  the spirit of these requirements, as far as possible (Pavel, 2026-11-04).
 - Add what Pavel asks to this file, so it isn't lost.
 
 ## Not now
