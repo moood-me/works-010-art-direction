@@ -129,22 +129,48 @@ function aim(pose, j, child, dir) {
   turnUnder(pose, sk, j, qBetween(cur, normalize(dir)));
   build(pose, body, getV(pose.P, I.Hips));
 }
-// the fingers a little bent, together, as the drawing's relaxed hand (a pose layer on top of any motion)
+// the hand as the drawing's relaxed hand (a pose layer on top of any motion): fingers together and a little bent
+// toward the palm (Anny's rest has them spread straight)
 const FINGERS = ['Index', 'Middle', 'Ring', 'Pinky'];
+const V3 = (p, j) => getV(p.P, j);
+const cross3 = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 function relaxHands(pose, k = 1) {
+  const re = () => build(pose, body, getV(pose.P, I.Hips));
   for (const s of ['Left', 'Right']) {
-    const sg = s === 'Left' ? 1 : -1;
-    for (const f of FINGERS) for (const [n, ang] of [[1, 0.28], [2, 0.38], [3, 0.3]]) {
-      const j = I[`${s}Hand${f}${n}`], c = I[`${s}Hand${f}${n + 1}`] ?? I[`${s}Hand${f}End`];
-      // bend about the axis across the knuckles (thumb side to little finger), toward the palm
-      const across = normalize(sub(getV(pose.P, I[`${s}HandIndex1`]), getV(pose.P, I[`${s}HandPinky1`])));
-      const dir = normalize(sub(getV(pose.P, c), getV(pose.P, j)));
-      const ax = normalize([across[1] * dir[2] - across[2] * dir[1], across[2] * dir[0] - across[0] * dir[2], across[0] * dir[1] - across[1] * dir[0]]);
-      const axis = normalize([ax[1] * dir[2] - ax[2] * dir[1], ax[2] * dir[0] - ax[0] * dir[2], ax[0] * dir[1] - ax[1] * dir[0]]);
-      turnUnder(pose, sk, j, qAxisAngle(axis, -sg * ang * k));
-      build(pose, body, getV(pose.P, I.Hips));
+    const J_ = n => I[`${s}Hand${n}`];
+    // which side the palm is: where the thumb lies off the plane of the knuckles
+    const dirM = normalize(sub(V3(pose, J_('Middle2')), V3(pose, J_('Middle1'))));
+    const across = normalize(sub(V3(pose, J_('Index1')), V3(pose, J_('Pinky1'))));
+    let palm = sub(V3(pose, J_('ThumbEnd')), V3(pose, J_('Middle1')));
+    palm = normalize(sub(sub(palm, dirM.map(v => v * dot3(palm, dirM))), across.map(v => v * dot3(palm, across))));
+    // together: each finger's base turned toward the middle finger's direction
+    for (const f of ['Index', 'Ring', 'Pinky']) {
+      const d = normalize(sub(V3(pose, J_(f + '2')), V3(pose, J_(f + '1'))));
+      const tg = normalize(d.map((v, i) => v * 0.25 + dirM[i] * 0.75));
+      turnUnder(pose, sk, J_(f + '1'), qBetween(d, tg)); re();
     }
+    // bent toward the palm, a little more at the middle joints
+    for (const f of FINGERS) for (const [n, ang] of [[1, 0.35], [2, 0.45], [3, 0.3]]) {
+      const j = J_(f + n), c = I[`${s}Hand${f}${n + 1}`] ?? J_(f + 'End');
+      const d = normalize(sub(V3(pose, c), V3(pose, j)));
+      const ax = normalize(cross3(d, palm));
+      turnUnder(pose, sk, j, qAxisAngle(ax, ang * k)); re();
+    }
+    { const j = J_('Thumb2'), d = normalize(sub(V3(pose, J_('Thumb3')), V3(pose, j)));
+      turnUnder(pose, sk, j, qAxisAngle(normalize(cross3(d, palm)), 0.25 * k)); re(); }
   }
+}
+// the palm turned toward the thigh, as drawn (palm (−1, 0, 0.2) for the left hand, mirrored)
+function palmIn(pose, s, sg) {
+  const J_ = n => I[`${s}Hand${n}`], H_ = I[s + 'Hand'];
+  const ax = normalize(sub(V3(pose, J_('Middle1')), V3(pose, H_)));
+  const across = normalize(sub(V3(pose, J_('Index1')), V3(pose, J_('Pinky1'))));
+  let palm = sub(V3(pose, J_('ThumbEnd')), V3(pose, J_('Middle1')));
+  palm = normalize(sub(sub(palm, ax.map(v => v * dot3(palm, ax))), across.map(v => v * dot3(palm, across))));
+  let want = [-sg, 0, 0.25]; want = normalize(sub(want, ax.map(v => v * dot3(want, ax))));
+  const ang = Math.atan2(dot3(cross3(palm, want), ax), dot3(palm, want));
+  turnUnder(pose, sk, H_, qAxisAngle(ax, ang)); build(pose, body, getV(pose.P, I.Hips));
 }
 function standPose() {
   const pose = fig.restPose();
@@ -153,6 +179,7 @@ function standPose() {
     aim(pose, I[s + 'Arm'], I[s + 'ForeArm'], m(STAND.upper));
     aim(pose, I[s + 'ForeArm'], I[s + 'Hand'], m(STAND.fore));
     aim(pose, I[s + 'Hand'], I[s + 'HandMiddle1'], m(STAND.hand));
+    palmIn(pose, s, sg);
   }
   return pose;
 }

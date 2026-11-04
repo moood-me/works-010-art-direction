@@ -16,6 +16,6 @@ await page.click('#exprs button:nth-child(3)');
 await page.waitForTimeout(20000);
 await page.click('#play');
 await page.waitForTimeout(5000);
-await page.screenshot({ path: process.argv[2] });
+await page.screenshot({ path: process.argv[2], timeout: 240000 });
 await b.close(); srv.close();
 console.log(errs.length ? 'errors:\n' + errs.join('\n') : 'no errors');
