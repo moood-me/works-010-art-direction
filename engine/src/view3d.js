@@ -87,7 +87,7 @@ export function joinBounds(list) {
 }
 
 // a figure's meshes (every output: body, head, pieces, clothes, sweeps) as three.js meshes, updated from the figure
-// each frame; the joints and the body's collision capsules drawn over them when asked. A head (src/head/head.js) brings
+// each frame; the joints drawn over them when asked. A head (src/head/head.js) brings
 // its face's picture (painted each time its expressions ask the drawing something else: src/head/paint.js) and its
 // light: toon (three soft tones, not tone-mapped) with an outline (the back of a shell a little outside, set back in
 // depth so it shows only past the silhouette), and no cast shadows on the face when it asks.
@@ -122,7 +122,7 @@ export function figureView(THREE, figure, look) {
     if (toon) mat.toneMapped = false;
     if (m.noShadow) g.setAttribute('noShadow', new THREE.BufferAttribute(m.noShadow, 1));
     if (m.paintMask) g.setAttribute('paintMask', new THREE.BufferAttribute(m.paintMask, 1));
-    const sink = o.name === 'body' ? sunk(figure) : null; if (sink) g.setAttribute('sink', new THREE.BufferAttribute(sink, 1));
+    const sink = o.name === 'body' ? figure.simulations.find(s => s.sink)?.sink ?? null : null; if (sink) g.setAttribute('sink', new THREE.BufferAttribute(sink, 1));
     lightMaterial(THREE, mat, { toon, faceMask: !!m.noShadow, skin: m.paintMask ? new THREE.Color(head.skin) : null, shine: m.shine, sink: !!sink });
     // a head's piece, closed, casts its shadow from its back faces (no shadow acne on its own lit side: thin locks of hair)
     if (m.piece && !m.double) mat.shadowSide = THREE.BackSide;
@@ -136,46 +136,23 @@ export function figureView(THREE, figure, look) {
   const J = figure.rig.J;
   const dots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.008, 10, 8), new THREE.MeshBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true }), J);
   dots.renderOrder = 10; dots.visible = false; dots.frustumCulled = false; group.add(dots);
-  const caps = new THREE.Group(); caps.visible = false; group.add(caps);
-  const m = new THREE.Matrix4(), capMat = new THREE.MeshBasicMaterial({ color: '#2a7ab4', wireframe: true, transparent: true, opacity: 0.35 });
+  const m = new THREE.Matrix4();
   return {
-    group, dots, caps, parts,
+    group, dots, parts,
     update() {
-      for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; if (p.hair) p.g.attributes.hairT.needsUpdate = true; if (p.g.attributes.parted) p.g.attributes.parted.needsUpdate = true; }
+      for (const p of parts) if (!p.ink) { p.g.attributes.position.needsUpdate = true; p.g.attributes.normal.needsUpdate = true; if (p.hair) p.g.attributes.hairT.needsUpdate = true; if (p.g.attributes.parted) p.g.attributes.parted.needsUpdate = true; if (p.g.attributes.sink) p.g.attributes.sink.needsUpdate = true; }
       if (face) face.paint(figure.ctx.expressions);
       const P = figure.pose.P;
       if (dots.visible) { for (let j = 0; j < J; j++) dots.setMatrixAt(j, m.makeTranslation(P[j * 3], P[j * 3 + 1], P[j * 3 + 2])); dots.instanceMatrix.needsUpdate = true; }
-      if (caps.visible) {
-        // (the body's inside as its solids have it this frame; a figure that was only drawn, never stepped, at its rest)
-        const solids = figure.solids(), now = solids.capsules(solids.moment(1));
-        if (!caps.children.length) for (const c of now) caps.add(new THREE.Mesh(capsuleGeometry(THREE, c), capMat));
-        now.forEach((c, n) => placeCapsule(THREE, caps.children[n], c));
-      }
     },
     dispose() {
       for (const p of parts) { if (!p.ink) p.g.dispose(); p.mesh.material.dispose(); }
       if (face) face.texture.dispose();
-      dots.geometry.dispose(); dots.material.dispose(); for (const c of caps.children) c.geometry.dispose(); capMat.dispose();
+      dots.geometry.dispose(); dots.material.dispose();
     },
   };
 }
 
-// the skin under close clothes, drawn sunk a few millimetres (О3's): between the cloth's points (a centimetre or more
-// apart) the skin's own finer bulges would show through where the cloth sits tight — only drawn so; the cloth meets the
-// real body. SINK: how deep, NEAR and FAR: within how far of the cloth at rest all of it, beyond which none
-const SINK = 0.004, NEAR = 0.012, FAR = 0.027;
-function sunk(figure) {
-  const cloth = figure.outputs.filter(o => o.mesh.cloth); if (!cloth.length) return null;
-  const B = figure.outputs[0].mesh, P = B.positions, cell = FAR, grid = new Map(), key = (a, b, c) => `${a},${b},${c}`;
-  for (const o of cloth) { const Q = o.mesh.positions; for (const i of o.mesh.used) { const k = key(Math.floor(Q[i * 3] / cell), Math.floor(Q[i * 3 + 1] / cell), Math.floor(Q[i * 3 + 2] / cell)); (grid.get(k) || grid.set(k, []).get(k)).push(Q[i * 3], Q[i * 3 + 1], Q[i * 3 + 2]); } }
-  const out = new Float32Array(B.N);
-  for (const i of B.used) {
-    const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2], cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell); let d = Infinity;
-    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) { const L = grid.get(key(cx + a, cy + b, cz + c)); if (L) for (let k = 0; k < L.length; k += 3) d = Math.min(d, (L[k] - x) ** 2 + (L[k + 1] - y) ** 2 + (L[k + 2] - z) ** 2); }
-    d = Math.sqrt(d); out[i] = SINK * (1 - Math.min(1, Math.max(0, (d - NEAR) / (FAR - NEAR))));
-  }
-  return out;
-}
 // a garment's cloth (src/cloth/clothes.js): its colour, its fabric's roughness and sheen (velvet-like light along its
 // silhouette), translucent if the fabric is (chiffon); its inside darker (О3's)
 function clothMaterial(THREE, { color, fabric: F }) {
@@ -257,18 +234,6 @@ function lightMaterial(THREE, mat, { toon, faceMask, skin, shine, sink }) {
     sh.vertexShader = vs; sh.fragmentShader = fs;
   };
   mat.customProgramCacheKey = () => `light:${!!toon}:${!!faceMask}:${!!skin}:${shine ?? 0}:${!!sink}`;
-}
-
-// a tapered capsule along +y from 0 to its length, radius ra below and rb above
-function capsuleGeometry(THREE, c) {
-  const L = Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]), pts = [], n = 6;
-  for (let i = 0; i <= n; i++) { const t = -Math.PI / 2 + (i / n) * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(t) * c.ra, Math.sin(t) * c.ra)); }
-  for (let i = 0; i <= n; i++) { const t = (i / n) * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(t) * c.rb, L + Math.sin(t) * c.rb)); }
-  return new THREE.LatheGeometry(pts, 12);
-}
-function placeCapsule(THREE, mesh, c) {
-  const d = new THREE.Vector3(c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]).normalize();
-  mesh.position.set(...c.a); mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d);
 }
 
 const norm = a => { const l = Math.hypot(...a); return a.map(v => v / l); };

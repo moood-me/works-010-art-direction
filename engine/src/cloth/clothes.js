@@ -64,16 +64,10 @@ export async function clothesOn(body, list, E) {
     const { mesh } = skinnedOn(body, `cloth-${garmentId(g)}`, drawnAt, D ? D.triangles : cut.triangles, null, false,
       { floor: !moves, cloth: { color: g.color, fabric: F, pattern: g.pattern }, skinning: { method: 'lbs' } }, { stencil: D ?? identity(rest.length / 3), weights: sim.weights });
     out.push({ mesh, garment: g, cut, form, moves, fabric: F, pattern: P, sim: moves ? new Skinner(sim.mesh, body.rig, { method: 'lbs' }) : null, drawn: D,
-      home: P.tubes ? homeOf(cut, B.limb) : new Uint8Array(cut.near.length) });
+      // (a sleeve's or a trouser leg's points each on the limb its nearest skin point is, О3's — the hip band's too:
+      // a thigh folded up to the belly is met by the trousers' front)
+      home: P.tubes ? Uint8Array.from(cut.near, b => B.limb[b]) : new Uint8Array(cut.near.length) });
   }
-  return out;
-}
-// a sleeve's or a trouser leg's points: the limb each lies on (its nearest skin point's), where its neighbours lie on the
-// same one — not at a seam between two (the crotch: between a heavy body's thighs, touching, a point given one leg was
-// pushed out of it into the other and back, a flicker of 2–3 cm)
-function homeOf(cut, limb) {
-  const n = cut.near.length, home = Uint8Array.from(cut.near, b => limb[b]), T = cut.triangles, out = Uint8Array.from(home);
-  for (let t = 0; t < T.length; t += 3) for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) if (home[T[t + a]] !== home[T[t + b]]) out[T[t + a]] = 0;
   return out;
 }
 // a mesh skinned as the body's skin nearest each of its points is (near: those vertices), the weights then smoothed

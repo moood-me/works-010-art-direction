@@ -1,6 +1,6 @@
 // Hair in motion (В1's motion.js, carried onto the engine's figure): every guide is a chain of points rooted on the
 // Head joint, moved by position-based dynamics, as games and film do it (TressFX; Müller et al. 2012, "Fast simulation
-// of inextensible hair"). A figure's step (src/figure.js) runs it after the floor, in small steps of 1/240 s, always
+// of inextensible hair"). A figure's step (src/figure.js) runs it after the floor, in its small steps (1/240 s), always
 // the same whatever the frame's step (the time a frame leaves over is carried to the next: so the hair moves the same at
 // 20, 30, 60 or 144 frames a second); in each:
 // - gravity and the air (the wind with its gusts and a turbulence of its own round every lock, less the lock's own
@@ -23,10 +23,11 @@
 // drawn where they are at the frame's own moment (carried on by their velocity over the part of a small step the frame
 // leaves over), the roots where the head is.
 //   new HairSim(figure, {guides, meshes: [{output, bind, normals: 'design' | 'surface'}], physics})
-//   sim.wind = {speed, dir, gust, turbulence} | null      sim.step(ctx) — the figure's simulation step
+//   sim.wind = {speed, dir, gust, turbulence} | null      sim.begin(ctx), sim.substep(was, now), sim.end(left) — the figure's step
 import { qRot3, qSlerp } from '../math.js';
 import { normalsOf } from '../mesh.js';
 import { windAt } from '../wind.js';
+import { SMALL } from '../figure.js';
 
 // WIND: how much more the wind takes the hair than the air of its own motion does (the wind felt as a flow WIND times as
 // fast): with the air of its motion alone, a strong wind leaned long hair 24°; with that air made as strong (four, eight
@@ -34,7 +35,7 @@ import { windAt } from '../wind.js';
 const WIND = 3;
 // G: gravity; H: the small step; PIN: points of a chain carried by the head; MU: friction against a solid (the share of
 // its motion along the solid taken away in a small step); AIR: how fast the air stills a point's own motion (1/s)
-const G = 9.81, H = 1 / 240, PIN = 2, MU = 0.35, AIR = 0.4;
+const G = 9.81, H = SMALL, PIN = 2, MU = 0.35, AIR = 0.4;
 // ZIGZAG: how fast a point's velocity against its two neighbours' dies (1/s: 0.35 of it a small step); TOGETHER: how
 // fast a point's velocity against its neighbouring locks' (1/s); NEAR: how near at rest a point of another lock is a
 // neighbour; FLOOR: the floor's friction (a share a small step)
@@ -89,7 +90,7 @@ export class HairSim {
     }
     // what a small step works with, made once: the solids now and a small step ago, a point's answers, scratch
     const S = this.solids;
-    this.m = { now: S.moment(1), was: S.moment(1), end: S.moment(1), rest: S.rest.moment(0) };
+    this.m = { end: S.moment(1), rest: S.rest.moment(0) };
     this.q = { o: [0, 0, 0], w: [0, 0, 0], r: [0, 0, 0], pp: [0, 0, 0], l: [0, 0, 0], lp: [0, 0, 0], n: [0, 0, 0], p: [0, 0, 0], Q: [0, 0, 0, 1], B: [0, 0, 0, 1], at: { n: [0, 0, 0], v: [0, 0, 0] } };
     this.Qs = new Float64Array(N * 4);
     // how deep each point lies in the head's shape at rest, and in the skin (where a head without a designed form is
@@ -100,9 +101,9 @@ export class HairSim {
       // (in the head's skin — a head without a designed form — as deep as it lay at rest, roots under the scalp; out of
       // the body's by its own half-thickness, however the design lay on the neutral head's small shoulders)
       c.allowSkin = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3, d = S.skin(mr, this.X0[i], this.X0[i + 1], this.X0[i + 2], at); return at.head > 0.5 ? Math.min(c.rad[k], d - 0.001) : c.rad[k]; });
-      // (over the clothes — a collar, a hood's back — as it lies over them at rest; what lies under them, under a hood,
-      // is the clothes' to keep off: none of its points meet them)
-      c.allowCover = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3, d = S.over(mr, this.X0[i], this.X0[i + 1], this.X0[i + 2], at); return d < 0 ? -Infinity : c.rad[k]; });
+      // (over the clothes — a collar, a hood's back — out by its own half-thickness, or as near as it lay over them at
+      // rest; what lies under them, under a hood, is the clothes' to keep off: those of its points don't meet them)
+      c.allowCover = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3, d = S.over(mr, this.X0[i], this.X0[i + 1], this.X0[i + 2], at); return d < -c.rad[k] ? -Infinity : Math.min(c.rad[k], d - 0.001); });
     }
     // the inner layers: their edges, and how far each point's are stretched now (output.parted: src/hair/shade.js hides
     // the inner layer where it is stretched past PARTED — where locks part it does not stretch into a web between them)
@@ -144,38 +145,31 @@ export class HairSim {
     this.weights.set(w);
     for (const [name, A] of Object.entries(this.base)) { const X = this[name]; X.set(A); this.growth.forEach((D, l) => { if (w[l]) for (let i = 0; i < X.length; i++) X[i] += w[l] * D[i]; }); }
   }
-  // the figure's step: {pose, previous, dt, reset, jump, t}
-  step({ dt, reset, jump, t }) {
-    const S = this.solids, m = this.m;
+  // the figure's step (src/figure.js): as the frame begins — {dt, reset, jump, t, was, now}
+  begin({ reset, jump, t, was, now }) {
     this.grown();
     // (a reset — the first step, a new clip, a scrub — finds the hair as it hangs on the body in this pose: from where
     // it hangs at rest, carried by the head, let settle without speed, so a body unlike the rest's doesn't fling it)
     if (reset || !this.started) {
-      S.moment(1, m.now); S.moment(1, m.was); this.place(m.now);
-      for (let k = 0; k < SETTLE; k++) this.substep(m.was, m.now, null, true);
-      this.v.fill(0); this.started = true; this.left = 0; this.time = t / (this.figure.state?.clip?.fps ?? 30); this.write(); return;
+      this.place(now);
+      for (let k = 0; k < SETTLE; k++) this.substep(was, now, true);
+      this.v.fill(0); this.started = true; this.time = t / (this.figure.state?.clip?.fps ?? 30); return;
     }
     // (a jump — the clip begun again — carries the hair as it is with the head: it goes on from where it was on it)
-    if (jump) this.jumped();
-    if (!(dt > 0)) { this.write(); return; }   // (the same moment again: nothing moves)
-    // small steps from where the last frame left the hair (this.left behind it) up to this frame, the solids at each
-    // small step's moment within the frame (the first from the last one's: the head where the hair last saw it)
-    const lag = this.left, n = Math.floor((lag + dt) / H + 1e-9);
-    for (let s = 1; s <= n; s++) { [m.was, m.now] = [m.now, m.was]; S.moment(Math.max(0, Math.min(1, (s * H - lag) / dt)), m.now); this.substep(m.was, m.now, this.wind, false); this.time += H; }
-    this.left = lag + dt - n * H;
-    this.write();
+    if (jump) this.jumped(was, now);
   }
+  // as the frame ends (left: the part of a small step it leaves over)
+  end(left) { this.left = left; this.write(); }
   // everything carried by the head's jump (from where it was before it to where it is now); the velocities as they
   // were against the head's own motion there (the moments of the last small step before the jump), turned with it — on
   // the head, standing still through the jump's frame, the hair swings on as it swung on the head
-  jumped() {
-    const S = this.solids, { T0, v } = this, a = S.jumped, o = this.q.o, pp = this.q.pp, mw = this.m.was, mn = this.m.now;
+  jumped(mw, mn) {
+    const S = this.solids, { T0, v } = this, a = S.jumped, o = this.q.o, pp = this.q.pp, b0 = this.m.end;
     for (let i = 0; i < v.length; i += 3) { this.carry(mn, T0[i], T0[i + 1], T0[i + 2], o); this.carry(mw, T0[i], T0[i + 1], T0[i + 2], pp); for (let d = 0; d < 3; d++) v[i + d] -= (o[d] - pp[d]) / H; }
-    const b = S.carrier(S.moment(0, mn)), qi = [-a.q[0], -a.q[1], -a.q[2], a.q[3]];
+    const b = S.carrier(S.moment(0, b0)), qi = [-a.q[0], -a.q[1], -a.q[2], a.q[3]];
     const T = [b.q[3] * qi[0] + b.q[0] * qi[3] + b.q[1] * qi[2] - b.q[2] * qi[1], b.q[3] * qi[1] - b.q[0] * qi[2] + b.q[1] * qi[3] + b.q[2] * qi[0], b.q[3] * qi[2] + b.q[0] * qi[1] - b.q[1] * qi[0] + b.q[2] * qi[3], b.q[3] * qi[3] - b.q[0] * qi[0] - b.q[1] * qi[1] - b.q[2] * qi[2]];
     for (const A of [this.x, this.xp]) for (let i = 0; i < A.length; i += 3) { qRot3(T, A[i] - a.p[0], A[i + 1] - a.p[1], A[i + 2] - a.p[2], o); A[i] = o[0] + b.p[0]; A[i + 1] = o[1] + b.p[1]; A[i + 2] = o[2] + b.p[2]; }
     for (let i = 0; i < v.length; i += 3) { qRot3(T, v[i], v[i + 1], v[i + 2], o); v[i] = o[0]; v[i + 1] = o[1]; v[i + 2] = o[2]; }
-    S.moment(0, mw);
   }
   // everything where the hairstyle hangs (once found, R0; else the groom), on the head at moment m
   place(m) {
@@ -184,8 +178,9 @@ export class HairSim {
     this.v.fill(0);
   }
 
-  // a small step from the solids at moment mw to mn
-  substep(mw, mn, wind, settle) {
+  // a small step from the solids at moment mw to mn (settle: without speed, nor wind)
+  substep(mw, mn, settle = false) {
+    const wind = settle ? null : this.wind;
     const { x, xp, v, T0, corr } = this, h = H, q = this.q, o = q.o, w = q.w, r = q.r, pp = q.pp, Q = q.Q, B = q.B, damp = Math.exp(-AIR * h), kw = this.k.wind;
     const zig = 1 - Math.exp(-ZIGZAG * this.k.damping * h);
     for (const ch of this.chains) {
@@ -256,7 +251,7 @@ export class HairSim {
       { const i = (a0 + ch.n - 1) * 3; for (let d = 0; d < 3; d++) v[i + d] += (v[i - 3 + d] - v[i + d]) * zig * 0.5; }
       if (settle) v.fill(0, a0 * 3, (a0 + ch.n) * 3);
     }
-    if (!settle) this.together(h);
+    if (!settle) { this.together(h); this.time += H; }
   }
   // neighbouring points of two locks kept within LINK of their gap at rest (beyond it, each pulled half the way back)
   link() {
@@ -361,7 +356,7 @@ export class HairSim {
   settled(frames, from = true) {
     const mr = this.m.rest;
     if (from) this.place(mr);
-    for (let f = 0; f < frames; f++) for (let s = 0; s < 8; s++) this.substep(mr, mr, null, !this.noSettle);
+    for (let f = 0; f < frames; f++) for (let s = 0; s < 8; s++) this.substep(mr, mr, !this.noSettle);
     this.v.fill(0);
     return Float64Array.from(this.x);
   }

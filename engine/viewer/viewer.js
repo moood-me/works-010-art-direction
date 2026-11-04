@@ -47,7 +47,7 @@ const CLIPS = [...motions.motions.filter(m => !m.after).map(m => ({ id: m.id, la
 const LAYERS = [['armsOff', 'руки от тела'], ['armsOutOfHead', 'руки из головы'], ['amplifyLimbs', 'размах конечностей'], ['dampHeadSpine', 'тише голова и спина']];
 const SPACING = 0.9;   // metres between figures side by side
 
-const S = { clip: q.get('m') ?? 'walk', t: +(q.get('t') || 0), playing: !q.has('paused'), follow: q.get('follow') !== '0', joints: false, capsules: false, cur: 0, face: q.has('face') };
+const S = { clip: q.get('m') ?? 'walk', t: +(q.get('t') || 0), playing: !q.has('paused'), follow: q.get('follow') !== '0', joints: false, cur: 0, face: q.has('face') };
 // each figure: its character and what the panel changed over its description
 const figs = (q.get('c') || chars.characters[0].id).split(',').map(char => ({ char, over: {} }));
 if (BODIES && q.get('b')) { const b = bodyIndex.bodies.find(b => b.id === q.get('b')); if (!b) throw new Error(`no body ${q.get('b')}`); figs[0].over.body = b.pin; }
@@ -87,7 +87,7 @@ panel.innerHTML = `
   <div class="row"><span class="lab">Персонаж</span><select id="char" aria-label="Персонаж" title="описание персонажа (characters/): тело, его изменения, слои позы, вид"></select></div>
   <div class="row"><span class="lab">Движение</span></div><div class="mv" id="moves"></div>
   <div class="row"><button id="play" aria-label="Пауза">❚❚</button><input id="time" type="range" min="0" max="0" step="0.01" value="0" aria-label="Время"><span id="flab"></span></div>
-  <div class="row"><span class="lab">Камера</span><button id="follow">следует</button><button data-view="front">спереди</button><button data-view="side">сбоку</button><button id="joints">суставы</button><button id="capsules">капсулы</button></div>
+  <div class="row"><span class="lab">Камера</span><button id="follow">следует</button><button data-view="front">спереди</button><button data-view="side">сбоку</button><button id="joints">суставы</button></div>
   <details id="skin"${BODIES || HEADS || HAIR || CLOTHES ? '' : ' open'}><summary>Скиннинг и слои позы</summary>
   <div class="row"><span class="lab">Скиннинг</span><button data-method="cor">центры вращения</button><button data-method="dqs">двойные кватернионы</button><button data-method="lbs">линейный</button></div>
   <div class="row"><span class="lab">Т7</span><button id="clav">ключица ⅓</button><button id="seam">шов сглажен</button></div>
@@ -138,7 +138,7 @@ function press() {
   panel.querySelectorAll('#layers button').forEach(b => b.setAttribute('aria-pressed', String(spec.pose.some(l => l.kind === b.dataset.id))));
   $('#clav').setAttribute('aria-pressed', String(spec.pose.some(l => l.kind === 'clavicleShare')));
   $('#seam').setAttribute('aria-pressed', String(!!spec.skinning.seam));
-  for (const k of ['follow', 'joints', 'capsules']) $('#' + k).setAttribute('aria-pressed', String(S[k]));
+  for (const k of ['follow', 'joints']) $('#' + k).setAttribute('aria-pressed', String(S[k]));
   if (HEADS) $('#face').setAttribute('aria-pressed', String(S.face));
   $('#play').textContent = S.playing ? '❚❚' : '▶';
   $('#char').value = f.char;
@@ -298,7 +298,7 @@ async function build(f, i) {
   if (f.view) { stage.scene.remove(f.view.group); f.view.dispose(); }
   f.fig = fig; f.view = figureView(THREE, fig, f.spec.look);
   for (const sim of fig.simulations) sim.wind = wind?.wind ?? null;
-  f.view.dots.visible = S.joints; f.view.caps.visible = S.capsules;
+  f.view.dots.visible = S.joints;
   stage.scene.add(f.view.group);
 }
 async function rebuild(which = figs.map((_, i) => i)) {
@@ -411,7 +411,6 @@ $('#play').onclick = () => { S.playing = !S.playing; press(); };
 $('#time').oninput = () => { S.t = +$('#time').value; S.playing = false; press(); draw(); };
 $('#follow').onclick = () => { S.follow = !S.follow; press(); };
 $('#joints').onclick = () => { S.joints = !S.joints; for (const f of figs) f.view.dots.visible = S.joints; press(); draw(); };
-$('#capsules').onclick = () => { S.capsules = !S.capsules; for (const f of figs) f.view.caps.visible = S.capsules; press(); draw(); };
 panel.querySelectorAll('[data-method]').forEach(b => b.onclick = () => { cur().over.method = b.dataset.method; rebuild([S.cur]); });
 $('#clav').onclick = () => toggleLayer('clavicleShare');
 $('#seam').onclick = () => { const f = cur(); f.over.seam = !f.spec.skinning.seam; rebuild([S.cur]); };

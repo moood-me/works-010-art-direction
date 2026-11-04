@@ -1,19 +1,19 @@
 // Capsules round a body's bones at its rest: a tapered capsule along each bone that carries enough skin (from the
 // joint to its child farthest away — the spine's next joint, not a collarbone), its radius at each end a share of the
-// skin's distances round that half of the bone. The body's solids (src/solids.js) take them as its coarse inside, a pose
-// layer (src/layers.js armsOff) as what the arms keep clear of.
-//   fitCapsules(rig, mesh, {fit = 0.5 (the share: 0.5 the median), inset = 0 (metres off each radius), minVertices = 30})
+// skin's distances round that half of the bone. A pose layer (src/layers.js armsOff) takes them as what the arms keep
+// clear of.
+//   fitCapsules(rig, mesh, {fit = 0.5 (the share: 0.5 the median), minVertices = 30})
 //     → [{joint, child, a, b, ra, rb}] at rest (cached per mesh, rig and options)
 const CACHE = new WeakMap();
 
-export function fitCapsules(rig, mesh, { fit = 0.5, inset = 0, minVertices = 30 } = {}) {
-  const key = `${fit}|${inset}|${minVertices}`; let byRig = CACHE.get(mesh.positions); if (!byRig) CACHE.set(mesh.positions, byRig = new WeakMap());
+export function fitCapsules(rig, mesh, { fit = 0.5, minVertices = 30 } = {}) {
+  const key = `${fit}|${minVertices}`; let byRig = CACHE.get(mesh.positions); if (!byRig) CACHE.set(mesh.positions, byRig = new WeakMap());
   let m = byRig.get(rig); if (!m) byRig.set(rig, m = new Map());
-  if (!m.has(key)) m.set(key, fitted(rig, mesh, fit, inset, minVertices));
+  if (!m.has(key)) m.set(key, fitted(rig, mesh, fit, minVertices));
   return m.get(key);
 }
 
-function fitted(rig, mesh, fit, inset, minVertices) {
+function fitted(rig, mesh, fit, minVertices) {
   const sk = rig.skeleton, R = rig.joints, P = mesh.positions, K = mesh.skin.K, SJ = mesh.skin.joints, SW = mesh.skin.weights, out = [];
   for (let j = 0; j < sk.J; j++) {
     let child = -1, far = 0;
@@ -30,7 +30,7 @@ function fitted(rig, mesh, fit, inset, minVertices) {
     if (ts.length < minVertices) continue;
     const at = (lo, hi) => { const d = ds.filter((_, n) => ts[n] >= lo && ts[n] <= hi).sort((x, y) => x - y); return d.length ? d[Math.min(d.length - 1, Math.floor(d.length * fit))] : null; };
     const all = at(0, 1), ra = at(0, 0.5) ?? all, rb = at(0.5, 1) ?? all;
-    out.push({ joint: j, child, a, b, ra: Math.max(0.005, ra - inset), rb: Math.max(0.005, rb - inset) });
+    out.push({ joint: j, child, a, b, ra: Math.max(0.005, ra), rb: Math.max(0.005, rb) });
   }
   return out;
 }

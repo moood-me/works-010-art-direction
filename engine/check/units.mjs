@@ -78,7 +78,7 @@ await test('the pose belongs to whoever gives it', async () => {
 });
 await test('the step: time step, previous pose, resets on a new clip, a loop and a scrub', async () => {
   const fig = await E.figure('woman'), clip = await E.clip('walk'), log = [];
-  fig.addSimulation({ step: c => log.push({ dt: c.dt, reset: c.reset, same: c.previous === c.pose, prevHip: c.previous.P[2], hip: c.pose.P[2] }) });
+  fig.addSimulation({ begin: c => log.push({ dt: c.dt, reset: c.reset, same: c.previous === c.pose, prevHip: c.previous.P[2], hip: c.pose.P[2] }), substep() {}, end() {} });
   for (const t of [0, 1, 2, 2.5, 119, 0, 1, 40]) fig.step(clip, t);
   fig.step(await E.clip('run'), 1);
   const r = log.map(l => l.reset);
@@ -142,15 +142,15 @@ await test('a rest change: frames kept ride along in motion; frames turned are a
   let d = 0; for (let i = 0; i < b.rig.frames.length; i++) d = Math.max(d, Math.abs(Math.abs(same.rig.frames[i]) - Math.abs(b.rig.frames[i])));
   ok(d < 1e-4, 'frames turned for an unchanged body moved ' + d);
 });
-await test('the body\'s solids: the skin between two frames, its inside deep in, updated once a step and read by many', async () => {
+await test('the body\'s solids: the skin between two frames, at any depth asked, updated once a step and read by many', async () => {
   const fig = await E.figure('man'), clip = await E.clip('walk'), S = fig.solids(), sk = E.skeleton, out = { n: [0, 0, 0], v: [0, 0, 0] };
   for (let t = 0; t <= 30; t++) fig.step(clip, t);
   const P = fig.pose.P, at = (j, dx = 0) => [P[j * 3] + dx, P[j * 3 + 1], P[j * 3 + 2]], m = S.moment(1);
-  ok(S.capsules(m).length >= 15, `only ${S.capsules(m).length} capsules`);
-  // deep in the trunk (farther than the skin's points reach): inside, and which way is out
-  const sp = at(sk.index.Spine2), d = S.skin(m, ...sp, out);
+  // deep in the trunk (as far as a reader asks): inside, and which way is out; within the near reach, nothing said
+  const sp = at(sk.index.Spine2), d = S.skin(m, ...sp, out, -1, S.FAR);
   ok(d < -0.05 && Math.abs(Math.hypot(...out.n) - 1) < 1e-6, `the spine is not deep inside the body (${d})`);
-  ok(S.skin(m, ...at(sk.index.Hips, 2), out) === Infinity, 'a point 2 m aside is not out of reach');
+  ok(S.skin(m, ...sp, out) === Infinity, `the spine is within the near reach of the skin (${S.skin(m, ...sp, out)})`);
+  ok(S.skin(m, ...at(sk.index.Hips, 2), out, -1, S.FAR) === Infinity, 'a point 2 m aside is not out of reach');
   // just outside the hand, the skin's velocity is the hand's
   const hand = sk.index.RightHand, h1 = at(hand); fig.step(clip, 31); const h2 = [0, 1, 2].map(k => fig.pose.P[hand * 3 + k]), v = h2.map((x, k) => (x - h1[k]) * clip.fps);
   const top = fig.outputs[0].positions, near = Array.from(fig.outputs[0].mesh.used).reduce((b, i) => { const dd = Math.hypot(top[i * 3] - h2[0], top[i * 3 + 1] - h2[1], top[i * 3 + 2] - h2[2]); return dd < b[0] ? [dd, i] : b; }, [Infinity, -1])[1];

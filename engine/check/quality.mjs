@@ -444,30 +444,33 @@ if (!only || only.includes('hair')) {
 }
 
 // ———— clothes (src/cloth/): every character that wears cloth, in every motion the engine has (whole), and in the wind ————
-// The limits say what looks right, not what the cloth measures now (each says why). CLOTH_ONLY: characters to look at
-// alone (--chars a,b).
+// Measured as the player sees it — the drawn meshes, exactly (check/through.mjs): the cloth inside the body at any depth,
+// the body through the cloth (between its points too), the skin it covers left bare, layers out of order, a sleeve or a
+// trouser leg off its limb. The limits say what looks right, not what the cloth measures now (each says why); in rolls,
+// lying and sitting no more is asked than О3 does with the same garments at the same moments (Pavel, 2026-11-04: a
+// deeply bent knee through the cloth for a few frames, trousers ridden up kneeling, a T-shirt ridden up after a roll
+// are as О3 leaves them). --chars a,b: those characters alone.
 if (!only || only.includes('clothes')) {
+  const { looker } = await import('./through.mjs');
   const CLOTH = [], pick = argv.includes('--chars') ? argv[argv.indexOf('--chars') + 1].split(',') : null;
   for (const c of chars) { if (pick && !pick.includes(c.id)) continue; const d = await E.expand(await E.resolve(await E.description(c.id))); if (d.clothes.some(g => g.moves !== false && !['mh-boots', 'mh-flats'].includes(g.pattern))) CLOTH.push(c.id); }
   const index = await E.motions(), CLIPS = [...index.motions.filter(m => !m.after).map(m => m.id), ...index.chains.map(c => c.id)];
-  const strong = (await E.preset(pinOf('wind-strong'))).wind, light = (await E.preset(pinOf('wind-light'))).wind, at = { n: [0, 0, 0], v: [0, 0, 0] };
-  // (cloth the body lies on — within PRESSED of the floor — has no room between them, and isn't seen: not counted)
-  const PRESSED = 0.025;
-  // how deep each point lies in the body (its skin, deep inside too) past where its cloth keeps off it: the deepest of a
-  // share, and the share deeper than a centimetre
-  const inBody = sim => { const S = sim.solids, m = S.moment(1), d = []; for (const g of sim.garments) for (let i = 0; i < g.n; i++) { const y = g.x[i * 3 + 1]; if (y < PRESSED) continue; d.push(Math.max(0, -S.skin(m, g.x[i * 3], y, g.x[i * 3 + 2], at))); } d.sort((a, b) => b - a); return d; };
+  const strong = (await E.preset(pinOf('wind-strong'))).wind, light = (await E.preset(pinOf('wind-light'))).wind;
+  // EVERY: every how many frames the exact measures are taken (a fifth of a second)
+  const EVERY = 6;
   // the edges stretched past 1.5× their cut (a share; edges shorter than a third of the garment's own are a fold's
   // slivers and left out) — a third longer than cut is not seen on cloth without a pattern; half again is
   const stretched = sim => { let n = 0, bad = 0; for (const g of sim.garments) for (let k = 0; k < g.EL.length; k++) { if (g.EL[k] < g.edge / 3) continue; const a = g.E[k * 2] * 3, b = g.E[k * 2 + 1] * 3; n++; if (Math.hypot(g.x[a] - g.x[b], g.x[a + 1] - g.x[b + 1], g.x[a + 2] - g.x[b + 2]) > 1.5 * g.EL[k]) bad++; } return bad / n; };
   const all = sim => sim.garments.flatMap(g => [g.x]);
   const apart = (A, B) => { let m = 0, s = 0, n = 0; A.forEach((a, k) => { const b = B[k]; for (let i = 0; i < a.length; i += 3) { const d = Math.hypot(a[i] - b[i], a[i + 1] - b[i + 1], a[i + 2] - b[i + 2]); m = Math.max(m, d); s += d; n++; } }); return { most: m, mean: s / n }; };
+  const share = (a, q) => { const b = Float64Array.from(a).sort(); return b[Math.min(b.length - 1, Math.floor(b.length * q))]; };
   for (const id of CLOTH) {
-    const t0 = Date.now(), fig = await E.figure(id), sim = fig.simulations.find(s => s instanceof ClothSim), S = sim.solids;
+    const t0 = Date.now(), fig = await E.figure(id), sim = fig.simulations.find(s => s instanceof ClothSim);
     console.log(`${id}: made in ${((Date.now() - t0) / 1000).toFixed(1)} s, ${sim.garments.map(g => `${g.output.mesh.cloth.pattern} ${g.n}`).join(', ')}`);
     // at rest: the designed silhouette kept, the rest kept, no jitter
     // (at strength 1 the cloth as it hangs on the body is its designed form within a centimetre on the whole: a bell
     // that sinks more reads as another silhouette)
-    for (const g of sim.garments) if (g.form && g.shapeK >= 2000) { let s = 0; for (let i = 0; i < g.R0.length; i += 3) s += Math.hypot(g.R0[i] - g.form[i], g.R0[i + 1] - g.form[i + 1], g.R0[i + 2] - g.form[i + 2]); check(`${id}: ${g.output.mesh.cloth.pattern} at strength 1 hangs off its designed form (mean)`, s / g.n * 1000, 10, ' mm'); }
+    for (const g of sim.garments) if (g.form && g.strength >= 1) { let s = 0; for (let i = 0; i < g.R0.length; i += 3) s += Math.hypot(g.R0[i] - g.form[i], g.R0[i + 1] - g.form[i + 1], g.R0[i + 2] - g.form[i + 2]); check(`${id}: ${g.output.mesh.cloth.pattern} at strength 1 hangs off its designed form (mean)`, s / g.n * 1000, 10, ' mm'); }
     // (where it settled: two seconds after it was set on the body — a hem set there without speed swings a little first)
     let R = null, prev = null, jitter = 0;
     for (let t = 0; t <= 300; t++) { fig.step(null, t); const now = all(sim); if (t === 60) R = now.map(a => Float64Array.from(a)); if (t > 180) jitter = Math.max(jitter, apart(now, prev).most); prev = now.map(a => Float64Array.from(a)); }
@@ -476,10 +479,11 @@ if (!only || only.includes('clothes')) {
     // seen; more is a shimmer)
     check(`${id}: standing still 8 s, it leaves where it settled`, apart(all(sim), R).most * 1000, 12, ' mm');
     check(`${id}: standing still, it moves in a frame (jitter)`, jitter * 1000, 2, ' mm');
+    const L = looker(fig, sim);
     let ms = 0, frames = 0;
     for (const [clip, w] of [...CLIPS.map(c => [c, null]), ['idle', strong], ['walk', light]]) {
       const C = await E.clip(clip); sim.wind = w; fig.reset();
-      let bad = 0, speed = 0, deep = 0, share = 0, tear = 0, was = null;
+      let bad = 0, speed = 0, tear = 0, was = null; const deep = [], inside = [], through = [], bare = [], swapped = [], rings = [];
       for (let t = 0; t < C.frames; t++) {
         const a = performance.now(); fig.step(C, t); if (t) { ms += performance.now() - a; frames++; }
         // (how fast each point went from the frame before: what is seen)
@@ -487,29 +491,47 @@ if (!only || only.includes('clothes')) {
         for (const g of sim.garments) for (let i = 0; i < g.x.length; i += 3) if (!Number.isFinite(g.x[i] + g.x[i + 1] + g.x[i + 2])) bad++;
         if (was) speed = Math.max(speed, apart(now, was).most * C.fps);
         was = now;
-        if (t % 3 === 0) { const d = inBody(sim); deep = Math.max(deep, d[Math.floor(d.length * 0.01)]); share = Math.max(share, d.filter(x => x > 0.01).length / d.length); tear = Math.max(tear, stretched(sim)); }
+        if (t % EVERY === 0 || t === C.frames - 1) {
+          const r = L.frame(); deep.push(r.deep[Math.floor(r.deep.length * 0.01)]); inside.push(r.deep.filter(d => d > 0.01).length / r.deep.length);
+          through.push(r.through); bare.push(r.uncovered); swapped.push(r.swapped); rings.push(r.rings); tear = Math.max(tear, stretched(sim));
+        }
       }
-      const what = `${id} in ${clip}${w === strong ? ' in a strong wind' : w ? ' in a light wind' : ''}`;
+      const what = `${id} in ${clip}${w === strong ? ' in a strong wind' : w ? ' in a light wind' : ''}`, end = a => a[a.length - 1];
       check(`${what}: points not numbers`, bad, 0);
-      // (15 m/s from one frame to the next: looked at where it is most — a hem flicked by a running knee, a sleeve's end
-      // by a rolling arm, 11–13 m/s: a flick, nothing thrown; faster, a contact threw it)
-      check(`${what}: the fastest point, frame to frame (m/s)`, speed, 15);
-      // (looked at where it is worst — the heavy man sitting and bowing, his belly folding onto his thighs with the cloth
-      // between, 30 mm: pinched in a fold of the body, not seen — elsewhere under 12 mm; more than 1 cm in, 3 % at most:
-      // past that cloth would show through skin)
-      check(`${what}: the cloth in the body (the 1% deepest)`, deep * 1000, 35, ' mm');
-      check(`${what}: the share of the cloth more than 1 cm in the body`, share * 100, 3, ' %');
+      // (8 m/s from one frame to the next — nothing caps it: looked at where it is most, a hem flicked by a running knee, a
+      // sleeve's end by a rolling arm, 4–7 m/s; faster, a contact threw it)
+      check(`${what}: the fastest point, frame to frame (m/s)`, speed, 8);
+      // the cloth inside the body: the 1 % deepest of its drawn points, at the worst moment, and the share more than a
+      // centimetre in at most of the moments (looked at: cloth pinched in a fold of the body — a knee folded to the chest, a
+      // heavy belly on the thighs sitting — and pressed under a body lying lies a few millimetres under the skin and is not
+      // seen; 15 mm is a sleeve through an arm)
+      check(`${what}: the cloth in the body (the 1% deepest, at its worst)`, Math.max(...deep) * 1000, 15, ' mm');
+      check(`${what}: the share of the cloth more than 1 cm in the body (most moments: 90 %)`, share(inside, 0.9) * 100, 1, ' %');
+      // the body through the cloth (skin with cloth inside the body behind it): at the end of the motion none — 1 % (the
+      // body still, whatever it went through is out again: a trouser leg left behind the knee stays seen) — and at most of
+      // its moments 3 % (О3's knees through jeans rolling, for a few frames, are 2–3 %)
+      check(`${what}: the body through the cloth at the motion's end`, end(through) * 100, 1, ' %');
+      check(`${what}: the body through the cloth (most moments: 90 %)`, share(through, 0.9) * 100, 3, ' %');
+      // the tubes: at the motion's end every sleeve and trouser leg round its limb again (a leg out of its trouser leg is
+      // the first thing seen); at most moments a few of their rings (a knee folded tight, its ring crumpled round it)
+      check(`${what}: sleeves' and trouser legs' rings off their limbs at the motion's end`, end(rings) * 100, 3, ' %');
+      check(`${what}: sleeves' and trouser legs' rings off their limbs (most moments: 90 %)`, share(rings, 0.9) * 100, 15, ' %');
+      // covered skin left bare (more than 5 cm from the garment's edges at rest): a T-shirt ridden up rolling or lying,
+      // trousers up the shins kneeling — О3's own, seen at 20–25 %; past that the garment has come off
+      check(`${what}: the skin it covers left bare (most moments: 90 %)`, share(bare, 0.9) * 100, 25, ' %');
+      // layers in their order: a garment under another stays under it (most moments; a hem that turns over is a moment)
+      check(`${what}: layers out of their order (most moments: 90 %)`, share(swapped, 0.9) * 100, 5, ' %');
       // (looked at where it is most — a chiffon dress jumping, 6 %; rolling sideways, lying and rolling over, sitting, 3–5 %:
       // the cloth under the body drawn out over it, a hem flung out; no tear and no web seen)
       check(`${what}: its edges past 1.5× their cut (share)`, tear * 100, 7, ' %');
     }
     sim.wind = null;
     console.log(`${id}: a frame of its cloth ${(ms / frames).toFixed(1)} ms in node (the figure's whole step)`);
-    // a loop: the clip begun again carries the cloth with the body — what it moves at the wrap against the skin under
-    // it, no more than the frame before it (a pop is the cloth left where the body was)
+    // a loop: the clip begun again carries the cloth with the body — what it moves at the wrap against the skin under it
+    // (30 mm: a hem swinging on across the wrap; more is a pop, the cloth left where the body was)
     { const walk = await E.clip('walk'), n = walk.frames - 1; fig.reset(); for (let t = 0; t <= n; t++) fig.step(walk, t);
-      const rel = () => sim.garments.map(g => Float64Array.from(g.x, (v, i) => v - g.T1[i])), a = rel(); fig.step(walk, 1, { loop: true }); const b = rel(); fig.step(walk, 2, { loop: true }); const c = rel();
-      check(`${id}: across the walk's loop, the cloth moves on the body (most) against the next frame's`, apart(a, b).most * 1000, Math.max(30, apart(b, c).most * 1000 * 3), ' mm'); }
+      const rel = () => sim.garments.map(g => Float64Array.from(g.x, (v, i) => v - g.T1[i])), a = rel(); fig.step(walk, 1, { loop: true }); const b = rel();
+      check(`${id}: across the walk's loop, the cloth moves on the body (most)`, apart(a, b).most * 1000, 30, ' mm'); }
     // a scrub back: the same as starting afresh there
     { const walk = await E.clip('walk'); fig.reset(); for (let t = 0; t <= 40; t++) fig.step(walk, t); fig.step(walk, 10); const a = all(sim).map(x => Float64Array.from(x)); fig.reset(); fig.step(walk, 10); check(`${id}: a scrub back is a fresh start there`, apart(a, all(sim)).most * 1000, 0, ' mm'); }
     // the same at any frame rate: walking 2 s at 20, 60 and 144 frames a second against 30 (15 mm on the whole and 15 cm

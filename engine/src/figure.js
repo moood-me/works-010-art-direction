@@ -25,8 +25,11 @@
 // a jump ahead of more than `maxGap` frames; `loop` says this step goes on across the clip's end, the clip begun again
 // (t is its new moment: the time goes on, the body jumps to the clip's start and the simulations carry on from where
 // they were on it). Then the body's solids (src/solids.js: what simulations meet, made when one asks for them) are
-// updated once, and each simulation runs with {figure, pose, previous, dt, reset, jump, t, solids}; simulations run
-// after the floor and don't count for it.
+// updated once, and the simulations (hair, clothes: sim.begin({figure, pose, previous, dt, reset, jump, t, was, now}), sim.substep(was, now)
+// for each small step, sim.end(left)) go through the frame together in small steps of SMALL seconds, always the same
+// whatever the frame's step (what a frame leaves over, `left`, is carried to the next: they move the same at 20, 30,
+// 60 or 144 frames a second), each small step at its moment of the solids (made once for all of them), in the order
+// they were added (clothes before the hair that lies over them); simulations run after the floor and don't count for it.
 import { makeRetarget, place } from './retarget.js';
 import { Skinner } from './skin.js';
 import { morphed, normalsOf } from './mesh.js';
@@ -35,6 +38,9 @@ import { LAYERS, NO_REBUILD } from './layers.js';
 import { makeSolids } from './solids.js';
 import { newSample } from './motion.js';
 import { qRot3 } from './math.js';
+
+// SMALL: the simulations' small step (s)
+export const SMALL = 1 / 240;
 
 export class Figure {
   // rig; meshes: [{mesh, name?, skinning?: {method, sigma, seam}}] (the first is the body's, named 'body'); layers: resolved pose layers;
@@ -46,7 +52,7 @@ export class Figure {
       if (l.kind === 'rest' && !(l.joints && l.body && l.forMesh)) throw new Error('a change of the rest as a layer is made by src/deform.js: restLayer');
       if (l.kind !== 'code' && l.kind !== 'rest' && !LAYERS[l.kind]) throw new Error(`no pose layer "${l.kind}"`);
     }
-    Object.assign(this, { rig, body, layers, floorMode: floor, maxGap: 3, simulations: [], driven: new Set() });
+    Object.assign(this, { rig, body, layers, floorMode: floor, maxGap: 3, simulations: [], driven: new Set(), left: 0 });
     this.restLayers = layers.filter(l => l.kind === 'rest');
     this.place = { position: [0, 0, 0], heading: 0, ...where };
     this.retarget = makeRetarget(rig);
@@ -155,9 +161,26 @@ export class Figure {
     this.frame(clip, t, this.pose, this.driven);
     if (reset || on) this.previous.copy(this.pose);
     this.state = { clip, t };
-    const solids = this._solids ?? null, jump = !reset && !!on;
-    if (solids) solids.update(this.previous, this.pose, reset ? 'reset' : jump ? 'jump' : 'go', dt);
-    for (const sim of this.simulations) sim.step({ figure: this, pose: this.pose, previous: this.previous, dt, reset, jump, t, solids });
+    const jump = !reset && !!on, sims = this.simulations;
+    if (!sims.length) return this.pose;
+    const solids = this.solids();
+    solids.update(this.previous, this.pose, reset ? 'reset' : jump ? 'jump' : 'go', dt);
+    // (each simulation as the frame begins: a reset, a jump; then the small steps, the same for all of them — each at
+    // its moment of the solids, made once for all —, from where the last frame left them (this.left behind it) up to
+    // this frame; then each draws itself at the frame's own moment)
+    const m = this.moments ??= { was: solids.moment(1), now: solids.moment(1) }, ctx = { figure: this, pose: this.pose, previous: this.previous, dt, reset, jump, t, was: m.was, now: m.now };
+    if (reset) { solids.moment(1, m.now); solids.moment(1, m.was); this.left = 0; }
+    for (const sim of sims) sim.begin(ctx);
+    if (!reset && dt > 0) {
+      if (jump) solids.moment(0, m.now);
+      const lag = this.left, n = Math.floor((lag + dt) / SMALL + 1e-9);
+      for (let s = 1; s <= n; s++) {
+        [m.was, m.now] = [m.now, m.was]; solids.moment(Math.max(0, Math.min(1, (s * SMALL - lag) / dt)), m.now);
+        for (const sim of sims) sim.substep(m.was, m.now);
+      }
+      this.left = lag + dt - n * SMALL;
+    }
+    for (const sim of sims) sim.end(this.left);
     return this.pose;
   }
   reset() { this.state = null; }
