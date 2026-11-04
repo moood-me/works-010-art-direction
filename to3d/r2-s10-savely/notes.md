@@ -73,3 +73,38 @@ No neural images, no StdGEN.
 - Kimodo's "idle" stoops and drops the head, so the stills use a stand made from the rest pose.
 - The first attempt with the stylised HBM head was dropped: its eyes are twice the drawing's; the realistic head's
   eye size matches the drawing (eye width ≈ 0.1 head).
+
+## Second round: alive (asked by Pavel through the orchestrator)
+
+1. **The live face** — `tools/web/face.mjs` (the face moved by a few params: lids over the ball, jaw, mouth corners,
+   wide/pucker, brows, irises; fields over space, so the moustache and the ink marks on the face move with the skin)
+   and `tools/web/life.mjs` (a track of those params over a clip at 120 Hz, deterministic from a seed: blinks at
+   log-normal intervals ~3 s apart, never closer than 0.8 s, closing in ~75 ms and opening in ~170 ms, plus a blink
+   with every large gaze shift; the eyes hold still and jump — fixational jumps every 0.3–1.6 s, a jump lasting
+   20 ms + 2.2 ms per degree — and when the head is about to turn (looked up 0.22 s ahead in the clip) they jump to
+   where it goes and turn back in the head as it follows; speech as phrases of syllables (consonant then vowel shapes)
+   followed by a fast critically damped spring, brows lifting at phrase starts; expressions as targets followed by a
+   slower spring, any mix of the five). The same two modules drive the renders (`move.mjs` with `LIFE='{…}'`) and the
+   browser viewer. The face's displacement is made in the head's rest frame and turned with the Head joint.
+   Baked face marks for moving pictures leave out the lid strokes, the pupils and the mouth: the 3D lids and mouth
+   draw themselves.
+2. **Motions with the live face** (`engine/motions`, nothing new from the studio): walk, sit (Kimodo's sit is onto
+   the floor), wave, and idle for the face close-up. There is no look-round / head-turn motion and none with the
+   hands at the chest (for the watch), so those were not made.
+3. **Nose and hands** — measured: the fitted nose already lies on the drawing's own nose surface within 1–2 units
+   (profile and width at every height), so it was left; it reads smaller than in the drawing because the drawing draws
+   it with a heavy contour and a hook mark. Hands that fit the drawing (simple mittens) are not cheap here and were not
+   done.
+4. **The viewer** — `tools/web/view.html` (+ `view.mjs`, `data/`: the body pack, `face.json`, `look.json` from
+   `tools/web_data.py`). The engine runs in the browser as it is; skinning there is the engine's dual-quaternion
+   option (`dqs`), because the default centres of rotation take ~15 s to prepare on 48k vertices (an engine matter:
+   `Skinner.centres` is costly on large clothed meshes). The line is found on screen: two passes of the same mesh
+   (flat colour; piece id + depth into float targets, twice the screen size), then a pass that inks a pixel where the
+   piece changes within the line's radius or where the depth has a kink (second difference) or meets the background,
+   averaged 2×2. Close to Freestyle: the same places get lines (silhouettes, a form over itself — nose over cheek,
+   arm over body —, piece borders, the floor's far edge); differences: lines are pixel-made, not strokes, so they
+   thicken a little where a surface turns away and are not as clean on small details; the ink marks' width is fixed
+   on the model (2.2 drawing units) as in the moving renders. `tools/web/shot.mjs` takes pictures of it headless.
+   Mesh lightened for this (hair, vest, shirt, trouser grids): 47.8k vertices.
+
+Render speed: frames without the head's subdivision and with Freestyle culling take ~3.5 s instead of ~10–25 s.

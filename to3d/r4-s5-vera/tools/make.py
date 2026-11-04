@@ -111,15 +111,15 @@ LIVE = {
     # the walk, the camera going along with her
     'walk': lambda: live_film('walk', 'walk', 150, {'yaw': 32, 'pitch': 7, 'dist': 2.75, 'ty': 0.56, 'fov': 26, 'follow': True}),
     # sitting down on the floor; tired at the end
-    'sit': lambda: live_film('sit', 'sit', 150, {'yaw': 34, 'pitch': 13, 'dist': 2.6, 'ty': 0.42, 'fov': 26, 'follow': False},
+    'sit': lambda: live_film('sit', 'sit', 150, {'yaw': 34, 'pitch': 12, 'dist': 2.9, 'ty': 0.58, 'fov': 26, 'follow': True, 'followY': 0.7},
                              events={3.3: {'expr': {'neutral': 0.5, 'sad': 0.5}}}, hold=3.95),
     # looking round: the eyes go first, the head follows, a blink with the big turns
     'look': lambda: live_film('look', 'look', 150, {'yaw': 12, 'pitch': 4, 'dist': 1.75, 'ty': 0.74, 'fov': 24}, size=(720, 720)),
     # the arms free: the folder goes into the left hand, the right one waves
-    'wave': lambda: live_film('wave', 'wave', 105, {'yaw': 22, 'pitch': 6, 'dist': 3.0, 'ty': 0.6, 'fov': 26},
+    'wave': lambda: live_film('wave', 'wave', 105, {'yaw': 22, 'pitch': 6, 'dist': 2.5, 'ty': 0.6, 'fov': 26},
                               events={0.0: {'expr': 'joy'}}, hold=2.95),
     # the face close: speaking, then the sheet's expressions one after another, then a mix and speaking again
-    'face': lambda: live_film('face', 'idle', 300, {'yaw': 12, 'pitch': 2, 'dist': 1.2, 'ty': 0.87, 'fov': 22}, size=(720, 720),
+    'face': lambda: live_film('face', 'idle', 300, {'yaw': 12, 'pitch': 2, 'dist': 1.32, 'ty': 0.91, 'fov': 22}, size=(720, 720),
                               events={0.3: {'talk': True}, 4.4: {'talk': False}, 4.6: {'expr': 'joy'}, 5.7: {'expr': 'surprise'},
                                       6.8: {'expr': 'sad'}, 7.9: {'expr': 'anger'}, 8.9: {'expr': {'joy': 0.6, 'neutral': 0.4}, 'talk': True}}),
 }

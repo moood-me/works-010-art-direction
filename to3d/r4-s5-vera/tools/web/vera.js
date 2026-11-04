@@ -322,7 +322,8 @@ void main() {
   else {
     float e = fwidth(l) * 1.2;
     c = mix(vS, vC, smoothstep(uThr - e, uThr + e, l));
-    if (uUseFace > 0.5 && vM > 0.0) { vec4 f = texture2D(uFace, vUv); c = mix(c, f.rgb, f.a * vM); }
+    // the drawn face fades where the head turns away from the eye, so signs don't creep round its edge
+    if (uUseFace > 0.5 && vM > 0.0) { vec4 f = texture2D(uFace, vUv); c = mix(c, f.rgb, f.a * vM * smoothstep(0.08, 0.3, n.z)); }
   }
   gl_FragColor = vec4(c, 1.0);
 }`;
@@ -337,7 +338,6 @@ void main() {
   #include <begin_vertex>
   #include <skinning_vertex>
   transformed += normalize(objectNormal) * uW;
-  transformed.y = max(transformed.y, uFloor);
   #include <project_vertex>
 }`;
 const LFS = `uniform vec3 uCol; void main() { gl_FragColor = vec4(uCol, 1.0); }`;
@@ -580,7 +580,8 @@ function aimCam(snap) {
   if (cam.fixed) { persp.fov = cam.fixed.fov || 22; persp.position.set(...cam.fixed.pos); persp.lookAt(...cam.fixed.at); persp.updateProjectionMatrix(); return; }
   const I = placed[0];
   let at = [0, cam.ty, 0];
-  if (I && cam.follow) { I.bones.Hips.getWorldPosition(_v); at = [_v.x, cam.ty, _v.z]; }
+  // followY: how much the aim goes down and up with her hips (sitting down)
+  if (I && cam.follow) { I.bones.Hips.getWorldPosition(_v); at = [_v.x, cam.ty + (cam.followY || 0) * (_v.y - J.Hips[1]), _v.z]; }
   cam.at = snap || !cam.at ? at : cam.at.map((a, i) => lerp(a, at[i], 0.12));
   const yw = cam.yaw * Math.PI / 180, pt = cam.pitch * Math.PI / 180;
   persp.fov = cam.fov;

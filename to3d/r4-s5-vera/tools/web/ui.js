@@ -5,14 +5,14 @@ if (!new URLSearchParams(location.search).has('shots') && !new URLSearchParams(l
   while (!window.__ready) await new Promise(r => setTimeout(r, 50));
   const A = window.A, ui = document.getElementById('ui'), msg = document.getElementById('msg');
   const S = { clip: 'stand', expr: { neutral: 1 }, talk: false, playing: true, t: 0, dur: 4 };
-  const CAM = { stand: [0.55, 3.0], walk: [0.55, 3.2], sit: [0.38, 2.9], idle: [0.55, 3.0], look: [0.7, 2.2], wave: [0.6, 3.3] };
+  const CAM = { stand: [0.55, 3.0], walk: [0.55, 3.2], sit: [0.55, 3.0], idle: [0.55, 3.0], look: [0.7, 2.2], wave: [0.6, 3.3] };
   const size = () => [innerWidth, innerHeight];
   async function place() {
     await A.set({ size: size(), floor: true, view: 'style', line: 2.1, figures: [{ clip: S.clip, live: true, exprW: S.expr, talk: S.talk, yaw: 0 }] });
     const I = A.placed()[0];
     S.dur = I.M ? I.M.n / I.M.fps : 6;
     A.cam.ty = CAM[S.clip][0]; if (!placed) A.cam.dist = CAM[S.clip][1];
-    A.setCam({ follow: true, fov: 24 });
+    A.setCam({ follow: true, fov: 24, followY: S.clip === 'sit' ? 0.7 : 0 });
     S.t = 0; placed = true;
   }
   let placed = false;

@@ -21,7 +21,10 @@ GROUPS = {
     'clav': (['LeftShoulder', 'RightShoulder'], (0.86, 0.86)),
     'upper': (['LeftArm', 'RightArm'], (0.62, 0.55)),
     'fore': (['LeftForeArm', 'RightForeArm'], (0.6, 0.52)),
-    'hand': ([n for n in NAMES if 'Hand' in n], (0.55, 0.6)),
+    'hand': (['LeftHand', 'RightHand'], (0.55, 0.62)),
+    # fingers short and thick: together they read as the drawing's mitten
+    'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (0.36, 0.95)),
+    'thumb': ([n for n in NAMES if 'Thumb' in n], (0.45, 0.9)),
     'thigh': (['LeftLeg', 'RightLeg'], (0.69, 0.56)),
     'shin': (['LeftShin', 'RightShin'], (0.6, 0.52)),
     'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (0.62, 0.62)),

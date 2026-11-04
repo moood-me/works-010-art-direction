@@ -29,15 +29,34 @@ const spec = resolve({ format: 'engine/character', version: 1, id: 'savely', lab
 const fig = await E.figure(spec, { position: [0, 0, 0], heading: 0 });
 const clip = await E.clip(motions.split(','));
 let [a, b] = rangeArg ? rangeArg.split(':').map(Number) : [0, clip.frames - 1];
-const N = fig.body.N, times = [], hips = [], head = [];
+// the live face (web/face.mjs, web/life.mjs): LIFE='{"talk": true, "expr": [[0, {"calm": 1}], [2, {"joy": 1}]], "seed": 3}'
+const { Face } = await import('./web/face.mjs');
+const { lifeTrack, headFacing } = await import('./web/life.mjs');
+const { qRot } = await import(pathToFileURL(path.join(ENGINE, 'src/math.js')).href);
+const LIFE = process.env.LIFE ? JSON.parse(process.env.LIFE) : null;
+const fps = clip.fps ?? 30;
+let face = null, life = null;
+if (LIFE) {
+  face = new Face(fig.body, JSON.parse(await readFile(path.resolve(cache, 'engine/face.json'), 'utf8')));
+  const HI = fig.body.skeleton.index.Head, smp = (await import(pathToFileURL(path.join(ENGINE, 'src/motion.js')).href)).newSample(fig.body.skeleton.J);
+  const head = s => headFacing(fig.retarget.pose(clip.sample(Math.min(clip.frames - 1, s * fps), smp)), HI, qRot);
+  life = lifeTrack(head, { seconds: clip.frames / fps, ...LIFE });
+}
+const N = fig.body.N, times = [], hips = [], head = [], params = [];
 const H = fig.body.skeleton.index.Hips, HD = fig.body.skeleton.index.Head;
 const chunks = [];
 for (let t = a; t <= b; t += step) {
   fig.frame(clip, t);
+  if (face) {
+    const q = life.at(t / fps); params.push(q);
+    face.update(q);
+    face.apply(fig.positions, fig.skinner.matrix(fig.pose, fig.body.skeleton.index.Head));
+  }
   chunks.push(Buffer.from(new Float32Array(fig.positions).buffer));
   times.push(t);
   hips.push([fig.pose.P[H * 3], fig.pose.P[H * 3 + 1], fig.pose.P[H * 3 + 2]]);
+  head.push([fig.pose.P[HD * 3], fig.pose.P[HD * 3 + 1], fig.pose.P[HD * 3 + 2]]);
 }
 await writeFile(out, Buffer.concat(chunks));
-await writeFile(out.replace(/\.bin$/, '.json'), JSON.stringify({ frames: times.length, N, times, hips, fps: clip.fps ?? 30 }));
+await writeFile(out.replace(/\.bin$/, '.json'), JSON.stringify({ frames: times.length, N, times, hips, head, fps, params, blinks: life?.blinks }));
 console.log('frames', times.length, 'N', N);

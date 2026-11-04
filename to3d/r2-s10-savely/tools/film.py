@@ -15,6 +15,13 @@ for i, f in enumerate(files):
     W, H = im.size
     bg = im.getpixel((2, 2))
     # the floor band under the figure: drawn where the picture is still background
+    d = ImageDraw.Draw(im)
+    if fy >= H:                    # no floor in this picture (a close view): only the frame
+        d.rectangle([0, 0, W - 1, H - 1], outline=INK, width=3)
+        im.save(os.path.join(tmp, f'{i:04d}.png'))
+        if sheet and i % every == 0:
+            ims.append(im.resize((W // 2, H // 2)))
+        continue
     band = Image.new('RGB', (W, H - fy), BAND)
     lower = im.crop((0, fy, W, H))
     mask = Image.eval(lower.convert('L'), lambda v: 0)

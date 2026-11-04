@@ -1,0 +1,116 @@
+{
+ "format": "tim/model",
+ "version": 1,
+ "id": "tim",
+ "skeleton": "soma77",
+ "mats": [
+  "skin",
+  "skin_d",
+  "hair",
+  "shirt",
+  "shorts",
+  "sock",
+  "shoe",
+  "sole",
+  "ear",
+  "collar",
+  "clay",
+  "ink",
+  "hair_d"
+ ],
+ "parts": [
+  "head"
+ ],
+ "stripes": {
+  "y0": 0.5,
+  "period": 0.034,
+  "width": 0.42,
+  "top": 0.79
+ },
+ "sockBand": [
+  0.148,
+  0.158
+ ],
+ "bin": "tim.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    20788,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    39010,
+    3
+   ],
+   "offset": 249456
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    20788,
+    4
+   ],
+   "offset": 717576
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    20788,
+    4
+   ],
+   "offset": 800728
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1133336
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1134260
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    20788
+   ],
+   "offset": 1135492
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    20788,
+    3
+   ],
+   "offset": 1156280
+  },
+  "fuv": {
+   "dtype": "float32",
+   "shape": [
+    20788,
+    3
+   ],
+   "offset": 1405736
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    20788,
+    1
+   ],
+   "offset": 1655192
+  }
+ }
+}

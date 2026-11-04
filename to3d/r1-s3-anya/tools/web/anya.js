@@ -160,18 +160,32 @@ const dressR = H.pieces.dress, skirt = [];
 for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.62) skirt.push(i);
 const CAPS = [['LeftLeg', 'LeftShin', 0.06], ['LeftShin', 'LeftFoot', 0.048], ['RightLeg', 'RightShin', 0.06], ['RightShin', 'RightFoot', 0.048]]
   .map(([a, b, r]) => [I[a], I[b], r]);
+const RING = 72;                    // the dress is a loft of rings of 72 points (build.py)
+const skirtSet = new Int32Array(rest.length / 3).fill(-1); skirt.forEach((i, k) => { skirtSet[i] = k; });
+const skirtNb = skirt.map(i => { const k = i - dressR[0], r = Math.floor(k / RING), c = k % RING;
+  return [r * RING + (c + 1) % RING, r * RING + (c + RING - 1) % RING, (r - 1) * RING + c, (r + 1) * RING + c].map(m => m + dressR[0]).filter(m => m >= 0 && skirtSet[m] >= 0).map(m => skirtSet[m]); });
+// the push fades in from the skirt's top (rest 0.62 m) to 0.48 m, so no step where it begins
+const fade = Float64Array.from(skirt, i => { const u = Math.max(0, Math.min(1, (0.62 - rest[i * 3 + 1]) / 0.14)); return u * u * (3 - 2 * u); });
+const dsp = new Float64Array(skirt.length * 3), dsp2 = new Float64Array(skirt.length * 3);
 function pushSkirt(P, pose) {
-  const caps = CAPS.map(([a, b, r], k) => { const A = getV(pose.P, a), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => (v + B[c]) / 2), B, r]; });
-  for (const i of skirt) {
+  const caps = CAPS.map(([a, b, r], k) => { const A = getV(pose.P, a), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => (v + B[c]) / 2), B, r + 0.008]; });
+  // how far each point must go out of the legs …
+  skirt.forEach((i, k) => {
     let x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
     for (const [A, B, r] of caps) {
       const ab = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], l2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
       let u = ((x - A[0]) * ab[0] + (y - A[1]) * ab[1] + (z - A[2]) * ab[2]) / l2; u = Math.max(0, Math.min(1, u));
       const cx = A[0] + ab[0] * u, cy = A[1] + ab[1] * u, cz = A[2] + ab[2] * u, dx = x - cx, dy = y - cy, dz = z - cz, d = Math.hypot(dx, dy, dz);
-      if (d < r && d > 1e-6) { const k = r / d; x = cx + dx * k; y = cy + dy * k; z = cz + dz * k; }
+      if (d < r && d > 1e-6) { const s = r / d; x = cx + dx * s; y = cy + dy * s; z = cz + dz * s; }
     }
-    P[i * 3] = x; P[i * 3 + 1] = y; P[i * 3 + 2] = z;
+    dsp[k * 3] = x - P[i * 3]; dsp[k * 3 + 1] = y - P[i * 3 + 1]; dsp[k * 3 + 2] = z - P[i * 3 + 2];
+  });
+  // … spread over the cloth around them (no steps where single points were pushed), keeping the largest push
+  for (let it = 0; it < 6; it++) {
+    skirtNb.forEach((nb, k) => { for (let c = 0; c < 3; c++) { let s = dsp[k * 3 + c]; for (const m of nb) s += dsp[m * 3 + c]; dsp2[k * 3 + c] = s / (nb.length + 1); } });
+    for (let k = 0; k < skirt.length; k++) for (let c = 0; c < 3; c++) { const a = dsp[k * 3 + c], b = dsp2[k * 3 + c]; dsp[k * 3 + c] = Math.abs(b) > Math.abs(a) ? b : (a + b) / 2 + (a - b) / 2 * 0.5; }
   }
+  skirt.forEach((i, k) => { const w = fade[k]; P[i * 3] += w * dsp[k * 3]; P[i * 3 + 1] += w * dsp[k * 3 + 1]; P[i * 3 + 2] += w * dsp[k * 3 + 2]; });
 }
 function frame() {
   applyMorphs();

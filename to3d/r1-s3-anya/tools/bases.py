@@ -17,7 +17,7 @@ def save(name, V, T, SJ, SW, joints):
                    skinWeights=SW.astype(np.float32), joints=joints.astype(np.float32).ravel(), frames=a['frames'].astype(np.float32).ravel(),
                    col=np.tile(skin, (N, 1)).astype(np.uint8), shd=np.tile(shade, (N, 1)).astype(np.uint8), lin=np.tile(line, (N, 1)).astype(np.uint8),
                    ow=np.full(N, 255, np.uint8), uv=np.zeros((N, 2), np.float32), tex=np.zeros(N, np.uint8), pn=np.zeros((N, 3), np.float32),
-                   pw=np.zeros(N, np.uint8), pj=np.zeros(N, np.float32), two=np.zeros(N, np.uint8)))
+                   pw=np.zeros(N, np.uint8), pj=np.zeros(N, np.float32), two=np.zeros(N, np.uint8), band=np.full(N, -1, np.float32)))
 
 
 save('anny', a['positions'].reshape(-1, 3), t['triangles'].reshape(-1, 3), t['skinJoints'].reshape(-1, 4), t['skinWeights'].reshape(-1, 4), a['joints'].reshape(-1, 3))

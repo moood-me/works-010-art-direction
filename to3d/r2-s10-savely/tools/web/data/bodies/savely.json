@@ -1,0 +1,39 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "savely",
+ "label": {
+  "ru": "Савелий Петрович",
+  "en": "Savely"
+ },
+ "source": "to3d/r2-s10-savely: Anny (moood-oldman) fitted to the С10 drawing, HBM head",
+ "topology": "savely",
+ "skeleton": "soma77",
+ "bin": "savely.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    47754,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 573048
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 573972
+  }
+ }
+}

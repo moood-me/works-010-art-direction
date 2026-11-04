@@ -124,7 +124,7 @@ sock = (by < y3(1252)) & ~isfoot
 
 B['col'][isfoot] = C['shoe']; B['shd'][isfoot] = rgb('#55301f'); B['lin'][isfoot] = C['shoeL']
 # the legs' rest height, per vertex: the shader cuts sock and shoe at exact heights (a clean edge, not a blurred one)
-B['band'] = np.where(by < 0.3, by, -1.0)
+B["band"] = by.copy()
 
 # ---------------------------------------------------------------- the head
 hv, hP, eyes, er, vis = Hd.load(HBM)

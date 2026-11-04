@@ -87,3 +87,26 @@ within the work; the stills use frame 0 of the engine's `bow` (standing upright 
 - The neck: the base's neck under the jaw is still a little conical in profile; the drawing's head sits on a thinner
   stalk.
 - No slingshot (figure-tim's detail) and no pose with hands behind the back (the motion did not arrive).
+
+## Alive (second round, asked by Pavel through the orchestrator)
+
+- **The face** (`tools/web/face.js`): kit.py's path/sample/brush and face.py's eye/brow/mouth ported to JavaScript line
+  for line; the face is drawn every frame into a canvas the head takes (a CanvasTexture, the same front projection).
+  The timeline is made once from a seeded random stream (a moment always looks the same — films, scrubbing):
+  blinks at gamma-like intervals (mostly 2–5 s, 12 % doubles), lid closing ~70 ms, held ~30 ms, opening ~140 ms;
+  saccades: fixations 0.3–2.2 s, jumps of ~40 ms with 10 % overshoot settling in ~60 ms; gaze lead: the head's world yaw
+  is read off the clip, the eyes jump towards yaw(t + 0.28 s) − yaw(t), and a turn faster than 1.6 rad/s calls a blink
+  (not more than one per 0.9 s); speech: syllables of a consonant shape (60–110 ms) and a vowel shape (100–220 ms),
+  phrases of 3–9 syllables with 0.3–1 s pauses, each shape eased into the next over ≤70 ms; expressions blend over
+  0.35 s (numbers interpolated, a mark of another kind cross-faded). The blush, freckles and hair strokes are a cached
+  layer (a blur is dear to draw each frame).
+- **Hands**: the finger joints get a short and thick map (along 0.36, across 0.95), the thumb 0.45/0.9: with the
+  thinned palm they read as a small mitten-like fist; Kimodo still moves the fingers.
+- **Profile compromise tried and dropped**: the face's sides drawn back (the midline and the front outline kept) so the
+  profile's eye sits deeper — the eye hid behind the cheek in profile and a crease came in three-quarter.
+- **Films** (`films.py walk sit wave jump look face turn`): perspective camera following him, a painted ground (one
+  paint, faint blotches fixed to the ground, a soft spot under him) so the travel shows; the face film is a close look
+  while he stands (Kimodo's bow, frame 0).
+- **Viewer** (`tools/web/tim.html` + `ui.js`): the model in `model/tim.json` (written by build.py); paths relative, so
+  it runs from the repository's root; `?shots=1` turns the controls off for `shots.mjs`. `viewer_check.mjs` opens it
+  as the site serves it and takes a picture.

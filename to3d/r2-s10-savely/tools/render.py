@@ -102,7 +102,7 @@ for ob in meta['objects']:
         continue                 # marks baked for moving pictures; a still draws them at its own line width
     V, F = SC['obj_' + ob['name'] + '_v'], SC['obj_' + ob['name'] + '_f']
     o = mesh_obj(ob['name'], V, F, job.get('debug_colours', {}).get(ob['name'], ob['colour']), ob.get('line', True), ob.get('smooth', True), ob.get('solidify', 0))
-    if ob.get('subsurf'):
+    if ob.get('subsurf') and not job.get('no_subsurf'):
         m = o.modifiers.new('sub', 'SUBSURF')
         m.levels = m.render_levels = ob['subsurf']
     if ob.get('colours'):         # per-face colours: a material per colour, face index → colour index
@@ -204,6 +204,7 @@ def build_marks(expr, lw_units, yaw=0.0, extra_skip=()):
 vl = sc.view_layers[0]
 fs = vl.freestyle_settings
 fs.crease_angle = math.radians(job.get('crease', 100))
+fs.use_culling = True               # edges outside the picture are not looked at (faster)
 for ls in list(fs.linesets):
     fs.linesets.remove(ls)
 ls = fs.linesets.new('ink')
@@ -289,7 +290,13 @@ else:
                 o.data.vertices.foreach_set('co', to_b(D[i0:i1]).astype(np.float32).ravel())
                 o.data.update()
             vv = dict(v)
-            if v.get('follow'):
+            if v.get('follow') == 'head':        # a close view kept on the head (the point given by cx, cy)
+                hx, hy, hz = fj['head'][fi]
+                R = view_matrix(v.get('yaw', 0), v.get('pitch', 0))
+                hp = R @ np.array([hx / K, FLOOR - hy / K, hz / K])
+                vv['cx'] = v['cx'] - hp[0] * v['s']
+                vv['cy'] = v['cy'] - hp[1] * v['s']
+            elif v.get('follow'):
                 hx, hy, hz = fj['hips'][fi]
                 R = view_matrix(v.get('yaw', 0), v.get('pitch', 0))
                 hp = R @ np.array([hx / K, 0.0, hz / K])

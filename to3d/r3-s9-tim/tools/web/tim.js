@@ -4,14 +4,16 @@
 // Then (optionally) it is laid onto the drawing's backdrop and passed through the drawing's own SVG gouache filter.
 // window.A.set({...}) / A.render() — driven by shots.mjs.
 import * as THREE from 'three';
-import { loadSkeleton } from '/works-010-art-direction/engine/src/skeleton.js';
-import { makeBody } from '/works-010-art-direction/engine/src/body.js';
-import { Figure } from '/works-010-art-direction/engine/src/figure.js';
-import { loadMotion, clipOf } from '/works-010-art-direction/engine/src/motion.js';
-import { resolve } from '/works-010-art-direction/engine/src/character.js';
-import { loadPack } from '/works-010-art-direction/engine/src/pack.js';
+import { loadSkeleton } from '../../../../engine/src/skeleton.js';
+import { makeBody } from '../../../../engine/src/body.js';
+import { Figure } from '../../../../engine/src/figure.js';
+import { loadMotion, clipOf } from '../../../../engine/src/motion.js';
+import { resolve } from '../../../../engine/src/character.js';
+import { loadPack } from '../../../../engine/src/pack.js';
 
-const ENG = '/works-010-art-direction/engine/';
+const ENG = new URL('../../../../engine/', import.meta.url).href;
+import { LiveFace } from './face.js';
+import { qMul, qConj, qRot } from '../../../../engine/src/math.js';
 const q = new URLSearchParams(location.search);
 const canvas = document.getElementById('c'), svg = document.getElementById('out');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -71,6 +73,45 @@ const uniforms = {
 const material = new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: FS, uniforms, side: THREE.DoubleSide });
 
 let sk, figure, mesh, geom, model, clips = {}, faces = {};
+// the ground he walks on, painted like the drawing's ground band: one flat paint with blotches of a darker and a
+// lighter one fixed to the ground (so it slides under him as he goes), and a soft shadow-spot under his feet
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderMaterial({
+  uniforms: { spot: { value: new THREE.Vector3(0, 0, 0.3) } },
+  vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+  fragmentShader: `precision highp float; varying vec3 vW; uniform vec3 spot;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f); return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }
+    void main(){ vec2 p = vW.xz; vec3 c = vec3(0.369, 0.651, 0.627);
+      float m = n(p * 0.9) * 0.6 + n(p * 2.6) * 0.4; c *= 0.95 + 0.07 * m;
+      float d = smoothstep(0.78, 0.82, n(p * 3.0 + 7.0)); c = mix(c, c * 0.9, d * 0.7);
+      float r = length((p - spot.xy) / vec2(1.0, 0.8)) / spot.z; c *= 1.0 - 0.18 * (1.0 - smoothstep(0.35, 1.0, r));
+      gl_FragColor = vec4(c, 1.0); }`,
+}));
+ground.rotation.x = -Math.PI / 2; ground.position.y = -0.001; ground.visible = false; scene.add(ground);
+// the live face: drawn every frame into a canvas the head takes (face.js)
+const faceCanvas = document.createElement('canvas'); faceCanvas.width = faceCanvas.height = 1024;
+const faceCtx = faceCanvas.getContext('2d');
+const faceTexture = new THREE.CanvasTexture(faceCanvas); faceTexture.flipY = false; faceTexture.anisotropy = 4;
+const live = new LiveFace({ seed: +(q.get('seed') || 7), length: 600 });
+// where the head turns: its yaw in the world each frame of a clip; the eyes lead it, fast turns call a blink
+const turns = new Map();
+function headTurns(c) {
+  const key = c.motions.join('+');
+  if (turns.has(key)) return turns.get(key);
+  const H = sk.index.Head, fr = [figure.body.frames[H * 4], figure.body.frames[H * 4 + 1], figure.body.frames[H * 4 + 2], figure.body.frames[H * 4 + 3]];
+  const s = { q: new Float64Array(sk.J * 4), p: new Float64Array(sk.J * 3), lowest: 0 }, yaw = [];
+  for (let f = 0; f < c.frames; f++) {
+    c.sample(f, s);
+    const qh = [s.q[H * 4], s.q[H * 4 + 1], s.q[H * 4 + 2], s.q[H * 4 + 3]], Q = qMul(qh, qConj(fr)), d = qRot(Q, [0, 0, 1]);
+    let a = Math.atan2(d[0], d[2]); if (yaw.length) { while (a - yaw[yaw.length - 1] > Math.PI) a -= 2 * Math.PI; while (a - yaw[yaw.length - 1] < -Math.PI) a += 2 * Math.PI; }
+    yaw.push(a);
+  }
+  const at = f => { f = Math.max(0, Math.min(c.frames - 1, f)); const i = Math.floor(f), u = f - i; return yaw[i] * (1 - u) + yaw[Math.min(i + 1, c.frames - 1)] * u; };
+  const fps = c.fps, blinks = []; let last = -9;
+  for (let f = 1; f < c.frames; f++) { const v = (yaw[f] - yaw[f - 1]) * fps; if (Math.abs(v) > 1.6 && f / fps - last > 0.9) { blinks.push(f / fps); last = f / fps; } }
+  const r = { lead: tsec => at(tsec * fps + 0.28 * fps) - at(tsec * fps), blinks };
+  turns.set(key, r); return r;
+}
 const state = { pose: 'rest', t: 0, motion: null };
 
 async function loadModel(url) {
@@ -79,8 +120,9 @@ async function loadModel(url) {
   if (h.stripes) { uniforms.stripe0.value = h.stripes.y0; uniforms.stripeP.value = h.stripes.period; uniforms.stripeW.value = h.stripes.width; uniforms.stripeTop.value = h.stripes.top ?? 9; }
   if (h.sockBand) uniforms.sockY.value.set(...h.sockBand);
   const body = makeBody({ id: h.id, skeleton: sk, positions: a.positions, triangles: a.triangles, skin: { joints: a.skinJoints, weights: a.skinWeights },
-    parts: { names: [], weights: new Uint8Array(0) }, joints: Float64Array.from(a.joints), frames: Float64Array.from(a.frames) });
-  const spec = resolve({ format: 'engine/character', version: 1, id: 'tim', body: h.id, skinning: { method: q.get('skin') || 'cor' } });
+    parts: { names: h.parts || [], weights: a.parts || new Uint8Array(0) }, joints: Float64Array.from(a.joints), frames: Float64Array.from(a.frames) });
+  // his head is big: a hand or an elbow that would go into it is swung out (the engine's correction for big heads)
+  const spec = resolve({ format: 'engine/character', version: 1, id: 'tim', body: h.id, skinning: { method: q.get('skin') || 'cor' }, motion: { corrections: { armsOutOfHead: { margin: 0.03 } } } });
   figure = new Figure(body, spec, { position: [0, 0, 0], heading: 0 });
   figure.frame(null, 0);
   if (mesh) { scene.remove(mesh); geom.dispose(); }
@@ -116,8 +158,19 @@ const A = window.A = {
     if (o.light) uniforms.L.value.set(...o.light);
     const c = state.motion ? await clip(state.motion) : null;
     figure.frame(c, state.t);
+    if ('expr' in o) live.setExpressions(typeof o.expr === 'string' ? [{ t: 0, name: o.expr }] : o.expr);
+    if ('talk' in o) live.talking = !!o.talk;
+    if ('ground' in o) ground.visible = !!o.ground;
+    if (ground.visible) { const P = figure.pose.P, H = sk.index.Hips; ground.material.uniforms.spot.value.set(P[H * 3], P[H * 3 + 2], 0.3); ground.position.y = figure.pose.floor ?? 0; }
+    if (o.live !== false && !o.face) {
+      const tr = c ? headTurns(c) : null;
+      live.lead = tr ? tr.lead : null; live.setHeadTurns(tr ? tr.blinks : []);
+      const ts = o.faceTime ?? (c ? state.t / c.fps : (state.clock || 0));
+      live.draw(faceCtx, ts); faceTexture.needsUpdate = true;
+      uniforms.face.value = faceTexture; uniforms.hasFace.value = 1;
+    }
     geom.attributes.position.needsUpdate = true; geom.attributes.normal.needsUpdate = true;
-    if (o.w) { renderer.setSize(o.w, o.h, false); canvas.style.width = o.w + 'px'; canvas.style.height = o.h + 'px'; }
+    if (o.w && (o.w !== canvas.width || o.h !== canvas.height)) { renderer.setSize(o.w, o.h, false); canvas.style.width = o.w + 'px'; canvas.style.height = o.h + 'px'; }
     if (o.cam) A.camera(o.cam);
     state.backdrop = o.backdrop ?? state.backdrop;
   },
@@ -149,8 +202,9 @@ const A = window.A = {
   },
   uncompose() { svg.innerHTML = ''; canvas.style.visibility = 'visible'; },
   info() { return { joints: Array.from(figure.pose.P), N: model.body.N }; },
+  clipInfo() { const c = state.motion ? clips[state.motion.join('+')] : null; return c ? { frames: c.frames, fps: c.fps } : null; },
 };
 
 sk = await loadSkeleton(new URL(`${ENG}data/skeleton.json`, location.href));
-if (q.get('model')) await A.set({ model: q.get('model') });
+await A.set({ model: q.get('model') || new URL('../../model/tim.json', import.meta.url).href });
 window.__ready = true;
