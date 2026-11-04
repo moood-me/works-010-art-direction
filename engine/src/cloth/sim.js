@@ -33,25 +33,37 @@
 import { normalsOf } from '../mesh.js';
 import { windAt } from '../wind.js';
 import { stenciled } from './patterns.js';
+import { sst } from '../math.js';
 
 // H: the small step; G: gravity; SPEED: no point of cloth faster than this (m/s — the fastest a hand moves is some 10;
 // a point flung faster by a contact is a contact's error, not motion); RHO: the air's density; DRAG: pressure on a
 // surface facing the flow; SKIN_DRAG: the air along it
 const H = 1 / 240, G = 9.81, SPEED = 12, RHO = 1.2, DRAG = 1.2, SKIN_DRAG = 0.03;
-// HOLD_TIME: how fast a held point goes where the skin carries it (seconds to close the gap, at hold 1); TETHER: how much
-// longer than the cloth between them a point may be from its held point; SHAPE_K: the designed form's pull at strength
+// HOLD_TIME: how fast a held point goes where the skin carries it (seconds to close the gap, at hold 1); HELD_MASS: how
+// much of its weight a held point gives up (below); TETHER: how much longer than the cloth between them a point may be
+// from its held point, TETHER_PULL the share of the excess it is drawn back each small step (all of it at once fought
+// the body where the cloth goes round it — a hem over a lifted knee — and threw the cloth); SHAPE_K: the designed form's pull at strength
 // 1 (1/s²: a point a centimetre off it pulled as hard as gravity pulls it at 2000 × 0.005… — at 2000 the cloth sags 5 mm
 // under its own weight from the form, a stiff petticoat; at 0.1 it sags 5 cm)
-const HOLD_TIME = 0.012, HELD_MASS = 0.95, TETHER = 1.04, SHAPE_K = 2000;
-// SETTLE: small steps a reset lets the cloth settle in its pose without speed; REST_FRAMES: how long it hangs on the body
-// at rest to find the rest (s); PREPARE: rounds of putting it on (out of the skin and the garments under it)
-const SETTLE = 60, REST_TIME = 1.2, PREPARE = 6;
+const HOLD_TIME = 0.012, HELD_MASS = 0.95, TETHER = 1.04, TETHER_PULL = 0.3, SHAPE_K = 2000;
+// SETTLE: small steps a reset lets the cloth settle in its pose without speed; ENTER: how long (s) the body goes into it
+// from the rest on a reset; REST_TIME: how long it hangs on the body at rest to find the rest (s); PREPARE: rounds of
+// putting it on (out of the skin and the garments under it)
+const SETTLE = 30, REST_TIME = 1.2, PREPARE = 6, ENTER = 0.4;
 // FLOOR_MU: the floor's friction; REACH: how far past its thickness a point is looked at by the skin (farther: surely
 // clear until the skin or the point has moved that far); HEAD_REACH: how near the Head joint the head's form is asked
 // (a share of nothing: metres)
 const FLOOR_MU = 0.8, REACH = 0.01, HEAD_REACH = 0.3;
 // CURVE: the radius of the body's tightest curve cloth wraps (m)
 const CURVE = 0.04;
+// CLEAR: how far clear of the body a point's designed form must be for the form to pull it fully
+const CLEAR = 0.02;
+// GIVE: the most an edge is shortened in a pass of the lengths (m)
+const GIVE = 0.004;
+// TOUCH: how near the skin a corner of a triangle is, for its middle to be asked too (m)
+const TOUCH = 0.004;
+// PRESSED: how near the floor a point lies pressed between the body and it
+const PRESSED = 0.01;
 
 export class ClothSim {
   constructor(figure, garments) {
@@ -61,6 +73,7 @@ export class ClothSim {
     const S = this.solids;
     this.m = { now: S.moment(1), was: S.moment(1), rest: S.rest.moment(0) };
     this.at = { n: [0, 0, 0], v: [0, 0, 0] }; this.at2 = { n: [0, 0, 0], v: [0, 0, 0] }; this.hl = [0, 0, 0]; this.hn = [0, 0, 0]; this.hp = [0, 0, 0]; this.ho = [0, 0, 0]; this.w = [0, 0, 0];
+    this.ats = [0, 0, 0];
     this.time = 0; this.left = 0; this.started = false; this.bodyMove = 0; this.stepMove = 0; this.bodyWas = null;
     this.rest();
   }
@@ -68,7 +81,7 @@ export class ClothSim {
   // ———— the rest it hangs in ————
   rest() {
     const mr = this.m.rest, gs = this.garments;
-    for (const g of gs) { g.T0.set(g.cut); g.T1.set(g.cut); if (g.form) { g.S0.set(g.form); g.S1.set(g.form); } }
+    for (const g of gs) { g.T0.set(g.cut); g.T1.set(g.cut); }
     // put on, innermost first: out of the skin and the garments under it before its lengths are its own (the masks: where
     // it lies together with each one under it)
     for (const [k, g] of gs.entries()) {
@@ -94,11 +107,18 @@ export class ClothSim {
   step({ dt, reset, jump, t }) {
     const S = this.solids, m = this.m, F = this.figure, gs = this.garments;
     // where the skin carries each garment now, and its designed form (the frame's end)
-    for (const g of gs) { g.T0.set(g.T1); if (g.form) g.S0.set(g.S1); g.carry(F); }
+    for (const g of gs) { g.T0.set(g.T1); g.carry(F); if (g.shapeF) g.clearOfBody(S, m.end ??= S.moment(1)); }
     this.bodyMoved(reset || jump);
     if (reset || !this.started) {
-      S.moment(1, m.now); S.moment(1, m.was);
-      for (const g of gs) { g.settled(); g.place(F); }
+      // (from where it hangs at rest, carried whole by the pelvis to where the body is now, the body going into its pose
+      // over ENTER — the cloth going along it, as a person dressed standing goes into a stride — then let settle there
+      // without speed)
+      const entry = S.entry(F.pose); this.bodyWas = null; this.bodyMoved(true); this.stepMove = this.bodyMove;
+      for (const g of gs) g.enter(entry.pose);
+      const n = Math.round(ENTER / H);
+      for (let k = 1; k <= n; k++) { const u = sst(k / n); [m.was, m.now] = [m.now, m.was]; entry.moment(u, m.now); if (k === 1) entry.moment(0, m.was); this.substep(m.was, m.now, u, null); }
+      S.moment(1, m.now); S.moment(1, m.was); this.stepMove = 0;
+      for (const g of gs) g.settled();
       for (let k = 0; k < SETTLE; k++) { this.substep(m.was, m.now, 1, null); for (const g of gs) g.v.fill(0); }
       this.started = true; this.left = 0; this.time = t / (F.state?.clip?.fps ?? 30); this.write('reset', 0); return;
     }
@@ -144,12 +164,16 @@ export class ClothSim {
   collide(g, k, mw, mn, moving) {
     const S = this.solids, head = S.head, at = this.at, at2 = this.at2, { x, p, n, thick, mu } = g, under = this.garments.slice(0, k);
     const move = moving ? this.stepMove : 0, hp = head ? S.carrier(mn).p : null;
+    g.touched.fill(0);
     for (let i = 0; i < n; i++) {
       const i3 = i * 3;
       // the skin (and deep in, its inside): unless surely clear of it
       g.clear[i] -= move + Math.sqrt((x[i3] - p[i3]) ** 2 + (x[i3 + 1] - p[i3 + 1]) ** 2 + (x[i3 + 2] - p[i3 + 2]) ** 2);
       if (g.clear[i] <= REACH) {
-        const d = S.kept(mn, x[i3], x[i3 + 1], x[i3 + 2], at, g.near, i * S.KN, !moving || ((i + g.tick) & 1) === 0);
+        // (pressed between the body and the floor — the skin above it facing down, the floor under it — there is no room:
+        // it lies on the floor, where the body presses it, and is not pushed through one into the other)
+        const d0 = S.kept(mn, x[i3], x[i3 + 1], x[i3 + 2], at, g.near, i * S.KN, !moving || ((i + g.tick) & 1) === 0);
+        const d = d0 < thick && at.n[1] < -0.5 && x[i3 + 1] < thick + PRESSED ? thick : d0;
         // (beyond the skin's reach it is at least that far from it)
         g.clear[i] = (d === Infinity ? S.FAR : d) - thick;
         if (d < thick) this.contact(g, i3, at, thick - d, mu);
@@ -168,21 +192,26 @@ export class ClothSim {
     }
     // between its points: each triangle's middle out of the skin too, its three points moved together (a knee pressed
     // into a skirt goes between points two or three centimetres apart, and through, though every point keeps out) —
-    // asked of the skin points its first point keeps (it lies within a few centimetres of them)
-    const T = g.tris, C = g.clear, KN = S.KN;
+    // over the skin points its corners keep (round it: they hold under its middle)
+    // (each point moved as far as the deepest of its triangles asks, not by each of them in turn)
+    const T = g.tris, C = g.clear, KN = S.KN, ats = this.ats, PL = g.pushL, PN = g.pushN, PV = g.pushV; PL.fill(0);
     for (let t = 0; t < T.length; t += 3) {
-      const a = T[t], b = T[t + 1], c = T[t + 2]; if (C[a] > REACH && C[b] > REACH && C[c] > REACH) continue;
+      // (only where a corner is in touch: a body part between points lies on them)
+      const a = T[t], b = T[t + 1], c = T[t + 2]; if (C[a] > TOUCH && C[b] > TOUCH && C[c] > TOUCH) continue;
       const a3 = a * 3, b3 = b * 3, c3 = c * 3, mx = (x[a3] + x[b3] + x[c3]) / 3, my = (x[a3 + 1] + x[b3 + 1] + x[c3 + 1]) / 3, mz = (x[a3 + 2] + x[b3 + 2] + x[c3 + 2]) / 3;
-      const d = S.kept(mn, mx, my, mz, at, g.near, a * KN, false); if (!(d < thick)) continue;
+      ats[0] = a * KN; ats[1] = b * KN; ats[2] = c * KN;
+      const d = S.among(mn, mx, my, mz, at, g.near, ats); if (!(d < thick)) continue;
       const pen = thick - d, N = at.n;
-      for (const i3 of [a3, b3, c3]) { x[i3] += N[0] * pen; x[i3 + 1] += N[1] * pen; x[i3 + 2] += N[2] * pen; }
+      for (const v of [a, b, c]) if (pen > PL[v]) { PL[v] = pen; for (let q = 0; q < 3; q++) { PN[v * 3 + q] = N[q]; PV[v * 3 + q] = at.v[q]; } }
     }
+    for (let v = 0; v < g.n; v++) { const pen = PL[v]; if (!pen) continue; const v3 = v * 3; for (let q = 0; q < 3; q++) x[v3 + q] += PN[v3 + q] * pen; g.touch(v3, PN.subarray(v3, v3 + 3), PV.subarray(v3, v3 + 3)); }
     for (const [j, u] of under.entries()) if (g.masks?.[j]) g.against(u, g.masks[j]);
   }
   // one point pushed out of the skin by pen along its normal; its slide over the skin held back by friction (against the
   // skin's own motion in the small step)
   contact(g, i3, at, pen, mu) {
     const { x, p } = g, N = at.n, V = at.v;
+    g.touch(i3, N, V);
     x[i3] += N[0] * pen; x[i3 + 1] += N[1] * pen; x[i3 + 2] += N[2] * pen;
     let tx = x[i3] - p[i3] - V[0] * H, ty = x[i3 + 1] - p[i3 + 1] - V[1] * H, tz = x[i3 + 2] - p[i3 + 2] - V[2] * H;
     const dn = tx * N[0] + ty * N[1] + tz * N[2]; tx -= dn * N[0]; ty -= dn * N[1]; tz -= dn * N[2];
@@ -214,17 +243,19 @@ export class ClothSim {
 
 // ———— one garment ————
 class Garment {
-  constructor({ output, cut, fabric: F, strength = 0, form = null, carrier = null, sim, drawn, pattern, home }, index, kn) {
+  constructor({ output, cut, fabric: F, strength = 0, form = null, sim, drawn, pattern, home }, index, kn) {
     const T = cut.triangles, R = form ?? cut.positions, n = R.length / 3;
     Object.assign(this, { output, pattern, index, n, tris: T, F, mu: F.friction, self: !!pattern.self, home, tick: 0 });
-    this.formRest = form; this.carrier = carrier; this.skinner = sim; this.drawn = drawn; this.base = Float32Array.from(R);
+    this.skinner = sim; this.drawn = drawn; this.base = Float32Array.from(R);
     this.cut = Float64Array.from(R); this.form = form ? Float64Array.from(form) : null;
     this.x = Float64Array.from(R); this.p = Float64Array.from(R); this.v = new Float64Array(n * 3);
     this.T0 = new Float64Array(n * 3); this.T1 = new Float64Array(n * 3); this.u = 1; this.buf = new Float32Array(n * 3);
-    if (form) { this.S0 = new Float64Array(n * 3); this.S1 = new Float64Array(n * 3); }
     // the skin points nearest each point (src/solids.js kept: looked for afresh every other small step, half the points
     // each time)
-    this.nrm = new Float64Array(n * 3); this.clear = new Float64Array(n); this.near = new Int32Array(n * kn).fill(-2);
+    this.nrm = new Float64Array(n * 3); this.clear = new Float64Array(n); this.near = new Int32Array(n * kn).fill(-1);
+    this.touched = new Uint8Array(n); this.tn = new Float64Array(n * 3); this.tv = new Float64Array(n * 3);
+    this.free = new Float64Array(n).fill(1);
+    this.pushL = new Float64Array(n); this.pushN = new Float64Array(n * 3); this.pushV = new Float64Array(n * 3);
     this.hold = Float64Array.from(cut.hold); this.shapeK = strength * SHAPE_K;
     // masses from the fabric's weight per square metre (the smallest triangles' points given at least a share of a usual
     // point's mass: the cloth weighs the same within a few per cent, and slivers don't fly off); each point's share of
@@ -249,7 +280,7 @@ class Garment {
     this.edge = this.EL.reduce((s, l) => s + l, 0) / this.EL.length;
     // how far its points keep off the body: its fabric's thickness, and as far as the cloth between two points sags in
     // from them over the body's tightest curve (a knee, an elbow: CURVE) — else the skin shows between them
-    this.thick = F.thick + this.edge * this.edge / (8 * CURVE);
+    this.bulge = this.edge * this.edge / (8 * CURVE); this.thick = F.thick + this.bulge;
     this.H = Uint32Array.from(Hg); this.HC = new Float64Array(Hg.length / 4);
     for (let k = 0; k < this.HC.length; k++) {
       const a = Hg[k * 4], b = Hg[k * 4 + 1], c = Hg[k * 4 + 2], d = Hg[k * 4 + 3], e = dist(R, a, b) || 1e-4, h1 = 2 * triArea(R, a, b, c) / e, h2 = 2 * triArea(R, a, b, d) / e;
@@ -278,17 +309,10 @@ class Garment {
     order.sort((a, b) => far(a) - far(b));
     this.E = Uint32Array.from(order.flatMap(k => [this.E[k * 2], this.E[k * 2 + 1]])); this.EL = Float64Array.from(order, k => this.EL[k]);
   }
-  // where the skin carries it at this frame's end (T1), and its designed form (S1): its rest (with this frame's changes of
-  // the rest) skinned by its own skin and by the form's carrier
+  // where the skin carries it at this frame's end (T1): its rest (with this frame's changes of the rest — its designed
+  // form, when it has one) skinned by its own skin
   carry(F) {
-    const b = this.buf, J = F.ctx.rest, r = this.restNow(F);
-    this.skinner.skin(F.pose, b, r, J); for (let i = 0; i < b.length; i++) this.T1[i] = b[i];
-    if (this.form) {
-      // (the form moved by what moved the garment's rest this frame)
-      const fr = this.formNow ??= new Float32Array(b.length);
-      for (let i = 0; i < fr.length; i++) fr[i] = this.formRest[i] + r[i] - this.base[i];
-      this.carrier.skin(F.pose, b, fr, J); for (let i = 0; i < b.length; i++) this.S1[i] = b[i];
-    }
+    const b = this.buf; this.skinner.skin(F.pose, b, this.restNow(F), F.ctx.rest); for (let i = 0; i < b.length; i++) this.T1[i] = b[i];
   }
   // its rest this frame: as cut, moved by what moved the drawn mesh's rest (a change of the rest as a pose layer: the
   // drawn mesh's first points are the cut's own, src/cloth/patterns.js loopStencil)
@@ -298,13 +322,13 @@ class Garment {
     for (let i = 0; i < r.length; i++) r[i] = this.base[i] + o.rest[i] - o.mesh.positions[i];
     return r;
   }
-  // placed where it hangs at rest, carried by the skin into this pose (a reset)
-  place(F) {
-    const b = this.buf, R = this.R0, base = this.base, rest = this.restNow(F), r = this.placeRest ??= new Float32Array(b.length);
-    for (let i = 0; i < r.length; i++) r[i] = R[i] + rest[i] - base[i];
-    this.skinner.skin(F.pose, b, r, F.ctx.rest);
-    for (let i = 0; i < b.length; i++) this.x[i] = this.p[i] = b[i];
-    this.v.fill(0); this.clear.fill(0);
+  // placed where it hangs at rest, carried whole by the pelvis as the entry pose has it (a reset), its targets from
+  // there (to this frame's, T1)
+  enter(pose) {
+    const b = this.buf; this.skinner.skin(pose, b, this.R0f ??= Float32Array.from(this.R0)); for (let i = 0; i < b.length; i++) this.x[i] = this.p[i] = b[i];
+    this.skinner.skin(pose, b, this.base); this.T0.set(b);
+    // (nothing of before kept: a reset is the same however it is come to)
+    this.v.fill(0); this.clear.fill(0); this.near.fill(-1); this.tick = 0;
   }
   // the clip begun again: each point moved as the skin under it jumped (T0: before, T1: after)
   jump() { const { x, p, T0, T1 } = this; for (let i = 0; i < x.length; i++) { const d = T1[i] - T0[i]; x[i] += d; p[i] += d; } this.clear.fill(0); }
@@ -313,11 +337,12 @@ class Garment {
   // flat lengths; where it is cut to and kept apart from itself is here too
   fitted() {
     if (!this.flat) for (let k = 0; k < this.EL.length; k++) this.EL[k] = dist(this.x, this.E[k * 2], this.E[k * 2 + 1]) * this.tight;
-    this.cut.set(this.x); this.p.set(this.x);
+    // (where the skin carries it is where it lies now)
+    this.cut.set(this.x); this.p.set(this.x); this.T0.set(this.x); this.T1.set(this.x); this.base.set(this.x);
     this.tether();
   }
   // the targets as they are at the frame's end, from its start too (nothing to go between)
-  settled() { this.T0.set(this.T1); if (this.form) this.S0.set(this.S1); }
+  settled() { this.T0.set(this.T1); }
   // gravity, damping, the air; then each point carried on by its velocity
   integrate(wind, t, W) {
     const { n, x, v, p, nrm, area, mass, F } = this, damp = this.damp, odd = (++this.tick) & 1, air = F.air;
@@ -345,7 +370,9 @@ class Garment {
       const a = E[k * 2], b = E[k * 2 + 1], a3 = a * 3, b3 = b * 3, wa = w[a], wb = w[b];
       const dx = x[b3] - x[a3], dy = x[b3 + 1] - x[a3 + 1], dz = x[b3 + 2] - x[a3 + 2], l = Math.sqrt(dx * dx + dy * dy + dz * dz);
       if (l < 1e-9) continue;
-      const C = l - EL[k], s = C / ((wa + wb + (C > 0 ? aT : aC)) * l);
+      // (pulled across the body — a hem over a knee — an edge gives no more than GIVE a pass: past it the cloth would be
+      // drawn through the body faster than the body can push it out)
+      const C0 = l - EL[k], C = C0 > GIVE ? GIVE : C0, s = C / ((wa + wb + (C > 0 ? aT : aC)) * l);
       x[a3] += wa * s * dx; x[a3 + 1] += wa * s * dy; x[a3 + 2] += wa * s * dz;
       x[b3] -= wb * s * dx; x[b3 + 1] -= wb * s * dy; x[b3 + 2] -= wb * s * dz;
     }
@@ -391,17 +418,25 @@ class Garment {
       for (let c = i * 3; c < i * 3 + 3; c++) x[c] += (T0[c] + (T1[c] - T0[c]) * u - x[c]) * f;
     }
   }
-  // toward the designed form, as firmly as the garment's strength says
+  // toward the designed form, as firmly as the garment's strength says — where the form is clear of the body: where the
+  // body stands in it (a knee rising into a bell when sitting, the thighs level, the floor), the cloth lies on the body
+  // instead of being drawn into it (О1's: "a weaker pull to the form when sitting")
   pull() {
-    if (!this.form || !this.shapeF) return;
-    const { x, S0, S1, u } = this, f = this.shapeF; for (let i = 0; i < x.length; i++) x[i] += (S0[i] + (S1[i] - S0[i]) * u - x[i]) * f;
+    if (!this.shapeF) return;
+    const { x, T0, T1, u, free: W } = this, f = this.shapeF;
+    for (let i = 0; i < this.n; i++) { const k = f * W[i]; if (!k) continue; for (let c = i * 3; c < i * 3 + 3; c++) x[c] += (T0[c] + (T1[c] - T0[c]) * u - x[c]) * k; }
+  }
+  // how clear of the body each point's form is at the frame's end (1 clear by CLEAR, 0 in it or on it)
+  clearOfBody(S, m) {
+    S.moment(1, m); const T = this.T1, at = this.at ??= { n: [0, 0, 0], v: [0, 0, 0] }, W = this.free;
+    for (let i = 0; i < this.n; i++) { const d = T[i * 3 + 1] < this.thick ? 0 : S.skin(m, T[i * 3], T[i * 3 + 1], T[i * 3 + 2], at); W[i] = d === Infinity ? 1 : Math.max(0, Math.min(1, (d - this.thick) / CLEAR)); }
   }
   tethers() {
     const { x, anchor, reach, n } = this;
     for (let i = 0; i < n; i++) {
       const a = anchor[i]; if (a < 0 || a === i) continue;
       const dx = x[i * 3] - x[a * 3], dy = x[i * 3 + 1] - x[a * 3 + 1], dz = x[i * 3 + 2] - x[a * 3 + 2], l = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      if (l > reach[i]) { const s = reach[i] / l; x[i * 3] = x[a * 3] + dx * s; x[i * 3 + 1] = x[a * 3 + 1] + dy * s; x[i * 3 + 2] = x[a * 3 + 2] + dz * s; }
+      if (l > reach[i]) { const s = (1 - reach[i] / l) * TETHER_PULL; x[i * 3] -= dx * s; x[i * 3 + 1] -= dy * s; x[i * 3 + 2] -= dz * s; }
     }
   }
   // its own points kept apart, unless they were near as cut (neighbours along the cloth)
@@ -425,7 +460,18 @@ class Garment {
       }
     }
   }
-  velocities() { const { x, p, v } = this, ih = 1 / H; for (let i = 0; i < x.length; i++) v[i] = (x[i] - p[i]) * ih; }
+  // the velocities the small step leaves; a point the skin pushed out leaves it without the push's speed (no bounce:
+  // cloth lies on what it meets, and is carried off it only as fast as the skin moves there)
+  velocities() {
+    const { x, p, v, touched: T, tn, tv } = this, ih = 1 / H;
+    for (let i = 0; i < x.length; i++) v[i] = (x[i] - p[i]) * ih;
+    for (let i = 0; i < this.n; i++) {
+      if (!T[i]) continue; const i3 = i * 3, vn = (v[i3] - tv[i3]) * tn[i3] + (v[i3 + 1] - tv[i3 + 1]) * tn[i3 + 1] + (v[i3 + 2] - tv[i3 + 2]) * tn[i3 + 2];
+      if (vn > 0) { v[i3] -= tn[i3] * vn; v[i3 + 1] -= tn[i3 + 1] * vn; v[i3 + 2] -= tn[i3 + 2] * vn; }
+    }
+  }
+  // a point the skin pushed out this small step: which way, and how fast the skin there moves
+  touch(i3, N, V) { const i = i3 / 3; this.touched[i] = 1; for (let c = 0; c < 3; c++) { this.tn[i3 + c] = N[c]; this.tv[i3 + c] = V[c]; } }
   normals() {
     const { x, tris: T, nrm } = this; nrm.fill(0);
     for (let t = 0; t < T.length; t += 3) {

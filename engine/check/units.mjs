@@ -14,6 +14,10 @@ import { headShares } from '../src/head/frame.js';
 import { wrapKey, wrapHead } from '../src/head/wrap.js';
 import { buildStyle, styleKey, BUILD_SOURCES } from '../src/hair/hair.js';
 import { hashOf } from '../src/hash.js';
+import { HairSim } from '../src/hair/sim.js';
+import { ClothSim } from '../src/cloth/sim.js';
+import { PATTERNS, cutFor } from '../src/cloth/patterns.js';
+import { headFrame } from '../src/head/frame.js';
 
 const E = await createEngine({ read });
 let failed = 0, passed = 0;
@@ -371,13 +375,80 @@ await test('hair: the step — a scrub back is a fresh start; a loop goes on fro
 });
 await test('hair: a ready head\'s hair as it was (rigid) unless it moves; moving, at rest it keeps its look', async () => {
   const rigid = await E.figure('head-red'), moving = await E.figure('hair-g3-red');
-  ok(!rigid.simulations.length && moving.simulations.length === 1, 'which moves');
+  const hairOf = f => f.simulations.filter(s => s instanceof HairSim);
+  ok(!hairOf(rigid).length && hairOf(moving).length === 1, 'which moves');
   const pose = rigid.frame(null, 0); moving.step(null, 0);
   const a = rigid.outputs.find(o => o.name === 'hair-locks'), b = moving.outputs.find(o => o.name === 'hair-locks');
   // (on the head itself — the part of each lock above the shoulders — the moving hair lies as the rigid one)
   let worst = 0; const H = pose.P[E.skeleton.index.Neck1 * 3 + 1];
   for (const v of a.mesh.used) if (a.positions[v * 3 + 1] > H + 0.06) worst = Math.max(worst, Math.hypot(a.positions[v * 3] - b.positions[v * 3], a.positions[v * 3 + 1] - b.positions[v * 3 + 1], a.positions[v * 3 + 2] - b.positions[v * 3 + 2]));
   ok(worst < 0.01, `on the head the moving hair lies ${(worst * 1000).toFixed(1)} mm from its design`);
+});
+
+// ———— clothes (src/cloth/) ————
+const presetPin = async id => `${id}@${(await E.preset(id)).hash.slice(0, 16)}`;
+const garment = async (pattern, fabric, more = {}) => ({ kind: 'garment', pattern, fabric: await presetPin('fabric-' + fabric), color: '#5a7aa0', ...more });
+const dressed = async (clothes, base = woman) => E.figure(await E.expand(await E.resolve({ ...structuredClone(base), clothes })));
+await test('clothes: every pattern cut on a body — its points, triangles, what holds it on, the skin it lies on', async () => {
+  const body = await E.body('moood-woman');
+  for (const id of Object.keys(PATTERNS)) {
+    const c = await cutFor(body, id, E, { frame: headFrame(body.rig) }), n = c.positions.length / 3;
+    ok(n > 100 && c.triangles.length >= n, `${id}: ${n} points, ${c.triangles.length / 3} triangles`);
+    for (let i = 0; i < c.triangles.length; i++) ok(c.triangles[i] < n, `${id}: a triangle past its points`);
+    ok(c.hold.some(h => h > 0), `${id}: nothing holds it on`); ok(c.near.every(b => b >= 0), `${id}: a point on no skin`);
+    if (c.drawn) ok(c.drawn.N > n && c.drawn.triangles.length === c.triangles.length * 4, `${id}: drawn subdivided`);
+  }
+});
+await test('clothes: a garment refused where it is not one — an unknown pattern, key or fabric, a preset of another kind', async () => {
+  const g = await garment('mh-dress', 'poplin');
+  await refuses(() => resolve(desc({ clothes: [{ ...g, pattern: 'mh-gown' }] }), E.skeleton), /"mh-gown" is not one of/);
+  await refuses(() => resolve(desc({ clothes: [{ ...g, colour: '#ffffff' }] }), E.skeleton), /unknown key "colour"/);
+  await refuses(() => resolve(desc({ clothes: [{ ...g, fabric: { density: 0.1 } }] }), E.skeleton), /"stretch" is missing/);
+  await refuses(async () => E.expand(resolve(desc({ clothes: [{ ...g, fabric: await presetPin('wind-light') }] }), E.skeleton)), /is not a fabric/);
+  await refuses(async () => E.expand(resolve(desc({ clothes: [{ ...g, shape: await presetPin('fabric-silk') }] }), E.skeleton)), /is not a shape/);
+});
+await test('clothes: over a base by id — taken away, changed by its keys, replaced whole, added; an outfit taken in', async () => {
+  const base = await E.character('head-semi'), ids = base.clothes.map(g => g.id);
+  ok(ids.includes('turtleneck') && ids.includes('sweater'), 'head-semi wears its outfit: ' + ids.join(', '));
+  const over = async clothes => (await E.expand(await E.resolve({ format: 'engine/character', version: woman.version, id: 'x', label: woman.label, base: `head-semi@${hashOf([await E.description('head-semi')]).slice(0, 16)}`, clothes }))).clothes;
+  const a = await over([{ kind: 'off', id: 'turtleneck' }, { id: 'sweater', color: '#ff0000' }, await garment('mh-shorts', 'twill', { id: 'pants' }), await garment('scarf', 'silk')]);
+  ok(!a.some(g => g.id === 'turtleneck'), 'the turtleneck not taken away');
+  ok(a.find(g => g.id === 'sweater').color === '#ff0000' && a.find(g => g.id === 'sweater').pattern === 'mh-sweater', 'the sweater not changed by its colour alone');
+  ok(a.find(g => g.id === 'pants').pattern === 'mh-shorts', 'the trousers not replaced whole');
+  ok(a[a.length - 1].pattern === 'scarf' && a.find(g => g.id === 'scarf').fabric.density === (await E.preset('fabric-silk')).fabric.density, 'the scarf not added after, in its fabric');
+  await refuses(() => over([{ id: 'hat', color: '#ff0000' }]), /garment "hat" to change: there is none/);
+});
+await test('clothes: the silhouette — the cloth cut to its designed form and pulled toward it as firmly as its strength', async () => {
+  const bell = async k => (await dressed([await garment('mh-dress', 'poplin', { shape: await presetPin('shape-bell'), strength: k })])).simulations.find(s => s instanceof ClothSim).garments[0];
+  const plain = (await dressed([await garment('mh-dress', 'poplin')])).simulations[0].garments[0], free = await bell(0), firm = await bell(1);
+  const hem = g => { let lo = Infinity; for (let i = 1; i < g.cut.length; i += 3) lo = Math.min(lo, g.cut[i]); let r = 0, n = 0; for (let i = 0; i < g.n; i++) if (g.cut[i * 3 + 1] < lo + 0.05) { r += Math.hypot(g.cut[i * 3], g.cut[i * 3 + 2]); n++; } return r / n; };
+  ok(hem(free) > hem(plain) * 1.3, `the bell's hem ${hem(free).toFixed(3)} m round, the dress's own ${hem(plain).toFixed(3)}`);
+  ok(free.shapeK === 0 && firm.shapeK > 0, 'strength 0 pulls (it should hang freely as cut)');
+  const off = g => { let s = 0; for (let i = 0; i < g.R0.length; i++) s += Math.abs(g.R0[i] - g.form[i]); return s / g.n; };
+  ok(off(firm) < off(free) / 2, `at strength 1 it hangs ${(off(firm) * 1000).toFixed(1)} off its form, at 0 ${(off(free) * 1000).toFixed(1)}`);
+});
+await test('clothes: the step — a scrub back is a fresh start; the same moment again moves nothing; frame draws it on the skin', async () => {
+  const f = await dressed([await garment('mh-tshirt', 'jersey'), await garment('mh-pants', 'denim')]), sim = f.simulations[0], clip = await E.clip('walk'), xs = () => sim.garments.flatMap(g => Array.from(g.x));
+  const d = (a, b) => a.reduce((m, v, i) => Math.max(m, Math.abs(v - b[i])), 0);
+  for (let t = 0; t <= 20; t++) f.step(clip, t);
+  const at20 = xs(); f.step(clip, 20); ok(d(at20, xs()) === 0, 'the same moment again moved the cloth');
+  f.step(clip, 5); const back = xs(); f.reset(); f.step(clip, 5); ok(d(back, xs()) === 0, 'a scrub back is not a fresh start');
+  const o = f.outputs.find(o => o.mesh.cloth), was = Float32Array.from(o.positions); f.frame(clip, 30); ok(d(was, o.positions) > 0.01, 'frame did not draw the cloth (carried by the skin)');
+});
+await test('clothes: the solids — a limb\'s own skin, the points kept nearest, the cover hair lies over', async () => {
+  const f = await dressed([await garment('mh-sweater', 'woolknit')], await E.description('hair-alva')), S = f.solids(), m = S.moment(1), at = { n: [0, 0, 0], v: [0, 0, 0] };
+  f.step(null, 0);
+  // (a point 5 mm off the skin of the left forearm's middle)
+  const sk = E.skeleton, P = f.pose.P, e = sk.index.LeftForeArm * 3, h = sk.index.LeftHand * 3, mid = [0, 1, 2].map(c => (P[e + c] + P[h + c]) / 2), B = f.outputs[0];
+  let v = -1, best = Infinity; for (const i of B.mesh.used) { const q = Math.hypot(B.positions[i * 3] - mid[0], B.positions[i * 3 + 1] - mid[1], B.positions[i * 3 + 2] - mid[2]); if (q < best) { best = q; v = i; } }
+  const [x, y, z] = [0, 1, 2].map(c => B.positions[v * 3 + c] + B.normals[v * 3 + c] * 0.005);
+  const all = S.skin(m, x, y, z, at), arm = S.skin(m, x, y, z, at, 1), leg = S.skin(m, x, y, z, at, 3);
+  ok(Number.isFinite(arm) && Math.abs(arm - all) < 0.005 && leg === Infinity, `by the left forearm: ${all}, its own ${arm}, a leg's ${leg}`);
+  const ids = new Int32Array(S.KN).fill(-2), k1 = S.kept(m, x, y, z, at, ids, 0, true), k2 = S.kept(m, x, y, z, at, ids, 0, false);
+  ok(Math.abs(k1 - all) < 0.003 && Math.abs(k2 - k1) < 1e-9 && ids[0] >= 0, `kept: ${k1}, ${k2}`);
+  const g = f.simulations.find(s => s instanceof ClothSim).garments[0], i = g.n >> 1, n = g.nrm, mm = S.moment(1);
+  const above = S.over(mm, g.x[i * 3] + n[i * 3] * 0.02, g.x[i * 3 + 1] + n[i * 3 + 1] * 0.02, g.x[i * 3 + 2] + n[i * 3 + 2] * 0.02, at);
+  ok(above > 0.005 && above < 0.025, `2 cm over the sweater, the cover is ${above} away`);
 });
 console.log(failed ? `${failed} of ${passed + failed} failed` : `all ${passed} hold`);
 process.exit(failed ? 1 : 0);
