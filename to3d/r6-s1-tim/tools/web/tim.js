@@ -90,8 +90,8 @@ function headTrack(c) {
   if (tracks.has(key)) return tracks.get(key);
   const H = sk.index.Head, yaw = [], pitch = [];
   for (let f = 0; f < c.frames; f++) {
-    figure.frame(c, f);
-    const M = figure.skinner.matrix(figure.pose, H);
+    const pose = figure.retarget.pose(c.sample(f, figure.sample));      // the pose only: no skinning needed here
+    const M = figure.skinner.matrix(pose, H);
     const d = [M[2], M[6], M[10]];          // the head's forward (its rest +z) now
     let a = Math.atan2(d[0], d[2]); if (yaw.length) { while (a - yaw[yaw.length - 1] > Math.PI) a -= 2 * Math.PI; while (a - yaw[yaw.length - 1] < -Math.PI) a += 2 * Math.PI; }
     yaw.push(a); pitch.push(Math.asin(Math.max(-1, Math.min(1, d[1]))));
