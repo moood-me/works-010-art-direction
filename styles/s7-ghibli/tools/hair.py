@@ -31,6 +31,23 @@ class Hair:
         self.top_y = periodic(P['top'], P.get('mirror', True)) if 'top' in P else (lambda t: np.full_like(np.asarray(t, float), 1.0))
         self.k = table(P.get('volume', [(-1, 0.06), (0, 0.08), (1, 0.12)]))
         self.C = np.array([0, 0.05, float(head.zm(0.05))])
+        self.locks = list(P.get('locks', []))
+        for tf in P.get('tufts', []):
+            self.locks += self.tufts(**tf)
+
+    def tufts(self, ts, y, drop, w, out=0.06, swirl=0.0, line=True):
+        """clumps lying on the shell and following it down: they break the smooth dome into locks.
+        ts: azimuths of the roots; y: root height; drop: how far down each runs; out: how far it lifts off."""
+        res = []
+        for i, t in enumerate(ts):
+            r = self.shell_pt(t, y)
+            m = self.shell_pt(t + swirl * 0.5, y - drop * 0.5)
+            e = self.shell_pt(t + swirl, y - drop)
+            m = self.C + (m - self.C) * (1 + out)
+            e = self.C + (e - self.C) * (1 + out * 0.6)
+            res.append(dict(root=(t, y), to=[tuple(m - r), tuple(e - r)], w=w, prof=1.3,
+                            line=(('l' if i % 2 else 'r') if line else None)))
+        return res
 
     def shell_pt(self, t_deg, y):
         h = self.h
@@ -111,7 +128,7 @@ class Hair:
             from shapely.geometry import Point as _P
             g = _P(c).buffer(r * view.s * self.h.k, 32)
             (front if fz >= 0 else back).append(g)
-        for L in self.P.get('locks', []):
+        for L in self.locks:
             for g, c, w, fz in self.lock(view, L):
                 isback = L.get('back') or (fz < -0.002 and not L.get('front'))
                 (back if isback else front).append(g)

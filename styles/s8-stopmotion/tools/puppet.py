@@ -43,6 +43,8 @@ def draw_head(d, P, ex, S, cx, cy, yaw=30, roll=0):
     front.append(f'<path d="{pts(o)}" fill="url(#{face})" filter="url(#{fid})"/>')
     tid = d.tex('clay', 1.0, P.get('skin_tex', 0.10), seed=5)
     front.append(f'<path d="{pts(o)}" fill="{skin}" filter="url(#{tid})"/>')
+    if P.get('stage') == 'bare':            # for the construction picture: the sculpted head only
+        return {'back': back, 'head': front, 'h': h}
     # cheeks, freckles
     for side in (-1, 1):
         blush(h, d, side, P, front, P.get('blush', 0.3), P.get('blush_col', '#e0606a'))
@@ -65,6 +67,8 @@ def draw_head(d, P, ex, S, cx, cy, yaw=30, roll=0):
     # near ear
     for side in (-1, 1):
         ear(h, d, side, P, front, behind=False)
+    if P.get('stage') == 'face':
+        return {'back': [], 'head': front, 'h': h}
     # hair over the head
     if hd:
         front.append(H.mass(d, h, P, front_locks, hd['col'], cap=cap_front))

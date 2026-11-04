@@ -234,6 +234,18 @@ def draw_torso(d, view, F, S, torso, k):
             m(d, view, F, g)
     if top and top.get('collar'):
         collar(d, view, F, top['collar'], top['c'], k)
+    if top and top.get('turtle'):
+        # a turtleneck: the collar is a short wide tube round the neck, folded once
+        y1 = B['torso'][-1][0]
+        r = B['neck_r'] + 0.8
+        n0 = J['neck0']
+        dirn = (J['neck1'] - J['neck0']) / np.linalg.norm(J['neck1'] - J['neck0'])
+        g = tube(view, [n0, n0 + dirn * (y1 - n0[1] + top['turtle'])], [r + 0.3, r])
+        fill_part(d, g, top['c'], k * 0.5)
+        fold = view.xy(np.array([n0 + dirn * (y1 - n0[1] + top['turtle'] * 0.45) + np.array([x, 0, z])
+                                 for x, z in [(-r, 0.0), (-r * 0.7, r * 0.7), (0, r), (r * 0.7, r * 0.7), (r, 0)]]))
+        from geo import spline as _sp
+        d.line(_sp(fold, 20), lw * 0.6)
     if bot.get('kind') in ('trousers', 'shorts') and bot.get('belt'):
         pass
     if S.get('apron'):

@@ -32,7 +32,7 @@ def _ribbon(Pts, radii):
     a_start = math.atan2(y1 - y0, x1 - x0) + math.pi / 2
     xe, ye = Pts[-1]; xp, yp = Pts[-2]
     a_end = math.atan2(ye - yp, xe - xp) - math.pi / 2
-    return L + cap(Pts[-1], radii[-1], a_end) + R[::-1] + cap(Pts[0], radii[0], a_start)
+    return L + cap(Pts[-1], radii[-1], a_end)[::-1] + R[::-1] + cap(Pts[0], radii[0], a_start)[::-1]
 
 
 def _smooth3(p, n=16):
@@ -144,23 +144,50 @@ def hand(d, T, wrist, direction, skin, size=0.11, pose='relaxed', side=1, shade=
     return w[2], g + out + '</g>'
 
 
+def _hull(points):
+    pts_ = sorted(set((round(x, 2), round(y, 2)) for x, y in points))
+    if len(pts_) < 3:
+        return pts_
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lower, upper = [], []
+    for p in pts_:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    for p in reversed(pts_):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
+
+
 def shoe(d, T, ankle, length, col, side=1, height=0.1, width=0.09, toe_up=0.0, sole='#2a1a14'):
-    """A puppet shoe: a rounded block from heel to a big toe, seen turned with the body. Returns (depth, svg)."""
+    """A puppet shoe: a rounded box (half an ellipsoid on a sole) from heel to a big round toe, turned with the body.
+    Returns (depth, svg)."""
     S = T.S
     x, y, z = ankle
-    heel = (x, y + height * 0.6, z - length * 0.2)
-    toe = (x + side * 0.02, y + height * 0.7 - toe_up, z + length * 0.8)
-    ps = [heel, (x, y, z), toe]
-    Pts = [T.P(p) for p in ps]
-    # outline: a fat ribbon from heel to toe
-    hp, ap, tp = Pts
-    o = _ribbon([hp, ((hp[0] + tp[0]) / 2, (hp[1] + tp[1]) / 2 - height * S * 0.3), tp],
-                [height * S * 0.55, width * S * 0.9, width * S * 0.85])
-    s = d.shape(pts(o), col, S * 0.35, 'clay', 0.06, shade='#140a0a', depth=0.6, sheen=0.35, reach=0.25)
-    # sole line
-    sole_l = [(p[0], p[1]) for p in o if p[1] > (hp[1] + tp[1]) / 2]
-    zz = sum(T.scr(p)[2] for p in ps) / 3
-    return zz, s
+    floor = y + height * 0.9
+    cz = z + length * 0.3                 # the shoe sticks forward of the ankle
+    up_pts, sole_pts = [], []
+    for i in range(24):
+        a = 2 * math.pi * i / 24
+        for j in range(7):
+            b = math.pi / 2 * j / 6       # 0 = sole level, pi/2 = top
+            X = x + side * 0.01 + width * math.cos(a) * math.cos(b) * (1.1 if math.sin(a) > 0 else 0.95)
+            Z = cz + length * 0.5 * math.sin(a) * math.cos(b)
+            Y = floor - height * math.sin(b) * (1.0 - 0.35 * max(0, math.sin(a))) - toe_up * max(0, math.sin(a)) ** 3
+            up_pts.append(T.P((X, Y, Z)))
+        X = x + side * 0.01 + width * 1.05 * math.cos(a)
+        Z = cz + length * 0.52 * math.sin(a)
+        sole_pts.append(T.P((X, floor + 0.015, Z)))
+        sole_pts.append(T.P((X, floor - 0.02, Z)))
+    hull = _hull(up_pts)
+    shull = _hull(sole_pts)
+    s = d.shape(poly(shull), sole, S * 0.3, None, shade='#000000', depth=0.4, sheen=0.1, reach=0.2)
+    s += d.shape(pts(hull), col, S * 0.3, 'clay', 0.05, shade='#140a0a', depth=0.6, sheen=0.35, reach=0.25)
+    return T.scr((x, y, cz))[2], s
 
 
 def figure(d, P, B, F, ex, S, cx, cy, yaw=20, body_yaw=None, roll=0, head_dx=0.0, head_dy=0.0):
@@ -182,7 +209,7 @@ def figure(d, P, B, F, ex, S, cx, cy, yaw=20, body_yaw=None, roll=0, head_dx=0.0
             parts.append((z + item.get('z', -0.5), s))
         sh = F['shoe'](side)
         z, s = shoe(d, T, sh['ankle'], sh['len'], sh['col'], side, sh.get('h', 0.1), sh.get('w', 0.09), sh.get('toe_up', 0.0))
-        parts.append((z + sh.get('z', -0.4), s))
+        parts.append((z + sh.get('z', -0.15), s))
     # skirt / coat tails
     for sk in F.get('skirts', []):
         L = Head(sk['table'], S, cx, cy, by)

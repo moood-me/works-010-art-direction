@@ -198,7 +198,7 @@ class Shell:
         return [f(np.clip(y, self.ymin, self.ymax)) for f in self._f]
 
     def point(self, a, y):
-        """a: angle around (0 = viewer's right side, pi/2 = front, pi = left, 3pi/2 = back)."""
+        """a: angle around (0 = the x > 0 side, pi/2 = front, pi = the x < 0 side, 3pi/2 = back)."""
         w, zm, zf, zb, n = self.sl(y)
         ca, sa = np.cos(a), np.sin(a)
         front = sa >= 0
@@ -228,8 +228,8 @@ class Shell:
         return r3.Part(name, material, X, Y, Z)
 
     def curve(self, pts):
-        """3D points on the shell from (angle in degrees, y) pairs; angle 90 = front middle."""
-        a = np.radians([p[0] for p in pts])
+        """3D points on the shell from (angle in degrees from the front middle, y) pairs; + toward x < 0."""
+        a = np.radians([p[0] + 90 for p in pts])
         y = np.array([p[1] for p in pts], float)
         X, Y, Z = self.point(a, y)
         return np.stack([X, Y, Z], 1)
@@ -278,7 +278,42 @@ def draw(head, view, box, colours, expr=None, lw=lc.LINE, clip_id='fc'):
     # marks are clipped to the material they lie on, so nothing crosses a contour in near-profile views
     for mat in sorted(set(m.on for m in marks)):
         ms = [m for m in marks if m.on == mat]
+        if mat not in R.mats:            # marks in the air (glasses): no clip
+            out += draw_marks(ms, R, lw)
+            continue
         cid = f'{clip_id}-{mat}'
         out.append(f'<defs>{R.clip_path([mat], cid)}</defs><g clip-path="url(#{cid})">'
                    + ''.join(draw_marks(ms, R, lw)) + '</g>')
     return out, R
+
+
+def lock_part(shell, path, widths, lift=3.0, name='lock', material='hair', res=2.4, curl=0.0):
+    """A lock of hair: a ribbon laid along a path on a shell (angles in degrees, y), lifted off it, with a width
+    profile (tapering to a point gives a tip).  curl bends the ribbon's edges toward the shell (rounded lock)."""
+    path = np.array(path, float)
+    # resample the path densely
+    seg = np.hypot(np.diff(path[:, 0]) * 1.2, np.diff(path[:, 1]))
+    t = np.concatenate([[0], np.cumsum(seg)]); t /= t[-1]
+    n = int(t[-1] * 0 + max(20, seg.sum() * res * 1.5))
+    tt = np.linspace(0, 1, n)
+    ang = np.interp(tt, t, path[:, 0])
+    yy = np.interp(tt, t, path[:, 1])
+    wv = np.interp(tt, np.linspace(0, 1, len(widths)), widths)
+    X, Y, Z = shell.point(np.radians(ang + 90), yy)
+    C = np.stack([X, Y, Z], 1)
+    zm = shell.sl(yy)[1]
+    N = C - np.stack([0 * X, Y, zm], 1)
+    N[:, 1] += 0.0
+    N /= np.linalg.norm(N, axis=1, keepdims=True) + 1e-9
+    T = np.gradient(C, axis=0)
+    T /= np.linalg.norm(T, axis=1, keepdims=True) + 1e-9
+    Bn = np.cross(N, T)
+    Bn /= np.linalg.norm(Bn, axis=1, keepdims=True) + 1e-9
+    m = int(max(8, wv.max() * 2 * res * 1.5))
+    s = np.linspace(-1, 1, m)
+    P = (C[:, None, :] + N[:, None, :] * (lift - curl * s[None, :, None] ** 2 * 0 + 0)
+         + Bn[:, None, :] * (wv[:, None, None] * s[None, :, None]))
+    if curl:
+        P = P - N[:, None, :] * (curl * (s[None, :, None] ** 2) * wv[:, None, None] / max(wv.max(), 1e-6))
+    P = P.reshape(-1, 3)
+    return r3.Part(name, material, P[:, 0], P[:, 1], P[:, 2])

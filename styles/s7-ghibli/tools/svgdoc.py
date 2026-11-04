@@ -6,6 +6,7 @@ import random
 from geo import path_of, line_of, polys
 
 INK = '#2e2320'          # the line: dark warm brown, never pure black
+MODE = 'full'            # 'full'; 'flat' — colours without the shadow tone; 'line' — only the line (for the rules)
 
 
 def mix(a, b, t):
@@ -18,6 +19,8 @@ def mix(a, b, t):
 def shade(c, k=1.0):
     """the one shadow tone of a colour: as if multiplied by a soft warm lavender — Ghibli's cel shadow keeps the
     colour's warmth, it does not turn grey."""
+    if MODE != 'full':
+        return c
     c = c.lstrip('#')
     m = (0.86, 0.78, 0.84)
     v = [int(c[i:i + 2], 16) for i in (0, 2, 4)]
@@ -39,6 +42,8 @@ class Doc:
 
     # ---- cel primitives
     def fill(self, g, c, op=1.0):
+        if MODE == 'line' and c != INK:
+            c, op = '#fbf8f1', 1.0
         d = path_of(g)
         if d:
             o = f' opacity="{op}"' if op < 1 else ''

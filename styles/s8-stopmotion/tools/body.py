@@ -58,7 +58,7 @@ def stripes(d, L, y0, y1, step, col, clip_outline, n=48):
     return f'<g clip-path="url(#{c})" opacity="0.92">{body}</g>'
 
 
-def ribs(d, L, y0, y1, col, step=0.1, S=None, width=None, depth=None, clip_outline=None, horizontal=False, n=24):
+def ribs(d, L, y0, y1, col, step=0.1, S=None, width=None, depth=None, clip_outline=None, horizontal=False, n=12):
     """Knit ribs (or cord, or pleats): grooves running down the surface of a loft (or round it if horizontal)."""
     S = L.S
     lines = []

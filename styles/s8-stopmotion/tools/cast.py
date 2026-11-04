@@ -7,15 +7,17 @@ import hair as H
 # ------------------------------------------------------------------ expressions (shared)
 EXPR = {
     'calm':     {'smile': 0.12},
-    'dream':    {'gaze': (0.18, -0.22), 'open': 0.92, 'smile': 0.25, 'brow_in': 0.008},
-    'joy':      {'smile': 0.9, 'mopen': 0.35, 'lid_lo': 0.35, 'open': 0.85, 'brow_out': 0.01, 'brow_in': 0.012, 'wide': 1.2},
-    'surprise': {'open': 1.35, 'lid_up': 0.25, 'brow_in': 0.03, 'brow_out': 0.03, 'mopen': 0.55, 'wide': 0.75,
-                 'teeth': False, 'pupil': 0.3},
-    'sad':      {'open': 0.78, 'brow_in': 0.03, 'brow_out': -0.012, 'smile': -0.55, 'gaze': (0.0, 0.25), 'lid_up': -0.1},
-    'anger':    {'open': 0.8, 'brow_in': -0.03, 'brow_out': 0.01, 'smile': -0.4, 'mopen': 0.28, 'lower_teeth': True,
-                 'lid_up': -0.18, 'wide': 1.05},
-    'grin':     {'smile': 0.75, 'skew': 0.35, 'mopen': 0.22, 'lid_lo': 0.3, 'brow_in': 0.005, 'brow_out': 0.015},
-    'stern':    {'smile': -0.15, 'open': 0.82, 'lid_up': -0.12, 'brow_in': -0.008},
+    'dream':    {'gaze': (0.12, -0.2), 'open': 0.86, 'smile': 0.3, 'brow_in': 0.012, 'brow_out': 0.004},
+    'joy':      {'smile': 1.0, 'mopen': 0.5, 'lid_lo': 0.5, 'open': 0.8, 'brow_out': 0.012, 'brow_in': 0.02, 'wide': 1.25},
+    'surprise': {'open': 1.4, 'lid_up': 0.3, 'brow_in': 0.05, 'brow_out': 0.045, 'mopen': 0.7, 'wide': 0.7,
+                 'teeth': False, 'pupil': 0.28},
+    'sad':      {'open': 0.75, 'brow_in': 0.05, 'brow_out': -0.015, 'smile': -0.8, 'gaze': (0.0, 0.3), 'lid_up': -0.15},
+    'anger':    {'open': 0.78, 'brow_in': -0.055, 'brow_out': 0.015, 'smile': -0.6, 'mopen': 0.38, 'lower_teeth': True,
+                 'lid_up': -0.3, 'wide': 1.1},
+    'grin':     {'smile': 0.75, 'skew': 0.35, 'mopen': 0.25, 'lid_lo': 0.3, 'brow_in': 0.005, 'brow_out': 0.02},
+    'stern':    {'smile': -0.25, 'open': 0.85, 'lid_up': -0.12, 'brow_in': -0.015},
+    'grumpy':   {'smile': -0.45, 'open': 0.8, 'lid_up': -0.15, 'brow_in': -0.025, 'gaze': (0.0, 0.1)},
+    'tired':    {'smile': -0.1, 'open': 0.78, 'lid_up': -0.2, 'brow_in': 0.012, 'brow_out': -0.006},
 }
 
 
@@ -59,7 +61,7 @@ ANYA = dict(
                (0.2, 0.37), (0.3, 0.345), (0.4, 0.31), (0.46, 0.27), (0.5, 0.2)],
         back=[(-0.5, -0.02), (-0.46, -0.24), (-0.38, -0.38), (-0.25, -0.46), (-0.1, -0.47), (0.0, -0.44), (0.1, -0.36),
               (0.2, -0.22), (0.3, -0.08), (0.4, 0.04), (0.46, 0.1), (0.5, 0.13)]),
-    skin='#f0cbb2', skin_shade='#b0707a', shade='#5a2a40', blush=0.34, freckles=16, skin_tex=0.05,
+    skin='#f0cbb2', skin_shade='#b0707a', shade='#6a3038', blush=0.34, freckles=16, skin_tex=0.05,
     eye_phi=0.43, eye_y=0.11, eye_r=0.082, eye_w=0.092, eye_open=0.92, eye_tilt=0.006, iris_r=0.056, iris='#5a7a4a',
     lash='#24120e', lash_w=0.015, wing=1.5, lid_paint='#b0607a', lid_paint_a=0.35, socket_a=0.25,
     brow_gap=0.1, brow_w=0.072, brow_th=0.012, brow_col='#7a3a22', brow_arch=0.014,
@@ -103,13 +105,13 @@ def savely_hair(h, d, P, ex):
     """Bald dome; fluffy white tufts over the ears and round the back, sticking out and curling up."""
     locks = []
     for side in (-1, 1):
-        for k in range(5):
-            phi0 = side * (1.0 + 0.3 * k)
-            y0 = -0.2 + 0.035 * k
-            p = H.surf_path(h, [(phi0, y0), (phi0 + side * 0.1, y0 + 0.14)], out=(0.0, 0.03), k=1.0)
-            p += H.fall(p[-1], 0.05, n=3, side=side, out_x=0.06 - 0.008 * k, back_z=-0.02, flick=0.04)
-            p += [(p[-1][0] + side * 0.03, p[-1][1] - 0.04, p[-1][2])]
-            locks.append(H.Lock(p, 0.13, 0.0, taper=1.0, root=0.7, strands=4, z_bias=0.0))
+        for k in range(8):
+            phi0 = side * (1.0 + 0.2 * k)
+            y0 = -0.21 + 0.025 * k + 0.02 * (k % 2)
+            p = H.surf_path(h, [(phi0, y0), (phi0 + side * 0.08, y0 + 0.1)], out=(0.0, 0.03), k=1.0)
+            p += H.fall(p[-1], 0.04, n=3, side=side, out_x=0.05 - 0.004 * k + 0.02 * (k % 2), back_z=-0.02, flick=0.03)
+            p += [(p[-1][0] + side * 0.035, p[-1][1] - 0.05 - 0.02 * (k % 2), p[-1][2])]
+            locks.append(H.Lock(p, 0.1, 0.0, taper=0.8, root=0.7, strands=3, z_bias=0.0, sheen=(0.3, 0.7)))
     for k, ph in enumerate((2.45, 2.8, -2.8, -2.45, 3.14)):
         p = H.surf_path(h, [(ph, -0.17), (ph, 0.1)], out=(0.0, 0.025), k=1.0)
         locks.append(H.Lock(p, 0.26, 0.05, taper=1.0, root=0.7, strands=5, z_bias=-0.3))
@@ -246,7 +248,7 @@ TIM = dict(
         back=[(-0.5, -0.02), (-0.46, -0.25), (-0.38, -0.39), (-0.25, -0.46), (-0.1, -0.47), (0.0, -0.44), (0.1, -0.36),
               (0.2, -0.22), (0.3, -0.08), (0.4, 0.04), (0.46, 0.1), (0.5, 0.13)],
         bumps=[(0.95, 0.22, 0.06, 0.45, 0.1)]),
-    skin='#eec4a4', skin_shade='#b0686a', shade='#5a2a40', blush=0.45, blush_col='#e85a5a', freckles=26, skin_tex=0.05,
+    skin='#eec4a4', skin_shade='#b0686a', shade='#6a3038', blush=0.45, blush_col='#e85a5a', freckles=26, skin_tex=0.05,
     eye_phi=0.44, eye_y=0.1, eye_r=0.088, eye_w=0.092, eye_open=1.05, eye_tilt=0.0, iris_r=0.062, iris='#6a4a2a',
     lash='#2a1810', lash_w=0.012, wing=0.6, socket_a=0.2, lid_top=0.82, lid_bot=0.45,
     brow_gap=0.1, brow_w=0.075, brow_th=0.022, brow_col='#5a3018', brow_arch=0.006,
@@ -289,13 +291,12 @@ def vera_hair(h, d, P, ex):
         a = abs(phi)
         return -0.3 + 0.18 * min(1.0, a / 1.1) ** 2 + 0.3 * max(0.0, a - 1.1)
     locks = []
-    # combed back from the hairline to the bun: smooth wide locks hugging the skull
-    for k in range(9):
-        ph = -1.6 + 3.2 * k / 8
-        y0 = line(ph) + 0.01
-        p = H.surf_path(h, [(ph, y0), (ph * 1.25 + (0.6 if ph > 0 else -0.6), -0.4), (math.pi * (0.95 if ph >= 0 else -0.95), -0.33)],
-                        out=(0.012, 0.02), k=1.02)
-        locks.append(H.Lock(p, 0.22, 0.1, taper=1.0, root=0.9, strands=3, grooves=0, sheen=(0.1, 0.35), z_bias=0.05))
+    # combed back: smooth wide bands from the hairline up over the skull
+    for k in range(11):
+        ph = -1.5 + 3.0 * k / 10
+        y0 = line(ph) + 0.005
+        p = H.surf_path(h, [(ph, y0), (ph * 0.8, (y0 - 0.44) / 2 - 0.02), (ph * 0.55, -0.45)], out=(0.008, 0.012), k=1.02)
+        locks.append(H.Lock(p, 0.17, 0.12, taper=1.0, root=1.0, strands=3, grooves=0, sheen=(0.3, 0.6), z_bias=0.1))
     # escaped strands by the temples
     extra_front = []
     for side in (-1, 1):
@@ -325,7 +326,7 @@ VERA = dict(
         back=[(-0.5, -0.02), (-0.46, -0.23), (-0.38, -0.37), (-0.25, -0.45), (-0.1, -0.46), (0.0, -0.43), (0.1, -0.35),
               (0.2, -0.22), (0.3, -0.08), (0.4, 0.04), (0.46, 0.1), (0.5, 0.13)],
         bumps=[(0.92, 0.08, 0.07, 0.3, 0.07), (0.0, 0.46, 0.04, 0.3, 0.04)]),
-    skin='#e4c6b2', skin_shade='#8a5a6a', shade='#3a2440', blush=0.18, blush_col='#c86070', skin_tex=0.05,
+    skin='#ead0be', skin_shade='#9a6a6a', shade='#5a3038', shade_depth=0.6, blush=0.18, blush_col='#c86070', skin_tex=0.05,
     eye_phi=0.43, eye_y=0.07, eye_r=0.07, eye_w=0.085, eye_open=0.66, eye_tilt=0.014, iris_r=0.046, iris='#3a4a3a',
     lash='#1a1014', lash_w=0.014, wing=1.6, socket_a=0.45, bags=1, lid_top=0.72, lid_bot=0.4,
     lid_paint='#7a5a7a', lid_paint_a=0.35,
@@ -335,9 +336,7 @@ VERA = dict(
     ear_phi=1.5, ear_y=0.14, ear_w=0.07, ear_h=0.15, ear_out=15,
     hair=vera_hair, hair_col='#3a2622', hair_shade='#0a0404',
     over_all=vera_over,
-    wrinkles=[(0.3, 0.27, [(0.0, -0.05), (0.02, 0.0), (0.04, 0.06)], 0.005),
-              (-0.3, 0.27, [(0.0, -0.05), (-0.02, 0.0), (-0.04, 0.06)], 0.005),
-              (0.0, 0.0, [(-0.02, -0.03), (-0.015, 0.02)], 0.004)],
+    wrinkles=[(0.0, 0.0, [(-0.018, -0.025), (-0.014, 0.015)], 0.004)],
 )
 
 
@@ -386,3 +385,123 @@ VERA_BODY = dict(
     cloth='#4a2c40', tex='knit', tex_amount=0.15, shade='#140a14', ribs=0.07,
     inside=vera_inside, details=vera_details, collar_extra=vera_collar,
 )
+
+
+# ------------------------------------------------------------------ figures (full height, in head units)
+def _flower(stem_from, col='#e8d8a0'):
+    """A wild flower on a thin stem (a prop in Anya's hand)."""
+    def prop(d, T, P, S):
+        x, y, z = stem_from
+        top = (x + 0.05, y - 0.55, z + 0.05)
+        a, b = T.P(stem_from), T.P(top)
+        s = d.bump(f'M{f(a[0])} {f(a[1])} Q{f(a[0]+S*0.02)} {f((a[1]+b[1])/2)} {f(b[0])} {f(b[1])}', '#5a7a3a', soft=1, height=2,
+                   spec=0.2, stroke=True, sw=S * 0.012)
+        petals = ''
+        for k in range(7):
+            ang = 2 * math.pi * k / 7
+            px, py = b[0] + math.cos(ang) * S * 0.045, b[1] + math.sin(ang) * S * 0.035
+            petals += f'<ellipse cx="{f(px)}" cy="{f(py)}" rx="{f(S*0.035)}" ry="{f(S*0.02)}" transform="rotate({f(math.degrees(ang))} {f(px)} {f(py)})" fill="{col}"/>'
+        s += f'<g filter="url(#{d.relief(1.5, 3, 0.3, 20)})">{petals}</g>'
+        s += d.bump(f'M{f(b[0]-S*0.025)} {f(b[1])} a{f(S*0.025)} {f(S*0.025)} 0 1 0 {f(S*0.05)} 0 a{f(S*0.025)} {f(S*0.025)} 0 1 0 {f(-S*0.05)} 0Z',
+                    '#d89a30', soft=1.5, height=3, spec=0.4)
+        return (T.scr(top)[2] + 0.3, s)
+    return prop
+
+
+ANYA_FIG = dict(
+    legs=lambda side: [dict(path=[(side * 0.17, 2.1, 0.0), (side * 0.16, 3.0, 0.03), (side * 0.15, 3.85, 0.0)], r0=0.1, r1=0.06,
+                            col='#4a3448', tex='cloth', tex_amount=0.1, z=-0.3)],
+    shoe=lambda side: dict(ankle=(side * 0.15, 3.86, 0.0), len=0.36, col='#7a3a24', h=0.11, w=0.1),
+    skirts=[dict(table=dict(a=[(1.9, 0.38), (2.2, 0.47), (2.6, 0.57), (3.0, 0.64)], front=[(1.9, 0.2), (3.0, 0.42)],
+                            back=[(1.9, -0.18), (3.0, -0.38)]), y=(1.92, 3.0), col='#2e5a5e', tex='cloth', tex_amount=0.2,
+                 ribs=0.22, z=-0.1)],
+    arms=lambda side: [dict(path=[(side * 0.48, 0.86, -0.02), (side * 0.6, 1.5, -0.04), (side * 0.48 if side < 0 else 0.3, 2.05, 0.12 if side > 0 else 0.0)],
+                            r0=0.1, r1=0.075, col='#c8902e', tex='felt', tex_amount=0.12, ribs=True, z=0.05)],
+    hand=lambda side: dict(wrist=(side * 0.48 if side < 0 else 0.3, 2.07, 0.12 if side > 0 else 0.0),
+                           dir=(0.0, 1.0, 0.1), size=0.26, pose='relaxed' if side < 0 else 'hold'),
+    props=[_flower((0.28, 2.2, 0.2))],
+)
+
+SAVELY_FIG = dict(
+    torso=dict(SAVELY_BODY['torso'], a=SAVELY_BODY['torso']['a'] + [(2.2, 0.55)], front=SAVELY_BODY['torso']['front'] + [(2.2, 0.26)],
+               back=SAVELY_BODY['torso']['back'] + [(2.2, -0.2)]),
+    torso_y=(0.55, 2.2),
+    legs=lambda side: [dict(path=[(side * 0.22, 2.05, 0.0), (side * 0.22, 2.7, 0.04), (side * 0.2, 3.25, 0.0)], r0=0.17, r1=0.14,
+                            col='#4a4a52', tex='cloth', tex_amount=0.25, z=-0.3)],
+    shoe=lambda side: dict(ankle=(side * 0.2, 3.27, 0.0), len=0.36, col='#3a2418', h=0.11, w=0.1),
+    arms=lambda side: [dict(path=[(side * 0.52, 0.8, -0.02), (side * 0.66, 1.45, 0.0), (side * 0.3, 1.75, 0.38)] if side > 0 else
+                            [(side * 0.52, 0.8, -0.02), (side * 0.7, 1.5, -0.04), (side * 0.6, 2.15, 0.0)],
+                            r0=0.13, r1=0.11, col='#e2d6bc', tex='cloth', tex_amount=0.25, z=0.05)],
+    hand=lambda side: dict(wrist=(0.28, 1.76, 0.4) if side > 0 else (-0.6, 2.17, 0.0), dir=(-0.4, 0.2, 0.6) if side > 0 else (0, 1, 0),
+                           size=0.28, pose='hold' if side > 0 else 'relaxed', z=0.1),
+)
+
+
+def _watch(at):
+    """A pocket watch held up: gold case, white face, two hands."""
+    def prop(d, T, P, S):
+        x, y = T.P(at)
+        r = S * 0.07
+        s = d.bump(f'M{f(x-r)} {f(y)} a{f(r)} {f(r)} 0 1 0 {f(2*r)} 0 a{f(r)} {f(r)} 0 1 0 {f(-2*r)} 0Z', '#d8a840', soft=2, height=5,
+                   spec=0.9, shine=50)
+        s += f'<circle cx="{f(x)}" cy="{f(y)}" r="{f(r*0.78)}" fill="#f4eee0"/>'
+        for k in range(12):
+            a = 2 * math.pi * k / 12
+            s += f'<circle cx="{f(x+math.cos(a)*r*0.62)}" cy="{f(y+math.sin(a)*r*0.62)}" r="{f(r*0.05)}" fill="#3a2a20"/>'
+        s += f'<path d="M{f(x)} {f(y)} L{f(x+r*0.4)} {f(y-r*0.25)} M{f(x)} {f(y)} L{f(x-r*0.1)} {f(y-r*0.55)}" stroke="#2a1a14" stroke-width="{f(r*0.07)}" stroke-linecap="round"/>'
+        s += d.bump(f'M{f(x-r*0.15)} {f(y-r*1.05)} h{f(r*0.3)} v{f(-r*0.25)} h{f(-r*0.3)}Z', '#d8a840', soft=1, height=2, spec=0.8)
+        s += f'<path d="M{f(x)} {f(y-r*1.3)} q{f(-r*1.5)} {f(-r*0.5)} {f(-r*2.6)} {f(r*0.8)}" fill="none" stroke="#d8a840" stroke-width="{f(S*0.008)}" stroke-dasharray="{f(S*0.008)} {f(S*0.004)}"/>'
+        return (T.scr(at)[2] + 0.5, s)
+    return prop
+
+
+SAVELY_FIG['props'] = [_watch((0.2, 1.62, 0.5))]
+
+TIM_FIG = dict(
+    torso=dict(TIM_BODY['torso']),
+    torso_y=(0.56, 1.75),
+    legs=lambda side: [dict(path=[(side * 0.15, 1.65, 0.0), (side * 0.17, 2.0, 0.02)], r0=0.15, r1=0.14, col='#6a5a3a', tex='cloth',
+                            tex_amount=0.3, z=-0.25),
+                       dict(path=[(side * 0.16, 1.95, 0.02), (side * 0.18 + (0.05 if side > 0 else 0), 2.35, 0.03), (side * 0.17 + (0.08 if side > 0 else 0), 2.72, 0.0)],
+                            r0=0.075, r1=0.06, col='#eec4a4', z=-0.3),
+                       dict(path=[(side * 0.17 + (0.08 if side > 0 else 0), 2.5, 0.0), (side * 0.17 + (0.08 if side > 0 else 0), 2.72, 0.0)],
+                            r0=0.07, r1=0.068, col='#e8e0d0', tex='knit', tex_amount=0.15, z=-0.29, ribs=True)],
+    shoe=lambda side: dict(ankle=(side * 0.17 + (0.08 if side > 0 else 0), 2.74, 0.0), len=0.34, col='#c83a2a', h=0.11, w=0.1, toe_up=0.02),
+    arms=lambda side: [dict(path=[(side * 0.4, 0.75, -0.02), (side * 0.56, 1.25, 0.0), (side * 0.44, 1.7, 0.1)] if side < 0 else
+                            [(side * 0.4, 0.75, -0.02), (side * 0.7, 1.1, 0.05), (side * 0.62, 0.62, 0.15)],
+                            r0=0.09, r1=0.08, col='#2c4a72', tex='knit', tex_amount=0.12, stripes='#f0e6d2', z=0.05)],
+    hand=lambda side: dict(wrist=(side * 0.44, 1.72, 0.1), dir=(0, 1, 0), size=0.22, pose='fist') if side < 0 else
+    dict(wrist=(0.62, 0.58, 0.15), dir=(0.1, -1.0, 0.1), size=0.22, pose='open', z=0.05),
+)
+
+VERA_FIG = dict(
+    torso=dict(VERA_BODY['torso'], a=VERA_BODY['torso']['a'] + [(2.5, 0.44)], front=VERA_BODY['torso']['front'] + [(2.5, 0.21)],
+               back=VERA_BODY['torso']['back'] + [(2.5, -0.21)]),
+    torso_y=(0.6, 2.5),
+    legs=lambda side: [dict(path=[(side * 0.14, 2.5, 0.0), (side * 0.13, 3.5, 0.02), (side * 0.12, 4.35, 0.0)], r0=0.085, r1=0.055,
+                            col='#2a2430', tex='cloth', tex_amount=0.1, z=-0.3)],
+    shoe=lambda side: dict(ankle=(side * 0.12, 4.36, 0.0), len=0.36, col='#2a1c22', h=0.1, w=0.085),
+    skirts=[dict(table=dict(a=[(2.15, 0.36), (2.5, 0.42), (3.0, 0.44), (3.45, 0.44)], front=[(2.15, 0.2), (3.45, 0.24)],
+                            back=[(2.15, -0.2), (3.45, -0.24)]), y=(2.17, 3.45), col='#3a3a4a', tex='cloth', tex_amount=0.25,
+                 ribs=0.3, z=-0.1)],
+    arms=lambda side: [dict(path=[(side * 0.47, 0.86, -0.02), (side * 0.58, 1.55, 0.0), (side * 0.2 if side > 0 else -0.05, 1.55, 0.36)],
+                            r0=0.095, r1=0.075, col='#4a2c40', tex='knit', tex_amount=0.15, ribs=True, z=0.1)],
+    hand=lambda side: dict(wrist=(0.2, 1.55, 0.37) if side > 0 else (-0.05, 1.55, 0.37), dir=(-0.8, 0.2, 0.3) if side > 0 else (0.8, 0.2, 0.3),
+                           size=0.25, pose='hold', z=0.2),
+)
+
+
+def _folder(at):
+    """A thick folder of papers held against the chest."""
+    def prop(d, T, P, S):
+        x, y, z = at
+        corners = [(x - 0.32, y - 0.38, z), (x + 0.22, y - 0.4, z + 0.04), (x + 0.24, y + 0.3, z + 0.04), (x - 0.3, y + 0.32, z)]
+        pp = [T.P(c) for c in corners]
+        s = d.shape(poly(pp), '#2e4a3a', S * 0.6, 'cloth', 0.2, shade='#0a1410', depth=0.5, sheen=0.25, reach=0.2)
+        pages = [(p[0] + S * 0.02, p[1] - S * 0.02) for p in pp]
+        s = d.shape(poly(pages), '#ece6d6', S * 0.6, 'cloth', 0.1, shade='#3a3020', depth=0.3, reach=0.2) + s
+        return (T.scr(at)[2] + 0.05, s)
+    return prop
+
+
+VERA_FIG['props'] = [_folder((0.08, 1.45, 0.3))]

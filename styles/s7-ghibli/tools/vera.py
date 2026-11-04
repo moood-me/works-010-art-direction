@@ -19,7 +19,7 @@ FACE = dict(
         (-0.6, -0.06), (-0.8, 0.06), (-1.0, 0.18)],
     prof=profile(-0.50, 0.15, bridge=0.06, mouth_y=-0.73),
     sigma=[(0.2, 0.10), (-0.3, 0.075), (-0.5, 0.16), (-0.8, 0.20)],
-    eye_x=0.26, eye_y=-0.08, eye_w=0.27, eye_h=0.15, iris_w=0.072, iris_h=0.085, lashes=1, flick=0.8, lid_w=1.4,
+    eye_x=0.275, eye_y=-0.08, eye_w=0.27, eye_h=0.15, iris_w=0.072, iris_h=0.085, lashes=1, flick=0.8, lid_w=1.4,
     crease=0.55, eye_tilt=0.015,
     brow_y=0.22, brow_w=0.30, brow_th=1.0, brow_arch=0.012, nose_y=-0.50, nose='hook', nose_len=0.15, nose_w=0.07,
     mouth_y=-0.73, mouth_w=0.095, mouth_curve=-0.006, lower_lip=0.04, ear_z=0.04, ear=(-0.04, -0.38),
@@ -30,6 +30,7 @@ FACE = dict(
 
 # pulled back from a side part into a low knot at the nape; the front swept across; one strand fallen loose
 HAIRDEF = dict(
+    tufts=[dict(ts=[-140, 140, 160, -160, 180], y=0.75, drop=0.6, w=0.36, out=0.02, line=False)],
     hairline=[(0, 0.62), (25, 0.60), (55, 0.45), (80, 0.20), (95, 0.04), (115, -0.20), (150, -0.45), (180, -0.50)],
     volume=[(-1, 0.08), (0, 0.11), (1, 0.15)],
     flow=[[(-28, 0.93), (20, 0.86), (55, 0.66), (85, 0.40), (120, 0.1), (160, -0.2)],
@@ -61,7 +62,7 @@ def extra(d, view, F, h, skin_g):
         a = float(h.a(-0.40))
         p = np.array([[side * (a - 0.01), -0.44, float(h.zm(-0.40)) + 0.06]])
         nrm = np.array([[side * 0.9, 0, 0.4]]) @ h.R.T
-        if float(view.dir(nrm)[0, 2]) < -0.2:
+        if float(view.dir(nrm)[0, 2]) < 0.15:
             continue
         c = view.xy(h.to_model(p))[0]
         g = Point(c[0], c[1] + 0.03 * view.s * h.k).buffer(0.035 * view.s * h.k, 16)
@@ -73,7 +74,7 @@ def extra(d, view, F, h, skin_g):
 B = dict(
     hip_y=87, hip_x=8.5, thigh=41, shin=39, shoulder=(14.4, 135, -1.0), upper=28, fore=24, hand=16,
     arm_r=[3.9, 3.3, 2.8, 2.2], hand_r=2.1, leg_r=[7.2, 6.0, 4.4, 3.9, 4.4, 4.0, 2.9, 2.7],
-    neck=(140.0, 147, -1.0, 0.5), neck_r=3.5, head_c=(0, 153.6, 1.8), head_h=23.5, chest_y=122,
+    neck=(140.0, 150.5, -1.0, 0.5), neck_r=3.5, head_c=(0, 157.4, 1.8), head_h=23.5, chest_y=122,
     torso=[(79, 10.5, 7, -7), (87, 16.0, 8.5, -9.5), (96, 15.0, 8, -9), (106, 12.4, 7.0, -7.0), (115, 13.8, 8.6, -7.6),
            (123, 14.8, 10.0, -8.0), (130, 16.2, 9.0, -8.0), (134, 17.4, 7.4, -7.2), (137, 15.0, 5.8, -6.4),
            (139.5, 10.0, 4.5, -5.5), (141.5, 5.3, 3.5, -4.6)],
@@ -99,8 +100,8 @@ POSES = dict(
 
 SPEC = dict(
     skin=SKIN,
-    top=dict(c='#dfe6ee', ease=0.5, hem=88, sleeve=dict(upto=1.0, ease=0.8), collar=3.4),
-    over=dict(c='#4b5468', ease=1.4, hem=84, open=(0.10, 0.38), sleeve=dict(upto=1.0, ease=1.2), buttons=[96, 104]),
-    bottom=dict(kind='trousers', c='#5b5a62', ease=1.8, waist=104),
+    top=dict(c='#6e4048', ease=0.5, hem=88, sleeve=dict(upto=1.0, ease=0.8), turtle=2.2),
+    over=dict(c='#3e4a62', ease=1.4, hem=84, open=(0.10, 0.38), sleeve=dict(upto=1.0, ease=1.2), buttons=[96, 104]),
+    bottom=dict(kind='trousers', c='#4c4746', ease=1.6, waist=104),
     shoes=dict(c='#3b3236', len=23, r=3.0, out=8),
 )

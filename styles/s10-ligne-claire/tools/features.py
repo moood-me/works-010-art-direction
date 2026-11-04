@@ -164,3 +164,49 @@ def nose_marks(h, e, st, view_yaw):
         out.append(Mark(h.on_face(0, y, [(-W * 0.75 * s, -5), (-W * 0.95 * s, -1.5), (-W * 0.55 * s, 1.2),
                                            (W * 0.1 * s, 1.8)]), w=0.85))
     return out
+
+
+def glasses_marks(h, st):
+    """Glasses: two lenses floating in front of the eyes, a bridge, the arms back to the ears.
+    st: x, y (eye centre), rx, ry (lens), lift (distance off the face), shape ('round' or 'rect'), colour, w."""
+    out = []
+    lift = st.get('lift', 11)
+    col = st.get('colour', lc.INK)
+    rx, ry = st['rx'], st['ry']
+    lens = []
+    for s in (1, -1):
+        x0 = st['x'] * s
+        P, T, B, N = h.frame(x0, st['y'], 0)
+        pts = []
+        for a in np.linspace(0, 2 * np.pi, 49)[:-1]:
+            if st.get('shape') == 'rect':
+                c, si = np.cos(a), np.sin(a)
+                k = 1 / max(abs(c) ** 4 + abs(si) ** 4, 1e-9) ** 0.25
+                u, v = rx * c * k, ry * si * k * (1.0 if si < 0 else 0.92)
+            else:
+                u, v = rx * np.cos(a), ry * np.sin(a)
+            # lenses sit flat, turned a little with the face
+            pts.append(P + N * lift + T * u + B * v)
+        pts = np.array(pts)
+        out.append(Mark(pts, kind='shape', fill=st.get('glass', None) or 'none', w=st.get('w', 1.0), stroke=col,
+                        on='glasses', tol=30))
+        lens.append((P + N * lift + T * rx * (1 if s > 0 else -1), P + N * lift - T * rx * (1 if s > 0 else -1)))
+        # arm: from the outer edge of the lens back to the top of the ear
+        e = h.p['ear']
+        w = float(h.sl(e['y'] - 8)[0])
+        outer = P + N * lift + T * rx * s
+        arm = [outer, outer + np.array([s * 4, 0, -10]), np.array([s * (w + 3), e['y'] - 9, e['z'] + 6])]
+        out.append(Mark(np.array(arm), w=st.get('w', 1.0), stroke=col, on='glasses', tol=2))
+    # bridge between the inner edges
+    a, b = lens[0][1], lens[1][1]
+    mid = (a + b) / 2 + np.array([0, -2.5, 2])
+    out.append(Mark(np.array([a, mid, b]), w=st.get('w', 1.0), stroke=col, on='glasses', tol=30))
+    return out
+
+
+def face_shape(h, x, y, uv, fill, w=0.8, on='skin', flip=False, corners=()):
+    return Mark(h.on_face(x, y, uv, flip), kind='shape', fill=fill, w=w, on=on, corners=corners)
+
+
+def face_line(h, x, y, uv, w=0.55, flip=False, on='skin'):
+    return Mark(h.on_face(x, y, uv, flip), w=w, on=on)

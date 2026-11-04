@@ -19,7 +19,7 @@ FACE = dict(
         (-0.6, -0.06), (-0.8, 0.06), (-1.0, 0.18)],
     prof=profile(-0.47, 0.19, bridge=0.07, mouth_y=-0.74, brow=0.04, chin=0.03),
     sigma=[(0.2, 0.16), (-0.3, 0.12), (-0.5, 0.20), (-0.8, 0.26)],
-    eye_x=0.27, eye_y=-0.08, eye_w=0.21, eye_h=0.11, iris_w=0.042, iris_h=0.052, lashes=0, flick=0.0, lid_w=1.0,
+    eye_x=0.285, eye_y=-0.08, eye_w=0.21, eye_h=0.11, iris_w=0.042, iris_h=0.052, lashes=0, flick=0.0, lid_w=1.0,
     crease=0.55, glints=[(-0.3, 0.3, 0.35)], iris_light='#3a2a26',
     brow_style='bushy', brow_y=0.17, brow_w=0.34, nose_y=-0.47, nose='round', nose_w=0.10, nose_len=0.13,
     mouth_y=-0.74, mouth_w=0.11, ear=(-0.02, -0.42), ear_z=0.04,
@@ -37,14 +37,14 @@ FACE = dict(
 HAIRDEF = dict(
     hairline=[(0, 0.95), (60, 0.95), (78, 0.12), (90, 0.0), (105, -0.25), (140, -0.5), (180, -0.55)],
     top=[(0, 0.2), (60, 0.2), (80, 0.34), (110, 0.42), (150, 0.50), (180, 0.52)],
-    volume=[(-1, 0.10), (0, 0.13), (1, 0.12)],
+    volume=[(-1, 0.12), (0, 0.17), (1, 0.14)],
     shadow='#b9b2bf',
     locks=[
-        # tufts over the ears, sticking out and up a little
-        dict(root=(88, 0.22), to=[(0.10, 0.02, -0.02), (0.20, 0.10, -0.08)], w=0.24, mirror=True, line='l'),
-        dict(root=(95, 0.08), to=[(0.12, -0.04, -0.04), (0.22, -0.02, -0.12)], w=0.26, mirror=True),
-        dict(root=(108, 0.25), to=[(0.10, 0.06, -0.06), (0.16, 0.16, -0.16)], w=0.22, mirror=True),
-        dict(root=(100, -0.1), to=[(0.08, -0.08, -0.04), (0.14, -0.12, -0.10)], w=0.2, mirror=True),
+        # soft white fluff over the ears, a little out and up; it does not reach the bald crown
+        dict(root=(84, 0.26), to=[(0.10, 0.03, -0.02), (0.17, 0.08, -0.08)], w=0.22, mirror=True, prof=1.0),
+        dict(root=(96, 0.12), to=[(0.11, -0.03, -0.05), (0.18, -0.01, -0.13)], w=0.24, mirror=True, prof=1.0, line='l'),
+        dict(root=(112, 0.30), to=[(0.10, 0.05, -0.08), (0.14, 0.12, -0.18)], w=0.20, mirror=True, prof=1.0),
+        dict(root=(100, -0.06), to=[(0.08, -0.08, -0.05), (0.12, -0.14, -0.12)], w=0.18, mirror=True, prof=1.0),
     ],
 )
 
@@ -134,7 +134,7 @@ def extra(d, view, F, h, skin_g, glasses=False, loupe=True):
 B = dict(
     hip_y=82, hip_x=9.5, thigh=39, shin=36.5, shoulder=(15.2, 130, -1.0), upper=28, fore=24, hand=17,
     arm_r=[4.4, 3.9, 3.3, 2.7], hand_r=2.5, leg_r=[8.0, 6.8, 5.0, 4.4, 4.9, 4.4, 3.3, 3.1],
-    neck=(134.5, 143, -0.5, 1.0), neck_r=4.5, head_c=(0, 149.6, 2.2), head_h=23.5, chest_y=114,
+    neck=(134.5, 145, -0.5, 1.0), neck_r=4.5, head_c=(0, 150.2, 2.6), head_h=23.5, chest_y=114,
     torso=[(74, 12, 8, -8), (82, 17.5, 10, -10), (92, 17.8, 12.5, -10), (101, 17.6, 13.5, -9.5), (110, 17.0, 12, -9.5),
            (118, 17.4, 10.5, -9.5), (125, 18.2, 9.5, -9.5), (129, 18.8, 8, -8.5), (132, 15.5, 6.5, -7.5),
            (134.5, 10.5, 5, -6.5), (136.5, 6.2, 4, -5.2)],

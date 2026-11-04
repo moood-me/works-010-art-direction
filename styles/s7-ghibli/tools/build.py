@@ -34,8 +34,8 @@ EXPR = {
     'joy': Expr(closed=1, mouth='D', mouth_open=0.9, smile=1.0, teeth=True, blush=0.6, brow_up=0.35, mouth_w=1.25),
     'surprise': Expr(open=1.2, iris=0.78, brow_up=1.0, brow_arch=0.6, mouth='O', mouth_open=0.7, mouth_w=0.7),
     'sad': Expr(open=0.72, lid_out=0.35, brow_in=-1.0, brow_up=0.2, smile=-0.9, look=(0.0, -0.7), mouth_w=0.9),
-    'anger': Expr(open=0.85, lid_in=0.45, brow_in=1.1, brow_up=-0.45, mouth='shout', mouth_open=0.55, teeth=True,
-                  smile=-0.5, mouth_w=1.1),
+    'anger': Expr(open=0.85, lid_in=0.45, brow_in=1.1, brow_up=-0.45, mouth='shout', mouth_open=0.85, teeth=True,
+                  smile=-0.5, mouth_w=1.35),
 }
 # small corrections of the face per character for the default look
 CALM = {
@@ -108,7 +108,7 @@ def portrait(name, key='calm'):
     d = Doc(W, H, lw=2.6)
     place(d, W, H, where, seed=7)
     F = Figure(m.B, m.POSES[pp])
-    v = view_at(22, 14.0 * 23.5 / m.B['head_h'], F.J['head'], W * 0.5, H * 0.38)
+    v = view_at(18, 14.0 * 23.5 / m.B['head_h'], F.J['head'], W * 0.5, H * 0.38)
     person(d, v, name, pp, expr_of(name, key))
     return d
 
@@ -172,7 +172,57 @@ def cast():
     return d
 
 
+def stages():
+    """how a picture is made: the line; flat colour; one shadow tone."""
+    import svgdoc
+    W, H = 1500, 640
+    d = Doc(W, H, lw=2.4)
+    scenes.grad(d, 0, 0, W, H, [(0, '#efe6d4'), (1, '#e0d3ba')])
+    for i, mode in enumerate(('line', 'flat', 'full')):
+        svgdoc.MODE = mode
+        sub = Doc(500, H, lw=2.4)
+        F = Figure(anya.B, anya.POSES['stand'])
+        v = view_at(18, 12.0, F.J['head'], 250, H * 0.42)
+        person(sub, v, 'anya', 'stand', expr_of('anya', 'calm'))
+        d.defs += sub.defs
+        d.add(f'<g transform="translate({i * 500},0)">{"".join(sub.body)}</g>')
+    svgdoc.MODE = 'full'
+    for i, t in enumerate(('1. линия', '2. плоский цвет', '3. один тон тени')):
+        d.add(f'<text x="{i * 500 + 250}" y="44" text-anchor="middle" font-family="sans-serif" font-size="26" '
+              f'fill="#5a4a3a">{t}</text>')
+    return d
+
+
+def face_rule():
+    """where things sit on a Ghibli face: the same head front and in profile with guide lines."""
+    W, H = 1200, 700
+    d = Doc(W, H, lw=2.6)
+    scenes.grad(d, 0, 0, W, H, [(0, '#f3ecdc'), (1, '#e8dcc4')])
+    m = anya
+    h = m.head()
+    marks = [(1.0, 'макушка'), (0.16, 'брови'), (-0.09, 'глаза'), (-0.50, 'низ носа'), (-0.72, 'рот'), (-1.0, 'подбородок')]
+    for i, yaw in enumerate((0, 90)):
+        v = View(yaw=yaw, pitch=0, s=13, ox=330 + i * 480, oy=350)
+        h.place((0, 0, 0), 24)
+        hr = m.hair(h)
+        Fh, Bh, st = hr.build(v)
+        if Bh is not None:
+            hr.draw(d, v, Bh, m.HAIR)
+        sk = h.draw_face(d, v, Expr(), m.SKIN, m.HAIR, m.IRIS, hair_front=Fh)
+        hr.draw(d, v, Fh, m.HAIR, st)
+    for y, t in marks:
+        py = 350 - y * 12 * 13
+        d.add(f'<line x1="120" x2="{W - 40}" y1="{py:.0f}" y2="{py:.0f}" stroke="#b0503a" stroke-width="1.4" '
+              f'stroke-dasharray="6 6" opacity="0.8"/>')
+        d.add(f'<text x="20" y="{py + 6:.0f}" font-family="sans-serif" font-size="22" fill="#8a3a2a">{t}</text>')
+    return d
+
+
 if __name__ == '__main__':
+    if want('rule-stages'):
+        save(stages(), 'rule-stages')
+    if want('rule-face'):
+        save(face_rule(), 'rule-face')
     for n in CAST:
         if want('portrait-' + n):
             save(portrait(n), 'portrait-' + n)

@@ -32,6 +32,8 @@ def mix(a, b, t):
 
 
 def f(v):
+    if abs(v) >= 4:       # screen coordinates: a tenth of a pixel is enough; head-unit coordinates need more
+        return ('%.1f' % v).rstrip('0').rstrip('.')
     return ('%.4f' % v).rstrip('0').rstrip('.')
 
 

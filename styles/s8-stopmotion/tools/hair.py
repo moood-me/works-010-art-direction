@@ -44,7 +44,7 @@ def _smooth(points, it=2):
     return p
 
 
-def geom(h, L, n=28):
+def geom(h, L, n=22):
     """Screen geometry of a lock: centre line, half widths, outline polygon, mean depth."""
     S = h.S
     c = _smooth(_resample([h.scr(p) for p in L.path3], n))
@@ -66,7 +66,7 @@ def geom(h, L, n=28):
     return dict(c=c, half=half, left=left, right=right, poly=left + right[::-1], z=z)
 
 
-def cap_polys(h, k, line, y_back=None, rows=44, cols=120):
+def cap_polys(h, k, line, y_back=None, rows=80, cols=120):
     """The hair cap over the skull (shell = head scaled by k): the region above the hairline line(phi).
     Built as horizontal strips of the shell, split into the part turned away from us (back, drawn before the head)
     and the part facing us (front). Returns (back, front): lists of polygons."""
@@ -98,7 +98,7 @@ def cap_polys(h, k, line, y_back=None, rows=44, cols=120):
                 bl = a0
             if open_r and yb > line(a1):
                 br = a1
-            n = max(2, len(run))
+            n = max(2, min(14, len(run)))
             top = [h.P(h.surf(tl + (tr - tl) * i / (n - 1), ya - 0.004, 0, k)) for i in range(n)]
             bot = [h.P(h.surf(bl + (br - bl) * i / (n - 1), yb + 0.004, 0, k)) for i in range(n)]
             return top + bot[::-1]
@@ -160,7 +160,7 @@ def mass(d, h, P, locks, col, cap=None, groove_col=None, sheen=0.28, name='hair'
         for k in range(L.strands):
             o = -0.9 + 1.8 * (k + 0.5) / L.strands
             line = []
-            for i in range(int(n * 0.05), n - 2):
+            for i in range(int(n * 0.05), n - 2, 2):
                 x, y, _ = g['c'][i]
                 lx, ly = g['left'][i]
                 line.append((x + (lx - x) * o, y + (ly - y) * o))
