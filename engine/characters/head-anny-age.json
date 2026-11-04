@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "head-anny-age",
  "label": {
   "ru": "Голова: голова малыша на взрослом",
@@ -12,20 +12,20 @@
   "form": [
    {
     "kind": "preset",
-    "id": "head-of-toddler@d552bda97a03a5a8",
+    "id": "head-of-toddler@3929fd9bff3a090a",
     "strength": 0.7
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-relief@bd842db977612ad2"
+    "id": "features-relief@48703c057a92fd5e"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    },
    {
     "kind": "off",
@@ -34,7 +34,7 @@
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon@ae99df8a65cf6c01"
+   "id": "light-toon@9ec46ec5097eba0c"
   }
  },
  "look": {

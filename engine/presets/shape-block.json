@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-block",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: блок оверсайз",
+  "en": "silhouette: oversized block"
+ },
+ "about": {
+  "ru": "висит с плеч прямым квадратным блоком, прямые рукава (силуэт О1: форма, к которой тянется ткань)",
+  "en": "hangs from the shoulders as a straight square block, straight sleeves (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "from": "shoulder",
+  "stiff": 0.95,
+  "square": 3,
+  "round": 0.8,
+  "shape": "straight",
+  "sleeve": "straight"
+ }
+}

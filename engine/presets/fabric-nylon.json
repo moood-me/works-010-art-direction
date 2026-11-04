@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-nylon",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: нейлон (ветровка)",
+  "en": "fabric: nylon (windbreaker)"
+ },
+ "about": {
+  "ru": "лёгкий, не тянется, ловит ветер (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "light, does not stretch, catches the wind (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.08,
+  "stretch": 6000,
+  "compress": 0.25,
+  "bend": 0.000015,
+  "damping": 0.3,
+  "friction": 0.3,
+  "thick": 0.002,
+  "air": 1,
+  "sheen": 0.3,
+  "rough": 0.45
+ }
+}

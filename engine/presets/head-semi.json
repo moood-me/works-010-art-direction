@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "head-semi",
  "group": "head",
  "label": {
@@ -17,19 +17,19 @@
   "form": [
    {
     "kind": "preset",
-    "id": "form-semi@04f55cf714054ff9"
+    "id": "form-semi@882d7a32927dce50"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-semi@81b4c0a1ea6478df"
+    "id": "features-semi@ed275512caccab0d"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    }
   ],
   "pieces": [
@@ -39,12 +39,12 @@
    },
    {
     "kind": "preset",
-    "id": "hair-semi@323177a3cdd38fd0"
+    "id": "hair-semi@09bf48d61daa54ce"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon-form@82a1a4323c882044"
+   "id": "light-toon-form@4a5001203610c6f5"
   }
  }
 }

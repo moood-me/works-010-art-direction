@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "head-red",
  "label": {
   "ru": "Голова: рыжая девушка",
@@ -8,8 +8,14 @@
  },
  "body": "moood-woman@271c46992b9495aa",
  "head": {
-  "preset": "head-red@926a301c60ee4ab7"
+  "preset": "head-red@28bee1e96f6de81e"
  },
+ "clothes": [
+  {
+   "kind": "preset",
+   "id": "outfit-red@7ccb8c4baa3c3586"
+  }
+ ],
  "look": {
   "skin": "#fbe2d2",
   "roughness": 0.65

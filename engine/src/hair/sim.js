@@ -9,7 +9,7 @@
 //   toward its designed angle against the one above — stiffnesses as springs (1/s²), each pass taking k·h²/(1 + k·h²)
 //   as XPBD's compliance does;
 // - the solids (src/solids.js: the head's shape with its jaw — each point allowed as deep as it lies at rest —, the
-//   body's skin between the frames, the floor), with friction against their own motion;
+//   body's skin between the frames, the clothes it lies over, the floor), with friction against their own motion;
 // - lengths kept exactly (follow-the-leader, with its velocity correction; ringlets give like springs);
 // - the hair's own friction (its motion against where the head carries the hairstyle dies down), friction between
 //   neighbouring locks (each point's velocity drawn toward its neighbours' in the other locks near it at rest — hair
@@ -26,6 +26,7 @@
 //   sim.wind = {speed, dir, gust, turbulence} | null      sim.step(ctx) — the figure's simulation step
 import { qRot3, qSlerp } from '../math.js';
 import { normalsOf } from '../mesh.js';
+import { windAt } from '../wind.js';
 
 // WIND: how much more the wind takes the hair than the air of its own motion does (the wind felt as a flow WIND times as
 // fast): with the air of its motion alone, a strong wind leaned long hair 24°; with that air made as strong (four, eight
@@ -56,19 +57,6 @@ const ACROSS = 0.06;
 // moved up by the sag (each move at most GROOM_STEP), DRAPE: the bend while it settles on the body, SETTLED: still
 // enough (m) to be the rest
 const SETTLE = 60, GROOM_FIT = 5, GROOM_STEP = 0.03, DRAPE = 0.05, SETTLED = 0.004, SETTLE_ROUNDS = 6;
-
-// the wind at a point: a steady flow (o.speed along o.dir) going through gusts — two waves travelling along the wind,
-// slow and quick, the strength o.gust —, a slow swing of each lock's own (its seed), a turbulence round each lock
-// (o.turbulence: its share of the speed across the wind and up), and the flow's small lift
-export function windAt(o, x, y, z, t, seed, out) {
-  const s = o.speed, d = o.dir, along = x * d[0] + z * d[2], g = o.gust ?? 1, tu = o.turbulence ?? 1;
-  const gust = 0.62 + g * (0.3 * Math.sin(t * 1.3 - along * 1.7) * Math.sin(t * 0.47 + 1.3) + 0.22 * Math.sin(t * 3.1 - along * 4 + seed) * Math.sin(t * 0.9 + seed * 0.7));
-  const k = s * gust * (0.85 + 0.3 * Math.sin(seed * 5.1 + t * 0.6));
-  out[0] = d[0] * k + tu * 0.32 * s * Math.sin(t * 2.3 + y * 7 + seed * 1.7) * Math.sin(t * 0.8 + seed);
-  out[1] = d[1] * k + tu * 0.22 * s * Math.sin(t * 2.9 + x * 6 + seed * 2.3) + 0.08 * s;
-  out[2] = d[2] * k + tu * 0.32 * s * Math.cos(t * 2.1 + z * 7 + seed * 3.1) * Math.sin(t * 0.7 + seed * 1.3);
-  return out;
-}
 
 export class HairSim {
   constructor(figure, { guides, meshes, physics = {}, grows = null }) {
@@ -112,6 +100,9 @@ export class HairSim {
       // (in the head's skin — a head without a designed form — as deep as it lay at rest, roots under the scalp; out of
       // the body's by its own half-thickness, however the design lay on the neutral head's small shoulders)
       c.allowSkin = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3, d = S.skin(mr, this.X0[i], this.X0[i + 1], this.X0[i + 2], at); return at.head > 0.5 ? Math.min(c.rad[k], d - 0.001) : c.rad[k]; });
+      // (over the clothes — a collar, a hood's back — as it lies over them at rest; what lies under them, under a hood,
+      // is the clothes' to keep off: none of its points meet them)
+      c.allowCover = Array.from({ length: c.n }, (_, k) => { const i = (c.at + k) * 3, d = S.over(mr, this.X0[i], this.X0[i + 1], this.X0[i + 2], at); return d < 0 ? -Infinity : c.rad[k]; });
     }
     // the inner layers: their edges, and how far each point's are stretched now (output.parted: src/hair/shade.js hides
     // the inner layer where it is stretched past PARTED — where locks part it does not stretch into a web between them)
@@ -335,6 +326,15 @@ export class HairSim {
             const ux = x[i] - xp[i] - at.v[0] * H, uy = x[i + 1] - xp[i + 1] - at.v[1] * H, uz = x[i + 2] - xp[i + 2] - at.v[2] * H, un = ux * N[0] + uy * N[1] + uz * N[2];
             x[i] -= (ux - un * N[0]) * mu; x[i + 1] -= (uy - un * N[1]) * mu; x[i + 2] -= (uz - un * N[2]) * mu;
           }
+        }
+      }
+      // the clothes it lies over, with friction against their own motion
+      if (!this.noBody && ch.allowCover[k] > -Infinity) {
+        const d = S.over(mn, x[i], x[i + 1], x[i + 2], at) - ch.allowCover[k];
+        if (d < 0) {
+          const N = at.n; x[i] -= N[0] * d; x[i + 1] -= N[1] * d; x[i + 2] -= N[2] * d;
+          this.contact(ch.at + k, N);
+          if (friction) { const ux = x[i] - xp[i] - at.v[0] * H, uy = x[i + 1] - xp[i + 1] - at.v[1] * H, uz = x[i + 2] - xp[i + 2] - at.v[2] * H, un = ux * N[0] + uy * N[1] + uz * N[2]; x[i] -= (ux - un * N[0]) * mu; x[i + 1] -= (uy - un * N[1]) * mu; x[i + 2] -= (uz - un * N[2]) * mu; }
         }
       }
       if (x[i + 1] < rad) { x[i + 1] = rad; if (friction) { x[i] -= (x[i] - xp[i]) * FLOOR; x[i + 2] -= (x[i + 2] - xp[i + 2]) * FLOOR; } }

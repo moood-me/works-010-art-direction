@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "head-tails",
  "group": "head",
  "label": {
@@ -17,19 +17,19 @@
   "form": [
    {
     "kind": "preset",
-    "id": "form-tails@a846c306805106e9"
+    "id": "form-tails@ceb7f1c829f09e83"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-tails@7b442d858ff2b682"
+    "id": "features-tails@5b1279c96ebc022d"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    }
   ],
   "pieces": [
@@ -39,12 +39,12 @@
    },
    {
     "kind": "preset",
-    "id": "hair-tails@ee5ed53c31e279c3"
+    "id": "hair-tails@2649c0d1a1d6f10a"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon-form@82a1a4323c882044"
+   "id": "light-toon-form@4a5001203610c6f5"
   }
  }
 }

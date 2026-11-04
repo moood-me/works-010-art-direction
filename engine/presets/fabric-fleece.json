@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-fleece",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: флис",
+  "en": "fabric: fleece"
+ },
+ "about": {
+  "ru": "пушистый, объёмный (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "fluffy, voluminous (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.28,
+  "stretch": 500,
+  "compress": 0.6,
+  "bend": 0.00002,
+  "damping": 0.7,
+  "friction": 0.7,
+  "thick": 0.0045,
+  "air": 0.9,
+  "sheen": 0.8,
+  "rough": 1
+ }
+}

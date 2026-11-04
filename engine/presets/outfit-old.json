@@ -1,0 +1,46 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-old",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: старик",
+  "en": "outfit: old man"
+ },
+ "about": {
+  "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+  "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+ },
+ "clothes": [
+  {
+   "id": "tshirt",
+   "kind": "garment",
+   "pattern": "mh-tshirt",
+   "fabric": "fabric-jersey@fbeb796abdcdb8ec",
+   "color": "#7aa36e"
+  },
+  {
+   "id": "pants",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#d8d8d2"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#b49a6a"
+  },
+  {
+   "id": "hood",
+   "kind": "garment",
+   "pattern": "hood",
+   "fabric": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "color": "#f4f2ee",
+   "wide": 1.15,
+   "strength": 0.6
+  }
+ ]
+}

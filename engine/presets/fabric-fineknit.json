@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-fineknit",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: тонкая вязка (мерино)",
+  "en": "fabric: fine knit (merino)"
+ },
+ "about": {
+  "ru": "тонкая, мягкая, тянется (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "thin, soft, stretchy (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.22,
+  "stretch": 300,
+  "compress": 0.5,
+  "bend": 0.000008,
+  "damping": 0.6,
+  "friction": 0.6,
+  "thick": 0.003,
+  "air": 1,
+  "sheen": 0.5,
+  "rough": 0.95
+ }
+}

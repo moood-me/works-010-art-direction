@@ -1,8 +1,8 @@
 // Our heads as the engine's head presets: Г1's and Г3's heads (experiments/heads-anime, experiments/heads-wrap) read
 // from their pages as they are, and one of Г2's solids fitted to a picture as a way of the form (chars.py), written as
 // presets of parts — each head's form (form-<id>: a wrap onto its designed form), features (features-<id>), hair
-// (hair-<id>) and headwear (wear-<id>), the expressions and lights they share — and a head preset taking them
-// (head-<id>), with characters wearing them (characters/head-*.json, on the moood body each was drawn on). The pages'
+// (hair-<id>) and headwear (wear-<id>: what is rigid on it), the expressions and lights they share — and a head preset
+// taking them (head-<id>), with characters wearing them and the outfit each was drawn in (outfit-<id>: clothes) (characters/head-*.json, on the moood body each was drawn on). The pages'
 // data are read by running their own lines that define it, alone in a context of their own (node:vm: nothing of node or
 // of this tool reachable). Run again after their pages change, then `node engine/tools/characters.mjs presets` and
 // `… pin head-…`.
@@ -59,9 +59,16 @@ function featuresOf(CH) {
   return out;
 }
 const hairOf = CH => [{ id: 'hair', kind: 'hair', color: CH.hairColor, ...(CH.hairInk ? { ink: CH.hairInk } : {}), parts: CH.hair }];
-// headwear stays with the head (coarse, the clothes' stage makes garments of it); garments (the turtleneck, the outfits)
-// are the clothes' stage
-const wearOf = CH => (CH.extras || []).filter(([kind]) => kind !== 'turtleneck').map(([kind, o]) => ({ id: kind, kind, ...o }));
+// what is rigid on the head stays with it (a hat, an ear device); what is cloth — a hood, the turtleneck, the outfit
+// each was drawn in (MakeHuman's garments) — is the character's clothes (src/cloth/), an outfit preset of its own
+const CLOTH = new Set(['hood', 'turtleneck']);
+const wearOf = CH => (CH.extras || []).filter(([kind]) => !CLOTH.has(kind)).map(([kind, o]) => ({ id: kind, kind, ...o }));
+// each garment of the pages in the fabric such a garment is made of (presets fabric-*)
+const FABRIC = { tshirt: 'jersey', polo: 'jersey', sweater: 'fineknit', oversized: 'heavyjersey', dress: 'poplin', skirt: 'suiting', pants: 'twill', shorts: 'twill', boots: 'suiting', flats: 'suiting', hood: 'heavyjersey', turtleneck: 'fineknit' };
+const outfitOf = CH => [...CH.outfit.map(([g, color]) => ({ id: g, kind: 'garment', pattern: `mh-${g}`, fabric: `fabric-${FABRIC[g]}` + PIN, color })),
+  ...(CH.extras || []).filter(([kind]) => CLOTH.has(kind)).map(([kind, o]) => ({ id: kind, kind: 'garment', pattern: kind, fabric: `fabric-${FABRIC[kind]}` + PIN, color: o.color, ...(o.wide ? { wide: o.wide } : {}), ...(kind === 'hood' ? { strength: HOOD_HOLD } : {}) }))];
+// a hood keeps the shell it was drawn as (over the hair, which it does not meet), as firmly as this
+const HOOD_HOLD = 0.6;
 
 // shared parts: the expressions every drawn head takes, and the lights
 const PRESETS = {
@@ -100,6 +107,7 @@ for (const [id, CH] of Object.entries(C)) {
   await preset(`features-${id}`, 'features', `черты: ${ru}`, `features: ${en}`, `${was}: глаза, брови, рот и пометки — нарисованы на коже`, `${was}: eyes, brows, mouth and marks — painted on the skin`, { features: featuresOf(CH) });
   await preset(`hair-${id}`, 'hair', `волосы: ${ru}`, `hair: ${en}`, 'волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)', "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)", { pieces: hairOf(CH) });
   if (wear.length) await preset(`wear-${id}`, 'headwear', `убор: ${ru}`, `headwear: ${en}`, 'головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)', 'the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)', { pieces: wear });
+  await preset(`outfit-${id}`, 'outfit', `наряд: ${ru}`, `outfit: ${en}`, `${was}: что надето, как нарисовано, — тканью (вещи MakeHuman${(CH.extras || []).some(([k]) => CLOTH.has(k)) ? ', капюшон или ворот' : ''})`, `${was}: what it was drawn wearing — as cloth (MakeHuman's garments${(CH.extras || []).some(([k]) => CLOTH.has(k)) ? ', a hood or a collar' : ''})`, { clothes: outfitOf(CH) });
   const head = {
     size: CH.hs ?? HEAD_SIZE, skin: CH.skin,
     form: [{ kind: 'preset', id: `form-${id}` + PIN }],
@@ -110,7 +118,7 @@ for (const [id, CH] of Object.entries(C)) {
   };
   await preset(`head-${id}`, 'head', `голова: ${ru}`, `head: ${en}`, `${was}: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове`, `${was}: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head`, { head });
   await save(new URL(`characters/head-${id}.json`, EN), { format: 'engine/character', version: 5, id: `head-${id}`, label: { ru: `Голова: ${ru}`, en: `Head: ${en}` },
-    body: BODY[CH.who] + PIN, head: { preset: `head-${id}` + PIN }, look: { skin: CH.skin, roughness: 0.65 } });
+    body: BODY[CH.who] + PIN, head: { preset: `head-${id}` + PIN }, clothes: [{ kind: 'preset', id: `outfit-${id}` + PIN }], look: { skin: CH.skin, roughness: 0.65 } });
   console.log(`head-${id} (${was}, on ${BODY[CH.who]})`);
 }
 

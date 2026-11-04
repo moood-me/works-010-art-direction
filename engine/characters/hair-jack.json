@@ -1,17 +1,17 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "hair-jack",
  "label": {
   "ru": "Волосы: Джек (В1) на мужчине",
   "en": "Hair: Jack (В1) on the man"
  },
- "base": "man@62c4b78f0d631a54",
+ "base": "man@0b3359cb680a7242",
  "head": {
   "pieces": [
    {
     "kind": "preset",
-    "id": "hair-v1-jack@94daf18d97039dc1"
+    "id": "hair-v1-jack@ab18545a8b88e3c2"
    }
   ]
  },

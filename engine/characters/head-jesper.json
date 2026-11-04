@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "head-jesper",
  "label": {
   "ru": "Голова: Джеспер",
@@ -8,8 +8,14 @@
  },
  "body": "moood-man@ae2fe31d3d61c6e7",
  "head": {
-  "preset": "head-jesper@b500cacb9552103d"
+  "preset": "head-jesper@5ec2524db296f5ba"
  },
+ "clothes": [
+  {
+   "kind": "preset",
+   "id": "outfit-jesper@c558675bfeba3874"
+  }
+ ],
  "look": {
   "skin": "#f0c4a8",
   "roughness": 0.65

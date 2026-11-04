@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-polo",
+ "kind": "top",
+ "label": {
+  "ru": "поло",
+  "en": "polo shirt"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/polo.js)",
+ "bin": "mh-polo.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    1985,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    1985,
+    3
+   ],
+   "offset": 11912
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    1985,
+    3
+   ],
+   "offset": 35732
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 47644
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 47656
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    3757,
+    3
+   ],
+   "offset": 47668
+  }
+ }
+}

@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-apron",
+ "kind": "apron",
+ "label": {
+  "ru": "фартук",
+  "en": "apron"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/apron.js)",
+ "bin": "mh-apron.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    412,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    412,
+    3
+   ],
+   "offset": 2472
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    412,
+    3
+   ],
+   "offset": 7416
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 9888
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 9900
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    688,
+    3
+   ],
+   "offset": 9912
+  }
+ }
+}

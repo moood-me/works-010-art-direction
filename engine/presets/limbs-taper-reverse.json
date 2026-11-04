@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "limbs-taper-reverse",
  "label": {
   "ru": "конечности: обратное сужение",

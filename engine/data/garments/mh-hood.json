@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-hood",
+ "kind": "top",
+ "label": {
+  "ru": "худи с капюшоном",
+  "en": "hooded top"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/hood.js)",
+ "bin": "mh-hood.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    2416,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    2416,
+    3
+   ],
+   "offset": 14496
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    2416,
+    3
+   ],
+   "offset": 43488
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 57984
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 57996
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    4718,
+    3
+   ],
+   "offset": 58008
+  }
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-tweed",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: твид",
+  "en": "fabric: tweed"
+ },
+ "about": {
+  "ru": "толстая жёсткая шерсть: пальто, куртки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "thick stiff wool: coats, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.45,
+  "stretch": 4000,
+  "compress": 0.3,
+  "bend": 0.00015,
+  "damping": 0.6,
+  "friction": 0.65,
+  "thick": 0.0045,
+  "air": 1,
+  "sheen": 0.3,
+  "rough": 1
+ }
+}

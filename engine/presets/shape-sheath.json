@@ -1,0 +1,18 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-sheath",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: платье-футляр",
+  "en": "silhouette: sheath"
+ },
+ "about": {
+  "ru": "прямой силуэт, ткань мостом через впадины (силуэт О1: форма, к которой тянется ткань)",
+  "en": "a straight line, the cloth bridging the hollows (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "straight",
+  "stiff": 0.5
+ }
+}

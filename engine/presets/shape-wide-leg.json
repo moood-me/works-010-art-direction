@@ -1,0 +1,17 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-wide-leg",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: широкие штанины",
+  "en": "silhouette: wide legs"
+ },
+ "about": {
+  "ru": "штанины расширяются к низу (силуэт О1: форма, к которой тянется ткань)",
+  "en": "legs widening downward (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "leg": "wide"
+ }
+}

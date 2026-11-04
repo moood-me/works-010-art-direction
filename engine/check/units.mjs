@@ -3,7 +3,7 @@
 //   node engine/check/units.mjs
 import { createEngine } from '../src/engine.js';
 import { read } from './node-read.mjs';
-import { resolve, upgrade } from '../src/character.js';
+import { resolve, upgrade, VERSION } from '../src/character.js';
 import { makeMesh } from '../src/mesh.js';
 import { qRot3 } from '../src/math.js';
 import { Pose } from '../src/pose.js';
@@ -43,7 +43,7 @@ await test('a description: unknown keys and values refused', async () => {
 await test('a description of an earlier version: refused with the way to upgrade; the upgrade gives the stored preset', async () => {
   const v1 = { format: 'engine/character', version: 1, id: 'woman', label: woman.label, body: 'moood-woman',
     skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} }, look: woman.look };
-  await refuses(() => resolve(v1, E.skeleton), /upgrade it to 6/);
+  await refuses(() => resolve(v1, E.skeleton), new RegExp(`upgrade it to ${VERSION}`));
   const up = upgrade(v1, { bodyPin: woman.body });
   ok(JSON.stringify(resolve(up, E.skeleton)) === JSON.stringify(resolve(woman, E.skeleton)), 'the upgraded woman is not the preset');
   const v1c = { ...v1, skinning: { method: 'dqs', clavicleShare: 1 / 3 }, motion: { corrections: { armsOff: { degrees: 5 }, dampHeadSpine: { on: false } } } };

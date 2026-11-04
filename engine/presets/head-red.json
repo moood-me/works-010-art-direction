@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "head-red",
  "group": "head",
  "label": {
@@ -17,30 +17,30 @@
   "form": [
    {
     "kind": "preset",
-    "id": "form-red@4882ca6fa221925c"
+    "id": "form-red@050eaf0c9bdbedeb"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-red@4e3590cba23abbdd"
+    "id": "features-red@06674836fef930fb"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    }
   ],
   "pieces": [
    {
     "kind": "preset",
-    "id": "hair-red@f7b40ae44b1bd42e"
+    "id": "hair-red@bb08b400b6cc3fa5"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon-form@82a1a4323c882044"
+   "id": "light-toon-form@4a5001203610c6f5"
   },
   "ref": {
    "image": "cartoon-anatomical-2.png",

@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "head-anime",
  "group": "head",
  "label": {
@@ -17,30 +17,30 @@
   "form": [
    {
     "kind": "preset",
-    "id": "form-anime@673504be003e063a"
+    "id": "form-anime@d9556d7681208692"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-anime@6de055d4dae3b258"
+    "id": "features-anime@b835447b1fb67de7"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    }
   ],
   "pieces": [
    {
     "kind": "preset",
-    "id": "hair-anime@e97f000816a31b67"
+    "id": "hair-anime@7d9b9d4581dcb87c"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon-form@82a1a4323c882044"
+   "id": "light-toon-form@4a5001203610c6f5"
   }
  }
 }

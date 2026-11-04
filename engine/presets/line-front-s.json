@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "line-front-s",
  "label": {
   "ru": "линия действия: спереди S",

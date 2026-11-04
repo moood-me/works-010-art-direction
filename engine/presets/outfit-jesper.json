@@ -1,0 +1,44 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-jesper",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: Джеспер",
+  "en": "outfit: Jesper"
+ },
+ "about": {
+  "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+  "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+ },
+ "clothes": [
+  {
+   "id": "oversized",
+   "kind": "garment",
+   "pattern": "mh-oversized",
+   "fabric": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "color": "#7a8496"
+  },
+  {
+   "id": "pants",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#3a3f4e"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2e231c"
+  },
+  {
+   "id": "turtleneck",
+   "kind": "garment",
+   "pattern": "turtleneck",
+   "fabric": "fabric-fineknit@3f0b9dbffafbc738",
+   "color": "#3a3a44"
+  }
+ ]
+}

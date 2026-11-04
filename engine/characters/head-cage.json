@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "head-cage",
  "label": {
   "ru": "Голова: каркас и плавные сдвиги",
@@ -12,28 +12,28 @@
   "form": [
    {
     "kind": "preset",
-    "id": "head-cage-tall@475c33006dee6e8e"
+    "id": "head-cage-tall@abfbc2fedd605a3f"
    },
    {
     "kind": "preset",
-    "id": "head-warps-cheeks@ee79e9617b4add25"
+    "id": "head-warps-cheeks@a35f074e6d04a4ec"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-dots@cc360650b4811081"
+    "id": "features-dots@6de146a7440e54ac"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon@ae99df8a65cf6c01"
+   "id": "light-toon@9ec46ec5097eba0c"
   }
  },
  "look": {

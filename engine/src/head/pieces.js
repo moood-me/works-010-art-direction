@@ -1,9 +1,9 @@
 // A head's pieces: meshes on the rig beside its skin — where the skin won't stretch (a long nose, a ball of a nose:
-// Г3's, experiments/heads-wrap), and what a head preset wears so it looks as it was drawn (Г1's and Г3's hair, hoods,
+// Г3's, experiments/heads-wrap), and what a head preset wears so it looks as it was drawn (Г1's and Г3's hair,
 // hats, an ear device: experiments/heads-anime). Each piece is one or more meshes rigid on the Head joint, made in
-// head units at the rest (src/head/frame.js). Garments (Г1's turtleneck, the outfits) are the clothes' stage. Hair
-// here is Г1's designed hair carried as it was (rigid volumes and ribbons on the head); the hair that moves is a
-// later stage — it takes the head's shape to collide with (src/head/head.js, src/figure.js headShape).
+// head units at the rest (src/head/frame.js). Garments (a hood, Г1's turtleneck, the outfits) are clothes
+// (src/cloth/). Hair here is Г1's designed hair carried as it was (rigid volumes and ribbons on the head), or moving
+// (src/hair/).
 //   piecesOf(list, {form, frame, sk, skin, cranium}) → [mesh fields for makeMesh]
 import { smin, clamp, lerp, add, sub, scale, normalize, len, cross, dot } from '../math.js';
 import { smax, sdEll, sdCapsule, sdSphere, meshOf } from './shapes.js';
@@ -19,7 +19,6 @@ export const PIECE_SCHEMA = { type: 'union', key: 'kind', cases: {
   nose: { type: 'object', props: { kind: { const: 'nose' }, id: { type: 'string' }, ink: num(0, 0.01), inkColor: color, rosy: num(0, 1), shine: num(0, 1) }, required: ['kind'] },
   hair: { type: 'object', props: { kind: { const: 'hair' }, id: { type: 'string' }, color, ink: color, parts: { type: 'array', min: 1, items: part }, moves: flag, physics: PHYSICS }, required: ['kind', 'color', 'parts'] },
   style: STYLE_PIECE,
-  hood: { type: 'object', props: { kind: { const: 'hood' }, id: { type: 'string' }, color, inner: color, ink: color, wide: num(0.5, 2) }, required: ['kind', 'color'] },
   hat: { type: 'object', props: { kind: { const: 'hat' }, id: { type: 'string' }, color, ink: color }, required: ['kind', 'color'] },
   earDevice: { type: 'object', props: { kind: { const: 'earDevice' }, id: { type: 'string' }, color, dark: color, ink: color }, required: ['kind', 'color'] },
 } };
@@ -72,13 +71,11 @@ function nose(p, ctx) {
 }
 const ROSY = '#f0a088';
 
-// hoods, hats, an ear device: shells by distance, two-sided — what a head preset wears so it looks as it was drawn, made
-// coarse (a garment's form is the clothes' stage: there a hood becomes cloth that doesn't go through the body)
+// hats, an ear device: shells by distance, two-sided — what a head preset wears, rigid on it, so it looks as it was
+// drawn, made coarse (a hood is cloth: a garment of src/cloth/patterns.js)
 const WEAR_STEP = 0.07, INK = '#2a1e24';
 function extra(p, ctx) {
-  const W = p.wide ?? 1;
   const sdf = {
-    hood: (x, y, z) => { const s0 = smin(sdEll(x, y - 0.12, z + 0.1, 1.24 * W, 1.32, 1.32), sdCapsule(x, y, z, [0, -0.7, -0.3], [0, -2.2, -0.4], [1.15 * W, 1.4 * W]), 0.5); const d = Math.abs(s0) - 0.075, ell = (Math.hypot(x / (0.92 * W), (y + 0.42) / 1.18) - 1) * 0.92, open = smax(ell, -(z - 0.05), 0.1); return smax(d, -open, 0.12); },
     hat: (x, y, z) => { const crown = sdEll(x, y - 1.05, z + 0.05, 1.32, 0.78, 1.28), band = Math.max(Math.abs(y - 0.55) - 0.16, Math.hypot(x / 1.12, (z + 0.04) / 1.14) - 1); return smin(crown, band - 0.03, 0.12); },
     earDevice: (x, y, z) => Math.max(sdCapsule(x, y, z, [-1.0, -0.28, -0.05], [-1.16, -0.28, -0.05], 0.26), 0),
   }[p.kind];

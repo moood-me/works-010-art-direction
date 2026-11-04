@@ -1,0 +1,23 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-trapeze-robe",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: халат-трапеция",
+  "en": "silhouette: trapeze robe"
+ },
+ "about": {
+  "ru": "с плеч жёсткой квадратной трапецией (силуэт О1: форма, к которой тянется ткань)",
+  "en": "from the shoulders as a stiff square trapeze (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "from": "shoulder",
+  "stiff": 1,
+  "square": 4,
+  "round": 0.9,
+  "shape": "trapeze",
+  "flare": 0.15,
+  "sleeve": "straight"
+ }
+}

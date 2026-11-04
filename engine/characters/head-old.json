@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "head-old",
  "label": {
   "ru": "Голова: старик",
@@ -8,8 +8,14 @@
  },
  "body": "moood-oldman@4cc8baf71d85269e",
  "head": {
-  "preset": "head-old@568df0e9ddbf267e"
+  "preset": "head-old@6f3632720637bbae"
  },
+ "clothes": [
+  {
+   "kind": "preset",
+   "id": "outfit-old@cd11d6f94102980d"
+  }
+ ],
  "look": {
   "skin": "#f2c49f",
   "roughness": 0.65

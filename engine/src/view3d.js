@@ -115,20 +115,22 @@ export function figureView(THREE, figure, look) {
       }
       continue;
     }
-    const color = o.name === 'body' || m.painted ? (head?.skin ?? look.skin) : (m.color || '#8a8f99'), map = m.uv && face ? face.texture : null;
-    const toon = !!light?.toon, side = m.double ? THREE.DoubleSide : THREE.FrontSide;
+    const color = o.name === 'body' || m.painted ? (head?.skin ?? look.skin) : (m.cloth?.color || m.color || '#8a8f99'), map = m.uv && face ? face.texture : null;
+    const toon = !!light?.toon, side = m.double || m.cloth ? THREE.DoubleSide : THREE.FrontSide;
     const mat = toon ? new THREE.MeshToonMaterial({ color: map || m.colors ? '#ffffff' : color, gradientMap: toonRamp(THREE, light.soft, light.shade), map, vertexColors: !!m.colors, side })
-      : new THREE.MeshStandardMaterial({ color: map ? '#ffffff' : color, roughness: look.roughness, map, vertexColors: !!m.colors, side });
+      : m.cloth ? clothMaterial(THREE, m.cloth) : new THREE.MeshStandardMaterial({ color: map ? '#ffffff' : color, roughness: look.roughness, map, vertexColors: !!m.colors, side });
     if (toon) mat.toneMapped = false;
     if (m.noShadow) g.setAttribute('noShadow', new THREE.BufferAttribute(m.noShadow, 1));
     if (m.paintMask) g.setAttribute('paintMask', new THREE.BufferAttribute(m.paintMask, 1));
-    lightMaterial(THREE, mat, { toon, faceMask: !!m.noShadow, skin: m.paintMask ? new THREE.Color(head.skin) : null, shine: m.shine });
+    const sink = o.name === 'body' ? sunk(figure) : null; if (sink) g.setAttribute('sink', new THREE.BufferAttribute(sink, 1));
+    lightMaterial(THREE, mat, { toon, faceMask: !!m.noShadow, skin: m.paintMask ? new THREE.Color(head.skin) : null, shine: m.shine, sink: !!sink });
     // a head's piece, closed, casts its shadow from its back faces (no shadow acne on its own lit side: thin locks of hair)
     if (m.piece && !m.double) mat.shadowSide = THREE.BackSide;
     const mesh = new THREE.Mesh(g, mat);
     mesh.castShadow = m.shadows !== false; mesh.receiveShadow = m.shadows !== false; mesh.frustumCulled = false;
     group.add(mesh); parts.push({ o, g, mesh });
-    const ink = o.name === 'body' ? (light?.outline ? { width: light.outline, color: light.outlineColor } : null) : light?.toon || light?.outline ? m.ink : null;
+    // (the body's outline round its clothes too)
+    const ink = o.name === 'body' || m.cloth ? (light?.outline ? { width: light.outline, color: light.outlineColor } : null) : light?.toon || light?.outline ? m.ink : null;
     if (ink) { const om = new THREE.Mesh(g, outlineMaterial(THREE, ink)); om.frustumCulled = false; group.add(om); parts.push({ o, g, mesh: om, ink: true }); }
   }
   const J = figure.rig.J;
@@ -158,6 +160,31 @@ export function figureView(THREE, figure, look) {
   };
 }
 
+// the skin under close clothes, drawn sunk a few millimetres (О3's): between the cloth's points (a centimetre or more
+// apart) the skin's own finer bulges would show through where the cloth sits tight — only drawn so; the cloth meets the
+// real body. SINK: how deep, NEAR and FAR: within how far of the cloth at rest all of it, beyond which none
+const SINK = 0.004, NEAR = 0.012, FAR = 0.027;
+function sunk(figure) {
+  const cloth = figure.outputs.filter(o => o.mesh.cloth); if (!cloth.length) return null;
+  const B = figure.outputs[0].mesh, P = B.positions, cell = FAR, grid = new Map(), key = (a, b, c) => `${a},${b},${c}`;
+  for (const o of cloth) { const Q = o.mesh.positions; for (const i of o.mesh.used) { const k = key(Math.floor(Q[i * 3] / cell), Math.floor(Q[i * 3 + 1] / cell), Math.floor(Q[i * 3 + 2] / cell)); (grid.get(k) || grid.set(k, []).get(k)).push(Q[i * 3], Q[i * 3 + 1], Q[i * 3 + 2]); } }
+  const out = new Float32Array(B.N);
+  for (const i of B.used) {
+    const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2], cx = Math.floor(x / cell), cy = Math.floor(y / cell), cz = Math.floor(z / cell); let d = Infinity;
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) { const L = grid.get(key(cx + a, cy + b, cz + c)); if (L) for (let k = 0; k < L.length; k += 3) d = Math.min(d, (L[k] - x) ** 2 + (L[k + 1] - y) ** 2 + (L[k + 2] - z) ** 2); }
+    d = Math.sqrt(d); out[i] = SINK * (1 - Math.min(1, Math.max(0, (d - NEAR) / (FAR - NEAR))));
+  }
+  return out;
+}
+// a garment's cloth (src/cloth/clothes.js): its colour, its fabric's roughness and sheen (velvet-like light along its
+// silhouette), translucent if the fabric is (chiffon); its inside darker (О3's)
+function clothMaterial(THREE, { color, fabric: F }) {
+  const m = new THREE.MeshPhysicalMaterial({ color, roughness: F.rough, sheen: F.sheen, sheenRoughness: 0.6, sheenColor: new THREE.Color(color).lerp(new THREE.Color('#ffffff'), 0.35), side: THREE.DoubleSide,
+    transparent: F.opacity < 1, opacity: F.opacity });
+  m.onBeforeCompile = sh => { const out = sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\nif (!gl_FrontFacing) diffuseColor.rgb *= 0.55;'); if (out === sh.fragmentShader) throw new Error('three.js: color_fragment is not where it was'); sh.fragmentShader = out; };
+  m.customProgramCacheKey = () => 'cloth';
+  return m;
+}
 // the face's picture, drawn again when what the expressions ask of it changes
 function facePicture(THREE, head) {
   const canvas = document.createElement('canvas'); canvas.width = canvas.height = 1024;
@@ -194,11 +221,13 @@ function outlineMaterial(THREE, { width, color }) {
 // is, its edge eased as the tones' are (three.js multiplies the light by the shadow map's penumbra: grey blotches between
 // the tones, and the self-shadow's edge stepped by the map's texels)
 const SHADOW_LINE = 'directLight.color *= ( directLight.visible && receiveShadow ) ? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;';
-function lightMaterial(THREE, mat, { toon, faceMask, skin, shine }) {
-  if (!toon && !faceMask && !skin) return;
+function lightMaterial(THREE, mat, { toon, faceMask, skin, shine, sink }) {
+  if (!toon && !faceMask && !skin && !sink) return;
   mat.onBeforeCompile = sh => {
     let vs = sh.vertexShader, fs = sh.fragmentShader;
     const replace = (text, a, b, what) => { const out = text.replace(a, b); if (out === text) throw new Error(`three.js: ${what} is not where it was`); return out; };
+    // the skin under close clothes drawn sunk (src/cloth: sunk)
+    if (sink) vs = 'attribute float sink;\n' + replace(vs, '#include <begin_vertex>', '#include <begin_vertex>\n transformed -= normalize( objectNormal ) * sink;', 'begin_vertex');
     if (toon || faceMask) {
       // the key light's shadow: how much of it reaches the point (1 on the face when it asks for no cast shadows)
       let shadow = 'getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] )';
@@ -227,7 +256,7 @@ function lightMaterial(THREE, mat, { toon, faceMask, skin, shine }) {
     }
     sh.vertexShader = vs; sh.fragmentShader = fs;
   };
-  mat.customProgramCacheKey = () => `light:${!!toon}:${!!faceMask}:${!!skin}:${shine ?? 0}`;
+  mat.customProgramCacheKey = () => `light:${!!toon}:${!!faceMask}:${!!skin}:${shine ?? 0}:${!!sink}`;
 }
 
 // a tapered capsule along +y from 0 to its length, radius ra below and rb above

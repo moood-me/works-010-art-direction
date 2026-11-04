@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-chiffon",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: шифон",
+  "en": "fabric: chiffon"
+ },
+ "about": {
+  "ru": "тончайший, летит на ветру, полупрозрачный (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "the finest, flies in the wind, translucent (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.04,
+  "stretch": 1500,
+  "compress": 0.25,
+  "bend": 6e-7,
+  "damping": 0.25,
+  "friction": 0.25,
+  "thick": 0.0015,
+  "air": 1,
+  "sheen": 0.5,
+  "rough": 0.6,
+  "opacity": 0.86
+ }
+}

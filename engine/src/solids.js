@@ -18,15 +18,23 @@
 //   const r = S.rest.moment(0, m?)                  //   S.rest: the same at the figure's rest (its own state, unchanged)
 //   S.head: null | {local(m, x, out), world(m, l, out), turn(m, v, out), distance(l), normal(l, out)}
 //                                                     (l: a point in the head's rest space)
-//   S.skin(m, x, y, z, out) → distance (metres, negative inside; the skin itself, a reader keeps its own thickness);
-//                             out = {n: [3], v: [3], head}: which way is out, the skin's velocity there (m/s), how much
-//                             of the skin there is head (0–1)
+//   S.skin(m, x, y, z, out, limb?) → distance (metres, negative inside; the skin itself, a reader keeps its own
+//                             thickness); out = {n: [3], v: [3], head, limb}: which way is out, the skin's velocity there
+//                             (m/s), how much of the skin there is head (0–1), the limb of the skin nearest (src/regions.js
+//                             LIMBS: 0 the body, 1 2 the arms, 3 4 the legs); limb: the skin of that limb alone, near it
+//                             (a sleeve round its own arm where the body's side is nearer: src/cloth/sim.js), else Infinity
+//   S.kept(m, x, y, z, out, ids, at, fresh) → the same, over the skin points it found nearest before (a reader keeps them:
+//                             ids, an Int32Array, KN of them from `at`, −2 where none was looked for), looked for anew when
+//                             fresh: the points move with the skin, so they stay the nearest while the reader does not
+//                             slide far along it (cloth, which lies on the skin: src/cloth/sim.js); S.FAR: no skin point
+//                             within it, a point is at least that far from the skin (or deep inside)
 //   S.carrier(m) → the Head joint's {q, p} at that moment; S.headRest: its rest place; S.jumped: its {q, p} before a jump
 //   S.capsules(m) → the inner capsules at that moment [{a, b, ra, rb}] (for drawing)
 import { qRot3, qSlerp, clamp, sst } from './math.js';
 import { headShares, HEAD_JOINTS } from './head/frame.js';
 import { normalsOf } from './mesh.js';
 import { fitCapsules } from './capsules.js';
+import { regionsOf } from './regions.js';
 
 // the skin's points are looked up in cells of 3 cm; a point farther than that from every skin point is not near the
 // skin, and is asked of the capsules (inside, deep, or out)
@@ -46,23 +54,43 @@ export function makeSolids(figure) {
   const caps = fitCapsules(rig, mesh, { fit: SHARE, inset: CORE }).filter(c => !shape || !headBones.has(c.joint)).map(c => ({ ...c, bound: Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1], c.b[2] - c.a[2]) / 2 + Math.max(c.ra, c.rb) }));
   // (how much of each skin point is head: a reader may lie in the head's skin as deep as it lay at rest — roots under
   // the scalp — but not in the body's)
-  const headOfPoint = Float32Array.from(idx, i => omega[i]), now = stateOf(idx, caps, [H, JW], headOfPoint), rest = stateOf(idx, caps, [H, JW], headOfPoint);
+  // (and which limb each skin point is: its strongest)
+  const R = regionsOf(mesh, rig), limbOf = i => { let m = 0; for (let l = 1; l < 5; l++) if (R.limb[i * 5 + l] > R.limb[i * 5 + m]) m = l; return m; };
+  const headOfPoint = Float32Array.from(idx, i => omega[i]), limbs = Uint8Array.from(idx, limbOf), now = stateOf(idx, caps, [H, JW], headOfPoint, limbs), rest = stateOf(idx, caps, [H, JW], headOfPoint, limbs);
   const head = shape ? headOf(shape, J, H, JW) : null, restNormals = normalsOf(mesh.positions, mesh.triangles, undefined, mesh.used);
   rest.set(null, null, mesh.positions, restNormals, mesh.positions, restNormals, J, 0);
   const S = {
     head, headRest: [J[H * 3], J[H * 3 + 1], J[H * 3 + 2]], jumped: { q: [0, 0, 0, 1], p: [0, 0, 0] },
-    rest: { moment: (u, m) => rest.moment(u, m) },
+    rest: { moment: (u, m) => withCover(rest.moment(u, m), u, 'rest') },
     // (a step: the skin as the previous frame and this one drew it; a jump or a reset: only this one's, unmoving)
     update(previous, pose, how, dt) {
       if (how === 'jump') { const t = now.ends[0][1]; for (let k = 0; k < 4; k++) S.jumped.q[k] = t.q[k]; for (let k = 0; k < 3; k++) S.jumped.p[k] = t.p[k]; }
       const P = body.positions, N = body.normals, still = how !== 'go';
       now.set(still ? pose : previous, pose, still ? P : now.P1, still ? N : now.N1, P, N, J, still ? 0 : dt);
     },
-    moment: (u, m) => now.moment(u, m),
-    skin: (m, x, y, z, out) => m.state.skin(m, x, y, z, out),
+    moment: (u, m) => withCover(now.moment(u, m), u, 'now'),
+    // clothes over the body, as what lies on them meets them (hair over a collar): their simulation gives their surface
+    // at its rest and at each frame's end (cover.rest(P, N), cover.update(P, N, how, dt) — after the body's update, before
+    // hair reads it); S.over(m, x, y, z, out) → the distance from it at moment m (as S.skin: out = {n, v}), Infinity
+    // where none of it is near
+    cover(n) {
+      if (covers) throw new Error('a figure has one cover (all its clothes, src/cloth/sim.js)');
+      const ids = Uint32Array.from({ length: n }, (_, i) => i);
+      covers = { now: stateOf(ids, [], [], null, null), rest: stateOf(ids, [], [], null, null) };
+      return {
+        rest(P, N) { covers.rest.set(null, null, P, N, P, N, J, 0); covers.now.set(null, null, P, N, P, N, J, 0); },
+        update(P, N, how, dt) { const still = how !== 'go', c = covers.now; c.set(null, null, still ? P : c.P1, still ? N : c.N1, P, N, J, still ? 0 : dt); },
+      };
+    },
+    over: (m, x, y, z, out) => m.cover ? m.cover.state.skin(m.cover, x, y, z, out) : Infinity,
+    skin: (m, x, y, z, out, limb = -1) => m.state.skin(m, x, y, z, out, limb),
+    kept: (m, x, y, z, out, ids, at, fresh) => m.state.kept(m, x, y, z, out, ids, at, fresh), KN, FAR: CELL,
     carrier: m => m.joints[0],
     capsules: m => m.state.capsulesAt(m.u),
   };
+  let covers = null;
+  // a moment of the cover beside a moment of the body (made when there is a cover)
+  const withCover = (m, u, which) => { if (covers) m.cover = covers[which].moment(u, m.cover); return m; };
   // (made after a step: as that step left the figure; before any: at rest)
   if (figure.state) S.update(figure.pose, figure.pose, 'reset', 0);
   else now.set(null, null, mesh.positions, restNormals, mesh.positions, restNormals, J, 0);
@@ -72,7 +100,7 @@ export function makeSolids(figure) {
 // the solids between two frames: the joints the head rides, the skin's points and normals, the capsules — at both
 // ends. A moment (made and kept by its reader) holds the joints at its share u of the frame, and — once the skin is
 // asked of it — the skin's points there in a hash of 3 cm cells
-function stateOf(idx, caps, joints, HP) {
+function stateOf(idx, caps, joints, HP, LP) {
   const n = idx.length, P0 = new Float32Array(n * 3), P1 = new Float32Array(n * 3), N0 = new Float32Array(n * 3), N1 = new Float32Array(n * 3), V = new Float32Array(n * 3);
   const ends = joints.map(() => [tr(), tr()]), C = caps.map(c => ({ ...c, a0: [0, 0, 0], b0: [0, 0, 0], a1: [0, 0, 0], b1: [0, 0, 0] }));
   let version = 0;
@@ -100,18 +128,30 @@ function stateOf(idx, caps, joints, HP) {
       for (let e = 0; e < joints.length; e++) { const [a, b] = ends[e], o = m.joints[e]; qSlerp(a.q, b.q, u, o.q); o.qi[0] = -o.q[0]; o.qi[1] = -o.q[1]; o.qi[2] = -o.q[2]; o.qi[3] = o.q[3]; for (let k = 0; k < 3; k++) o.p[k] = a.p[k] + (b.p[k] - a.p[k]) * u; }
       return m;
     },
-    // the skin's points and normals at m's moment, in its hash; the capsules there (each its ends, its middle)
+    // the skin's points and normals at m's moment; the capsules there (each its ends, its middle); their hash when a
+    // search needs it
     skinAt(m) {
       if (m.skinOf === version) return;
       const u = m.u, P = m.P ??= new Float32Array(n * 3), N = m.N ??= new Float32Array(n * 3), K = m.C ??= new Float64Array(C.length * 9);
       for (let i = 0; i < n * 3; i++) { P[i] = P0[i] + (P1[i] - P0[i]) * u; N[i] = N0[i] + (N1[i] - N0[i]) * u; }
-      (m.hash ??= cellHash()).build(n, P);
       C.forEach((c, k) => { for (let j = 0; j < 3; j++) { const a = c.a0[j] + (c.a1[j] - c.a0[j]) * u, b = c.b0[j] + (c.b1[j] - c.b0[j]) * u; K[k * 9 + j] = a; K[k * 9 + 3 + j] = b; K[k * 9 + 6 + j] = (a + b) / 2; } });
-      m.skinOf = version;
+      m.skinOf = version; m.hashed = false;
     },
-    skin(m, x, y, z, out) {
+    hashAt(m) { if (!m.hashed) { (m.hash ??= cellHash()).build(n, m.P); m.hashed = true; } return m.hash; },
+    skin(m, x, y, z, out, limb = -1) {
       st.skinAt(m);
-      const d = nearest(m.P, m.N, V, m.hash, x, y, z, out, HP);
+      const d = nearest(m.P, m.N, V, st.hashAt(m), x, y, z, out, HP, LP, limb);
+      return d === Infinity && limb < 0 ? st.deep(m.C, x, y, z, out) : d;
+    },
+    // the same, over the skin points a reader found nearest before (ids, at: KN of them kept from `at`), found anew when
+    // `fresh` (or none were): the skin's points move with it, so between searches they stay the nearest ones but where
+    // the reader slides along the skin
+    kept(m, x, y, z, out, ids, at, fresh) {
+      st.skinAt(m);
+      let d;
+      if (fresh || ids[at] < -1) { d = nearest(m.P, m.N, V, st.hashAt(m), x, y, z, out, HP, LP, -1); const bi = out.bi; for (let q = 0; q < KN; q++) ids[at + q] = bi[q]; if (bi[0] < 0) ids[at] = -1; }
+      else if (ids[at] < 0) d = Infinity;
+      else d = nearOf(m.P, m.N, V, ids, at, x, y, z, out, HP, LP);
       return d === Infinity ? st.deep(m.C, x, y, z, out) : d;
     },
     // farther than the skin's points reach: inside a capsule (deep in the body: as deep as the capsule's surface lies
@@ -127,7 +167,7 @@ function stateOf(idx, caps, joints, HP) {
         if (d < best) { best = d; if (l > 1e-9) { out.n[0] = px / l; out.n[1] = py / l; out.n[2] = pz / l; } else { out.n[0] = 0; out.n[1] = 1; out.n[2] = 0; } }
       }
       if (best >= 0) return Infinity;
-      out.v[0] = out.v[1] = out.v[2] = 0; out.head = 0;
+      out.v[0] = out.v[1] = out.v[2] = 0; out.head = 0; out.limb = 0;
       return best - Math.sqrt(REACH);
     },
     capsulesAt(u) { return C.map(c => ({ joint: c.joint, ra: c.ra, rb: c.rb, a: c.a0.map((v, k) => v + (c.a1[k] - v) * u), b: c.b0.map((v, k) => v + (c.b1[k] - v) * u) })); },
@@ -149,8 +189,9 @@ function carried(pose, c, x, out, J) {
 
 // the distance from a skin given by its points and normals (P, N; V their velocities, or null), in its hash: moving least
 // squares over the nearest KN points' planes, weighed by nearness (smooth where the nearest point changes); beyond REACH
-// of every point, Infinity. out: {n, v} which way is out, how fast the skin moves there
-function nearest(P, N, V, hash, x, y, z, out, HP = null) {
+// of every point, Infinity. out: {n, v, head, limb} which way is out, how fast the skin moves there, how much of it is
+// head (HP) and the nearest point's limb (LP); limb ≥ 0: that limb's points alone
+function nearest(P, N, V, hash, x, y, z, out, HP = null, LP = null, limb = -1) {
   const items = hash.items, start = hash.start, bi = out.bi ??= new Int32Array(KN), bd = out.bd ??= new Float64Array(KN);
   bi.fill(-1); bd.fill(Infinity);
   // (the cells round the point's own, but those farther than the reach from it)
@@ -160,12 +201,30 @@ function nearest(P, N, V, hash, x, y, z, out, HP = null) {
     if ((gap(fx, a) ** 2 + gap(fy, b) ** 2 + gap(fz, c) ** 2) * CELL * CELL > REACH) continue;
     const h = bucket(cx + a, cy + b, cz + c);
     for (let e = start[h], end = start[h + 1]; e < end; e++) {
+      if (limb >= 0 && LP[items[e]] !== limb) continue;
       const k3 = items[e] * 3, d = (P[k3] - x) ** 2 + (P[k3 + 1] - y) ** 2 + (P[k3 + 2] - z) ** 2; if (d >= bd[KN - 1] || d > REACH) continue;
       let q = KN - 1; while (q > 0 && bd[q - 1] > d) { bd[q] = bd[q - 1]; bi[q] = bi[q - 1]; q--; } bd[q] = d; bi[q] = items[e];
     }
   }
+  return planes(P, N, V, bi, bd, x, y, z, out, HP, LP);
+}
+// the same over KN points kept (ids from at; −1 where fewer), as near as they are now
+function nearOf(P, N, V, ids, at, x, y, z, out, HP, LP) {
+  const bi = out.bi ??= new Int32Array(KN), bd = out.bd ??= new Float64Array(KN);
+  let n = 0;
+  for (let q = 0; q < KN; q++) {
+    const k = ids[at + q]; if (k < 0) break;
+    const k3 = k * 3, d = (P[k3] - x) ** 2 + (P[k3 + 1] - y) ** 2 + (P[k3 + 2] - z) ** 2;
+    let r = n++; while (r > 0 && bd[r - 1] > d) { bd[r] = bd[r - 1]; bi[r] = bi[r - 1]; r--; } bd[r] = d; bi[r] = k;
+  }
+  for (let q = n; q < KN; q++) { bi[q] = -1; bd[q] = Infinity; }
+  if (bd[0] > REACH) { bi[0] = -1; }
+  return planes(P, N, V, bi, bd, x, y, z, out, HP, LP);
+}
+// moving least squares over the points bi (bd their squared distances, nearest first)
+function planes(P, N, V, bi, bd, x, y, z, out, HP, LP) {
   if (bi[0] < 0) { out.head = 0; return Infinity; }
-  out.head = HP ? HP[bi[0]] : 0;
+  out.head = HP ? HP[bi[0]] : 0; out.limb = LP ? LP[bi[0]] : 0;
   const h2 = Math.max(bd[0], 1e-6) * 4 + 1e-5; let sw = 0, sd = 0, nx = 0, ny = 0, nz = 0, vx = 0, vy = 0, vz = 0;
   for (let q = 0; q < KN; q++) {
     const k = bi[q]; if (k < 0) break; const k3 = k * 3, w = Math.exp(-bd[q] / h2);

@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-robe",
+ "kind": "top",
+ "label": {
+  "ru": "халат",
+  "en": "robe"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/robe.js)",
+ "bin": "mh-robe.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    2040,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    2040,
+    3
+   ],
+   "offset": 12240
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    2040,
+    3
+   ],
+   "offset": 36720
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 48960
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 48972
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    4000,
+    3
+   ],
+   "offset": 48984
+  }
+ }
+}

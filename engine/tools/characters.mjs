@@ -49,6 +49,10 @@ async function repinHead(h) {
   return o;
 }
 
+// clothes (a character's, an outfit's): its outfits, each garment's fabric and shape, pinned as they are now
+const repinClothes = list => Promise.all(list.map(async g => g.kind === 'preset' ? { ...g, id: await pinRef(g.id) }
+  : { ...g, ...(typeof g.fabric === 'string' ? { fabric: await pinRef(g.fabric) } : {}), ...(typeof g.shape === 'string' ? { shape: await pinRef(g.shape) } : {}) }));
+
 if (what === 'upgrade' || what === 'pin') {
   for (const id of await all()) {
     let d = JSON.parse(await readFile(file(id), 'utf8'));
@@ -59,6 +63,7 @@ if (what === 'upgrade' || what === 'pin') {
       if (d.base) { const b = pinned(d.base).id; d.base = pinOf(b, hashOf([JSON.parse(await readFile(file(b), 'utf8'))])); }
       for (const k of ['rest', 'pose']) d[k] = await repin(d[k] || []);
       if (d.head) d.head = await repinHead(d.head);
+      if (d.clothes) d.clothes = await repinClothes(d.clothes);
     }
     await E.resolve(d);
     await save(file(id), d);
@@ -134,20 +139,21 @@ if (what === 'upgrade' || what === 'pin') {
   for (const f of files) { const p = JSON.parse(await readFile(dir + f, 'utf8')); if (p.version < PRESET_VERSION) await save(dir + f, upgradePreset(p)); }
   // in the order they take each other: a preset is pinned anew after the presets it takes
   const content = {}; for (const f of files) content[f.slice(0, -5)] = JSON.parse(await readFile(dir + f, 'utf8'));
-  const takes = p => JSON.stringify(p).match(/"(?:id|preset)":\s*"([a-z0-9][a-z0-9-]*)@[0-9a-f]+"/g)?.map(m => m.match(/"([a-z0-9][a-z0-9-]*)@/)[1]).filter(x => x !== p.id) ?? [];
+  const takes = p => JSON.stringify(p).match(/"(?:id|preset|fabric|shape)":\s*"([a-z0-9][a-z0-9-]*)@[0-9a-f]+"/g)?.map(m => m.match(/"([a-z0-9][a-z0-9-]*)@/)[1]).filter(x => x !== p.id) ?? [];
   const done = new Set(), order = [], visit = (id, path = []) => { if (done.has(id)) return; if (path.includes(id)) throw new Error(`presets take each other: ${[...path, id].join(' → ')}`); for (const t of takes(content[id])) if (content[t]) visit(t, [...path, id]); done.add(id); order.push(id); };
   for (const id of Object.keys(content)) visit(id);
   for (const id of order) {
     const p = content[id];
     if (p.changes) p.changes = await repin(p.changes);
     if (p.head) p.head = await repinHead(p.head);
+    if (p.clothes) p.clothes = await repinClothes(p.clothes);
     checkPreset(p); await save(dir + id + '.json', p);
   }
   for (const f of files) { const id = f.slice(0, -5), p = await E.preset(id); list.push({ id, pin: pinOf(id, p.hash), group: p.group, label: p.label, about: p.about }); }
-  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram', 'head', 'head-form', 'features', 'hair', 'headwear', 'expressions', 'face-light', 'wind'];
+  const ORDER = ['silhouette', 'line', 'squash', 'contrapposto', 'limbs', 'proportions', 'caricature', 'surface', 'contour', 'masses', 'pictogram', 'head', 'head-form', 'features', 'hair', 'headwear', 'expressions', 'face-light', 'wind', 'fabric', 'garment-shape', 'outfit'];
   const rank = g => ORDER.includes(g) ? ORDER.indexOf(g) : ORDER.length;
   list.sort((a, b) => rank(a.group) - rank(b.group) || a.id.localeCompare(b.id));
-  await save(dir + 'index.json', { format: 'engine/presets', version: 1, about: 'Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: "preset", id: "<pin>", strength, frames | space}; heads a character or another head takes by head.preset; a head\'s features, expressions and light. Written by engine/tools/characters.mjs presets.', groups: ORDER, presets: list });
+  await save(dir + 'index.json', { format: 'engine/presets', version: 1, about: 'Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: "preset", id: "<pin>", strength, frames | space}; heads a character or another head takes by head.preset; a head\'s features, expressions and light; winds; fabrics, garments\' shapes and outfits a character\'s clothes take. Written by engine/tools/characters.mjs presets.', groups: ORDER, presets: list });
   console.log(`${list.length} presets`);
 } else if (what === 'bodies') {
   const dir = fileURLToPath(new URL('data/bodies/', ROOT)), ids = (await readdir(dir)).filter(f => f.endsWith('.json') && f !== 'index.json').map(f => f.slice(0, -5));

@@ -1,0 +1,37 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-mask",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: девушка в маске",
+  "en": "outfit: masked girl"
+ },
+ "about": {
+  "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+  "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+ },
+ "clothes": [
+  {
+   "id": "oversized",
+   "kind": "garment",
+   "pattern": "mh-oversized",
+   "fabric": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "color": "#5b4b3c"
+  },
+  {
+   "id": "pants",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#3b3550"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b2530"
+  }
+ ]
+}

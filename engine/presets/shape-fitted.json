@@ -1,0 +1,19 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-fitted",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: по фигуре",
+  "en": "silhouette: fitted"
+ },
+ "about": {
+  "ru": "плотно по телу, без мостов (силуэт О1: форма, к которой тянется ткань)",
+  "en": "close to the body, no bridging (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "fit": 1,
+  "ease": 0.004,
+  "sleeve": "fitted"
+ }
+}

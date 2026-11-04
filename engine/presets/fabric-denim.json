@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-denim",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: деним",
+  "en": "fabric: denim"
+ },
+ "about": {
+  "ru": "тяжёлый, жёсткий, крупные складки: джинсы, куртки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "heavy, stiff, big folds: jeans, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.4,
+  "stretch": 6000,
+  "compress": 0.25,
+  "bend": 0.00012,
+  "damping": 0.5,
+  "friction": 0.55,
+  "thick": 0.0035,
+  "air": 1,
+  "sheen": 0.1,
+  "rough": 0.9
+ }
+}

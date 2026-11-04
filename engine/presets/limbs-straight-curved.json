@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "limbs-straight-curved",
  "label": {
   "ru": "конечности: прямое против кривого",

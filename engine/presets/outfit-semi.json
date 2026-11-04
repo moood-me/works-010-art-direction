@@ -1,0 +1,44 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-semi",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: парень с длинным носом",
+  "en": "outfit: long-nosed man"
+ },
+ "about": {
+  "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+  "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+ },
+ "clothes": [
+  {
+   "id": "sweater",
+   "kind": "garment",
+   "pattern": "mh-sweater",
+   "fabric": "fabric-fineknit@3f0b9dbffafbc738",
+   "color": "#7a6aa8"
+  },
+  {
+   "id": "pants",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#3a3446"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b2530"
+  },
+  {
+   "id": "turtleneck",
+   "kind": "garment",
+   "pattern": "turtleneck",
+   "fabric": "fabric-fineknit@3f0b9dbffafbc738",
+   "color": "#55506e"
+  }
+ ]
+}

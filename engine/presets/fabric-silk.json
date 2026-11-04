@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-silk",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: шёлк",
+  "en": "fabric: silk"
+ },
+ "about": {
+  "ru": "лёгкий, скользкий, течёт мелкими складками, блестит (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "light, slippery, flows in small folds, shines (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.07,
+  "stretch": 2500,
+  "compress": 0.25,
+  "bend": 0.000002,
+  "damping": 0.25,
+  "friction": 0.2,
+  "thick": 0.0018,
+  "air": 1,
+  "sheen": 0.9,
+  "rough": 0.35
+ }
+}

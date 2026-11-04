@@ -20,9 +20,10 @@ import { buildHead, LIGHT_DEFAULTS } from './head/head.js';
 import { featureId, FEATURE_SCHEMA } from './head/features.js';
 import { EXPRESSION_SCHEMA } from './head/expressions.js';
 import { PIECE_SCHEMA } from './head/pieces.js';
-import { validate } from './schema.js';
 import { makeMesh } from './mesh.js';
 import { stylesOf, hairSims } from './hair/hair.js';
+import { overParts } from './parts.js';
+import { clothesOn, clothSim, GARMENT_SCHEMA, garmentId } from './cloth/clothes.js';
 
 // a way of a head's form by its name: its own, or a preset's id, or a deformer's kind
 const wayName = c => c.name ?? (c.kind === 'preset' ? pinned(c.id).id : c.kind);
@@ -33,7 +34,7 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
   const cache = new Map(), once = (key, make) => { if (!cache.has(key)) cache.set(key, make()); return cache.get(key); };
   const pinnedLoad = (kind, ref, load) => { const { id } = pinned(ref); return once(kind + id, load(id)).then(x => { checkPin(ref, kind, x.hash); return x; }); };
   const E = {
-    root, skeleton,
+    root, skeleton, read,
     body: ref => pinnedLoad('body ', ref, id => () => loadBody(new URL(`data/bodies/${id}.json`, root).href, skeleton, read)),
     motion: ref => pinnedLoad('motion ', ref, id => () => loadMotion(new URL(`motions/${id}.json`, root), skeleton, read)),
     motions: () => once('mi', () => readJSON(new URL('motions/index.json', root), read)),
@@ -75,14 +76,14 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
         }
         return out;
       };
-      const head = spec.head ? await E.headOf(spec.head, spec.look) : null;
+      const head = spec.head ? await E.headOf(spec.head, spec.look) : null, clothes = spec.clothes ? await E.clothesOf(spec.clothes) : [];
       const rest = await open(spec.rest, 'rest');
-      if (!head) return { ...spec, rest, pose: await open(spec.pose, 'pose'), head: null, expanded: true };
+      if (!head) return { ...spec, rest, pose: await open(spec.pose, 'pose'), head: null, clothes, expanded: true };
       // the head's form: changes of the rest after the character's own, frames kept (a design rides along in motion)
       const form = await open(head.form.map(c => ({ ...c, frames: 'keep' })), 'rest');
       // the last wrap onto a designed form: where in the rest it is made (the face is drawn on the head it leaves)
       const w = form.findLastIndex(c => c.kind === 'wrap'), wrap = w < 0 ? null : complete(form[w]);
-      return { ...spec, rest: [...rest, ...form], pose: await open(spec.pose, 'pose'), head: { ...head, formAt: rest.length, wrapAt: w < 0 ? null : rest.length + w, wrap }, expanded: true };
+      return { ...spec, rest: [...rest, ...form], pose: await open(spec.pose, 'pose'), head: { ...head, formAt: rest.length, wrapAt: w < 0 ? null : rest.length + w, wrap }, clothes, expanded: true };
     },
     // a head with what it starts from (its base's head, its preset, the preset's own) merged under it, its presets of
     // features, expressions, pieces and light taken in: {size, skin, form, features, expressions, pieces, light}. Its
@@ -94,26 +95,24 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       if (depth > 8) throw new Error('heads nested deeper than 8 (a cycle?)');
       const under = h.under ? await E.headOf(h.under, look, depth + 1) : h.preset ? await E.headOf(await E.headPreset(h.preset), look, depth + 1) : { form: [], features: [], expressions: [], pieces: [], light: { ...LIGHT_DEFAULTS } };
       const inline = async (list, key) => (await Promise.all((list || []).map(async x => x.kind === 'preset' ? (await E.preset(x.id))[key] ?? (() => { throw new Error(`preset ${x.id} has no ${key}`); })() : [x]))).flat();
-      const over = (base, own, id, schema, what) => {
-        const out = base.slice();
-        for (const o of own) {
-          const k = out.findIndex(x => id(x) === id(o));
-          if (o.kind === 'off') { if (k < 0) throw new Error(`${what} "${id(o)}" to take away: there is none`); out.splice(k, 1); continue; }
-          if (!o.kind && k >= 0) { out[k] = { ...out[k], ...o }; if (schema) validate(out[k], schema, `${what} ${id(o)}`); continue; }
-          if (!o.kind && schema !== EXPRESSION_SCHEMA) throw new Error(`${what} "${id(o)}" to change: there is none`);
-          if (k >= 0) out[k] = o; else out.push(o);
-        }
-        return out;
-      };
       const light = h.light?.kind === 'preset' ? (await E.preset(h.light.id)).light : h.light, k = h.strength ?? 1;
       return {
         size: h.size ?? under.size, skin: h.skin ?? under.skin ?? look.skin, ref: h.ref ?? under.ref ?? null,
-        form: over(under.form.map(c => k === 1 ? c : { ...c, strength: (c.strength ?? 1) * k }), (h.form || []).map(c => ({ ...c, name: wayName(c) })), c => c.name, null, 'a way of the form'),
-        features: over(under.features, await inline(h.features, 'features'), featureId, FEATURE_SCHEMA, 'feature'),
-        expressions: over(under.expressions, await inline(h.expressions, 'expressions'), x => x.name, EXPRESSION_SCHEMA, 'expression'),
-        pieces: over(under.pieces, await inline(h.pieces, 'pieces'), p => p.id ?? p.kind, PIECE_SCHEMA, 'piece'),
+        form: overParts(under.form.map(c => k === 1 ? c : { ...c, strength: (c.strength ?? 1) * k }), (h.form || []).map(c => ({ ...c, name: wayName(c) })), c => c.name, null, 'a way of the form'),
+        features: overParts(under.features, await inline(h.features, 'features'), featureId, FEATURE_SCHEMA, 'feature'),
+        expressions: overParts(under.expressions, await inline(h.expressions, 'expressions'), x => x.name, EXPRESSION_SCHEMA, 'expression', true),
+        pieces: overParts(under.pieces, await inline(h.pieces, 'pieces'), p => p.id ?? p.kind, PIECE_SCHEMA, 'piece'),
         light: { ...under.light, ...(light || {}) },
       };
+    },
+    // a character's clothes with what they start from (its base's) under them, its outfits taken in (src/parts.js), each
+    // garment's fabric and shape as their keys (a preset's, or its own): [garment…] (src/cloth/clothes.js)
+    async clothesOf(c, depth = 0) {
+      if (depth > 8) throw new Error('clothes nested deeper than 8 (a cycle?)');
+      const under = c.under ? await E.clothesOf(c.under, depth + 1) : [];
+      const own = (await Promise.all(c.list.map(async g => g.kind === 'preset' ? (await E.preset(g.id)).clothes ?? (() => { throw new Error(`preset ${g.id} holds no clothes`); })() : [g]))).flat();
+      const content = async (ref, key) => typeof ref === 'string' ? (await E.preset(ref))[key] ?? (() => { throw new Error(`preset ${ref} is not a ${key}`); })() : ref;
+      return Promise.all(overParts(under, own, garmentId, GARMENT_SCHEMA, 'garment').map(async g => ({ ...g, id: garmentId(g), fabric: await content(g.fabric, 'fabric'), shape: g.shape ? await content(g.shape, 'shape') : null })));
     },
     // a head preset's head (presets/ of group "head"), pinned
     headPreset: async ref => { const p = await E.preset(ref); if (!p.head) throw new Error(`preset ${ref} is not a head`); return p.head; },
@@ -156,7 +155,7 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
     // for ctx.weights), made on the body with the changes of the rest before it in the list.
     async figure(c, { place, layers = [], meshes = [] } = {}) {
       const spec = typeof c === 'string' ? await E.character(c) : c.expanded ? c : await E.expand(c);
-      const { body, meshes: head } = await E.headBody(spec), list = [];
+      const { body, meshes: head } = await E.headBody(spec), list = [], laid = await clothesOn(body, spec.clothes, E);
       let from = body, chain = [];
       for (const [k, l] of spec.pose.entries()) {
         if (!DEFORMERS[l.kind]) { list.push(l); continue; }
@@ -170,8 +169,11 @@ export async function createEngine({ root = new URL('../', import.meta.url), rea
       }
       const figure = new Figure({
         rig: body.rig, body, place, floor: spec.motion.floor, layers: [...list, ...layers],
-        meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...head.map(mesh => ({ mesh, name: mesh.id, skinning: mesh.skinning ?? spec.skinning })), ...meshes],
+        meshes: [{ mesh: body.mesh, name: 'body', skinning: spec.skinning }, ...head.map(mesh => ({ mesh, name: mesh.id, skinning: mesh.skinning ?? spec.skinning })),
+          ...laid.map(l => ({ mesh: l.mesh, name: l.mesh.id, skinning: l.mesh.skinning })), ...meshes],
       });
+      // clothes that move: one simulation for all of them (src/cloth/sim.js), before the hair (which lies over them)
+      const cloth = clothSim(figure, laid); if (cloth) figure.addSimulation(cloth);
       // hair that moves: a simulation of its own on the figure's step (src/hair/sim.js)
       for (const sim of hairSims(figure)) figure.addSimulation(sim);
       return figure;

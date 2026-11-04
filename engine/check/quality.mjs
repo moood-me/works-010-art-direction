@@ -54,7 +54,7 @@ let failed = 0, passed = 0;
 // mouth's corners out and up)
 const EXPR_LIMIT = 2.5;
 // a head's headwear (src/head/pieces.js)
-const WEAR = ['hood', 'hat', 'earDevice'];
+const WEAR = ['hat', 'earDevice'];
 const check = (name, value, limit, unit = '') => {
   const ok = value <= limit;
   if (!ok) failed++; else passed++;

@@ -1,7 +1,7 @@
 {
  "format": "engine/presets",
  "version": 1,
- "about": "Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: \"preset\", id: \"<pin>\", strength, frames | space}; heads a character or another head takes by head.preset; a head's features, expressions and light. Written by engine/tools/characters.mjs presets.",
+ "about": "Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: \"preset\", id: \"<pin>\", strength, frames | space}; heads a character or another head takes by head.preset; a head's features, expressions and light; winds; fabrics, garments' shapes and outfits a character's clothes take. Written by engine/tools/characters.mjs presets.",
  "groups": [
   "silhouette",
   "line",
@@ -21,12 +21,15 @@
   "headwear",
   "expressions",
   "face-light",
-  "wind"
+  "wind",
+  "fabric",
+  "garment-shape",
+  "outfit"
  ],
  "presets": [
   {
    "id": "silhouette-bean",
-   "pin": "silhouette-bean@c781f16364c75d04",
+   "pin": "silhouette-bean@ed42ec595b80abfb",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: фасолина",
@@ -39,7 +42,7 @@
   },
   {
    "id": "silhouette-column",
-   "pin": "silhouette-column@28154d789ef68ed1",
+   "pin": "silhouette-column@cffdd00675819d4e",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: колонна",
@@ -52,7 +55,7 @@
   },
   {
    "id": "silhouette-diamond",
-   "pin": "silhouette-diamond@5d2640f62775c57f",
+   "pin": "silhouette-diamond@f562a9186476cbe1",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: ромб",
@@ -65,7 +68,7 @@
   },
   {
    "id": "silhouette-egg",
-   "pin": "silhouette-egg@e41921a09a85e4e8",
+   "pin": "silhouette-egg@3a31c8bc7c87439d",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: яйцо",
@@ -78,7 +81,7 @@
   },
   {
    "id": "silhouette-hourglass",
-   "pin": "silhouette-hourglass@32e858c0fc7766fd",
+   "pin": "silhouette-hourglass@0097d55939ccfdf2",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: песочные часы",
@@ -91,7 +94,7 @@
   },
   {
    "id": "silhouette-inverted-trapezoid",
-   "pin": "silhouette-inverted-trapezoid@40b00b0973d88e20",
+   "pin": "silhouette-inverted-trapezoid@d25bcb0319da5037",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: перевёрнутая трапеция",
@@ -104,7 +107,7 @@
   },
   {
    "id": "silhouette-mass-on-legs",
-   "pin": "silhouette-mass-on-legs@e581fd7bdcbf44dc",
+   "pin": "silhouette-mass-on-legs@f22199e517651859",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: масса на ножках",
@@ -117,7 +120,7 @@
   },
   {
    "id": "silhouette-pear",
-   "pin": "silhouette-pear@bf34f216b375d434",
+   "pin": "silhouette-pear@5279fc6dfce69da1",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: груша",
@@ -130,7 +133,7 @@
   },
   {
    "id": "silhouette-rectangle",
-   "pin": "silhouette-rectangle@b1c96d23a027a774",
+   "pin": "silhouette-rectangle@39dbe5e984b4989c",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: прямоугольник",
@@ -143,7 +146,7 @@
   },
   {
    "id": "silhouette-reed",
-   "pin": "silhouette-reed@3ed6050fed7fda55",
+   "pin": "silhouette-reed@bb7ca6c510ba3e8c",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: тростинка",
@@ -156,7 +159,7 @@
   },
   {
    "id": "silhouette-trapezoid",
-   "pin": "silhouette-trapezoid@414b58873a138404",
+   "pin": "silhouette-trapezoid@87c93b01e13b1f6c",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: трапеция",
@@ -169,7 +172,7 @@
   },
   {
    "id": "silhouette-triangle",
-   "pin": "silhouette-triangle@1fa725b3e76b06b0",
+   "pin": "silhouette-triangle@4415b65f2f340338",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: треугольник",
@@ -182,7 +185,7 @@
   },
   {
    "id": "silhouette-v",
-   "pin": "silhouette-v@5c4b9d1bb7168355",
+   "pin": "silhouette-v@34d15df2a5681746",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: V",
@@ -195,7 +198,7 @@
   },
   {
    "id": "silhouette-wedge",
-   "pin": "silhouette-wedge@c302383f61cfcf99",
+   "pin": "silhouette-wedge@205d32aa22785206",
    "group": "silhouette",
    "label": {
     "ru": "силуэт: клин",
@@ -208,7 +211,7 @@
   },
   {
    "id": "line-front-c",
-   "pin": "line-front-c@7c2502f6acee3363",
+   "pin": "line-front-c@13cce833c2fa592d",
    "group": "line",
    "label": {
     "ru": "линия действия: спереди C",
@@ -221,7 +224,7 @@
   },
   {
    "id": "line-front-s",
-   "pin": "line-front-s@9c69a2c5db05cc6a",
+   "pin": "line-front-s@39471faa41f27712",
    "group": "line",
    "label": {
     "ru": "линия действия: спереди S",
@@ -234,7 +237,7 @@
   },
   {
    "id": "line-side-c-back",
-   "pin": "line-side-c-back@8d1746078ed202e6",
+   "pin": "line-side-c-back@861e2191c8c8ce7c",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку C назад",
@@ -247,7 +250,7 @@
   },
   {
    "id": "line-side-c-forward",
-   "pin": "line-side-c-forward@36a04c15a87af008",
+   "pin": "line-side-c-forward@1ed47f7b02da8346",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку C вперёд",
@@ -260,7 +263,7 @@
   },
   {
    "id": "line-side-s",
-   "pin": "line-side-s@3f98eb16ddfc1081",
+   "pin": "line-side-s@908cd829e4959ec1",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку S",
@@ -273,7 +276,7 @@
   },
   {
    "id": "line-side-s-reverse",
-   "pin": "line-side-s-reverse@c6fe1e35d939cb09",
+   "pin": "line-side-s-reverse@d08c09065a8ff470",
    "group": "line",
    "label": {
     "ru": "линия действия: сбоку обратная S",
@@ -286,7 +289,7 @@
   },
   {
    "id": "squash",
-   "pin": "squash@710dbdce6e2e3175",
+   "pin": "squash@bd14e68be9daffc8",
    "group": "squash",
    "label": {
     "ru": "сжатие",
@@ -299,7 +302,7 @@
   },
   {
    "id": "stretch",
-   "pin": "stretch@00263315b8c443bb",
+   "pin": "stretch@f336e24b5641d9c4",
    "group": "squash",
    "label": {
     "ru": "растяжение",
@@ -312,7 +315,7 @@
   },
   {
    "id": "contrapposto",
-   "pin": "contrapposto@c91ac75728e006a6",
+   "pin": "contrapposto@9ac3793f62e3070a",
    "group": "contrapposto",
    "label": {
     "ru": "контрапост",
@@ -325,7 +328,7 @@
   },
   {
    "id": "limbs-arcs",
-   "pin": "limbs-arcs@e6e66d115d9a6e3c",
+   "pin": "limbs-arcs@7c32e694f7eb0af0",
    "group": "limbs",
    "label": {
     "ru": "конечности: дугой",
@@ -338,7 +341,7 @@
   },
   {
    "id": "limbs-legs-bowed-in",
-   "pin": "limbs-legs-bowed-in@4344a62c52d2caf1",
+   "pin": "limbs-legs-bowed-in@979327dfaddb4816",
    "group": "limbs",
    "label": {
     "ru": "конечности: ноги дугой внутрь",
@@ -351,7 +354,7 @@
   },
   {
    "id": "limbs-straight-curved",
-   "pin": "limbs-straight-curved@7dfec7285a437e1f",
+   "pin": "limbs-straight-curved@2055e08173270cd3",
    "group": "limbs",
    "label": {
     "ru": "конечности: прямое против кривого",
@@ -364,7 +367,7 @@
   },
   {
    "id": "limbs-taper",
-   "pin": "limbs-taper@7c1581e1ab1fe0da",
+   "pin": "limbs-taper@2cc5eb43a39feb66",
    "group": "limbs",
    "label": {
     "ru": "конечности: сужение к концам",
@@ -377,7 +380,7 @@
   },
   {
    "id": "limbs-taper-reverse",
-   "pin": "limbs-taper-reverse@7e75d18f071610ad",
+   "pin": "limbs-taper-reverse@d788217e96b2fc7c",
    "group": "limbs",
    "label": {
     "ru": "конечности: обратное сужение",
@@ -390,7 +393,7 @@
   },
   {
    "id": "proportions-big-hands-feet",
-   "pin": "proportions-big-hands-feet@3cadfff0c2762f96",
+   "pin": "proportions-big-hands-feet@8bc0ee11aa28febf",
    "group": "proportions",
    "label": {
     "ru": "пропорции: большие кисти и стопы",
@@ -403,7 +406,7 @@
   },
   {
    "id": "proportions-big-head",
-   "pin": "proportions-big-head@e1f762eb9a192642",
+   "pin": "proportions-big-head@214a8c56a3438f0c",
    "group": "proportions",
    "label": {
     "ru": "пропорции: большая голова",
@@ -416,7 +419,7 @@
   },
   {
    "id": "proportions-broad-shoulders",
-   "pin": "proportions-broad-shoulders@b8c131be781ea673",
+   "pin": "proportions-broad-shoulders@d898da2194551ba0",
    "group": "proportions",
    "label": {
     "ru": "пропорции: широкие плечи",
@@ -429,7 +432,7 @@
   },
   {
    "id": "proportions-long-arms",
-   "pin": "proportions-long-arms@c660949520ee27e0",
+   "pin": "proportions-long-arms@59d137cc085b2a66",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинные руки",
@@ -442,7 +445,7 @@
   },
   {
    "id": "proportions-long-legs",
-   "pin": "proportions-long-legs@32a1468b1940352d",
+   "pin": "proportions-long-legs@9d1c58118eefc1a2",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинные ноги",
@@ -455,7 +458,7 @@
   },
   {
    "id": "proportions-long-neck",
-   "pin": "proportions-long-neck@931290112711d379",
+   "pin": "proportions-long-neck@050350da518dc8b2",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинная шея",
@@ -468,7 +471,7 @@
   },
   {
    "id": "proportions-long-torso",
-   "pin": "proportions-long-torso@5b31a656d3d6a9f1",
+   "pin": "proportions-long-torso@499b96bbec4d4ec5",
    "group": "proportions",
    "label": {
     "ru": "пропорции: длинное туловище",
@@ -481,7 +484,7 @@
   },
   {
    "id": "proportions-narrow-shoulders",
-   "pin": "proportions-narrow-shoulders@65425a07dd973d98",
+   "pin": "proportions-narrow-shoulders@43ed7a37a3688cba",
    "group": "proportions",
    "label": {
     "ru": "пропорции: узкие плечи",
@@ -494,7 +497,7 @@
   },
   {
    "id": "proportions-short-legs",
-   "pin": "proportions-short-legs@0edcd7fc6975347a",
+   "pin": "proportions-short-legs@85be42a136451060",
    "group": "proportions",
    "label": {
     "ru": "пропорции: короткие ноги",
@@ -507,7 +510,7 @@
   },
   {
    "id": "proportions-short-neck",
-   "pin": "proportions-short-neck@8f1d877c10789b46",
+   "pin": "proportions-short-neck@ec2513db2baf1b64",
    "group": "proportions",
    "label": {
     "ru": "пропорции: короткая шея",
@@ -520,7 +523,7 @@
   },
   {
    "id": "proportions-slim-torso",
-   "pin": "proportions-slim-torso@0e0caaae0824914c",
+   "pin": "proportions-slim-torso@5eee45f37516ef93",
    "group": "proportions",
    "label": {
     "ru": "пропорции: узкое туловище",
@@ -533,7 +536,7 @@
   },
   {
    "id": "proportions-small-hands-feet",
-   "pin": "proportions-small-hands-feet@8cf3f2d58c985055",
+   "pin": "proportions-small-hands-feet@b1a1b04ba231cc0c",
    "group": "proportions",
    "label": {
     "ru": "пропорции: маленькие кисти и стопы",
@@ -546,7 +549,7 @@
   },
   {
    "id": "proportions-small-head",
-   "pin": "proportions-small-head@b28946567fe5f638",
+   "pin": "proportions-small-head@db8142fd0f5dca22",
    "group": "proportions",
    "label": {
     "ru": "пропорции: маленькая голова",
@@ -559,7 +562,7 @@
   },
   {
    "id": "proportions-thick-limbs",
-   "pin": "proportions-thick-limbs@3893591fba1a3dec",
+   "pin": "proportions-thick-limbs@969d3388c3802036",
    "group": "proportions",
    "label": {
     "ru": "пропорции: толстые руки и ноги",
@@ -572,7 +575,7 @@
   },
   {
    "id": "proportions-thin-limbs",
-   "pin": "proportions-thin-limbs@c6f525f8b60c353e",
+   "pin": "proportions-thin-limbs@21c396c0a2e2e72f",
    "group": "proportions",
    "label": {
     "ru": "пропорции: тонкие руки и ноги",
@@ -585,7 +588,7 @@
   },
   {
    "id": "average",
-   "pin": "average@675c04fc7182c681",
+   "pin": "average@1c0cbbd3ef69956c",
    "group": "caricature",
    "label": {
     "ru": "ближе к среднему",
@@ -598,7 +601,7 @@
   },
   {
    "id": "caricature",
-   "pin": "caricature@cc51cd5148f00860",
+   "pin": "caricature@9d0b745c548ae184",
    "group": "caricature",
    "label": {
     "ru": "шарж",
@@ -611,7 +614,7 @@
   },
   {
    "id": "anatomy-defined",
-   "pin": "anatomy-defined@801782f61bd61823",
+   "pin": "anatomy-defined@f35316de0f8d2876",
    "group": "surface",
    "label": {
     "ru": "анатомия чётче",
@@ -624,7 +627,7 @@
   },
   {
    "id": "anatomy-soft",
-   "pin": "anatomy-soft@95be394a795837f6",
+   "pin": "anatomy-soft@21ec915f1dd05ae4",
    "group": "surface",
    "label": {
     "ru": "анатомия мягче",
@@ -637,7 +640,7 @@
   },
   {
    "id": "smooth-2cm",
-   "pin": "smooth-2cm@062428c55d91adf5",
+   "pin": "smooth-2cm@c5958027f4b76911",
    "group": "surface",
    "label": {
     "ru": "сглаживание 2 см",
@@ -650,7 +653,7 @@
   },
   {
    "id": "smooth-4cm",
-   "pin": "smooth-4cm@47d9b00e64d4b859",
+   "pin": "smooth-4cm@ee31c824e0a00e1b",
    "group": "surface",
    "label": {
     "ru": "сглаживание 4 см",
@@ -663,7 +666,7 @@
   },
   {
    "id": "smooth-8cm",
-   "pin": "smooth-8cm@467f641fbf7ba2c2",
+   "pin": "smooth-8cm@395b8e2b06c6ca6d",
    "group": "surface",
    "label": {
     "ru": "сглаживание 8 см",
@@ -676,7 +679,7 @@
   },
   {
    "id": "contour-anime",
-   "pin": "contour-anime@18420acf4009d68b",
+   "pin": "contour-anime@25302c7a10ef9724",
    "group": "contour",
    "label": {
     "ru": "контур: аниме",
@@ -689,7 +692,7 @@
   },
   {
    "id": "contour-disney",
-   "pin": "contour-disney@f1aa62f6419b7138",
+   "pin": "contour-disney@23acce3772b83e19",
    "group": "contour",
    "label": {
     "ru": "контур: Дисней",
@@ -702,7 +705,7 @@
   },
   {
    "id": "contour-pixar",
-   "pin": "contour-pixar@e56469bed6ef6afe",
+   "pin": "contour-pixar@122aaddbca87054e",
    "group": "contour",
    "label": {
     "ru": "контур: Pixar",
@@ -715,7 +718,7 @@
   },
   {
    "id": "masses-anime-bust",
-   "pin": "masses-anime-bust@e7c4ffff404326fc",
+   "pin": "masses-anime-bust@50b497261d39c34c",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (аниме)",
@@ -728,7 +731,7 @@
   },
   {
    "id": "masses-anime-glutes",
-   "pin": "masses-anime-glutes@14e3b952fef9f36c",
+   "pin": "masses-anime-glutes@0dc49d09f23cc340",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (аниме)",
@@ -741,7 +744,7 @@
   },
   {
    "id": "masses-disney-bust",
-   "pin": "masses-disney-bust@9bcc4cfe918c3ac8",
+   "pin": "masses-disney-bust@499af6fb6e389d95",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (Дисней)",
@@ -754,7 +757,7 @@
   },
   {
    "id": "masses-disney-glutes",
-   "pin": "masses-disney-glutes@de339855b8d091d6",
+   "pin": "masses-disney-glutes@0042820e3947b25f",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (Дисней)",
@@ -767,7 +770,7 @@
   },
   {
    "id": "masses-pixar-bust",
-   "pin": "masses-pixar-bust@56bcf49aab6bcfd1",
+   "pin": "masses-pixar-bust@0dee19e2790807db",
    "group": "masses",
    "label": {
     "ru": "массы: грудь (Pixar)",
@@ -780,7 +783,7 @@
   },
   {
    "id": "masses-pixar-glutes",
-   "pin": "masses-pixar-glutes@579bdd01a39d584e",
+   "pin": "masses-pixar-glutes@525fe9d92a11cdbf",
    "group": "masses",
    "label": {
     "ru": "массы: ягодицы (Pixar)",
@@ -793,7 +796,7 @@
   },
   {
    "id": "masses-shoulders",
-   "pin": "masses-shoulders@274c40736f406dc2",
+   "pin": "masses-shoulders@24985df2002c8feb",
    "group": "masses",
    "label": {
     "ru": "массы: плечо — шапка и скат от шеи",
@@ -806,7 +809,7 @@
   },
   {
    "id": "pictogram-inverted",
-   "pin": "pictogram-inverted@702a2390a5ce0d73",
+   "pin": "pictogram-inverted@1a636ceb34c2bfe6",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: перевёрнутая трапеция",
@@ -819,7 +822,7 @@
   },
   {
    "id": "pictogram-oval",
-   "pin": "pictogram-oval@f9ba4c8b62afbd7a",
+   "pin": "pictogram-oval@43e7315a5476e455",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: овал",
@@ -832,7 +835,7 @@
   },
   {
    "id": "pictogram-rectangle",
-   "pin": "pictogram-rectangle@013de786ed5a7bae",
+   "pin": "pictogram-rectangle@14ed046d46d51c68",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: прямоугольник",
@@ -845,7 +848,7 @@
   },
   {
    "id": "pictogram-trapezoid",
-   "pin": "pictogram-trapezoid@181b7be4637dd68b",
+   "pin": "pictogram-trapezoid@14ed24c0c167c4a9",
    "group": "pictogram",
    "label": {
     "ru": "пиктограмма: трапеция",
@@ -858,7 +861,7 @@
   },
   {
    "id": "head-alva",
-   "pin": "head-alva@2baa3ae92cca28ea",
+   "pin": "head-alva@caebe9a2ceac800a",
    "group": "head",
    "label": {
     "ru": "голова: Альва",
@@ -871,7 +874,7 @@
   },
   {
    "id": "head-anime",
-   "pin": "head-anime@c161cfd974a3f1e3",
+   "pin": "head-anime@0ef38b7469404e04",
    "group": "head",
    "label": {
     "ru": "голова: аниме-девушка",
@@ -884,7 +887,7 @@
   },
   {
    "id": "head-blond",
-   "pin": "head-blond@853be02192be1494",
+   "pin": "head-blond@9d8f93930621043a",
    "group": "head",
    "label": {
     "ru": "голова: блондин",
@@ -897,7 +900,7 @@
   },
   {
    "id": "head-boy7",
-   "pin": "head-boy7@a63f6ba307fa7efd",
+   "pin": "head-boy7@c01448cf8c58de80",
    "group": "head",
    "label": {
     "ru": "голова: мальчик с каре",
@@ -910,7 +913,7 @@
   },
   {
    "id": "head-hood",
-   "pin": "head-hood@a9c9f42d3300ef9f",
+   "pin": "head-hood@09abcc3002f36bd6",
    "group": "head",
    "label": {
     "ru": "голова: женщина в капюшоне",
@@ -923,7 +926,7 @@
   },
   {
    "id": "head-jesper",
-   "pin": "head-jesper@b500cacb9552103d",
+   "pin": "head-jesper@5ec2524db296f5ba",
    "group": "head",
    "label": {
     "ru": "голова: Джеспер",
@@ -936,7 +939,7 @@
   },
   {
    "id": "head-mask",
-   "pin": "head-mask@7fdb1312daaf3827",
+   "pin": "head-mask@e4c3308f97096cae",
    "group": "head",
    "label": {
     "ru": "голова: девушка в маске",
@@ -949,7 +952,7 @@
   },
   {
    "id": "head-old",
-   "pin": "head-old@568df0e9ddbf267e",
+   "pin": "head-old@6f3632720637bbae",
    "group": "head",
    "label": {
     "ru": "голова: старик",
@@ -962,7 +965,7 @@
   },
   {
    "id": "head-red",
-   "pin": "head-red@926a301c60ee4ab7",
+   "pin": "head-red@28bee1e96f6de81e",
    "group": "head",
    "label": {
     "ru": "голова: рыжая девушка",
@@ -975,7 +978,7 @@
   },
   {
    "id": "head-semi",
-   "pin": "head-semi@17b28809e602d892",
+   "pin": "head-semi@e7235d5a4cb44a87",
    "group": "head",
    "label": {
     "ru": "голова: парень с длинным носом",
@@ -988,7 +991,7 @@
   },
   {
    "id": "head-tails",
-   "pin": "head-tails@e65bbda528d61791",
+   "pin": "head-tails@ba04fa52c09cfcc3",
    "group": "head",
    "label": {
     "ru": "голова: мальчик с хвостиками",
@@ -1001,7 +1004,7 @@
   },
   {
    "id": "face-anny-big-eyes",
-   "pin": "face-anny-big-eyes@da7f3bdf86c94f35",
+   "pin": "face-anny-big-eyes@548161cc84e03aea",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: большие глаза",
@@ -1014,7 +1017,7 @@
   },
   {
    "id": "face-anny-small-nose",
-   "pin": "face-anny-small-nose@600efd86accc5192",
+   "pin": "face-anny-small-nose@8b4cd2bf6e474360",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: маленький курносый нос",
@@ -1027,7 +1030,7 @@
   },
   {
    "id": "face-anny-soft-chin",
-   "pin": "face-anny-soft-chin@8a3da9e861247286",
+   "pin": "face-anny-soft-chin@3c7addc0286a19cb",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: мягкий маленький подбородок",
@@ -1040,7 +1043,7 @@
   },
   {
    "id": "face-anny-strong",
-   "pin": "face-anny-strong@909faac0ce85b3db",
+   "pin": "face-anny-strong@229d76329f5be3f4",
    "group": "head-form",
    "label": {
     "ru": "лицо Anny: сильное",
@@ -1053,7 +1056,7 @@
   },
   {
    "id": "face-points-cute",
-   "pin": "face-points-cute@5c2f709204761013",
+   "pin": "face-points-cute@78c0262e500550c5",
    "group": "head-form",
    "label": {
     "ru": "лицо по точкам: мило",
@@ -1066,7 +1069,7 @@
   },
   {
    "id": "face-points-long",
-   "pin": "face-points-long@4d98d8e8fd90666f",
+   "pin": "face-points-long@469800a514277c9a",
    "group": "head-form",
    "label": {
     "ru": "лицо по точкам: длинное",
@@ -1079,7 +1082,7 @@
   },
   {
    "id": "form-alva",
-   "pin": "form-alva@ff01510e261faa4a",
+   "pin": "form-alva@5617da0c0f410bbb",
    "group": "head-form",
    "label": {
     "ru": "форма: Альва",
@@ -1092,7 +1095,7 @@
   },
   {
    "id": "form-anime",
-   "pin": "form-anime@673504be003e063a",
+   "pin": "form-anime@d9556d7681208692",
    "group": "head-form",
    "label": {
     "ru": "форма: аниме-девушка",
@@ -1105,7 +1108,7 @@
   },
   {
    "id": "form-blond",
-   "pin": "form-blond@ed84bd78b22d0046",
+   "pin": "form-blond@2078bd064df0f77b",
    "group": "head-form",
    "label": {
     "ru": "форма: блондин",
@@ -1118,7 +1121,7 @@
   },
   {
    "id": "form-boy7",
-   "pin": "form-boy7@c2165d09b5a76ff6",
+   "pin": "form-boy7@61e605acd6c418f2",
    "group": "head-form",
    "label": {
     "ru": "форма: мальчик с каре",
@@ -1131,7 +1134,7 @@
   },
   {
    "id": "form-hood",
-   "pin": "form-hood@1ae83a3a6072a445",
+   "pin": "form-hood@9f8734ffe3aaa112",
    "group": "head-form",
    "label": {
     "ru": "форма: женщина в капюшоне",
@@ -1144,7 +1147,7 @@
   },
   {
    "id": "form-jesper",
-   "pin": "form-jesper@73e37a511da225a3",
+   "pin": "form-jesper@ca625204224efb04",
    "group": "head-form",
    "label": {
     "ru": "форма: Джеспер",
@@ -1157,7 +1160,7 @@
   },
   {
    "id": "form-mask",
-   "pin": "form-mask@b71af90a0fd7420e",
+   "pin": "form-mask@238aa169baf23193",
    "group": "head-form",
    "label": {
     "ru": "форма: девушка в маске",
@@ -1170,7 +1173,7 @@
   },
   {
    "id": "form-old",
-   "pin": "form-old@eb1b7ae2b6df0a9c",
+   "pin": "form-old@29df848353cf96ee",
    "group": "head-form",
    "label": {
     "ru": "форма: старик",
@@ -1183,7 +1186,7 @@
   },
   {
    "id": "form-red",
-   "pin": "form-red@4882ca6fa221925c",
+   "pin": "form-red@050eaf0c9bdbedeb",
    "group": "head-form",
    "label": {
     "ru": "форма: рыжая девушка",
@@ -1196,7 +1199,7 @@
   },
   {
    "id": "form-semi",
-   "pin": "form-semi@04f55cf714054ff9",
+   "pin": "form-semi@882d7a32927dce50",
    "group": "head-form",
    "label": {
     "ru": "форма: парень с длинным носом",
@@ -1209,7 +1212,7 @@
   },
   {
    "id": "form-solid-giulia",
-   "pin": "form-solid-giulia@5ddd133f55a34ea8",
+   "pin": "form-solid-giulia@a7d98cea0fd44b2d",
    "group": "head-form",
    "label": {
     "ru": "форма: тело по картинке (Джулия, Г2)",
@@ -1222,7 +1225,7 @@
   },
   {
    "id": "form-tails",
-   "pin": "form-tails@a846c306805106e9",
+   "pin": "form-tails@ceb7f1c829f09e83",
    "group": "head-form",
    "label": {
     "ru": "форма: мальчик с хвостиками",
@@ -1235,7 +1238,7 @@
   },
   {
    "id": "head-cage-pear",
-   "pin": "head-cage-pear@65ae974b30e567c0",
+   "pin": "head-cage-pear@9da5ae30bc912a9b",
    "group": "head-form",
    "label": {
     "ru": "каркас головы: груша",
@@ -1248,7 +1251,7 @@
   },
   {
    "id": "head-cage-tall",
-   "pin": "head-cage-tall@475c33006dee6e8e",
+   "pin": "head-cage-tall@abfbc2fedd605a3f",
    "group": "head-form",
    "label": {
     "ru": "каркас головы: высокий череп",
@@ -1261,7 +1264,7 @@
   },
   {
    "id": "head-of-toddler",
-   "pin": "head-of-toddler@d552bda97a03a5a8",
+   "pin": "head-of-toddler@3929fd9bff3a090a",
    "group": "head-form",
    "label": {
     "ru": "голова малыша",
@@ -1274,7 +1277,7 @@
   },
   {
    "id": "head-warps-cheeks",
-   "pin": "head-warps-cheeks@ee79e9617b4add25",
+   "pin": "head-warps-cheeks@a35f074e6d04a4ec",
    "group": "head-form",
    "label": {
     "ru": "плавные сдвиги: щёки и затылок",
@@ -1287,7 +1290,7 @@
   },
   {
    "id": "features-alva",
-   "pin": "features-alva@cccd6469f3799d75",
+   "pin": "features-alva@25f27b389e2ad4c8",
    "group": "features",
    "label": {
     "ru": "черты: Альва",
@@ -1300,7 +1303,7 @@
   },
   {
    "id": "features-anime",
-   "pin": "features-anime@6de055d4dae3b258",
+   "pin": "features-anime@b835447b1fb67de7",
    "group": "features",
    "label": {
     "ru": "черты: аниме-девушка",
@@ -1313,7 +1316,7 @@
   },
   {
    "id": "features-blond",
-   "pin": "features-blond@486042110ef56e43",
+   "pin": "features-blond@250f4975f5f59848",
    "group": "features",
    "label": {
     "ru": "черты: блондин",
@@ -1326,7 +1329,7 @@
   },
   {
    "id": "features-boy7",
-   "pin": "features-boy7@b71d7b733fb79584",
+   "pin": "features-boy7@0d08b89f63552485",
    "group": "features",
    "label": {
     "ru": "черты: мальчик с каре",
@@ -1339,7 +1342,7 @@
   },
   {
    "id": "features-dots",
-   "pin": "features-dots@cc360650b4811081",
+   "pin": "features-dots@6de146a7440e54ac",
    "group": "features",
    "label": {
     "ru": "черты: глаза-точки",
@@ -1352,7 +1355,7 @@
   },
   {
    "id": "features-hood",
-   "pin": "features-hood@02ec96d073558d34",
+   "pin": "features-hood@be56b3fa0375b3ff",
    "group": "features",
    "label": {
     "ru": "черты: женщина в капюшоне",
@@ -1365,7 +1368,7 @@
   },
   {
    "id": "features-jesper",
-   "pin": "features-jesper@ba152227b7e7d8bb",
+   "pin": "features-jesper@bacef4c29e49cf4d",
    "group": "features",
    "label": {
     "ru": "черты: Джеспер",
@@ -1378,7 +1381,7 @@
   },
   {
    "id": "features-mask",
-   "pin": "features-mask@218a1b71f1aee828",
+   "pin": "features-mask@3a16977bb2f6f1e1",
    "group": "features",
    "label": {
     "ru": "черты: девушка в маске",
@@ -1391,7 +1394,7 @@
   },
   {
    "id": "features-old",
-   "pin": "features-old@95cd3bc2f25090f5",
+   "pin": "features-old@31d5dc7866c69063",
    "group": "features",
    "label": {
     "ru": "черты: старик",
@@ -1404,7 +1407,7 @@
   },
   {
    "id": "features-red",
-   "pin": "features-red@4e3590cba23abbdd",
+   "pin": "features-red@06674836fef930fb",
    "group": "features",
    "label": {
     "ru": "черты: рыжая девушка",
@@ -1417,7 +1420,7 @@
   },
   {
    "id": "features-relief",
-   "pin": "features-relief@bd842db977612ad2",
+   "pin": "features-relief@48703c057a92fd5e",
    "group": "features",
    "label": {
     "ru": "черты объёмом",
@@ -1430,7 +1433,7 @@
   },
   {
    "id": "features-semi",
-   "pin": "features-semi@81b4c0a1ea6478df",
+   "pin": "features-semi@ed275512caccab0d",
    "group": "features",
    "label": {
     "ru": "черты: парень с длинным носом",
@@ -1443,7 +1446,7 @@
   },
   {
    "id": "features-tails",
-   "pin": "features-tails@7b442d858ff2b682",
+   "pin": "features-tails@5b1279c96ebc022d",
    "group": "features",
    "label": {
     "ru": "черты: мальчик с хвостиками",
@@ -1456,7 +1459,7 @@
   },
   {
    "id": "hair-alva",
-   "pin": "hair-alva@15c8b105f85246ed",
+   "pin": "hair-alva@e7985172976b3a4d",
    "group": "hair",
    "label": {
     "ru": "волосы: Альва",
@@ -1469,7 +1472,7 @@
   },
   {
    "id": "hair-anime",
-   "pin": "hair-anime@e97f000816a31b67",
+   "pin": "hair-anime@7d9b9d4581dcb87c",
    "group": "hair",
    "label": {
     "ru": "волосы: аниме-девушка",
@@ -1482,7 +1485,7 @@
   },
   {
    "id": "hair-blond",
-   "pin": "hair-blond@33220273bda06dc2",
+   "pin": "hair-blond@da5e07dceb78b9f4",
    "group": "hair",
    "label": {
     "ru": "волосы: блондин",
@@ -1495,7 +1498,7 @@
   },
   {
    "id": "hair-boy7",
-   "pin": "hair-boy7@6b3e9607b3fac7de",
+   "pin": "hair-boy7@c7d3e1626fa9c91a",
    "group": "hair",
    "label": {
     "ru": "волосы: мальчик с каре",
@@ -1508,7 +1511,7 @@
   },
   {
    "id": "hair-hood",
-   "pin": "hair-hood@095036bedb9193d4",
+   "pin": "hair-hood@270414768a283dbb",
    "group": "hair",
    "label": {
     "ru": "волосы: женщина в капюшоне",
@@ -1521,7 +1524,7 @@
   },
   {
    "id": "hair-jesper",
-   "pin": "hair-jesper@99c54718dfb546dc",
+   "pin": "hair-jesper@ace6bf2870bee50e",
    "group": "hair",
    "label": {
     "ru": "волосы: Джеспер",
@@ -1534,7 +1537,7 @@
   },
   {
    "id": "hair-mask",
-   "pin": "hair-mask@4bcb34acbd07d286",
+   "pin": "hair-mask@0b2a4e2712f8c5c8",
    "group": "hair",
    "label": {
     "ru": "волосы: девушка в маске",
@@ -1547,7 +1550,7 @@
   },
   {
    "id": "hair-old",
-   "pin": "hair-old@e56d051d0ac97cfb",
+   "pin": "hair-old@f4a521c75ecab8a6",
    "group": "hair",
    "label": {
     "ru": "волосы: старик",
@@ -1560,7 +1563,7 @@
   },
   {
    "id": "hair-red",
-   "pin": "hair-red@f7b40ae44b1bd42e",
+   "pin": "hair-red@bb08b400b6cc3fa5",
    "group": "hair",
    "label": {
     "ru": "волосы: рыжая девушка",
@@ -1573,7 +1576,7 @@
   },
   {
    "id": "hair-semi",
-   "pin": "hair-semi@323177a3cdd38fd0",
+   "pin": "hair-semi@09bf48d61daa54ce",
    "group": "hair",
    "label": {
     "ru": "волосы: парень с длинным носом",
@@ -1586,7 +1589,7 @@
   },
   {
    "id": "hair-tails",
-   "pin": "hair-tails@ee5ed53c31e279c3",
+   "pin": "hair-tails@2649c0d1a1d6f10a",
    "group": "hair",
    "label": {
     "ru": "волосы: мальчик с хвостиками",
@@ -1599,7 +1602,7 @@
   },
   {
    "id": "hair-v1-alva",
-   "pin": "hair-v1-alva@8ed63fc8370380cb",
+   "pin": "hair-v1-alva@5141d72a60695da8",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Альва: шторка",
@@ -1612,7 +1615,7 @@
   },
   {
    "id": "hair-v1-anime",
-   "pin": "hair-v1-anime@23ee45c08f7dd9ea",
+   "pin": "hair-v1-anime@9c647d77759c95a9",
    "group": "hair",
    "label": {
     "ru": "причёска В1: аниме: чёлка и длинные",
@@ -1625,7 +1628,7 @@
   },
   {
    "id": "hair-v1-ariel",
-   "pin": "hair-v1-ariel@0623ded28ef2929c",
+   "pin": "hair-v1-ariel@67965514f3f2430a",
    "group": "hair",
    "label": {
     "ru": "причёска В1: рыжая девушка: длинные волны",
@@ -1638,7 +1641,7 @@
   },
   {
    "id": "hair-v1-doll",
-   "pin": "hair-v1-doll@611225a6d5739a62",
+   "pin": "hair-v1-doll@5411685c2722455f",
    "group": "hair",
    "label": {
     "ru": "причёска В1: девочка-кукла: фиолетовые",
@@ -1651,7 +1654,7 @@
   },
   {
    "id": "hair-v1-ginger",
-   "pin": "hair-v1-ginger@2c1cb71c88133578",
+   "pin": "hair-v1-ginger@748b2263c859ae2c",
    "group": "hair",
    "label": {
     "ru": "причёска В1: рыжий мальчик: начёс",
@@ -1664,7 +1667,7 @@
   },
   {
    "id": "hair-v1-giulia",
-   "pin": "hair-v1-giulia@4e5b8f09282c4fa2",
+   "pin": "hair-v1-giulia@fb24abad0ee60a96",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Джулия: кудри под шапкой",
@@ -1677,7 +1680,7 @@
   },
   {
    "id": "hair-v1-gogo",
-   "pin": "hair-v1-gogo@636a6cd23ee86e24",
+   "pin": "hair-v1-gogo@e8cf770d009c361d",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Гоу-Гоу: тёмное каре с прядью",
@@ -1690,7 +1693,7 @@
   },
   {
    "id": "hair-v1-gwen",
-   "pin": "hair-v1-gwen@27aa954e4949faf8",
+   "pin": "hair-v1-gwen@820ab0a8034b3b6c",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Гвен: каре с косым пробором",
@@ -1703,7 +1706,7 @@
   },
   {
    "id": "hair-v1-jack",
-   "pin": "hair-v1-jack@94daf18d97039dc1",
+   "pin": "hair-v1-jack@ab18545a8b88e3c2",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Джек: растрёпанные белые",
@@ -1716,7 +1719,7 @@
   },
   {
    "id": "hair-v1-kbraid",
-   "pin": "hair-v1-kbraid@6067589d7912a37c",
+   "pin": "hair-v1-kbraid@e6772e336a5c1f09",
    "group": "hair",
    "label": {
     "ru": "причёска В1: K-pop: коса",
@@ -1729,7 +1732,7 @@
   },
   {
    "id": "hair-v1-kbuns",
-   "pin": "hair-v1-kbuns@501ac18d0ef67b05",
+   "pin": "hair-v1-kbuns@ff7492a41b1f51f6",
    "group": "hair",
    "label": {
     "ru": "причёска В1: K-pop: два пучка",
@@ -1742,7 +1745,7 @@
   },
   {
    "id": "hair-v1-kpony",
-   "pin": "hair-v1-kpony@3c5e37c02d077568",
+   "pin": "hair-v1-kpony@c0baa725b1d13e14",
    "group": "hair",
    "label": {
     "ru": "причёска В1: K-pop: высокий хвост",
@@ -1755,7 +1758,7 @@
   },
   {
    "id": "hair-v1-marco",
-   "pin": "hair-v1-marco@6d857f7e983c3e8f",
+   "pin": "hair-v1-marco@92018e60e00ccd29",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Марко: чёлка набок",
@@ -1768,7 +1771,7 @@
   },
   {
    "id": "hair-v1-nimona",
-   "pin": "hair-v1-nimona@8f640e0f565a253d",
+   "pin": "hair-v1-nimona@86b683020fcc098e",
    "group": "hair",
    "label": {
     "ru": "причёска В1: Нимона: вихры, бок выбрит",
@@ -1780,21 +1783,8 @@
    }
   },
   {
-   "id": "wear-hood",
-   "pin": "wear-hood@ee3aa49b1fb4eaca",
-   "group": "headwear",
-   "label": {
-    "ru": "убор: женщина в капюшоне",
-    "en": "headwear: hooded woman"
-   },
-   "about": {
-    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
-    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
-   }
-  },
-  {
    "id": "wear-jesper",
-   "pin": "wear-jesper@90856ccaf99eadc7",
+   "pin": "wear-jesper@022cf656076f6335",
    "group": "headwear",
    "label": {
     "ru": "убор: Джеспер",
@@ -1807,7 +1797,7 @@
   },
   {
    "id": "wear-mask",
-   "pin": "wear-mask@c3b0a7311135853f",
+   "pin": "wear-mask@022e28d8c95044b5",
    "group": "headwear",
    "label": {
     "ru": "убор: девушка в маске",
@@ -1819,21 +1809,8 @@
    }
   },
   {
-   "id": "wear-old",
-   "pin": "wear-old@55fc9501104f6f60",
-   "group": "headwear",
-   "label": {
-    "ru": "убор: старик",
-    "en": "headwear: old man"
-   },
-   "about": {
-    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
-    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
-   }
-  },
-  {
    "id": "expressions-drawn",
-   "pin": "expressions-drawn@539819d9361387ef",
+   "pin": "expressions-drawn@be414f295b73fceb",
    "group": "expressions",
    "label": {
     "ru": "выражения: нарисованное лицо",
@@ -1846,7 +1823,7 @@
   },
   {
    "id": "light-plain",
-   "pin": "light-plain@0a1644460b579472",
+   "pin": "light-plain@5acbe8db01ec7ddd",
    "group": "face-light",
    "label": {
     "ru": "свет: обычный",
@@ -1859,7 +1836,7 @@
   },
   {
    "id": "light-soft-form",
-   "pin": "light-soft-form@43886c11470c226f",
+   "pin": "light-soft-form@01c280e63291ee71",
    "group": "face-light",
    "label": {
     "ru": "свет: мягкий, по форме",
@@ -1872,7 +1849,7 @@
   },
   {
    "id": "light-toon",
-   "pin": "light-toon@ae99df8a65cf6c01",
+   "pin": "light-toon@9ec46ec5097eba0c",
    "group": "face-light",
    "label": {
     "ru": "свет: мультяшный",
@@ -1885,7 +1862,7 @@
   },
   {
    "id": "light-toon-form",
-   "pin": "light-toon-form@82a1a4323c882044",
+   "pin": "light-toon-form@4a5001203610c6f5",
    "group": "face-light",
    "label": {
     "ru": "свет: мультяшный, по форме",
@@ -1898,7 +1875,7 @@
   },
   {
    "id": "wind-calm",
-   "pin": "wind-calm@cba0546f957b893a",
+   "pin": "wind-calm@30b7b2e318b1461e",
    "group": "wind",
    "label": {
     "ru": "ветер: тихо",
@@ -1911,7 +1888,7 @@
   },
   {
    "id": "wind-gusty",
-   "pin": "wind-gusty@5f3d7c6b68c0883a",
+   "pin": "wind-gusty@b4ca5265c3f22e0c",
    "group": "wind",
    "label": {
     "ru": "ветер: порывы",
@@ -1924,7 +1901,7 @@
   },
   {
    "id": "wind-light",
-   "pin": "wind-light@d14c059bb144c540",
+   "pin": "wind-light@ecb351e6471f5e97",
    "group": "wind",
    "label": {
     "ru": "ветер: лёгкий ветер",
@@ -1937,7 +1914,7 @@
   },
   {
    "id": "wind-strong",
-   "pin": "wind-strong@543a4c62f1d581cb",
+   "pin": "wind-strong@64bb0a2cb59fea0d",
    "group": "wind",
    "label": {
     "ru": "ветер: сильный ветер",
@@ -1946,6 +1923,643 @@
    "about": {
     "ru": "сильный порывистый ветер: длинные волосы клонятся на 60° (дует спереди справа)",
     "en": "a strong gusty wind: long hair leans some 60° (blowing from the front right)"
+   }
+  },
+  {
+   "id": "fabric-chiffon",
+   "pin": "fabric-chiffon@f305643886762bd4",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: шифон",
+    "en": "fabric: chiffon"
+   },
+   "about": {
+    "ru": "тончайший, летит на ветру, полупрозрачный (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "the finest, flies in the wind, translucent (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-denim",
+   "pin": "fabric-denim@08106be05917918a",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: деним",
+    "en": "fabric: denim"
+   },
+   "about": {
+    "ru": "тяжёлый, жёсткий, крупные складки: джинсы, куртки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "heavy, stiff, big folds: jeans, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-fineknit",
+   "pin": "fabric-fineknit@3f0b9dbffafbc738",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: тонкая вязка (мерино)",
+    "en": "fabric: fine knit (merino)"
+   },
+   "about": {
+    "ru": "тонкая, мягкая, тянется (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thin, soft, stretchy (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-fleece",
+   "pin": "fabric-fleece@9e206d9258a01436",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: флис",
+    "en": "fabric: fleece"
+   },
+   "about": {
+    "ru": "пушистый, объёмный (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "fluffy, voluminous (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-heavyjersey",
+   "pin": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: плотный трикотаж (футер)",
+    "en": "fabric: heavy jersey (sweatshirt fleece)"
+   },
+   "about": {
+    "ru": "толще и тяжелее трикотажа, держит объём: толстовки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thicker and heavier than jersey, keeps some volume: sweatshirts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-jersey",
+   "pin": "fabric-jersey@fbeb796abdcdb8ec",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: хлопковый трикотаж",
+    "en": "fabric: cotton jersey"
+   },
+   "about": {
+    "ru": "мягкий, тянется, ложится по телу: футболки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "soft, stretchy, lies on the body: T-shirts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-linen",
+   "pin": "fabric-linen@904bf4c72f9721b5",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: лён",
+    "en": "fabric: linen"
+   },
+   "about": {
+    "ru": "не тянется, мнётся крупно (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "does not stretch, creases in big folds (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-lycra",
+   "pin": "fabric-lycra@28ef387d27e68e98",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: бифлекс (нейлон с лайкрой)",
+    "en": "fabric: lycra (nylon with spandex)"
+   },
+   "about": {
+    "ru": "тянется сильно, облегает: купальники (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "very stretchy, clings: swimsuits (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-neoprene",
+   "pin": "fabric-neoprene@2b0d6732944a2644",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: неопрен",
+    "en": "fabric: neoprene"
+   },
+   "about": {
+    "ru": "толстый, упругий, держит форму (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thick, springy, keeps its shape (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-nylon",
+   "pin": "fabric-nylon@bf8c5cf21852d892",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: нейлон (ветровка)",
+    "en": "fabric: nylon (windbreaker)"
+   },
+   "about": {
+    "ru": "лёгкий, не тянется, ловит ветер (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "light, does not stretch, catches the wind (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-poplin",
+   "pin": "fabric-poplin@d20ecf344a94963e",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: хлопок-поплин",
+    "en": "fabric: cotton poplin"
+   },
+   "about": {
+    "ru": "лёгкий плотный хлопок: рубашки, платья (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "light, firm cotton: shirts, dresses (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-silk",
+   "pin": "fabric-silk@8dee0e65301326ad",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: шёлк",
+    "en": "fabric: silk"
+   },
+   "about": {
+    "ru": "лёгкий, скользкий, течёт мелкими складками, блестит (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "light, slippery, flows in small folds, shines (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-suiting",
+   "pin": "fabric-suiting@cfe77341b470ad80",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: костюмная шерсть",
+    "en": "fabric: suiting wool"
+   },
+   "about": {
+    "ru": "держит линию: брюки, юбки, пиджаки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "keeps its line: trousers, skirts, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-tweed",
+   "pin": "fabric-tweed@eb14b1101a2f5b5e",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: твид",
+    "en": "fabric: tweed"
+   },
+   "about": {
+    "ru": "толстая жёсткая шерсть: пальто, куртки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thick stiff wool: coats, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-twill",
+   "pin": "fabric-twill@926bd20764dc9758",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: хлопковый твил",
+    "en": "fabric: cotton twill"
+   },
+   "about": {
+    "ru": "плотный хлопок: чиносы, шорты (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "firm cotton: chinos, shorts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-woolknit",
+   "pin": "fabric-woolknit@27bad4928d150dc3",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: толстая шерстяная вязка",
+    "en": "fabric: chunky wool knit"
+   },
+   "about": {
+    "ru": "толстая, тяжёлая, тянется, держит объём (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thick, heavy, stretchy, keeps volume (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "shape-aline",
+   "pin": "shape-aline@ccf194e7b54dc21e",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: А-силуэт",
+    "en": "silhouette: A-line"
+   },
+   "about": {
+    "ru": "расширяется от талии к подолу ровной трапецией, мягкие складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "widens from the waist to the hem as an even trapeze, soft folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-balloon-leg",
+   "pin": "shape-balloon-leg@a480f9ef9e35e695",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: шаровары",
+    "en": "silhouette: balloon legs"
+   },
+   "about": {
+    "ru": "штанины надуты и собраны у щиколотки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs puffed out, gathered at the ankle (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bell",
+   "pin": "shape-bell@3ec8e4c677e97227",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: колокол",
+    "en": "silhouette: bell"
+   },
+   "about": {
+    "ru": "пышный колокол от талии, складки по подолу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a full bell from the waist, folds round the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bell-sleeve",
+   "pin": "shape-bell-sleeve@22c57c280485af77",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: трапеция, рукав-колокол",
+    "en": "silhouette: trapeze, bell sleeve"
+   },
+   "about": {
+    "ru": "от груди трапецией, рукава расширяются к кисти (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a trapeze from the bust, sleeves widening to the hand (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bishop-sleeve",
+   "pin": "shape-bishop-sleeve@4c3ab651252645ab",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: рукав-епископ",
+    "en": "silhouette: bishop sleeve"
+   },
+   "about": {
+    "ru": "облегает, рукава пышные у кисти (силуэт О1: форма, к которой тянется ткань)",
+    "en": "fitted, sleeves full at the wrist (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-block",
+   "pin": "shape-block@2a359016b2b3bfa2",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: блок оверсайз",
+    "en": "silhouette: oversized block"
+   },
+   "about": {
+    "ru": "висит с плеч прямым квадратным блоком, прямые рукава (силуэт О1: форма, к которой тянется ткань)",
+    "en": "hangs from the shoulders as a straight square block, straight sleeves (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bubble",
+   "pin": "shape-bubble@43d9a320bab8771f",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: баллон",
+    "en": "silhouette: bubble"
+   },
+   "about": {
+    "ru": "надут шаром и собран у подола (силуэт О1: форма, к которой тянется ткань)",
+    "en": "puffed out like a ball, gathered at the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-cap-sleeve",
+   "pin": "shape-cap-sleeve@2ac398f6f5e9969f",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: трапеция, рукав-крылышко",
+    "en": "silhouette: trapeze, cap sleeve"
+   },
+   "about": {
+    "ru": "от груди трапецией, рукава-крылышки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a trapeze from the bust, cap sleeves (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-empire",
+   "pin": "shape-empire@7aae918183f6ee4b",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: ампир",
+    "en": "silhouette: empire"
+   },
+   "about": {
+    "ru": "висит от груди трапецией, мелкие складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "hangs from the bust as a trapeze, fine folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-fitted",
+   "pin": "shape-fitted@5b5641d9c4ef3697",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: по фигуре",
+    "en": "silhouette: fitted"
+   },
+   "about": {
+    "ru": "плотно по телу, без мостов (силуэт О1: форма, к которой тянется ткань)",
+    "en": "close to the body, no bridging (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-flare-leg",
+   "pin": "shape-flare-leg@913db52266899498",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: клёш",
+    "en": "silhouette: flared legs"
+   },
+   "about": {
+    "ru": "штанины расширяются от колена (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs flaring from the knee (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-full-skirt",
+   "pin": "shape-full-skirt@6f6541c3b97e4588",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: пышная юбка",
+    "en": "silhouette: full skirt"
+   },
+   "about": {
+    "ru": "пышная, длиннее, глубокие складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "full, longer, deep folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-mini-pleats",
+   "pin": "shape-mini-pleats@f545c29737d35805",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: короткая в складку",
+    "en": "silhouette: short pleats"
+   },
+   "about": {
+    "ru": "короче, частые складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "shorter, many folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-pencil",
+   "pin": "shape-pencil@95a9413a3b041a6e",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: карандаш",
+    "en": "silhouette: pencil"
+   },
+   "about": {
+    "ru": "сужается к подолу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "narrows toward the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-pleated",
+   "pin": "shape-pleated@53c8fc2c03626702",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: юбка в складку",
+    "en": "silhouette: pleated skirt"
+   },
+   "about": {
+    "ru": "А-силуэт с глубокими нарисованными складками (силуэт О1: форма, к которой тянется ткань)",
+    "en": "an A-line with deep drawn folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-puff-sleeve",
+   "pin": "shape-puff-sleeve@146bcd8bff713e30",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: рукав-фонарик",
+    "en": "silhouette: puff sleeve"
+   },
+   "about": {
+    "ru": "облегает, рукава-фонарики у плеча (силуэт О1: форма, к которой тянется ткань)",
+    "en": "fitted, sleeves puffed at the shoulder (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-sheath",
+   "pin": "shape-sheath@0a992f880069e556",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: платье-футляр",
+    "en": "silhouette: sheath"
+   },
+   "about": {
+    "ru": "прямой силуэт, ткань мостом через впадины (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a straight line, the cloth bridging the hollows (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-straight-leg",
+   "pin": "shape-straight-leg@88e6de992128d032",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: прямые штанины",
+    "en": "silhouette: straight legs"
+   },
+   "about": {
+    "ru": "штанины прямые, ткань мостом (силуэт О1: форма, к которой тянется ткань)",
+    "en": "straight legs, the cloth bridging (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-taper-leg",
+   "pin": "shape-taper-leg@0e0c921b42f4fc02",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: зауженные",
+    "en": "silhouette: tapered legs"
+   },
+   "about": {
+    "ru": "штанины сужаются к низу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs narrowing downward (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-trapeze-robe",
+   "pin": "shape-trapeze-robe@055386dae3eabc94",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: халат-трапеция",
+    "en": "silhouette: trapeze robe"
+   },
+   "about": {
+    "ru": "с плеч жёсткой квадратной трапецией (силуэт О1: форма, к которой тянется ткань)",
+    "en": "from the shoulders as a stiff square trapeze (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-tulip",
+   "pin": "shape-tulip@aa31739b63173fda",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: тюльпан",
+    "en": "silhouette: tulip"
+   },
+   "about": {
+    "ru": "расширяется на бёдрах и сужается к подолу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "widens over the hips and narrows to the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-wide-leg",
+   "pin": "shape-wide-leg@0370789d5662bce7",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: широкие штанины",
+    "en": "silhouette: wide legs"
+   },
+   "about": {
+    "ru": "штанины расширяются к низу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs widening downward (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "outfit-alva",
+   "pin": "outfit-alva@bf4de70ff0a6a35f",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: Альва",
+    "en": "outfit: Alva"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-anime",
+   "pin": "outfit-anime@1afc3373119cbc8d",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: аниме-девушка",
+    "en": "outfit: anime girl"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-blond",
+   "pin": "outfit-blond@08995452c2c243d3",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: блондин",
+    "en": "outfit: blond boy"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-boy7",
+   "pin": "outfit-boy7@06406ed6c0d15a0a",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: мальчик с каре",
+    "en": "outfit: boy with a bob"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-hood",
+   "pin": "outfit-hood@05ea8d1a69fcf55e",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: женщина в капюшоне",
+    "en": "outfit: hooded woman"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-jesper",
+   "pin": "outfit-jesper@c558675bfeba3874",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: Джеспер",
+    "en": "outfit: Jesper"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-mask",
+   "pin": "outfit-mask@7b360afb10bf8b3a",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: девушка в маске",
+    "en": "outfit: masked girl"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-old",
+   "pin": "outfit-old@cd11d6f94102980d",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: старик",
+    "en": "outfit: old man"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-red",
+   "pin": "outfit-red@7ccb8c4baa3c3586",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: рыжая девушка",
+    "en": "outfit: red-haired girl"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-semi",
+   "pin": "outfit-semi@f09aa6aa9f2c4459",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: парень с длинным носом",
+    "en": "outfit: long-nosed man"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-tails",
+   "pin": "outfit-tails@6ffadf8351b9cf4e",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: мальчик с хвостиками",
+    "en": "outfit: boy with tails"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
    }
   }
  ]

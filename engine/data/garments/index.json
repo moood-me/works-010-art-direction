@@ -1,0 +1,157 @@
+{
+ "format": "engine/garments",
+ "version": 1,
+ "about": "MakeHuman's garments as source meshes on Anny's mesh (tools/garments.mjs)",
+ "garments": [
+  {
+   "id": "mh-dress",
+   "kind": "top",
+   "label": {
+    "ru": "платье",
+    "en": "dress"
+   },
+   "points": 1120,
+   "triangles": 2116
+  },
+  {
+   "id": "mh-tshirt",
+   "kind": "top",
+   "label": {
+    "ru": "футболка",
+    "en": "T-shirt"
+   },
+   "points": 1203,
+   "triangles": 2324
+  },
+  {
+   "id": "mh-sweater",
+   "kind": "top",
+   "label": {
+    "ru": "свитер",
+    "en": "sweater"
+   },
+   "points": 1944,
+   "triangles": 3828
+  },
+  {
+   "id": "mh-polo",
+   "kind": "top",
+   "label": {
+    "ru": "поло",
+    "en": "polo shirt"
+   },
+   "points": 1985,
+   "triangles": 3757
+  },
+  {
+   "id": "mh-oversized",
+   "kind": "top",
+   "label": {
+    "ru": "оверсайз",
+    "en": "oversized top"
+   },
+   "points": 1944,
+   "triangles": 3828
+  },
+  {
+   "id": "mh-tunic",
+   "kind": "top",
+   "label": {
+    "ru": "туника",
+    "en": "tunic"
+   },
+   "points": 3002,
+   "triangles": 5910
+  },
+  {
+   "id": "mh-robe",
+   "kind": "top",
+   "label": {
+    "ru": "халат",
+    "en": "robe"
+   },
+   "points": 2040,
+   "triangles": 4000
+  },
+  {
+   "id": "mh-hood",
+   "kind": "top",
+   "label": {
+    "ru": "худи с капюшоном",
+    "en": "hooded top"
+   },
+   "points": 2416,
+   "triangles": 4718
+  },
+  {
+   "id": "mh-pants",
+   "kind": "bottom",
+   "label": {
+    "ru": "брюки",
+    "en": "trousers"
+   },
+   "points": 1293,
+   "triangles": 2518
+  },
+  {
+   "id": "mh-shorts",
+   "kind": "bottom",
+   "label": {
+    "ru": "шорты",
+    "en": "shorts"
+   },
+   "points": 285,
+   "triangles": 500
+  },
+  {
+   "id": "mh-skirt",
+   "kind": "bottom",
+   "label": {
+    "ru": "юбка",
+    "en": "skirt"
+   },
+   "points": 960,
+   "triangles": 1840
+  },
+  {
+   "id": "mh-vikingpants",
+   "kind": "bottom",
+   "label": {
+    "ru": "широкие штаны",
+    "en": "wide trousers"
+   },
+   "points": 1312,
+   "triangles": 2544
+  },
+  {
+   "id": "mh-apron",
+   "kind": "apron",
+   "label": {
+    "ru": "фартук",
+    "en": "apron"
+   },
+   "points": 412,
+   "triangles": 688
+  },
+  {
+   "id": "mh-boots",
+   "kind": "shoes",
+   "label": {
+    "ru": "ботинки",
+    "en": "boots"
+   },
+   "points": 1201,
+   "triangles": 2357
+  },
+  {
+   "id": "mh-flats",
+   "kind": "shoes",
+   "label": {
+    "ru": "туфли",
+    "en": "flats"
+   },
+   "points": 1207,
+   "triangles": 2319
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "head-points",
  "label": {
   "ru": "Голова: лицо по точкам",
@@ -12,19 +12,19 @@
   "form": [
    {
     "kind": "preset",
-    "id": "face-points-cute@5c2f709204761013"
+    "id": "face-points-cute@78c0262e500550c5"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-relief@bd842db977612ad2"
+    "id": "features-relief@48703c057a92fd5e"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    },
    {
     "kind": "off",
@@ -33,7 +33,7 @@
   ],
   "light": {
    "kind": "preset",
-   "id": "light-plain@0a1644460b579472"
+   "id": "light-plain@5acbe8db01ec7ddd"
   }
  },
  "look": {

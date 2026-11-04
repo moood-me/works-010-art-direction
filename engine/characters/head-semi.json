@@ -1,6 +1,6 @@
 {
  "format": "engine/character",
- "version": 6,
+ "version": 7,
  "id": "head-semi",
  "label": {
   "ru": "Голова: парень с длинным носом",
@@ -8,8 +8,14 @@
  },
  "body": "moood-man@ae2fe31d3d61c6e7",
  "head": {
-  "preset": "head-semi@17b28809e602d892"
+  "preset": "head-semi@e7235d5a4cb44a87"
  },
+ "clothes": [
+  {
+   "kind": "preset",
+   "id": "outfit-semi@f09aa6aa9f2c4459"
+  }
+ ],
  "look": {
   "skin": "#efd2d4",
   "roughness": 0.65

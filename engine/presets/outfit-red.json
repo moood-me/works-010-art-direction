@@ -1,0 +1,23 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-red",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: рыжая девушка",
+  "en": "outfit: red-haired girl"
+ },
+ "about": {
+  "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+  "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments)"
+ },
+ "clothes": [
+  {
+   "id": "dress",
+   "kind": "garment",
+   "pattern": "mh-dress",
+   "fabric": "fabric-poplin@d20ecf344a94963e",
+   "color": "#d8cde6"
+  }
+ ]
+}

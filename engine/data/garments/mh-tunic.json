@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-tunic",
+ "kind": "top",
+ "label": {
+  "ru": "туника",
+  "en": "tunic"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/tunic.js)",
+ "bin": "mh-tunic.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    3002,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    3002,
+    3
+   ],
+   "offset": 18012
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    3002,
+    3
+   ],
+   "offset": 54036
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 72048
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 72060
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    5910,
+    3
+   ],
+   "offset": 72072
+  }
+ }
+}

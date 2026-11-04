@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "line-side-c-forward",
  "label": {
   "ru": "линия действия: сбоку C вперёд",

@@ -1,6 +1,6 @@
 {
  "format": "engine/preset",
- "version": 5,
+ "version": 6,
  "id": "head-hood",
  "group": "head",
  "label": {
@@ -17,19 +17,19 @@
   "form": [
    {
     "kind": "preset",
-    "id": "form-hood@1ae83a3a6072a445"
+    "id": "form-hood@9f8734ffe3aaa112"
    }
   ],
   "features": [
    {
     "kind": "preset",
-    "id": "features-hood@02ec96d073558d34"
+    "id": "features-hood@be56b3fa0375b3ff"
    }
   ],
   "expressions": [
    {
     "kind": "preset",
-    "id": "expressions-drawn@539819d9361387ef"
+    "id": "expressions-drawn@be414f295b73fceb"
    }
   ],
   "pieces": [
@@ -39,16 +39,12 @@
    },
    {
     "kind": "preset",
-    "id": "hair-hood@095036bedb9193d4"
-   },
-   {
-    "kind": "preset",
-    "id": "wear-hood@ee3aa49b1fb4eaca"
+    "id": "hair-hood@270414768a283dbb"
    }
   ],
   "light": {
    "kind": "preset",
-   "id": "light-toon-form@82a1a4323c882044"
+   "id": "light-toon-form@4a5001203610c6f5"
   }
  }
 }

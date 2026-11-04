@@ -1,0 +1,17 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-taper-leg",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: зауженные",
+  "en": "silhouette: tapered legs"
+ },
+ "about": {
+  "ru": "штанины сужаются к низу (силуэт О1: форма, к которой тянется ткань)",
+  "en": "legs narrowing downward (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "leg": "taper"
+ }
+}
