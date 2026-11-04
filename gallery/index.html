@@ -65,11 +65,12 @@
     #menuSel { display: block; width: 100%; padding: 10px; font-size: 15px; margin-bottom: 16px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
     main { padding: 16px; } #lb .imgbox { padding: 12px 8px 0; } #lbPrev, #lbNext { top: auto; bottom: 56px; }
   }
+  @media (max-width: 760px) { #homeM { display: block !important; margin-bottom: 8px; } }
 </style>
 </head>
 <body>
-<aside id="side"><h1><a href="#" style="padding:0">Art direction</a></h1><p class="sub">Код пути — буква группы и номер (Т5 — тело, путь 5). Картинка — через дефис: «Т5-б».</p></aside>
-<main><select id="menuSel" aria-label="Путь"></select><div id="view"></div></main>
+<aside id="side"><a class="home" href="../" style="font-size:13px;color:var(--muted);padding:0 8px 8px;display:block">← На главную</a><h1><a href="#" style="padding:0">Art direction</a></h1><p class="sub">Код пути — буква группы и номер (Т5 — тело, путь 5). Картинка — через дефис: «Т5-б».</p></aside>
+<main><a class="home" href="../" style="font-size:13px;color:var(--muted);display:none" id="homeM">← На главную</a><select id="menuSel" aria-label="Путь"></select><div id="view"></div></main>
 <div id="lb" role="dialog" aria-modal="true"><div class="imgbox"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div>
 <button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
 <script>

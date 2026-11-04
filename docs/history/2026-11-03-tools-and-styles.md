@@ -59,3 +59,11 @@ was not animated. A root `index.html` links the gallery and the three new sites.
 **Findings and briefs kept (2026-11-04).** Pavel asked to keep in the repository what may help the next agents:
 the three briefs the page agents worked from went to `docs/briefs/` (tools, styles, to3d) and a summary of what was
 found to `docs/findings.md`, both listed in `docs/README.md`.
+
+**Drawings to 3D, round two (2026-11-04).** Pavel liked the five and asked for one character from each of the other
+seven styles: Р6 Тим (Pixar), Р7 Вера (Arcane), Р8 Савелий (symbolic), Р9 Аня (Ghibli), Р10 Тим (stop-motion), Р11
+Савелий (1930s), Р12 Аня (pen and watercolour). The brief got a "second round" part (learn from the five, make the good
+ones alive at once, a viewer in the «3D» tab). All came out good except Р6 (middling). Pavel decided to keep the Р
+numbers and folders as they are and show each one's style and name in the menu (`LABEL` in `to3d/index.html`) — a
+renumbering would have touched ~250 references and working paths. Every site got a «← На главную» link to the root
+page. Findings added to `docs/findings.md`.

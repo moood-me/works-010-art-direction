@@ -53,6 +53,25 @@ follows.
 - Engine note: centres-of-rotation skinning takes ~15 s to prepare on a 48k-vertex dressed mesh — too slow for the
   browser; viewers used dual quaternions. Worth an issue.
 
+## Drawings to 3D, round two (all twelve styles)
+
+One character from each remaining style, same brief, the five done as examples (`to3d/` Р6–Р12; the menu shows each
+one's style and name, e.g. «Р1 (С3 Аня)»; folders keep the Р numbers). Out of twelve, ten came out good and alive.
+- **Bases follow the style, not one recipe.** When a style's drawing code already builds a volume (С4, С6, С7, С8,
+  С10), fit the bases to those numbers — all views agree at once. Proportions far from human take our constructors:
+  indie (П1) for 3 heads tall, the expressive one (П2: arcs through the joints, ball head) for 1930s rubber hose —
+  still on SOMA, still Kimodo through the engine.
+- **The look can be drawn each frame from the 3D.** Pen and watercolour (Р12): silhouette and crease lines taken from
+  the 3D each frame and drawn with the style's own pen code, washes as offset masks under its own filter — reads as the
+  drawing, not a shader. Symbolic (Р8): no face, mood by pose and breath, the rim light moving with a real lamp.
+  Stop-motion (Р10): Cycles materials (resin skin, glass eyes, ribbed knit), 12 frames a second, replaceable mouths
+  and brows like Laika's. 1930s (Р11): head squash and stretch on a spring, a wobbling ink line, black-and-white film.
+- **Following the style's rules over a weak drawing** (Arcane Р7) gave a face better than the drawing but a figure of
+  real proportions that no longer matches it.
+- **Weak spots repeat:** open mouths without a tongue or teeth read as holes (Р6); big modelled eyes can look staring;
+  realistic Anny hands; skirts and coats as shells; a big head makes Kimodo's wave cover the face.
+- Viewers load slowly in software WebGL (centres-of-rotation skinning on ~70k vertices takes about a minute).
+
 ## Other people's tools (`tools-demo/`)
 
 - **Better than ours:** Blender Studio's character heads (Rain, Snow…, CC-BY) — eyeballs under thick lids, lips with

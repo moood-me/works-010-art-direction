@@ -83,11 +83,12 @@
   .blk > h3 { font-size: 18px; margin: 0 0 6px; }
   .blk ul { margin: 4px 0 12px; padding-left: 20px; max-width: 900px; } .blk li { margin: 3px 0; }
   .refs a { color: var(--accent); }
+  @media (max-width: 760px) { #homeM { display: block !important; margin-bottom: 8px; } }
 </style>
 </head>
 <body>
-<aside id="side"><h1><a href="#" style="padding:0">Рисунок в 3D</a></h1><p class="sub">Наш рисунок — задание; 3D собирается из хороших готовых основ и подгоняется под него. Код — Р и номер, картинка — через дефис: «Р1-б».</p></aside>
-<main><select id="menuSel" aria-label="Персонаж"></select><div id="view"></div></main>
+<aside id="side"><a class="home" href="../" style="font-size:13px;color:var(--muted);padding:0 8px 8px;display:block">← На главную</a><h1><a href="#" style="padding:0">Рисунок в 3D</a></h1><p class="sub">Наш рисунок — задание; 3D собирается из хороших готовых основ и подгоняется под него. Код — Р и номер, картинка — через дефис: «Р1-б».</p></aside>
+<main><a class="home" href="../" style="font-size:13px;color:var(--muted);display:none" id="homeM">← На главную</a><select id="menuSel" aria-label="Персонаж"></select><div id="view"></div></main>
 <div id="lb" role="dialog" aria-modal="true"><div class="imgbox"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div>
 <button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
 <script>
@@ -97,6 +98,7 @@ const ITEMS = [
   ['Р6', 'r6-s1-tim'], ['Р7', 'r7-s4-vera'], ['Р8', 'r8-s6-savely'], ['Р9', 'r9-s7-anya'],
   ['Р10', 'r10-s8-tim'], ['Р11', 'r11-s11-savely'], ['Р12', 'r12-s12-anya'],
 ];
+const LABEL = {"Р1": "С3 Аня", "Р2": "С10 Савелий", "Р3": "С9 Тим", "Р4": "С5 Вера", "Р5": "С2 Аня", "Р6": "С1 Тим", "Р7": "С4 Вера", "Р8": "С6 Савелий", "Р9": "С7 Аня", "Р10": "С8 Тим", "Р11": "С11 Савелий", "Р12": "С12 Аня"};
 const letters = 'абвгдежзиклмнопрстуфхцчшэюя';
 const side = document.getElementById('side'), view = document.getElementById('view'), sel = document.getElementById('menuSel');
 const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
@@ -111,9 +113,9 @@ async function load() {
   const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Обзор'; sel.appendChild(o0);
   for (const it of all) {
     const a = document.createElement('a'); a.href = '#' + it.id; a.dataset.id = it.id;
-    a.innerHTML = `<span class="n">${it.id}</span><span>${esc(it.name)}</span><span class="dot ${it.status || ''}" title="${esc(it.statusText)}"></span>`;
+    a.innerHTML = `<span class="n">${it.id}</span><span>${LABEL[it.id] ? '(' + LABEL[it.id] + ') ' : ''}${esc(it.name)}</span><span class="dot ${it.status || ''}" title="${esc(it.statusText)}"></span>`;
     side.appendChild(a);
-    const o = document.createElement('option'); o.value = it.id; o.textContent = it.id + '. ' + it.name; sel.appendChild(o);
+    const o = document.createElement('option'); o.value = it.id; o.textContent = it.id + (LABEL[it.id] ? ' (' + LABEL[it.id] + ')' : '') + '. ' + it.name; sel.appendChild(o);
   }
   sel.onchange = () => { location.hash = sel.value ? '#' + sel.value : '#'; };
   addEventListener('hashchange', () => show(decodeURIComponent(location.hash.slice(1))));

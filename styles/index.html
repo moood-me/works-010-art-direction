@@ -83,11 +83,12 @@
   .blk > h3 { font-size: 18px; margin: 0 0 6px; }
   .blk ul { margin: 4px 0 12px; padding-left: 20px; max-width: 900px; } .blk li { margin: 3px 0; }
   .refs a { color: var(--accent); }
+  @media (max-width: 760px) { #homeM { display: block !important; margin-bottom: 8px; } }
 </style>
 </head>
 <body>
-<aside id="side"><h1><a href="#" style="padding:0">Стили персонажей</a></h1><p class="sub">Стиль из настоящей работы: образцы, правила, и наши рисунки по этим правилам. Код — С и номер, картинка — через дефис: «С1-б».</p></aside>
-<main><select id="menuSel" aria-label="Стиль"></select><div id="view"></div></main>
+<aside id="side"><a class="home" href="../" style="font-size:13px;color:var(--muted);padding:0 8px 8px;display:block">← На главную</a><h1><a href="#" style="padding:0">Стили персонажей</a></h1><p class="sub">Стиль из настоящей работы: образцы, правила, и наши рисунки по этим правилам. Код — С и номер, картинка — через дефис: «С1-б».</p></aside>
+<main><a class="home" href="../" style="font-size:13px;color:var(--muted);display:none" id="homeM">← На главную</a><select id="menuSel" aria-label="Стиль"></select><div id="view"></div></main>
 <div id="lb" role="dialog" aria-modal="true"><div class="imgbox"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div>
 <button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
 <script>
