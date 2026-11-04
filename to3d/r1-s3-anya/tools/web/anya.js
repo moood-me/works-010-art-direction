@@ -13,7 +13,7 @@ import { normalsOf } from '../../../../engine/src/skin.js';
 import { qAxisAngle, qBetween, getQ, getV, normalize, sub } from '../../../../engine/src/math.js';
 
 const q = new URLSearchParams(location.search);
-const packUrl = new URL(q.get('pack'), location.href);
+const packUrl = new URL(q.get('pack') || '../../data/anya.json', location.href);
 const E = await createEngine({ root: new URL('../../../../engine/', import.meta.url) });
 const { header: H, arrays: a } = await loadPack(packUrl.href);
 const sk = E.skeleton;
@@ -65,6 +65,7 @@ const U = {
   thr: { value: Number(q.get('thr') ?? -0.18) },
   face: { value: await texture('dream') },
   width: { value: Number(q.get('line') ?? 0.0028) },
+  paint: { value: 1 }, clay: { value: 0 },
   R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) },
 };
 const toon = new THREE.ShaderMaterial({
@@ -72,18 +73,19 @@ const toon = new THREE.ShaderMaterial({
   vertexShader: `
     attribute vec3 col; attribute vec3 shd; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two;
     uniform mat3 R[${sk.J}];
-    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo;
-    void main() { vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
+    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw;
+    void main() { vPw = pw; vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: `
-    uniform vec3 L; uniform float thr; uniform sampler2D face;
-    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo;
+    uniform vec3 L; uniform float thr; uniform sampler2D face; uniform float paint; uniform float clay;
+    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw;
     void main() {
       if (!gl_FrontFacing) { if (vTwo < 0.5) discard; gl_FragColor = vec4(vShd * 0.92, 1.0); return; }
       float d = dot(normalize(vN), L);
-      float lit = smoothstep(thr - 0.015, thr + 0.015, d);
+      float th = thr - 0.22 * vPw; float lit = smoothstep(th - 0.015, th + 0.015, d);
       vec3 c = mix(vShd, vCol, lit);
-      if (vTex > 0.5) { vec4 t = texture2D(face, vUv); c = mix(c, t.rgb, t.a); }
+      if (clay > 0.5) c = vec3(0.86, 0.84, 0.8) * (0.55 + 0.45 * max(d, 0.0)) + 0.08;
+      if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv); c = mix(c, t.rgb, t.a); }
       gl_FragColor = vec4(c, 1.0);
     }`,
   side: THREE.DoubleSide,
@@ -170,6 +172,14 @@ window.A = {
     if (o.bg) scene.background = new THREE.Color(o.bg);
     if (o.floor !== undefined) { floor.visible = !!o.floor; if (o.floor) floor.material.color.set(o.floor); }
     if (o.shadow !== undefined) shadow.visible = o.shadow;
+    if (o.show !== undefined) {           // only these pieces (names from the pack's header), or all
+      const all = a.triangles; let idx = all;
+      if (o.show) { const parts = []; for (const n of o.show) { const [s0, s1] = H.trianglePieces[n]; parts.push(all.subarray(s0 * 3, s1 * 3)); }
+        idx = new Uint32Array(parts.reduce((k, p) => k + p.length, 0)); let k = 0; for (const p of parts) { idx.set(p, k); k += p.length; } }
+      g.setIndex(new THREE.BufferAttribute(idx, 1));
+    }
+    if (o.paint !== undefined) U.paint.value = o.paint ? 1 : 0;
+    if (o.flat !== undefined) U.clay.value = o.flat ? 1 : 0;
     frame();
   },
   frames: () => clip ? clip.frames : 0,
@@ -198,3 +208,22 @@ window.A = {
 await window.A.set({});
 window.A.render();
 window.__ready = true;
+
+// ---------------------------------------------------------------- by hand (when no picture script drives the page)
+if (!q.has('pack')) {
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;font:14px system-ui;z-index:2';
+  const btn = (label, f) => { const b = document.createElement('button'); b.textContent = label; b.style.cssText = 'padding:4px 12px;border-radius:999px;border:1px solid #cbbfae;background:#fffdf9;cursor:pointer'; b.onclick = f; bar.appendChild(b); return b; };
+  let walking = false, t0 = performance.now();
+  btn('стоит', () => { walking = false; window.A.set({ clip: null, cam: { mode: 'ortho', follow: false, cy: 0.84, h: 1.85 } }); });
+  btn('идёт (Kimodo)', async () => { walking = true; t0 = performance.now(); await window.A.set({ clip: 'walk', cam: { mode: 'persp', dist: 6, fov: 22, cy: 0.82, follow: true } }); });
+  for (const [e, l] of [['dream', 'мечтает'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']]) btn(l, () => window.A.set({ expr: e }));
+  document.body.appendChild(bar);
+  let drag = null; const cam = S.cam;
+  canvas.onpointerdown = e => { drag = [e.clientX, e.clientY, cam.yaw, cam.pitch]; };
+  window.onpointerup = () => { drag = null; };
+  window.onpointermove = e => { if (drag) { cam.yaw = drag[2] - (e.clientX - drag[0]) * 0.01; cam.pitch = Math.max(-0.4, Math.min(0.8, drag[3] + (e.clientY - drag[1]) * 0.005)); } };
+  await window.A.set({ cam: { h: 1.85, cy: 0.84 } });
+  const loop = async () => { if (walking) await window.A.set({ t: ((performance.now() - t0) / 1000 * 30) % (window.A.frames() - 1) }); window.A.render(); requestAnimationFrame(loop); };
+  loop();
+}

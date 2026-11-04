@@ -1,0 +1,201 @@
+{
+ "format": "r1/character",
+ "version": 1,
+ "id": "anya-s3",
+ "label": {
+  "ru": "Аня, графичный стиль"
+ },
+ "faces": ".",
+ "skinning": "cor",
+ "source": "Anny moood-woman (engine) + Human Base Meshes stylised head (CC0) + shells from the drawing",
+ "pieces": {
+  "body": [
+   0,
+   6346
+  ],
+  "head": [
+   6346,
+   12068
+  ],
+  "dress": [
+   12068,
+   21140
+  ],
+  "collar": [
+   21140,
+   21500
+  ],
+  "cardigan": [
+   21500,
+   25468
+  ],
+  "sleeveLeft": [
+   25468,
+   26212
+  ],
+  "sleeveRight": [
+   26212,
+   26956
+  ],
+  "hair": [
+   26956,
+   43456
+  ]
+ },
+ "trianglePieces": {
+  "body": [
+   0,
+   11506
+  ],
+  "head": [
+   11506,
+   22938
+  ],
+  "dress": [
+   22938,
+   40938
+  ],
+  "collar": [
+   40938,
+   41538
+  ],
+  "cardigan": [
+   41538,
+   49224
+  ],
+  "sleeveLeft": [
+   49224,
+   50664
+  ],
+  "sleeveRight": [
+   50664,
+   52104
+  ],
+  "hair": [
+   52104,
+   84586
+  ]
+ },
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    130368
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    253758
+   ],
+   "offset": 521472
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    43456,
+    4
+   ],
+   "offset": 1536504
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    43456,
+    4
+   ],
+   "offset": 1710328
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    231
+   ],
+   "offset": 2405624
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    308
+   ],
+   "offset": 2406552
+  },
+  "col": {
+   "dtype": "uint8",
+   "shape": [
+    43456,
+    3
+   ],
+   "offset": 2407784
+  },
+  "shd": {
+   "dtype": "uint8",
+   "shape": [
+    43456,
+    3
+   ],
+   "offset": 2538152
+  },
+  "lin": {
+   "dtype": "uint8",
+   "shape": [
+    43456,
+    3
+   ],
+   "offset": 2668520
+  },
+  "ow": {
+   "dtype": "uint8",
+   "shape": [
+    43456
+   ],
+   "offset": 2798888
+  },
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    43456,
+    2
+   ],
+   "offset": 2842344
+  },
+  "tex": {
+   "dtype": "uint8",
+   "shape": [
+    43456
+   ],
+   "offset": 3189992
+  },
+  "pn": {
+   "dtype": "float32",
+   "shape": [
+    43456,
+    3
+   ],
+   "offset": 3233448
+  },
+  "pw": {
+   "dtype": "uint8",
+   "shape": [
+    43456
+   ],
+   "offset": 3754920
+  },
+  "pj": {
+   "dtype": "float32",
+   "shape": [
+    43456
+   ],
+   "offset": 3798376
+  },
+  "two": {
+   "dtype": "uint8",
+   "shape": [
+    43456
+   ],
+   "offset": 3972200
+  }
+ },
+ "bin": "anya.bin"
+}

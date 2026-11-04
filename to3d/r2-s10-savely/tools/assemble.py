@@ -54,7 +54,11 @@ if WITH_BODY:
     F = np.asarray(hf['f'])
     low = np.asarray(hf['low'])
     keepf = ~low[np.maximum(F, 0)].any(1)
-    add('head', hf['v'], F[keepf], col['skin'], subsurf=1)
+    F = F[keepf]
+    # the inside of the mouth dark (it shows when the jaw opens)
+    mi = np.asarray(hf['mouth_in'])
+    fc = mi[np.maximum(F, 0)].sum(1) >= 3
+    add('head', hf['v'], F, col['skin'], subsurf=1, colours=[col['skin'], '#4a1a14'], fc=fc.astype(int))
 else:
     add('head', hf['v'], hf['f'], col['skin'], subsurf=1)
 for s in 'LR':

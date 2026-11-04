@@ -98,7 +98,7 @@ def mesh_obj(name, V, F, colour, lined=True, smooth=True, solidify=0.0, coll=Non
 
 
 for ob in meta['objects']:
-    if ob.get('baked') and not job.get('frames'):
+    if ob.get('baked') and (not job.get('frames') or job.get('still_marks')):
         continue                 # marks baked for moving pictures; a still draws them at its own line width
     V, F = SC['obj_' + ob['name'] + '_v'], SC['obj_' + ob['name'] + '_f']
     o = mesh_obj(ob['name'], V, F, job.get('debug_colours', {}).get(ob['name'], ob['colour']), ob.get('line', True), ob.get('smooth', True), ob.get('solidify', 0))
@@ -265,12 +265,12 @@ else:
     N, nf = fj['N'], fj['frames']
     data = np.memmap(job['frames'], np.float32, 'r', shape=(nf, N, 3))
     a, b = job.get('frame_range', [0, nf])
-    for v in job['views']:
-        for fi in range(a, min(b, nf)):
+    for vi, v in enumerate(job['views']):
+        for fi in ([vi] if job.get('pair') else range(a, min(b, nf))):
             P = np.array(data[fi], float)
             D = np.stack([P[:, 0] / K, FLOOR - P[:, 1] / K, P[:, 2] / K], 1)     # back to the drawing's units
             for name, o in OBJ.items():
-                if name not in offs:
+                if name not in offs or o.name not in bpy.data.objects:
                     continue
                 i0, i1 = offs[name]
                 o.data.vertices.foreach_set('co', to_b(D[i0:i1]).astype(np.float32).ravel())
@@ -282,5 +282,7 @@ else:
                 hp = R @ np.array([hx / K, 0.0, hz / K])
                 vv['cx'] = v['cx'] - hp[0] * v['s']
             set_view(vv)
+            if job.get('still_marks'):       # the head at rest: the drawing's marks at this picture's line width
+                build_marks(v.get('expr', job.get('marks_expr', 'calm')), v.get('lw', 2.2) / v['s'], v.get('yaw', 0))
             sc.render.filepath = os.path.join(job['out'], f"{v['name']}_{fi:04d}.png")
             bpy.ops.render.render(write_still=True)

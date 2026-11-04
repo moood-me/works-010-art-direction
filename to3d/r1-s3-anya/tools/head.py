@@ -135,6 +135,14 @@ def fit(v, ears_mask, extra=()):
         A, B = np.interp(y, bins, zb_t), np.interp(y, bins, zf_t)
         z = A + (V[:, 2] - a) / (b - a) * (B - A)
         out.append(np.c_[x, (D.FLOOR - y) * D.K, z])
+    # the lower face fuller and flatter in front (the drawing's face is one round plane; the base has a muzzle):
+    # where it lies behind an arc through the lips' front, it comes forward toward it
+    V = out[0]; y = np.interp(v[:, 1], Y_BASE, Y_DRAW)
+    zf = np.interp(y, bins, zf_t)
+    wy = smooth01((y - 10) / 30) * (1 - smooth01((y - 104) / 14))
+    arc = zf - V[:, 0] ** 2 / (2 * 0.085) - 0.004
+    push = np.clip(arc - V[:, 2], 0, None) * wy * (V[:, 2] > 0.0) * np.exp(-(V[:, 0] / 0.075) ** 4)
+    V[:, 2] += 0.85 * push
     # the ears smaller and closer to the head (under the hair; the drawing shows only a bit of one in profile)
     e = ears_mask
     c = out[0][e].mean(0) * [0, 1, 1]
@@ -143,6 +151,10 @@ def fit(v, ears_mask, extra=()):
         root = np.array([s_ * 0.075, c[1], c[2]])
         out[0][m] = root + (out[0][m] - root) * [0.4, 0.7, 0.7]
     return out
+
+
+def smooth01(t):
+    t = np.clip(t, 0, 1); return t * t * (3 - 2 * t)
 
 
 def _fillnan(a):

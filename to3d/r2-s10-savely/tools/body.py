@@ -166,11 +166,23 @@ OBJ = []
 tree_body = cKDTree(np.where(used[:, None], X1, 1e6))
 
 
-def weights_nearest(P, mask=None):
-    src = X1 if mask is None else np.where(mask[:, None], X1, 1e6)
-    t = tree_body if mask is None else cKDTree(src)
-    _, j = t.query(P)
-    return SJ[j], SW[j]
+def weights_nearest(P, mask=None, k=24, sigma=12.0):
+    """Skin weights for a garment point: Anny's weights of the nearby body vertices blended by distance (a smooth
+    field: neighbouring points of a shell move alike), the four largest kept."""
+    m = used if mask is None else (mask & used)
+    idx = np.nonzero(m)[0]
+    t = cKDTree(X1[idx])
+    dist, j = t.query(P, k)
+    j = idx[j]
+    g = np.exp(-((dist - dist[:, :1]) / sigma) ** 2)
+    acc = np.zeros((len(P), len(NAMES)))
+    for c in range(k):
+        for q in range(4):
+            np.add.at(acc, (np.arange(len(P)), SJ[j[:, c], q]), g[:, c] * SW[j[:, c], q])
+    top = np.argsort(-acc, 1)[:, :4]
+    w = np.take_along_axis(acc, top, 1)
+    w /= w.sum(1, keepdims=True)
+    return top, w
 
 
 def weights_joint(P, name):
@@ -208,10 +220,11 @@ anny_region(hands | (wrist & (part('Lhand', 'Rhand') > 0.15)), 0.0, 'hands', SKI
 # sleeves: over the arms, from inside the vest down to the wrist
 arm = (part('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lclavicle', 'Rclavicle') > 0.5) & used
 arm &= (part('Lhand', 'Rhand') < 0.15)
-anny_region(arm, 5.0, 'sleeves', COL['shirt'])
 
 # trouser legs: Anny's thighs and shins on a straight, loose tube (the drawing's radii 60 → 42)
-leg = (part('Lthigh', 'Rthigh', 'Lshin', 'Rshin') > 0.5) & used & (X1[:, 1] < FLOOR - 40)
+leg = (part('Lthigh', 'Rthigh', 'Lshin', 'Rshin') > 0.5) & used & (X1[:, 1] < FLOOR - 22)
+# the seat and crotch: the pelvis below the trouser top's shell, so the trousers close between the legs
+seat = (part('pelvis') > 0.4) & used & (X1[:, 1] > 500)
 
 
 def loosen(V):
@@ -231,7 +244,7 @@ def loosen(V):
     return out
 
 
-anny_region(leg, 3.0, 'trouserlegs', COL['trousers'], extra=loosen)
+anny_region(leg | seat, 3.0, 'trouserlegs', COL['trousers'], extra=loosen)
 
 # ------------------------------------------------------------------ the drawing's own garments
 la, ra = J1[IDX['LeftArm']], J1[IDX['RightArm']]
@@ -267,10 +280,23 @@ def vest_margin(X, Y, Z, U, V):
     t = np.clip((300 - Y) / (300 - 140), 0, 1)
     vee = d - 26 * t
     hem = 452 + np.clip(30 - d, 0, 30) * 0.9 - Y       # the hem comes down to two points at the front
-    return np.minimum(np.minimum(vee, arm_hole(X, Y, Z, 40)), hem)
+    return np.minimum(np.minimum(vee, arm_hole(X, Y, Z, 33)), hem)
 
 
-Vv, Fv = shell_mesh(VEST, 140, 480, vest_margin, nu=160, nv=80)
+Vv, Fv = shell_mesh(VEST, 122, 480, vest_margin, nu=160, nv=84)
+
+
+def tuck(V):
+    """The sleeve's top kept under the vest where the vest covers it, so it comes out of the arm hole (whose edge
+    the line draws) instead of through the cloth."""
+    m = np.ones(len(V), bool)
+    r, zm = rho(VEST, V[:, 0], V[:, 1], V[:, 2])
+    hole = arm_hole(V[:, 0], V[:, 1], V[:, 2], 33)
+    sel = (hole > -6) & (r > 0.9) & (r < 1.2) & (V[:, 1] < 452)
+    return keep_inside(V, VEST, 0.96, sel)
+
+
+anny_region(arm, 2.5, 'sleeves', COL['shirt'], extra=tuck)
 sj, sw = weights_nearest(Vv, trunk)
 add('vest', Vv, Fv, COL['vest'], sj, sw)
 vest_shell = H.Shell(VEST)
@@ -282,15 +308,15 @@ add('shirt', Vs, Fs, COL['shirt'], sj, sw)
 shirt_shell = H.Shell(inset(TORSO, 6))
 
 # trouser top: the hips shell
-Vh, Fh = shell_mesh(HIPS, 400, 540, None, nu=120, nv=24)
+Vh, Fh = shell_mesh(HIPS, 420, 540, None, nu=120, nv=24)
 sj, sw = weights_nearest(Vh, trunk | leg)
 add('trousers', Vh, Fh, COL['trousers'], sj, sw)
 
 # shoes: the drawing's blobs (30, 24, 60), set on each foot along it
 for s, side in ((1, 'Left'), (-1, 'Right')):
     f, t = J1[IDX[side + 'Foot']], J1[IDX[side + 'ToeEnd']]
-    c = np.array([(f[0] + t[0]) / 2, FLOOR - 24, (f[2] + t[2]) / 2 + 4])
-    Ve, Fe = M.ellipsoid(c, (30, 24, 62), nu=36, nv=18)
+    c = np.array([(f[0] + t[0]) / 2, FLOOR - 26, (f[2] + t[2]) / 2 + 10])
+    Ve, Fe = M.ellipsoid(c, (36, 28, 74), nu=36, nv=18)
     Ve[:, 1] = np.minimum(Ve[:, 1], FLOOR)                   # a flat sole on the floor
     footm = (part(('L' if s > 0 else 'R') + 'foot') > 0.5) & used
     sj, sw = weights_nearest(Ve, footm)
@@ -345,7 +371,7 @@ json.dump([dict(pts=(p + np.array([0, 0, 1.0]) * 0).tolist(), w=w) for p, w, _ i
           open(os.path.join(C, 'body_lines.json'), 'w'))
 
 names = [o['name'] for o in OBJ]
-arr = {'names': np.array(names), 'joints': J1, 'joints0': J0}
+arr = {'names': np.array(names), 'joints': J1, 'joints0': J0, 'anny_raw': X0, 'anny_fit': X1, 'anny_tri': TRI[used[TRI].all(1)]}
 for o in OBJ:
     arr[o['name'] + '_v'] = o['v']
     arr[o['name'] + '_f'] = o['f']

@@ -19,6 +19,7 @@ def build(ctx):
     hv, ht = ctx['head']
     hn = M.vertex_normals(hv, ht)
     hyd, hxd = D.FLOOR - hv[:, 1] / K, hv[:, 0] / K
+    hyd[np.setdiff1d(np.arange(len(hv)), np.unique(ht))] = 1e9
     ys = np.arange(-142, 262, 2.0)
     back = _span(anya.BACK_F, ys)[:, 1]
     curt = _span(anya.CURT_F, ys)
@@ -28,14 +29,15 @@ def build(ctx):
     zf_top = np.nan_to_num(side[:, 1], nan=40)
     # the face's window: the curtains' inner edge (a little wider, so more face shows as in the profile)
     inner = np.where(np.isnan(curt[:, 1]), 0, -curt[:, 1])        # CURT_F is the image-left curtain: its inner edge is x<0
-    w_t = np.where(ys < -112, 0, np.clip(inner, 0, None) + 5)
+    w_t = np.where(ys < -112, 0, np.clip(inner, 0, None) + 5 + 7 * smooth((ys + 100) / 40))
     w_t = np.where(ys > 236, np.nan, w_t)
     w_t = np.interp(ys, ys[~np.isnan(w_t)], w_t[~np.isnan(w_t)])
     # where the window's edge lies: on the face (its front at that width), below the chin by the neck
     ze = np.zeros_like(ys)
     for i, (y, w) in enumerate(zip(ys, w_t)):
         m = (abs(hyd - y) < 6) & (abs(abs(hxd) - w) < 8)
-        ze[i] = hv[m, 2].max() / K + 6 if m.sum() else np.nan
+        ze[i] = hv[m, 2].max() / K + 9 if m.sum() else np.nan
+    # half way back toward where the profile's hair begins (the profile shows more cheek than the front's curtains)
     ze = np.where(ys > 100, np.interp(ys, [100, 180, 262], [30, 6, 0]), ze)
     ok = ~np.isnan(ze); ze = np.interp(ys, ys[ok], ze[ok])
     zc_t = np.interp(ys, [-142, -100, 90, 160, 262], [10, -8, -8, -40, -46])
@@ -49,7 +51,7 @@ def build(ctx):
         zc = g(zc_t)
         return k * g(a_t), zc, zc - k * (zc - g(zb_t)), g(w_t), g(ze), zc + k * (g(zf_top) - zc)
 
-    rows, cols = 90, 80
+    rows, cols = 150, 110
     V = np.zeros((rows, cols, 3)); TH = np.zeros((rows, cols))
     for r in range(rows):
         v = r / (rows - 1)
@@ -80,12 +82,13 @@ def build(ctx):
             T += [[a0, b0, a1], [a1, b0, b1]]
     T = np.array(T)
     # out of the head
-    tree = cKDTree(hv)
+    used = np.unique(ht); hv_u, hn_u = hv[used], hn[used]
+    tree = cKDTree(hv_u)
     for _ in range(3):
         dd, ii = tree.query(V)
-        s = ((V - hv[ii]) * hn[ii]).sum(1)
-        m = s < 0.006
-        V[m] += hn[ii[m]] * (0.006 - s[m])[:, None]
+        s = ((V - hv_u[ii]) * hn_u[ii]).sum(1)
+        m = s < 0.009
+        V[m] += hn_u[ii[m]] * (0.009 - s[m])[:, None]
     # out of the clothes (their rings, as ellipses), below the chin
     def push(rows_, margin):
         r_ = np.array(rows_); o = np.argsort(r_[:, 0]); r_ = r_[o]
@@ -110,4 +113,7 @@ def build(ctx):
     curve = -128 + 0.40 * abs(xd)
     hi = (yd > curve - 1) & (yd < curve + 9) & (abs(xd) > 5) & (abs(xd) < 74) & (V[:, 2] > 0)
     col[hi] = C['hairH']
-    return dict(V=V, T=T, W=W, col=col, shd=shd, lin=lin)
+    # the shade follows a smoothed form of the hair: big clean shapes, not every ripple of the shell
+    Vs = M.smooth(V, A, np.ones(n, bool), iters=40, lam=0.5)
+    pn = M.vertex_normals(Vs, T)
+    return dict(V=V, T=T, W=W, col=col, shd=shd, lin=lin, pn=pn, pw=np.ones(n))

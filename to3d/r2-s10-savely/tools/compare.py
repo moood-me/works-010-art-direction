@@ -15,8 +15,9 @@ labels = opts['labels'].split(',') if 'labels' in opts else None
 cw, ch = boxes[0][2], boxes[0][3]
 pad = 6
 top = 30 if labels else 0
-W = len(boxes) * (cw + pad) + pad
-H = top + len(rows) * (ch + pad) + pad
+ROW = opts.get('layout') == 'row'          # one row: each box's drawing, render, overlay side by side
+W = len(boxes) * (cw + pad) + pad if not ROW else len(boxes) * len(rows) * (cw + pad) + pad
+H = top + len(rows) * (ch + pad) + pad if not ROW else top + ch + 2 * pad
 sheet = Image.new('RGB', (W, H), '#f4ecd8')
 dr = ImageDraw.Draw(sheet)
 try:
@@ -27,11 +28,12 @@ for i, (b, r) in enumerate(zip(boxes, renders)):
     x0, y0, w, h = b
     crop = drawing.crop((x0, y0, x0 + w, y0 + h))
     r = r.resize((w, h))
-    x = pad + i * (cw + pad)
+    x0 = pad + i * (cw + pad) * (len(rows) if ROW else 1)
     if labels:
-        dr.text((x + 4, 6), labels[i], fill='#1b1714', font=font)
+        dr.text((x0 + 4, 6), labels[i], fill='#1b1714', font=font)
     for j, kind in enumerate(rows):
-        y = top + pad + j * (ch + pad)
+        x = x0 + j * (cw + pad) if ROW else x0
+        y = top + pad if ROW else top + pad + j * (ch + pad)
         if kind == 'draw':
             sheet.paste(crop, (x, y))
         elif kind == 'render':
@@ -40,7 +42,7 @@ for i, (b, r) in enumerate(zip(boxes, renders)):
             a = np.asarray(crop, float)
             g = a.mean(2, keepdims=True)
             base = 255 - (255 - g) * 0.45                     # the drawing faded to grey
-            ink = np.asarray(r, float).mean(2) < 70           # the render's ink lines
+            ink = np.linalg.norm(np.asarray(r, float) - [27, 23, 20], axis=2) < 45   # the render's ink lines
             o = np.repeat(base, 3, 2)
             o[ink] = [215, 40, 30]
             sheet.paste(Image.fromarray(o.astype(np.uint8)), (x, y))

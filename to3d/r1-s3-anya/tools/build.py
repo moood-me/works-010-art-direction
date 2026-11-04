@@ -63,11 +63,11 @@ for s, sg in (('Left', 1), ('Right', -1)):
     for n, k in (('ForeArm', 0.92), ('Hand', 0.92)):
         j = I[s + n]; J1[j] = J1[PARENT[j]] + k * (J0[j] - J0[PARENT[j]])
     for j in under(I[s + 'Hand'])[1:]:
-        J1[j] = J1[PARENT[j]] + 0.95 * (J0[j] - J0[PARENT[j]])
-    for n, x in (('Leg', 0.098), ('Shin', 0.09), ('Foot', 0.105)):
+        J1[j] = J1[PARENT[j]] + 0.84 * (J0[j] - J0[PARENT[j]])
+    for n, x in (('Leg', 0.088), ('Shin', 0.07), ('Foot', 0.078)):
         J1[I[s + n], 0] = sg * x
-    for n in ('ToeBase', 'ToeEnd'):
-        J1[I[s + n], 0] = J0[I[s + n], 0] + (J1[I[s + 'Foot'], 0] - J0[I[s + 'Foot'], 0])
+    for n in ('ToeBase', 'ToeEnd'):        # a shorter foot: a small shoe as drawn
+        j = I[s + n]; J1[j] = J1[PARENT[j]] + 0.82 * (J0[j] - J0[PARENT[j]])
 
 
 def joint_affine(j):
@@ -79,8 +79,8 @@ def joint_affine(j):
         d = J0[c] - J0[j]; d /= np.linalg.norm(d)
         r = 0.74 if n.endswith('Shin') else 0.85
         A = r * np.eye(3) + (1 - r) * np.outer(d, d)
-    elif 'Foot' in n or 'Toe' in n: A = 0.92 * np.eye(3)
-    elif 'Hand' in n: A = 0.95 * np.eye(3)
+    elif 'Foot' in n or 'Toe' in n: A = np.diag([0.9, 0.9, 0.8])
+    elif 'Hand' in n: A = 0.84 * np.eye(3)
     return A
 
 
@@ -104,7 +104,7 @@ fore = np.array([n.endswith('ForeArm') for n in dn])
 legs = np.array([('Shin' in n or 'Foot' in n or 'Toe' in n or n.endswith('Leg')) for n in dn])
 near_wrist = np.zeros(len(P0), bool)
 for s in ('Left', 'Right'): near_wrist |= np.linalg.norm(P0 - J0[I[s + 'Hand']], axis=1) < 0.06
-keep = hand | (fore & near_wrist) | (legs & (P0[:, 1] < 0.36))
+keep = hand | (fore & near_wrist) | (legs & (P0[:, 1] < 0.33))
 tk = keep[TRI0].all(1)
 bi = np.where(keep)[0]; remap = -np.ones(len(P0), int); remap[bi] = np.arange(len(bi))
 B = dict(V=PF[bi], T=remap[TRI0[tk]], SJ=SJ0[bi], SW=SW0[bi])
@@ -157,7 +157,7 @@ Hh['tex'] = ((V0[:, 2] > -0.03) & (yd < 125)).astype(np.uint8)
 ow = np.ones(nH)
 for cx, cy, rx, ry in REG:
     e = np.sqrt(((xd - cx) / rx) ** 2 + ((yd - cy) / ry) ** 2)
-    ow = np.minimum(ow, smooth((e - 1.0) / 0.4))
+    ow = np.minimum(ow, smooth((e - 1.3) / 0.3))
 ow[nh:] = 0
 Hh['ow'] = ow
 Hh['pn'] = pn; Hh['pw'] = (1 - smooth((yd - 95) / 30))      # the face plain; the neck shaded by its own form
@@ -245,15 +245,15 @@ Cc = dict(V=CV, T=CT, col=np.tile(C['sock'], (nc, 1)), shd=np.tile(rgb('#e8dccb'
 # the cardigan: a shell over the dress, open in front, its yoke round the neck; sleeves along the arms
 krows, kgap = [], []
 gapf = lambda yy: np.interp(yy, [188, 222, 360, 520, 656], [50, 22, 46, 50, 48])
-for tt in np.linspace(1, 0, 9)[:-1]:          # yoke: neck ring → shoulder ring
-    yv = 188 + 62 * (1 - tt) ** 2
-    a_ = 112 * (1 - tt) + 36 * tt
+for tt in np.linspace(1, 0, 12)[:-1]:         # yoke: neck ring → shoulder ring, a round shoulder
+    yv = 186 + 64 * (1 - tt) ** 2.2
+    a_ = 118 * (1 - tt) ** 0.8 + 36 * (1 - (1 - tt) ** 0.8)
     zf = 62 * (1 - tt) + 36 * tt; zb = -82 * (1 - tt) - 44 * tt
     krows.append((y3(yv), u(a_), u((zf + zb) / 2), u((zf - zb) / 2), u((zf - zb) / 2)))
     kgap.append(np.arcsin(min(gapf(yv) / a_, np.sin(np.radians(78)))))
 for yy in np.arange(250, 657, 8.0):
     da, dzc, ddf, ddb = dims_at(drows, y3(yy))
-    a_ = max(u(112), da + 0.009)
+    a_ = max(u(np.interp(yy, [250, 400, 656], [118, 113, 112])), da + 0.009)
     zf = max(u(62), dzc + ddf + 0.009); zb = min(u(-82), dzc - ddb - 0.009)
     krows.append((y3(yy), a_, (zf + zb) / 2, (zf - zb) / 2, (zf - zb) / 2))
     kgap.append(np.arcsin(min(gapf(yy) / (a_ / K), 0.97)))
@@ -287,9 +287,9 @@ SL = []
 for s in ('Left', 'Right'):
     A_, E_, W_ = J1[I[s + 'Arm']], J1[I[s + 'ForeArm']], J1[I[s + 'Hand']]
     d1 = (E_ - A_) / np.linalg.norm(E_ - A_); d2 = (W_ - E_) / np.linalg.norm(W_ - E_)
-    path = catmull([A_ - d1 * 0.045, (A_ + E_) / 2, E_, W_ + d2 * 0.01], 10)
+    path = catmull([A_ - d1 * 0.02, (A_ + E_) / 2, E_, W_ + d2 * 0.01], 10)
     L = np.r_[0, np.cumsum(np.linalg.norm(np.diff(path, axis=0), axis=1))]; L /= L[-1]
-    radii = np.interp(L, [0, 0.12, 0.5, 0.9, 1.0], [0.036, 0.041, 0.037, 0.034, 0.036])
+    radii = np.interp(L, [0, 0.12, 0.5, 0.9, 1.0], [0.030, 0.038, 0.036, 0.034, 0.036])
     V_, T_ = tube(path, radii)
     SL.append(dict(V=V_, T=T_, col=np.tile(C['knit'], (len(V_), 1)), shd=np.tile(C['knitS'], (len(V_), 1)),
                    lin=np.tile(C['knitL'], (len(V_), 1)), side=s))
@@ -310,7 +310,7 @@ def transfer(V, k=6):
 
 def skirt_rule(V):
     yd_ = ydr(V[:, 1]); W = np.zeros((len(V), NJ))
-    L = 0.5 * smooth((yd_ - 640) / 500)
+    L = 0.78 * smooth((yd_ - 600) / 540)
     side = 1 / (1 + np.exp(-V[:, 0] / 0.035))
     W[:, I['LeftLeg']] = L * side; W[:, I['RightLeg']] = L * (1 - side); W[:, I['Hips']] = 1 - L
     return W
@@ -345,13 +345,15 @@ B['W'] = BW
 
 # ---------------------------------------------------------------- the hair (hair.py)
 import hair as HR  # noqa: E402
-Hr = HR.build(dict(head=(V0[:nh], M.triangulate(hP)), dress=drows, card=krows, C=C, J1=J1, I=I, NJ=NJ))
+earm = Hd.ears(hv)
+hP_ne = [p for p in hP if not earm[p].any()]
+Hr = HR.build(dict(head=(V0[:nh], M.triangulate(hP_ne)), dress=drows, card=krows, C=C, J1=J1, I=I, NJ=NJ))
 
 # ---------------------------------------------------------------- one pack
 pieces = [('body', B), ('head', Hh), ('dress', Dd), ('collar', Cc), ('cardigan', Kc)] + \
          [('sleeve' + S_['side'], S_) for S_ in SL] + [('hair', Hr)]
 Vs, Ts, Ws, cols, shds, lins, ows, uvs, texs, pns, pws, two = [], [], [], [], [], [], [], [], [], [], [], []
-base = 0; ranges = {}
+base = 0; ranges = {}; tbase = 0; tranges = {}
 for name, p in pieces:
     n = len(p['V'])
     Vs.append(p['V']); Ts.append(p['T'] + base); Ws.append(p['W'])
@@ -359,7 +361,7 @@ for name, p in pieces:
     ows.append(p.get('ow', np.ones(n))); uvs.append(p.get('uv', np.zeros((n, 2))))
     texs.append(p.get('tex', np.zeros(n))); pns.append(p.get('pn', np.zeros((n, 3)))); pws.append(p.get('pw', np.zeros(n)))
     two.append(np.full(n, 1 if name in ('cardigan', 'hair', 'dress', 'collar') or name.startswith('sleeve') else 0))
-    ranges[name] = [base, base + n]; base += n
+    ranges[name] = [base, base + n]; tranges[name] = [tbase, tbase + len(p['T'])]; base += n; tbase += len(p['T'])
 V = np.vstack(Vs); W = np.vstack(Ws); N = len(V)
 W = np.maximum(W, 0)
 order = np.argsort(-W, 1)[:, :4]
@@ -368,7 +370,7 @@ pj = SJ[:, 0].astype(np.float32)
 pack.save(os.path.join(OUT, 'anya.json'),
           dict(format='r1/character', version=1, id='anya-s3', label={'ru': 'Аня, графичный стиль'}, faces='.', skinning='cor',
                source='Anny moood-woman (engine) + Human Base Meshes stylised head (CC0) + shells from the drawing',
-               pieces=ranges),
+               pieces=ranges, trianglePieces=tranges),
           dict(positions=V.astype(np.float32).ravel(), triangles=np.vstack(Ts).astype(np.uint32).ravel(),
                skinJoints=SJ, skinWeights=SWt.astype(np.float32), joints=J1.astype(np.float32).ravel(), frames=FR.ravel(),
                col=np.vstack(cols).astype(np.uint8), shd=np.vstack(shds).astype(np.uint8), lin=np.vstack(lins).astype(np.uint8),
