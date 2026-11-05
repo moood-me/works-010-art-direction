@@ -10,7 +10,7 @@
 //   MARGIN from the garment's open edges) still meets its inside — not left bare by cloth ridden up, nor through it;
 // - layers keep their order: skin covered by two garments meets the one worn under first;
 // - tubes go round their bones: each ring of a sleeve or a trouser leg (its points round the limb at rest, a band along
-//   the bone) still winds once round the bone.
+//   the bone) still has its points on every side of the bone.
 //   const L = looker(fig, sim)   (at rest, settled: what each garment covers, its rings)
 //   L.frame() → {deep: [metres of each drawn cloth point inside, deepest first], through, uncovered, swapped, rings}
 //               (the last four shares 0–1 of what they count)
@@ -84,15 +84,15 @@ export function looker(fig, sim) {
       } });
       for (const [v, a, b] of pairs) { const ha = along(gs[a], v), ta = ha && ha.inner ? ha.t : Infinity, hb = along(gs[b], v), tb = hb && hb.inner ? hb.t : Infinity; if (tb < ta - 1e-3 && ta < Infinity) swapped++; }
       // the tubes round their bones
-      let off = 0; for (const r of rings) if (Math.abs(r.winding()) < 0.5) off++;
+      let off = 0; for (const r of rings) if (!r.round()) off++;
       return { deep, through: n ? through / n : 0, uncovered: n ? uncovered / n : 0, swapped: pairs.length >= PAIRS ? swapped / pairs.length : 0, rings: rings.length ? off / rings.length : 0 };
     },
   };
 }
 
 // a tube's rings: its simulated points by the limb under each at rest (its nearest skin point's), each limb's two bones,
-// bands BAND wide along each bone; a band is a ring where its points go round the bone at rest (no gap wider than 60°,
-// winding once) — ordered by their angle round it there
+// bands BAND wide along each bone; a band is a ring where its points go round the bone at rest (no gap wider than 60°);
+// it is round its bone while its points are on every side of it
 function ringsOf(fig, g, limbOf) {
   const sk = fig.rig.skeleton, P = () => fig.pose.P, x = g.x, out = [];
   for (const [limb, names] of Object.entries(BONES)) {
@@ -113,9 +113,11 @@ function ringsOf(fig, g, limbOf) {
         const order = pts.map((i, j) => [ang[j], i]).sort((p, q) => p[0] - q[0]);
         let gap = 0; for (let j = 0; j < order.length; j++) gap = Math.max(gap, (order[(j + 1) % order.length][0] - order[j][0] + 2 * Math.PI) % (2 * Math.PI) || 0);
         if (gap > Math.PI / 3) continue;
-        const ids = order.map(o => o[1]);
-        const winding = () => { let w = 0, prev = angleAt(P(), a, b, t, x, ids[ids.length - 1]); for (const i of ids) { const c = angleAt(P(), a, b, t, x, i); let d = c - prev; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; w += d; prev = c; } return w / (2 * Math.PI); };
-        if (Math.abs(winding()) > 0.5) out.push({ limb: LIMBS[limb], bone: s, band: k, winding });
+        const ids = order.map(o => o[1]), A = new Float64Array(ids.length);
+        // (round it: its points on every side of the bone — no gap between them, seen from the bone, of half a turn or
+        // more; however it folds, a limb come out has them all on one side)
+        const round = () => { ids.forEach((i, j) => { A[j] = angleAt(P(), a, b, t, x, i); }); A.sort(); let g = A[0] + 2 * Math.PI - A[A.length - 1]; for (let j = 1; j < A.length; j++) g = Math.max(g, A[j] - A[j - 1]); return g < Math.PI; };
+        out.push({ limb: LIMBS[limb], bone: s, band: k, round });
       }
     }
   }
