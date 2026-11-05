@@ -77,23 +77,24 @@ ways below were decided by me within that.
   10 mm). Left for the hair's own rest and friction.
 - What the checks still break is listed under *Checks* below.
 
-**Checks** (all on the final code). `units.mjs`: 35 of 35 hold. `quality.mjs --only clothes` (all 24 dressed
-characters, every motion and chain whole, two winds): 4642 of 4993 hold, 351 broken — what the new exact checks see,
-most of it there before them too (the old check called the jeans' roll "0.000 mm in the body"): the body through the
-cloth at a motion's end (131) and at most of its moments (83) — knees and shins through trousers lying, rolling sideways
-and over, sitting (a few % of the covered skin); trouser legs and sleeves off their limbs at a motion's end (35) — an
-oversized top's sleeves in a run, legs in the side roll and the roll over; covered skin left bare past О3's 35 % (31) —
-short dresses and T-shirts ridden up lying and rolling; a pop across the walk's loop (23 — the loop's limit is now
-against the frame before, and in mm: it was 3× the next frame's); layers out of order (9); standing jitter (4: the hood
-12.7 mm, the heavy man 8.8, the V hero 5.5, the oversized top 4.4); granny's pleats 17–29 mm in the body (5); two flicks
-just past 12 m/s. The jeans' forward roll (the review's first case) holds every check but the end's through (knees).
-`quality.mjs` skin, bones, feet, order, heads, hair: see the report of this stage (hair over clothes: the dress's
-shimmer 16.4 → 2.8 mm a frame standing, but its locks now slide 7 cm in 8 s over the arm — not right). `numbers.mjs`,
-`pictures.mjs`: stored anew only for the cases the clothes moved — the dressed characters (`clothes-*`), the heads in
-their outfits and the hair on them (`head-*`, `hair-g1-alva`, `hair-g3-red`, `hair-red-ariel`), and four hair
-characters without clothes whose hair's rest is found a little differently without the capsules (`hair-alva`,
-`hair-jack` — a stray strand on the crown smaller —, `hair-kpony`, `hair-marco`, looked at); nothing else moved. A
-frame of a dressed figure's whole step: 27–112 ms in node.
+**Checks** (on the final code). `units.mjs`: 35 of 35 hold. `quality.mjs --only clothes` (all 24 dressed characters,
+every motion and chain whole, two winds): 4656 of 4993 hold, 337 broken — what the new exact checks see, most of it there
+before them too (the old check called the jeans' roll "0.000 mm in the body"): the body through the cloth at a motion's
+end (128) and at most of its moments (77) — knees and shins through trousers lying, rolling sideways and over, sitting (a
+few % of the covered skin); covered skin left bare past 35 % (31) — short dresses and T-shirts ridden up lying and
+rolling; trouser legs and sleeves off their limbs at a motion's end (31) and most moments (21) — an oversized top's
+sleeves in a run, legs in the side roll and the roll over; a pop across the walk's loop (21 — the limit is now against
+the frame before and in mm: it was 3× the next frame's); layers out of order (9); granny's pleats 17–29 mm in the body
+(5, and 4 of the share over 1 cm); flicks just past 12 m/s (5); standing jitter (4: the heavy man 16 mm at his touching
+thighs, jesper 3.8, the mask 3.8, the hood 3.1 — before: 15 characters, the heavy man 26). The jeans' forward roll (the
+review's first case) holds all but the end's "through" (the knees). `quality.mjs` skin, bones, feet, order, heads, hair
+(the run before the last two cloth changes): only the hair over clothes breaks — Г3's girl standing (jitter 2.8 mm, the
+lock sliding 8 cm), Г1's Alva standing (5 mm), the blouse of clothes-hair in motion (shimmer up to 9.5 mm sitting, flicks
+past 10 m/s) — the rest holds. `numbers.mjs`, `pictures.mjs`: stored anew only for the cases the clothes moved — the
+dressed characters (`clothes-*`), the heads in their outfits and the hair on them (`head-*`, `hair-g1-alva`,
+`hair-g3-red`, `hair-red-ariel`), and four hair characters without clothes whose hair's rest is found a little
+differently without the capsules (`hair-alva`, `hair-jack` — a stray strand on the crown smaller —, `hair-kpony`,
+`hair-marco`; looked at); nothing else moved. A frame of a dressed figure's whole step: 37–155 ms in node.
 
 **How, to repeat it.** `node engine/check/units.mjs`; `node engine/check/quality.mjs` (`--only clothes --chars a,b` to
 split it); `node engine/check/numbers.mjs`, `node engine/check/pictures.mjs`; pictures: `node engine/tools/sheets.mjs
