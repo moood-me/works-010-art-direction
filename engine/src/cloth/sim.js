@@ -9,8 +9,8 @@
 // - lengths: each edge holds against stretching with the fabric's stretch (N/m) and gives way more easily when pushed
 //   together (its compress share), so the cloth folds rather than shrinks — three passes, the edges in the order of their
 //   distance from where the garment hangs;
-// - bending: the angle at each inner edge held toward its angle as the garment was put on (a sleeve is a tube, not a
-//   sheet pressed flat round the arm) with the fabric's bending rigidity B (N·m, Kawabata's; per hinge k = 3·B·e/(h₁+h₂))
+// - bending: the angle at each inner edge held toward its angle as the garment was put on, or as its designed form has
+//   it (a sleeve is a tube, not a sheet pressed flat round the arm) with the fabric's bending rigidity B (N·m, Kawabata's; per hinge k = 3·B·e/(h₁+h₂))
 //   — chiffon's bending length is about a centimetre, denim's three, tweed's four;
 // - what holds it on: its waistband, neckline or shoulders (and a long sleeve's cuff, lightly) drawn to where the skin
 //   carries them, as an elastic; every point no farther from its nearest held point than the cloth between them is long, as a strip of the cloth
@@ -391,15 +391,17 @@ class Garment {
   // flat lengths; its bends as they are now; where it is cut to and kept apart from itself is here too
   fitted() {
     if (!this.flat) for (let k = 0; k < this.EL.length; k++) this.EL[k] = dist(this.x, this.E[k * 2], this.E[k * 2 + 1]) * this.tight;
-    for (let k = 0; k < this.HA.length; k++) this.HA[k] = this.flat ? Math.PI : this.angle(k);
+    // (a garment with a designed form bends toward the form's angles: toward the put-on ones, it was bent one way and
+    // pulled another, a hood's shell trembling)
+    const A = this.shape0 ?? this.x; for (let k = 0; k < this.HA.length; k++) this.HA[k] = this.flat ? Math.PI : this.angle(A, k);
     // (where the skin carries it is where it lies now)
     this.cut.set(this.x); this.p.set(this.x); this.T0.set(this.x); this.T1.set(this.x); this.base.set(this.x);
     if (this.shape0) { this.S0.set(this.shape0); this.S1.set(this.shape0); }
     this.tether();
   }
-  // the dihedral angle at hinge k now (π: flat)
-  angle(k) {
-    const x = this.x, Hg = this.H, i1 = Hg[k * 4] * 3, i2 = Hg[k * 4 + 1] * 3, i3 = Hg[k * 4 + 2] * 3, i4 = Hg[k * 4 + 3] * 3;
+  // the dihedral angle at hinge k of positions x (π: flat)
+  angle(x, k) {
+    const Hg = this.H, i1 = Hg[k * 4] * 3, i2 = Hg[k * 4 + 1] * 3, i3 = Hg[k * 4 + 2] * 3, i4 = Hg[k * 4 + 3] * 3;
     const p2 = [x[i2] - x[i1], x[i2 + 1] - x[i1 + 1], x[i2 + 2] - x[i1 + 2]], p3 = [x[i3] - x[i1], x[i3 + 1] - x[i1 + 1], x[i3 + 2] - x[i1 + 2]], p4 = [x[i4] - x[i1], x[i4 + 1] - x[i1 + 1], x[i4 + 2] - x[i1 + 2]];
     const n1 = cross(p2, p3), n2 = cross(p2, p4), l = Math.hypot(...n1) * Math.hypot(...n2);
     return l < 1e-24 ? Math.PI : Math.acos(clamp((n1[0] * n2[0] + n1[1] * n2[1] + n1[2] * n2[2]) / l, -1, 1));
@@ -500,16 +502,17 @@ class Garment {
       x[i3] += (S0[i3] + (S1[i3] - S0[i3]) * u - x[i3]) * g; x[i3 + 1] += (S0[i3 + 1] + (S1[i3 + 1] - S0[i3 + 1]) * u - x[i3 + 1]) * g; x[i3 + 2] += (S0[i3 + 2] + (S1[i3 + 2] - S0[i3 + 2]) * u - x[i3 + 2]) * g;
     }
   }
-  // the tethers (XPBD, one way: only farther than its reach)
+  // the tethers (XPBD, one way: only farther than its reach; the held point it is tied to as where it is held — as Kim
+  // et al.'s attachments — not drawn down by the cloth hanging from it: moved too, a pair of trousers' back slid off the
+  // buttocks rolling)
   tethers() {
     const { x, w, anchor, reach, aR, n } = this;
     for (let i = 0; i < n; i++) {
       const a = anchor[i]; if (a < 0 || a === i) continue;
       const dx = x[i * 3] - x[a * 3], dy = x[i * 3 + 1] - x[a * 3 + 1], dz = x[i * 3 + 2] - x[a * 3 + 2], l = Math.sqrt(dx * dx + dy * dy + dz * dz), C = l - reach[i];
       if (C <= 0) continue;
-      const wi = w[i], wa = w[a], dl = -C / (wi + wa + aR[i]), s = dl / l;
-      x[i * 3] += wi * s * dx; x[i * 3 + 1] += wi * s * dy; x[i * 3 + 2] += wi * s * dz;
-      x[a * 3] -= wa * s * dx; x[a * 3 + 1] -= wa * s * dy; x[a * 3 + 2] -= wa * s * dz;
+      const wi = w[i], s = -C / (wi + aR[i]) * wi / l;
+      x[i * 3] += s * dx; x[i * 3 + 1] += s * dy; x[i * 3 + 2] += s * dz;
     }
   }
   // its own points kept apart, unless they were near as cut (neighbours along the cloth)
