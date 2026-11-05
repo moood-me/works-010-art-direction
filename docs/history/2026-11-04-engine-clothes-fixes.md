@@ -87,10 +87,11 @@ sleeves in a run, legs in the side roll and the roll over; a pop across the walk
 the frame before and in mm: it was 3× the next frame's); layers out of order (9); granny's pleats 17–29 mm in the body
 (5, and 4 of the share over 1 cm); flicks just past 12 m/s (5); standing jitter (4: the heavy man 16 mm at his touching
 thighs, jesper 3.8, the mask 3.8, the hood 3.1 — before: 15 characters, the heavy man 26). The jeans' forward roll (the
-review's first case) holds all but the end's "through" (the knees). `quality.mjs` skin, bones, feet, order, heads, hair
-(the run before the last two cloth changes): only the hair over clothes breaks — Г3's girl standing (jitter 2.8 mm, the
-lock sliding 8 cm), Г1's Alva standing (5 mm), the blouse of clothes-hair in motion (shimmer up to 9.5 mm sitting, flicks
-past 10 m/s) — the rest holds. `numbers.mjs`, `pictures.mjs`: stored anew only for the cases the clothes moved — the
+review's first case) holds all but the end's "through" (the knees). `quality.mjs` skin, bones, feet, order, heads, hair:
+2669 of 2713 hold; the 44 broken are all the hair over clothes (the review: 51), on the same four — Г3's girl (her lock
+sliding 9 cm standing, shimmer 1.3–2.7 mm, flicks to 12.8 m/s), Г1's Alva and Ariel (standing 26–41 mm off the rest,
+jitter 3.4–3.6 mm, shimmer 1.0–2.4 mm), the blouse of clothes-hair (shimmer 5–8 mm and locks torn 2.4–3.9 % in
+jumps, sits and rolls, flicks to 17 m/s); hair without clothes, heads, skin, bones, feet, order all hold. `numbers.mjs`, `pictures.mjs`: stored anew only for the cases the clothes moved — the
 dressed characters (`clothes-*`), the heads in their outfits and the hair on them (`head-*`, `hair-g1-alva`,
 `hair-g3-red`, `hair-red-ariel`), and four hair characters without clothes whose hair's rest is found a little
 differently without the capsules (`hair-alva`, `hair-jack` — a stray strand on the crown smaller —, `hair-kpony`,
