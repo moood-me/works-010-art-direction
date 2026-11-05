@@ -49,10 +49,11 @@ import { SMALL } from '../figure.js';
 // along it
 const H = SMALL, G = 9.81, RHO = 1.2, DRAG = 1.2, SKIN_DRAG = 0.03;
 // HOLD_K: how firmly a held point is drawn where the skin carries it (1/s²: a centimetre off, thirty times as hard as
-// gravity pulls it — an elastic band, a third of the way back in a small step); TETHER: how much longer than the cloth between them a point may be from its
+// gravity pulls it — an elastic band, a third of the way back in a small step); HELD_MASS: how much of its weight a
+// held point gives up (below); TETHER: how much longer than the cloth between them a point may be from its
 // held point before the cloth's own stretch along the way holds it; SHAPE_K: the designed form's pull at strength 1
 // (1/s²: at 2000 the cloth sags 5 mm under its own weight from the form, a stiff petticoat; at 0.1 it sags 5 cm)
-const HOLD_K = 30000, TETHER = 1.04, SHAPE_K = 2000;
+const HOLD_K = 30000, HELD_MASS = 0.95, TETHER = 1.04, SHAPE_K = 2000;
 // UPRIGHT, LYING: the hips' tilt from upright (degrees) up to which a garment's designed form holds what hangs of it
 // wholly, and from which it holds none of it (a bell standing and walking; bowing it begins to fall, lying it hangs);
 // LIES: how long a point that lay on the body or the floor keeps lying on it, released from its form (s)
@@ -225,8 +226,8 @@ export class ClothSim {
     }
   }
   // each triangle's middle out of the skin too, its three points moved together (a knee pressed into a skirt or a trouser
-  // leg goes between points two or three centimetres apart, and through, though every point keeps out) — over the skin
-  // points its corners keep; only on a sleeve, a trouser leg or what hangs (a skirt), where a corner is in touch (a body
+  // leg goes between points two or three centimetres apart, and through, though every point keeps out) — out of its own
+  // limb's skin on a sleeve or a trouser leg, else over the skin points its corners keep; only on a sleeve, a trouser leg or what hangs (a skirt), where a corner is in touch (a body
   // part between points lies on them) and all three lie on one limb, their own (where the trunk meets an arm its nearest
   // skin goes from one to the other, and its middle was pushed one way and the other, a tremble; a triangle across two — between a heavy body's thighs, touching — has no one inside to keep
   // out of: pushed from one to the other it trembled); each point moved as far as the deepest of its triangles asks
@@ -237,7 +238,7 @@ export class ClothSim {
       const na = near[a * KN], nb = near[b * KN], nc = near[c * KN]; if (na < 0 || nb < 0 || nc < 0) continue;
       const l = LB[na]; if (LB[nb] !== l || LB[nc] !== l || H[a] !== H[b] || H[a] !== H[c] || (H[a] ? H[a] !== l : !g.hangs)) continue;
       const a3 = a * 3, b3 = b * 3, c3 = c * 3, mx = (x[a3] + x[b3] + x[c3]) / 3, my = (x[a3 + 1] + x[b3 + 1] + x[c3 + 1]) / 3, mz = (x[a3 + 2] + x[b3 + 2] + x[c3 + 2]) / 3;
-      const d = S.among(mn, mx, my, mz, at, near, a * KN, b * KN, c * KN); if (!(d < thick)) continue;
+      const d = H[a] ? S.skin(mn, mx, my, mz, at, H[a]) : S.among(mn, mx, my, mz, at, near, a * KN, b * KN, c * KN); if (!(d < thick)) continue;
       const pen = thick - d, N = at.n;
       for (let s = 0; s < 3; s++) { const v = T[t + s]; if (pen > PL[v]) { PL[v] = pen; for (let q = 0; q < 3; q++) { PN[v * 3 + q] = N[q]; PV[v * 3 + q] = at.v[q]; } } }
     }
@@ -311,7 +312,10 @@ class Garment {
     for (let t = 0; t < T.length; t += 3) { const A = triArea(R, T[t], T[t + 1], T[t + 2]); for (let k = 0; k < 3; k++) { m[T[t + k]] += A / 3 * F.density; area[T[t + k]] += A / 3; } }
     const med = Float64Array.from(m).sort()[n >> 1];
     for (let i = 0; i < n; i++) m[i] = Math.max(m[i], med * 0.4);
-    this.mass = m; this.area = area; this.w = Float64Array.from(m, v => 1 / Math.max(v, 1e-9));
+    // (a held point is as good as carried: its inverse mass taken down as it is held, so the cloth's weight hangs from
+    // it rather than pulling it down — a waistband of a hundred points carries a pair of trousers of five thousand; with
+    // their true masses an old man's trousers slid off his hips walking)
+    this.mass = m; this.area = area; this.w = Float64Array.from(m, (v, i) => (1 - HELD_MASS * this.hold[i]) / Math.max(v, 1e-9));
     // edges and hinges: rest lengths as cut (a scarf's as it lies flat), the swimsuit's a share shorter
     const em = new Map();
     for (let t = 0; t < T.length; t += 3) for (let k = 0; k < 3; k++) {
