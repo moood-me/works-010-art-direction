@@ -17,7 +17,7 @@ ways below were decided by me within that.
 1. *Bodies through clothes* — О3's two rules carried: the pinch memory (`S.kept`: when the skin found anew faces away
    from the skin a point lay by, and it is still within its thickness of that one, it keeps that one and is left where it
    is until the skin is looked for again) and the own limb for every point of a sleeve or a trouser leg, the hip band's
-   too (each on the limb its nearest skin point was dressed; its own limb has the last word). The jeans in the forward
+   too (each on the limb its nearest skin point was dressed; pushed out of its own limb too, and a tube's triangle's middle out of its own limb's skin). The jeans in the forward
    roll now stand up with both legs in the trousers (the tube check: 44 % of the rings off at the roll's end before, 0
    now), shins no longer come through sitting. A knee folded tight still shows through the cloth for some frames of the
    roll (52–64), as О3's does. Tried and dropped: the skin's points kept under the cloth's triangles (every skin point a
@@ -30,11 +30,12 @@ ways below were decided by me within that.
    still winding round its bone. The floor is not skipped; the loop's limit is 30 mm; the speed is measured with no cap
    in the cloth. Each limit says why, set by looking, at О3's level in rolls.
 3. *Standing tremble* — its causes: the triangle's middle met over both legs' skin at the crotch (now only on a sleeve,
-   a trouser leg or what hangs, and only where its three corners lie on one limb, their own); the capsules standing out
+   a trouser leg or what hangs, and only where its three corners lie on one limb, their own, a tube's out of its own limb's
+   skin); the capsules standing out
    of the skin with the hard 3 cm switch (dropped: the skin is asked at any depth, as far as a reader asks); bending
    toward flat (now toward the angle each hinge had as put on); the pinch's alternate small steps (a pinched point now
    stays pinched until the skin is looked for anew); a stiff hood's shell let go where it touched the head and drawn off
-   it again (what hangs alone lets go where it lies). The heavy man 26 mm a frame → 0.3; the hood 47 → 0.2.
+   it again (what hangs alone lets go where it lies). The heavy man 26 mm a frame → 9 (his touching thighs still move the trousers' crotch); the hood 0.2.
 4. *Hair shimmer over clothes* — the cover is the cloth's own now (`S.lieOn`, `S.over`): the outermost garment's
    surface where it is at that small step (the planes of its nearest points, not mixed with the garments under it),
    past its open edge as far as from the edge, and hair allowed as near as it lay over it at rest.
@@ -43,9 +44,10 @@ ways below were decided by me within that.
    the knees sitting).
 7. *Solver* — XPBD with each constraint's λ gathered over the small step's passes (lengths, bending), tethers as XPBD
    constraints as stiff as a strip of the cloth; held points pulled as a spring per unit of mass (XPBD's share in its one
-   pass, as the form's) with the true masses (HELD_MASS, which took weight off held points, dropped); the 12 m/s speed cap
-   and the pressed-on-floor rule dropped, and the check no longer skips points near the floor. Tried and dropped: the
-   hold as an XPBD constraint carrying the garment's weight with 2 mm of give (soft for a light hood, it trembled).
+   pass, as the form's); the 12 m/s speed cap and the pressed-on-floor rule dropped, and the check no longer skips points
+   near the floor. Left, written down: the held points' weight taken off (HELD_MASS) — with their true masses an old
+   man's trousers slid off his hips walking. Tried and dropped: the hold as an XPBD constraint carrying the garment's
+   weight with 2 mm of give (soft for a light hood, it trembled).
 8, 11. *Shared, and the cost* — the figure's step goes through its small steps once for all its simulations (hair and
    cloth: `sim.begin`, `sim.substep`, `sim.end`), each small step at one moment of the solids made once for all; one
    cell hash (`src/cells.js`) for the skin, cloth against itself and under another, a garment laid on the body; no
@@ -65,7 +67,23 @@ ways below were decided by me within that.
 - An oversized top's loose sleeves slip off the arms in a run (as before; seen by the new tube check).
 - What the checks still break is listed under *Checks* below.
 
-**Checks.** (filled in below)
+**Checks** (all on the final code). `units.mjs`: 35 of 35 hold. `quality.mjs --only clothes` (all 24 dressed
+characters, every motion and chain whole, two winds): 4642 of 4993 hold, 351 broken — what the new exact checks see,
+most of it there before them too (the old check called the jeans' roll "0.000 mm in the body"): the body through the
+cloth at a motion's end (131) and at most of its moments (83) — knees and shins through trousers lying, rolling sideways
+and over, sitting (a few % of the covered skin); trouser legs and sleeves off their limbs at a motion's end (35) — an
+oversized top's sleeves in a run, legs in the side roll and the roll over; covered skin left bare past О3's 35 % (31) —
+short dresses and T-shirts ridden up lying and rolling; a pop across the walk's loop (23 — the loop's limit is now
+against the frame before, and in mm: it was 3× the next frame's); layers out of order (9); standing jitter (4: the hood
+12.7 mm, the heavy man 8.8, the V hero 5.5, the oversized top 4.4); granny's pleats 17–29 mm in the body (5); two flicks
+just past 12 m/s. The jeans' forward roll (the review's first case) holds every check but the end's through (knees).
+`quality.mjs` skin, bones, feet, order, heads, hair: see the report of this stage (hair over clothes: the dress's
+shimmer 16.4 → 2.8 mm a frame standing, but its locks now slide 7 cm in 8 s over the arm — not right). `numbers.mjs`,
+`pictures.mjs`: stored anew only for the cases the clothes moved — the dressed characters (`clothes-*`), the heads in
+their outfits and the hair on them (`head-*`, `hair-g1-alva`, `hair-g3-red`, `hair-red-ariel`), and four hair
+characters without clothes whose hair's rest is found a little differently without the capsules (`hair-alva`,
+`hair-jack` — a stray strand on the crown smaller —, `hair-kpony`, `hair-marco`, looked at); nothing else moved. A
+frame of a dressed figure's whole step: 27–112 ms in node.
 
 **How, to repeat it.** `node engine/check/units.mjs`; `node engine/check/quality.mjs` (`--only clothes --chars a,b` to
 split it); `node engine/check/numbers.mjs`, `node engine/check/pictures.mjs`; pictures: `node engine/tools/sheets.mjs

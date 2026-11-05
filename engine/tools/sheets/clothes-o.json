@@ -207,6 +207,139 @@
        }
       ]
      }
+    },
+    {
+     "label": "джинсы · кувырок 52",
+     "o3": {
+      "outfit": "m-jeans",
+      "motion": "roll",
+      "t": 52
+     },
+     "engine": {
+      "char": "man",
+      "clip": "roll",
+      "t": 52,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-pants",
+        "fabric": "fabric-denim",
+        "color": "#3e5578"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-tshirt",
+        "fabric": "fabric-heavyjersey",
+        "color": "#7a8a5a"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-boots",
+        "fabric": "fabric-suiting",
+        "color": "#2e231c"
+       }
+      ]
+     }
+    },
+    {
+     "label": "джинсы · кувырок 64",
+     "o3": {
+      "outfit": "m-jeans",
+      "motion": "roll",
+      "t": 64
+     },
+     "engine": {
+      "char": "man",
+      "clip": "roll",
+      "t": 64,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-pants",
+        "fabric": "fabric-denim",
+        "color": "#3e5578"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-tshirt",
+        "fabric": "fabric-heavyjersey",
+        "color": "#7a8a5a"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-boots",
+        "fabric": "fabric-suiting",
+        "color": "#2e231c"
+       }
+      ]
+     }
+    },
+    {
+     "label": "джинсы · кувырок 85",
+     "o3": {
+      "outfit": "m-jeans",
+      "motion": "roll",
+      "t": 85
+     },
+     "engine": {
+      "char": "man",
+      "clip": "roll",
+      "t": 85,
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-pants",
+        "fabric": "fabric-denim",
+        "color": "#3e5578"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-tshirt",
+        "fabric": "fabric-heavyjersey",
+        "color": "#7a8a5a"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-boots",
+        "fabric": "fabric-suiting",
+        "color": "#2e231c"
+       }
+      ]
+     }
+    },
+    {
+     "label": "свитер и брюки · кувырок 72",
+     "o3": {
+      "outfit": "m-sweater",
+      "motion": "roll",
+      "t": 72
+     },
+     "engine": {
+      "char": "man",
+      "clip": "roll",
+      "t": 72,
+      "view": "side",
+      "clothes": [
+       {
+        "kind": "garment",
+        "pattern": "mh-pants",
+        "fabric": "fabric-suiting",
+        "color": "#3d4048"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-sweater",
+        "fabric": "fabric-woolknit",
+        "color": "#8c6a4a"
+       },
+       {
+        "kind": "garment",
+        "pattern": "mh-boots",
+        "fabric": "fabric-suiting",
+        "color": "#2e231c"
+       }
+      ]
+     }
     }
    ]
   },

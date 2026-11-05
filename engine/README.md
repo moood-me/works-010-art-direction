@@ -542,8 +542,8 @@ sleeves, legs), 11 outfits `outfit-*` (what the ready heads were drawn in), and 
   on the limb its nearest skin was dressed) also out of its own limb's skin, which has the last word (О3's); with the
   fabric's thickness and as far as the cloth between two points sags in over the body's tightest curve; on a sleeve, a
   trouser leg and what hangs, each triangle's middle out of the skin too where its three corners lie on one limb, their
-  own (a knee goes between points two or three centimetres apart; a triangle across two limbs, or where the trunk meets
-  an arm, was pushed one way and the other, a tremble); the head's designed form; the garments under it where they lie
+  own (a sleeve's and a trouser leg's out of that limb's skin; a knee goes between points two or three centimetres apart;
+  a triangle across two limbs, or where the trunk meets an arm, was pushed one way and the other, a tremble); the head's designed form; the garments under it where they lie
   together as dressed, not past their edge; the floor last; friction against the skin's own motion, and no bounce (a
   point pushed out leaves without the push's speed). Nothing caps its speed.
 - *Its rest*: put on the body at rest (out of the skin and the garments under it; its lengths as it lies then), then
