@@ -43,7 +43,9 @@ ways below were decided by me within that.
    as the hips leave upright (wholly to 20°, none from 70°) and where it lies on the body or the floor (it drapes over
    the knees sitting).
 7. *Solver* — XPBD with each constraint's λ gathered over the small step's passes (lengths, bending), tethers as XPBD
-   constraints as stiff as a strip of the cloth; held points pulled as a spring per unit of mass (XPBD's share in its one
+   constraints as stiff as a strip of the cloth, the held point not drawn down by them (moved too, the trousers' back slid
+   off the buttocks rolling under a sweater); a garment with a designed form bends toward the form's angles (toward the
+   put-on ones a hood's shell was bent one way and pulled another, 13 mm a frame standing); held points pulled as a spring per unit of mass (XPBD's share in its one
    pass, as the form's); the 12 m/s speed cap and the pressed-on-floor rule dropped, and the check no longer skips points
    near the floor. Left, written down: the held points' weight taken off (HELD_MASS) — with their true masses an old
    man's trousers slid off his hips walking. Tried and dropped: the hold as an XPBD constraint carrying the garment's
@@ -65,6 +67,14 @@ ways below were decided by me within that.
 - 10: cloth over cloth stays one way, by the masks of where garments lay together at rest; folds from compression not
   made.
 - An oversized top's loose sleeves slip off the arms in a run (as before; seen by the new tube check).
+- Worse than О3 at the same moments still: in the forward roll the knees show through the jeans (52–64) and, under the
+  sweater, the trousers' back rides down off the top of the buttocks (72) — the waistband is held where the skin carries
+  it (within 1–3 cm), the cloth below it slides; not found in the time.
+- Hair over a dress (Г3's girl): its shimmer standing is 16.4 → 2.8 mm a frame, but a lock lying over the dress's top
+  edge by the arm now slides 7–8 cm in 8 s standing (before 7 mm): it was held up by the dress's plane carried on past
+  its open edge — the shimmer's cause; let down onto the arm's skin it slides on it (the hair's friction on skin). Tried:
+  the plane falling away round the edge (shimmer back to 4.5 mm, still sliding); the plane carried on (no slide, shimmer
+  10 mm). Left for the hair's own rest and friction.
 - What the checks still break is listed under *Checks* below.
 
 **Checks** (all on the final code). `units.mjs`: 35 of 35 hold. `quality.mjs --only clothes` (all 24 dressed

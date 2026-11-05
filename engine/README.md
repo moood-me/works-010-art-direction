@@ -529,10 +529,10 @@ sleeves, legs), 11 outfits `outfit-*` (what the ready heads were drawn in), and 
   a fabric is as stiff as it is, however many passes): lengths three times (each edge holds against stretching with the
   fabric's stretch, gives way when pushed together, so it folds; the edges ordered by their distance from where the
   garment hangs, so a pass carries the weight down from the top), bending toward the angle each hinge had as the garment
-  was put on (Kawabata's rigidity per hinge; toward flat, a sleeve pressed outward round its arm); what holds it on (a
+  was put on (or as its designed form has it) (Kawabata's rigidity per hinge; toward flat, a sleeve pressed outward round its arm); what holds it on (a
   held point an elastic to where the skin carries it, its weight taken up so a waistband of a hundred points carries
   trousers of five thousand), its form, tethers (no farther from a held point than the cloth between is long, as a
-  strip of the cloth one edge wide would hold it), its own points kept apart, then the body: the figure's solids
+  strip of the cloth one edge wide would hold it; the held point not drawn down by it), its own points kept apart, then the body: the figure's solids
   (`src/solids.js`), the one collision hair uses too — the skin between the frames at that small step's moment, at any
   depth (no capsules: each point keeping the skin points nearest it, `S.kept`, looked for afresh every other step as far
   as 15 cm, of the nearest one's limb only — between the legs, both legs' skin together pushed a skirt sideways through
