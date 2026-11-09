@@ -26,7 +26,7 @@ GROUPS = {
     'thumb': ([n for n in NAMES if 'Thumb' in n], (0.55, 0.8)),
     'thigh': (['LeftLeg', 'RightLeg'], (1.0, 0.52)),
     'shin': (['LeftShin', 'RightShin'], (1.0, 0.42)),
-    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (0.62, 0.55)),
+    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (0.74, 0.6)),
 }
 
 

@@ -18,7 +18,7 @@ def person():
 
 # the comparisons (compare.py): the pose the stills stand in, the portrait's turn (the style's yaw −0.32 is the
 # camera's 0.32 here: the style turns the figure, the page turns the camera) and face
-STAND = {'motion': ['bow'], 't': 0}
+STAND = {'motion': ['stomp'], 't': 0}        # Kimodo's «топает», its first frame: she stands upright, arms down
 DRAWN_TURN = DRAWN_EXPR = True          # drawn for the comparison by drawn.py (the style's page has none of Вера)
 PORTRAIT_YAW = 0.32
 PORTRAIT_EXPR = 'calm'

@@ -1,5 +1,5 @@
-// Тим's painted face, alive. The drawing's own marks (styles/s9-midcentury/tools: kit.py path/sample/brush, face.py
-// eye/brow/mouth, tim.py's expressions) are carried over line for line and drawn into a canvas the head takes by its
+// Аня's painted face, alive. The drawing's own marks (styles/s9-midcentury/tools: kit.py path/sample/brush, face.py
+// eye/brow/mouth, anya.py's expressions) are carried over line for line and drawn into a canvas the head takes by its
 // front projection (the drawing's head units −128…128, y down). Every frame the marks are drawn again from a state:
 //   expression — the sheet's five, blended: numbers (brow ends, mouth size, blush) go over smoothly, a mark of another
 //                kind (dot eye → laughing arc) fades over the old one;
@@ -11,7 +11,7 @@
 //                into the next (coarticulation), the expression's mouth when silent.
 // All of it is a timeline made once from a seeded random stream, so a moment t always looks the same (films, scrubbing).
 
-const INK = '#2a201c', LIP = '#c23a2c', MOUTH_IN = '#6e1f1c', CHEEK = '#ee7a66', FRECK = '#c97a52', HAIR_D = '#a8481c';
+const INK = '#2a201c', LIP = '#c23a2c', MOUTH_IN = '#6e1f1c', CHEEK = '#ec7f72', HAIR_L = '#6a4034', NOSE = '#b9775e', WHITE = '#fbf6ea';
 
 // ---------- kit.py ----------
 function samplePts(pts, closed = false, per = 10) {
@@ -71,14 +71,28 @@ class Pen {
   }
 }
 
-// ---------- face.py (the kinds Тим uses), with open: 1 open … 0 shut, and gaze (gx, gy) in head units ----------
-function eye(p, x, y, s, kind, side, open = 1, gx = 0, gy = 0) {
+// ---------- face.py (the kinds Аня uses), with open: 1 open … 0 shut, and gaze (gx, gy) in head units ----------
+function eye(p, x, y, s, kind, side, open = 1, gx = 0, gy = 0, lid = 0) {
   const w = s;
   if (kind === 'dot') {
     if (open > 0.25) p.ell(x + gx, y + gy, 4.2 * w, 5.6 * s * open, INK);
     else p.brush([[x - 6 * w, y - 1 * s], [x, y + 2.5 * s], [x + 6 * w, y - 1 * s]], 2.4 * s, INK, [0.3, 0.3], Math.min(1, (0.25 - open) * 8 + 0.3));
+  } else if (kind === 'look') {
+    // a white almond, a big dark iris pushed up under a heavy lid, a lash flick; a blink brings the lid down to a curve
+    if (open > 0.22) {
+      const top = y + 3.6 * s + (y - 5.5 * s + lid * 3 * s - (y + 3.6 * s)) * open;
+      const alm = [[x - side * 8 * w, y + 0.8 * s, 'c'], [x - side * 2 * w, top], [x + side * 5 * w, top + 0.2 * s], [x + side * 9 * w, y - 1.2 * s, 'c'], [x + side * 2 * w, y + 4.2 * s]];
+      p.shape(alm, WHITE);
+      const c = p.c; c.save(); c.clip(new Path2D(pathD(alm))); p.ell(x + side * w + gx * 0.7, y - 1.6 * s + gy * 0.6, 4.6 * w, 5.4 * s, INK); c.restore();
+      p.brush([[x - side * 8.5 * w, y + 0.4 * s], [x - side * 1 * w, top - 1.4 * s], [x + side * 6 * w, top - 0.4 * s], [x + side * 11 * w, y - 3.8 * s + (1 - open) * 3 * s]], 2.8 * s, INK, [0.2, 0.25]);
+      p.brush([[x + side * 8.5 * w, y - 2 * s + (1 - open) * 3 * s], [x + side * 12 * w, y - 6 * s + (1 - open) * 5 * s], [x + side * 14 * w, y - 8 * s + (1 - open) * 6 * s]], 2.0 * s, INK, [0.0, 0.7]);
+    } else {
+      p.brush([[x - side * 8 * w, y - 1 * s], [x, y + 3.5 * s], [x + side * 9 * w, y - 1.5 * s]], 2.6 * s, INK, [0.3, 0.2]);
+      p.brush([[x + side * 8.5 * w, y - 1.5 * s], [x + side * 12 * w, y - 4.5 * s]], 1.6 * s, INK, [0, 0.8]);
+    }
   } else if (kind === 'happy') {
     p.brush([[x - side * 7 * w, y + 2.5 * s], [x, y - 3.5 * s], [x + side * 8 * w, y + 2 * s]], 2.6 * s, INK, [0.25, 0.25]);
+    p.brush([[x + side * 7.5 * w, y + 1.5 * s], [x + side * 11 * w, y - 1 * s]], 1.5 * s, INK, [0, 0.8]);
   } else if (kind === 'wide') {
     const o = Math.max(open, 0.08);
     p.ell(x, y - 1 * s, 7.6 * w, 9 * s * o, '#fbf6ea');
@@ -100,7 +114,11 @@ function brow(p, x, y, s, side, inner, outer, w) {
 }
 function mouth(p, x, y, s, kind, side, width) {
   const W = width * s;
-  if (kind === 'smirk') p.brush([[x - side * 7 * W, y + 0.5 * s], [x + side * 2 * W, y + 1.5 * s], [x + side * 8 * W, y - 3.5 * s]], 2.6 * s, LIP, [0.3, 0.2]);
+  if (kind === 'lips') {
+    p.shape([[x - side * 8 * W, y - 0.5 * s, 'c'], [x - side * 3 * W, y - 3.2 * s], [x - side * 0.5 * W, y - 2 * s, 'c'], [x + side * 2.5 * W, y - 3.4 * s],
+      [x + side * 7.5 * W, y - 1.5 * s, 'c'], [x + side * 2 * W, y + 3.8 * s], [x - side * 4 * W, y + 3.2 * s]], LIP);
+    p.brush([[x - side * 8.5 * W, y - 0.6 * s], [x, y + 0.3 * s], [x + side * 8 * W, y - 1.8 * s]], 1.3 * s, MOUTH_IN, [0.3, 0.3]);
+  } else if (kind === 'smirk') p.brush([[x - side * 7 * W, y + 0.5 * s], [x + side * 2 * W, y + 1.5 * s], [x + side * 8 * W, y - 3.5 * s]], 2.6 * s, LIP, [0.3, 0.2]);
   else if (kind === 'o') { p.ell(x, y + 1 * s, 4 * W, 5 * s, LIP); p.ell(x, y + 1.6 * s, 2.3 * W, 3.2 * s, MOUTH_IN); }
   else if (kind === 'grin') {
     p.shape([[x - side * 10 * W, y - 2 * s, 'c'], [x + side * 10 * W, y - 3 * s, 'c'], [x + side * 5 * W, y + 7 * s], [x - side * 4 * W, y + 7 * s]], MOUTH_IN);
@@ -125,15 +143,16 @@ function talkMouth(p, x, y, s, o, wd, rd, smile) {
   p.brush([[x - W * 1.04, y - 1.5 * s - smile * 1.2 * s], [x, top - H * 0.25 * rd - 0.6 * s], [x + W * 1.04, y - 1.5 * s - smile * 1.6 * s]], 1.7 * s, LIP, [0.12, 0.12]);
 }
 
-// ---------- tim.py's expressions ----------
+// ---------- anya.py's expressions (face.py EXPR, her own calm: a dreamy look under lowered lids, painted lips) ----------
 export const EXPRS = {
-  calm: { eye: 'dot', brow: [0, 0], brow2: [4, -6], mouth: 'smirk', ms: 1, cheek: 1 },
-  joy: { eye: 'happy', brow: [-4, -2], brow2: [-4, -2], mouth: 'grin', ms: 1.45, cheek: 1.3 },
-  surprise: { eye: 'wide', brow: [-10, -8], brow2: [-10, -8], mouth: 'o', ms: 1.35, cheek: 1 },
-  sad: { eye: 'sad', brow: [-7, 5], brow2: [-7, 5], mouth: 'sad', ms: 1.2, cheek: 1 },
-  anger: { eye: 'glare', brow: [9, -6], brow2: [9, -6], mouth: 'shout', ms: 1.45, cheek: 1.3 },
+  calm: { eye: 'look', lid: 0.3, brow: [0, 0], brow2: [0, 0], mouth: 'lips', ms: 1, cheek: 1 },
+  joy: { eye: 'happy', lid: 0, brow: [-3, -1], brow2: [-3, -1], mouth: 'grin', ms: 1.45, cheek: 1.25 },
+  surprise: { eye: 'wide', lid: 0, brow: [-8, -7], brow2: [-8, -7], mouth: 'o', ms: 1.35, cheek: 1 },
+  sad: { eye: 'sad', lid: 0, brow: [-7, 5], brow2: [-7, 5], mouth: 'sad', ms: 1.2, cheek: 1 },
+  anger: { eye: 'glare', lid: 0, brow: [8, -6], brow2: [8, -6], mouth: 'shout', ms: 1.45, cheek: 1.3 },
 };
-const FRECKLES = [[-48, 30], [-38, 26], [-28, 32], [-42, 38], [48, 30], [38, 26], [28, 32], [42, 38]];
+// where the features sit on her front view (anya.py head('front'))
+const F = { ex: 26, ey: 10, es: 1.15, bx: 27, by: -15, bs: 1.0, bw: 2.6, mx: 0, my: 63, ms: 1.0, mw: 0.9, cx: 38, cy: 38, cr: 14 };
 
 // ---------- the timeline ----------
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -227,27 +246,27 @@ export class LiveFace {
       this.base = this.base && this.base.width === ctx.canvas.width ? this.base : Object.assign(document.createElement('canvas'), { width: ctx.canvas.width, height: ctx.canvas.height });
       const bc = this.base.getContext('2d'), bp = new Pen(bc); bp.scale = S;
       bc.setTransform(1, 0, 0, 1, 0, 0); bc.clearRect(0, 0, this.base.width, this.base.height); bc.setTransform(S, 0, 0, S, 128 * S, 128 * S);
-      bp.brush([[-56, -70], [-16, -106], [30, -110]], 2.6, HAIR_D, [0.3, 0.5], 0.7);
-      bp.brush([[-10, -74], [30, -100], [64, -76]], 2.6, HAIR_D, [0.3, 0.5], 0.7);
-      bp.blush(-40, 40, 16 * ck, CHEEK); bp.blush(40, 40, 16 * ck, CHEEK);
-      for (const [x, y] of FRECKLES) bp.ell(x, y, 1.9, 1.9, FRECK, 0.85);
+      bp.brush([[-56, -50], [-20, -100], [30, -112]], 3, HAIR_L, [0.3, 0.5], 0.55);
+      bp.brush([[-10, -62], [30, -100], [64, -86]], 3, HAIR_L, [0.3, 0.5], 0.55);
+      bp.blush(-F.cx, F.cy, F.cr * ck, CHEEK); bp.blush(F.cx, F.cy, F.cr * ck, CHEEK);
+      bp.brush([[4, 22], [8, 38], [1, 42]], 2.4, NOSE, [0.4, 0.2]);
       this.baseKey = ck;
     }
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.drawImage(this.base, 0, 0); ctx.setTransform(S, 0, 0, S, 128 * S, 128 * S);
     // eyes (kinds fading into each other), brows lifting a little with a wide look
     const lift = open < 0.5 ? (0.5 - open) * 2 : 0;
-    const eyes = (e, al) => { p.alpha = al; eye(p, -24, 14, 1.45, e, -1, open, gx, gy); eye(p, 24, 14, 1.45, e, 1, open, gx, gy); };
-    if (a.eye !== b.eye && u < 1) { eyes(a.eye, 1 - u); eyes(b.eye, u); } else eyes(b.eye, 1);
+    const eyes = (e, al) => { p.alpha = al; eye(p, -F.ex, F.ey, F.es, e.eye, -1, open, gx, gy, e.lid); eye(p, F.ex, F.ey, F.es, e.eye, 1, open, gx, gy, e.lid); };
+    if (a.eye !== b.eye && u < 1) { eyes(a, 1 - u); eyes(b, u); } else eyes(b, 1);
     p.alpha = 1;
-    brow(p, -25, -10 + lift * 1.2, 1.2, -1, bi, bo, 3.2); brow(p, 25, -12 + lift * 1.2, 1.2, 1, b2i, b2o, 3.2);
+    brow(p, -F.bx, F.by + lift * 1.2, F.bs, -1, bi, bo, F.bw); brow(p, F.bx, F.by + lift * 1.2, F.bs, 1, b2i, b2o, F.bw);
     // the mouth: speaking shapes, or the expression's own
     if (talk) {
-      const smile = b.mouth === 'smirk' || b.mouth === 'grin' ? 1 : b.mouth === 'sad' ? -1 : 0;
-      talkMouth(p, 2, 58, 1.3, talk[0], talk[1], talk[2], smile * (1 - (a === b ? 0 : 0)));
+      const smile = b.mouth === 'lips' || b.mouth === 'grin' ? 1 : b.mouth === 'sad' ? -1 : 0;
+      talkMouth(p, F.mx, F.my, F.ms * 0.8, talk[0], talk[1], talk[2], smile);
     } else if (a.mouth !== b.mouth && u < 1) {
-      p.alpha = 1 - u; mouth(p, 2, 58, 1.3 * mix(a.ms, b.ms), a.mouth, 1, 0.85);
-      p.alpha = u; mouth(p, 2, 58, 1.3 * ms, b.mouth, 1, 0.85); p.alpha = 1;
-    } else mouth(p, 2, 58, 1.3 * ms, b.mouth, 1, 0.85);
+      p.alpha = 1 - u; mouth(p, F.mx, F.my, F.ms * ms, a.mouth, 1, F.mw);
+      p.alpha = u; mouth(p, F.mx, F.my, F.ms * ms, b.mouth, 1, F.mw); p.alpha = 1;
+    } else mouth(p, F.mx, F.my, F.ms * ms, b.mouth, 1, F.mw);
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
   }
 }

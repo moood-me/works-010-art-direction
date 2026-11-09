@@ -20,8 +20,8 @@ EXPR = {
     'calm':     dict(lid=0.52, low=0.12, look=0.1, mouth='none', brow=(0, 0), mou=0),
     'kind':     dict(lid=0.45, low=0.3, look=0.0, mouth='smile', brow=(-3, -4), mou=-9),
     'surprise': dict(lid=0.12, low=0.0, look=0.0, mouth='o', brow=(-13, -8), mou=3),
-    'sad':      dict(lid=0.6, low=0.1, look=0.35, mouth='none', brow=(-2, -16), mou=6),
-    'anger':    dict(lid=0.5, low=0.25, look=0.05, mouth='none', brow=(7, 12), mou=2),
+    'sad':      dict(lid=0.6, low=0.1, look=0.35, mouth='none', brow=(-10, 6), mou=6),
+    'anger':    dict(lid=0.5, low=0.25, look=0.05, mouth='none', brow=(10, -7), mou=2),
 }
 LOOKS = {'l': -0.42, 'c': 0.0, 'r': 0.42}
 

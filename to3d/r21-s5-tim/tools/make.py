@@ -100,7 +100,7 @@ def turn_film():
     jpg(os.path.join(OUT, 'turn', 'f0009.png'), os.path.join(PICS, 'turn-frame.jpg'))
 
 
-def live_film(name, clip, n, cam, size=(640, 720), fps=30, events=None, hold=None, fig=None, still=None):
+def live_film(name, clip, n, cam, size=(560, 640), fps=30, events=None, hold=None, fig=None, still=None):
     """A clip with the live face: events {second: {expr, talk}} change the face on the way; hold: stop the motion
     there (the face lives on)."""
     events = events or {}
@@ -126,9 +126,9 @@ LIVE = {
                               events={0.0: {'expr': {'neutral': 0.5, 'joy': 0.5}}, 0.9: {'expr': 'joy'}}),
     'wave': lambda: live_film('wave', 'wave', 96, {'yaw': 20, 'pitch': 6, 'dist': 1.7, 'ty': 0.4, 'fov': 26}, events={0.0: {'expr': 'joy'}}, hold=2.95),
     # looking round, hands behind his back: the eyes go first, the head follows, a blink with the big turns
-    'look': lambda: live_film('look', 'look', 150, {'yaw': 12, 'pitch': 4, 'dist': 1.35, 'ty': 0.44, 'fov': 24}, size=(640, 640)),
+    'look': lambda: live_film('look', 'look', 150, {'yaw': 12, 'pitch': 4, 'dist': 1.35, 'ty': 0.44, 'fov': 24}, size=(560, 560)),
     # the face close: speaking, then the sheet's expressions one after another, then a mix and speaking again
-    'face': lambda: live_film('face', 'look', 300, {'yaw': 10, 'pitch': 2, 'dist': 1.05, 'ty': 0.5, 'fov': 22}, size=(640, 640), fig={'clip': 'idle'},
+    'face': lambda: live_film('face', 'look', 270, {'yaw': 10, 'pitch': 2, 'dist': 1.05, 'ty': 0.5, 'fov': 22}, size=(560, 560), fig={'clip': 'idle'},
                               events={0.3: {'talk': True}, 4.2: {'talk': False}, 4.4: {'expr': 'joy'}, 5.5: {'expr': 'surprise'},
                                       6.6: {'expr': 'sad'}, 7.7: {'expr': 'anger'}, 8.7: {'expr': {'joy': 0.5, 'neutral': 0.5}, 'talk': True}}),
 }

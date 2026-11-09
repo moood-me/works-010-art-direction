@@ -67,9 +67,9 @@ FINGERS = ('Index', 'Middle', 'Ring', 'Pinky')
 def scale_of(name):
     """The scale of the bone from this joint's parent to it, per axis (x, y, z) in the drawing's frame."""
     if name in ('LeftLeg', 'RightLeg'):
-        return (0.56 * U, U, U)              # the drawing's legs stand close together under the narrow skirt
+        return (0.46 * U, U, U)              # the drawing's legs stand close together under the narrow skirt
     if 'Shin' in name or ('Foot' in name and 'Toe' not in name):
-        return (0.3 * U, U, U)               # and straight down, not splayed as Anny's rest
+        return (0.0, U, U)                   # and straight down, not splayed as Anny's rest
     if 'Toe' in name:
         return (0.7 * U, 0.7 * U, 0.58 * U)  # small shoes
     if name in ('LeftForeArm', 'RightForeArm', 'LeftHand', 'RightHand'):
@@ -320,6 +320,7 @@ def tuck(V):
     r, zm = rho(TORSO, V[:, 0], V[:, 1], V[:, 2])
     hole = arm_hole(V[:, 0], V[:, 1], V[:, 2], HOLE)
     sel = (hole > -6) & (r > 0.9) & (r < 1.25) & (V[:, 1] < 480)
+    sel |= (part('Lclavicle', 'Rclavicle') > 0.35) & (r > 0.96)       # the shoulder's top stays under the jacket's
     return keep_inside(V, TORSO, 0.96, sel)
 
 

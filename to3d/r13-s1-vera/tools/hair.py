@@ -5,7 +5,8 @@ and the grey streak swept back from the parting (a lock, as Тим's locks).
 
 The cap is a grid laid from the bun: its meridians run from the hairline over the crown into the bun, the way the
 hair is combed, so the strands of the look follow them. Each point lies on the shell or, where the head comes nearer
-than 1.2 units, that far over the head; toward the hairline it comes down to the scalp, and the edge is turned in.
+than 1.2 units, that far over the head; toward the hairline it comes down to 3.6 units over the scalp (the drawn
+shell stands 5–11 units off the head there, which in 3D is a helmet), and the edge is turned in.
 aux per vertex: (along 0…1 from the bun, the strand's turn round the bun 0…1, −1 for the cap / the lock's id, 1)."""
 import math
 import numpy as np, igl
@@ -84,6 +85,9 @@ def push_out(X, HV, HT, gap):
     return X
 
 
+EDGE = 3.6        # the hair's thickness at the hairline (the drawn shell stands 5–11 units off the head there: a helmet in 3D)
+
+
 def cap(HV, HT, na=64, nt=120):
     b = shell_dir(H.bun['lat'], H.bun['lon'])
     e1 = np.cross([1.0, 0, 0], b); e1 /= np.linalg.norm(e1); e2 = np.cross(b, e1)
@@ -98,9 +102,9 @@ def cap(HV, HT, na=64, nt=120):
             h = igl.ray_mesh_intersect(SH_C, d, HV, HT, False)
             dh = h[-1][1] if h else 0.0
             g = lat - HL(lon)                                    # degrees above the hairline
-            edge = 1 - min(1.0, max(0.0, g / 14.0)) ** 0.6       # 1 at the hairline, 0 from 14° up
+            e = min(1.0, max(0.0, g / 24.0)); edge = 1 - e * e * (3 - 2 * e)     # 1 at the hairline, 0 from 24° up
             r = max(ds, dh + 1.2)
-            r = r * (1 - edge) + min(r, dh + 1.5) * edge
+            r = r * (1 - edge) + min(r, dh + EDGE) * edge
             X.append(SH_C + d * r); A.append((i / na, j / nt, -1.0, 1.0)); f.append(-g)
     X = np.array(X); A = np.array(A); f = np.array(f); F = []
     for i in range(na):
@@ -115,7 +119,7 @@ def cap(HV, HT, na=64, nt=120):
         L = np.array(L)
         if not on[L].mean() > 0.5: continue
         inward = SH_C - v[L]; inward /= np.linalg.norm(inward, axis=1, keepdims=True)
-        v, t, a = rim(v, t, L, inward * 1.6, a)
+        v, t, a = rim(v, t, L, inward * (EDGE - 0.6), a)
     return v, t, a
 
 

@@ -35,7 +35,7 @@ NB = vnormals(V, T)
 UY = lambda y: (FLOOR - y) * K            # a height of the drawing (person units, y down) in metres
 # ---------------- the head (head units: y up, crown +50, chin −50; drawn HS times larger, its centre at person y 8) --
 HS = char.HS
-HY = FLOOR - PERSON['head_at'][1] - 4.0     # 4 units lower than drawn: the chin sits on the collar as in the drawing
+HY = FLOOR - PERSON['head_at'][1] - 1.0     # a unit lower than drawn: the chin comes down to the collar
 Z0 = J[IX['Neck1'], 2] - PERSON['neck'][1][2] * K          # the drawing's axis (its z 0) in the model, by the neck's foot
 HZ = Z0 / K
 H2W = lambda X: np.c_[X[:, 0] * HS * K, (HY + X[:, 1] * HS) * K, (X[:, 2] * HS + HZ) * K]
@@ -51,8 +51,8 @@ def neck(X):
     """below the jaw the base's neck becomes the drawing's thin round neck (radius 9.4 head units about x 0, z −10;
     the drawn one is 8.2), blended in under the jaw line"""
     y, z = X[:, 1], X[:, 2]
-    yj = np.interp(z, [-25, -12, 10, 25], [-38, -44, -52, -54])          # the jaw line, higher at the nape
-    w = sstep(yj - y, 0, 9)
+    yj = np.interp(z, [-30, -12, 8, 22, 32], [-35, -42, -47.5, -50, -52])          # the jaw line, higher at the nape
+    w = sstep(yj - y, 0, 7)
     r = 9.4 + 1.0 * sstep(-y, 58, 75)
     zc = -10.0
     d = np.c_[X[:, 0], z - zc]; rr = np.linalg.norm(d, axis=1)
@@ -63,8 +63,8 @@ def neck(X):
 
 HV = neck(HV)
 # the neck smoothed where the reshaping left folds (the nape, under the jaw), the face and ears left as they are
-nm = sstep(-HV[:, 1], 40, 50) * (1 - sstep(HV[:, 2], 18, 26)) * (np.abs(HV[:, 0]) < 26)
-HV = smooth(HV, HT, it=20, lam=0.5, mask=nm.astype(float))
+nm = sstep(-HV[:, 1], 36, 46) * (1 - sstep(HV[:, 2], 20, 28)) * (np.abs(HV[:, 0]) < 30)
+HV = smooth(HV, HT, it=40, lam=0.5, mask=nm.astype(float))
 HW = H2W(HV)
 # the head's joints where the drawn head is (frames kept)
 J2 = J.copy()
@@ -229,7 +229,7 @@ def glasses():
             a = 2 * np.pi * i / 40; ca, sa = np.cos(a), np.sin(a)
             x = sd * ex + rx * np.sign(ca) * abs(ca) ** 0.5; y = yc + ry * np.sign(sa) * abs(sa) ** 0.5
             ring.append([x, -y, z0 - 0.012 * (abs(x) - ex) * abs(abs(x) - ex + rx) ])      # the rims turn back a little toward the temples
-        out.append(tube_mesh(ring, 0.62, closed=True))
+        out.append(tube_mesh(ring, 0.5, closed=True))
         edge = np.array(ring)[np.argmax(np.array(ring)[:, 0] * sd - 0.3 * np.abs(np.array(ring)[:, 1] + yc - ry * 0.3))]
         ear = np.array([sd * (hd.width(C.get('ear_y', 8)) + 1.5), -(C.get('ear_y', 8) - 5), -6.0])
         mid = (edge + ear) / 2 + [sd * 1.5, 0, 0]
@@ -376,7 +376,7 @@ for _ in range(8): Ws = 0.5 * Ws + 0.5 * np.array([Ws[n].mean(0) for n in nbS])
 hem_loop = np.arange((NR - 1) * NS, NR * NS)
 SK2, SF2, Ws2 = rim(SK, SF, hem_loop, np.c_[-np.sin(ps), np.full(NS, 0.25), -np.cos(ps)] * 0.012, Ws)
 sj, sw = top4(Ws2)
-skirt = part(SK2, SF2, sj, sw, 'coat', name='coat')
+skirt = part(SK2, SF2, sj, sw, 'coat', name='skirt')
 # the coat's front layer (lapels, the turtleneck's wedge, the belt, buttons, the seam) is painted by look.js from the
 # drawing's own shapes: aux = (x, y in the drawing's units at rest, how much the rest surface faces front, 0)
 for p in (coat, skirt):
@@ -460,11 +460,12 @@ N = vnormals(M['V'], M['T'])
 ao = igl.ambient_occlusion(M['V'], M['T'], M['V'] + N * 1e-4, N, 64)
 from pix import mix
 # the drawing's colours; skin and coat a third of the way to their shadow colours (the look's key light is strong, as Р6's)
-PAINT = dict(skin=mix(C['skin'], C['skin_sh'], 0.28), lip=C['lip'], mouth='#5a1f22', eye='#f2ede8', hair=C['hair'].base,
-             coat=mix('#7d8b97', '#4c5866', 0.35), turtle=mix('#93334a', '#5e1c2c', 0.2), pants='#2e2c33', frame='#2a1f1c', shoe='#1e1c20',
+PAINT = dict(skin=mix(C['skin'], C['skin_sh'], 0.42), lip=C['lip'], mouth='#5a1f22', eye='#f2ede8', hair=mix(C['hair'].base, C['hair'].dark, 0.45),
+             coat=mix('#7d8b97', '#4c5866', 0.55), turtle=mix('#93334a', '#5e1c2c', 0.2), pants='#2e2c33', frame='#2a1f1c', shoe='#1e1c20',
              sole='#0c0b0d', teeth='#f4eee2', streak='#8f8882', belt='#6c7985')
 write(char.NAME, parts, J2, B['frames'], ao=ao, out_dirs=OUT,
       extra=dict(K=K, hs=HS, headY=HY, headZ=HZ, balls=BALLS.tolist(), mouthY=MY, lipZ=float(lipz), floor=FLOOR, paint=PAINT,
-                 iris=dict(col=C['iris_col'], r=C['iris'] / char.EYE_R), hair=dict(light=C['hair'].light, dark=C['hair'].dark),
+                 iris=dict(col=mix(C['iris_col'], '#8a8a86', 0.45), r=C['iris'] / char.EYE_R),
+                 legs=dict(r=[0.056, 0.044, 0.036], soft=0.012), hair=dict(light=C['hair'].light, dark=C['hair'].dark),
                  skinShade=C['skin_sh'], lash=C['lash'], eye=dict(x=C['eye_x'], y=C['eye_y'], browH=C['brow_h'])))
 np.savez(f'{CACHE}/head_rest.npz', X=HEAD_REST)

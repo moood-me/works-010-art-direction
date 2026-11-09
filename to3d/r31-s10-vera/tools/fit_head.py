@@ -242,6 +242,16 @@ _lim = 0.4 * np.asarray(h.sl(V[:, 1] - DROP)[0], float)
 _x = _lim * np.tanh(V[:, 0] / np.maximum(_lim, 1e-6))
 V = V + _wb[:, None] * (np.stack([_x, V[:, 1], V[:, 2] - 6.0], 1) - V)
 
+# the nose: the drawing's nose stands on the face with steep sides (so its line is drawn from the brow down in
+# turned views); the Laplacian rounds that off — the nose's own vertices are set on the drawing's nose
+_y0, _y1, _hgt, _hw = h.bumps['nose']
+_yy = V[:, 1] - DROP
+_inn = (_yy > _y0 + 4) & (_yy < _y1 + 2) & (np.abs(V[:, 0]) < np.asarray(_hw(np.clip(_yy, _y0, _y1)), float) + 4) & \
+    (V[:, 2] > 50) & ~mouth_in & (eye_w == 0)
+_zt = h.face_z(V[:, 0], np.clip(_yy, _y0, _y1))
+_k = getattr(who, 'NOSE_SNAP', 0.0) * np.clip((_yy - _y0 - 4) / 8, 0, 1) * np.clip((_y1 - 4 - _yy) / 4, 0, 1)
+V[:, 2] = np.where(_inn, V[:, 2] + _k * (_zt - V[:, 2]), V[:, 2])
+
 _edge = (_hop == 1) & (np.abs(V[:, 0]) < 4) & (V[:, 2] > 55)
 print('the fitted lips meet at y', round(float(V[_edge, 1].mean()), 1), '— the drawing\'s mouth is at', round(who.MOUTH_Y, 1))
 

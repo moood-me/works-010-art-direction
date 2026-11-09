@@ -1,0 +1,16 @@
+"""Close looks at the head for work (not for the page): python3 heads.py out.png [expr …]"""
+import sys, json, subprocess
+from PIL import Image
+from common import CACHE, HERE
+import char
+names = sys.argv[2:] or ['calm']
+shots = []
+for n in names:
+    for yaw, k in ((0, 'a'), (-0.5, 'b'), (-1.5708, 'c'), (2.6, 'd')):
+        shots.append({'name': n + k, 'set': {'expr': [{'t': 0, 'name': n}], 'cam': {'yaw': yaw, 'joint': 'Head', 'offset': [0, 0.11, 0], 'dist': 5, 'height': 0.52}}})
+json.dump({'w': 560, 'h': 560, 'set': {**char.STAND, 'still': True}, 'shots': shots}, open(f'{CACHE}/job_heads.json', 'w'))
+subprocess.run(['node', f'{HERE}/shots.mjs', f'{CACHE}/job_heads.json', f'{CACHE}/heads'], check=True, stdout=subprocess.DEVNULL)
+o = Image.new('RGB', (560 * 4, 560 * len(names)))
+for i, n in enumerate(names):
+    for j, k in enumerate('abcd'): o.paste(Image.open(f'{CACHE}/heads/{n}{k}.png').convert('RGB'), (560 * j, 560 * i))
+o.resize((o.width * 2 // 3, o.height * 2 // 3) if len(names) == 1 else (o.width // 2, o.height // 2)).save(sys.argv[1])

@@ -1,5 +1,5 @@
 """The films, each frame laid on the drawing's backdrop through its gouache filter, then ffmpeg → short mp4s.
-   python3 films.py <name>…   (names: turn, walk, sit, wave, jump, look, face)
+   python3 films.py <name>…   (names: turn, walk, dance, bow, wave, jump, look, face)
 The face is alive in all of them (web/face.js): blinks, the gaze's small jumps and its lead before head turns; some
 talk; expressions change over time (blended). The body moves by the engine's Kimodo motions; the camera follows him
 (a perspective one, over a painted ground that slides under him, so the travel shows) and keeps him large."""
@@ -8,10 +8,10 @@ from common import CACHE, HERE
 from compose import compose_many
 
 PICS = os.path.join(os.path.dirname(HERE), 'pics')
-M = '/cache/to3d-r29-s9-anya/tim.json'
+M = '/cache/to3d-r29-s9-anya/anya.json'
 
 
-def follow(yaw, pitch=0.1, dist=3.9, y=0.55, fov=20):
+def follow(yaw, pitch=0.1, dist=5.5, y=0.84, fov=20):
     return {'yaw': yaw, 'pitch': pitch, 'dist': dist, 'follow': [0, y, 0], 'fov': fov}
 
 
@@ -22,10 +22,11 @@ def motion_film(motion, frames, cam, expr, talk=lambda s: False, W=640, H=720, b
 
 FILMS = {
     'walk': lambda: motion_film('walk', 120, follow(-0.55), [{'t': 0, 'name': 'calm'}, {'t': 2.4, 'name': 'joy'}], lambda s: 0.6 < s < 2.3),
-    'sit': lambda: motion_film('sit', 120, follow(-0.9, 0.16, 3.8, 0.4), [{'t': 0, 'name': 'calm'}, {'t': 2.2, 'name': 'sad'}]),
+    'dance': lambda: motion_film('dance', 120, follow(-0.3), [{'t': 0, 'name': 'joy'}, {'t': 2.6, 'name': 'calm'}]),
+    'bow': lambda: motion_film('bow', 105, follow(-0.7), [{'t': 0, 'name': 'calm'}, {'t': 2.6, 'name': 'joy'}]),
     'wave': lambda: motion_film('wave', 90, follow(-0.25), [{'t': 0, 'name': 'joy'}], lambda s: 0.9 < s < 2.8),
-    'jump': lambda: motion_film('jump', 90, follow(-0.4, 0.08, 4.4, 0.65), [{'t': 0, 'name': 'surprise'}, {'t': 1.3, 'name': 'joy'}]),
-    'look': lambda: motion_film('idle', 150, follow(-0.2, 0.06, 3.0, 0.75), [{'t': 0, 'name': 'calm'}]),
+    'jump': lambda: motion_film('jump', 90, follow(-0.4, 0.08, 6.2, 0.95), [{'t': 0, 'name': 'surprise'}, {'t': 1.3, 'name': 'joy'}]),
+    'look': lambda: motion_film('idle', 150, follow(-0.2, 0.06, 3.4, 1.25), [{'t': 0, 'name': 'calm'}]),
 }
 
 
@@ -34,7 +35,7 @@ def face_film():
     expressions one after another, blended"""
     ex = [{'t': 0, 'name': 'calm'}, {'t': 3.8, 'name': 'joy'}, {'t': 5.0, 'name': 'surprise'}, {'t': 6.2, 'name': 'sad'},
           {'t': 7.6, 'name': 'anger'}, {'t': 8.8, 'name': 'calm'}]
-    cam = {'yaw': -0.35, 'pitch': 0.04, 'dist': 1.6, 'joint': 'Head', 'offset': [0, 0.05, 0], 'fov': 20}
+    cam = {'yaw': -0.35, 'pitch': 0.04, 'dist': 1.55, 'joint': 'Head', 'offset': [0, 0.06, 0], 'fov': 20}
     n = 300
     return 600, 600, 'portrait', 30, [{'name': f'f{i:04d}', 'set': {'model': M, 'ground': False, 'motion': ['bow'], 't': 0, 'faceTime': i / 30, 'cam': cam,
                                                                      'expr': ex, 'talk': 1.0 < i / 30 < 3.5}} for i in range(n)]
@@ -43,7 +44,7 @@ def face_film():
 def turn_film():
     n = 72
     return 500, 760, 'figure', 24, [{'name': f'f{i:04d}', 'set': {'model': M, 'ground': False, 'motion': ['bow'], 't': 0, 'faceTime': i / 24,
-                                     'cam': {'yaw': -6.2832 * i / n, 'follow': [0, 0.6, 0], 'height': 1.45}}} for i in range(n)]
+                                     'cam': {'yaw': -6.2832 * i / n, 'follow': [0, 0.87, 0], 'height': 1.9}}} for i in range(n)]
 
 
 for name in sys.argv[1:]:

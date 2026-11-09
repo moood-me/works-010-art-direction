@@ -16,7 +16,7 @@ export const PARAMS = ['blink', 'up', 'low', 'lookX', 'lookY', 'pupil', 'jaw', '
 export class FaceRig {
   constructor(h, a) {
     this.h = h; const hs = h.hs || 1, K = h.K * hs, HY = h.headY / hs, HZ = (h.headZ || 0) / hs, P = a.positions, F = a.face, JW = a.jaw;
-    this.KH = K; const EX = h.eye.x, EY = -h.eye.y, BY = EY + h.eye.browH + 2.5;
+    this.KH = K; const EX = h.eye.x, EY = -h.eye.y, BY = EY + h.eye.browH + 0.8;
     this.balls = h.balls; this.MY = h.mouthY; this.LZ = h.lipZ;
     const idx = [];
     for (const name of ['head', 'eyeL', 'eyeR', 'teethUp', 'teethLo']) { const [s, e] = h.ranges[name]; for (let i = s; i < e; i++) idx.push(i); }
@@ -130,7 +130,7 @@ function rotY(p, c, deg) {
 // Вера's faces in these numbers. The style drew no expression sheet for her: these follow the style's sheet
 // (styles/s1-pixar/tools/build.py EXPR) held back to her character — she is strict and does not laugh aloud
 export const EXPRESSIONS = {
-  calm: { smile: -0.12, up: 13, low: 6, inner: -0.15, lookY: 1 },
+  calm: { smile: -0.12, up: 19, low: 7, inner: -0.15, lookY: 1 },
   strict: { smile: -0.3, up: 13, low: 5, brow: -0.25, inner: -0.7, browR: 0.5, lookX: 6 },
   joy: { smile: 0.95, upper: 0.25, wide: 0.3, low: 8, up: 5, brow: 0.35 },
   surprise: { jaw: 12, pucker: 0.5, up: -7, low: -3, brow: 1.2, pupil: 0.8 },

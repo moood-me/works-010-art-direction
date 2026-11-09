@@ -236,8 +236,9 @@ ls2.collection_negation = 'INCLUSIVE'
 ls2.select_by_face_marks = True
 ls2.face_mark_negation = 'INCLUSIVE'
 ls2.face_mark_condition = 'BOTH'
-for _k in ('silhouette', 'border', 'crease', 'ridge_valley', 'suggestive_contour', 'contour', 'edge_mark'):
+for _k in ('silhouette', 'border', 'crease', 'ridge_valley', 'suggestive_contour', 'edge_mark'):
     setattr(ls2, 'select_' + _k, False)
+ls2.select_contour = True                    # each object's own outline (a hand over the skirt, the lips in profile)
 ls2.select_material_boundary = True
 ls2.select_external_contour = True
 ls2.linestyle = lst

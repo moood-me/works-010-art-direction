@@ -178,11 +178,12 @@ for r, y in enumerate(ys):
     xs = np.linspace(-hw, hw, cols)
     zb = np.array([B.front(x, max(y, 0.60), 0.02, front_mask) for x in xs])
     zb = np.where(np.isnan(zb), np.nanmin(zb), zb)
-    AV[r] = np.c_[xs, np.full(cols, y), zb + 0.012 - 0.045 * (xs / hw) ** 2]
+    zm = np.nanmax(zb[cols // 2 - 2:cols // 2 + 3])
+    AV[r] = np.c_[xs, np.full(cols, y), np.maximum(zb + 0.008, zm + 0.014 - 0.05 * (xs / hw) ** 2)]
 # leather hangs: below the belly's most forward line it falls straight, only a little back
 for c in range(cols):
     z = AV[:, c, 2]; k = int(np.argmax(z))
-    for r in range(k + 1, rows): z[r] = max(z[r], z[k] - 0.10 * (ys[k] - ys[r]))
+    for r in range(k + 1, rows): z[r] = max(z[r], z[k] - 0.08 * (ys[k] - ys[r]))
 for _ in range(8):
     Q = AV.copy(); Q[1:-1, :, 2] = (AV[:-2, :, 2] + 2 * AV[1:-1, :, 2] + AV[2:, :, 2]) / 4
     Q[:, 1:-1, 2] = (Q[:, :-2, 2] + 2 * Q[:, 1:-1, 2] + Q[:, 2:, 2]) / 4; AV = Q
@@ -253,6 +254,9 @@ void deco(vec3 rp, vec2 uv, float m, inout vec3 base, inout vec3 bshd) {
   }
 }'''
 
+# the drawn stand: the hands behind the back
+POSE = dict(Left=dict(down=0.72, fwd=-0.5, bend=0.9, axis=[0.5, 1, 0]), Right=dict(down=0.72, fwd=-0.5, bend=0.9, axis=[0.5, -1, 0]))
+
 # ---------------------------------------------------------------- the pack
 N = sum(len(p['V']) for p in parts)
 def cat(key, default, dtype=np.float32):
@@ -277,7 +281,10 @@ movers = {g: dict(ranges=groups[g], pivot=[float(x) for x in np.mean([parts[i]['
 header = dict(format='engine/body', version=1, id='savely-klaus', label={'ru': 'Савелий Петрович (Клаус)'}, topology='savely-klaus',
               skeleton='soma', source='to3d/r15-s2-savely/tools/build.py', faces='faces', floor=floor, materials=MATS,
               deco=DECO % DV, K=K, headOrigin=[float(x) for x in OFF], movers=movers, expr=FT.EXPR,
-              back=dict(top='#2e2230', bottom='#4a3030', glow='#f0a050'))
+              back=dict(top='#2e2230', bottom='#4a3030', glow='#f0a050'), seed=15,
+              ui=dict(motions=[['', 'стоит'], ['walk', 'шаг'], ['wave', 'машет'], ['sneak', 'крадётся'], ['bow', 'поклон'], ['stomp', 'топает'], ['sit', 'садится'], ['dance', 'танец']],
+                      expr=[['calm', 'ворчит'], ['kind', 'добрый'], ['surprise', 'удивлён'], ['sad', 'грустит'], ['anger', 'сердит']],
+                      dist=5.0, cy=0.82, near=2.5, up=0.13, pose=POSE, look3d=dict(thr=0.08, light=[-0.48, 0.48, 0.74])))
 pack.save(os.path.join(OUT, 'savely.json'), header, dict(
     positions=pos, triangles=tri, skinJoints=np.concatenate([p['SJ'] for p in parts]).astype(np.uint8),
     skinWeights=np.concatenate([p['SW'] for p in parts]).astype(np.float32),

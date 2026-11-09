@@ -13,7 +13,7 @@ d = {k: C[k] for k in ['eye_x', 'eye_y', 'eye_w', 'eye_h', 'brow_h', 'brow_len',
 d['blush_x'] = C.get('blush_x', 23); d['blush_y'] = C.get('blush_y', 19)
 d['spots'] = [list(s) for s in C.get('spots', [])]
 d['lines'] = [[[list(p) for p in path], a] for path, a in C.get('lines', [])]
-d['brow_up'] = 2.0          # the brows this much higher than drawn: in 3D the upper lid's fold is where the drawing paints them
+d['brow_up'] = 0.8          # the brows this much higher than drawn: in 3D the upper lid's fold is where the drawing paints them
 ex = face.expr()
 lt, lb, my, mw = face.mouth_curves(C, ex)
 ub = [(x, y - C['lip_up'] * (1 - abs(x / mw) ** 1.8) * (1 - 0.35 * math.exp(-((x / mw) / 0.13) ** 2)) - 0.15) for x, y in lt]

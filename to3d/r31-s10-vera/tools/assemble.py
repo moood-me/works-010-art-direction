@@ -52,6 +52,8 @@ if WITH_BODY:
         meta = json.loads(str(b[name + '_meta']))
         add(name, b[name + '_v'], b[name + '_f'], meta['colour'], **{k: v for k, v in meta.items() if k != 'colour'})
         RIG[name] = (b[name + '_sj'], b[name + '_sw'])
+    # the hands: one clear shape each, as the style draws a hand — only their outer contour is drawn
+    arrays['obj_hands_fm'] = np.ones(len(arrays['obj_hands_f']), np.uint8)
     # the base head's shoulders are cut off: its neck ends inside the blouse's collar
     F = np.asarray(hf['f'])
     low = np.asarray(hf['low'])

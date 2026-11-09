@@ -18,7 +18,7 @@ def chain(points, radii, n=24):
     return C, np.interp(t, np.arange(len(R)), R)
 
 
-def solid(balls, k, cell, squash=None, pad=None, smooth=6):
+def solid(balls, k, cell, squash=None, pad=None, smooth=6, keep=0.4):
     """balls: (centres N×3, radii N). k: how far neighbours melt together. squash: (sx, sy, sz) — the form is made
     in a space stretched by 1/s and brought back (a flatter form). Returns V, T (outward faces)."""
     C, R = np.asarray(balls[0], float), np.asarray(balls[1], float)
@@ -40,6 +40,10 @@ def solid(balls, k, cell, squash=None, pad=None, smooth=6):
     if smooth:
         V = M.smooth(V, M.adjacency(len(V), T), np.ones(len(V)), iters=smooth, lam=0.5)
     V = V * s + c0
+    if keep < 1:
+        import igl
+        r = igl.decimate(V, T, int(len(T) * keep))
+        V, T = r[0], r[1].astype(np.int64)
     return V, outward(V, T)
 
 

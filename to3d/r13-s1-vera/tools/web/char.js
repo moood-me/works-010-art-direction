@@ -13,6 +13,7 @@ import { makeMaterial, KeyShadow } from './look.js';
 import { FaceRig } from './face.js';
 import { Life } from './life.js';
 import { FacePaint, clothLayer } from './paint.js';
+import { skirtOverLegs } from './cloth.js';
 
 const ENG = new URL('../../../../engine/', import.meta.url).href;
 const HERE = new URL('./', import.meta.url).href;
@@ -112,6 +113,7 @@ const A = window.A = {
     const ts = state.faceTime ?? (c ? state.t / c.fps : 0);
     const p = state.params ? { ...state.params } : life.at(ts, { expr: state.expr, talk: state.talk, track: tr, still: state.still, look: state.look });
     rig.apply(p, figure, sk);
+    if (model.h.ranges.skirt) skirtOverLegs(figure.positions, model.h.ranges.skirt, figure.pose.P, sk, model.h.legs);
     normalsOf(figure.positions, model.body.triangles, figure.normals);
     paint.draw(p); material.uniforms.pupil.value = p.pupil ?? 1;
     material.uniforms.clay.value = +state.clay || 0;
