@@ -215,3 +215,62 @@ def fall(p, length, n=8, side=1, out_x=0.0, back_z=0.0, wave=0.0, waves=1.0, pha
         x = x0 + side * (out_x * t + wave * math.sin(2 * math.pi * waves * t + phase) + flick * t ** 4)
         res.append((x, y0 + length * t, z0 + back_z * t))
     return res
+
+
+# ------------------------------------------------------------------ sculpted curls
+def curl_spots(h, inside, r, y0, y1, out=0.02, k=1.0, seed=1, place=None, radius=None, jitter=0.22):
+    """Where the curls of a curly mass sit: a jittered honeycomb over the surface, kept where inside(phi, y).
+    r — curl radius (head units); place(phi, y) → 3D point for a mass that leaves the head (a beard under the chin);
+    radius(y) — the mass's half width there (for the spacing round it). The same seed gives the same curls in every
+    view. Returns [(point3, radius, facing, start angle, winding)]."""
+    import random
+    rnd = random.Random(seed)
+    spots = []
+    step = r * 1.12
+    rows = int((y1 - y0) / (step * 0.87)) + 1
+    for i in range(rows):
+        y = y0 + i * step * 0.87
+        rad = radius(y) if radius else (h.a(y) + h.b(y)) / 2 * k
+        m = max(3, int(2 * math.pi * max(rad, 0.03) / step))
+        for j in range(m):
+            phi = -math.pi + 2 * math.pi * (j + 0.5 * (i % 2)) / m + (rnd.random() - 0.5) * jitter * step / max(rad, 0.03)
+            yy = y + (rnd.random() - 0.5) * jitter * step
+            rr = r * (0.85 + 0.3 * rnd.random())
+            a0, wind = rnd.random() * 2 * math.pi, rnd.choice((-1, 1))
+            if not inside(phi, yy):
+                continue
+            p = place(phi, yy) if place else h.surf(phi, yy, out, k)
+            spots.append((p, rr, h.facing(phi, max(-0.5, min(0.5, yy))), a0, wind))
+    return spots
+
+
+def coils(d, h, P, spots, col):
+    """A curly mass, as on a clay or yarn-haired puppet: every curl is a small ball with a spiral cut into it, lit
+    from the key side; the balls overlap from back to front and the whole mass is shaded as one form.
+    Returns (behind the head, over the head)."""
+    S = h.S
+    ball = d.rad([(0, mix(col, '#ffe8d0', 0.3), 1), (0.45, col, 1), (1, mix(col, '#000000', 0.6), 1)],
+                 cx=0.5, cy=0.5, r=0.56, fx=0.3, fy=0.24)
+    cut, lit = mix(col, '#000000', 0.55), mix(col, '#ffe8d0', 0.38)
+    back, front = [], []
+    for p, rr, facing, a0, wind in spots:
+        x, y, z = h.scr(p)
+        R = rr * S
+        sp = []
+        for i in range(15):
+            t = i / 14
+            a = a0 + wind * 2 * math.pi * 1.2 * t
+            q = R * (0.8 - 0.62 * t)
+            sp.append((x + q * math.cos(a), y + q * math.sin(a)))
+        path = pts(sp, close=False)
+        s = (f'<circle cx="{f(x)}" cy="{f(y)}" r="{f(R)}" fill="url(#{ball})"/>'
+             f'<path d="{path}" fill="none" stroke="{cut}" stroke-width="{f(R*0.15)}" stroke-linecap="round"/>'
+             f'<path d="{path}" fill="none" stroke="{lit}" stroke-width="{f(R*0.07)}" stroke-linecap="round" opacity="0.5" '
+             f'transform="translate({f(-R*0.09)},{f(-R*0.09)})"/>')
+        (front if facing > -0.2 else back).append((z, s))
+    fid = d.form(S * 0.6, shade=P.get('hair_shade', '#1a0a06'), depth=0.5, ao=0.4, sheen=0.0, rim=0.0)
+    res = []
+    for lst in (back, front):
+        lst.sort(key=lambda t: t[0])
+        res.append(f'<g filter="url(#{fid})">{"".join(s for _, s in lst)}</g>' if lst else '')
+    return res[0], res[1]

@@ -62,8 +62,46 @@ Needs `google-chrome` and Python with Pillow. The SVGs are gzipped (`.svgz`, ope
    paths with `H.surf_path(h, [(phi, y), ...], out=(root, end))` and `H.fall(...)`.
 3. Its bust `*_BODY` (torso/neck tables, cloth, texture, `ribs`, `neckline` or `collar`, `inside` for painted
    clothes, `details` for buttons and edges) and figure `*_FIG` (legs, shoe, skirts, arms, hand, props).
-4. Add it to `NAMES`, `LOOK`, `FIG` in `build.py`. Try a quick head with `draw_head` at yaw 0/35/90 first —
+4. Add it to `NAMES`, `LOOK`, `FIG` in `build.py` (a character in a module of its own — as `marat.py`, `kira.py` —
+   also to `HOME`). Try a quick head with `draw_head` at yaw 0/35/90 first —
    the turn shows at once whether the shape tables are right.
+
+## Round three: Марат and Кира
+
+What was asked: two more characters in this style, made with its code, next to the four (brief
+`docs/briefs/styles-more.md`, part A). What was done:
+
+- `tools/marat.py`, `tools/kira.py` — a module per character: `MARAT` / `KIRA` (head and face), `*_BODY` (bust),
+  `*_FIG` (the whole puppet), `EXPR` (their own faces: `beam`, `laugh`; `sulk`, `smirk`). The four stay in `cast.py`.
+- `hair.py` got sculpted curls: `curl_spots` (a jittered honeycomb of curl centres over the head, or over a mass that
+  leaves the head — `place`, `radius`) and `coils` (each curl a small lit ball with a spiral cut, the whole mass shaded
+  as one form). Marat's hair, beard and moustache are made of them — after the clay and yarn hair in the samples
+  (`refs/09`, `10`, `11`). The beard hangs from the jaw as a bowl of its own; the moustache's lower edge follows the
+  smile of the given face, so the open mouth (teeth, tongue) is never covered. They turn with the head, so his
+  turnaround holds in profile.
+- Marat's clothes: the apron's bib and straps are painted inside the jacket's form (`inside`), hems and the tie are
+  relief (`details`), the towel comes over the shoulder's top; in the figure the apron goes on as a thin loft in front
+  of the legs, the sleeves end at the elbow in a roll, the forearms are skin.
+- Kira: the fringe is four pointed locks from the part over her left eye; the hood is the `collar` loft with
+  `open_neck`; the headphones are drawn in `collar_extra`; in the figure one forearm goes under a "pocket lip" (a
+  prop laid over it), the boots are a shaft tube + the shoe + lime laces (a prop).
+- `build.py`: the character table takes the module of each (`HOME`); a character may have a pose of its own for the
+  full figure (`LOOK[n]['fig']`: expression, turn, `roll`, `head_dx`, `head_dy`, `x`), a resting face for the
+  turnaround (`rest`), and its own reading of an expression (`P['faces']`: Kira's joy is the smirk, Marat's the
+  laugh). New picture `six` (all six; `cast` — the four — stays). A line of action comes from the torso's `x` table
+  (hips aside), the head's roll and shift, and legs that differ.
+- By eye: the first moustache was a string of beads and hid the smile — made thicker and lifted with the mouth's
+  corners; the beard was a strip along the jaw in profile — carried under the ear; the jacket's collar under the beard
+  was a white box — removed; Kira's headphones first looked like two eyes — turned toward each other, the cushion
+  showing inside; her portrait was turned the other way so that the fringe falls over the near eye; the hood and the
+  hems had thin "wings" at the corners (the smooth outline overshoots a square end) — the lofts now end in a taper.
+- The four were not touched: re-rendered with the new code from a copy of `tools/` and compared with `pics/` pixel
+  by pixel — identical (14 pictures).
+
+To repeat: `python3 tools/build.py marat`, `python3 tools/build.py kira`, `python3 tools/build.py six`.
+
+Weak: hands are the same mittens (Marat's fist on the ladle is a lump); Kira's hoodie is a smooth box without folds;
+Marat's towel is flat; profiles are flat-faced; Marat's anger is the weakest face.
 
 ## Honest state
 
