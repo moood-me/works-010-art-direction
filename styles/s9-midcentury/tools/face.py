@@ -124,6 +124,22 @@ def mouth(x, y, s=1.0, kind='smile', side=1, color=LIP, width=1.0):
                        (x + side * 7 * W, y + 6 * s, 'c'), (x - side * 7 * W, y + 6 * s, 'c')], MOUTH_IN)
                 + shape([(x - side * 8 * W, y - 2 * s, 'c'), (x + side * 8 * W, y - 2.4 * s, 'c'), (x + side * 7 * W, y + 0.4 * s),
                          (x - side * 7 * W, y + 0.6 * s)], '#f6efe0'))
+    if kind == 'beam':      # a wide closed-teeth smile: a white crescent of teeth, the lower lip under it
+        teeth = [(x - side * 13 * W, y - 3.5 * s, 'c'), (x - side * 4 * W, y - 0.6 * s), (x + side * 5 * W, y - 1 * s),
+                 (x + side * 13 * W, y - 5 * s, 'c'), (x + side * 7 * W, y + 5.5 * s), (x - side * 5 * W, y + 6 * s)]
+        return (shape(teeth, '#f8f2e4')
+                + brush([(x - side * 13.5 * W, y - 3.2 * s), (x - side * 5 * W, y + 6.6 * s), (x + side * 7 * W, y + 6.2 * s),
+                         (x + side * 13.5 * W, y - 4.8 * s)], 2.2 * s, color, taper=(0.25, 0.25)))
+    if kind == 'laugh':     # laughing out loud: wide open, upper teeth, tongue, the lower lip
+        hole = [(x - side * 13 * W, y - 4 * s, 'c'), (x, y - 2.5 * s), (x + side * 13 * W, y - 5.5 * s, 'c'),
+                (x + side * 9 * W, y + 9 * s), (x, y + 13 * s), (x - side * 8 * W, y + 9.5 * s)]
+        cid = 'mo%d' % (abs(hash((round(x, 2), round(y, 2), round(s, 3), side))) % 10**8)
+        return (shape(hole, MOUTH_IN) + f'<clipPath id="{cid}"><path d="{path(hole)}"/></clipPath><g clip-path="url(#{cid})">'
+                + ell(x + side * 1 * W, y + 12 * s, 7.5 * W, 5.5 * s, '#e2706a')
+                + shape([(x - side * 14 * W, y - 6 * s, 'c'), (x + side * 14 * W, y - 7 * s, 'c'), (x + side * 12 * W, y + 0.6 * s),
+                         (x, y + 2.2 * s), (x - side * 11.5 * W, y + 1 * s)], '#f8f2e4') + '</g>'
+                + brush([(x - side * 9 * W, y + 9.5 * s), (x, y + 13.6 * s), (x + side * 9.5 * W, y + 9 * s)], 2.2 * s, color,
+                        taper=(0.3, 0.3)))
     raise ValueError(kind)
 
 

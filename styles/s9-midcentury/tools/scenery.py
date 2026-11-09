@@ -8,6 +8,8 @@ BACK = {
     'savely': dict(field='#d7a64a', ground='#b98634', motif='clock', mc='#f3e6c4'),
     'tim':    dict(field='#7fc4c0', ground='#5ea6a0', motif='sun', mc='#f2c94c'),
     'vera':   dict(field='#5e7591', ground='#4a5f78', motif='leaf', mc='#a9bfcf'),
+    'marat':  dict(field='#98a35c', ground='#7b8645', motif='lemon', mc='#f0cf4a'),
+    'kira':   dict(field='#b5abc8', ground='#9287ab', motif='star', mc='#efe9f6'),
 }
 
 
@@ -42,7 +44,28 @@ def leaf(x, y, r, c, rot=0):
             + brush([(0, -r * 0.8), (0, r * 0.9)], 2.2, mix(c, '#2a201c', 0.35), taper=(0.1, 0.1)) + '</g>')
 
 
-MOTIF = {'daisy': daisy, 'sun': sun, 'clock': clock, 'leaf': leaf}
+def lemon(x, y, r, c):
+    rot = (x * 7) % 70 - 35
+    return (f'<g transform="translate({x},{y}) rotate({rot})">'
+            + shape([(-r * 1.25, 0, 'c'), (-r * 0.5, -r * 0.78), (r * 0.5, -r * 0.78), (r * 1.25, 0, 'c'), (r * 0.5, r * 0.78),
+                     (-r * 0.5, r * 0.78)], c)
+            + shape([(-r * 1.2, -r * 0.1, 'c'), (-r * 1.7, -r * 0.9), (-r * 2.3, -r * 0.7, 'c'), (-r * 1.8, -r * 0.2)], '#55703a')
+            + brush([(-r * 0.5, r * 0.35), (r * 0.1, r * 0.5), (r * 0.7, r * 0.25)], r * 0.12, '#d9a92e', taper=(0.3, 0.3)) + '</g>')
+
+
+def star(x, y, r, c):
+    """The four-point 'atomic' star of 1950s prints."""
+    k = 0.16
+    pts = []
+    for i in range(4):
+        a = i * math.pi / 2 + ((x * 3) % 40 - 20) * math.pi / 180
+        pts.append((x + r * 1.5 * math.cos(a), y + r * 1.5 * math.sin(a), 'c'))
+        b = a + math.pi / 4
+        pts.append((x + r * 1.5 * k * 1.6 * math.cos(b), y + r * 1.5 * k * 1.6 * math.sin(b)))
+    return shape(pts, c)
+
+
+MOTIF = {'daisy': daisy, 'sun': sun, 'clock': clock, 'leaf': leaf, 'lemon': lemon, 'star': star}
 
 
 def backdrop(d, who, kind):

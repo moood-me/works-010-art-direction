@@ -236,7 +236,8 @@ def render(svg_path, png_path, w, h, scale=1):
 
 
 def limb(pts, ws, fill, per=8, cap=True):
-    """A limb or any tube: centre line pts with a width at each point (linearly between them); round ends."""
+    """A limb or any tube: centre line pts with a width at each point (linearly between them).
+    cap=True: ends cut by an inward half-circle (they sit under a hand or a sleeve); cap='round': ends rounded outward."""
     c = sample(pts, per=per)
     n = len(pts)
     W = []
@@ -252,12 +253,13 @@ def limb(pts, ws, fill, per=8, cap=True):
         nx, ny = -dy / dl, dx / dl
         left.append((p[0] + nx * W[i] / 2, p[1] + ny * W[i] / 2))
         right.append((p[0] - nx * W[i] / 2, p[1] - ny * W[i] / 2))
+    sw = 0 if cap == 'round' else 1     # cap=True bites a half-circle into each end; cap='round' rounds the end outward
     d = 'M' + ' L'.join('%.1f,%.1f' % q for q in left)
     if cap:
-        d += ' A%.1f,%.1f 0 0 1 %.1f,%.1f' % (W[-1] / 2, W[-1] / 2, *right[-1])
+        d += ' A%.1f,%.1f 0 0 %d %.1f,%.1f' % (W[-1] / 2, W[-1] / 2, sw, *right[-1])
     d += ' L' + ' L'.join('%.1f,%.1f' % q for q in right[::-1])
     if cap:
-        d += ' A%.1f,%.1f 0 0 1 %.1f,%.1f' % (W[0] / 2, W[0] / 2, *left[0])
+        d += ' A%.1f,%.1f 0 0 %d %.1f,%.1f' % (W[0] / 2, W[0] / 2, sw, *left[0])
     return f'<path d="{d}Z" fill="{fill}"/>'
 
 
@@ -265,3 +267,34 @@ def edge(pts, i0, i1, w=2.2, color=INK, dx=1.6, dy=1.2, opacity=0.85):
     """Part of a shape's contour in ink, a little off the fill (the print's misregistration): the Šašek line."""
     seg = [(q[0] + dx, q[1] + dy) for q in pts[i0:i1 + 1]]
     return brush(seg, w, color, taper=(0.3, 0.3), opacity=opacity)
+
+
+def hand(x, y, s=1.0, rot=0, fill='#f0c8a8', line=None, kind='open', side=1):
+    """A hand as a few flat shapes, not a mitten: wrist at (x, y), fingers toward +y before `rot` (degrees);
+    side=+1 puts the thumb on -x. kind: open (fingers spread) | fist (knuckles, thumb across) | curl (relaxed)."""
+    o = []
+    t = side
+    if kind == 'open':
+        for dx, ang, ln in ((-6.5, -20, 12), (-2.2, -7, 14.5), (2.2, 6, 13.5), (6.2, 19, 10.5)):
+            a = math.radians(ang) * t
+            x0, y0 = dx * s * t, 15 * s
+            o.append(limb([(x0, y0), (x0 + math.sin(a) * ln * s, y0 + math.cos(a) * ln * s)], [5.2 * s, 4.0 * s], fill, cap='round'))
+        o.append(limb([(-7 * s * t, 6 * s), (-15 * s * t, 9 * s), (-19 * s * t, 17 * s)], [6.5 * s, 5.5 * s, 4.2 * s], fill, cap='round'))
+        o.append(ell(0, 10 * s, 9.5 * s, 10.5 * s, fill))
+    elif kind == 'fist':
+        o.append(ell(0, 10 * s, 11 * s, 10 * s, fill))
+        o.append(limb([(-8 * s * t, 5 * s), (-11 * s * t, 13 * s), (-4 * s * t, 17 * s)], [6.5 * s, 6 * s, 5 * s], fill, cap='round'))
+        if line:
+            for dx in (-1.5, 3, 7):
+                o.append(brush([(dx * s * t, 13 * s), (dx * s * t + 0.6 * s, 19 * s)], 1.5 * s, line, taper=(0.2, 0.5)))
+            o.append(brush([(-10 * s * t, 6 * s), (-11.5 * s * t, 13 * s), (-5 * s * t, 17.5 * s)], 1.4 * s, line, taper=(0.3, 0.3)))
+    elif kind == 'curl':
+        for dx, ln in ((-5, 9), (-1, 11), (3, 10.5), (6.5, 8)):
+            x0 = dx * s * t
+            o.append(limb([(x0, 14 * s), (x0 + 1.5 * s * t, 14 * s + ln * s * 0.7), (x0 - 1.5 * s * t, 14 * s + ln * s)],
+                          [4.8 * s, 4.4 * s, 3.6 * s], fill))
+        o.append(limb([(-6 * s * t, 6 * s), (-11 * s * t, 13 * s), (-9 * s * t, 20 * s)], [6 * s, 5 * s, 4 * s], fill, cap='round'))
+        o.append(ell(0, 9 * s, 8.5 * s, 9.5 * s, fill))
+    else:
+        raise ValueError(kind)
+    return f'<g transform="translate({x:.1f},{y:.1f}) rotate({rot})">' + ''.join(o) + '</g>'

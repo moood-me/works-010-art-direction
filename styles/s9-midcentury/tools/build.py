@@ -4,7 +4,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(__file__))
 from kit import Doc, render, g
 import scenery
-import anya, savely, tim, vera
+import anya, savely, tim, vera, marat, kira
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SVG, PNG = os.path.join(HERE, 'svg'), os.path.join(HERE, 'pics')
@@ -14,7 +14,7 @@ FILTER = sys.argv[1] if len(sys.argv) > 1 else ''
 SCRATCH = os.environ.get('S9_SCRATCH', '/home/user/cache/styles-s9-midcentury/render')
 os.makedirs(SCRATCH, exist_ok=True)
 
-CAST = {'anya': anya, 'savely': savely, 'tim': tim, 'vera': vera}
+CAST = {'anya': anya, 'savely': savely, 'tim': tim, 'vera': vera, 'marat': marat, 'kira': kira}
 
 
 def save(d, name):
@@ -139,6 +139,21 @@ def cast():
     return d
 
 
+def cast_six():
+    """All six on the same street: Марат greets everyone with the ladle, Кира stands apart at the other end."""
+    from kit import shape
+    d = Doc(1600, 900)
+    d.add(g([f'<rect width="1600" height="900" fill="#ead9b4"/>'], filt='board'))
+    d.add(g([scenery.sun(1250, 130, 50, '#e8a03a')], filt='gouache'))
+    scenery.town(d, 640)
+    d.add(g([shape([(0, 620), (800, 610), (1600, 626), (1600, 900), (0, 900)], '#b9c58a'),
+             shape([(0, 760), (800, 748), (1600, 770), (1600, 900), (0, 900)], '#a3b274')], filt='gouache'))
+    for m, x, y, flip in ((marat, 250, 846, 1), (vera, 560, 836, 1), (tim, 745, 846, 1), (anya, 940, 838, 1),
+                          (savely, 1160, 846, -1), (kira, 1440, 852, -1)):
+        d.add(g(m.figure(), f'translate({x},{y}) scale({0.86 * flip},0.86)', 'gouache'))
+    return d
+
+
 if __name__ == '__main__':
     save(rule_flat(), 'rule-flat')
     save(rule_parts(), 'rule-parts')
@@ -151,3 +166,7 @@ if __name__ == '__main__':
     save(expressions('anya'), 'expr-anya')
     save(turnaround('tim'), 'turn-tim')
     save(expressions('tim'), 'expr-tim')
+    save(cast_six(), 'cast-six')
+    for n in ('marat', 'kira'):
+        save(turnaround(n), 'turn-' + n)
+        save(expressions(n), 'expr-' + n)
