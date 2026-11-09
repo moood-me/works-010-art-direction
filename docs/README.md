@@ -14,5 +14,7 @@
 9. [briefs/](briefs/) — the briefs those agents worked from (`tools-demo/`, `styles/`, `to3d/`; `styles-more.md`: two
    more characters and four more styles), to reuse.
 
+10. [status.md](status.md) — where the work stands now: what is done, what was paused half-way, what is planned.
+
 Pictures are in [pictures/](pictures/): the hope scenes (Claude Design's originals and the engine 3 render of the
 title), references Pavel sent (third-party images, kept here only as references), and sheets from the experiments.
