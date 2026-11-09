@@ -39,6 +39,7 @@
 - `tools/cast.py` — the four heads: shape, hair, face marks, colours.
 - `tools/figures.py` — the four bodies and clothes, poses, head tilt on the neck (`Figure`).
 - `tools/build.py` — composes every picture (panels, the street) → `svg/`, `pics/`.
+- Round three (below): `tools/marat.py`, `tools/kira.py`, `tools/extra.py`, `tools/build6.py`.
 
 ## How to repeat
 
@@ -73,6 +74,57 @@ closest to Hergé and Chaland. Savely and Tim came out best. Аня is the weake
 Floc'h's and Chaland's women. Poses are stiff, legs are plain tubes, feet are ovals. Hands are 2D drawings, so they
 don't turn with the figure. The line is mechanical: it never swells or thins the way a hand-drawn line does, and
 small details (hair ends, collar) can get a little jagged. Turnarounds are heads with shoulders.
+
+## Round three: Марат and Кира (the cast is six)
+
+Brief: `docs/briefs/styles-more.md`, part A. No new samples; the style's rules are as they were.
+
+What was done:
+
+- `tools/marat.py`, `tools/kira.py` — a module per character: `head()` and `figure(bust, head_rot)`, plus the
+  panel colour (`PANEL`) and, where needed, the character's own settings for the sheets (`PORTRAIT`, `TURN`, `EXPR`).
+- `tools/extra.py` — shared parts the two needed; the four don't use them:
+  - `Posed` — a `Figure` whose whole body follows a line of action: `spine` rows (y, dx, dz, tilt, twist) shift,
+    tilt and turn the body by height (Марат leans back laughing; Кира's head is forward, the hips pushed out);
+  - `OnShell` — draws `features.py` marks on a shell instead of the face (Марат's mouth is on his beard);
+  - `bumps` — pushes a shell into curls, so the silhouette is scalloped; `curl` — a small "c" stroke;
+  - `strip` — a band of cloth along a 3D path (the towel over the shoulder);
+  - `grin_marks` (an open laughing mouth: teeth along the top, the tongue below), `smirk_marks` (a shut mouth
+    with one corner up).
+- `tools/build6.py` — builds the new pictures with `build.py`'s own sheets (same format, size, line, paper):
+  `portrait-`, `figure-`, `turn-`, `expr-` for `marat` and `kira`, and `cast-six` (all six in the same street).
+- One change in shared code: `build.turnaround` got `side` (which way the character turns; default as before)
+  and passes extra keywords to the figure. Кира's turnaround is turned to our right, where the fringe doesn't hide
+  her face; Марат's is drawn with the arms down (the ladle stood in front of his profile).
+- The four were not touched: after the work their `svg/` and `pics/` files have the same checksums as before, and
+  `turn-anya`, `turn-savely` re-rendered with the changed `build.py` came out byte for byte the same.
+
+How it went by eye: Марат's beard first hid the ears and squeezed the face into a hole — the cheek line was lowered,
+the sideburns narrowed, the mouth made wide. Кира's fringe first covered half the face as a slab; now it is three
+long points, and the eye looks out between two of them. Her headphones first looked like two lime eyes on the chest;
+now the cups hang edge-on at the collarbones. The towel as a `lock_part` ribbon tore on the shoulder — `strip` was
+written for it.
+
+Honest state of the two: Марат is good (portrait, expressions, the figure with the ladle); his fists are the same
+flat signs as everyone's hands. Кира's portrait and turnaround are alive; her full figure is the weakest new picture
+(the hoodie is a smooth sack, the slouch reads more as a lean, no sharp elbows and knees under the clothes); on her
+expression sheet a lock cuts the near eye in places.
+
+How to repeat:
+
+```
+cd styles/s10-ligne-claire
+python3 tools/build6.py             # the nine new pictures (~3 min); run one name at a time if memory is short
+python3 tools/build6.py kira        # only names containing "kira"
+```
+
+Needs `numpy`, `scipy`, `scikit-image` and `google-chrome`. In this session scipy and scikit-image were not
+installed: they were put into `/home/user/cache/styles-s10-ligne-claire/pylib` (`pip install --target`) and used
+through `PYTHONPATH`.
+
+A new character now: a module like `marat.py` (the nearest example for a big man, a beard, curls, a pose) or
+`kira.py` (a girl, a fringe, a hood), registered in `NEW` in `build6.py`. The steps of "How to add a new character"
+above hold; `Posed` with a `spine` gives the pose a line of action.
 
 ## Sources (third-party pictures, kept only as references)
 

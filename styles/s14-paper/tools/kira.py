@@ -12,7 +12,7 @@ SPEC = dict(skin=SKIN, rx=70, ry=98, jaw=0.56, chin=0.09, eye_y=12, eye_gap=31, 
             nose='wedge', nose_y=40, nose_s=0.85, mouth_y=66, mouth_w=15, lip='#a9566a',
             cheek='#dc8a9c', cheek_r=13, cheek_op=0.22, neck_w=19,
             rest=dict(open=0.62, tilt=-0.2, brow=-0.3, brow_dy=4, mouth='flat', look=0.9),
-            on=dict(joy=dict(mouth='smirk', open=0.66, low=0.25, brow=-0.05, brow_dy=0, look=0.6),   # she never smiles openly
+            on=dict(joy=dict(mouth='smirk', open=0.7, low=0.0, brow=-0.05, brow_dy=0, look=0.6),   # she never smiles openly
                     surprise=dict(mouth='pout', open=1.0, eye=1.1), sad=dict(look_y=0.8), angry=dict(mouth='frown')))
 
 
@@ -20,8 +20,8 @@ def front_pieces():
     back = [paint([(-82, 30), (-80, -30), (-68, -86), (0, -110), (68, -86), (80, -30), (82, 30), (74, 60, 1), (64, 36, 1), (54, 58, 1), (40, 30, 1),
                    (-40, 30, 1), (-54, 58, 1), (-64, 36, 1), (-74, 60, 1)], dark(HAIR, 0.15), 1, var=1)]
     side = [paint([(34, -98), (68, -76), (82, -24), (79, 26, 1), (68, -4, 1), (64, 16, 1), (54, -40)], HAIR, 2, var=1)]
-    fringe = [paint([(42, -96), (-28, -110), (-74, -82), (-88, -30), (-85, 14), (-80, 44, 1), (-68, 4, 1), (-58, 30, 1), (-47, -4, 1), (-36, 12, 1),
-                     (-22, -16, 1), (0, -40), (24, -66)], HAIR, 3, var=1)]
+    fringe = [paint([(42, -96), (-28, -110), (-74, -82), (-88, -30), (-85, 14), (-80, 46, 1), (-68, 8, 1), (-57, 40, 1), (-46, 12, 1), (-34, 32, 1),
+                     (-20, 4, 1), (-4, -28), (22, -64)], HAIR, 3, var=1)]
     return back, side, fringe
 
 
@@ -73,10 +73,10 @@ def figure(expr=None, yaw=0.5):
     o += B.limb([(30, -250), (46, -134), (38, -22)], [21, 18, 15], TROU, 1, joints=False)
     o += B.boot(-54, 0, 1, 48, '#2d2a31', '#1e1b20', lace=LIME) + B.boot(60, 0, -1, 48, '#2d2a31', '#1e1b20', lace=LIME)
     # far arm: the elbow out, the hand in the pocket
-    o += B.limb([(34, -410), (78, -344), (50, -280)], [26, 24, 22], dark(HOOD, 0.12), 1, 'paint', 1)
+    o += B.limb([(30, -410), (68, -344), (48, -280)], [26, 24, 22], dark(HOOD, 0.12), 1, 'paint', 1, joints=False)
     # the hood heaped on the rounded back, then the hoodie: back curved, belly hem pushed forward
     o += [paint([(-74, -398), (-62, -446), (-22, -462), (24, -446), (30, -410)], dark(HOOD, 0.2), 1, var=1)]
-    hd = [(-56, -432), (6, -440), (40, -416), (66, -330), (80, -236, 1), (-30, -220, 1), (-58, -300), (-74, -380)]
+    hd = [(-40, -438), (8, -442), (38, -420), (58, -340), (80, -236, 1), (-30, -220, 1), (-56, -300), (-70, -370), (-62, -416)]
     o += [paint(hd, HOOD, 1, var=1)]
     o += B.folds(hd, [((-50, -330), (-28, -326)), ((30, -300), (50, -304))], 0.22)
     o += [paint(strip([(-30, -228), (26, -234), (80, -244)], 16), dark(HOOD, 0.18), 1, var=1)]
@@ -85,5 +85,6 @@ def figure(expr=None, yaw=0.5):
     o += move(rot(scale(head(yaw, expr, phones(4)), hs), 13), 30, -470)
     # near arm: shoulder hunched, the sleeve hangs past the hand
     o += B.hand(-62, -244, 4, 0.9, SKIN, spread=3, thumb=0)
-    o += B.limb([(-52, -406), (-76, -326), (-62, -236)], [27, 25, 24], HOOD, 2, 'paint', 1)
+    o += [paint(strip([(-40, -420), (-58, -370), (-72, -312), (-70, -270), (-62, -234)], [30, 30, 27, 25, 24], round_ends=True), HOOD, 1, var=1)]
+    o += B.folds(strip([(-40, -420), (-58, -370), (-72, -312), (-70, -270), (-62, -234)], [30, 30, 27, 25, 24], round_ends=True), [((-84, -312), (-66, -316))], 0.2)
     return o

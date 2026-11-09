@@ -11,15 +11,15 @@ SPEC = dict(skin=SKIN, rx=86, ry=88, jaw=0.80, chin=0.0, eye_y=16, eye_gap=37, e
             nose='button', nose_y=42, nose_s=0.85, mouth_y=62, mouth_w=22, lip='#b8483f',
             cheek='#f0876c', cheek_r=18, cheek_op=0.38, ear=1.3, neck_w=22,
             rest=dict(open=0.92, brow=-0.12, brow_dy=-2, mouth='smirk', look=0.5),
-            on=dict(joy=dict(low=0.3)))
+            on=dict(joy=dict(low=0.0)))
 
 
 def freckles(s=0):
     r = rnd(4)
     out = []
-    for cx in (-40, 40):
+    for cx in (-40, 40 if not s else 24):
         for i in range(5):
-            out.append(flat(ell(s + cx + r.uniform(-15, 15), 44 + r.uniform(-9, 7), 2.1, 2.1, n=5), '#cf8a55'))
+            out.append(flat(ell(s + cx + r.uniform(-15, 15 if not s or cx < 0 else 8), 44 + r.uniform(-9, 7), 2.1, 2.1, n=5), '#cf8a55'))
     return out
 
 

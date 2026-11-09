@@ -36,12 +36,9 @@ FRONT = [
     ".......NNn..NNn",
     ".......NNn..NNn",
     ".......NNn..NNn",
-    ".......NNn..NNn",
     ".......NNn...NNn",
     ".......NNn...NNn",
     ".......NNn...NNn",
-    ".......NNn...NNn",
-    ".......NNn....NNn",
     ".......NNn....NNn",
     ".......NNn....NNn",
     "......BBBB...BBBBb",
@@ -80,7 +77,7 @@ Q = [
     "......QPPPPPPPPPQQ",
     ".......QQPPPPPPQQ",
     ".......QQQQQQQQQQ",
-] + ["........NNn.NNn"] * 4 + ["........NNn..NNn"] * 7 + [
+] + ["........NNn.NNn"] * 4 + ["........NNn..NNn"] * 4 + [
     ".......BBBB..BBBBb",
     ".......BGBB..BGBBb",
     ".......BGBBB.BGBBBb",
@@ -116,7 +113,7 @@ SIDE = [
     ".......PPPPPPPPQQ",
     ".......QQPPPPPPQ",
     "........QQQQQQQ",
-] + [".........NNNNn"] * 5 + [".........nn.NNn"] * 7 + [
+] + [".........NNNNn"] * 4 + [".........nn.NNn"] * 5 + [
     ".........bbb.BBBb",
     ".........bbb.BGBb",
     ".........bbbbBGBBb",

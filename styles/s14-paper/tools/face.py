@@ -246,11 +246,11 @@ def face(spec, yaw=0, expr=None, extras=None, glasses=None):
     cr = sp['cheek_r']
     for (x, kx, side) in pl['eyes']:
         far = kx < 1 and side > 0 and yaw < 0.75
-        cxk = x + side * sp['eye_gap'] * 0.42 if not far else x - 3
+        cxk = x + side * sp['eye_gap'] * 0.42 if not far else x - 9
         cyk = ey + ry * 0.36 - (4 if e['low'] > 0.3 else 0)
         if yaw >= 0.75:
             cxk = x - sp['eye_gap'] * 0.5
-        feats.append(tissue(ell(cxk, cyk, cr * (0.6 if far else 1), cr * (0.9 if far else 1), n=10), sp['cheek'], sp['cheek_op']))
+        feats.append(tissue(ell(cxk, cyk, cr * (0.5 if far else 1), cr * (0.85 if far else 1), n=10), sp['cheek'], sp['cheek_op']))
     for (x, kx, side) in pl['eyes']:
         feats += eye(x, ey, sp['eye_w'] * kx, sp['eye_h'], sp, e, side, yaw)
         bx = x + (side * 2 if yaw < 0.75 else 4)

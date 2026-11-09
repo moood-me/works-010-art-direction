@@ -12,7 +12,7 @@ SPEC = dict(skin=SKIN, rx=92, ry=98, jaw=0.93, chin=0.0, eye_y=4, eye_gap=37, ey
             nose='broad', nose_y=34, nose_s=1.25, mouth_y=66, mouth_w=34, lip='#a8483c', inside='#4a151c',
             cheek='#e86a50', cheek_r=21, cheek_op=0.42, ear=1.2, neck_w=44,
             rest=dict(open=0.82, low=0.5, brow=0.12, brow_dy=-5, mouth='grin'),
-            on=dict(joy=dict(mouth='laugh', open=0.0, brow_dy=-9), sad=dict(mouth='frown'), surprise=dict(mouth='o')))
+            on=dict(joy=dict(mouth='laugh', open=0.0, brow_dy=-9), sad=dict(mouth='flat'), surprise=dict(mouth='o')))
 
 CURLS_TOP = [(-92, -44, 14), (-78, -78, 15), (-52, -100, 15), (-20, -112, 16), (14, -113, 15), (46, -103, 16), (74, -82, 15), (92, -48, 14),
              (-62, -66, 13), (-34, -82, 14), (-2, -88, 13), (30, -84, 14), (58, -68, 13)]
@@ -106,7 +106,7 @@ def figure(expr='joy', yaw=0.5):
     o2 = []
     # the apron: tied at the waist, long, with folds
     ap = [(-104, -340, 1), (104, -340, 1), (112, -200), (104, -84, 1), (-104, -84, 1), (-112, -200)]
-    o2 += [paint(ap, TERRA, 2, var=2)]
+    o2 += [paint(ap, TERRA, 2, var=1)]
     o2 += B.folds(ap, [((-40, -200), (-18, -202)), ((36, -200), (60, -204))], 0.22)
     o2 += [light(ap, (-42, -200), (-60, -198), 0.2), light(ap, (34, -200), (16, -198), 0.2)]
     o2 += [card(strip([(-122, -330), (0, -322), (122, -330)], 15), dark(TERRA, 0.2), 1)]

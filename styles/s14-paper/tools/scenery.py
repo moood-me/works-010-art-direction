@@ -9,7 +9,7 @@ def mat(w, h, col):
 
 
 def floor(w, h, y, col):
-    return [torn([(46, y - 30), (w * 0.3, y - 44), (w * 0.7, y - 36), (w - 48, y - 46), (w - 50, h - 46, 1), (52, h - 54, 1)], col, 1)]
+    return [torn([(74, y - 30), (w * 0.3, y - 44), (w * 0.7, y - 36), (w - 76, y - 46), (w - 80, h - 70, 1), (80, h - 76, 1)], col, 1)]
 
 
 def house(x, y, w, h, col, roof, r=None, door=True):
@@ -46,26 +46,54 @@ def sun(x, y, r, col):
     return rays + [paint(ell(x, y, r, r, n=14), col, 2, var=2)]
 
 
+def pine(x, y, s, col):
+    o = [card(strip([(x, y), (x, y - 40 * s)], 8 * s), '#6b5546', 1)]
+    for k in range(3):
+        yy = y - 30 * s - k * 46 * s
+        ww = (62 - k * 14) * s
+        o.append(paint([(x - ww, yy, 1), (x, yy - 84 * s, 1), (x + ww, yy, 1)], dark(col, 0.10 * (2 - k)), 2, var=k))
+    return o
+
+
+def hung(x, y, piece_fn, top=-10):
+    """Something hung from above on a thread, as in a paper theatre."""
+    return [flat(strip([(x, top), (x, y)], 1.6), '#8a7a66')] + piece_fn(x, y)
+
+
 def street(w, h, gy, evening=False):
-    """Sky sheet (the Doc background), far hills torn from paper, a row of houses, the ground in two torn strips."""
-    r = rnd(7 if not evening else 11)
+    """A paper theatre: the sky sheet (the Doc background), a sun and clouds hung on threads, four rows of torn
+    hills going back into tissue haze, paper trees, the ground in two torn strips."""
     o = []
-    o += sun(w - 210, 150, 58, '#f0b23c' if not evening else '#e8703c')
-    o += cloud(260, 150, 1.3) + cloud(w * 0.55, 100, 1.0) + cloud(w - 520, 220, 0.8)
-    hill = lambda y0, amp, col, lift, seed: torn([(-20, y0)] + [(i * w / 8, y0 - amp * (0.5 + 0.5 * rnd(seed + i).random())) for i in range(1, 8)] + [(w + 20, y0), (w + 20, h + 20, 1), (-20, h + 20, 1)], col, lift)
-    o += [hill(gy - 250, 110, '#9cc0b4' if not evening else '#d99a7c', 1, 3), hill(gy - 170, 90, '#7fae96' if not evening else '#b8746a', 2, 9)]
-    cols = ['#e7c36a', '#d9826a', '#8fb7c9', '#e9dcc0', '#c98aa0', '#9ab87a', '#e0a04c']
-    roofs = ['#8a3b34', '#4c5a66', '#6b5546', '#3f7355']
-    x = -10
-    while x < w:
-        hw = r.randint(84, 150)
-        hh = r.randint(130, 300)
-        o += house(x, gy - 60, hw, hh, r.choice(cols), r.choice(roofs), r)
-        if r.random() < 0.3:
-            o += tree(x + hw + 22, gy - 60, r.uniform(0.9, 1.3), '#5f9a6c' if not evening else '#a8643c')
-            x += 44
-        x += hw + r.randint(-6, 14)
-    g1, g2 = ('#b7c98a', '#9fb673') if not evening else ('#c9a36a', '#a8824e')
-    o += [torn([(-20, gy - 70), (w * 0.25, gy - 84), (w * 0.5, gy - 72), (w * 0.75, gy - 88), (w + 20, gy - 74), (w + 20, h + 20, 1), (-20, h + 20, 1)], g1, 2)]
-    o += [torn([(-20, gy + 70), (w * 0.3, gy + 56), (w * 0.6, gy + 72), (w + 20, gy + 58), (w + 20, h + 20, 1), (-20, h + 20, 1)], g2, 2)]
+    sky = ['#9cc3bd', '#7fb0a0', '#5f9a7c', '#4c8a66'] if not evening else ['#eebf8c', '#e0a070', '#c98060', '#a8684e']
+    tr = '#3f7a5a' if not evening else '#2f5f62'
+    o += hung(w * 0.72, 150, lambda x, y: sun(x, y, 60, '#f0b23c' if not evening else '#f6e2a0'))
+    o += hung(250, 150, lambda x, y: cloud(x, y, 1.3)) + hung(w * 0.52, 110, lambda x, y: cloud(x, y, 1.0)) + hung(w - 130, 230, lambda x, y: cloud(x, y, 0.8))
+
+    def hill(y0, amp, col, lift, seed, n=7):
+        r = rnd(seed)
+        return torn([(-20, y0)] + [(i * w / n, y0 - amp * r.random()) for i in range(1, n)] + [(w + 20, y0), (w + 20, h + 20, 1), (-20, h + 20, 1)], col, lift)
+    haze = lambda y0: tissue([(-20, y0, 1), (w + 20, y0, 1), (w + 20, h, 1), (-20, h, 1)], '#fff8ea', 0.22)
+    r = rnd(5 if not evening else 12)
+    for k, (y0, amp) in enumerate(((gy - 330, 150), (gy - 230, 130), (gy - 140, 110))):
+        o += [hill(y0, amp, sky[k], 2, 3 + k * 7 + (20 if evening else 0), 6 + k)]
+        for j in range(3 + k):
+            x = r.uniform(40, w - 40)
+            sc = 0.55 + 0.3 * k
+            o += pine(x, y0 + 30 + r.uniform(0, 30), sc, mix(sky[k + 1], tr, 0.5)) if r.random() < 0.6 else tree(x, y0 + 30, sc, mix(sky[k + 1], tr, 0.3))
+        o += [haze(y0 + 40)]
+    g1, g2 = (sky[3], dark(sky[3], 0.15))
+    o += [torn([(-20, gy - 70), (w * 0.25, gy - 86), (w * 0.5, gy - 72), (w * 0.75, gy - 90), (w + 20, gy - 74), (w + 20, h + 20, 1), (-20, h + 20, 1)], mix(g1, '#c9d88a' if not evening else '#d9a070', 0.55), 2)]
+    o += [torn([(-20, gy + 76), (w * 0.3, gy + 62), (w * 0.6, gy + 78), (w + 20, gy + 64), (w + 20, h + 20, 1), (-20, h + 20, 1)], mix(g2, '#b7c97a' if not evening else '#b8804e', 0.5), 2)]
+    return o
+
+
+def bunting(w, y, n=14, cols=('#c9412f', '#e0ae38', '#6c9bc4', '#fbf6ea', '#c9623a', '#5b2f57')):
+    """A string of paper flags across the sheet."""
+    import math
+    o = []
+    pts = [(i * w / n, y + 60 * math.sin(math.pi * i / n) ) for i in range(n + 1)]
+    o.append(flat(strip(pts, 2), '#6b5546'))
+    for i in range(1, n):
+        x, yy = pts[i]
+        o.append(card([(x - 20, yy, 1), (x + 20, yy + 2, 1), (x + 2, yy + 46, 1)], cols[i % len(cols)], 2))
     return o

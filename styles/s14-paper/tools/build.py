@@ -21,7 +21,7 @@ def portrait(who):
     b = m.bust(0.5)
     if who in ('savely', 'kira'):
         b = mirror(b)
-    d.add(b, 400, 400 if who != 'marat' else 420, 2.1 if who != 'marat' else 1.85)
+    d.add(b, 400, 440 if who != 'marat' else 480, 2.1 if who != 'marat' else 1.85)
     return d
 
 
@@ -58,17 +58,18 @@ def expressions(who):
 
 def cast():
     """The four: a street of cut paper — hills, houses, a paper sun; each figure stands on its own shadow."""
-    d = Doc(1600, 900, '#bfe0e6')
-    d.add(S.street(1600, 900, 760))
-    for who, x, flip in (('savely', 330, False), ('tim', 640, False), ('anya', 1000, False), ('vera', 1290, True)):
+    d = Doc(1600, 900, '#cfe6e4')
+    d.add(S.street(1600, 900, 770))
+    for who, x, flip in (('savely', 300, False), ('tim', 640, False), ('anya', 1010, False), ('vera', 1320, True)):
         f = WHO[who].figure()
-        d.add(mirror(f) if flip else f, x, 800, 1.0)
+        d.add(mirror(f) if flip else f, x, 820, 1.12)
     return d
 
 
 def cast6():
-    d = Doc(2000, 960, '#f3d9b0')
-    d.add(S.street(2000, 960, 800, evening=True))
+    d = Doc(2000, 960, '#f6dcae')
+    d.add(S.street(2000, 960, 810, evening=True))
+    d.add(S.bunting(2000, 40))
     for who, x, flip in (('kira', 250, False), ('savely', 540, False), ('tim', 800, False), ('marat', 1150, False), ('anya', 1560, False), ('vera', 1800, True)):
         f = WHO[who].figure()
         d.add(mirror(f) if flip else f, x, 850, 1.0)
