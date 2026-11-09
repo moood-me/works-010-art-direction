@@ -81,7 +81,9 @@ cover). Each got a backdrop in `scenery.BACK` (Марат — olive with lemons,
   ladle leaves the sheet; his real size shows in `cast-six`.
 - Кира: a narrower, longer face than Tim's with a small chin; the eye is the `look` almond at a small size, heavy lid,
   no lash flick, the iris slid sideways (`gaze`); brows thick, low, inner end down; a muted mouth colour. The fringe
-  is one shape with ragged points over the far eye; in `34` the nose tip is drawn after the fringe. `head('34')` and
+  is one shape with ragged points: in `34` it is parted on the far side and swept to the near side, its points over the
+  near brow and the corner of the near eye, so both eyes, the nose (a wedge that breaks the far cheek, as on Вера and
+  Аня) and the far cheek line stay open; in `front` it hangs over her right eye. `head('34')` and
   `head('side')` are already tipped 6° down. She never smiles openly: her `joy` is `smirk` with softer lids. Figure:
   a dark bean of a hoodie (round back, hips forward), thin legs with knees, heavy boots with lime laces, one hand in
   the pocket, the other out of a sleeve that is too long.
@@ -104,10 +106,14 @@ touching shared code: build each of their pages in Python and compare `Doc.svg()
 **Tried and changed by eye.** Марат's nose first sat over the far eye and was clown-pink — moved lower, paler; the
 jacket covered his mouth — the bust went down (`BUST_DY = 14`) so the beard lies on the collar; the apron was a slab
 to the ankles — shortened to the knees and narrowed down. Кира's far arm first reached up to the headphones and read
-as a wing — now it hangs; the fringe hid the nose — the tip comes out under it.
+as a wing — now it hangs. Her three-quarter face was redrawn after the coordinator's look: the fringe first covered
+the far eye and the far cheek, and the nose tip left sticking out from under the hair read as an ear on a one-eyed
+face. Two variants were drawn — the fringe over the near brow with nose and far cheek open; the fringe over the far
+eye with the nose inside the face — and the first was kept (it reads at once); the front view's fringe was mirrored
+to match.
 
 **Honest state.** Good: Марат's portrait and laugh, `cast-six`, Кира's silhouette and her expression sheet. Weak:
-Кира's nose tip in three-quarter (reads uncertainly next to the fringe), her legs are straight like stilts; Марат's
+Кира's legs are straight like stilts, one hand is hidden in the pocket; Марат's
 profile (the neck shows behind the beard, the head is simpler than the other views); busts are still domes.
 
 ## Honest state

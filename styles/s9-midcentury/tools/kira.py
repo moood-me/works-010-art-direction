@@ -59,8 +59,8 @@ def head(view='34', expr='calm', neck=True):
     cheek = e.get('cheek', 1.0)
     o = []
     if view == '34':
-        # choppy hair behind: ragged ends at the nape and by the far cheek
-        o.append(shape([(-28, -130), (30, -128), (70, -104), (86, -60), (86, -14), (92, 30, 'c'), (78, 14), (74, 46, 'c'), (60, 20),
+        # hair behind: ragged at the nape; on the far side it stops at the temple, the far cheek stays clear
+        o.append(shape([(-28, -130), (30, -128), (66, -106), (76, -70), (70, -30), (40, -20),
                         (0, 40), (-40, 54), (-54, 88, 'c'), (-64, 58), (-82, 78, 'c'), (-84, 42), (-102, 46, 'c'), (-94, 4),
                         (-92, -56), (-68, -108)], HAIR))
         o.append(shape([(-70, -100), (-88, -128, 'c'), (-56, -116), (-50, -142, 'c'), (-28, -122)], HAIR))
@@ -77,16 +77,15 @@ def head(view='34', expr='calm', neck=True):
         o.append(brow(-12, -7, 1.2, side=-1, inner=bi, outer=bo, w=4.2, length=0.95))
         o.append(brow(42, -9, 1.15, side=1, inner=b2i, outer=b2o, w=3.4, squash=0.6))
         o.append(_mouth(27, 67, 1.4, e))
-        # the fringe: parted on the near side, it falls across the forehead and over the far eye in ragged points
-        o.append(shape([(-58, 4, 'c'), (-62, -40), (-58, -84), (-26, -122), (26, -126), (66, -104), (86, -62), (86, -20),
-                        (88, 20, 'c'), (76, -4), (68, 24, 'c'), (54, -2), (42, 28, 'c'), (28, -8), (8, -30), (-16, -42), (-34, -38),
-                        (-50, -26)], HAIR))
-        o.append(shape([(-56, -30), (-66, 0), (-60, 36, 'c'), (-50, 10), (-48, -20)], HAIR))
-        o.append(dryb([[(-36, -110), (10, -80), (44, -30), (56, 20)], [(-10, -120), (40, -92), (68, -40), (76, 10)],
-                       [(-52, -90), (-30, -60), (-10, -48)]], 2.8, HAIR_L, 0.7))
-        # the tip of a straight sharp nose comes out under the fringe and breaks the far cheek
-        o.append(shape([(58, 20), (64, 30), (72, 41, 'c'), (64, 46), (55, 44)], SKIN))
-        o.append(brush([(60, 22), (72, 41), (64, 46), (56, 45)], 2.2, '#a8685a', taper=(0.2, 0.15)))
+        # nose as on the other three-quarter faces: a wedge whose tip breaks the far cheek
+        o.append(shape([(56, 8), (64, 26), (72, 40, 'c'), (64, 45), (55, 43)], SKIN))
+        o.append(brush([(51, -2), (62, 24), (72, 40), (64, 45), (56, 44)], 2.2, '#a8685a', taper=(0.6, 0.15)))
+        # the fringe: parted on the far side, swept to the near side, its long points over the near brow and half the eye
+        o.append(shape([(68, -24, 'c'), (74, -66), (58, -104), (22, -126), (-28, -122), (-60, -86), (-66, -40), (-64, 6),
+                        (-58, 46, 'c'), (-50, 8), (-40, 36, 'c'), (-32, 4), (-23, 26, 'c'), (-13, -6), (4, -30), (30, -40),
+                        (52, -40)], HAIR))
+        o.append(dryb([[(40, -104), (-6, -84), (-36, -40), (-46, 10)], [(10, -120), (-36, -96), (-58, -44), (-58, 10)],
+                       [(56, -84), (34, -60), (10, -48)]], 2.8, HAIR_L, 0.7))
         return ['<g transform="rotate(6 0 70)">'] + o + ['</g>']
     if view == 'front':
         o.append(shape([(0, -132), (56, -120), (88, -78), (92, -20), (98, 34, 'c'), (84, 18), (78, 56, 'c'), (64, 30), (0, 50),
@@ -104,13 +103,13 @@ def head(view='34', expr='calm', neck=True):
         o.append(brow(26, -1, 1.0, side=1, inner=b2i, outer=b2o, w=3.6))
         o.append(brush([(3, 20), (7, 42), (0, 46)], 2.4, '#b47868', taper=(0.4, 0.2)))
         o.append(_mouth(0, 68, 1.05, e, width=0.8))
-        # the head is lowered: more crown than forehead; the fringe hangs over her left eye
-        o.append(shape([(-62, 6, 'c'), (-70, -40), (-64, -90), (-30, -124), (28, -126), (68, -100), (86, -56), (84, -10),
-                        (76, 42, 'c'), (64, 8), (54, 50, 'c'), (42, 6), (30, 34, 'c'), (20, 0), (4, -22), (-18, -32), (-38, -28),
-                        (-54, -14)], HAIR))
-        o.append(shape([(-60, -20), (-72, 6), (-64, 40, 'c'), (-54, 14), (-52, -10)], HAIR))
-        o.append(dryb([[(-40, -112), (6, -78), (38, -24), (48, 26)], [(-12, -122), (40, -90), (66, -34), (72, 14)],
-                       [(-56, -86), (-34, -54), (-14, -40)]], 2.8, HAIR_L, 0.7))
+        # the head is lowered: more crown than forehead; the fringe hangs over her right eye
+        o.append(shape([(62, 6, 'c'), (70, -40), (64, -90), (30, -124), (-28, -126), (-68, -100), (-86, -56), (-84, -10),
+                        (-76, 42, 'c'), (-64, 8), (-54, 50, 'c'), (-42, 6), (-30, 34, 'c'), (-20, 0), (-4, -22), (18, -32), (38, -28),
+                        (54, -14)], HAIR))
+        o.append(shape([(60, -20), (72, 6), (64, 40, 'c'), (54, 14), (52, -10)], HAIR))
+        o.append(dryb([[(40, -112), (-6, -78), (-38, -24), (-48, 26)], [(12, -122), (-40, -90), (-66, -34), (-72, 14)],
+                       [(56, -86), (34, -54), (14, -40)]], 2.8, HAIR_L, 0.7))
         return o
     if view == 'side':
         o.append(shape([(-20, -132), (30, -124), (60, -98), (66, -60), (40, -40), (0, 0), (0, 40), (-14, 78, 'c'), (-26, 50),
