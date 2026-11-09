@@ -14,8 +14,8 @@ const page = await b.newPage({ viewport: { width: jobs.w || 800, height: jobs.h 
 await page.route('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', r => r.fulfill({ path: '/home/user/cache/to3d-r29-s9-anya/node_modules/three/build/three.module.js', contentType: 'text/javascript' }));
 const errs = []; page.on('pageerror', e => errs.push(e.message)); page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); else console.log('page:', m.text()); });
 await page.goto(srv.url + 'works-010-art-direction/to3d/r29-s9-anya/tools/web/anya.html?shots=1');
-try { await page.waitForFunction(() => window.__ready, null, { timeout: 300000 }); }
-catch (e) { console.error(errs.join('\n')); throw e; }
+try { await page.waitForFunction(() => window.__ready, null, { timeout: 100000 }); }
+catch (e) { console.error(errs.join("\n")); await b.close(); srv.close(); throw e; }
 const shoot = async (set, path, compose) => {
   await page.evaluate(async ([o, c]) => { await window.A.set(o); window.A.render(); if (c) await window.A.compose(c === true ? null : c); }, [set, compose]);
   const w = set.w || jobs.w || 800, h = set.h || jobs.h || 800;

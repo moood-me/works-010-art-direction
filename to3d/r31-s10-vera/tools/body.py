@@ -1,15 +1,18 @@
-"""Савелий Петрович's body and clothes, on Anny (engine/data/bodies/moood-oldman: Anny baked by moood, SOMA skeleton).
+"""Вера's body and clothes, on Anny (engine/data/bodies/moood-woman: Anny baked by moood, SOMA skeleton).
 
-1. Anny's old man is fitted to the drawing's proportions (styles/s10-ligne-claire/tools/figures.py: savely_figure):
-   each bone of the skeleton is scaled (legs shorter, the trunk a little shorter and wider, arms shorter), and every
-   vertex follows its own joints by Anny's skin weights (v' = Σ w·(J' + A·(v − J))) — the frames stay, so Kimodo's
-   motions carry as they do on any engine body.  The trunk is then kept inside the drawing's own torso shell.
-2. Clothes are made to the drawing: the vest and the shirt's body are the drawing's own torso shells (the vest with
-   its V opening and arm holes), the trouser top is its hips shell; the sleeves and trouser legs are shells laid
-   over Anny's arms and legs (the legs widened to the drawing's straight trouser legs); shoes, the bow tie, the
-   collar points, buttons, the watch chain and the pocket watch from the drawing's own shapes.
-3. Every piece gets four SOMA joints and weights: Anny's own where it is Anny's, else the nearest Anny vertex's.
-Units: the drawing's (y down, z toward the viewer), floor at y = 1030; K metres per unit.
+1. Anny's woman is fitted to the drawing's proportions (styles/s10-ligne-claire/tools/figures.py: vera_figure):
+   each bone of the skeleton is scaled (the whole figure taller, legs close together and straight, arms shorter),
+   and every vertex follows its own joints by Anny's skin weights (v' = Σ w·(J' + A·(v − J))) — the frames stay, so
+   Kimodo's motions carry as they do on any engine body.  The trunk is kept inside the drawing's own shells.
+   The fingers are laid side by side (each finger's joints set along the middle finger's direction) and a little
+   thicker, so the hand reads as the style's hand: one shape with short lines between the fingers.
+2. Clothes are made to the drawing: the jacket (with its V opening and arm holes) and the blouse are the drawing's
+   own torso shells, the skirt is its skirt shell; the sleeves are shells laid over Anny's arms, widened to the
+   drawing's sleeve; the legs in tights are Anny's own; shoes, the blouse's collar, the lapels, buttons and the
+   seams from the drawing's shapes.  The folder is a box held in the left hand.
+3. Every piece gets four SOMA joints and weights: Anny's own where it is Anny's, else from the nearby Anny
+   vertices; the skirt's from both legs, blended across its width, so it spans between them like cloth pulled tight.
+Units: the drawing's (y down, z toward the viewer), floor at who.FLOOR; who.K metres per unit.
 usage: python3 body.py CACHE → CACHE/body.npz
 """
 import sys, os, json
@@ -17,28 +20,27 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.join(HERE, '../../..')
 sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.join(REPO, 'engine/tools'))
-sys.path.insert(0, os.path.join(REPO, 'styles/s10-ligne-claire/tools'))
+import who                      # noqa: E402
 import pack                     # noqa: E402
 import meshes as M              # noqa: E402
 import head as H                # noqa: E402
-from figures import inset, SAVELY_COL   # noqa: E402
+from figures import inset       # noqa: E402
 from cast import wrapdeg        # noqa: E402
 
 C = sys.argv[1]
-K = 1.60 / 1114
-FLOOR = 1030.0
-SKIN = '#f1c6a0'
-COL = dict(SAVELY_COL, skin=SKIN, gold='#d9a837', chain='#a87a1e', face='#fbf8ee')
+REPO = who.REPO
+K, FLOOR = who.K, who.FLOOR
+COL = who.colours()
+SKIN = COL['skin']
+INK = '#1b1714'
 
 sk = json.load(open(os.path.join(REPO, 'engine/data/skeleton.json')))
 NAMES = [j['name'] for j in sk['joints']]
 PARENT = [j['parent'] for j in sk['joints']]
 IDX = {n: i for i, n in enumerate(NAMES)}
 th, top = pack.read(os.path.join(REPO, 'engine/data/topology/anny-moood.json'))
-bh, bod = pack.read(os.path.join(REPO, 'engine/data/bodies/moood-oldman.json'))
+bh, bod = pack.read(os.path.join(REPO, f'engine/data/bodies/{who.BASE_BODY}.json'))
 TRI = top['triangles'].astype(int)
 SJ, SW = top['skinJoints'].astype(int), top['skinWeights'].astype(float)
 PARTS = top['parts'].astype(float) / 255
@@ -58,25 +60,23 @@ X0 = to_d(bod['positions'])
 J0 = to_d(bod['joints'].reshape(-1, 3))
 
 # ------------------------------------------------------------------ 1. the skeleton to the drawing's proportions
+U = 1.17                                         # the drawing's Вера against Anny's woman, overall
+FINGERS = ('Index', 'Middle', 'Ring', 'Pinky')
+
+
 def scale_of(name):
     """The scale of the bone from this joint's parent to it, per axis (x, y, z) in the drawing's frame."""
     if name in ('LeftLeg', 'RightLeg'):
-        return (0.72, 0.8, 1.0)              # the drawing's legs stand closer (x ±66)
+        return (0.56 * U, U, U)              # the drawing's legs stand close together under the narrow skirt
     if 'Shin' in name or ('Foot' in name and 'Toe' not in name):
-        return (0.35, 0.81, 1.0)             # and straight down, not splayed as Anny's rest
+        return (0.3 * U, U, U)               # and straight down, not splayed as Anny's rest
     if 'Toe' in name:
-        return (0.75, 0.75, 0.75)
-    if name in ('Spine1', 'Spine2', 'Chest'):
-        return (1.0, 0.92, 1.0)
-    if 'Shoulder' in name:
-        return (1.12, 0.92, 1.0)
-    if name in ('LeftArm', 'RightArm'):
-        return (1.05, 0.92, 1.0)
-    if 'ForeArm' in name or name in ('LeftHand', 'RightHand'):
-        return (0.9, 0.9, 0.9)
+        return (0.7 * U, 0.7 * U, 0.58 * U)  # small shoes
+    if name in ('LeftForeArm', 'RightForeArm', 'LeftHand', 'RightHand'):
+        return (0.86 * U,) * 3               # the drawing's arms are shorter (the wrist at the hip)
     if 'Hand' in name:
-        return (0.95, 0.95, 0.95)
-    return (1.0, 1.0, 1.0)
+        return (0.98 * U,) * 3
+    return (U, U, U)
 
 
 S = np.array([scale_of(n) for n in NAMES])
@@ -87,18 +87,48 @@ for j in range(len(NAMES)):                      # joints are listed parents fir
         J1[j] = J0[j]
         continue
     J1[j] = J1[p] + (J0[j] - J0[p]) * S[j]
-# the root: legs start at the drawing's hips (y 520), the body centred where the drawing stands
-legs_y = 0.5 * (J1[IDX['LeftLeg'], 1] + J1[IDX['RightLeg'], 1])
-J1 += np.array([0, 515 - legs_y, -J1[IDX['Hips'], 2] - 22])
+# the fingers side by side: every finger's joints along the middle finger's direction
+for side in ('Left', 'Right'):
+    m1, me = J1[IDX[side + 'HandMiddle1']], J1[IDX[side + 'HandMiddleEnd']]
+    dm = (me - m1) / np.linalg.norm(me - m1)
+    hand = J1[IDX[side + 'Hand']]
+    for f in FINGERS:
+        base = J1[IDX[f'{side}Hand{f}1']].copy()
+        if f != 'Middle':                        # the knuckles a little closer to the middle one
+            base = m1 + (base - m1) * 0.94
+        prev_old, prev_new = J1[IDX[f'{side}Hand{f}1']].copy(), base
+        J1[IDX[f'{side}Hand{f}1']] = base
+        for seg in ('2', '3', '4', 'End'):
+            j = IDX[f'{side}Hand{f}{seg}']
+            old = J1[j].copy()
+            L = np.linalg.norm(old - prev_old)
+            d = (old - prev_old) / max(L, 1e-9)
+            d = 0.25 * d + 0.75 * dm
+            new = prev_new + d / np.linalg.norm(d) * L
+            J1[j] = new
+            prev_old, prev_new = old, new
+# the root: the body centred where the drawing stands
+J1 += np.array([0, 0, -J1[IDX['Hips'], 2] - 14])
 # the neck and head joints: where the drawing's head turns on its neck (figures.NECK + the head drop)
+HEAD_JOINTS = ('Neck1', 'Neck2', 'Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye')
 for n, p in (('Neck1', (0, 178, -14)), ('Neck2', (0, 152, -12)), ('Head', (0, 126, -10)), ('HeadEnd', (0, -84, -10)),
-             ('Jaw', (0, 110, 20)), ('LeftEye', (27, 23, 58)), ('RightEye', (-27, 23, 58))):
+             ('Jaw', (0, 110, 20)), ('LeftEye', (who.EYE[0], who.EYE[1] + who.DROP, 58)),
+             ('RightEye', (-who.EYE[0], who.EYE[1] + who.DROP, 58))):
     J1[IDX[n]] = p
-# the floor: the lowest of the feet's skin stays on the floor (checked below)
 
-# vertices follow their joints: v' = Σ w (J'_k + A_k (v − J_k)); A_k: the joint's own bone scale (girth too)
+# vertices follow their joints: v' = Σ w (J'_k + A_k (v − J_k)); A_k: the joint's own girth
 A = S.copy()
-A[IDX['Spine1']] = A[IDX['Spine2']] = A[IDX['Chest']] = A[IDX['Hips']] = (1.12, 0.92, 1.25)
+for n in NAMES:
+    if 'Leg' in n or 'Shin' in n:
+        A[IDX[n]] = (1.0, U, 1.0)                # slim legs, as drawn (the calf's radius 38)
+    if 'Foot' in n or 'Toe' in n:
+        A[IDX[n]] = (0.8, 0.85, 0.66)
+    if 'Arm' in n:
+        A[IDX[n]] = (1.0, 1.0, 1.0)
+    if 'Hand' in n:
+        A[IDX[n]] = (1.12, 1.12, 1.12)
+    if any(f in n for f in FINGERS):
+        A[IDX[n]] = (1.22, 1.22, 1.22)           # fingers thick enough to lie against each other
 X1 = np.zeros_like(X0)
 for k in range(4):
     j = SJ[:, k]
@@ -106,20 +136,20 @@ for k in range(4):
 used = np.zeros(len(X0), bool)
 used[TRI.ravel()] = True
 feet = (part('Lfoot', 'Rfoot') > 0.5) & used
-_shift = FLOOR - X1[feet, 1].max()
+_shift = FLOOR - 6 - X1[feet, 1].max()            # the sole of the shoe is 6 under the foot
 X1[:, 1] += _shift
 for n in NAMES:
-    if n not in ('Neck1', 'Neck2', 'Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'):
+    if n not in HEAD_JOINTS:
         J1[IDX[n], 1] += _shift
 print('floor shift', round(_shift, 1))
 
 
-# ------------------------------------------------------------------ the drawing's shells
-TORSO = [(122, 52, -14, 30, -58, 2.0), (144, 104, -14, 42, -66, 2.2), (168, 140, -16, 54, -76, 2.4),
-         (205, 146, -16, 70, -82, 2.6), (260, 140, -14, 84, -82, 2.6), (330, 136, -16, 94, -80, 2.6),
-         (400, 138, -20, 90, -84, 2.6), (450, 142, -22, 78, -92, 2.5)]
-HIPS = [(400, 134, -20, 84, -82, 2.5), (450, 140, -22, 78, -90, 2.5), (500, 140, -24, 70, -92, 2.4),
-        (540, 132, -26, 64, -92, 2.2)]
+# ------------------------------------------------------------------ the drawing's shells (figures.vera_figure)
+TORSO = [(126, 41, -12, 28, -50, 2.0), (148, 90, -10, 40, -58, 2.2), (172, 124, -12, 52, -64, 2.4),
+         (210, 128, -10, 64, -68, 2.6), (265, 118, -6, 74, -66, 2.6), (335, 98, -4, 58, -60, 2.6),
+         (405, 94, -2, 56, -60, 2.6), (460, 118, 0, 64, -70, 2.5), (505, 128, 0, 68, -76, 2.4)]
+SKIRT = [(400, 88, -2, 52, -56, 2.4), (470, 116, 0, 62, -68, 2.4), (600, 114, 0, 62, -68, 2.3),
+         (860, 98, 0, 56, -62, 2.2)]
 
 
 def rho(rows, X, Y, Z):
@@ -142,19 +172,17 @@ def keep_inside(P, rows, k, mask):
 
 
 trunk = (part('pelvis', 'spine', 'Lclavicle', 'Rclavicle') > 0.3) & used
-X1 = keep_inside(X1, TORSO, 0.9, trunk & (X1[:, 1] < 440) & (X1[:, 1] > 122))
-X1 = keep_inside(X1, HIPS, 0.9, trunk & (X1[:, 1] >= 440))
+legs_all = (part('Lthigh', 'Rthigh', 'Lshin', 'Rshin') > 0.3) & used
+X1 = keep_inside(X1, inset(TORSO, 7), 0.92, trunk & (X1[:, 1] < 430) & (X1[:, 1] > 126))
+X1 = keep_inside(X1, SKIRT, 0.9, (trunk | legs_all) & (X1[:, 1] >= 430) & (X1[:, 1] < 850))
 
-# vertex normals of the fitted body
+
 def vnormals(P, T):
     n = np.zeros_like(P)
     fn = np.cross(P[T[:, 1]] - P[T[:, 0]], P[T[:, 2]] - P[T[:, 0]])
     for k in range(3):
         np.add.at(n, T[:, k], fn)
-    n /= np.linalg.norm(n, axis=1, keepdims=True) + 1e-12
-    # Anny in the drawing's frame (y flipped) has its winding mirrored: normals point outward after a flip
-    c = P[used].mean(0)
-    return n
+    return n / (np.linalg.norm(n, axis=1, keepdims=True) + 1e-12)
 
 
 N1 = vnormals(X1, TRI)
@@ -163,10 +191,9 @@ if np.mean(np.einsum('ij,ij->i', N1[_hips], X1[_hips] - X1[_hips].mean(0))) < 0:
     N1 = -N1
 
 OBJ = []
-tree_body = cKDTree(np.where(used[:, None], X1, 1e6))
 
 
-def weights_nearest(P, mask=None, k=24, sigma=12.0):
+def weights_nearest(P, mask=None, k=24, sigma=12.0, top4=True):
     """Skin weights for a garment point: Anny's weights of the nearby body vertices blended by distance (a smooth
     field: neighbouring points of a shell move alike), the four largest kept."""
     m = used if mask is None else (mask & used)
@@ -179,6 +206,11 @@ def weights_nearest(P, mask=None, k=24, sigma=12.0):
     for c in range(k):
         for q in range(4):
             np.add.at(acc, (np.arange(len(P)), SJ[j[:, c], q]), g[:, c] * SW[j[:, c], q])
+    acc /= acc.sum(1, keepdims=True)
+    return top_four(acc) if top4 else acc
+
+
+def top_four(acc):
     top = np.argsort(-acc, 1)[:, :4]
     w = np.take_along_axis(acc, top, 1)
     w /= w.sum(1, keepdims=True)
@@ -212,43 +244,45 @@ def anny_region(mask_v, offset, name, colour, extra=None, **kw):
     return keep
 
 
-# hands (skin), the body itself hidden under the clothes is not drawn
+# hands (skin)
 hands = (part('Lhand', 'Rhand') > 0.5) & used
 wrist = (part('LforeArm', 'RforeArm') > 0.2) & used
 anny_region(hands | (wrist & (part('Lhand', 'Rhand') > 0.15)), 0.0, 'hands', SKIN)
 
-# sleeves: over the arms, from inside the vest down to the wrist
+# legs in tights: Anny's own legs and feet (the skirt hides them above the knee)
+tights = (part('Lthigh', 'Rthigh', 'Lshin', 'Rshin', 'Lfoot', 'Rfoot') > 0.5) & used
+anny_region(tights | ((part('pelvis') > 0.4) & used & (X1[:, 1] > 560)), 0.6, 'tights', COL['tights'])
+
+# sleeves: over the arms, from inside the jacket down to the wrist, widened to the drawing's sleeve (33 → 26)
 arm = (part('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lclavicle', 'Rclavicle') > 0.5) & used
 arm &= (part('Lhand', 'Rhand') < 0.15)
 
-# trouser legs: Anny's thighs and shins on a straight, loose tube (the drawing's radii 60 → 42)
-leg = (part('Lthigh', 'Rthigh', 'Lshin', 'Rshin') > 0.5) & used & (X1[:, 1] < FLOOR - 22)
-# the seat and crotch: the pelvis below the trouser top's shell, so the trousers close between the legs
-seat = (part('pelvis') > 0.4) & used & (X1[:, 1] > 500)
 
-
-def loosen(V):
+def widen(V):
     out = V.copy()
-    for s, side in ((1, 'Left'), (-1, 'Right')):
-        a, b = J1[IDX[side + 'Leg']], J1[IDX[side + 'Foot']]
-        a = a + np.array([0, 10, 0])
-        m = leg & (np.sign(X1[:, 0]) == s)
-        d = b - a
-        t = np.clip(((V[m] - a) @ d) / (d @ d), 0, 1)
-        c = a + t[:, None] * d
-        r_now = np.linalg.norm(V[m] - c, axis=1)
-        r_want = np.interp(t, [0, 0.35, 0.7, 1.0], [60, 52, 46, 42])
-        r = np.maximum(r_want, r_now + 2)
-        dirs = (V[m] - c) / np.maximum(r_now, 1e-6)[:, None]
-        out[m] = c + dirs * r[:, None]
+    for s, side, L in ((1, 'Left', 'L'), (-1, 'Right', 'R')):
+        acc = np.zeros_like(V); wsum = np.zeros(len(V))
+        for (ja, jb), pn, (r0, r1) in (((side + 'Arm', side + 'ForeArm'), L + 'upperArm', (34, 31)),
+                                        ((side + 'ForeArm', side + 'Hand'), L + 'foreArm', (31, 27))):
+            a, b = J1[IDX[ja]], J1[IDX[jb]]
+            d = b - a
+            t = np.clip(((V - a) @ d) / (d @ d), 0, 1)
+            c = a + t[:, None] * d
+            r_now = np.linalg.norm(V - c, axis=1)
+            r = np.maximum(r0 + (r1 - r0) * t, r_now + 2)
+            cand = c + (V - c) / np.maximum(r_now, 1e-6)[:, None] * r[:, None]
+            w = part(pn)
+            acc += cand * w[:, None]; wsum += w
+        rest = np.clip(1 - wsum, 0, 1)                 # the shoulder's own vertices stay
+        m = (wsum > 0) & arm
+        out[m] = (acc[m] + V[m] * rest[m, None]) / (wsum[m] + rest[m])[:, None]
     return out
 
-
-anny_region(leg | seat, 3.0, 'trouserlegs', COL['trousers'], extra=loosen)
 
 # ------------------------------------------------------------------ the drawing's own garments
 la, ra = J1[IDX['LeftArm']], J1[IDX['RightArm']]
 le, re_ = J1[IDX['LeftForeArm']], J1[IDX['RightForeArm']]
+HOLE = 36.0
 
 
 def arm_hole(X, Y, Z, r):
@@ -271,104 +305,123 @@ def shell_mesh(rows, y0, y1, margin=None, nu=200, nv=80):
     return M.grid_cut(lambda U, V: sh.point(U, V), u, v, margin)
 
 
-# vest: the torso shell 2 out, with its V and its arm holes; ends in two points at the front
-VEST = inset(TORSO, -2)
-
-
-def vest_margin(X, Y, Z, U, V):
+def jacket_margin(X, Y, Z, U, V):
     d = np.abs(wrapdeg(U))
-    t = np.clip((300 - Y) / (300 - 140), 0, 1)
-    vee = d - 26 * t
-    hem = 452 + np.clip(30 - d, 0, 30) * 0.9 - Y       # the hem comes down to two points at the front
-    return np.minimum(np.minimum(vee, arm_hole(X, Y, Z, 33)), hem)
+    t = np.clip((330 - Y) / (330 - 140), 0, 1)         # figures.vneck(330, 140, 30)
+    return np.minimum(d - 30 * t, arm_hole(X, Y, Z, HOLE))
 
 
-Vv, Fv = shell_mesh(VEST, 122, 480, vest_margin, nu=128, nv=64)
+Vj, Fj = shell_mesh(TORSO, 126, 505, jacket_margin, nu=128, nv=64)
 
 
 def tuck(V):
-    """The sleeve's top kept under the vest where the vest covers it, so it comes out of the arm hole (whose edge
-    the line draws) instead of through the cloth."""
-    m = np.ones(len(V), bool)
-    r, zm = rho(VEST, V[:, 0], V[:, 1], V[:, 2])
-    hole = arm_hole(V[:, 0], V[:, 1], V[:, 2], 33)
-    sel = (hole > -6) & (r > 0.9) & (r < 1.2) & (V[:, 1] < 452)
-    return keep_inside(V, VEST, 0.96, sel)
+    """The sleeve's top kept under the jacket where the jacket covers it, so it comes out of the arm hole (whose
+    edge the line draws: the sleeve's seam) instead of through the cloth."""
+    r, zm = rho(TORSO, V[:, 0], V[:, 1], V[:, 2])
+    hole = arm_hole(V[:, 0], V[:, 1], V[:, 2], HOLE)
+    sel = (hole > -6) & (r > 0.9) & (r < 1.25) & (V[:, 1] < 480)
+    return keep_inside(V, TORSO, 0.96, sel)
 
 
-anny_region(arm, 2.5, 'sleeves', COL['shirt'], extra=tuck)
-sj, sw = weights_nearest(Vv, trunk)
-add('vest', Vv, Fv, COL['vest'], sj, sw)
-vest_shell = H.Shell(VEST)
+anny_region(arm, 2.5, 'sleeves', COL['jacket'], extra=lambda V: tuck(widen(V)))
+add('jacket', Vj, Fj, COL['jacket'], *weights_nearest(Vj, trunk))
+jacket = H.Shell(TORSO)
 
-# shirt body: the torso shell 6 in, from the collar down into the trousers, with arm holes
-Vs, Fs = shell_mesh(inset(TORSO, 6), 122, 440, lambda X, Y, Z, U, V: arm_hole(X, Y, Z, 34), nu=80, nv=44)
-sj, sw = weights_nearest(Vs, trunk)
-add('shirt', Vs, Fs, COL['shirt'], sj, sw)
-shirt_shell = H.Shell(inset(TORSO, 6))
+# blouse: the torso shell 7 in, from the collar down to the waist
+BLOUSE = inset(TORSO, 7, y1=405)
+Vs, Fs = shell_mesh(BLOUSE, 126, 405, lambda X, Y, Z, U, V: arm_hole(X, Y, Z, HOLE + 1), nu=80, nv=40)
+add('blouse', Vs, Fs, COL['blouse'], *weights_nearest(Vs, trunk))
+blouse = H.Shell(BLOUSE)
 
-# trouser top: the hips shell
-Vh, Fh = shell_mesh(HIPS, 420, 540, None, nu=96, nv=16)
-sj, sw = weights_nearest(Vh, trunk | leg)
-add('trousers', Vh, Fh, COL['trousers'], sj, sw)
+# skirt: the drawing's shell; each point takes the weights of both legs' sides, blended across the width
+Vk, Fk = shell_mesh(SKIRT, 420, 860, None, nu=96, nv=40)
+side_l = (trunk | legs_all) & (X1[:, 0] > -2)
+side_r = (trunk | legs_all) & (X1[:, 0] < 2)
+wl = weights_nearest(Vk, side_l, k=32, sigma=30, top4=False)
+wr = weights_nearest(Vk, side_r, k=32, sigma=30, top4=False)
+a = np.clip((Vk[:, 0] + 70) / 140, 0, 1)
+a = (a * a * (3 - 2 * a))[:, None]
+add('skirt', Vk, Fk, COL['skirt'], *top_four(wl * a + wr * (1 - a)))
+skirt = H.Shell(SKIRT)
 
-# shoes: the drawing's blobs (30, 24, 60), set on each foot along it
+# shoes: low pumps — an oval over each foot's toes and heel, the sole flat on the floor
 for s, side in ((1, 'Left'), (-1, 'Right')):
-    f, t = J1[IDX[side + 'Foot']], J1[IDX[side + 'ToeEnd']]
-    c = np.array([(f[0] + t[0]) / 2, FLOOR - 26, (f[2] + t[2]) / 2 + 10])
-    Ve, Fe = M.ellipsoid(c, (36, 28, 74), nu=36, nv=18)
-    Ve[:, 1] = np.minimum(Ve[:, 1], FLOOR)                   # a flat sole on the floor
+    fm = (part(('L' if s > 0 else 'R') + 'foot') > 0.5) & used & (X1[:, 1] > FLOOR - 34)
+    lo, hi = X1[fm].min(0), X1[fm].max(0)
+    c = np.array([(lo[0] + hi[0]) / 2, FLOOR - 19, (lo[2] + hi[2]) / 2])
+    Ve, Fe = M.ellipsoid(c, ((hi[0] - lo[0]) / 2 + 5, 20, (hi[2] - lo[2]) / 2 + 7), nu=36, nv=18)
+    Ve[:, 1] = np.minimum(Ve[:, 1], FLOOR)
     footm = (part(('L' if s > 0 else 'R') + 'foot') > 0.5) & used
-    sj, sw = weights_nearest(Ve, footm)
-    add('shoe' + side, Ve, Fe, COL['shoe'], sj, sw)
+    add('shoe' + side, Ve, Fe, COL['shoe'], *weights_nearest(Ve, footm))
+    print('shoe', side, (hi - lo).round(0))
 
-# collar points and the bow tie (figures.savely_figure), on the shirt
-for s in (1, -1):
-    p = H.lock_part(shirt_shell, [(s * -4, 124), (s * -14, 134), (s * -22, 146)], [8, 9, 0], lift=3, res=1.0)
+
+def ribbon(shell, path, widths, lift, res=0.35):
+    p = H.lock_part(shell, path, widths, lift=lift, res=res)
     P = np.stack([p.X, p.Y, p.Z], 1)
-    m = int(max(8, 9 * 2 * 1.0 * 1.5))
+    m = int(max(8, max(widths) * 2 * res * 1.5))
     n = len(P) // m
     q = np.array([(i * m + j, (i + 1) * m + j, (i + 1) * m + j + 1, i * m + j + 1) for i in range(n - 1) for j in range(m - 1)])
-    sj, sw = weights_joint(P, 'Chest')
-    add(f'collar{s}', P, q, COL['shirt'], sj, sw, solidify=1.0)
-zb = float(shirt_shell.sl(142)[2]) + 6
+    return P, q
+
+
+# the blouse's high collar and the jacket's lapels (figures.vera_figure)
 for s in (1, -1):
-    a = np.radians(s * -10)
-    R = np.array([[np.cos(a), -np.sin(a), 0], [np.sin(a), np.cos(a), 0], [0, 0, 1]])
-    Ve, Fe = M.ellipsoid((s * 16, 142, zb), (16, 10, 6), R, nu=24, nv=12)
-    add(f'bow{s}', Ve, Fe, COL['tie'], *weights_joint(Ve, 'Chest'))
-Ve, Fe = M.ellipsoid((0, 142, zb + 3), (7, 8, 6), nu=20, nv=10)
-add('knot', Ve, Fe, COL['tie'], *weights_joint(Ve, 'Chest'))
+    P, q = ribbon(blouse, [(s * -2, 128), (s * -16, 132), (s * -30, 136)], [9, 11, 0], 3)
+    add(f'bcol{s}', P, q, COL['blouse'], *weights_joint(P, 'Chest'), solidify=1.0)
+    P, q = ribbon(jacket, [(s * -12, 142), (s * -24, 190), (s * -30, 250), (s * -26, 320)], [10, 20, 14, 0], 3)
+    add(f'lapel{s}', P, q, COL['jacket'], *weights_nearest(P, trunk), solidify=1.0)
 
-# buttons, pocket, chain and the watch in the vest pocket
-vc = vest_shell.curve
-btn = []
-for y in (310, 352, 394):
-    p = vc([(0, y)])[0] + [0, 0, 1.5]
+# buttons
+jc = jacket.curve
+for y in (360, 420):
+    p = jc([(0, y)])[0] + [0, 0, 1.5]
     Ve, Fe = M.ellipsoid(p, (4.5, 4.5, 2.0), nu=16, nv=8)
-    add(f'button{y}', Ve, Fe, '#c9a35a', *weights_nearest(Ve, trunk))
-# the watch: a gold case peeking out of the left pocket (the person's left: x > 0... the drawing's pocket at -angle)
-wp = vc([(-40, 352)])[0]
-nrm = wp - np.array([0, 352, float(vest_shell.sl(352)[1])]); nrm /= np.linalg.norm(nrm)
-R = np.array([[1, 0, 0], [0, 1, 0], nrm]); R[0] -= R[0] @ nrm * nrm; R[0] /= np.linalg.norm(R[0])
-R[1] = np.cross(nrm, R[0])
-Ve, Fe = M.ellipsoid(wp + nrm * 3 + np.array([0, -8, 0]), (12, 12, 3.5), R.T, nu=28, nv=10)
-add('watch', Ve, Fe, COL['gold'], *weights_nearest(Ve, trunk))
-Ve, Fe = M.ellipsoid(wp + nrm * 6.2 + np.array([0, -8, 0]), (9, 9, 0.6), R.T, nu=28, nv=6)
-add('watchface', Ve, Fe, COL['face'], *weights_nearest(Ve, trunk))
-chain = vc([(0, 352), (-12, 372), (-26, 370), (-38, 346)]) + nrm * 0 + np.array([0, 0, 2.5])
-from scipy.interpolate import CubicSpline
-cs = CubicSpline(np.linspace(0, 1, len(chain)), chain)
-Ve, Fe = M.tube(cs(np.linspace(0, 1, 40)), 1.3, nseg=6)
-add('chain', Ve, Fe, COL['chain'], *weights_nearest(Ve, trunk), line=False)
+    add(f'button{y}', Ve, Fe, '#1e2534', *weights_nearest(Ve, trunk), line=False)
 
-# lines on the clothes, as the drawing has them: pocket welts, the vest's seam at the hem, trouser creases
+# the folder: held in the left hand, flat against the thigh when the arm hangs (the drawing holds it at the hip)
+if os.environ.get('FOLDER', '1') == '1':
+    hj, mj = J1[IDX['LeftHand']], J1[IDX['LeftHandMiddle2']]
+    d = (mj - hj) / np.linalg.norm(mj - hj)               # along the hand
+    nrm = np.cross(d, J1[IDX['LeftHandIndex1']] - J1[IDX['LeftHandPinky1']])
+    nrm /= np.linalg.norm(nrm)                             # out of the palm's plane
+    if nrm @ (J1[IDX['LeftHand']] - J1[IDX['Hips']]) > 0:
+        nrm = -nrm                                         # toward the body: the palm's side
+    w = np.cross(nrm, d)
+    c = hj + d * 40 + nrm * 22 - w * 10
+    R = np.stack([w, d, nrm], 1)                           # box axes: width, height (along the hand), thickness
+    sz = np.array([150, 210, 16]) / 2
+    cube = np.array([[x, y, z] for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)], float) * sz
+    Vf = cube @ R.T + c
+    Ff = np.array([(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)])
+    add('folder', Vf, Ff, COL['folder'], *weights_joint(Vf, 'LeftHand'), smooth=False)
+
+# the seams the drawing has, as thin ink: the jacket's pockets and darts, the skirt's slit
 LINES = []
 for s in (1, -1):
-    LINES.append((vc([(s * 30, 360), (s * 52, 356)]), 0.6, 'vest'))
-    LINES.append((vc([(s * 32, 250), (s * 52, 246)]), 0.6, 'vest'))
-json.dump([dict(pts=(p + np.array([0, 0, 1.0]) * 0).tolist(), w=w) for p, w, _ in LINES],
-          open(os.path.join(C, 'body_lines.json'), 'w'))
+    LINES.append((jc([(s * 30, 452), (s * 58, 450)]), 0.6, trunk))
+    LINES.append((jc([(s * 40, 230), (s * 44, 330), (s * 40, 410)]), 0.55, trunk))
+LINES.append((skirt.curve([(-20, 700), (-22, 856)]), 0.6, None))
+from scipy.interpolate import CubicSpline
+for i, (P, w, mask) in enumerate(LINES):
+    if len(P) > 2:
+        P = CubicSpline(np.linspace(0, 1, len(P)), P)(np.linspace(0, 1, 24))
+    else:
+        P = P[0] + (P[1] - P[0]) * np.linspace(0, 1, 12)[:, None]
+    if mask is None:                                   # on the skirt: move as the skirt's nearest points do
+        _, j = cKDTree(Vk).query(P)
+        sj, sw = OBJ[[o['name'] for o in OBJ].index('skirt')]['sj'][j], OBJ[[o['name'] for o in OBJ].index('skirt')]['sw'][j]
+        sh = skirt
+    else:
+        sj, sw = weights_nearest(P, mask)
+        sh = jacket
+    zm = sh.sl(P[:, 1])[1]
+    nrm = P - np.stack([0 * zm, P[:, 1], zm], 1)
+    nrm /= np.linalg.norm(nrm, axis=1, keepdims=True)
+    Vt, Ft = M.tube(P + nrm * 0.8, w * 1.5, nseg=6)
+    rep = np.repeat(np.arange(len(P)), 6)
+    rep = np.r_[rep, [0, len(P) - 1]]
+    add(f'seam{i}', Vt, Ft, INK, sj[rep], sw[rep], line=False)
 
 names = [o['name'] for o in OBJ]
 arr = {'names': np.array(names), 'joints': J1, 'joints0': J0, 'anny_raw': X0, 'anny_fit': X1, 'anny_tri': TRI[used[TRI].all(1)]}
@@ -380,5 +433,5 @@ for o in OBJ:
     arr[o['name'] + '_meta'] = json.dumps(dict(o['meta'], colour=o['colour']))
 np.savez(os.path.join(C, 'body.npz'), **arr)
 print({o['name']: len(o['v']) for o in OBJ}, sum(len(o['v']) for o in OBJ))
-print('joints: arm', J1[IDX['LeftArm']].round(1), 'leg', J1[IDX['LeftLeg']].round(1), 'hand', J1[IDX['LeftHand']].round(1),
-      'foot', J1[IDX['LeftFoot']].round(1))
+for n in ('LeftArm', 'LeftForeArm', 'LeftHand', 'LeftLeg', 'LeftShin', 'LeftFoot', 'Hips'):
+    print(n, J1[IDX[n]].round(1))

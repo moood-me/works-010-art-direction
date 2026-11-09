@@ -1,0 +1,113 @@
+{
+ "format": "s9/model",
+ "version": 1,
+ "id": "anya",
+ "skeleton": "soma77",
+ "mats": [
+  "skin",
+  "skin_d",
+  "hair",
+  "band",
+  "dress",
+  "belt",
+  "cardi",
+  "collar",
+  "shoe",
+  "clay",
+  "ink",
+  "hair_l",
+  "white",
+  "nose",
+  "nose_d"
+ ],
+ "parts": [
+  "head"
+ ],
+ "dots": {
+  "mat": "dress",
+  "step": 0.044,
+  "r": 0.0052
+ },
+ "bin": "anya.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    28090,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    52363,
+    3
+   ],
+   "offset": 337080
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    28090,
+    4
+   ],
+   "offset": 965436
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    28090,
+    4
+   ],
+   "offset": 1077796
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1527236
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1528160
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    28090
+   ],
+   "offset": 1529392
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    28090,
+    3
+   ],
+   "offset": 1557484
+  },
+  "fuv": {
+   "dtype": "float32",
+   "shape": [
+    28090,
+    3
+   ],
+   "offset": 1894564
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    28090,
+    1
+   ],
+   "offset": 2231644
+  }
+ }
+}

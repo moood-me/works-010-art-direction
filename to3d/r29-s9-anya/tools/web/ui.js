@@ -1,7 +1,7 @@
 // The viewer's controls (not in shots mode): turn with the mouse, zoom with the wheel; choose a motion and an
 // expression (it blends in), talk on/off, play/pause, scrub. Everything goes through window.A (tim.js).
 const q = new URLSearchParams(location.search);
-if (q.get('shots')) document.body.classList.add('shots');
+if (q.get('shots')) { document.body.classList.add('shots'); document.documentElement.style.background = 'transparent'; }
 else {
   while (!window.__ready) await new Promise(r => setTimeout(r, 50));
   const A = window.A, $ = id => document.getElementById(id), canvas = $('c');

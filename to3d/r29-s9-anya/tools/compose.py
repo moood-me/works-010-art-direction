@@ -7,14 +7,16 @@ from common import HERE, CACHE
 from kit import Doc, g
 import scenery
 
+WHO = CACHE.split('-')[-1]
+
 
 def backdrop(d, kind):
-    """the drawing's backdrop (scenery.backdrop); for a walk across a wide picture its suns stay up in the sky"""
-    if kind != 'walk': return scenery.backdrop(d, 'tim', kind)
-    b = scenery.BACK['tim']; w, h = d.w, d.h
+    """the drawing's backdrop (scenery.backdrop); for a walk across a wide picture its motifs stay up in the sky"""
+    if kind != 'walk': return scenery.backdrop(d, WHO, kind)
+    b = scenery.BACK[WHO]; w, h = d.w, d.h
     d.add(g([f'<rect width="{w}" height="{h}" fill="{b['field']}"/>'], filt='board'))
     o = [f'<rect y="{h * 0.8}" width="{w}" height="{h}" fill="{b['ground']}"/>']
-    o += [scenery.sun(x, y, r, b['mc']) for x, y, r in ((70, 70, 24), (300, 130, 16), (560, 60, 20), (820, 140, 18), (900, 50, 14))]
+    o += [scenery.MOTIF[b['motif']](x, y, r, b['mc']) for x, y, r in ((70, 70, 24), (300, 130, 16), (560, 60, 20), (820, 140, 18), (900, 50, 14))]
     d.add(g(o, filt='gouache'))
 
 

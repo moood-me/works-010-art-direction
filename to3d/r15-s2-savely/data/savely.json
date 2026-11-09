@@ -1,0 +1,271 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "savely-klaus",
+ "label": {
+  "ru": "Савелий Петрович (Клаус)"
+ },
+ "topology": "savely-klaus",
+ "skeleton": "soma",
+ "source": "to3d/r15-s2-savely/tools/build.py",
+ "faces": "faces",
+ "floor": 0.0,
+ "materials": [
+  "skin",
+  "nose",
+  "white",
+  "shirt",
+  "vest",
+  "apron",
+  "trous",
+  "shoe",
+  "frame",
+  "loupe",
+  "brass",
+  "glass",
+  "glint",
+  "band"
+ ],
+ "deco": "\nvoid deco(vec3 rp, vec2 uv, float m, inout vec3 base, inout vec3 bshd) {\n  if (abs(m - 3.0) < 0.5) {\n    // trousers below the waist; the vest over the trunk, open in a V at the neck where the shirt and a small tie show\n    if (rp.y < 0.779 && abs(rp.x) < 0.26) { base = vec3(0.459, 0.373, 0.325); bshd = vec3(0.196, 0.161, 0.255); return; }\n    bool trunk = abs(rp.x) < 0.140 - 0.5 * max(0.0, rp.y - 1.161);\n    float v = (rp.y - 1.030) * 0.42;\n    bool open = rp.z > 0.014 && abs(rp.x) < v;\n    if (trunk && !open && (rp.y < 1.276 || rp.z < 0.014)) {\n      base = vec3(0.470, 0.478, 0.341); bshd = vec3(0.200, 0.224, 0.265);\n      float e = min(abs(abs(rp.x) - v), abs(rp.y - 0.779));\n      if (rp.z > 0.014 && abs(abs(rp.x) - v) < 0.004 && v > 0.0) { base *= 0.72; bshd *= 0.8; }\n    } else if (open && abs(rp.x) < 0.012 + 0.006 * sin((rp.y - 1.030) * 30.0) && rp.y < 1.276 - 0.03) { base = vec3(0.50, 0.22, 0.20); bshd = vec3(0.27, 0.12, 0.17); }\n  }\n  if (abs(m - 5.0) < 0.5 && rp.z > 0.0) {\n    float e = min(1.0 - abs(uv.x), min(uv.y, 1.0 - uv.y) * 3.0);\n    if (e > 0.045 && e < 0.06) { base *= 0.8; bshd *= 0.85; }\n    // the apron's pocket with two tools, a stitched edge\n    vec2 p = vec2(rp.x + 0.035, rp.y - 0.84);\n    if (abs(p.x) < 0.05 && abs(p.y) < 0.042) { base *= 0.82; bshd *= 0.85;\n      if ((abs(p.x + 0.022) < 0.0035 || abs(p.x + 0.004) < 0.0035) && p.y > -0.02) { base = vec3(0.60, 0.60, 0.63); bshd = vec3(0.3, 0.28, 0.4); } }\n  }\n}",
+ "K": 0.001258,
+ "headOrigin": [
+  0.0,
+  1.186,
+  0.20072388136445213
+ ],
+ "movers": {
+  "browL": {
+   "ranges": [
+    [
+     40505,
+     4358
+    ]
+   ],
+   "pivot": [
+    0.0634650828064964,
+    0.2506633681359387,
+    0.11929675645542381
+   ]
+  },
+  "browR": {
+   "ranges": [
+    [
+     44863,
+     4360
+    ]
+   ],
+   "pivot": [
+    -0.06364460886909921,
+    0.250745811426597,
+    0.11927519328328007
+   ]
+  },
+  "moustache": {
+   "ranges": [
+    [
+     28971,
+     11534
+    ]
+   ],
+   "pivot": [
+    -0.00010909609900413775,
+    0.056545392167377084,
+    0.0982496193695499
+   ]
+  }
+ },
+ "expr": {
+  "calm": {
+   "lid": 0.52,
+   "low": 0.12,
+   "look": 0.1,
+   "mouth": "none",
+   "brow": [
+    0,
+    0
+   ],
+   "mou": 0
+  },
+  "kind": {
+   "lid": 0.45,
+   "low": 0.3,
+   "look": 0.0,
+   "mouth": "smile",
+   "brow": [
+    -3,
+    -4
+   ],
+   "mou": -9
+  },
+  "surprise": {
+   "lid": 0.12,
+   "low": 0.0,
+   "look": 0.0,
+   "mouth": "o",
+   "brow": [
+    -13,
+    -8
+   ],
+   "mou": 3
+  },
+  "sad": {
+   "lid": 0.6,
+   "low": 0.1,
+   "look": 0.35,
+   "mouth": "none",
+   "brow": [
+    -2,
+    -16
+   ],
+   "mou": 6
+  },
+  "anger": {
+   "lid": 0.5,
+   "low": 0.25,
+   "look": 0.05,
+   "mouth": "none",
+   "brow": [
+    7,
+    12
+   ],
+   "mou": 2
+  }
+ },
+ "back": {
+  "top": "#2e2230",
+  "bottom": "#4a3030",
+  "glow": "#f0a050"
+ },
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    79450,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    155398,
+    3
+   ],
+   "offset": 953400
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    79450,
+    4
+   ],
+   "offset": 2818176
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    79450,
+    4
+   ],
+   "offset": 3135976
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    231
+   ],
+   "offset": 4407176
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    308
+   ],
+   "offset": 4408104
+  },
+  "col": {
+   "dtype": "uint8",
+   "shape": [
+    79450,
+    3
+   ],
+   "offset": 4409336
+  },
+  "shd": {
+   "dtype": "uint8",
+   "shape": [
+    79450,
+    3
+   ],
+   "offset": 4647688
+  },
+  "rim": {
+   "dtype": "uint8",
+   "shape": [
+    79450,
+    3
+   ],
+   "offset": 4886040
+  },
+  "gloss": {
+   "dtype": "uint8",
+   "shape": [
+    79450
+   ],
+   "offset": 5124392
+  },
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    79450,
+    2
+   ],
+   "offset": 5203848
+  },
+  "tw": {
+   "dtype": "uint8",
+   "shape": [
+    79450
+   ],
+   "offset": 5839448
+  },
+  "pn": {
+   "dtype": "float32",
+   "shape": [
+    79450,
+    3
+   ],
+   "offset": 5918904
+  },
+  "pw": {
+   "dtype": "uint8",
+   "shape": [
+    79450
+   ],
+   "offset": 6872304
+  },
+  "two": {
+   "dtype": "uint8",
+   "shape": [
+    79450
+   ],
+   "offset": 6951760
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    79450
+   ],
+   "offset": 7031216
+  },
+  "rp": {
+   "dtype": "float32",
+   "shape": [
+    79450,
+    3
+   ],
+   "offset": 7110672
+  }
+ },
+ "bin": "savely.bin"
+}

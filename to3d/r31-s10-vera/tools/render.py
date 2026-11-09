@@ -1,4 +1,4 @@
-"""Render the 3D Савелий Петрович in the clear-line manner: flat colour (emission, no light, no shade) and one even
+"""Render the 3D character in the clear-line manner: flat colour (emission, no light, no shade) and one even
 contour line (Freestyle: silhouettes, borders, material edges) — the same split as the drawing's own renderer.
 Marks (lids, pupils, brows, wrinkles, the mouth, the glasses) are drawn as thin ink tubes and filled shapes lying on
 the surface; their width follows the picture's line width, as in the drawing.
@@ -78,6 +78,7 @@ sc.collection.children.link(line_coll)
 mark_coll = bpy.data.collections.new('marks')
 sc.collection.children.link(mark_coll)
 OBJ = {}
+TUBES = {ob['name']: ob['tube'] for ob in meta['objects'] if ob.get('tube')}
 
 
 def mesh_obj(name, V, F, colour, lined=True, smooth=True, solidify=0.0, coll=None):
@@ -110,6 +111,8 @@ for ob in meta['objects']:
         for c in ob['colours']:
             o.data.materials.append(flat(c))
         o.data.polygons.foreach_set('material_index', SC['obj_' + ob['name'] + '_fc'].astype(np.int32))
+    if 'obj_' + ob['name'] + '_fm' in SC:      # faces where only the outer contour and colour edges are drawn
+        o.data.polygons.foreach_set('use_freestyle_mark', SC['obj_' + ob['name'] + '_fm'].astype(bool))
     OBJ[ob['name']] = o
 
 
@@ -219,7 +222,25 @@ ls.select_border = True
 ls.select_crease = bool(job.get('crease_lines', False))
 ls.select_material_boundary = True
 ls.select_external_contour = True
+ls.select_by_face_marks = True               # not the marked faces (the lips): they have a line set of their own
+ls.face_mark_negation = 'EXCLUSIVE'
+ls.face_mark_condition = 'ONE'
 lst = ls.linestyle
+ls2 = fs.linesets.new('lips')
+ls2.select_by_visibility = True
+ls2.visibility = 'VISIBLE'
+ls2.select_by_edge_types = True
+ls2.select_by_collection = True
+ls2.collection = line_coll
+ls2.collection_negation = 'INCLUSIVE'
+ls2.select_by_face_marks = True
+ls2.face_mark_negation = 'INCLUSIVE'
+ls2.face_mark_condition = 'BOTH'
+for _k in ('silhouette', 'border', 'crease', 'ridge_valley', 'suggestive_contour', 'contour', 'edge_mark'):
+    setattr(ls2, 'select_' + _k, False)
+ls2.select_material_boundary = True
+ls2.select_external_contour = True
+ls2.linestyle = lst
 lst.color = hexrgb(INK)
 lst.chaining = 'PLAIN'
 lst.use_chain_count = False
@@ -287,7 +308,14 @@ else:
                 if name not in offs or o.name not in bpy.data.objects:
                     continue
                 i0, i1 = offs[name]
-                o.data.vertices.foreach_set('co', to_b(D[i0:i1]).astype(np.float32).ravel())
+                Q = D[i0:i1]
+                if name in TUBES:                # an ink line baked as a tube: its width set for this picture
+                    nseg, rings, w = TUBES[name]
+                    Q = Q.copy()
+                    Rg = Q[:nseg * rings].reshape(rings, nseg, 3)
+                    c = Rg.mean(1, keepdims=True)
+                    Q[:nseg * rings] = (c + (Rg - c) * ((v.get('lw', 2.2) / v['s']) / meta.get('bake_lw', 2.2))).reshape(-1, 3)
+                o.data.vertices.foreach_set('co', to_b(Q).astype(np.float32).ravel())
                 o.data.update()
             vv = dict(v)
             if v.get('follow') == 'head':        # a close view kept on the head (the point given by cx, cy)

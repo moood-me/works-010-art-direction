@@ -1,20 +1,23 @@
-"""Тим's drawing read as numbers: the outlines of figure-tim / turn-tim's head (front and side) from the drawing's own
-code (styles/s9-midcentury/tools/tim.py), in its units (y down; head centre 0,0; crown −106, chin 88)."""
+"""Аня's drawing read as numbers: the outlines of her head (front and side) from the drawing's own code
+(styles/s9-midcentury/tools/anya.py head('front'), head('side')), in its units (y down; head centre 0,0; chin 97; the
+face's top −104 under the fringe, the hair's top −132). The skull under the hair is ours: the face outline carried up to
+a crown at −118 and round to a back at −78 (the bob's back is at −96)."""
 import numpy as np
 import common  # noqa: F401  (paths)
 from kit import sample
 
-K = 0.0014          # metres per drawing unit of the head
-FRONT = [(0, -106), (46, -96), (72, -60), (78, -10), (72, 34), (52, 66), (24, 84), (0, 88), (-24, 84), (-52, 66),
-         (-72, 34), (-78, -10), (-72, -60), (-46, -96)]
-SIDE = [(-66, -30), (-56, -84), (-14, -110), (36, -104), (64, -72), (70, -30), (70, 10), (80, 30), (84, 40, 'c'),
-        (72, 46), (70, 58), (62, 72), (38, 86), (6, 86), (-24, 76), (-52, 50), (-68, 10)]
-SIDE_NO_NOSE = [p for p in SIDE if p[:2] not in [(80, 30), (84, 40), (72, 46)]]
-EAR_FRONT = (78, 12, 15, 21, 12)       # centre x, y, rx, ry, tilt (deg) — mirrored for the other ear
-EAR_SIDE = (-8, 14)
-NOSE = dict(front=(0, 34, 9, 8), side_tip=(84, 40))
-EYES = dict(front=[(-24, 14), (24, 14)], side=(52, 12))
-MOUTH = dict(front=(2, 58), side=(64, 58))
+K = 0.00114         # metres per drawing unit of the head (figure-anya draws the head at 0.5; 1 figure unit = 2.28 mm)
+CROWN, CHIN = -118, 97
+FRONT = [(0, -118), (46, -106), (70, -62), (72, -10), (64, 34), (46, 70), (20, 92), (0, 97), (-20, 92), (-46, 70),
+         (-64, 34), (-72, -10), (-70, -62), (-46, -106)]
+SIDE = [(-78, -30), (-66, -88), (-22, -118), (26, -116), (54, -86), (64, -50), (66, -14), (64, 4), (70, 24), (78, 36, 'c'),
+        (68, 42), (64, 50), (66, 58), (62, 64), (64, 72), (56, 86), (36, 96), (10, 94), (-10, 80), (-34, 62), (-62, 40), (-76, 6)]
+SIDE_NO_NOSE = [(-78, -30), (-66, -88), (-22, -118), (26, -116), (54, -86), (64, -50), (66, -14), (65, 12), (65, 40), (63, 62),
+                (56, 86), (36, 96), (10, 94), (-10, 80), (-34, 62), (-62, 40), (-76, 6)]
+EAR_X = -8          # the side view's x of the head's axis (the ear, under the bob)
+NECK = dict(a=20, c0=2, c=19, rings=((0.575, 108), (0.56, 122), (0.545, 138)))   # half-width, side centre, half-depth
+JAW = (45, 86)      # heights where round cross-sections are asked for
+BACK_MAX = 80
 
 
 def curve(pts, per=24):

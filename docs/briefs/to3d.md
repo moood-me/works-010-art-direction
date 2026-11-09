@@ -96,3 +96,8 @@ each in its own folder `to3d/<folder>/` with its own page.
 - Finish the first character's page (pictures, `entry.json`, `notes.md`) before starting the second, so that an
   interruption loses little. Final report: for each of the two — how it came out, honestly, the best pictures and
   the weakest.
+- The four new styles (С13 woodblock print, С14 cut paper, С15 noir, С16 pixel art) have no character in 3D yet:
+  there, take as your starting point the earlier characters whose way of making the look is nearest to your style
+  (read several `notes.md`: Р12 for a look drawn each frame from the 3D by the style's own code, Р1 and Р3 for flat
+  graphic styles and paper, Р8 for shape and light, Р2 for an even line), and find how this style lives in 3D — it is
+  the first try for it; say plainly what it can and can't keep of the drawing.

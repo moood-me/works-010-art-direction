@@ -293,6 +293,9 @@ export function mouth(d, x, y, kind = 'soft', s = 1, o = {}) {
     }
   } else if (kind === 'flat') {
     ink(d, [[a, y + 1], [xm, y], [b, y + 2]], { w: 1.8 * w, start: 0.6, end: 0.4, seed });
+    ink(d, [[b, y + 2], [b - side * 3, y + 5]], { w: 1.0 * w, seed: seed == null ? null : seed + 1 });
+  } else if (kind === 'grin') {
+    ink(d, [[a, y - 1], [xm, y + 4 * s], [b, y - 4 * s], [b - side * 3, y - 7 * s]], { w: 1.8 * w, start: 0.4, end: 0.2, seed });
   } else if (kind === 'down') {
     ink(d, [[a, y + 4], [xm, y - 1], [b, y + 4]], { w: 1.7 * w, start: 0.4, end: 0.3, seed });
   } else if (kind === 'laugh') {
@@ -310,4 +313,16 @@ export function mouth(d, x, y, kind = 'soft', s = 1, o = {}) {
     ink(d, [...pts, pts[0]], { w: 1.9 * w, start: 0.9, end: 0.7, seed });
     ink(d, [[a - side * 2, y + 0.5], [b + side * 2, y + 1]], { w: 0.8, jit: 0.2, seed: 77 });
   }
+}
+
+// kit.py's paper(): paper left white in any shape (teeth in an open mouth) — over the washes, under the ink
+export function paper(d, poly) {
+  const P = d.tp(poly); if (!P) return;
+  d.whites.push(`<polygon points="${fmt(catmull(P, true, 1.5))}"/>`);
+}
+// parts.py's curl(): one small curl inside a mass of curly hair — an open hook of the pen, most of a turn
+export function curl(d, x, y, r = 6, rot = 0, o = {}) {
+  const { w = 1.0, seed = null, raw = false } = o, pts = [];
+  for (let i = 0; i < 7; i++) { const a = rot * Math.PI / 180 + i / 6 * 1.5 * Math.PI, k = r * (1 - 0.07 * i); pts.push([x + k * Math.cos(a), y + k * Math.sin(a) * 0.85]); }
+  ink(d, pts, { w, start: 0.5, end: 0.1, jit: 0.3, retrace: 0, seed, raw });
 }

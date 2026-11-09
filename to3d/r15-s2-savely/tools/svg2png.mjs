@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { createRequire } from 'node:module';
-const { chromium } = createRequire('/home/user/works-010-art-direction/engine/check/')('playwright');
+const { chromium } = createRequire(import.meta.url)('playwright');
 const [out, ...files] = process.argv.slice(2);
 const b = await chromium.launch(); const page = await b.newPage();
 for (const f of files) {

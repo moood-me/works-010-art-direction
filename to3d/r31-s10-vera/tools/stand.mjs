@@ -7,12 +7,13 @@ import path from 'node:path';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ENGINE = path.resolve(here, '../../../engine/');
+const ID = 'vera';
 const [cache, out] = process.argv.slice(2);
 const ours = path.resolve(cache, 'engine/data');
 const read = async url => {
   let p = fileURLToPath(url);
   const rel = path.relative(path.join(ENGINE, 'data'), p);
-  if (rel.startsWith('bodies/savely') || rel.startsWith('topology/savely')) p = path.join(ours, rel);
+  if (rel.startsWith('bodies/' + ID + '.') || rel.startsWith('topology/' + ID + '.')) p = path.join(ours, rel);
   const b = await readFile(p);
   return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
 };
@@ -20,7 +21,7 @@ const { createEngine } = await import(pathToFileURL(path.join(ENGINE, 'src/engin
 const { resolve } = await import(pathToFileURL(path.join(ENGINE, 'src/character.js')).href);
 const { qAxisAngle, qMul, qRot } = await import(pathToFileURL(path.join(ENGINE, 'src/math.js')).href);
 const E = await createEngine({ root: pathToFileURL(ENGINE + '/'), read });
-const spec = resolve({ format: 'engine/character', version: 1, id: 'savely', body: 'savely' });
+const spec = resolve({ format: 'engine/character', version: 1, id: ID, body: ID });
 const fig = await E.figure(spec, { position: [0, 0, 0], heading: 0 });
 const body = fig.body, sk = body.skeleton, J = sk.J;
 const pose = { Q: new Float64Array(J * 4), P: Float64Array.from(body.joints) };

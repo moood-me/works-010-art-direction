@@ -1,6 +1,6 @@
-// Савелий Петрович moved by a Kimodo motion through the engine (engine/src): the engine's own retargeting and
+// Вера moved by a Kimodo motion through the engine (engine/src): the engine's own retargeting and
 // skinning, on his body pack (pack_engine.py). The engine is used as it is; only its file reading is pointed at our
-// body: data/bodies/savely.* and data/topology/savely.* are read from CACHE/engine/data.
+// body: data/bodies/vera.* and data/topology/vera.* are read from CACHE/engine/data.
 // usage: node move.mjs CACHE MOTION[,MOTION…] OUT.bin [step] [frames a:b]
 //   OUT.bin: float32, frames × N × 3 (metres, the engine's axes); OUT.json: {frames, N, times, hips: [[x, y, z]…]}
 import { readFile, writeFile } from 'node:fs/promises';
@@ -9,6 +9,7 @@ import path from 'node:path';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ENGINE = path.resolve(here, '../../../engine/');
+const ID = 'vera', RU = 'Вера';
 const [cache, motions, out, stepArg, rangeArg] = process.argv.slice(2);
 const step = Number(stepArg || 1);
 const ours = path.resolve(cache, 'engine/data');
@@ -16,7 +17,7 @@ const ours = path.resolve(cache, 'engine/data');
 const read = async url => {
   let p = fileURLToPath(url);
   const rel = path.relative(path.join(ENGINE, 'data'), p);
-  if (rel.startsWith('bodies/savely') || rel.startsWith('topology/savely')) p = path.join(ours, rel);
+  if (rel.startsWith('bodies/' + ID + '.') || rel.startsWith('topology/' + ID + '.')) p = path.join(ours, rel);
   const b = await readFile(p);
   return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
 };
@@ -24,8 +25,8 @@ const read = async url => {
 const { createEngine } = await import(pathToFileURL(path.join(ENGINE, 'src/engine.js')).href);
 const { resolve } = await import(pathToFileURL(path.join(ENGINE, 'src/character.js')).href);
 const E = await createEngine({ root: pathToFileURL(ENGINE + '/'), read });
-const spec = resolve({ format: 'engine/character', version: 1, id: 'savely', label: { ru: 'Савелий Петрович' },
-  body: 'savely', skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} } });
+const spec = resolve({ format: 'engine/character', version: 1, id: ID, label: { ru: RU },
+  body: ID, skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} } });
 const fig = await E.figure(spec, { position: [0, 0, 0], heading: 0 });
 const clip = await E.clip(motions.split(','));
 let [a, b] = rangeArg ? rangeArg.split(':').map(Number) : [0, clip.frames - 1];

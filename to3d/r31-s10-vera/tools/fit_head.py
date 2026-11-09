@@ -68,6 +68,16 @@ def eye_carry(P, k):
 
 
 V = place(V0)
+# the drawing's face can be much narrower below the eyes than the base's (a pointed chin): the base is first brought
+# to the drawing's width at every height, so the fit starts near and the skin doesn't fold over itself
+_notear = np.abs(V0[:, 0] - cx) < 0.066
+_ys = np.arange(CROWN_D + 10, CHIN_D + 1, 6.0)
+_wb = np.array([np.abs(V[_notear & (np.abs(V[:, 1] - y) < 5), 0]).max() for y in _ys])
+_wd = np.array([float(h.sl(y - DROP)[0]) for y in _ys])
+_ok = _ys < CHIN_D - 14                              # at the very chin both go to nothing: hold the last ratio
+_ratio = np.interp(V[:, 1], _ys[_ok], np.clip(_wd / _wb, 0.6, 1.4)[_ok])
+V[:, 0] *= np.where(V[:, 1] < 150, _ratio, 1.0)
+print('width ratio by height', np.round(np.clip(_wd / _wb, 0.6, 1.4)[_ok][::4], 2))
 
 # the nose: the drawing's is the caricature — big, round, drooping. The base's nose is enlarged about its root
 # before the fit (so the Laplacian keeps a nose's form, at the drawing's size), with a smooth falloff to the cheeks.
@@ -85,6 +95,17 @@ wn = np.clip((0.05 - dn) / 0.022, 0, 1) ** 1.5
 wn[V0[:, 1] > -0.115] = 0
 V = V + wn[:, None] * (ROOT_D + (V - r_h) * sc_n - V)
 print('nose scale', sc_n.round(2), 'tip', TIP_D.round(1))
+
+# the mouth: the drawing's is narrower than the base's — the base's mouth is drawn in toward the middle before the
+# fit (the lips keep their form), fading out to the cheeks
+MOUTH_H = np.array([cx, -0.150, 0.691])
+_dm = np.linalg.norm((V0 - MOUTH_H) * [1, 0.6, 1.3], axis=1)
+_wm = np.exp(-(_dm / 0.024) ** 2)
+V[:, 0] *= 1 - (1 - getattr(who, 'MOUTH_SX', 1.0)) * _wm
+# and set at the drawing's height (the drawing's upper lip is short, the chin long)
+_my0 = place(MOUTH_H[None])[0, 1]
+V[:, 1] += (who.MOUTH_Y - _my0) * np.exp(-(_dm / 0.034) ** 2)
+print('mouth moved by', round(float(who.MOUTH_Y - _my0), 1))
 
 # mesh: triangles from the polygons (fan), edges, Laplacian
 tris, edges = [], set()
@@ -128,7 +149,18 @@ ear = (np.abs(V0[:, 0] - cx) > 0.066) & (V0[:, 2] > 0.68) & (V0[:, 2] < 0.80) & 
 n0 = vnormals(V0) * SGN   # V0 is in Blender's handedness: flip back
 axis_pt = np.stack([np.full(N, cx), np.full(N, -0.03), V0[:, 2]], 1)
 inward = np.einsum('ij,ij->i', n0, V0 - axis_pt) < 0
-mouth_in = inward & (V0[:, 2] < 0.72) & (V0[:, 2] > 0.6) & (np.abs(V0[:, 0] - cx) < 0.03)
+# the mouth's bag: those of them that lie behind the face's front surface (the concave skin beside the nose and
+# under it is turned inward too, but nothing is in front of it)
+_cand = inward & (V0[:, 2] < 0.75) & (V0[:, 2] > 0.6) & (np.abs(V0[:, 0] - cx) < 0.06)
+import igl                                                  # noqa: E402
+_T64 = np.ascontiguousarray(tris, np.int64)
+_V64 = np.ascontiguousarray(V0, np.float64)
+mouth_in = np.zeros(N, bool)
+for _i in np.nonzero(_cand)[0]:
+    _hit = igl.ray_mesh_intersect(V0[_i] + np.array([0, -4e-4, 0]), np.array([0.0, -1.0, 0.0]), _V64, _T64, True)
+    mouth_in[_i] = bool(_hit)
+_nc = 1
+print('mouth bag', mouth_in.sum(), 'of', _cand.sum(), 'in', _nc, 'patches')
 # below the collar: no target (the shirt hides it); it follows the Laplacian
 low = V0[:, 2] < 0.56
 # the neck between the jaw and the collar: pulled onto the drawing's neck (an elliptic tube), not to the jaw above
@@ -144,9 +176,12 @@ EAR_H = np.array([V0[ear & (ear_side == k)].mean(0) for k in (0, 1)])
 ear_c = 1.0 * cxs
 
 
+EAR_K = np.array([e['out'] / 14, e['ry'] / 22, e['rz'] / 12])     # the drawing's ear against Савелий Петрович's (Р2)
+
+
 def ear_carry(P, k):
     q = P - EAR_H[k]
-    return EAR_D[k] + np.stack([q[:, 0] * 0.8, -q[:, 2] * 1.1, -q[:, 1] * 0.9], 1) * ear_c
+    return EAR_D[k] + np.stack([q[:, 0] * 0.8, -q[:, 2] * 1.1, -q[:, 1] * 0.9], 1) * ear_c * EAR_K
 
 
 # ------------------------------------------------------------------ target: the drawing's skin (no ears)
@@ -195,6 +230,21 @@ for it, alpha in enumerate([30, 20, 12, 8, 5, 3, 2, 2]):
     V = np.stack([solve(rhs[:, k]) for k in range(3)], 1)
     print(it, alpha, ok.sum(), float(np.mean(dist[ok])))
 
+# the mouth's bag is as wide and as high as the base's own jaw; the drawing's face is narrower and its upper lip
+# shorter: the bag is kept inside (narrower and a little deeper), the lips' own edge left as it is
+_hop = np.full(N, 99)
+_hop[~mouth_in] = 0
+for _i in range(1, 5):
+    _near = (A @ (_hop < 99).astype(float)) > 0
+    _hop[(_hop == 99) & _near] = _i
+_wb = np.clip((_hop - 1) / 3.0, 0, 1) * mouth_in
+_lim = 0.4 * np.asarray(h.sl(V[:, 1] - DROP)[0], float)
+_x = _lim * np.tanh(V[:, 0] / np.maximum(_lim, 1e-6))
+V = V + _wb[:, None] * (np.stack([_x, V[:, 1], V[:, 2] - 6.0], 1) - V)
+
+_edge = (_hop == 1) & (np.abs(V[:, 0]) < 4) & (V[:, 2] > 55)
+print('the fitted lips meet at y', round(float(V[_edge, 1].mean()), 1), '— the drawing\'s mouth is at', round(who.MOUTH_Y, 1))
+
 # eye balls (sclera, iris) carried with their regions
 balls = {}
 for k, s in ((0, 'L'), (1, 'R')):
@@ -205,6 +255,7 @@ for k, s in ((0, 'L'), (1, 'R')):
         balls[part + s] = eye_carry(P, k)
 
 np.savez(os.path.join(C, 'head_fit.npz'), v=V, f=Fpoly, tris=tris, v_init=Vref, low=low, ear=ear, eye_w=eye_w, mouth_in=mouth_in,
+         hop=_hop, mouth_line=float(V[_edge, 1].mean()), mouth_dark=mouth_in & (V0[:, 2] < 0.703),   # the bag reaches up behind the nostrils: only the mouth's part is dark
          **{b + '_v': balls[b] for b in balls}, **{b + '_f': d[b + '_f'] for b in balls})
 
 # a look: profile and front, the fitted head over the drawing's points

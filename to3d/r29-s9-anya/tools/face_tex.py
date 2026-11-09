@@ -1,28 +1,26 @@
-"""The face pictures: Тим's painted features in the front view, drawn by the drawing's own code (tim.py, face.py, kit.py
-of styles/s9-midcentury) for each expression of the sheet, on a transparent square that the head takes by a front
-projection (the drawing's head units −128…128 both ways; y down). Also the dry-brush strokes of the hair."""
-import json, subprocess, os
+"""The face pictures: Аня's painted features in the front view, drawn by the drawing's own code (anya.py, face.py,
+kit.py of styles/s9-midcentury) for each expression of the sheet, on a transparent square that the head takes by a
+front projection (the drawing's head units −128…128 both ways; y down). Also the dry-brush strokes of the hair."""
+import subprocess, os
 import common
 from common import CACHE, HERE
-from kit import blush, FILTERS
+from kit import blush, brush, dryb, FILTERS
 from face import eye, brow, mouth
-import tim
+import anya
 
 R = 128
 PX = 1024
 
 
 def features(expr='calm'):
-    e = tim._e(expr)
-    bi, bo = e['brow']; b2i, b2o = e.get('brow2', e['brow']); cheek = e.get('cheek', 1.0)
-    o = [blush(-40, 40, 16 * cheek, tim.CHEEK), blush(40, 40, 16 * cheek, tim.CHEEK),
-         tim._freckles([(-48, 30), (-38, 26), (-28, 32), (-42, 38), (48, 30), (38, 26), (28, 32), (42, 38)]),
-         eye(-24, 14, 1.45, e['eye'], side=-1, lash=False), eye(24, 14, 1.45, e['eye'], side=1, lash=False),
-         brow(-25, -10, 1.2, side=-1, inner=bi, outer=bo, w=3.2), brow(25, -12, 1.2, side=1, inner=b2i, outer=b2o, w=3.2),
-         mouth(2, 58, 1.3 * e.get('ms', 1), e['mouth'], side=1, width=0.85)]
-    # the hair's dry brush (front view of tim.head)
-    from kit import dryb
-    o.append(dryb([[(-56, -70), (-16, -106), (30, -110)], [(-10, -74), (30, -100), (64, -76)]], 2.6, tim.HAIR_D, 0.7))
+    e = anya._e(expr)
+    bi, bo = e['brow']; cheek = e.get('cheek', 1.0)
+    o = [blush(-38, 38, 14 * cheek, anya.CHEEK), blush(38, 38, 14 * cheek, anya.CHEEK),
+         eye(-26, 10, 1.15, e['eye'], side=-1, lid=e.get('lid', 0)), eye(26, 10, 1.15, e['eye'], side=1, lid=e.get('lid', 0)),
+         brow(-27, -15, 1.0, side=-1, inner=bi, outer=bo), brow(27, -15, 1.0, side=1, inner=bi, outer=bo),
+         brush([(4, 22), (8, 38), (1, 42)], 2.4, '#b9775e', taper=(0.4, 0.2)),
+         mouth(0, 63, 1.0 * e.get('ms', 1), e['mouth'], side=1, width=0.9),
+         dryb([[(-56, -50), (-20, -100), (30, -112)], [(-10, -62), (30, -100), (64, -86)]], 3, anya.HAIR_L, 0.55)]
     return o
 
 

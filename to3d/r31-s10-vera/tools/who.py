@@ -30,3 +30,5 @@ def colours():
     import figures
     h, col = head()
     return dict(col, **figures.VERA_COL)
+MOUTH_SX = 0.62          # the base's mouth drawn in to the drawing's narrow mouth (fit_head.py)
+MOUTH_FROM = 'calm'      # the expression whose mouth line is the moving mouth's rest (assemble.py)

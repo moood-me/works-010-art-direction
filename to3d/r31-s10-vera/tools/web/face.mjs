@@ -1,4 +1,4 @@
-// Савелий Петрович's live face: the face's form moved by a few numbers, on top of the skinned body.
+// The live face (as Савелий Петрович's, Р2, with a drawn mouth that opens): the face's form moved by a few numbers, on top of the skinned body.
 // Runs in node (the renders) and in the browser (view.html) alike. The measures come from face.json (assemble.py):
 // eye centres, the ball's radius, the mouth line, the jaw's pivot, in the drawing's units (y down, z toward the
 // viewer), and which of the body's vertices are the head, the irises, the moustache and the face's ink marks.
@@ -37,7 +37,7 @@ export class Face {
       for (let i = a; i < b; i++) { out[(i - a) * 3] = P[i * 3] / K; out[(i - a) * 3 + 1] = F - P[i * 3 + 1] / K; out[(i - a) * 3 + 2] = P[i * 3 + 2] / K; }
       return out; };
     this.pieces = [];
-    for (const [name, r] of Object.entries(data.pieces)) this.pieces.push({ name, r, rest: take(r) });
+    for (const [name, r] of Object.entries(data.pieces)) this.pieces.push({ name, r, rest: take(r), open: data.open?.[name] });
     data.marks.forEach((r, i) => this.pieces.push({ name: 'mark', r, rest: take(r) }));
     this.delta = new Float32Array(body.N * 3);       // metres, the head's rest frame (engine axes)
     this.touched = this.pieces.map(p => p.r);
@@ -45,10 +45,10 @@ export class Face {
 
   // the displacement of every face vertex for these params, into this.delta (engine axes, metres)
   update(q) {
-    const d = this.d, K = d.K, E = d.eyes, RB = d.rb, MY = d.mouthY, JAW = d.jaw;
+    const d = this.d, K = d.K, E = d.eyes, RB = d.rb, MY = d.mouthY, JAW = d.jaw, MW = d.mouthW ?? 15, MZ = d.mouthZ ?? 72;
     const p = [0, 0, 0];
     for (const pc of this.pieces) {
-      const head = pc.name === 'head' || pc.name === 'mark', iris = pc.name.startsWith('iris');
+      const mouth = !!pc.open, head = pc.name === 'head' || pc.name === 'mark', iris = pc.name.startsWith('iris');
       const stache = pc.name.startsWith('stache');
       const [a] = pc.r, R = pc.rest, n = R.length / 3;
       for (let i = 0; i < n; i++) {
@@ -65,16 +65,17 @@ export class Face {
             if (wj > 0) rotX(p, JAW, q.jaw, wj);
           }
         }
-        if (head || stache) {
+        if (mouth && q.jaw) rotX(p, JAW, Math.max(0, q.jaw), pc.open[i]);     // the drawn mouth: its lower edge opens
+        if (head || stache || mouth) {
           const s = q.smile || 0, wd = q.wide || 0, pk = q.pucker || 0;
           for (const side of [1, -1]) {
-            const g = gauss(p, [side * 15, MY - 1, 72], [9, 7, 12]);
+            const g = gauss(p, [side * MW, MY - 1, MZ], [0.6 * MW + 2, 7, 12]);
             if (g < 1e-4) continue;
             p[0] += g * (side * 2.0 * Math.max(s, 0) + side * 3.0 * wd - side * 3.5 * pk);
             p[1] += g * (-4.5 * s);
             p[2] += g * (-2.0 * Math.abs(s) - 1.0 * wd + 2.0 * pk);
           }
-          if (pk) { const g = gauss(p, [0, MY, 74], [11, 7, 10]); p[2] += 2.2 * pk * g; }
+          if (pk) { const g = gauss(p, [0, MY, MZ + 2], [11, 7, 10]); p[2] += 2.2 * pk * g; }
           if (stache && q.jaw) p[1] -= 0.08 * q.jaw * smooth(p[1], 60, 85);   // the upper lip lifts the moustache a little
         }
         if (head) {

@@ -26,7 +26,7 @@ let camera = persp;
 const PAINT = {
   skin: ['#f6d7bf', '#ecc3a8'], skin_d: ['#e9b89c', '#dca88c'], hair: ['#3a231f', '#2c1a17'], hair_l: ['#6a4034', '#553228'], band: ['#2f8f8a', '#26756f'],
   dress: ['#e8b33a', '#d39c28'], belt: ['#c98f22', '#b47d1b'], cardi: ['#2f8f8a', '#226e6a'], collar: ['#fbf6ea', '#e9e0cc'], shoe: ['#b8352b', '#9c2b23'],
-  clay: ['#d9d3c8', '#a9a196'], ink: ['#2a201c', '#2a201c'], white: ['#fbf6ea', '#e9e0cc'],
+  clay: ['#d9d3c8', '#a9a196'], ink: ['#2a201c', '#2a201c'], white: ['#fbf6ea', '#e9e0cc'], nose: ['#f6d7bf', '#f6d7bf'], nose_d: ['#c98f78', '#c98f78'],
 };
 const hex = c => new THREE.Color().setRGB(...[1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255));
 
@@ -57,7 +57,7 @@ void main(){
     float k = 1.0 - smoothstep(dotR * 0.85, dotR * 1.15, length(g - c)); b = mix(b, dotCol, k); s = mix(s, dotCol * 0.93, k); }
   if (hasFace > 0.5 && vFuv.z > 0.01) { vec4 f = texture2D(face, vFuv.xy); float a = f.a * smoothstep(0.05, 0.4, vFuv.z);
     b = mix(b, f.rgb, a); s = mix(s, f.rgb * 0.97, a); }
-  float th = (m == 0 || m == 1) ? -0.12 : 0.04;
+  float th = (m == 0 || m == 1) ? -0.42 : 0.04;      // the skin stays one paint until it turns well away from the light
   float t = smoothstep(th - 0.04, th + 0.04, d);
   vec3 col = mix(s, b, t * (1.0 - inside));
   // gouache: uneven density of the paint over the form
