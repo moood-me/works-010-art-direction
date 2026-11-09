@@ -7,10 +7,10 @@ import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from kit import Doc, render, ink, wash, catmull
 import parts
-import anya, savely, tim, vera
+import anya, savely, tim, vera, marat, kira
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CAST = {'anya': anya, 'savely': savely, 'tim': tim, 'vera': vera}
+CAST = {'anya': anya, 'savely': savely, 'tim': tim, 'vera': vera, 'marat': marat, 'kira': kira}
 JOBS = {}
 
 
@@ -64,6 +64,8 @@ def turnaround(name):
 
 JOBS['turn_anya'] = lambda: turnaround('anya')
 JOBS['turn_tim'] = lambda: turnaround('tim')
+JOBS['turn_marat'] = lambda: turnaround('marat')
+JOBS['turn_kira'] = lambda: turnaround('kira')
 
 
 def expressions(name, faces, y=220, s=0.86):
@@ -79,6 +81,8 @@ def expressions(name, faces, y=220, s=0.86):
 
 JOBS['expr_anya'] = lambda: expressions('anya', ['joy', 'surprise', 'sad', 'anger'])
 JOBS['expr_tim'] = lambda: expressions('tim', ['joy', 'surprise', 'sad', 'anger'], y=270, s=1.1)
+JOBS['expr_marat'] = lambda: expressions('marat', ['joy', 'surprise', 'sad', 'anger'], y=225, s=0.92)
+JOBS['expr_kira'] = lambda: expressions('kira', ['joy', 'surprise', 'sad', 'anger'], y=235, s=0.9)
 
 
 @job
@@ -98,6 +102,24 @@ def cast():
     for x0, x1 in [(250, 520), (610, 880), (960, 1220), (1310, 1570)]:
         ink(d, [(x0, 830), ((x0 + x1) / 2, 827), (x1, 831)], w=1.0, start=0.2, end=0.2)
     out('cast', d)
+
+
+@job
+def cast_six():
+    """All six: the four as in cast(), Кира apart on the left, turned away and glancing back; Марат on the right,
+    laughing, the ladle up."""
+    d = Doc(2520, 880, seed=13)
+    d.lw = 1.08
+    s = 0.92
+    place = [('kira', 300, False, 'sulk', 90), ('savely', 700, True, 'peer', 110), ('tim', 1060, False, 'smirk', 110),
+             ('anya', 1400, False, 'dream', 110), ('vera', 1730, False, 'stern', 110), ('marat', 2140, False, 'joy', 180)]
+    for name, cx, flip, e, hw in place:
+        wash(d, [(cx - hw, 820), (cx + hw - 10, 814), (cx + hw, 836), (cx - hw + 10, 840)], '#b9b2c6', 0.35)
+        d.push(cx + 300 * s if flip else cx - 300 * s, 10, s, 0, flip)
+        CAST[name].figure(d, e)
+        d.pop()
+        ink(d, [(cx - hw - 20, 830), (cx, 827), (cx + hw + 20, 831)], w=1.0, start=0.2, end=0.2)
+    out('cast-six', d)
 
 
 @job

@@ -30,6 +30,8 @@ EXPR = {
     'smirk':    dict(lift=2, tilt=-2, lid=0.1, look=(-1, 0), mouth='grin', eye=1.0),
     'peer':     dict(lift=-2, tilt=-3, lid=0.45, look=(-1, 1.6), mouth='soft', eye=0.95),
     'stern':    dict(lift=-1, tilt=-3, lid=0.4, look=(0, 0), mouth='flat', eye=1.0),
+    'merry':    dict(lift=5, tilt=0, lid=0.15, look=(0, 0), mouth='smile', eye=0.95),
+    'sulk':     dict(lift=-4, tilt=-5, lid=0.5, look=(1.1, -0.2), mouth='flat', eye=1.0),
 }
 
 
@@ -175,6 +177,53 @@ def tufts(d, path, n=12, length=(10, 22), lean=0.5, w=1.5, seed=0, inward=False)
         j = min(len(pts), i + r.choice((5, 7, 9)))
         ink(d, pts[i:j], w=w, start=0.7, end=0.3, jit=0.3, retrace=0, seed=r.randint(0, 1 << 30))
         i = j - 1
+
+
+def curls(d, path, n=10, r=(7, 12), w=1.5, seed=0, inward=False):
+    """A curly hair edge along path: a row of round bumps, each its own small pen stroke that overshoots a little.
+    The outward side is to the left of the path's direction (as in tufts)."""
+    import random
+    from kit import catmull
+    rr = random.Random(seed)
+    C = catmull(path, False, 1.0)
+    L = len(C)
+    for k in range(n):
+        i0 = int(k / n * (L - 1)); i1 = int((k + 1) / n * (L - 1))
+        a, b = C[i0], C[i1]
+        tx, ty = b[0] - a[0], b[1] - a[1]
+        nn = math.hypot(tx, ty) or 1
+        ux, uy = tx / nn, ty / nn
+        nx, ny = (uy, -ux) if not inward else (-uy, ux)
+        h = rr.uniform(*r)
+        o = rr.uniform(-0.12, 0.12) * nn
+        pts = [(a[0] - nx * 2, a[1] - ny * 2),
+               (a[0] + ux * (0.12 * nn + o) + nx * h * 0.75, a[1] + uy * (0.12 * nn + o) + ny * h * 0.75),
+               (a[0] + ux * (0.5 * nn + o) + nx * h, a[1] + uy * (0.5 * nn + o) + ny * h),
+               (b[0] - ux * 0.1 * nn + nx * h * 0.7, b[1] - uy * 0.1 * nn + ny * h * 0.7),
+               (b[0] - nx * 3, b[1] - ny * 3)]
+        ink(d, pts, w=w, start=0.6, end=0.25, jit=0.3, retrace=0, seed=rr.randint(0, 1 << 30))
+
+
+def curl(d, x, y, r=6, rot=0, w=1.0, seed=None):
+    """One small curl inside a mass of curly hair: an open hook of the pen, most of a turn."""
+    pts = []
+    for i in range(7):
+        a = math.radians(rot) + i / 6 * 1.5 * math.pi
+        k = r * (1 - 0.07 * i)
+        pts.append((x + k * math.cos(a), y + k * math.sin(a) * 0.85))
+    ink(d, pts, w=w, start=0.5, end=0.1, jit=0.3, retrace=0, seed=seed)
+
+
+def chop(d, pts, w=1.5, seed=None):
+    """Chopped hair ends: pts go base, tip, base, tip, … along the edge; every lock is two pen strokes that meet in
+    a sharp point, of whatever length the points give."""
+    for i in range(1, len(pts) - 1, 2):
+        a, t, b = pts[i - 1], pts[i], pts[i + 1]
+        s1 = None if seed is None else seed + i
+        ink(d, [a, ((a[0] + t[0]) / 2 + (t[1] - a[1]) * 0.08, (a[1] + t[1]) / 2 - (t[0] - a[0]) * 0.08), t], w=w,
+            start=0.6, end=0.12, jit=0.3, retrace=0, seed=s1)
+        ink(d, [t, ((b[0] + t[0]) / 2 + (t[1] - b[1]) * 0.06, (b[1] + t[1]) / 2 - (t[0] - b[0]) * 0.06), b], w=w * 0.8,
+            start=0.15, end=0.4, jit=0.3, retrace=0, seed=None if s1 is None else s1 + 50)
 
 
 def offsets(center, widths):

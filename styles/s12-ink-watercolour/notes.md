@@ -41,9 +41,9 @@ python3 tools/build.py portrait   # only names that contain "portrait"; also fig
 - `parts.py` — things drawn the same for everyone: colours, `EXPR` (expressions as numbers), `eye()`, `brow()`,
   `mouth()`, `extra()` (tear / start / flush), `hand()`, `tufts()` (tufty hair edge), `tube()` (sleeve, leg: two pen
   lines and a wash), `shoe()`.
-- `anya.py`, `savely.py`, `tim.py`, `vera.py` — a person each. Head units: crown about y = −125, chin y ≈ 100,
+- `anya.py`, `savely.py`, `tim.py`, `vera.py`, `marat.py`, `kira.py` — a person each. Head units: crown about y = −125, chin y ≈ 100,
   eyes at y ≈ 0, the face looking to the viewer's left (mirror with `d.push(..., flip=True)`). Each has
-  `head34(d, expr)`, `bust(d)` (600 × 720), `figure(d, expr)` (600 × 1000, feet at y ≈ 880); Аня and Тим also
+  `head34(d, expr)`, `bust(d)` (600 × 720), `figure(d, expr)` (600 × 1000, feet at y ≈ 880); Аня, Тим, Марат and Кира also
   `head_front`, `head_side`, `bust_view(d, view)` (500 × 620).
 - `build.py` — composes the pictures (`JOBS`).
 
@@ -52,6 +52,36 @@ units, and change what makes the character: the profile line (forehead, nose, li
 lids, brows, hair (a wash mass + a few lines, or `tufts`), colours at the top of the file; then the clothes in
 `bust` and the pose in `figure` (a body is washes + `tube()` limbs + `hand()`; lean it with `d.turn`). Expressions come
 from `parts.EXPR` through `eye/brow/mouth/extra`. Add the jobs in `build.py`. Look at it next to `refs/` and redraw.
+
+## Round three: Марат and Кира
+
+Asked for by the brief `docs/briefs/styles-more.md` (part A): two more characters in this style, the four untouched.
+
+- **Added to the shared code** (new functions and new `EXPR` keys only; the four's SVGs were regenerated and
+  compared byte for byte — unchanged): `kit.paper()` (paper left white in any shape — teeth), `kit.gouache()` and
+  `kit.gouache_line()` (a light opaque accent over a dark wash: the paper is cleared in that shape and the colour
+  laid on it — the layers are washes → whites → ink, so a light colour can't otherwise sit on a dark one);
+  `parts.curls()` (a curly hair edge: a row of round bumps), `parts.curl()` (one hook of a curl inside the mass),
+  `parts.chop()` (chopped hair ends: base, tip, base… — each lock two strokes meeting in a point);
+  `EXPR['merry']` (Марат at rest), `EXPR['sulk']` (Кира at rest).
+- **`marat.py`.** A wide head; hair and beard are dark washes in two layers with `curls()` round the edge and
+  `curl()` hooks inside; the beard is a polygon that leaves a gap for the mouth and drops with the jaw. His own mouth
+  `grin()`: teeth are `paper()` under the upper lip, the dark of the mouth below, a tongue when he laughs. The white
+  jacket is bare paper with a warm grey shade. `figure`: the upper body turned back 8° from the knees, the belly
+  line leading, the head thrown back (a negative turn of the head throws it back, a positive one bows it).
+  By eye: the first curls were a lace edge with bubbles (fewer, bigger bumps; hooks, not loops), the hair sat like a
+  hat (hairline lowered, no bumps along it), the eyes were dots (bigger), the nose a beak (shortened), the figure a
+  rectangle with a small head (head 0.62 → 0.72, belly line, longer legs).
+- **`kira.py`.** A longer face, a pointed chin, one eye with a heavy lid and a shade under it (`her_eye`), the
+  other under the fringe; `lips()` — pressed shut or the half-smirk; `her()` turns "joy" into that smirk, a little
+  warmer. Hair: dark washes with a jagged outline and `chop()`. Headphones and laces: `gouache`. `figure`: the body
+  turned back 9°, the head forward and bowed 13°. By eye: the first hair was a helmet with a frill (`tufts` → `chop`,
+  a jagged wash, fewer strands in the fringe), the face a child's (longer chin, narrower jaw), the figure a child in
+  a coat (hoodie shortened to the hips, legs longer, sleeves thinner).
+- **Pictures:** `portrait-`, `figure-`, `turn-`, `expr-` for `marat` and `kira`; `cast-six` (all six, 2520 × 880, the
+  same scale as `cast`). Repeat: `python3 tools/build.py marat`, `… kira`, `… six`.
+- **Weak:** Марат's hair from the front (like a fur hat); Кира's figure (the hoodie is a sack, both hands mostly
+  hidden) and her expression sheet (one eye carries it; the surprise marks are lost in the hair).
 
 ## Honest state
 

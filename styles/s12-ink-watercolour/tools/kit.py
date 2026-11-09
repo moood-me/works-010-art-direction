@@ -8,7 +8,8 @@ Shared by every character. Nothing here knows about a particular person.
   as a vignette on a book page.
 - ink(): a pen stroke — a centre line through hand-placed points, given width that swells and tapers, a slow wobble
   and a fine tremor, sometimes skipping like a dry nib.
-- dot(), white(), blot(): an ink dot; a round of paper left white; a soft touch of colour (a cheek).
+- dot(), white(), paper(), blot(): an ink dot; a round (or any shape) of paper left white; a soft touch of colour
+  (a cheek).
 - hatch(): loose parallel pen strokes inside a shape (shadow, texture) — shorter than the shape, never ruled.
 - wash(): a watercolour patch — a soft irregular shape, its edge pushed about by noise, pigment uneven inside,
   darker where it dried at the rim, grainy; placed a little off the line, as a painter's wash is.
@@ -228,6 +229,31 @@ def white(d, x, y, rx, ry, rot=0):
             y + rx * math.cos(a) * math.sin(math.radians(rot)) + ry * math.sin(a) * math.cos(math.radians(rot)))
            for a in [i / 12 * 2 * math.pi for i in range(12)]]
     d.whites.append(f'<polygon points="{fmt(catmull(d.tp(pts), True, 1.5))}"/>')
+
+
+def paper(d, poly):
+    """Paper left white in any shape (teeth in an open mouth, a white stripe): a polygon in paper colour over the
+    washes, under the ink."""
+    d.whites.append(f'<polygon points="{fmt(catmull(d.tp(poly), True, 1.5))}"/>')
+
+
+def gouache(d, poly, color, alpha=0.95):
+    """A touch of opaque light colour over a dark wash (a watercolourist's body colour): the paper is cleared in
+    that shape and the colour laid on it. For a small bright accent on dark clothes."""
+    P = fmt(catmull(d.tp(poly), True, 1.5))
+    d.whites.append(f'<polygon points="{P}"/>')
+    d.inks.append(f'<polygon points="{P}" fill="{color}" opacity="{alpha}"/>')
+
+
+def gouache_line(d, pts, w, color, **kw):
+    """The same as gouache(), for a stroke: a line of opaque light colour over a dark wash."""
+    keep, d.inks = d.inks, []
+    st = d.rnd.getstate()
+    ink(d, pts, w=w, retrace=0, alpha=1, **kw)
+    d.whites += d.inks
+    d.inks = keep
+    d.rnd.setstate(st)
+    ink(d, pts, w=w, retrace=0, alpha=0.95, color=color, **kw)
 
 
 def hatch(d, poly, angle=45, gap=6, w=1.0, fill=0.8, jit=0.4, seed=None, curve=0.0):
