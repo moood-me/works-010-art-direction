@@ -103,3 +103,53 @@ Fleischer 1930–35); Тим and Савелий are the liveliest; Аня is swe
 plain face, hair like a cap). Poses are calmer than the samples; three-quarter bodies are only shifted and narrowed
 front views; the line is even (the wobble is a filter, not a brush); and the style lives in bouncy motion, which a
 still sheet does not have.
+
+## Round three: Марат and Кира
+
+What was done (Claude, one agent of round three; the brief is `docs/briefs/styles-more.md`, part A): two characters
+added to the cast by this style's rules and code — a portrait, a posed figure, a turnaround and an expression sheet
+for each, and all six together (`cast6`). The four were not touched: their SVG files are byte-for-byte the same after
+the build (checked with `cmp` against a copy), so their pictures were not re-rendered.
+
+- `tools/marat.py` — Марат, the cook. The biggest: `FEET` 516, a barrel torso about 220 wide on short thick legs, no
+  neck. The head's silhouette is the ball plus the *volume of the beard* (a wider, deeper lower ball with curl bumps
+  along its edge) inked as one form with `union`; the beard is then painted inside that silhouette through a clip, its
+  upper edge (sideburns → under the cheeks → under the nose) drawn on the ball with `H.loop`, so it turns with the
+  head. Short curls: a ring of small circles behind `H.cap`, and the same circles without ink over it, so the cap's
+  own outline does not show inside the hair; the ring's front end climbs to the hairline as the head turns. His own
+  mouth `grin()` — an open D with a row of upper teeth, a tongue and a lower lip — because a dark mouth in a dark beard
+  reads as a hole; the other mouths get a lip under them for the same reason. Resting face = the grin with the lower
+  lids pushed up (`lower`). Poses: `stand`, `laugh` (the figure: torso and head leaned back as one group, fist on the
+  hip, ladle up), `hello` (the portrait: the ladle by the shoulder, so the hand stays inside the medallion).
+- `tools/kira.py` — Кира, the teenager. A narrower, longer lower face, smaller eyes with a dark upper lid, low
+  straight brows, a pressed crooked mouth (`pressed`, `smirk`, `teeth` are drawn in the module); a choppy cap, pointed
+  locks (`tuft`) sticking out round the lower edge of the hair, a long three-bladed fringe over the far eye drawn on
+  the ball with `H.pts` (in profile its blades are shortened to a bang, or they would cover the near eye). The slouch
+  is `sway(y, k)` — a sideways shift down the body (shoulders back, hips forward) applied to every point of the
+  hoodie, arms and hips; the head is put forward and down and rotated. In the figure the head is scaled by `HS` .92
+  (a teenager's head is smaller against the body than a child's). Poses: `stand`, `sulk`.
+- `tools/lib.py` — `arm()` got optional `w1`, `w2` (the hose's width in the middle and at the wrist: a thick forearm)
+  and `sleeve=(fill, t)` (a rolled-up sleeve over the first part of the arm, ending in a cuff). Without them it draws
+  as before.
+- `tools/build.py` — `CAST` has the two with optional keys (`ppose`, `fexpr`, `top`, `tsc`, `esc`, `ey`, `fx`);
+  `cast6()` is the sheet of six; the new sheets are built after the four's (ids in the SVG are counted through the
+  whole build, so this order keeps the four's files unchanged).
+
+Repeat (only the new sheets are rendered; `tojpg.py` converts whatever PNG is in `pics/`):
+
+```
+cd styles/s11-rubberhose/tools
+python3 build.py
+NODE_PATH=/opt/node-tools/node_modules node render.js ../pics 1 ../svg/cast6.svg ../svg/*-marat.svg ../svg/*-kira.svg
+python3 tojpg.py ../pics
+```
+
+How it went: Марат's first head had the brows under the hair (hairline raised, brows drawn last) and an afro (curls
+made smaller); the body was a rectangle with thin arms (chest widened to a barrel, forearms thickened, the profile
+deepened). Кира's first fringe left the far eye open (blades moved over it), two locks on the crown read as a bow
+(removed), the hand at the headphones read as a stub on the chest (replaced by a fist hanging from a long sleeve).
+
+Honest state: see the end of `verdict`. Best — Марат's laughing figure, Кира's portrait, the six together. Weak —
+Марат's profile (the back of the head is one dark mass) and his hair, fuller than "short curls"; Кира's hands (one
+in the pocket, the other half behind the hip) and her straight, stiff turnaround. Scratch renders are in
+`/home/user/cache/styles-s11-rubberhose/scratch/`.

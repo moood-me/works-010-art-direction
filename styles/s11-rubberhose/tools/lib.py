@@ -487,12 +487,27 @@ def cheek(cx, cy, r, col=CHEEK, op=.55):
     return ellipse(cx, cy, r, r * .8, col, 0, extra=f'opacity="{op}"')
 
 
-def arm(pts, w, fill, pose='open', gs=1.0, flip=False, gfill=WHITE, sleeve=None):
+def arm(pts, w, fill, pose='open', gs=1.0, flip=False, gfill=WHITE, sleeve=None, w1=None, w2=None):
     """A hose arm along pts ending in a glove that follows the arm's last direction.
-    flip mirrors the glove (thumb to the other side). sleeve: (fill, length in points) — a sleeve over the start."""
+    flip mirrors the glove (thumb to the other side). w1, w2: the hose's width in the middle and at the wrist (a thick
+    forearm). sleeve: (fill, t[, extra width]) — a rolled-up sleeve over the first t (0..1) of the arm, ending in a
+    cuff roll."""
     (x1, y1), (x2, y2) = pts[-2], pts[-1]
     rot = -math.degrees(math.atan2(x2 - x1, y2 - y1))
-    out = hose(pts, w, fill)
+    out = hose(pts, w, fill, w1, w2)
+    if sleeve:
+        sfill, t = sleeve[0], sleeve[1]
+        extra = sleeve[2] if len(sleeve) > 2 else 5
+        s = sample(pts, 10)
+        n = max(2, int(round((len(s) - 1) * t)))
+        part = s[:n + 1]
+        wm = w if w1 is None else w1
+        we = w + (wm - w) * min(t / .5, 1)
+        out += hose(part, w + extra, sfill, (w + we) / 2 + extra, we + extra)
+        (ax, ay), (bx, by) = part[-2], part[-1]
+        L = math.hypot(bx - ax, by - ay) or 1
+        ux, uy = (bx - ax) / L, (by - ay) / L
+        out += hose([(bx - ux * 5, by - uy * 5), (bx + ux * 5, by + uy * 5)], we + extra + 7, sfill)
     return out + g(glove(pose, gfill), x2, y2, gs, rot, flip)
 
 

@@ -5,7 +5,7 @@ import sys
 import math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lib import (svg, g, P, circle, ellipse, clip, shadow, text, INK, glove, shoe, hose, eye, mouth)
-import anya, savely, tim, vera
+import anya, savely, tim, vera, marat, kira
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'svg')
 os.makedirs(OUT, exist_ok=True)
@@ -16,7 +16,13 @@ CAST = {
     'savely': dict(m=savely, pose='watch', head=(18, 36), disc='#a9c3b8', name='Савелий Петрович', seed=5),
     'tim': dict(m=tim, pose='sneak', head=(0, 2), disc='#f0c75a', name='Тим', seed=7),
     'vera': dict(m=vera, pose='books', head=(8, -2), disc='#b9b3cf', name='Вера', seed=9),
+    # round three: optional keys — ppose (the portrait's pose), fexpr (the figure's expression), top (the highest
+    # point of the posed figure), tsc (the turnaround's scale), esc / ey (the expression heads' scale and shift)
+    'marat': dict(m=marat, pose='laugh', ppose='hello', fexpr='joy', head=(14, 20), disc='#e3a15e', name='Марат', seed=13,
+                  top=-150, tsc=1.14, esc=1.3, ey=-22, fx=-14),
+    'kira': dict(m=kira, pose='sulk', head=(16, 26), disc='#c3cc92', name='Кира', seed=15, top=-64, tsc=1.42),
 }
+FOUR = ('anya', 'savely', 'tim', 'vera')
 
 
 def save(name, w, h, body, **kw):
@@ -34,7 +40,7 @@ def portrait(key):
     rays = ''.join(P(f'M {cx} {cy} L {cx + 2 * r * math.cos(a0):.1f} {cy + 2 * r * math.sin(a0):.1f} '
                      f'L {cx + 2 * r * math.cos(a0 + .13):.1f} {cy + 2 * r * math.sin(a0 + .13):.1f} Z', '#ffffff', None, 0, 'opacity=".16"')
                    for a0 in [i * math.pi / 12 for i in range(24)])
-    inner = P(disc, c['disc'], None, 0) + rays + g(c['m'].figure('q', c['pose']), cx - hx * sc, cy - 40 - hy * sc, sc)
+    inner = P(disc, c['disc'], None, 0) + rays + g(c['m'].figure('q', c.get('ppose', c['pose'])), cx - hx * sc, cy - 40 - hy * sc, sc)
     body = clip(disc, inner) + P(disc, 'none', INK, 7) + circle(cx, cy, r + 12, 'none', 2.4)
     save(f'portrait-{key}', W, H, body, seed=c['seed'])
 
@@ -43,12 +49,12 @@ def figure(key):
     c = CAST[key]
     m = c['m']
     W, H = 640, 1000
-    top = {'anya': -100, 'savely': -40, 'tim': -104, 'vera': -70}[key]
+    top = {'anya': -100, 'savely': -40, 'tim': -104, 'vera': -70}.get(key) or c['top']
     sc = 800 / (m.FEET - top)
     gy = 920
     body = ellipse(320, 440, 250, 330, '#ffffff', 0, extra='opacity=".18"')
     body += shadow(320, gy + 2, 120 * sc, 12)
-    body += g(m.figure('q', c['pose']), 320, gy - m.FEET * sc, sc)
+    body += g(m.figure('q', c['pose'], c.get('fexpr', 'neutral')), 320 + c.get('fx', 0), gy - m.FEET * sc, sc)
     save(f'figure-{key}', W, H, body, seed=c['seed'])
 
 
@@ -56,7 +62,7 @@ def turnaround(key):
     c = CAST[key]
     m = c['m']
     W, H = 1500, 900
-    sc = {'anya': 1.36, 'savely': 1.6, 'tim': 1.6, 'vera': 1.26}[key]
+    sc = {'anya': 1.36, 'savely': 1.6, 'tim': 1.6, 'vera': 1.26}.get(key) or c['tsc']
     gy = 800
     body = ''
     for i, (v, lab) in enumerate((('front', 'анфас'), ('q', 'три четверти'), ('side', 'профиль'))):
@@ -81,7 +87,8 @@ def expressions(key):
         x = 150 + i * 300
         body += circle(x, 190, 135, '#ffffff', 0, extra='opacity=".22"')
         sx, sy = SQUASH[e]
-        body += f'<g transform="translate({x} 185) scale({1.55 * sx:.3f} {1.55 * sy:.3f})">{m.head(.3, e)}</g>'
+        k = c.get('esc', 1.55)
+        body += f'<g transform="translate({x} {185 + c.get("ey", 0)}) scale({k * sx:.3f} {k * sy:.3f})">{m.head(.3, e)}</g>'
         body += text(x, 395, lab, 26, extra='opacity=".75"')
     save(f'expressions-{key}', W, H, body, seed=c['seed'])
 
@@ -96,6 +103,21 @@ def cast(bw=False):
         body += shadow(x, gy + 2, 120, 14)
         body += g(m.figure('q', pose), x, gy - m.FEET * sc, sc)
     save('cast-bw' if bw else 'cast', W, H, body, bw=bw, bg='#e9dcc0' if not bw else '#d9d4c8', seed=11)
+
+
+def cast6():
+    """All six together (round three): the same sheet as the four, a little smaller to fit."""
+    W, H = 1600, 1000
+    gy = 930
+    sc = 1.22
+    body = ellipse(800, 1030, 900, 200, '#ffffff', 0, extra='opacity=".18"')
+    order = (('savely', 150, 'neutral'), ('anya', 395, 'neutral'), ('marat', 745, 'joy'), ('tim', 1040, 'neutral'), ('vera', 1245, 'neutral'),
+             ('kira', 1445, 'neutral'))
+    for key, x, ex in order:
+        c = CAST[key]
+        body += shadow(x, gy + 2, 150 if key == 'marat' else 105, 13)
+        body += g(c['m'].figure('q', c['pose'], ex), x, gy - c['m'].FEET * sc, sc)
+    save('cast6', W, H, body, bg='#e9dcc0', seed=17)
 
 
 def rules():
@@ -133,12 +155,19 @@ def rules():
 
 
 if __name__ == '__main__':
-    for k in CAST:
+    for k in FOUR:
         portrait(k)
         figure(k)
         expressions(k)
-    for k in CAST:
+    for k in FOUR:
         turnaround(k)
     cast()
     cast(bw=True)
     rules()
+    # round three: Марат and Кира, and all six together (built after the four, so the four's files stay as they were)
+    for k in ('marat', 'kira'):
+        portrait(k)
+        figure(k)
+        expressions(k)
+        turnaround(k)
+    cast6()
