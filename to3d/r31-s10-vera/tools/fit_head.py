@@ -1,4 +1,4 @@
-"""Fit Blender's Human Base Meshes head (realistic, for animation; CC0) to Савелий Петрович's head from the drawing.
+"""Fit Blender's Human Base Meshes head (realistic, for animation; CC0) to the head of the drawing (who.py).
 
 The drawing's head is a 3D surface already (styles/s10-ligne-claire/tools/head.py: slices, nose, lips, chin, ears,
 neck); drawing.py dumped it as points. Here the base head is laid onto it:
@@ -21,16 +21,15 @@ from scipy.sparse.linalg import factorized
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.join(HERE, '../../../styles/s10-ligne-claire/tools'))
+import who           # noqa: E402
 import dots          # noqa: E402
-import cast          # noqa: E402
 
 C = sys.argv[1]
 d = np.load(os.path.join(C, 'hbm_head.npz'))
 dr = np.load(os.path.join(C, 'drawing.npz'))
 info = json.load(open(os.path.join(C, 'drawing.json')))
-DROP = 20.0
-h, _ = cast.savely()
+DROP = who.DROP
+h, _ = who.head()
 
 V0 = d['head_v'].copy()
 Fpoly = d['head_f']
@@ -40,14 +39,14 @@ RS = 0.0117                                                           # sclera r
 ez, ey = EYE_H[0, 2], EYE_H[0, 1]
 
 # ------------------------------------------------------------------ 1. first placement
-EX = 27.0                                      # the drawing's eye: x = ±27, y = 3 (+ drop)
-EYD = 3 + DROP
-CROWN_D, CHIN_D = -104 + DROP, cast.sq(97, 0.95) + DROP
+EX = who.EYE[0]                                # the drawing's eye on the face
+EYD = who.EYE[1] + DROP
+CROWN_D, CHIN_D = h.ymin + DROP, h.ymax - 1 + DROP
 cxs = EX / abs(EYE_H[0, 0] - cx)
 up = (EYD - CROWN_D) / (0.88 - ez)
 down = (CHIN_D - EYD) / (ez - 0.648)
 zs = 0.5 * (up + down) * 1.08                   # depth scale (the drawing's head is deep: a long skull behind)
-EYE_ZD = float(h.face_z(EX, 3))
+EYE_ZD = float(h.face_z(EX, who.EYE[1]))
 c_e = 0.84 * cxs                                # the eye region's own scale (the drawing's eyes are a bit smaller)
 eye_depth = (RS + 0.0012) * c_e
 EYE_D = np.array([[EX, EYD, EYE_ZD - eye_depth], [-EX, EYD, EYE_ZD - eye_depth]])
@@ -80,7 +79,7 @@ _zt = np.array([float(h.face_z(0.0, y)) for y in _ys])
 TIP_D = np.array([0.0, _ys[_zt.argmax()] + DROP, _zt.max()])
 ROOT_D = np.array([0.0, -2 + DROP, float(h.face_z(0.0, -2))])
 r_h, t_h = place(ROOT_H[None])[0], place(NOSE_H[None])[0]
-sc_n = np.array([1.25, (TIP_D[1] - ROOT_D[1]) / (t_h[1] - r_h[1]), (TIP_D[2] - ROOT_D[2]) / (t_h[2] - r_h[2])])
+sc_n = np.array([getattr(who, 'NOSE_W', 1.0), (TIP_D[1] - ROOT_D[1]) / (t_h[1] - r_h[1]), (TIP_D[2] - ROOT_D[2]) / (t_h[2] - r_h[2])])
 dn = np.linalg.norm((V0 - NOSE_H) * [1, 1, 0.8], axis=1)
 wn = np.clip((0.05 - dn) / 0.022, 0, 1) ** 1.5
 wn[V0[:, 1] > -0.115] = 0

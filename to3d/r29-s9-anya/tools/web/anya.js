@@ -1,6 +1,6 @@
-// Tim's model drawn through the engine: the pack (tools/model.py) becomes an engine body (makeBody), a Figure moves it
+// Аня's model drawn through the engine: the pack (tools/model.py) becomes an engine body (makeBody), a Figure moves it
 // by a Kimodo motion (retargeting, skinning by centres of rotation), and a gouache shader paints it: flat paints, a
-// second tone of the same paint where the form turns from the light, the shirt's stripes, the face picture.
+// second tone of the same paint where the form turns from the light, the dress's printed dots, the face picture.
 // Then (optionally) it is laid onto the drawing's backdrop and passed through the drawing's own SVG gouache filter.
 // window.A.set({...}) / A.render() — driven by shots.mjs.
 import * as THREE from 'three';
@@ -22,11 +22,11 @@ const scene = new THREE.Scene();
 const persp = new THREE.PerspectiveCamera(22, 1, 0.05, 100), ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.05, 100);
 let camera = persp;
 
-// the paints (figure-tim's colours, styles/s9-midcentury/tools/tim.py): [paint, its second tone]
+// the paints (figure-anya's colours, styles/s9-midcentury/tools/anya.py): [paint, its second tone]
 const PAINT = {
-  skin: ['#f7d6bb', '#ecbea2'], skin_d: ['#e8b096', '#dba086'], hair: ['#d0642c', '#b65222'], shirt: ['#c8402f', '#b03526'],
-  shorts: ['#2c4a6e', '#233d5c'], sock: ['#f6eedd', '#e3d8c2'], shoe: ['#b8352b', '#9c2b23'], sole: ['#f6eedd', '#e3d8c2'],
-  ear: ['#f7d6bb', '#ecbea2'], collar: ['#f6eedd', '#e3d8c2'], clay: ['#d9d3c8', '#a9a196'], ink: ['#2a201c', '#2a201c'], hair_d: ['#a8481c', '#963e17'],
+  skin: ['#f6d7bf', '#ecc3a8'], skin_d: ['#e9b89c', '#dca88c'], hair: ['#3a231f', '#2c1a17'], hair_l: ['#6a4034', '#553228'], band: ['#2f8f8a', '#26756f'],
+  dress: ['#e8b33a', '#d39c28'], belt: ['#c98f22', '#b47d1b'], cardi: ['#2f8f8a', '#226e6a'], collar: ['#fbf6ea', '#e9e0cc'], shoe: ['#b8352b', '#9c2b23'],
+  clay: ['#d9d3c8', '#a9a196'], ink: ['#2a201c', '#2a201c'], white: ['#fbf6ea', '#e9e0cc'],
 };
 const hex = c => new THREE.Color().setRGB(...[1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255));
 
@@ -38,7 +38,7 @@ void main(){ vMat = mat; vPat = pat; vFuv = fuv; vN = normalize(normal); vVN = n
 const FS = `
 precision highp float;
 uniform vec3 base[16]; uniform vec3 shade[16]; uniform sampler2D face; uniform float hasFace; uniform vec3 L; uniform float clay;
-uniform float stripe0, stripeP, stripeW, stripeTop; uniform vec3 cream, creamS, sockBand; uniform vec2 sockY;
+uniform float dotMat, dotStep, dotR; uniform vec3 dotCol;
 varying float vMat; varying vec3 vPat; varying vec3 vFuv; varying vec3 vN; varying vec3 vVN;
 float h(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
 float noise(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
@@ -51,11 +51,13 @@ void main(){
   vec3 n = normalize(vVN); float inside = gl_FrontFacing ? 0.0 : 1.0; if (!gl_FrontFacing) n = -n;
   float d = dot(n, normalize(L));
   if (clay > 0.5) { float k = 0.35 + 0.65 * max(d, 0.0); gl_FragColor = vec4(vec3(0.85, 0.82, 0.77) * k + 0.08, 1.0); return; }
-  if (m == 3 && vPat.y < stripeTop) { float k = fract((vPat.y - stripe0) / stripeP); if (k < stripeW) { b = cream; s = creamS; } }
-  if (m == 5) { if (vPat.y > sockY.x && vPat.y < sockY.y) { b = sockBand; s = sockBand * 0.88; } }
+  if (m == int(dotMat + 0.5)) {   // printed dots on a staggered grid (kit.py pattern_dots), in the cloth's own flat coordinates
+    float row = floor(vPat.y / (dotStep * 0.87) + 0.5); vec2 g = vec2(vPat.x - mod(row, 2.0) * dotStep * 0.5, vPat.y);
+    vec2 c = vec2((floor(g.x / dotStep + 0.5)) * dotStep, row * dotStep * 0.87);
+    float k = 1.0 - smoothstep(dotR * 0.85, dotR * 1.15, length(g - c)); b = mix(b, dotCol, k); s = mix(s, dotCol * 0.93, k); }
   if (hasFace > 0.5 && vFuv.z > 0.01) { vec4 f = texture2D(face, vFuv.xy); float a = f.a * smoothstep(0.05, 0.4, vFuv.z);
     b = mix(b, f.rgb, a); s = mix(s, f.rgb * 0.97, a); }
-  float th = (m == 0 || m == 8) ? -0.12 : 0.04;
+  float th = (m == 0 || m == 1) ? -0.12 : 0.04;
   float t = smoothstep(th - 0.04, th + 0.04, d);
   vec3 col = mix(s, b, t * (1.0 - inside));
   // gouache: uneven density of the paint over the form
@@ -67,8 +69,7 @@ void main(){
 const uniforms = {
   base: { value: Array.from({ length: 16 }, () => new THREE.Color()) }, shade: { value: Array.from({ length: 16 }, () => new THREE.Color()) },
   face: { value: null }, hasFace: { value: 0 }, L: { value: new THREE.Vector3(-0.45, 0.55, 0.75) }, clay: { value: 0 },
-  stripe0: { value: 0 }, stripeTop: { value: 9 }, stripeP: { value: 0.03 }, stripeW: { value: 0.42 }, cream: { value: hex('#f6eedd') }, creamS: { value: hex('#e3d8c2') },
-  sockBand: { value: hex('#c8402f') }, sockY: { value: new THREE.Vector2(-1, -1) },
+  dotMat: { value: -1 }, dotStep: { value: 0.045 }, dotR: { value: 0.0055 }, dotCol: { value: hex('#fbf0d4') },
 };
 const material = new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: FS, uniforms, side: THREE.DoubleSide });
 
@@ -81,7 +82,7 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderM
   fragmentShader: `precision highp float; varying vec3 vW; uniform vec3 spot;
     float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f); return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }
-    void main(){ vec2 p = vW.xz; vec3 c = vec3(0.369, 0.651, 0.627);
+    void main(){ vec2 p = vW.xz; vec3 c = vec3(0.851, 0.475, 0.435);
       float m = n(p * 0.9) * 0.6 + n(p * 2.6) * 0.4; c *= 0.95 + 0.07 * m;
       float d = smoothstep(0.78, 0.82, n(p * 3.0 + 7.0)); c = mix(c, c * 0.9, d * 0.7);
       float r = length((p - spot.xy) / vec2(1.0, 0.8)) / spot.z; c *= 1.0 - 0.18 * (1.0 - smoothstep(0.35, 1.0, r));
@@ -117,12 +118,11 @@ const state = { pose: 'rest', t: 0, motion: null };
 async function loadModel(url) {
   const { header: h, arrays: a } = await loadPack(new URL(url, location.href).href);
   h.mats.forEach((m, i) => { const p = PAINT[m]; uniforms.base.value[i] = hex(p[0]); uniforms.shade.value[i] = hex(p[1]); });
-  if (h.stripes) { uniforms.stripe0.value = h.stripes.y0; uniforms.stripeP.value = h.stripes.period; uniforms.stripeW.value = h.stripes.width; uniforms.stripeTop.value = h.stripes.top ?? 9; }
-  if (h.sockBand) uniforms.sockY.value.set(...h.sockBand);
+  if (h.dots) { uniforms.dotMat.value = h.mats.indexOf(h.dots.mat); uniforms.dotStep.value = h.dots.step; uniforms.dotR.value = h.dots.r; }
   const body = makeBody({ id: h.id, skeleton: sk, positions: a.positions, triangles: a.triangles, skin: { joints: a.skinJoints, weights: a.skinWeights },
     parts: { names: h.parts || [], weights: a.parts || new Uint8Array(0) }, joints: Float64Array.from(a.joints), frames: Float64Array.from(a.frames) });
-  // his head is big: a hand or an elbow that would go into it is swung out (the engine's correction for big heads)
-  const spec = resolve({ format: 'engine/character', version: 1, id: 'tim', body: h.id, skinning: { method: q.get('skin') || 'cor' }, motion: { corrections: { armsOutOfHead: { margin: 0.03 } } } });
+  // a hand or an elbow that would go into the head or the bob is swung out (the engine's correction)
+  const spec = resolve({ format: 'engine/character', version: 1, id: 'anya', body: h.id, skinning: { method: q.get('skin') || 'cor' }, motion: { corrections: { armsOutOfHead: { margin: 0.03 } } } });
   figure = new Figure(body, spec, { position: [0, 0, 0], heading: 0 });
   figure.frame(null, 0);
   if (mesh) { scene.remove(mesh); geom.dispose(); }
@@ -206,5 +206,5 @@ const A = window.A = {
 };
 
 sk = await loadSkeleton(new URL(`${ENG}data/skeleton.json`, location.href));
-await A.set({ model: q.get('model') || new URL('../../model/tim.json', import.meta.url).href });
+await A.set({ model: q.get('model') || new URL('../../model/anya.json', import.meta.url).href });
 window.__ready = true;
