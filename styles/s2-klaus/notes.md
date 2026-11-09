@@ -68,7 +68,14 @@ Brief: `docs/briefs/styles-more.md`, part A. Two characters added by the same ru
   tallest, a light sliver of the jacket beside the apron was closed. Кира's first calm mouth was a friendly smile
   (→ pressed, crooked), the neck too long (shoulders raised, `dy=-84`), the headphone band stuck up like horns (→ a
   band behind the neck drawn in `bust`), trousers and boots went brown in the warm light (cooler base, less key).
-- **Weak:** Кира's front and profile (older and calmer than the three-quarter view; the hair reads as a helmet);
+- **Кира's age, redone** (the coordinator: the profile read as a woman of forty, front and portrait as older and
+  gaunt). In all three views: the lower face shorter (chin ~18 px up), a rounder cheek, a small round chin, the nose
+  smaller and softer, the eyes larger and lower (near eye 18×15.5 at y 269), no dark under the eye, lips as one line
+  (`mouth()` has no lip shapes now, only a faint shadow under the lower lip), the neck shorter (`dy=-106`, busts
+  drawn down to y 770), more blush; the head in the figure a little bigger (0.47). The first version is kept in
+  `/home/user/cache/styles-s2-klaus/kira-v1.py`.
+- **Weak:** Кира's front and profile (less prickly than the three-quarter view, the pressed mouth easily reads as
+  a small smile; the hair is heavy);
   hands are still simple (a ball with finger lines; Кира's hand is in the pocket). The folder is now ~20 MB — the
   grain makes PNGs heavy.
 

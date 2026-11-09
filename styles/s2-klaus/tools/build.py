@@ -19,7 +19,7 @@ BACK = {
     'tim':    dict(top='#24304a', bottom='#3c3a52', glow='#e8a060', dy=-66),
     'vera':   dict(top='#222838', bottom='#3a3448', glow='#d89070', dy=-60),
     'marat':  dict(top='#2e2430', bottom='#4a302c', glow='#f09a48', dy=-30),
-    'kira':   dict(top='#1e2236', bottom='#34283e', glow='#c88a78', dy=-84),
+    'kira':   dict(top='#1e2236', bottom='#34283e', glow='#c88a78', dy=-106),
 }
 
 

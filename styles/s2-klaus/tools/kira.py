@@ -16,7 +16,7 @@ SHEEN = '#8a6c98'
 PAD = mix(LIME, '#28321a', 0.55)   # the cups' inner side
 
 EXPR = {
-    'calm':     dict(lid=0.42, low=0.12, brows=(0, 0), mouth='shut', look=(0.3, -0.05)),
+    'calm':     dict(lid=0.38, low=0.12, brows=(0, 0), mouth='shut', look=(0.3, -0.05)),
     'smirk':    dict(lid=0.4, low=0.2, brows=(0, -2), mouth='smirk', look=(0.3, -0.05)),
     'joy':      dict(lid=0.36, low=0.36, brows=(-4, -3), mouth='halfsmile', look=(0.15, 0.1)),
     'surprise': dict(lid=0.02, low=0.0, brows=(-14, -12), mouth='o', look=(0.0, 0.0)),
@@ -27,44 +27,46 @@ TILT = 'rotate(-6,300,330)'   # the head is held down: everything above the neck
 
 
 def mouth(d, kind):
-    line = '#5a2434'
-    lip = '#c2727a'
+    """Thin lips: a dark line and a faint shadow under the lower lip — no painted lips."""
+    return '<g transform="translate(0,-13)">' + _mouth(d, kind) + '</g>'
+
+
+def _mouth(d, kind):
+    line = '#6a2c3a'
+    lip = '#c88080'
+    dim = mix(SKIN, INK, 0.45)
+    under = d.tone('M220,341 C228,344 238,343 245,339 C239,346 226,347 220,341Z', '#7a3a58', 0.28, 1.8)
     if kind == 'shut':       # pressed shut, a little crooked: the near corner tucked in
         return '\n'.join([
-            d.tone('M214,332 C226,329 240,329 252,328 C242,335 226,337 214,332Z', lip, 0.7, 1),
-            f'<path d="M208,334 C222,335 240,333 256,329" fill="none" stroke="{line}" stroke-width="2.2" stroke-linecap="round"/>',
-            f'<path d="M257,324 C260,327 260,331 258,334" fill="none" stroke="{mix(SKIN, INK, 0.5)}" stroke-width="1.5" stroke-linecap="round"/>',
-            d.tone('M216,340 C226,343 238,343 246,339 C240,347 224,348 216,340Z', lip, 0.5, 1.5)])
+            f'<path d="M212,333 C224,336 240,336 253,333" fill="none" stroke="{line}" stroke-width="2" stroke-linecap="round"/>',
+            f'<path d="M254,329 C257,331 257,335 255,338" fill="none" stroke="{dim}" stroke-width="1.4" stroke-linecap="round"/>',
+            under])
     if kind == 'smirk':      # pressed, the near corner pulled up and back
         return '\n'.join([
-            d.tone('M212,333 C224,330 240,329 254,323 C244,334 226,338 212,333Z', lip, 0.75, 1),
-            f'<path d="M206,334 C220,337 240,334 256,322" fill="none" stroke="{line}" stroke-width="2.2" stroke-linecap="round"/>',
-            f'<path d="M258,316 C262,319 262,324 259,327" fill="none" stroke="{mix(SKIN, INK, 0.5)}" stroke-width="1.5" stroke-linecap="round"/>',
-            d.tone('M216,340 C226,343 238,342 246,336 C240,346 224,348 216,340Z', lip, 0.5, 1.5)])
-    if kind == 'halfsmile':  # the most she allows: lips shut, both corners up, a dimple
+            f'<path d="M210,334 C222,337 240,334 254,323" fill="none" stroke="{line}" stroke-width="2" stroke-linecap="round"/>',
+            f'<path d="M256,317 C260,320 260,325 257,328" fill="none" stroke="{dim}" stroke-width="1.4" stroke-linecap="round"/>',
+            under])
+    if kind == 'halfsmile':  # the most she allows: lips shut, the corners up, a dimple
         return '\n'.join([
-            d.tone('M210,331 C224,334 242,331 256,321 C246,336 224,340 210,331Z', lip, 0.8, 1),
-            f'<path d="M208,331 C220,338 242,335 257,321" fill="none" stroke="{line}" stroke-width="2.2" stroke-linecap="round"/>',
-            f'<path d="M260,314 C264,318 264,323 260,327" fill="none" stroke="{mix(SKIN, INK, 0.5)}" stroke-width="1.5" stroke-linecap="round"/>',
-            d.tone('M216,341 C226,345 240,343 248,336 C242,348 224,350 216,341Z', lip, 0.5, 1.5)])
+            f'<path d="M210,331 C221,338 241,335 255,322" fill="none" stroke="{line}" stroke-width="2" stroke-linecap="round"/>',
+            f'<path d="M258,315 C262,319 262,324 258,328" fill="none" stroke="{dim}" stroke-width="1.4" stroke-linecap="round"/>',
+            d.tone('M220,342 C228,346 240,344 247,338 C241,348 226,349 220,342Z', '#7a3a58', 0.28, 1.8)])
     if kind == 'o':
         return '\n'.join([
-            f'<path d="M218,328 C224,321 238,321 243,329 C246,339 240,348 231,348 C222,348 215,339 218,328Z" fill="#4a1a26"/>',
-            f'<path d="M221,327 C226,323 236,323 240,328 C236,331 226,331 221,327Z" fill="#f4ece4"/>',
-            d.tone('M222,342 C227,338 236,338 240,343 C236,348 226,348 222,342Z', '#c45a64', 0.9, 0.8),
-            d.tone('M218,350 C226,354 236,354 243,349 C238,357 224,358 218,350Z', lip, 0.5, 1.5)])
+            f'<path d="M220,328 C225,322 237,322 241,329 C244,338 239,346 231,346 C223,346 217,338 220,328Z" fill="#4a1a26"/>',
+            f'<path d="M223,327 C227,324 235,324 238,328 C235,331 227,331 223,327Z" fill="#f4ece4"/>',
+            d.tone('M224,341 C228,337 235,337 238,342 C235,346 227,346 224,341Z', '#c45a64', 0.9, 0.8)])
     if kind == 'sad':        # pressed tight, the corners down, the lower lip pushed out
         return '\n'.join([
-            f'<path d="M210,338 C220,330 238,328 252,335" fill="none" stroke="{line}" stroke-width="2.2" stroke-linecap="round"/>',
-            d.tone('M216,338 C226,334 238,334 247,338 C240,346 224,346 216,338Z', lip, 0.75, 1.2),
-            d.tone('M218,350 C226,346 238,346 246,350 C238,354 226,354 218,350Z', '#7a3a50', 0.3, 2)])
+            f'<path d="M212,338 C221,331 238,329 251,335" fill="none" stroke="{line}" stroke-width="2" stroke-linecap="round"/>',
+            d.tone('M219,339 C227,336 238,336 245,339 C239,345 226,345 219,339Z', lip, 0.55, 1.2),
+            d.tone('M220,349 C227,346 238,346 245,349 C238,353 227,353 220,349Z', '#7a3a58', 0.28, 2)])
     if kind == 'angry':      # a snarl: the upper lip lifted on the near side, the teeth shut
         return '\n'.join([
-            f'<path d="M208,338 C218,330 240,322 256,326 C256,338 244,346 228,347 C218,347 210,344 208,338Z" fill="#4a1a26"/>',
-            f'<path d="M212,338 C222,332 240,326 253,329 C252,337 242,342 228,343 C220,343 214,341 212,338Z" fill="#f4ece4"/>',
-            f'<path d="M214,339 C226,336 242,333 253,334" fill="none" stroke="#4a1a26" stroke-width="1.2"/>',
-            f'<path d="M204,340 C216,328 242,318 258,324" fill="none" stroke="{line}" stroke-width="2.2" stroke-linecap="round"/>',
-            d.tone('M214,351 C224,355 238,353 248,346 C242,358 222,360 214,351Z', lip, 0.55, 1.5)])
+            f'<path d="M210,338 C219,331 240,324 254,327 C254,338 243,345 228,346 C219,346 212,343 210,338Z" fill="#4a1a26"/>',
+            f'<path d="M214,338 C223,333 240,328 251,330 C250,337 241,341 228,342 C221,342 216,340 214,338Z" fill="#f4ece4"/>',
+            f'<path d="M216,339 C227,336 241,334 251,335" fill="none" stroke="#4a1a26" stroke-width="1.1"/>',
+            f'<path d="M206,340 C217,329 241,320 256,325" fill="none" stroke="{line}" stroke-width="2" stroke-linecap="round"/>'])
     raise ValueError(kind)
 
 
@@ -72,59 +74,57 @@ def head34(d, out, expr='calm'):
     e = EXPR[expr]
     sk = mix(SKIN, '#4a1848', 0.6)
     # neck: thin, long, leaning forward
-    neck = 'M254,350 C260,386 258,420 252,452 L312,456 C306,420 304,380 312,316Z'
-    out.append(d.form(neck, SKIN, shift=9, soft=3.5, extra=d.tone('M246,346 C272,400 300,396 316,312 L330,480 L246,480Z', sk, 0.92, 3)
-                      + d.tone('M240,340 L330,300 L330,400 C300,410 270,404 240,384Z', '#3a1440', 0.35, 6)))
+    neck = 'M256,334 C261,370 259,400 254,432 L310,436 C305,400 304,366 312,306Z'
+    out.append(d.form(neck, SKIN, shift=9, soft=3.5, extra=d.tone('M246,330 C272,384 300,380 316,300 L330,480 L246,480Z', sk, 0.92, 3)
+                      + d.tone('M240,326 L330,290 L330,384 C300,394 270,388 240,368Z', '#3a1440', 0.3, 6)))
     out.append(f'<g transform="{TILT}">')
     # the hair behind: a short shaggy mass that ends in choppy points at the nape
     back = ('M300,100 C258,96 220,112 204,146 C240,140 290,150 316,190 C324,214 326,244 326,268 '
             'C326,290 322,306 316,322 L334,310 L334,344 L354,318 L362,344 L378,314 L398,322 '
-            'C398,284 398,244 392,212 C388,180 380,152 366,134 L378,120 L356,122 C340,108 322,101 300,100Z')
+            'C399,304 399,288 397,274 L409,262 L395,256 C395,240 394,226 392,212 C388,180 380,152 366,134 L378,120 L356,122 C340,108 322,101 300,100Z')
     bx = d.tone('M336,120 C372,160 388,240 368,350 L420,350 L420,100Z', '#120a16', 0.65, 8)
     bx += d.tone('M320,130 C344,160 354,200 354,240 C346,204 334,170 312,146Z', SHEEN, 0.5, 5)
     out.append(d.form(back, HAIR, shift=12, soft=4, k=0.06, s=0.4, extra=bx, rim=2, rimcol='#b890a8', rimop=0.35))
-    # face: narrow, a flat cheek that runs to a small sharp chin
-    face = ('M212,152 C200,172 194,198 194,222 C194,236 197,244 195,254 C190,264 188,276 190,288 '
-            'C192,304 198,318 204,332 C210,348 220,362 232,370 C240,374 250,372 258,366 '
-            'C280,352 302,330 314,306 C324,284 328,258 326,232 C324,200 318,172 304,154 C282,134 236,134 212,152Z')
-    fx = [d.tone('M292,150 C300,186 298,220 292,246 C286,272 280,300 266,326 C256,346 246,360 238,374 L350,390 L350,140Z', sk, 0.82, 3.5),
-          d.tone('M240,250 C256,238 290,240 302,256 C298,274 266,280 246,272Z', '#6a3058', 0.38, 5),
-          d.tone('M250,278 C264,286 284,286 296,276 C290,290 262,292 250,284Z', '#6a3058', 0.3, 2.5),
-          d.tone('M252,296 C266,286 296,290 300,306 C294,320 266,320 256,310Z', ROSE, 0.32, 7),
+    # face: a short lower face, a round young cheek, a small soft chin
+    face = ('M212,152 C200,172 194,198 194,222 C194,238 197,248 195,258 C190,268 187,280 189,292 '
+            'C191,304 197,316 205,326 C213,338 223,348 235,352 C243,355 253,353 261,348 '
+            'C284,338 306,320 317,297 C325,279 328,256 326,232 C324,200 318,172 304,154 C282,134 236,134 212,152Z')
+    fx = [d.tone('M294,150 C302,186 300,222 295,250 C290,276 284,298 270,318 C260,332 250,344 242,356 L350,380 L350,140Z', sk, 0.8, 4),
+          d.tone('M240,258 C256,246 290,248 302,264 C298,280 266,286 246,278Z', '#7a3a60', 0.22, 5),
+          d.tone('M250,298 C266,286 300,290 305,308 C298,324 266,324 254,312Z', ROSE, 0.42, 8),
           # the fringe's cast shadow
-          d.tone('M186,300 C200,290 214,270 228,262 C244,244 280,226 330,222 L340,130 L180,130Z', '#6a2a50', 0.4, 5)]
+          d.tone('M186,300 C200,290 214,272 228,264 C244,246 280,228 330,224 L340,130 L180,130Z', '#6a2a50', 0.36, 5)]
     out.append(d.form(face, SKIN, shift=30, soft=8, s=0.5, rim=2.4, rimcol='#ffb89a', rimop=0.6, extra='\n'.join(fx)))
-    # eyes: smaller than Аня's, a dark line round them; the far one is under the fringe
+    # eyes: big enough for fifteen, set low, a dark lash line; the far one is under the fringe
     lid, look = e['lid'], e['look']
-    out.append(eye(d, 268, 262, 16, 13.5, lid=lid, look=look, tilt=-1.5, skin=SKIN, iris='#5a6a52', crease=0.3,
-                   low_lid=e['low'], lash=3.4, wing=1.2, irr=0.84))
-    out.append(eye(d, 210, 259, 9, 12.5, lid=lid, look=look, tilt=0, skin=SKIN, iris='#5a6a52', wing=-0.3, crease=0,
-                   lower=0.3, low_lid=e['low'], lash=3.0, irr=0.84))
-    out.append(d.tone('M252,274 C264,280 280,280 290,272 C284,282 262,284 252,278Z', '#3a1a40', 0.35, 1.5))
-    # brows: straight and low, the inner end pulled down
+    out.append(eye(d, 267, 269, 18, 15.5, lid=lid, look=look, tilt=-1.5, skin=SKIN, iris='#5a6a52', crease=0.25,
+                   low_lid=e['low'], lash=3.2, wing=1.1, irr=0.86, lower=0.35))
+    out.append(eye(d, 208, 265, 9, 13.5, lid=lid, look=look, tilt=0, skin=SKIN, iris='#5a6a52', wing=-0.3, crease=0,
+                   lower=0.3, low_lid=e['low'], lash=2.8, irr=0.86))
+    # brows: straight and low, the inner end pulled down — the prickliness is here
     bc = mix(HAIR, INK, 0.3)
     bn, bf = e['brows']
     if e.get('sad'):
-        out.append(brow((246, 236 + bn), (270, 236 + bn), (298, 246 + bn), 4.6, bc))
-        out.append(brow((226, 236 + bf), (212, 236 + bf), (198, 244 + bf), 3.6, bc))
+        out.append(brow((244, 240 + bn), (268, 240 + bn), (298, 251 + bn), 4.6, bc))
+        out.append(brow((226, 240 + bf), (212, 240 + bf), (198, 248 + bf), 3.6, bc))
     elif e.get('angry'):
-        out.append(brow((244, 248 + bn - 6), (268, 238 + bn - 8), (298, 232 + bn - 8), 5, bc))
-        out.append(brow((228, 246 + bf - 6), (212, 240 + bf - 8), (198, 236 + bf - 8), 4, bc))
+        out.append(brow((242, 252 + bn - 6), (266, 242 + bn - 8), (298, 237 + bn - 8), 5, bc))
+        out.append(brow((228, 250 + bf - 6), (212, 244 + bf - 8), (198, 240 + bf - 8), 4, bc))
     else:
-        out.append(brow((244, 243 + bn), (268, 236 + bn), (298, 238 + bn), 4.6, bc))
-        out.append(brow((228, 242 + bf), (212, 238 + bf), (198, 240 + bf), 3.6, bc))
-    # nose: small, straight, a sharp tip
-    nose = 'M226,248 C223,264 212,280 197,291 C191,296 193,302 200,303 C208,304 214,306 222,302 C228,298 230,292 229,284Z'
-    nx = d.tone('M196,302 C208,304 214,306 224,301 L228,314 L192,314Z', '#5a2048', 0.5, 1.5)
-    out.append(d.form(nose, mix(SKIN, ROSE, 0.14), shift=6, soft=2.2, s=0.45, extra=nx))
-    out.append(d.tone('M199,293 C203,290 207,290 210,292 C206,295 202,296 199,293Z', '#fff4e8', 0.8, 0.8))
-    out.append(f'<path d="M209,299 C212,296 217,297 219,301" fill="none" stroke="{mix(SKIN, INK, 0.55)}" stroke-width="1.5" stroke-linecap="round"/>')
+        out.append(brow((242, 249 + bn), (266, 241 + bn), (298, 243 + bn), 4.6, bc))
+        out.append(brow((228, 247 + bf), (212, 243 + bf), (198, 245 + bf), 3.6, bc))
+    # nose: small and soft, a round tip a little up
+    nose = 'M223,266 C221,276 213,285 202,291 C197,294 197,300 203,302 C210,303 215,304 221,301 C226,298 227,292 226,286Z'
+    nx = d.tone('M199,301 C209,303 215,304 223,300 L226,310 L196,310Z', '#6a2a50', 0.4, 1.5)
+    out.append(d.form(nose, mix(SKIN, ROSE, 0.12), shift=6, soft=2.4, s=0.4, extra=nx))
+    out.append(d.tone('M202,293 C205,290 209,290 211,292 C208,295 205,296 202,293Z', '#fff4e8', 0.8, 0.8))
+    out.append(f'<path d="M210,299 C213,297 217,298 218,301" fill="none" stroke="{mix(SKIN, INK, 0.5)}" stroke-width="1.4" stroke-linecap="round"/>')
     out.append(mouth(d, e['mouth']))
     # a lock in front of the ear
     lock = 'M300,168 C322,200 330,250 324,290 L314,326 L308,298 L296,318 C300,282 300,240 290,200Z'
     out.append(d.form(lock, HAIR, shift=8, soft=3, k=0.14, s=0.7))
     # the fringe: from a parting on the near side, across the forehead and down over the far eye, cut in points
-    fringe = ('M308,104 C270,98 224,110 202,146 C188,172 184,212 186,248 L180,304 L196,274 L202,300 L213,264 L224,284 '
+    fringe = ('M308,104 C270,98 224,110 202,146 C188,172 184,212 186,248 L180,304 L196,274 L202,300 L215,272 L226,292 '
               'C230,258 242,240 258,228 C276,216 298,210 322,208 C326,170 320,130 308,104Z')
     hx = d.tone('M226,120 C250,108 280,106 302,112 C280,116 252,124 234,138Z', SHEEN, 0.75, 3)
     hx += d.tone('M196,170 C192,200 190,230 192,262 L200,262 C200,230 202,200 208,172Z', SHEEN, 0.5, 3)
@@ -143,8 +143,8 @@ def bust(d, out):
     out.append(d.form(hood, mix(HOOD, '#1a0a20', 0.25), shift=14, soft=5, k=0.14, s=0.5))
     band = mix(LIME, '#20281a', 0.3)
     out.append(f'<path d="M232,524 C226,478 352,470 350,520" fill="none" stroke="{band}" stroke-width="9" stroke-linecap="round"/>')
-    body = ('M146,700 L160,626 C170,574 198,540 236,526 L266,514 L302,512 L334,520 C374,536 398,574 406,626 L414,700Z')
-    bx = d.tone('M322,514 C364,548 380,620 384,700 L430,700 L430,490Z', sh, 0.6, 8)
+    body = ('M146,770 L160,626 C170,574 198,540 236,526 L266,514 L302,512 L334,520 C374,536 398,574 406,626 L414,770Z')
+    bx = d.tone('M322,514 C364,548 380,620 384,770 L430,770 L430,490Z', sh, 0.6, 8)
     bx += d.tone('M190,596 C202,566 222,546 244,534 C230,554 216,576 208,604Z', mix(HOOD, '#ffc8a0', 0.45), 0.5, 3)
     out.append(d.form(body, HOOD, shift=28, soft=8, k=0.16, s=0.55, extra=bx))
     fold = mix(HOOD, '#120818', 0.5)
@@ -211,7 +211,7 @@ def figure(d, out, expr='calm'):
     # the hood behind the neck, the head pushed forward and down
     hood = 'M240,240 C254,220 300,222 316,248 C324,272 306,290 282,290 C258,288 240,270 240,240Z'
     out.append(d.form(hood, mix(HOOD, '#1a0a20', 0.2), shift=10, soft=4, k=0.16, s=0.5))
-    place(d, out, head34, 'kira', (224, 238), 0.44, rot=-8, expr=expr)
+    place(d, out, head34, 'kira', (224, 240), 0.47, rot=-8, expr=expr)
     # the hood's edge and the headphones over the neck
     edge = 'M212,256 C222,246 238,250 244,262 C254,252 272,252 280,262 C276,278 262,284 246,284 C230,284 216,274 212,256Z'
     out.append(d.form(edge, mix(HOOD, '#1a0a20', 0.1), shift=5, soft=2, k=0.16, s=0.5))
@@ -230,34 +230,31 @@ def head_front(d, out, expr='calm'):
             'L304,316 L314,344 L324,312 L336,334 C342,290 344,240 340,196 C338,170 330,146 318,130 L326,116 L306,118 C290,104 270,98 250,98Z')
     out.append(d.form(back, HAIR, shift=12, soft=4, k=0.06, s=0.4, rim=2, rimcol='#b890a8', rimop=0.35,
                       extra=d.tone('M300,110 C336,150 344,240 334,340 L370,340 L370,100Z', '#120a16', 0.6, 8)))
-    neck = 'M226,356 C230,390 228,420 224,452 L276,452 C272,420 270,390 274,356Z'
-    out.append(d.form(neck, SKIN, shift=7, soft=3, extra=d.tone('M220,356 C240,392 262,392 280,356 L290,460 L220,460Z', sk, 0.88, 3)
-                      + d.tone('M220,350 L280,350 L280,392 C262,402 240,402 220,392Z', '#3a1440', 0.35, 5)))
-    face = ('M250,134 C206,134 184,170 182,216 C180,250 182,280 190,306 C198,334 222,368 250,374 '
-            'C278,368 302,334 310,306 C318,280 320,250 318,216 C316,170 294,134 250,134Z')
-    fx = [d.tone('M290,140 C310,190 312,250 304,300 C296,336 276,362 252,376 L340,380 L340,130Z', sk, 0.72, 5),
-          d.tone('M262,252 C272,238 300,238 310,250 C306,268 280,274 266,270Z', '#6a3058', 0.36, 4),
-          d.tone('M264,278 C276,286 294,284 304,274 C298,290 274,292 264,284Z', '#6a3058', 0.3, 2.5),
-          d.tone('M268,298 C278,286 302,288 306,302 C302,316 280,318 270,310Z', ROSE, 0.3, 7),
-          d.tone('M196,300 C206,288 226,290 230,302 C226,314 206,316 198,310Z', ROSE, 0.3, 7),
-          d.tone('M170,310 C190,296 206,274 222,262 C244,240 286,226 330,226 L330,130 L170,130Z', '#6a2a50', 0.4, 5)]
+    neck = 'M227,340 C230,372 229,402 225,432 L275,432 C271,402 270,372 273,340Z'
+    out.append(d.form(neck, SKIN, shift=7, soft=3, extra=d.tone('M220,340 C240,376 262,376 280,340 L290,460 L220,460Z', sk, 0.88, 3)
+                      + d.tone('M220,334 L280,334 L280,376 C262,386 240,386 220,376Z', '#3a1440', 0.3, 5)))
+    face = ('M250,134 C206,134 184,170 182,216 C180,250 181,278 187,300 C194,326 220,354 250,358 '
+            'C280,354 306,326 313,300 C319,278 320,250 318,216 C316,170 294,134 250,134Z')
+    fx = [d.tone('M292,140 C312,190 314,250 308,296 C300,326 278,348 252,360 L340,380 L340,130Z', sk, 0.68, 5),
+          d.tone('M262,258 C272,246 302,246 312,258 C308,274 282,280 266,276Z', '#7a3a60', 0.2, 4),
+          d.tone('M270,300 C280,288 306,290 310,304 C306,318 282,320 272,312Z', ROSE, 0.4, 7),
+          d.tone('M194,302 C204,290 226,292 230,304 C226,316 206,318 196,312Z', ROSE, 0.4, 7),
+          d.tone('M170,310 C190,296 206,276 222,264 C244,242 286,228 330,228 L330,130 L170,130Z', '#6a2a50', 0.36, 5)]
     out.append(d.form(face, SKIN, shift=22, soft=8, s=0.5, rim=2.4, rimcol='#ffb89a', rimop=0.6, extra='\n'.join(fx)))
     lid = e['lid']
-    out.append(eye(d, 216, 262, 15, 13.5, lid=lid, look=(0.25, -0.05), tilt=-1.5, skin=SKIN, iris='#5a6a52', wing=-1.2,
-                   crease=0.3, low_lid=e['low'], lash=3.4, irr=0.84))
-    out.append(eye(d, 284, 262, 15, 13.5, lid=lid, look=(0.25, -0.05), tilt=-1.5, skin=SKIN, iris='#5a6a52', wing=1.2,
-                   crease=0.3, low_lid=e['low'], lash=3.4, irr=0.84))
-    out.append(d.tone('M270,274 C280,280 294,280 302,272 C296,282 278,284 270,278Z', '#3a1a40', 0.35, 1.5))
+    for o, x in ((-1, 215), (1, 285)):
+        out.append(eye(d, x, 269, 17, 15.5, lid=lid, look=(0.25, -0.05), tilt=-1.5, skin=SKIN, iris='#5a6a52', wing=o * 1.1,
+                       crease=0.25, low_lid=e['low'], lash=3.2, irr=0.86, lower=0.35))
     bc = mix(HAIR, INK, 0.3)
-    out.append(brow((264, 243), (284, 236), (308, 239), 4.6, bc))
-    out.append(brow((236, 243), (216, 236), (192, 239), 4.6, bc))
-    nose = 'M242,276 C240,290 237,298 240,305 C244,311 256,311 260,305 C263,298 260,290 258,276Z'
-    out.append(d.form(nose, mix(SKIN, ROSE, 0.14), shift=5, soft=2.2, s=0.4,
-                      extra=d.tone('M238,304 C244,313 256,313 262,304 L262,316 L238,316Z', sk, 0.5, 1.5)))
-    out.append(d.tone('M246,294 C248,291 252,291 254,294 C252,296 248,296 246,294Z', '#fff4e8', 0.8, 0.8))
-    nl = mix(SKIN, INK, 0.55)
-    out.append(f'<path d="M241,306 C243,309 246,309 248,307 M252,307 C254,309 257,309 259,306" fill="none" stroke="{nl}" stroke-width="1.4" stroke-linecap="round"/>')
-    out.append('<g transform="translate(18,2)">')
+    out.append(brow((262, 249), (284, 241), (310, 244), 4.6, bc))
+    out.append(brow((238, 249), (216, 241), (190, 244), 4.6, bc))
+    nose = 'M243,284 C241,292 239,298 242,303 C245,308 255,308 258,303 C261,298 259,292 257,284Z'
+    out.append(d.form(nose, mix(SKIN, ROSE, 0.12), shift=5, soft=2.4, s=0.35,
+                      extra=d.tone('M240,302 C245,310 255,310 260,302 L260,312 L240,312Z', sk, 0.45, 1.5)))
+    out.append(d.tone('M246,295 C248,292 252,292 254,295 C252,297 248,297 246,295Z', '#fff4e8', 0.8, 0.8))
+    nl = mix(SKIN, INK, 0.5)
+    out.append(f'<path d="M243,304 C245,306 247,306 248,305 M252,305 C253,306 255,306 257,304" fill="none" stroke="{nl}" stroke-width="1.3" stroke-linecap="round"/>')
+    out.append('<g transform="translate(18,1)">')
     out.append(mouth(d, e['mouth']))
     out.append('</g>')
     lock = 'M300,180 C320,212 326,262 320,300 L312,334 L306,306 L296,322 C302,286 302,240 292,204Z'
@@ -276,33 +273,31 @@ def head_front(d, out, expr='calm'):
 def head_side(d, out, expr='calm'):
     e = EXPR[expr]
     sk = mix(SKIN, '#4a1848', 0.6)
-    neck = 'M236,350 C244,384 244,420 238,452 L302,456 C298,420 298,376 306,326Z'
-    out.append(d.form(neck, SKIN, shift=9, soft=3.5, extra=d.tone('M232,360 C256,376 284,366 306,326 L320,460 L232,460Z', sk, 0.85, 4)))
+    neck = 'M240,336 C246,370 246,402 241,432 L300,436 C297,402 298,362 306,314Z'
+    out.append(d.form(neck, SKIN, shift=9, soft=3.5, extra=d.tone('M232,344 C256,362 284,352 306,314 L320,460 L232,460Z', sk, 0.85, 4)))
     out.append(f'<g transform="{TILT}">')
-    # the profile: a straight forehead, a small sharp nose, a short upper lip, a small firm chin
-    face = ('M222,150 C206,166 198,192 198,218 C198,232 200,242 197,252 C192,264 184,278 176,290 '
-            'C172,296 174,302 182,303 C186,304 190,304 192,306 C190,314 188,320 190,324 C186,330 188,336 192,338 '
-            'C190,346 192,352 196,358 C200,368 212,374 226,372 C250,368 276,358 296,340 '
-            'C316,322 330,290 334,250 C338,200 320,160 290,140 C264,126 238,134 222,150Z')
-    fx = [d.tone('M300,140 C324,190 324,250 308,300 C294,332 264,356 232,372 L360,380 L360,130Z', sk, 0.55, 8),
-          d.tone('M200,250 C212,240 234,244 242,256 C236,272 214,274 204,266Z', '#6a3058', 0.36, 4),
-          d.tone('M218,290 C232,280 258,284 262,300 C256,314 232,314 220,304Z', ROSE, 0.32, 7),
-          d.tone('M190,250 C210,226 250,212 330,224 L340,120 L190,120Z', '#6a2a50', 0.38, 5)]
+    # the profile: a round forehead, a small soft nose a little up, a short lower face, a small round chin
+    face = ('M222,150 C206,166 198,192 198,218 C198,234 200,246 198,256 C195,266 189,275 183,283 '
+            'C179,288 180,294 187,295 C190,296 193,297 194,300 C192,305 192,309 194,312 C192,316 193,320 196,322 '
+            'C195,328 196,334 200,339 C206,348 218,353 232,351 C256,347 282,337 300,321 '
+            'C318,304 330,280 334,250 C338,200 320,160 290,140 C264,126 238,134 222,150Z')
+    fx = [d.tone('M300,140 C324,190 324,250 310,292 C296,320 266,340 236,352 L360,370 L360,130Z', sk, 0.5, 8),
+          d.tone('M202,258 C214,248 236,252 244,264 C238,280 216,282 206,274Z', '#7a3a60', 0.22, 4),
+          d.tone('M220,294 C236,282 266,286 270,304 C264,320 236,320 224,310Z', ROSE, 0.42, 8),
+          d.tone('M190,252 C210,228 250,214 330,226 L340,120 L190,120Z', '#6a2a50', 0.34, 5)]
     out.append(d.form(face, SKIN, shift=20, soft=7, s=0.5, rim=2.4, rimcol='#ffb89a', rimop=0.6, extra='\n'.join(fx)))
-    out.append(d.tone('M178,292 C182,289 186,289 189,291 C186,294 181,295 178,292Z', '#fff4e8', 0.75, 0.8))
-    out.append(f'<path d="M188,300 C192,298 196,300 196,304" fill="none" stroke="{mix(SKIN, INK, 0.55)}" stroke-width="1.5" stroke-linecap="round"/>')
-    # lips pressed, the corner tucked in
-    out.append(d.tone('M190,324 C196,320 204,320 210,323 C204,327 196,327 190,324Z', '#c2727a', 0.9))
-    out.append(d.tone('M192,330 C198,334 206,334 210,329 C206,338 198,338 192,332Z', '#c2727a', 0.6, 1))
-    out.append('<path d="M189,326 C198,328 208,328 216,326" fill="none" stroke="#5a2434" stroke-width="2" stroke-linecap="round"/>')
-    out.append(f'<path d="M218,321 C221,324 221,328 218,331" fill="none" stroke="{mix(SKIN, INK, 0.5)}" stroke-width="1.4" stroke-linecap="round"/>')
-    out.append(eye_side(218, 262, 1.2, iris='#5a6a52', skin=SKIN, lid=e['lid'], lash=1.4))
-    out.append(d.tone('M210,272 C218,278 230,276 236,268 C232,280 216,282 210,276Z', '#3a1a40', 0.35, 1.5))
-    out.append(brow((204, 244), (220, 237), (242, 240), 4.4, mix(HAIR, INK, 0.3)))
+    out.append(d.tone('M184,287 C187,284 191,284 193,286 C190,289 187,290 184,287Z', '#fff4e8', 0.75, 0.8))
+    out.append(f'<path d="M191,293 C194,291 198,293 198,296" fill="none" stroke="{mix(SKIN, INK, 0.5)}" stroke-width="1.4" stroke-linecap="round"/>')
+    # thin lips pressed into a line, the corner tucked in
+    out.append('<path d="M193,313 C200,314 208,315 215,315" fill="none" stroke="#6a2c3a" stroke-width="1.9" stroke-linecap="round"/>')
+    out.append(f'<path d="M216,311 C219,313 219,317 217,320" fill="none" stroke="{mix(SKIN, INK, 0.45)}" stroke-width="1.3" stroke-linecap="round"/>')
+    out.append(d.tone('M198,321 C203,324 210,324 214,320 C210,327 202,327 198,321Z', '#7a3a58', 0.25, 1.5))
+    out.append(eye_side(219, 269, 1.45, iris='#5a6a52', skin=SKIN, lid=e['lid'], lash=1.2))
+    out.append(brow((203, 251), (220, 244), (244, 247), 4.4, mix(HAIR, INK, 0.3)))
     # hair: the fringe hangs before the forehead, the rest is a short shaggy cap
     hair = ('M300,100 C262,94 226,108 208,140 C198,160 194,186 194,214 L186,256 L204,238 C214,228 228,220 244,216 L252,246 L262,213 '
             'C270,211 278,211 286,213 C296,250 296,290 284,328 L300,306 L306,334 L318,318 L334,310 L334,344 L354,318 L362,344 L378,314 L398,322 '
-            'C398,284 398,244 392,212 C388,180 380,152 366,134 L378,120 L356,122 C340,108 322,101 300,100Z')
+            'C399,304 399,288 397,274 L409,262 L395,256 C395,240 394,226 392,212 C388,180 380,152 366,134 L378,120 L356,122 C340,108 322,101 300,100Z')
     hx = d.tone('M226,120 C250,108 280,106 302,112 C280,116 252,124 234,138Z', SHEEN, 0.75, 3)
     hx += d.tone('M204,160 C198,186 198,210 200,232 L210,226 C208,206 210,186 216,164Z', SHEEN, 0.5, 3)
     hx += d.tone('M300,130 C326,160 338,200 338,250 C330,206 318,170 292,146Z', SHEEN, 0.4, 5)
@@ -329,8 +324,8 @@ def bust_front(d, out):
     out.append(d.form(hood, mix(HOOD, '#1a0a20', 0.25), shift=14, soft=5, k=0.14, s=0.5))
     band = mix(LIME, '#20281a', 0.3)
     out.append(f'<path d="M198,526 C192,480 308,480 302,526" fill="none" stroke="{band}" stroke-width="9" stroke-linecap="round"/>')
-    body = 'M112,700 L124,628 C134,576 162,542 200,528 L232,516 L268,516 L300,528 C338,542 366,576 376,628 L388,700Z'
-    bx = d.tone('M292,520 C336,550 356,620 362,700 L400,700 L400,490Z', sh, 0.6, 8)
+    body = 'M112,770 L124,628 C134,576 162,542 200,528 L232,516 L268,516 L300,528 C338,542 366,576 376,628 L388,770Z'
+    bx = d.tone('M292,520 C336,550 356,620 362,770 L400,770 L400,490Z', sh, 0.6, 8)
     bx += d.tone('M150,600 C162,570 182,550 204,538 C190,558 176,580 168,608Z', mix(HOOD, '#ffc8a0', 0.45), 0.5, 3)
     out.append(d.form(body, HOOD, shift=28, soft=8, k=0.16, s=0.55, extra=bx))
 
@@ -349,10 +344,10 @@ def bust_side(d, out):
     sh = '#1c1230'
     hood = 'M252,520 C250,476 290,452 330,460 C366,470 384,502 374,536 C350,556 270,552 252,520Z'
     out.append(d.form(hood, mix(HOOD, '#1a0a20', 0.25), shift=14, soft=5, k=0.14, s=0.5))
-    body = 'M196,700 L200,620 C202,570 214,538 240,522 L276,512 L316,516 C350,530 372,570 378,630 L384,700Z'
-    bx = d.tone('M310,514 C350,540 368,620 372,700 L400,700 L400,490Z', sh, 0.6, 8)
+    body = 'M196,770 L200,620 C202,570 214,538 240,522 L276,512 L316,516 C350,530 372,570 378,630 L384,770Z'
+    bx = d.tone('M310,514 C350,540 368,620 372,770 L400,770 L400,490Z', sh, 0.6, 8)
     out.append(d.form(body, HOOD, shift=26, soft=8, k=0.16, s=0.55, extra=bx))
-    arm = 'M270,524 C304,522 322,552 322,600 L320,700 L270,700 L270,600 C270,566 264,542 270,524Z'
+    arm = 'M270,524 C304,522 322,552 322,600 L320,770 L270,770 L270,600 C270,566 264,542 270,524Z'
     out.append(d.form(arm, HOOD, shift=14, soft=5, k=0.16, s=0.55))
 
 
