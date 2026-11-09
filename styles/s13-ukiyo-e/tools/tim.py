@@ -10,6 +10,8 @@ WHITE = '#f6f0e0'
 REDS = '#b8402f'
 SHORTS = '#3f5a78'
 HEIGHT = 500
+TOP = 620     # with the net and the butterfly
+X = 470
 
 p = parts.P(long=0.86, cheek=8, chin=1, jaw=2,
             eye=dict(w=36, h=12, iris=8.6, lid=3.2, slant=0.5, lower=0.4, y=10, color='#3a2a1e'),
@@ -25,9 +27,9 @@ EXPR = {'joy': dict(lift=4, tilt=0, open=0.0, mouth='grin', blush=0.5),
 
 def hair_front(d, view):
     """A tousled mop: tufts sticking out of the outline, a jagged fringe."""
-    out = [(-82, -22, 'c'), (-92, -52, 'c'), (-76, -66), (-80, -96, 'c'), (-50, -100), (-40, -126, 'c'), (-10, -112),
-           (12, -132, 'c'), (34, -110), (66, -120, 'c'), (76, -92), (104, -80, 'c'), (98, -50), (114, -22, 'c'),
-           (98, -4), (102, 30, 'c'), (82, 26), (72, 46, 'c'), (66, 18, 'c')]
+    out = [(-82, -22, 'c'), (-92, -50), (-80, -70), (-82, -96, 'c'), (-54, -102), (-40, -124), (-10, -114),
+           (12, -130, 'c'), (36, -114), (66, -118), (80, -94), (104, -80, 'c'), (100, -50), (112, -22), (100, -2),
+           (102, 30, 'c'), (84, 28), (72, 46, 'c'), (66, 18, 'c')]
     bang = [(60, -16, 'c'), (44, -36), (32, -20, 'c'), (16, -46), (0, -26, 'c'), (-18, -50), (-32, -32, 'c'),
             (-50, -54), (-60, -36, 'c'), (-72, -50)]
     d.fill(out + bang, HAIR)
@@ -63,13 +65,12 @@ def bust(d, view='q', expr=None, hand=False):
         clothes(d, 'q')
     parts.head(d, p, 'q', expr, extra=extra, front=hair_front)
     if hand:
-        parts.hand(d, -84, 345, 1.1, 180, 'point', skin=p['skin'], lw=1.6)
-        beetle(d, -93, 222, 1.1)
+        beetle(d, 104, 206, 1.0)
 
 
 def beetle(d, x, y, s=1.0):
     """A stag beetle on a thread — the summer toy of the boys in the old prints."""
-    with d.g(x, y, s, -20):
+    with d.g(x, y, s, -50):
         d.shape(parts.oval(0, -14, 13, 18, 10), '#2f2a28', 1.2)
         d.shape(parts.oval(0, -36, 9, 8, 8), '#2f2a28', 1.2)
         d.line([(0, -32), (0, 2)], 1.0, 'even', '#8a7f72', nib=0)

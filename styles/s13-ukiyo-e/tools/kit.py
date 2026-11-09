@@ -431,7 +431,7 @@ class Doc:
         if m:
             s += '<rect x="%d" y="%d" width="%d" height="%d" fill="none" stroke="%s" stroke-width="2.2"/>' % (
                 m, m, w - 2 * m, h - 2 * m, INK)
-        s += ('<rect width="%d" height="%d" filter="url(#grain)" opacity="0.24" style="mix-blend-mode:screen"/>'
+        s += ('<rect width="%d" height="%d" filter="url(#grain)" opacity="0.15" style="mix-blend-mode:screen"/>'
               '<rect width="%d" height="%d" filter="url(#paper)" opacity="0.42" style="mix-blend-mode:multiply"/>'
               '<rect width="%d" height="%d" filter="url(#age)" opacity="0.28" style="mix-blend-mode:multiply"/>'
               % (w, h, w, h, w, h))

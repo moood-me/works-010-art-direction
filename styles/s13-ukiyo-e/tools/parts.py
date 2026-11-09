@@ -374,7 +374,9 @@ def head(d, p, view='q', expr='calm', back=None, front=None, extra=None, under=N
 def neck(d, p, view, w=46, length=70, lean=0, lw=None):
     """A neck under the head (drawn before the head): two lines with pressure."""
     L = p['long']
-    cx = {'q': 14, 'f': 0, 's': 16}[view]
+    cx = {'q': 14, 'f': 0, 's': 12}[view]
+    if view == 's':
+        w *= 1.25
     y0 = 60 * L
     y1 = 100 * L + length
     pts = [(cx - w / 2, y0), (cx - w / 2 + 2 + lean * 0.3, y0 + (y1 - y0) * 0.5), (cx - w / 2 - 6 + lean, y1),
@@ -587,7 +589,7 @@ def scallop(pts, r=10, closed=False, out=1, n=6):
             nx, ny = -dy / ln * out, dx / ln * out
             res.append((a[0] + dx * 0.3 + nx * r * 0.62, a[1] + dy * 0.3 + ny * r * 0.62))
             res.append((a[0] + dx * 0.7 + nx * r * 0.62, a[1] + dy * 0.7 + ny * r * 0.62))
-            res.append((b[0] - nx * r * 0.12, b[1] - ny * r * 0.12, 'c'))
+            res.append((b[0] - nx * r * 0.3, b[1] - ny * r * 0.3))
             last = b
             acc = 0.0
     return res

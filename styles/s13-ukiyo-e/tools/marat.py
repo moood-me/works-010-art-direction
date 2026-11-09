@@ -12,6 +12,8 @@ TERRA = '#c8683a'
 TERRA_D = '#9c4a26'
 SKIN = '#f1d7b6'
 HEIGHT = 800
+TOP = 910     # with the ladle up
+X = 450
 
 p = parts.P(skin=SKIN, long=0.98, cheek=11, jaw=14, chin=9, brow_ridge=3,
             eye=dict(w=32, h=8.5, iris=6.2, lid=4.0, slant=0, lower=0.6, color='#2a2220'),
@@ -44,7 +46,7 @@ BEARDS = {
 
 def hair(d, view):
     out, inn = HAIRS[view]
-    d.fill(parts.scallop(out, 12) + parts.scallop(inn, 8), HAIR)
+    d.fill(parts.scallop(out, 12, out=-1) + parts.scallop(inn, 8), HAIR)
     for t in (0.3, 0.62):
         from kit import curve, lerp_pts
         mid = lerp_pts(curve(out), curve(inn[::-1]), t)

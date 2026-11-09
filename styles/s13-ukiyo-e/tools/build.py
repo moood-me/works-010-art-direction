@@ -37,7 +37,7 @@ def out(name, d):
     MADE.append(name)
 
 
-def portrait(key, x=440, y=520, s=1.5):
+def portrait(key, x=420, y=480, s=2.0):
     m = WHO[key]
     d = Doc(800, 1100, seed=3 + len(key))
     g, top = GROUND[key]
@@ -49,12 +49,13 @@ def portrait(key, x=440, y=520, s=1.5):
     out('portrait-' + key, d)
 
 
-def figure(key, x=430, s=1.15):
+def figure(key, x=400):
     m = WHO[key]
     d = Doc(800, 1200, seed=11 + len(key))
     g, top = GROUND[key]
     d.ground(g, top=top, bottom='#b9a67c')
-    with d.g(x, 1110, s):
+    s = min(1.4, 1020 / getattr(m, 'TOP', m.HEIGHT))
+    with d.g(getattr(m, 'X', x), 1120, s):
         m.figure(d)
     out('figure-' + key, d)
 
@@ -65,7 +66,7 @@ def turn(key):
     g, top = GROUND[key]
     d.ground(g, top=top)
     for i, v in enumerate(('f', 'q', 's')):
-        with d.g(300 + i * 600, 330, 1.25):
+        with d.g(300 + i * 600, 310, 1.5):
             m.bust(d, v)
     out('turn-' + key, d)
 
@@ -76,7 +77,7 @@ def expr(key):
     g, top = GROUND[key]
     d.ground(g, top=top)
     for i, e in enumerate(('joy', 'surprise', 'sad', 'anger')):
-        with d.g(270 + i * 490, 300, 1.1):
+        with d.g(270 + i * 490, 280, 1.4):
             m.bust(d, 'q', e)
     out('expr-' + key, d)
 
@@ -87,7 +88,7 @@ def _each(prefix, fn, keys):
 
 
 _each('portrait', portrait, WHO)
-_each('figure', lambda k: figure(k, 440, 1.1) if k == 'marat' else figure(k), WHO)
+_each('figure', figure, WHO)
 _each('turn', turn, ('anya', 'savely', 'marat'))
 _each('expr', expr, ('anya', 'tim', 'savely', 'marat', 'kira'))
 
@@ -117,12 +118,12 @@ def cast6():
     d = Doc(3000, 1400, seed=6)
     d.ground('#d6cba8', top='#6f8ca0', bottom='#a9a27a')
     s = 1.2
-    stand(d, tim, 520, s, y=1250)
-    stand(d, savely, 930, s, y=1250)
-    stand(d, anya, 1290, s, flip=True, y=1250)
-    stand(d, marat, 1900, s, y=1250)
-    stand(d, vera, 2330, s, y=1250)
-    stand(d, kira, 2700, s, flip=True, y=1250)
+    stand(d, tim, 540, s, y=1250)
+    stand(d, savely, 920, s, y=1250)
+    stand(d, anya, 1270, s, flip=True, y=1250)
+    stand(d, marat, 1810, s * 1.06, y=1250)
+    stand(d, vera, 2270, s, y=1250)
+    stand(d, kira, 2650, s, flip=True, y=1250)
     d.cartouche('шестеро', 2890, 60, 24)
     out('cast6', d)
 
