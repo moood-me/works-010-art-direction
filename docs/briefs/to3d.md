@@ -101,3 +101,8 @@ each in its own folder `to3d/<folder>/` with its own page.
   (read several `notes.md`: Р12 for a look drawn each frame from the 3D by the style's own code, Р1 and Р3 for flat
   graphic styles and paper, Р8 for shape and light, Р2 for an even line), and find how this style lives in 3D — it is
   the first try for it; say plainly what it can and can't keep of the drawing.
+- **Heavy runs take turns.** With eight agents the machine was overloaded (load 20 on 4 cores) and the container was
+  restarted. Run every heavy command — Blender, a browser rendering frames, a film, a long build — through one of
+  three shared locks, so at most three run at once:
+  `flock /home/user/cache/heavy.$((RANDOM % 3)).lock <command>`. Run it in the foreground or wait for it; don't
+  start a second heavy run of your own while one is going. Commit nothing; the orchestrator saves work in progress.
