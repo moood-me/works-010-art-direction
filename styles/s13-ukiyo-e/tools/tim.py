@@ -63,15 +63,13 @@ def bust(d, view='q', expr=None, hand=False):
         clothes(d, 'q')
     parts.head(d, p, 'q', expr, extra=extra, front=hair_front)
     if hand:
-        beetle(d, -108, 190, 1.3)
-        parts.hand(d, -64, 330, 1.05, 160, 'open', skin=p['skin'], lw=1.6)
-        d.line([(-100, 345), (-88, 322), (-56, 312), (-36, 330)], 3.0, 'swell')
+        parts.hand(d, -84, 345, 1.1, 180, 'point', skin=p['skin'], lw=1.6)
+        beetle(d, -93, 222, 1.1)
 
 
 def beetle(d, x, y, s=1.0):
     """A stag beetle on a thread — the summer toy of the boys in the old prints."""
     with d.g(x, y, s, -20):
-        d.line([(0, 0), (6, 40), (22, 84)], 1.2, 'even', nib=0)
         d.shape(parts.oval(0, -14, 13, 18, 10), '#2f2a28', 1.2)
         d.shape(parts.oval(0, -36, 9, 8, 8), '#2f2a28', 1.2)
         d.line([(0, -32), (0, 2)], 1.0, 'even', '#8a7f72', nib=0)
@@ -101,7 +99,7 @@ def figure(d):
     sk = p['skin']
     # far arm, swung back
     d.shape(parts.tube([(8, -370), (40, -338), (70, -314)], [26, 22, 18]), sk, 1.8)
-    parts.hand(d, 68, -315, 0.5, -64, 'open', skin=sk, lw=1.4)
+    parts.hand(d, 68, -315, 0.4, -64, 'open', skin=sk, lw=1.4)
     d.shape([(-4, -384), (20, -386), (44, -350), (30, -334), (6, -350)], WHITE, 2.6, pattern=st, nib=0.6)
     # back leg, kicked up
     d.shape(parts.tube([(14, -214), (26, -146), (64, -110)], [40, 30, 22]), sk, 1.9)

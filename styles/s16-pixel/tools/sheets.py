@@ -221,7 +221,7 @@ for n in SIX:
     PICS['figure-' + n] = (figure_pic, n)
 for n in ('tim', 'savely', 'kira'):
     PICS['turn-' + n] = (turn_pic, n)
-for n in ('anya', 'tim', 'savely', 'vera', 'marat', 'kira'):
+for n in ('anya', 'tim', 'savely', 'marat'):
     PICS['expr-' + n] = (expr_pic, n)
 PICS['cast'] = (lambda: group_pic(['vera', 'savely', 'anya', 'tim'], 168, 96, 8, [80, 102, 123, 144]),)
 PICS['six'] = (lambda: group_pic(['kira', 'vera', 'savely', 'anya', 'tim', 'marat'], 224, 100, 6, [80, 101, 121, 143, 164, 183]),)
