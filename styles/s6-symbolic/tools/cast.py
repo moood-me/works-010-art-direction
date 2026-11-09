@@ -280,3 +280,7 @@ def vera(pose=None, yaw=0, folder=True):
 
 CAST = dict(anya=anya, savely=savely, tim=tim, vera=vera)
 NAMES = dict(anya='Аня', savely='Савелий Петрович', tim='Тим', vera='Вера')
+
+# the two that joined later live in their own module
+from cast_more import MORE, MORE_NAMES
+CAST.update(MORE); NAMES.update(MORE_NAMES)

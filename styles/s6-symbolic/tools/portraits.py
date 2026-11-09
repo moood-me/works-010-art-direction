@@ -80,6 +80,10 @@ def portrait(name, W=420, H=500):
             front += '<path d="M 328 232 L 262 236" stroke="#4a5266" stroke-width="2" fill="none"/>'
             front += '<path d="M 330 224 C 340 224 344 242 340 250 C 336 254 330 252 329 244 Z" fill="#eaf1ff" opacity=".85"/>'
             front += glow_svg(336, 238, 40, '#f4f8ff', .5)
+        if a[0] == 'path':      # any flat sign: ('path', d, colour)
+            front += '<path d="%s" fill="%s"/>' % a[1:3]
+        if a[0] == 'line':      # a thin sign: ('line', d, colour, width)
+            front += '<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round"/>' % a[1:4]
     fig = '<g fill="%s">%s</g>' % (INK, paths)
     fig += crescent(paths, p['rim'], -2.6, .6)
     fig += crescent(paths, p['rim2'], 1.6, -.4, .55)
