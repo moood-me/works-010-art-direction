@@ -1,6 +1,6 @@
 """person — one drawing routine for any figure of the cast: legs, clothes, arms, neck, head, in depth order."""
 import math
-from pix import paint_volume, smooth_path, mix, f
+from pix import paint_volume, smooth_path, mix, f, spline
 from face import draw_head, make_head, expr
 from body import Rig, sweep, section_pt, tube, chain, interp_r, hand, shoe, ground_shadow
 
@@ -42,12 +42,23 @@ class HairSplit:
         self.h.front(cv, hd)
 
 
-def joints(P, pose):
+def joints(P, pose, shift=None):
     J = {}
     for k in ("sh", "el", "wr", "hip", "kn", "an"):
         J[k] = {sd: mirror(P[k], sd) for sd in (-1, 1)}
         J[k].update(pose.get(k, {}))
+        if shift:
+            J[k] = {sd: shift(p) for sd, p in J[k].items()}
     return J
+
+
+def bender(bend):
+    """a line of action: the whole figure is shifted sideways (x) and forward (z) by splines over the height y.
+    bend = dict(x=[(y, dx), ...], z=[(y, dz), ...]); returns the shift of a 3D point, or None without a bend."""
+    if not bend:
+        return None
+    bx, bz = bend.get("x"), bend.get("z")
+    return lambda p: (p[0] + (spline(bx, p[1]) if bx else 0.0), p[1], p[2] + (spline(bz, p[1]) if bz else 0.0))
 
 
 def draw_arm(cv, rig, P, J, sd, pose):
@@ -78,9 +89,12 @@ def draw_arm(cv, rig, P, J, sd, pose):
             tube(cv, rig, cc, [sl["r"][1] * 1.08] * len(cc), sl["roll"], sl["sh"], lift=0.12)
     if not hidden:
         H = P.get("hand", {})
-        hand(cv, rig, tuple(w_[i] - dv[i] * 2 for i in range(3)), dv if "hand_dir" not in pose else pose["hand_dir"][sd],
-             sd, c["skin"], c["skin_sh"], scale=H.get("scale", 1.0), curl=pose.get("curl", H.get("curl", 0.4)),
-             fat=H.get("fat", 1.0))
+        curl = pose.get("curl", H.get("curl", 0.4))
+        if isinstance(curl, dict):      # per side
+            curl = curl.get(sd, H.get("curl", 0.4))
+        hand(cv, rig, tuple(w_[i] - dv[i] * 2 for i in range(3)), pose.get("hand_dir", {}).get(sd, dv),
+             sd, c["skin"], c["skin_sh"], scale=H.get("scale", 1.0), curl=curl, fat=H.get("fat", 1.0),
+             spread=pose.get("spread", {}).get(sd, 0.15), palm=pose.get("palm", {}).get(sd))
 
 
 def draw_legs(cv, rig, P, J):
@@ -144,12 +158,26 @@ def draw_neck(cv, rig, P):
 
 def draw_person(cv, P, cx, cy, s, yaw=0.0, ex=None, pose=None, head_yaw=None, head_pitch=0.0, head_roll=0.0,
                 shadow=True):
-    pose = pose or {}
+    """pose: joints by side (sh, el, wr, hip, kn, an), hide_hand, curl (a number or by side), by side: hand_dir,
+    palm (where the palm looks), spread (of the fingers); head_at, and `bend` — a line of
+    action (see bender); a character may carry a habitual one in P["bend"]. Hooks of a character, each a list of
+    fn(cv, rig, pose): before_torso (behind the neck and the torso), after_torso, after_head; they find the joints
+    in pose["_J"] and the bend in pose["_shift"]."""
+    pose = dict(pose or {})
     rig = Rig(cx, cy, s, yaw)
-    J = joints(P, pose)
+    bend = pose.get("bend", P.get("bend"))
+    shift = bender(bend)
+    J = joints(P, pose, shift)
+    pose["_J"], pose["_shift"] = J, shift or (lambda p: p)
     c = P["head"]
     hs = P.get("hs", 1.0)
     hp = pose.get("head_at", P.get("head_at", (0, 0, 0)))
+    layers = P["layers"]
+    if shift:
+        hp = shift(hp)
+        top, base, r0, r1 = P["neck"]
+        P = dict(P, neck=(shift(top), shift(base), r0, r1), head_at=hp)
+        layers = [dict(L, xoff=bend.get("x"), zoff=bend.get("z")) for L in layers]
     hy = yaw + (head_yaw or 0.0)
     if shadow:
         ground_shadow(cv, *rig.P((0, P["shoe"]["floor"], 0)), P.get("shadow_w", 70) * s, 12 * s)
@@ -162,20 +190,22 @@ def draw_person(cv, P, cx, cy, s, yaw=0.0, ex=None, pose=None, head_yaw=None, he
     if hair:
         hair.back(cv, hd)
     draw_legs(cv, rig, P, J)
-    for L in P["layers"]:
+    for L in layers:
         if L.get("stage") == "low":
             draw_layer(cv, rig, L)
     for sd in far:
         draw_arm(cv, rig, P, J, sd, pose)
+    for fn in P.get("before_torso", []):
+        fn(cv, rig, pose)
     draw_neck(cv, rig, P)
-    for L in P["layers"]:
+    for L in layers:
         if L.get("stage", "torso") == "torso":
             draw_layer(cv, rig, L)
     for fn in P.get("after_torso", []):
         fn(cv, rig, pose)
     for sd in near:
         draw_arm(cv, rig, P, J, sd, pose)
-    for L in P["layers"]:
+    for L in layers:
         if L.get("stage") == "over":
             draw_layer(cv, rig, L)
     draw_head(cv, c, hcx, hcy, s * hs, yaw=hy, pitch=head_pitch, roll=head_roll, ex=ex,

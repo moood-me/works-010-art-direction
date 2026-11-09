@@ -126,14 +126,21 @@ def interp_r(radii, m=5):
 
 # ------------------------------------------------------------------ hands
 
-def hand(cv, rig, wrist, down, side, skin, shadow, scale=1.0, curl=0.35, spread=0.15, fat=1.0, pose="relaxed"):
+def hand(cv, rig, wrist, down, side, skin, shadow, scale=1.0, curl=0.35, spread=0.15, fat=1.0, pose="relaxed",
+         palm=None):
     """a hand hanging from the wrist. down: unit 3D direction of the hand, side: +1 character's left hand.
-    Four fingers and a thumb as tubes over a palm."""
+    Four fingers and a thumb as tubes over a palm. palm: where the palm looks (3D), for a gesture; without it
+    the palm faces the body."""
     s = scale
     d = norm3(down)
-    # palm faces the body (inward): palm normal = -side x
-    pn = norm3((-side, 0, 0.15))
-    ac = norm3(cross(d, pn))        # across the knuckles
+    if palm is None:
+        # palm faces the body (inward): palm normal = -side x
+        pn = norm3((-side, 0, 0.15))
+        ac = norm3(cross(d, pn))        # across the knuckles
+    else:
+        k = sum(a * b for a, b in zip(palm, d))
+        pn = norm3(tuple(a - k * b for a, b in zip(palm, d)))     # square to the fingers
+        ac = tuple(side * a for a in norm3(cross(d, pn)))         # the thumb on the hand's own side
     def at(o, a, b, c=0.0):
         return (o[0] + d[0] * a + ac[0] * b + pn[0] * c, o[1] + d[1] * a + ac[1] * b + pn[1] * c,
                 o[2] + d[2] * a + ac[2] * b + pn[2] * c)

@@ -61,6 +61,51 @@ The weak parts:
 
 Because every view comes from one simple model, the turnarounds are consistent, but the shapes come out generic.
 
+## Round three: Марат and Кира
+
+What was asked: two more characters in the same style, beside the four (brief `docs/briefs/styles-more.md`, part A).
+
+What was done:
+- `tools/marat.py`, `tools/kira.py` — a module per character (head, hair, body, clothes, props), like the four in
+  `cast.py`. `tools/cloth.py` — shared marks on a garment (patch, seam, band, dot) and a strip of cloth (ribbon);
+  unlike the decorations in `cast.py` they follow a bent figure.
+- Shared code was extended, each time so that the four's pictures stay byte for byte the same
+  (`python3 tools/check_four.py` draws them again and compares with `svg/`):
+  - `person.py`: a pose (or a character, `P["bend"]`) may carry a **line of action** — `bend=dict(x=[(y, dx)…],
+    z=[(y, dz)…])` shifts the whole figure (clothes, neck, head, joints) sideways and forward by splines over the
+    height. Марат's laugh leans back on it; Кира's slouch is her habitual bend. Also: the `before_torso` hook
+    (things behind the neck: the headphones' band, the towel's back half), `curl` by side, `palm` and `spread`
+    of a hand by side.
+  - `body.py`: `hand(..., palm=)` — where the palm looks, for a gesture (Марат's open hand).
+  - `face.py`: a hair lock may be a **ball** (`ball=spec, r, turn`) — a round curl that looks the same from every
+    side; `scalp_curls`, `jaw_curls` cover a scalp and a jaw with them (Марат's hair and beard). `teeth_h` in a
+    head's data (taller teeth for a big laugh). A catchlight is drawn only while it is inside the eye opening
+    (a laughing eye narrowed to a slit).
+  - `build.py`: the two in `PEOPLE`, `PORTRAIT`, `FIGURE`, `FLOOR`; `CALM` (the face of a turnaround), `EXPR_OF`
+    (a character's own expression sheet: Кира's joy is a smirk), `together6` → `cast6`.
+- Iterating by eye, what was redone: Марат's curls went from flat comma-shaped ribbons (scales, shards at the
+  silhouette) to balls, fewer and bigger, without the strand lines (they looked like coffee beans); his moustache
+  now follows the mouth's line so the teeth show; his body was widened twice and deepened; the laughing eyes were
+  opened a little so they aren't sleepy. Кира's eyes were made smaller and darker and the lids heavier (the first
+  face was an anime doll), the hair went from purple to charcoal, the fringe was lengthened over the eye, the
+  headphones moved from the chest up to the neck, the head's nod was turned the right way (in this code a
+  **negative** `head_pitch` looks down).
+
+Honest state: see the verdict. Weakest: Марат in profile; the hem corners of sweeps end in small spikes (the same
+artefact as Аня's skirt); hands are still tubes.
+
+## How to add a character
+
+1. Copy `tools/kira.py` (a head from `woman_head`) or `tools/marat.py` (a head written whole) to `tools/<name>.py`.
+   A head is data: sections `w`, `zf`, `zb`, `bumps`, the sizes of eye, brow, nose, mouth, colours, `hair`
+   (a `Hair` of locks, balls or a cap). A person is data too: joints, radii of limbs, `layers` (sweeps of clothes
+   with a `deco`), hooks for props, an optional `bend`.
+2. In `build.py`: add the person to `PEOPLE`, a backdrop to `BG`, the floor height to `FLOOR`, a portrait and a
+   figure pose to `PORTRAIT` and `FIGURE`; if needed `CALM`, `EXPR_OF`, `EXPR_S`; add jobs to `JOBS`.
+3. `python3 tools/build.py <name>`; look at `/home/user/cache/styles-s1-pixar/render/*.png` next to the others.
+4. If shared code was touched: `python3 tools/check_four.py` (it also guards any earlier character when its names
+   are taken out of `NEW`).
+
 ## Sources (references, third-party, kept only as samples)
 
 - `luca-alberto-still.jpg`, `luca-giulia-concept.jpg` — https://news.disney.com/luca-characters-art

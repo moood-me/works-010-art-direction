@@ -44,6 +44,15 @@ def eye_shape(c, e, side, ex):
     return up, lo, inner, outer
 
 
+def inside_poly(poly, p):
+    x, y = p
+    ins = False
+    for (x0, y0), (x1, y1) in zip(poly, poly[1:] + poly[:1]):
+        if (y0 > y) != (y1 > y) and x < x0 + (x1 - x0) * (y - y0) / (y1 - y0):
+            ins = not ins
+    return ins
+
+
 def draw_eye(cv, hd, c, ex, side):
     up, lo, inner, outer = eye_shape(c, ex, side, ex)
     s = hd.s
@@ -108,8 +117,12 @@ def draw_eye(cv, hd, c, ex, side):
     lx, ly = LIGHT
     h1 = P(icx + lx * ir * 0.42 + 0.8, icy + ly * ir * 0.42)
     h2 = P(icx - lx * ir * 0.45, icy - ly * ir * 0.5)
-    g.append(f'<ellipse cx="{f(h1[0])}" cy="{f(h1[1])}" rx="{f(ir * 0.27 * s * max(fx, .45))}" ry="{f(ir * 0.30 * s)}" fill="#ffffff" opacity="0.95"/>')
-    g.append(f'<ellipse cx="{f(h2[0])}" cy="{f(h2[1])}" rx="{f(ir * 0.11 * s * max(fx, .45))}" ry="{f(ir * 0.11 * s)}" fill="#ffffff" opacity="0.75"/>')
+    # (a catchlight shows only while it is inside the opening: a laughing eye narrowed to a slit hides it)
+    poly = up + lo
+    if inside_poly(poly, (icx + lx * ir * 0.42 + 0.8, icy + ly * ir * 0.42)):
+        g.append(f'<ellipse cx="{f(h1[0])}" cy="{f(h1[1])}" rx="{f(ir * 0.27 * s * max(fx, .45))}" ry="{f(ir * 0.30 * s)}" fill="#ffffff" opacity="0.95"/>')
+    if inside_poly(poly, (icx - lx * ir * 0.45, icy - ly * ir * 0.5)):
+        g.append(f'<ellipse cx="{f(h2[0])}" cy="{f(h2[1])}" rx="{f(ir * 0.11 * s * max(fx, .45))}" ry="{f(ir * 0.11 * s)}" fill="#ffffff" opacity="0.75"/>')
     # lash line: thin at the inner corner, thick toward the outer, lashes as one form flicking out
     thick = c.get("lid_w", 1.3)
     wing = c.get("wing", 0.0)
@@ -257,7 +270,7 @@ def draw_mouth(cv, hd, c, ex):
         kk = cv.clip(d_open)
         g = [f'<path d="{d_open}" fill="#4a1a1c"/>', f'<g clip-path="url(#{kk})">']
         if ex["teeth"]:
-            tt = [P(x, y + 1.6 * (1 - abs((x - ex["mouth_x"]) / mw) ** 2)) for x, y in lt]
+            tt = [P(x, y + c.get("teeth_h", 1.6) * (1 - abs((x - ex["mouth_x"]) / mw) ** 2)) for x, y in lt]
             tt2 = [P(x, y - 0.4) for x, y in lt]
             g.append(f'<path d="{smooth_path(tt2 + tt[::-1])}" fill="#fbf4ee"/>')
             if c.get("gap_tooth"):
@@ -434,6 +447,9 @@ class Hair:
         sh = Shell(hd, **self.shell_kw)
         out = []
         for L in self.locks:
+            if "ball" in L:
+                out.append(self.build_ball(hd, sh, L))
+                continue
             specs, widths = L["pts"], L["w"]
             ctrl = [self.point(sh, sp) for sp in specs]
             # densify along a Catmull-Rom curve
@@ -462,6 +478,26 @@ class Hair:
             depth = L.get("z", None)
             out.append((z if depth is None else z + depth, pts, c2, L))
         return out
+
+    def build_ball(self, hd, sh, L):
+        """a curl: a round clump at one point (the same from every side); L: ball=spec, r, turn (radians)"""
+        (x, y), z = hd.proj(self.point(sh, L["ball"]))
+        R = L["r"] * hd.s
+        a0 = L.get("turn", 0.0)
+        ca, sa = math.cos(a0), math.sin(a0)
+        el = L.get("flat", 0.82)
+        pts = []
+        for i in range(14):
+            a = 2 * math.pi * i / 14
+            u, v = R * math.cos(a), R * el * math.sin(a)
+            pts.append((x + u * ca - v * sa, y + u * sa + v * ca))
+        # a hook of light inside: the turn of the curl
+        c2 = []
+        for i in range(7):
+            a = -2.6 + 2.4 * i / 6
+            u, v = R * 0.5 * math.cos(a), R * 0.5 * el * math.sin(a)
+            c2.append((x + u * ca - v * sa, y + u * sa + v * ca))
+        return (z + L.get("z", 0), pts, c2, L)
 
     def draw_lock(self, cv, hd, pts, c2, L):
         s = hd.s
@@ -661,3 +697,51 @@ def curtain(lon0, lon1, lat_top, y_bot, rad, k=1.04):
                 pts.append(hd.proj(p)[0])
         return hull(pts)
     return fn
+
+
+# ------------------------------------------------------------------ curls
+
+def scalp_curls(hairline, k=1.07, r=8.5, step=10.5, size=17, seed=1, top=86):
+    """short curly hair: round clumps all over the scalp above the hairline (locks for Hair)."""
+    import random
+    rnd = random.Random(seed)
+    out = []
+    lat = top
+    dlat = math.degrees(step / 46.0)
+    row = 0
+    while lat > -45:
+        n = max(1, int(round(2 * math.pi * 46 * math.cos(math.radians(lat)) / step)))
+        off = rnd.random() * 360
+        for i in range(n):
+            lon = ((off + 360 * i / n + 180) % 360) - 180
+            if lat < hairline(lon):
+                continue
+            out.append(dict(ball=('s', lat + rnd.uniform(-2, 2), lon + rnd.uniform(-3, 3), k + rnd.uniform(-0.015, 0.03)),
+                            r=r * rnd.uniform(0.72, 1.25), turn=rnd.uniform(0, 6.28), size=size, strands=0,
+                            sheen=rnd.uniform(0.5, 1.0)))
+        lat -= dlat
+        row += 1
+    return out
+
+
+def jaw_curls(rad, inside, y0, y1, r=7.5, step=9.5, size=16, seed=2, lon_max=100):
+    """a curly beard: round clumps on a cylinder around the jaw. rad(y): the beard's radius at height y;
+    inside(a, y): whether the beard grows at |longitude| a (degrees) and height y."""
+    import random
+    rnd = random.Random(seed)
+    out = []
+    y = y0
+    row = 0
+    while y <= y1:
+        rr = rad(y)
+        dl = math.degrees(step / max(rr, 8))
+        lon = -lon_max + (dl / 2 if row % 2 else 0)
+        while lon <= lon_max:
+            if inside(abs(lon), y):
+                out.append(dict(ball=('c', lon + rnd.uniform(-1.5, 1.5), y + rnd.uniform(-1, 1), rr + rnd.uniform(0, 2.5)),
+                                r=r * rnd.uniform(0.72, 1.25), turn=rnd.uniform(0, 6.28), size=size, strands=0,
+                                sheen=rnd.uniform(0.4, 0.9)))
+            lon += dl
+        y += step * 0.8
+        row += 1
+    return out
