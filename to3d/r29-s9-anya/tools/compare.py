@@ -44,7 +44,7 @@ def sheet(drawing, render, w, h, name, captions):
 
 
 kind = sys.argv[1]
-base = {'model': '/cache/to3d-r3-s9-tim/tim.json', 'face': '/cache/to3d-r3-s9-tim/face/calm.png', **pose}
+base = {'model': '/cache/to3d-r29-s9-anya/tim.json', 'face': '/cache/to3d-r29-s9-anya/face/calm.png', **pose}
 if kind == 'turn':
     ppm = 1.25 / K
     shots = [{'name': n, 'set': {**base, 'cam': head_cam(y, ppm, 260, 600)}} for n, y in (('front', 0), ('q34', YAW34), ('side', -np.pi / 2))]
@@ -55,7 +55,7 @@ if kind == 'turn':
 elif kind == 'expr':
     ppm = 1.25 / K
     names = ['joy', 'surprise', 'sad', 'anger']
-    shots = [{'name': n, 'set': {**base, 'face': f'/cache/to3d-r3-s9-tim/face/{n}.png', 'cam': head_cam(YAW34, ppm, 240, 500)}} for n in names]
+    shots = [{'name': n, 'set': {**base, 'face': f'/cache/to3d-r29-s9-anya/face/{n}.png', 'cam': head_cam(YAW34, ppm, 240, 500)}} for n in names]
     shoot({'w': 400, 'h': 500, 'shots': shots}, f'{CACHE}/cmp')
     compose(f'{CACHE}/cmp/expr.png', 1600, 500, 'wide', [(f'{CACHE}/cmp/{n}.png', 400 * i, 0) for i, n in enumerate(names)])
     sheet(f'{STYLE}/pics/expr-tim.webp', f'{CACHE}/cmp/expr.png', 1600, 500, 'cmp-expr',

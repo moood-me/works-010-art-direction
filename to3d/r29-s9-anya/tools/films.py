@@ -8,7 +8,7 @@ from common import CACHE, HERE
 from compose import compose_many
 
 PICS = os.path.join(os.path.dirname(HERE), 'pics')
-M = '/cache/to3d-r3-s9-tim/tim.json'
+M = '/cache/to3d-r29-s9-anya/tim.json'
 
 
 def follow(yaw, pitch=0.1, dist=3.9, y=0.55, fov=20):

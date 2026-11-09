@@ -11,7 +11,8 @@
 7. [history/](history/) — what was done, why and how, session by session.
 8. [findings.md](findings.md) — what the rounds of other people's tools, drawn styles and drawings-to-3D found, for
    the agents who come next.
-9. [briefs/](briefs/) — the briefs those agents worked from (`tools-demo/`, `styles/`, `to3d/`), to reuse.
+9. [briefs/](briefs/) — the briefs those agents worked from (`tools-demo/`, `styles/`, `to3d/`; `styles-more.md`: two
+   more characters and four more styles), to reuse.
 
 Pictures are in [pictures/](pictures/): the hope scenes (Claude Design's originals and the engine 3 render of the
 title), references Pavel sent (third-party images, kept here only as references), and sheets from the experiments.

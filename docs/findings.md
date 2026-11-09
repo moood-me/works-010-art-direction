@@ -26,6 +26,30 @@ follows.
 - A style's drawing code is reusable: shared parts (head, face, line, colour) apart from per-character modules; each
   style's `notes.md` says how to add a character.
 
+## Drawing styles, round three (six characters, sixteen styles)
+
+- **Adding a character by a style's own code works.** Twelve agents who had not written the styles drew two new
+  characters into them from `tools/` and `notes.md` alone, and in every style the new two stand beside the four as
+  their own. The shared code only had to be extended (a beard, curls, a laughing mouth, a hand with fingers, a line
+  of action for the whole figure), never rewritten.
+- **A caricature carries; a subtle young face doesn't.** Марат (a big bearded laughing man) came out warm in all
+  sixteen styles at the first try. Кира (a sullen girl of fifteen) had to be redrawn in three styles and stays the
+  weakest in several: she reads older, gaunt, or as a boy. A fringe over one eye is a trap in three-quarter view —
+  what remains of the far side of the face (a nose tip, one eye) reads as something else; show both eyes, or keep the
+  nose inside the face shape.
+- **A described pose gives a line of action.** "Laughs with the whole body, a ladle up, a fist on the hip" and
+  "slouches, looks from under the brow" gave the liveliest figures in several styles, livelier than the four, who
+  were described by character only.
+- **New styles that suit SVG by code:** layered cut paper (С14: every form a piece with its own edge, a light rim and
+  a shadow on the layer below — filters do the material), the woodblock print (С13: a line with pressure, a flat
+  pattern laid over cloth without following folds, hairline strokes at the hairline), pixel art (С16: sprites typed
+  as character maps, portraits on a larger grid), noir (С15: the black shape does the drawing; faces strong, bodies
+  of straight pieces still wooden).
+- **Still weak everywhere:** hands (one of Кира's is in a pocket in almost every style), profiles (simpler than the
+  three-quarter view), bodies in the styles built from a 3D-like proxy (С1, С4, С7, С8).
+- A full rebuild of some styles (С5, С7) doesn't reproduce the committed pictures of the four exactly — build only
+  the new sheets there (each `notes.md` says how).
+
 ## Drawings to 3D (`to3d/`)
 
 - **Bases.** Anny's body (engine packs, SOMA, Kimodo through the engine) for human proportions; Anny's child bodies

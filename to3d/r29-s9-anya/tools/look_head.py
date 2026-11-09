@@ -19,7 +19,7 @@ TY = -V[:, 1].min()
 n = len(V)
 write('look-head', [part(V, T, np.tile([IX['Head'], 0, 0, 0], (n, 1)), np.tile([1, 0, 0, 0], (n, 1)), 'clay')], B['joints'], B['frames'])
 H = 0.5; S = 600
-job = {'w': S, 'h': S, 'set': {'clay': True, 'model': '/cache/to3d-r3-s9-tim/look-head.json'}, 'shots': [
+job = {'w': S, 'h': S, 'set': {'clay': True, 'model': '/cache/to3d-r29-s9-anya/look-head.json'}, 'shots': [
     {'name': 'front', 'set': {'cam': {'yaw': 0, 'target': [0, float(TY), -0.028], 'height': H}}},
     {'name': 'side', 'set': {'cam': {'yaw': -1.5708, 'target': [0, float(TY), -0.028], 'height': H}}},
     {'name': 'q34', 'set': {'cam': {'yaw': -0.7, 'target': [0, float(TY), -0.028], 'height': H}}}]}

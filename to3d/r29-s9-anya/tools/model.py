@@ -5,7 +5,7 @@ rest place), fuv N×3 (the face picture's coordinates and how much the surface f
 import numpy as np
 from common import pack, CACHE, HERE
 
-MATS = ['skin', 'skin_d', 'hair', 'shirt', 'shorts', 'sock', 'shoe', 'sole', 'ear', 'collar', 'clay', 'ink', 'hair_d']
+MATS = ['skin', 'skin_d', 'hair', 'band', 'dress', 'belt', 'cardi', 'collar', 'shoe', 'clay', 'ink', 'hair_l', 'white']
 
 
 def part(V, T, sj, sw, mat, fuv=None, pat=None):
@@ -25,15 +25,15 @@ def write(name, parts, joints, frames, extra=None):
     # the body parts the engine's corrections read (only 'head': armsOutOfHead finds the head's ball from it)
     from common import IX
     sj = np.concatenate(SJ); hw = sum(np.where(np.isin(sj[:, k], [IX['Head'], IX['HeadEnd'], IX['Jaw']]), sw[:, k], 0) for k in range(4))
-    h = dict(format='tim/model', version=1, id=name, skeleton='soma77', mats=MATS, parts=['head'], **(extra or {}))
+    h = dict(format='s9/model', version=1, id=name, skeleton='soma77', mats=MATS, parts=['head'], **(extra or {}))
     arrays = dict(positions=np.concatenate(V).astype(np.float32), triangles=np.concatenate(T).astype(np.uint32),
                   skinJoints=np.concatenate(SJ).astype(np.uint8), skinWeights=sw.astype(np.float32),
                   joints=np.asarray(joints, np.float32), frames=np.asarray(frames, np.float32),
                   mat=np.concatenate(M).astype(np.uint8), pat=np.concatenate(P).astype(np.float32),
                   fuv=np.concatenate(F).astype(np.float32), parts=np.round(hw * 255)[:, None].astype(np.uint8))
     pack.write(f'{CACHE}/{name}.json', h, arrays)
-    if name == 'tim':      # the viewer's copy, in the folder (to3d/r3-s9-tim/model)
+    if name == 'anya':      # the viewer's copy, in the folder (to3d/r29-s9-anya/model)
         import os
         os.makedirs(os.path.join(HERE, '..', 'model'), exist_ok=True)
-        pack.write(os.path.join(HERE, '..', 'model', 'tim.json'), h, arrays)
+        pack.write(os.path.join(HERE, '..', 'model', 'anya.json'), h, arrays)
     print(name, 'vertices', len(arrays['positions']), 'triangles', len(arrays['triangles']))

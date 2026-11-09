@@ -1,33 +1,32 @@
-"""Anny's child body (moood-child, the engine's) fitted to Тим's proportions.
+"""Anny's woman body (moood-woman, the engine's) fitted to Аня's proportions in figure-anya.
 
-The deformer: each joint gets an affine map — a scale along its bone (sl) and across it (sr, or sx/sz for the trunk) —
-and the joints are rebuilt down the chain with their parents' maps; every vertex moves by its skin weights' blend of
-its joints' maps (the same weights that later move it in motion). So bones get the drawing's lengths and the limbs its
-thickness, while the surface stays Anny's, smooth where parts meet. Frames are kept (the retargeting reference).
+The deformer (as Р3's): each joint gets an affine map — a scale along its bone (sl) and across it (sr, or sx/sz for
+the trunk) — and the joints are rebuilt down the chain with their parents' maps; every vertex moves by its skin weights'
+blend of its joints' maps. Frames are kept (the retargeting reference).
 
-Targets read off figure-tim (feet at 0, chin at -358 figure units; 1 unit = 2.33 mm): hip joint 0.43 m, knee 0.23,
-ankle 0.05, shoulder 0.79; arms about 0.3 m to the fingertips (the drawing's are even shorter — bent behind his back),
-thin limbs (the drawing: 4.7 cm thigh, 3.3 cm ankle, mitten hands)."""
+Targets read off figure-anya (feet at 0, hair top at −736 figure units; 1 unit = 2.28 mm → 1.68 m): waist 1.07 m,
+shoulder line 1.37, chin 1.42; shoulders ±12 cm with the cardigan, waist ±8 cm; legs 5.5 cm thick above the knee and
+2 cm at the ankle, arms 6 → 3.5 cm: a long thin figure, narrow everywhere."""
 import numpy as np
 from common import load_body, NAMES, IX, PARENT, children, CACHE
 
-B = load_body('moood-child')
+B = load_body('moood-woman')
 OLD = B['joints']
 
 # (sl along the bone, sr across it); trunk joints: (sl, sx, sz)
 GROUPS = {
-    'trunk': (['Hips', 'Spine1', 'Spine2', 'Chest'], (1.0, 0.8, 0.78)),
-    'neck': (['Neck1', 'Neck2', 'Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'], (0.6, 0.8, 0.8)),
-    'clav': (['LeftShoulder', 'RightShoulder'], (0.86, 0.86)),
-    'upper': (['LeftArm', 'RightArm'], (0.62, 0.55)),
-    'fore': (['LeftForeArm', 'RightForeArm'], (0.6, 0.52)),
-    'hand': (['LeftHand', 'RightHand'], (0.55, 0.62)),
-    # fingers short and thick: together they read as the drawing's mitten
-    'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (0.36, 0.95)),
-    'thumb': ([n for n in NAMES if 'Thumb' in n], (0.45, 0.9)),
-    'thigh': (['LeftLeg', 'RightLeg'], (0.69, 0.56)),
-    'shin': (['LeftShin', 'RightShin'], (0.6, 0.52)),
-    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (0.62, 0.62)),
+    'hips': (['Hips'], (1.0, 0.66, 0.72)),
+    'trunk': (['Spine1', 'Spine2', 'Chest'], (1.2, 0.6, 0.7)),
+    'neck': (['Neck1', 'Neck2', 'Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'], (0.6, 0.6, 0.6)),
+    'clav': (['LeftShoulder', 'RightShoulder'], (0.56, 0.62)),
+    'upper': (['LeftArm', 'RightArm'], (0.82, 0.6)),
+    'fore': (['LeftForeArm', 'RightForeArm'], (0.82, 0.56)),
+    'hand': (['LeftHand', 'RightHand'], (0.62, 0.62)),
+    'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (0.5, 0.8)),
+    'thumb': ([n for n in NAMES if 'Thumb' in n], (0.55, 0.8)),
+    'thigh': (['LeftLeg', 'RightLeg'], (1.0, 0.52)),
+    'shin': (['LeftShin', 'RightShin'], (1.0, 0.42)),
+    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (0.62, 0.55)),
 }
 
 
@@ -45,7 +44,7 @@ def maps():
     for g, (names, s) in GROUPS.items():
         for n in names:
             j = IX[n]
-            if g == 'trunk':
+            if g in ('trunk', 'hips'):
                 S[j] = np.diag([s[1], s[0], s[2]])
                 continue
             a = axis(j)
@@ -54,7 +53,7 @@ def maps():
     return S
 
 
-def fit(hips_y=0.47):
+def fit(hips_y=0.88):
     S = maps()
     new = np.zeros_like(OLD)
     for j in range(len(NAMES)):
