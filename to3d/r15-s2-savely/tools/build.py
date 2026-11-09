@@ -33,6 +33,7 @@ MAT = {
     'nose':   mat(mix(SKIN, rgb('#d0605a'), 0.45), 0.3, 0.5, rgb('#4a1838'), '#ffb48a', 0.8),
     'white':  mat('#e8e2da', 0.2, 0.45, SHADE, '#fff0d8', 0.0),
     'shirt':  mat('#e6dccb', 0.3, 0.5, rgb('#2a1e40'), '#fff0d8'),
+    'collar': mat('#e6dccb', 0.3, 0.5, rgb('#2a1e40'), '#fff0d8'),
     'vest':   mat('#3e5a48', 0.3, 0.55, rgb('#2a1e40'), '#c8b890'),
     'apron':  mat('#7a4e30', 0.3, 0.55, rgb('#2a1e40'), '#e0a070'),
     'trous':  mat('#3a3442', 0.3, 0.5, rgb('#2a1e40'), '#a08a90'),
@@ -73,6 +74,15 @@ B.prepose({'Spine2': ([1, 0, 0], 0.16), 'Chest': ([1, 0, 0], 0.24), 'Neck1': ([1
 neck_y = B.J[I['Neck1'], 1]
 gone = (B.part('head') > 0.5) | ((B.part('neck') > 0.3) & (B.P[:, 1] > neck_y + 0.01))
 B.cut(gone)
+# the neck's hole closed with a cap
+for loop in M.boundary_loops(B.T):
+    if len(loop) < 8: continue
+    c = len(B.P)
+    B.P = np.r_[B.P, [B.P[loop].mean(0) - [0, 0.01, 0]]]; B.P0 = np.r_[B.P0, [B.P0[loop].mean(0)]]
+    B.SJ = np.r_[B.SJ, B.SJ[loop[:1]]]; B.SW = np.r_[B.SW, B.SW[loop[:1]]]; B.parts = np.r_[B.parts, B.parts[loop[:1]]]
+    cap = np.array([[loop[k], loop[(k + 1) % len(loop)], c] for k in range(len(loop))])
+    if np.cross(B.P[cap[:, 1]] - B.P[cap[:, 0]], B.P[cap[:, 2]] - B.P[cap[:, 0]])[:, 1].sum() < 0: cap = cap[:, ::-1]
+    B.T = np.r_[B.T, cap]
 P = B.P; by = P[:, 1]
 arms = B.part('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lhand', 'Rhand', 'Lclavicle', 'Rclavicle') > 0.5
 notarm = B.part('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lhand', 'Rhand') < 0.3
@@ -162,10 +172,10 @@ for name, mt in (('glasses', 'frame'), ('glint', 'glint'), ('loupe', 'loupe'), (
 # ---------------------------------------------------------------- the collar: a soft ring of the shirt round the neck
 th = np.linspace(0, 2 * np.pi, 40, endpoint=False)
 NK = B.J[I['Neck1']]
-ring = np.c_[0.07 * np.sin(th), CHIN - 0.03 - 0.02 * np.cos(th), Z0 - 0.02 + 0.078 * np.cos(th)]
-cv, ct = Bl.tube(ring, np.array([[0.026, 0.02]] * len(ring)), 10, closed=True)
+ring = np.c_[0.068 * np.sin(th), CHIN - 0.034 - 0.018 * np.cos(th), Z0 - 0.016 + 0.07 * np.cos(th)]
+cv, ct = Bl.tube(ring, np.array([[0.011, 0.023]] * len(ring)), 10, closed=True)
 Wc = np.zeros((len(cv), NJ)); Wc[:, I['Chest']] = 0.6; Wc[:, I['Neck1']] = 0.4
-add('collar', cv, ct, MATS.index('shirt'), W=Wc)
+add('collar', cv, ct, MATS.index('collar'), W=Wc)
 
 # ---------------------------------------------------------------- the leather apron: a bib from the chest to the knees
 rows, cols = 44, 21

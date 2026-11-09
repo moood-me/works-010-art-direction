@@ -254,7 +254,7 @@ tights = (part('Lthigh', 'Rthigh', 'Lshin', 'Rshin', 'Lfoot', 'Rfoot') > 0.5) & 
 anny_region(tights | ((part('pelvis') > 0.4) & used & (X1[:, 1] > 560)), 0.6, 'tights', COL['tights'])
 
 # sleeves: over the arms, from inside the jacket down to the wrist, widened to the drawing's sleeve (33 → 26)
-arm = (part('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lclavicle', 'Rclavicle') > 0.5) & used
+arm = (part('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm') > 0.5) & used        # the shoulder is the jacket's
 arm &= (part('Lhand', 'Rhand') < 0.15)
 
 
@@ -302,7 +302,29 @@ def shell_mesh(rows, y0, y1, margin=None, nu=200, nv=80):
     sh = H.Shell(rows)
     u = np.linspace(0, 2 * np.pi, nu, endpoint=False)
     v = np.linspace(y0, y1, nv)
-    return M.grid_cut(lambda U, V: sh.point(U, V), u, v, margin)
+    V, F = M.grid_cut(lambda U, V: sh.point(U, V), u, v, margin)
+    return smooth_edge(V, F), F
+
+
+def smooth_edge(V, F, it=4):
+    """The cut edge of a grid mesh drawn smooth: each edge vertex moved toward the middle of its two edge
+    neighbours (a diagonal cut across a grid leaves small steps)."""
+    from collections import defaultdict
+    cnt = defaultdict(int)
+    for f in F:
+        f = [x for x in f if x >= 0]
+        for i in range(len(f)):
+            a, b = f[i - 1], f[i]
+            cnt[(min(a, b), max(a, b))] += 1
+    nb = defaultdict(list)
+    for (a, b), c in cnt.items():
+        if c == 1:
+            nb[a].append(b); nb[b].append(a)
+    idx = [i for i, n in nb.items() if len(n) == 2]
+    V = V.copy()
+    for _ in range(it):
+        V[idx] = 0.5 * V[idx] + 0.25 * (V[[nb[i][0] for i in idx]] + V[[nb[i][1] for i in idx]])
+    return V
 
 
 def jacket_margin(X, Y, Z, U, V):
@@ -335,7 +357,9 @@ add('blouse', Vs, Fs, COL['blouse'], *weights_nearest(Vs, trunk))
 blouse = H.Shell(BLOUSE)
 
 # skirt: the drawing's shell; each point takes the weights of both legs' sides, blended across the width
-Vk, Fk = shell_mesh(SKIRT, 420, 860, None, nu=96, nv=40)
+# (its top a little narrower than drawn: it is under the jacket there and must not come through it in motion)
+SKIRT_TOP = [(400, 80, -2, 46, -50, 2.4), (470, 108, 0, 56, -62, 2.4)] + SKIRT[2:]
+Vk, Fk = shell_mesh(SKIRT_TOP, 420, 860, None, nu=96, nv=40)
 side_l = (trunk | legs_all) & (X1[:, 0] > -2)
 side_r = (trunk | legs_all) & (X1[:, 0] < 2)
 wl = weights_nearest(Vk, side_l, k=32, sigma=30, top4=False)
@@ -381,19 +405,23 @@ for y in (360, 420):
     add(f'button{y}', Ve, Fe, '#1e2534', *weights_nearest(Ve, trunk), line=False)
 
 # the folder: held in the left hand, flat against the thigh when the arm hangs (the drawing holds it at the hip)
-if os.environ.get('FOLDER', '1') == '1':
-    hj, mj = J1[IDX['LeftHand']], J1[IDX['LeftHandMiddle2']]
-    d = (mj - hj) / np.linalg.norm(mj - hj)               # along the hand
-    nrm = np.cross(d, J1[IDX['LeftHandIndex1']] - J1[IDX['LeftHandPinky1']])
-    nrm /= np.linalg.norm(nrm)                             # out of the palm's plane
-    if nrm @ (J1[IDX['LeftHand']] - J1[IDX['Hips']]) > 0:
-        nrm = -nrm                                         # toward the body: the palm's side
-    w = np.cross(nrm, d)
-    c = hj + d * 40 + nrm * 22 - w * 10
-    R = np.stack([w, d, nrm], 1)                           # box axes: width, height (along the hand), thickness
-    sz = np.array([150, 210, 16]) / 2
+_stand = os.path.join(C, 'stand.json')
+if os.environ.get('FOLDER', '1') == '1' and os.path.exists(_stand) and 'hand' in json.load(open(_stand)):
+    # where it is when she stands with the arms down (stand.mjs gives the hand's turn and shift in that pose):
+    # upright, flat against the side of the skirt, the palm on it — and from there back to the rest pose
+    Mh = np.array(json.load(open(_stand))['hand']).reshape(3, 4)       # engine axes, metres: rest → stand
+    Rm, tm = Mh[:, :3], Mh[:, 3]
+    hj = J1[IDX['LeftHand']]
+    he = np.array([hj[0] * K, (FLOOR - hj[1]) * K, hj[2] * K])
+    hs = Rm @ he + tm                                                  # the wrist in the stand, engine axes
+    c = hs + np.array([-0.014, -0.135, 0.035])                         # inside the palm, lower, a little forward
+    sz = np.array([0.012, 0.30, 0.215]) / 2                            # thickness (x), height (y), width (z)
     cube = np.array([[x, y, z] for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)], float) * sz
-    Vf = cube @ R.T + c
+    tilt = np.radians(-8)                                              # leaning forward a little at the top
+    Rt = np.array([[1, 0, 0], [0, np.cos(tilt), -np.sin(tilt)], [0, np.sin(tilt), np.cos(tilt)]])
+    Ps = cube @ Rt.T + c
+    Pe = (Ps - tm) @ Rm                                                # back to the rest pose (Rm is a turn)
+    Vf = np.stack([Pe[:, 0] / K, FLOOR - Pe[:, 1] / K, Pe[:, 2] / K], 1)
     Ff = np.array([(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)])
     add('folder', Vf, Ff, COL['folder'], *weights_joint(Vf, 'LeftHand'), smooth=False)
 
@@ -419,7 +447,7 @@ for i, (P, w, mask) in enumerate(LINES):
     zm = sh.sl(P[:, 1])[1]
     nrm = P - np.stack([0 * zm, P[:, 1], zm], 1)
     nrm /= np.linalg.norm(nrm, axis=1, keepdims=True)
-    Vt, Ft = M.tube(P + nrm * 0.8, w * 1.5, nseg=6)
+    Vt, Ft = M.tube(P + nrm * 1.8, w * 1.5, nseg=6)
     rep = np.repeat(np.arange(len(P)), 6)
     rep = np.r_[rep, [0, len(P) - 1]]
     add(f'seam{i}', Vt, Ft, INK, sj[rep], sw[rep], line=False)

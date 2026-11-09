@@ -40,7 +40,7 @@ shoot({'w': 420, 'h': 640, 'shots': [
     {'name': 'paint', 'set': {'clay': False, 'live': False, 'face': '/cache/to3d-r29-s9-anya/face/calm.png', 'cam': {'yaw': -0.45, 'follow': [0, 0.87, 0], 'height': 1.9}}},
 ]}, f'{CACHE}/steps')
 stack([row([Image.open(f'{CACHE}/steps/{n}.png') for n in ('anny', 'fit', 'fitside')],
-           ['Anny, ребёнок (moood-woman), 1,32 м', 'подогнан: 1,0 м без головы', 'он же сбоку'])], f'{PICS}/step-body.webp')
+           ['Anny, женщина (moood-woman), 1,59 м', 'подогнана: длинная, узкая', 'она же сбоку'])], f'{PICS}/step-body.webp')
 stack([row([Image.open(f'{CACHE}/head_{k}.png').crop((0, 0, 1800, 600))], [cap], h=400) for k, cap in (
     ('orig', 'Human Base Meshes, стилизованная голова (CC0): как есть'),
     ('faired', 'лицо вырезано и закрыто гладкой заплатой (черты будут нарисованы)'),

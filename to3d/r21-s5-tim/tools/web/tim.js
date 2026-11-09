@@ -72,6 +72,8 @@ function parts(J) {
   put('edges', 'Head', edge(capY, rings(HEAD, { out: 8.6, o: HO }), 1.15), C.line);
   // the cap, worn backwards: a dome over the hair, its brim out at the back, a button on top
   put('cap', 'Head', inter(rings(HEAD, { out: 9, o: HO }), above(capY), 1.2 * S), C.cap);
+  // (a smooth crown: the ring stack's own top is uneven where the rings shrink to a point)
+  put('cap', 'Head', ell(P(0, HEAD_Y - 63.6, -2), [28 * S, 9.4 * S, 28 * S]), C.cap);
   put('cap', 'Head', ell(P(0, HEAD_Y - 72.5, -2), [6.5 * S, 2.6 * S, 6.5 * S]), C.cap);
   put('brim', 'Head', rings(BRIM, { o: HO }), C.brim);
   // the tee with two stripes, the shorts
@@ -105,7 +107,7 @@ start({
   name: 'Тим', C, HEAD_Y, HEAD, JU, parts, face, EXPR_RU,
   bounds: [[-0.26, -0.02, -0.3], [0.26, 0.74, 0.22]],
   GRID: { hair: 0.0016, edges: 0.0013, cap: 0.0022, ears: 0.002, earline: 0.0009, stripes: 0.0022, soles: 0.0018, sling: 0.0015, plaster: 0.0012, socks: 0.002, hands: 0.002, head: 0.0025 },
-  BLEND: { head: 3 * S, arms: 1.5 * S, shorts: 2.5 * S, sling: 1 * S },
+  BLEND: { head: 3 * S, cap: 3 * S, arms: 1.5 * S, shorts: 2.5 * S, sling: 1 * S },
   NO_LINE: new Set(['edges', 'earline', 'stripes', 'soles']), THIN: new Set(['plaster']),
   GROUND: ['shoes', 'soles'],
   THR: { head: 0.1, ears: 0.1 },      // the skin's shade is a narrower crescent than the clothes' (the drawing: off .05 against .09)

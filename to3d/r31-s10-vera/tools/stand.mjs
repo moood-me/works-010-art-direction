@@ -49,5 +49,7 @@ const P = new Float32Array(body.N * 3);
 fig.skinner.skin(pose, P);
 await writeFile(out, Buffer.from(P.buffer));
 const H = sk.index.Hips;
-await writeFile(out.replace(/\.bin$/, '.json'), JSON.stringify({ frames: 1, N: body.N, times: [0], hips: [[0, pose.P[H * 3 + 1], 0]] }));
+// the left hand's turn and shift in this pose (3×4, rest → stand): body.py sets what she holds by it
+const hand = Array.from(fig.skinner.matrix(pose, sk.index.LeftHand)).slice(0, 12);
+await writeFile(out.replace(/\.bin$/, '.json'), JSON.stringify({ frames: 1, N: body.N, times: [0], hips: [[0, pose.P[H * 3 + 1], 0]], hand }));
 console.log('stand', body.N);

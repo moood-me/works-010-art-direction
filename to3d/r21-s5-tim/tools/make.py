@@ -92,19 +92,20 @@ def encode(name, fps, dst=None):
 
 def turn_film():
     # a turn around: he turns in place, the camera a little above, as a person looks
-    n = 72
+    n = 40
     fig = lambda i: {'set': {'figures': [{'yaw': 360 * i / n}]}}
     shots([{'name': 'turn', 'size': [560, 640], 'set': {'view': 'style', 'line': 2.1, 'figures': [{'yaw': 0}], 'cam': {'pos': [0, 0.56, 3.0], 'at': [0, 0.36, 0], 'fov': 16}},
             'frames': [fig(i) for i in range(n)]}], 'film-turn')
-    encode('turn', 24)
-    jpg(os.path.join(OUT, 'turn', 'f0009.png'), os.path.join(PICS, 'turn-frame.jpg'))
+    encode('turn', 12)
+    jpg(os.path.join(OUT, 'turn', 'f0005.png'), os.path.join(PICS, 'turn-frame.jpg'))
 
 
-def live_film(name, clip, n, cam, size=(560, 640), fps=30, events=None, hold=None, fig=None, still=None):
-    """A clip with the live face: events {second: {expr, talk}} change the face on the way; hold: stop the motion
+def live_film(name, clip, n, cam, size=(560, 640), fps=15, events=None, hold=None, fig=None, still=None):
+    """A clip with the live face (n: its length in frames of 1/30 s; filmed at `fps`): events {second: {expr, talk}} change the face on the way; hold: stop the motion
     there (the face lives on)."""
     events = events or {}
     frames = []
+    n = n * fps // 30
     for k in range(n):
         t = k / fps
         fr = {'t': min(t, hold) if hold else t, 'dt': 1 / fps}
@@ -128,7 +129,7 @@ LIVE = {
     # looking round, hands behind his back: the eyes go first, the head follows, a blink with the big turns
     'look': lambda: live_film('look', 'look', 150, {'yaw': 12, 'pitch': 4, 'dist': 1.35, 'ty': 0.44, 'fov': 24}, size=(560, 560)),
     # the face close: speaking, then the sheet's expressions one after another, then a mix and speaking again
-    'face': lambda: live_film('face', 'look', 270, {'yaw': 10, 'pitch': 2, 'dist': 1.05, 'ty': 0.5, 'fov': 22}, size=(560, 560), fig={'clip': 'idle'},
+    'face': lambda: live_film('face', 'look', 270, fps=20, cam={'yaw': 10, 'pitch': 2, 'dist': 1.05, 'ty': 0.5, 'fov': 22}, size=(560, 560), fig={'clip': 'idle'},
                               events={0.3: {'talk': True}, 4.2: {'talk': False}, 4.4: {'expr': 'joy'}, 5.5: {'expr': 'surprise'},
                                       6.6: {'expr': 'sad'}, 7.7: {'expr': 'anger'}, 8.7: {'expr': {'joy': 0.5, 'neutral': 0.5}, 'talk': True}}),
 }

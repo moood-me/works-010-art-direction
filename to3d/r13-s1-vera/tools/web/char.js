@@ -126,14 +126,19 @@ const A = window.A = {
     groundMat.uniforms.spot.value.set(P[Hp * 3], P[Hp * 3 + 2], 0.2);
     state.centre = new THREE.Vector3(P[Hp * 3], P[Hp * 3 + 1] + 0.05, P[Hp * 3 + 2]);
   },
-  // cam: {yaw (0: from the front, −π/2: from his right), pitch, target, joint+offset, follow, dist, height (ortho), fov}
+  // cam: {yaw (0: from the front, −π/2: from the right side), rel, pitch, target, joint+offset, follow, dist, height (ortho), fov}
   camera(c) {
     const w = canvas.width, h = canvas.height;
     let t = c.target || [0, 0.6, 0];
     const P = figure.pose.P;
     if (c.joint) { const j = sk.index[c.joint], o = c.offset || [0, 0, 0]; t = [P[j * 3] + o[0], P[j * 3 + 1] + o[1], P[j * 3 + 2] + o[2]]; }
     if (c.follow) { const H = sk.index.Hips; t = [P[H * 3] + (c.follow[0] || 0), c.follow[1], P[H * 3 + 2] + (c.follow[2] || 0)]; }
-    const yaw = c.yaw || 0, pitch = c.pitch || 0, dist = c.dist || 6;
+    let yaw = c.yaw || 0; const pitch = c.pitch || 0, dist = c.dist || 6;
+    // rel: the yaw is counted from where the body ('body') or the head ('head') faces now, not from the world's front
+    if (c.rel) {
+      const M = figure.skinner.matrix(figure.pose, sk.index[c.rel === 'head' ? 'Head' : 'Hips']);
+      yaw += Math.atan2(M[2], M[10]);
+    }
     if (c.height) { camera = ortho; const hh = c.height / 2; Object.assign(ortho, { left: -hh * w / h, right: hh * w / h, top: hh, bottom: -hh }); }
     else { camera = persp; persp.fov = c.fov || 22; persp.aspect = w / h; }
     camera.position.set(t[0] + Math.sin(yaw) * Math.cos(pitch) * dist, t[1] + Math.sin(pitch) * dist, t[2] + Math.cos(yaw) * Math.cos(pitch) * dist);

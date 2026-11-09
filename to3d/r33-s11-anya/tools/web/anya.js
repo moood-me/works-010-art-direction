@@ -44,8 +44,8 @@ function restJoints(old, sk) {
     if (/^(Left|Right)Shoulder$/.test(n)) set(n, W((n[0] === 'L' ? 1 : -1) * 8, 116, 2));
     if (/^(Left|Right)Arm$/.test(n)) set(n, W((n[0] === 'L' ? 1 : -1) * 30, 120, 0));
     // her legs stand straighter than Anny's: knee and ankle where the drawing has them
-    if (/^(Left|Right)Shin$/.test(n)) out[j * 3] = (n[0] === 'L' ? 1 : -1) * 15.5 * S;
-    if (/^(Left|Right)Foot$/.test(n)) out[j * 3] = (n[0] === 'L' ? 1 : -1) * 19 * S;
+    if (/^(Left|Right)Shin$/.test(n)) out[j * 3] = (n[0] === 'L' ? 1 : -1) * 16.5 * S;
+    if (/^(Left|Right)Foot$/.test(n)) out[j * 3] = (n[0] === 'L' ? 1 : -1) * 21.5 * S;
     if (/^(Left|Right)Leg$/.test(n)) set(n, W((n[0] === 'L' ? 1 : -1) * 15, 248, 0));
   }
   return out;
@@ -98,8 +98,8 @@ const ss2 = (a, b, x) => sst(clamp((x - a) / (b - a), 0, 1));
 function hairR(d) {
   const phi = Math.acos(clamp(d[1], -1, 1)) * 180 / Math.PI;
   // the rolled ends are at the sides (the drawing's two curls); behind the neck and under the chin the hair ends higher
-  const lat = Math.abs(d[0]) / (Math.hypot(d[0], d[2]) || 1), roll = lerp(d[2] > 0 ? 0 : 0.4, 1, ss2(0.25, 0.75, lat));
-  let r = lerp(Math.min(keys(BOB, phi), 84 + 6 * ss2(100, 125, phi)), keys(BOB, phi), roll);
+  const lat = Math.abs(d[0]) / (Math.hypot(d[0], d[2]) || 1), roll = lerp(d[2] > 0 ? 0 : 0.12, 1, ss2(0.3, 0.8, lat));
+  let r = lerp(Math.min(keys(BOB, phi), 83 + 3 * ss2(100, 125, phi)), keys(BOB, phi), roll);
   // the bob stays behind the cheeks: toward the front its bulge goes back to the cap
   const az = Math.atan2(d[2], Math.abs(d[0])) * 180 / Math.PI;
   r = lerp(r, Math.min(r, 81), ss2(8, 38, az) * ss2(86, 100, phi));

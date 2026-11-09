@@ -164,6 +164,7 @@ function frame() {
   else {
     if (fp.tiltHead) turnUnder(pose, sk, I.Neck2, qAxisAngle(qRot(getQ(pose.Q, I.Neck2), [0, 0, 1]), fp.tiltHead * Math.PI / 180 * 0.6));
     if (fp.tiltHead) build(pose, body, getV(pose.P, I.Hips));
+    if (CH.poseHook) { CH.poseHook(pose, fp, { turnUnder, sk, I, getQ, qRot, qAxisAngle }); build(pose, body, getV(pose.P, I.Hips)); }      // the character's own (a jaw that drops)
     fig.skinner.skin(pose, fig.positions);
     if (S.clip || S.pose === 'stand') {
       if (!S.clip) pose.floor = 0;

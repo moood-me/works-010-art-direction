@@ -251,7 +251,7 @@ export function start(def) {
   const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 50), persp = new THREE.PerspectiveCamera(22, 1, 0.05, 60);
   let camera = ortho;
   // a soft round shadow under the figure (the drawing's ground ellipse); a quiet floor of big tiles for scenes in motion
-  const shadowMat = new THREE.MeshBasicMaterial({ color: new THREE.Color().setRGB(...hex('#2a1f3d')), transparent: true, opacity: 0.13, depthWrite: false });
+  const shadowMat = new THREE.MeshBasicMaterial({ color: new THREE.Color().setRGB(...hex('#2a1f3d')), transparent: true, opacity: 0.13, depthWrite: false, fog: false });
   const floor = (() => {
     const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
     g.fillStyle = '#e6dece'; g.fillRect(0, 0, 256, 256); g.strokeStyle = '#d8cebd'; g.lineWidth = 3; g.strokeRect(0, 0, 256, 256);

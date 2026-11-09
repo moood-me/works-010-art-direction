@@ -8,7 +8,7 @@ import numpy as np
 from common import pack, CACHE, HERE, IX
 
 # the first five and 'teeth' keep their places in every character of the style (the look reads them by number)
-MATS = ['skin', 'lip', 'mouth', 'eye', 'hair', 'coat', 'turtle', 'pants', 'frame', 'shoe', 'sole', 'teeth', 'streak', 'belt']
+MATS = ['skin', 'lip', 'mouth', 'eye', 'hair', 'coat', 'turtle', 'pants', 'frame', 'shoe', 'sole', 'teeth', 'streak', 'belt', 'tongue']
 
 
 def part(V, T, sj, sw, mat, aux=None, pat=None, name=''):

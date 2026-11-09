@@ -15,7 +15,7 @@ import { sweep, hosePath, circle, keys, loft, pillow, outline, merge, ball, bezi
 import { drawFace, X0, X1, Y0, Y1, PX, EXPR, vecExpr, exprVec, FACE_LOOP, mouthOpen } from './face.js';
 import { FaceLive } from './live.js';
 import { Part, paintMat, raw, createStage as stage } from './stage.js';
-const V3 = THREE.Vector3;
+const V3 = THREE.Vector3, HAND_TURN = +(new URLSearchParams(location.search).get('ht') ?? 1.2);
 
 export const S = 0.004, FEET = 516, XC = 4, HS = 1.08;   // metres per drawing unit (as Р11); soles; the body's middle in x; the head's scale
 const W = (x, y, z = 0) => new V3(x * S, (FEET - y) * S, z * S);   // drawing (x from the body's middle, y down, z forward) → world
@@ -101,6 +101,7 @@ function curlsGeometry() {
   fib(150).forEach((d, i) => {
     const p = d.map(v => v * (HR + 1));
     if (hairK(d, CAP) < 0.98 || p[1] < -12) return;
+    if (Math.abs(p[0]) > 54 && Math.abs(p[1] + 4) < 20 && p[2] > -8) return;      // the ears come out here
     if (p[2] > 14 && Math.hypot(p[0], p[1]) < HR - 13) return;
     gs.push(ball(p, 9 + 1.5 * (i % 2), 12));
   });
@@ -192,9 +193,12 @@ export class Marat {
     // the striped towel over his right shoulder: a ribbon down the chest, over the top, a little down the back
     {
       const tx = -70, pts = [];
-      for (let y = 198; y >= 92; y -= 6) pts.push(new V3(tx, y, torsoFront(tx, y) + 3));
-      pts.push(new V3(tx, 82, 18), new V3(tx, 79, 0), new V3(tx, 84, -26));
-      for (let y = 96; y <= 150; y += 6) pts.push(new V3(tx, y, -torsoBack(tx, y) - 3));
+      // over the shoulder it lies on the barrel's top: the height where the barrel's section passes through (tx, z)
+      const topY = z => { let lo = 79, hi = 150; for (let i = 0; i < 24; i++) { const y = (lo + hi) / 2, w = keys(TW, y), d = keys(z > 0 ? TF : TB, y); ((Math.abs(tx) / w) ** NE + (Math.abs(z) / d) ** NE < 1) ? hi = y : lo = y; } return hi; };
+      const zf = torsoFront(tx, 100), zb = torsoBack(tx, 104);
+      for (let y = 198; y > 100; y -= 6) pts.push(new V3(tx, y, torsoFront(tx, y) + 3));
+      for (let k = 0; k <= 8; k++) { const z = lerp(zf, -zb, k / 8), e = Math.abs(k - 4) / 4; pts.push(new V3(tx, topY(z * 0.97) - 3 * (1 - e * e), z + 3 * Math.sign(z) * e * e)); }
+      for (let y = 110; y <= 152; y += 6) pts.push(new V3(tx, y, -torsoBack(tx, y) - 3));
       const path = through(pts, 6), n = path.length, cT = raw(C.towel).toArray(), cS = raw(C.apron).toArray();
       let L = 0; const along = path.map((p, i) => (L += i ? p.distanceTo(path[i - 1]) : 0));
       const g = sweep(path, (i, a) => [Math.cos(a) * 18, Math.sin(a) * 2.4], { radial: 14, up: new V3(1, 0, 0), flip: true,
@@ -257,7 +261,7 @@ export class Marat {
     new Part(this.head, paintMat(C.hair, { paint: 3, map: this.faceTex, shade: 0.14, box }), hl).set(ballGeometry(hairR, 200, 150));
     new Part(this.head, paintMat(C.hair, { shade: 0.14 }), hl).set(curlsGeometry());
     // ears: flat cushions out of the curls, with an inner line
-    const earAt = (sd, u, v, h) => { const b = 0.6, n = new V3(sd * Math.sin(b), 0, Math.cos(b)), o = new V3(sd * Math.cos(b), 0, -Math.sin(b)); return new V3(sd * 65, -(4 + v), -4).addScaledVector(o, u).addScaledVector(n, h); };
+    const earAt = (sd, u, v, h) => { const b = 0.6, n = new V3(sd * Math.sin(b), 0, Math.cos(b)), o = new V3(sd * Math.cos(b), 0, -Math.sin(b)); return new V3(sd * 73, -(4 + v), 0).addScaledVector(o, u).addScaledVector(n, h); };
     new Part(this.head, paintMat(C.skin, { shade: 0.12 }), hl).set(merge([-1, 1].map(sd => pillow(outline([[0, -17], [15, -14], [18, 4], [9, 16], [-2, 13]].map(([u, v]) => [u * sd, v]), 6), (u, v, h) => earAt(sd, u * sd, v, h).toArray(), { thick: 4, sink: 4, rings: 5, flip: sd > 0 }))));
     new Part(this.head, paintMat(C.ink, { shade: 0 }), 0).set(merge([-1, 1].map(sd => sweep(through([[4, -7], [11, -4], [9, 6]].map(([u, v]) => earAt(sd, u, v, 3.2 - Math.abs(u - 8) * 0.12)), 6), circle(() => 1), { radial: 6 }))));
     // the broad nose over the moustache
@@ -289,6 +293,7 @@ export class Marat {
       turnUnder(pose, sk, F, qBetween(f, wantF)); buildPose(pose, B, hip());
       const mid = normalize(qRot(getQ(pose.Q, H), sub(getV(this.R, sk.index[sd + 'HandMiddle1']), getV(this.R, H))));
       turnUnder(pose, sk, H, qBetween(mid, normalize([0, -1, 0.1]))); buildPose(pose, B, hip());
+      turnUnder(pose, sk, H, qAxisAngle([0, 1, 0], sg * HAND_TURN)); buildPose(pose, B, hip());   // the back of the hand to the front, as drawn
     }
     if (o.head) { turnUnder(pose, sk, sk.index.Head, qMul(qAxisAngle([0, 1, 0], o.head[0] * Math.PI / 180), qAxisAngle([1, 0, 0], o.head[1] * Math.PI / 180))); buildPose(pose, { skeleton: sk, joints: this.R }, hip()); }
     pose.floor = 0;
@@ -323,11 +328,11 @@ export class Marat {
     const sq = this.sq || [1, 1];
     this.head.scale.set(S * HS * sq[0], S * HS * sq[1], S * HS * sq[0]);
     // hoses: the arm swells in the forearm (bare skin) below the rolled-up sleeve with its cuff; thick trouser legs
-    const AR = [[0, 16], [0.5, 22], [1, 13.5]], N = 36, cut = Math.round(N * 0.44);
-    const SL = [[0, 20], [0.3, 22.5], [0.36, 23.5], [0.385, 28.5], [0.44, 28.5]];
+    const AR = [[0, 16], [0.5, 22], [1, 13.5]], N = 36, cut = Math.round(N * 0.41);
+    const SL = [[0, 20], [0.27, 22.5], [0.33, 23.5], [0.355, 28.5], [0.41, 28.5]];
     for (const sd of ['Left', 'Right']) {
       const ap = hosePath(J(sd + 'Arm'), J(sd + 'ForeArm'), J(sd + 'Hand'), 1.0, N);
-      this.arms[sd].set(sweep(ap, circle(i => keys(AR, i / N) * S), { radial: 20 }));
+      this.arms[sd].set(sweep(ap.slice(8), circle(i => keys(AR, (i + 8) / N) * S), { radial: 20 }));   // (it begins inside the sleeve)
       this.sleeves[sd].set(sweep(ap.slice(0, cut + 1), circle(i => keys(SL, i / N) * S), { radial: 22, capDepth: 0.12 }));
       const lp = hosePath(J(sd + 'Leg'), J(sd + 'Shin'), J(sd + 'Foot'), 1.0, N);
       this.legs[sd].set(sweep(lp, circle(i => lerp(25, 20, i / N) * S), { radial: 24, capEnd: false }));

@@ -70,7 +70,7 @@ void main(){
     } else { alb = mix(alb, hairDark, 0.55 * smoothstep(0.55, 1.0, across) + 0.35 * (1.0 - smoothstep(0.0, 0.35, along)));
       alb = mix(alb, hairLight, 0.18 * (1.0 - across) * smoothstep(0.2, 0.7, along) * vAux.w);
       float str = h1(floor(vAux.y * 9.0 + vAux.z * 13.0)); alb *= 0.9 + 0.2 * str; }
-    rough = vAux.z < -0.5 ? 0.46 : 0.34; specK = 0.07;
+    rough = vAux.z < -0.5 ? 0.56 : 0.34; specK = vAux.z < -0.5 ? 0.035 : 0.07;
   }
   // the eye: sclera, iris (procedural on the ball's own direction), pupil
   float eyeSpec = 0.0;

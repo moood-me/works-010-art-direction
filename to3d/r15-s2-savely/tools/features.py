@@ -48,7 +48,7 @@ def skin(mouth):
     for sx in (1, -1):
         m = lambda x: 250 + sx * x
         # deep warm sockets under the brows, ruddy cheeks
-        o.append(d.tone(f'M{m(14)},250 C{m(24)},238 {m(58)},238 {m(66)},254 C{m(62)},276 {m(30)},282 {m(16)},272Z', '#7a3048', 0.42, 5))
+        o.append(d.tone(f'M{m(16)},250 C{m(24)},240 {m(52)},240 {m(58)},254 C{m(54)},272 {m(30)},278 {m(18)},270Z', '#7a3048', 0.32, 5))
         o.append(d.tone(f'M{m(24)},296 C{m(36)},282 {m(72)},284 {m(80)},306 C{m(72)},326 {m(40)},328 {m(26)},316Z', ROSE, 0.5, 8))
         wl = mix(SKIN, '#5a2030', 0.5)
         o.append(f'<path d="M{m(26)},288 C{m(36)},294 {m(50)},294 {m(60)},288 M{m(64)},264 C{m(70)},272 {m(72)},282 {m(70)},290" fill="none" '

@@ -100,7 +100,7 @@ export class LiveFace {
     const p = {
       lift: mix(e => e.lift, wb), tilt: mix(e => e.tilt, wb), lid: mix(e => e.lid), eye: mix(e => e.eye),
       ms: mix(e => e.ms ?? 1), tiltHead: mix(e => e.tilt_head ?? 0), squint: mix(e => e.squint ? 1 : 0) > 0.5,
-      mouth: E.mouth, dom, extra: E.extra, extraK: w[dom] / (EXPR_NAMES.reduce((s, n) => s + w[n], 0) || 1), flush: 0,
+      mouth: E.mouth, dom, w, extra: E.extra, extraK: w[dom] / (EXPR_NAMES.reduce((s, n) => s + w[n], 0) || 1), flush: 0,
     };
     if (E.extra === 'flush') p.extra = null;
     p.flush = (w.anger || 0) / (EXPR_NAMES.reduce((s, n) => s + w[n], 0) || 1);

@@ -15,7 +15,12 @@ PICS = os.path.join(os.path.dirname(HERE), 'pics')
 RENDER = '/home/user/cache/styles-s1-pixar/render'
 STAND = char.STAND
 S = min(1.6, 750 / (FLOOR + 60))                   # px per unit in the figure sheets
-HEAD_Y = (FLOOR - P['head_at'][1]) * K             # the drawn head's centre, metres
+HEAD_UP = 42 * char.HS * K                         # the head's centre over the Head joint (build.py puts the joint at head y −42)
+
+
+def head_cam(yaw, px, down_px, H, pitch=0):
+    """the camera of a head sheet: px pixels per unit, the head's centre down_px below the picture's middle"""
+    return {'yaw': yaw, 'rel': 'head', 'pitch': pitch, 'joint': 'Head', 'offset': [0, HEAD_UP + down_px / px * K, 0], 'dist': 6, 'height': H / px * K}
 
 
 def shots(name, w, h, shots, page=''):
@@ -40,7 +45,7 @@ def triple(draw, rend):
 
 def fig_cam(yaw, H=900):
     # the sheet: floor at H − 90 px, S px per unit → the picture's middle is (H/2 − 90) / S units above the floor
-    return {'yaw': yaw, 'follow': [0, (H / 2 - 90) / S * K, 0], 'dist': 6, 'height': H / S * K}
+    return {'yaw': yaw, 'rel': 'body', 'follow': [0, (H / 2 - 90) / S * K, 0], 'dist': 6, 'height': H / S * K}
 
 
 def turn():
@@ -59,8 +64,7 @@ def expr():
     # the sheet: 2.3 px per unit, the head's centre at y 250 px of 560, each face 400 px wide, turned 0.18
     D = Image.open(f'{CACHE}/drawn/{char.NAME}-expressions.png' if char.DRAWN_EXPR else f'{RENDER}/{char.NAME}-expressions.png').convert('RGB')
     names = ['joy', 'surprise', 'sad', 'anger']
-    hgt = 560 / 2.3 * K
-    R = shots('cmp_expr', 400, 560, [{'name': n, 'set': {'cam': {'yaw': -0.18, 'pitch': -0.06 if n == 'sad' else 0, 'follow': [0, HEAD_Y - (280 - 250) / 2.3 * K, 0], 'dist': 6, 'height': hgt},
+    R = shots('cmp_expr', 400, 560, [{'name': n, 'set': {'cam': head_cam(-0.18, 2.3, 280 - 250, 560, -0.06 if n == 'sad' else 0),
                                                             'expr': [{'t': 0, 'name': n}]}} for n in names])
     top = np.concatenate([np.asarray(D.crop((400 * i, 0, 400 * i + 400, 560))) for i in range(4)], 1)
     bot = np.concatenate([np.asarray(R[n]) for n in names], 1)
@@ -71,7 +75,7 @@ def expr():
 def portrait():
     # the sheet: 2.75 px per unit, the head's centre at y 285 px of 760, turned as build.PORTRAIT
     D = Image.open(f'{RENDER}/{char.NAME}-portrait.png').convert('RGB')
-    R = shots('cmp_portrait', 640, 760, [{'name': 'p', 'set': {'cam': {'yaw': char.PORTRAIT_YAW, 'follow': [0, HEAD_Y - (380 - 285) / 2.75 * K, 0], 'dist': 6, 'height': 760 / 2.75 * K},
+    R = shots('cmp_portrait', 640, 760, [{'name': 'p', 'set': {'cam': head_cam(char.PORTRAIT_YAW, 2.75, 380 - 285, 760),
                                                               'expr': [{'t': 0, 'name': char.PORTRAIT_EXPR}], **char.PORTRAIT_SET}}])
     out = Image.fromarray(np.concatenate([np.asarray(i) for i in triple(D, R['p'])], 1)).resize((1440, 570), Image.LANCZOS)
     out.save(f'{PICS}/cmp-portrait.webp', quality=86)

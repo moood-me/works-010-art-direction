@@ -21,10 +21,10 @@ def U(p):
 
 # the outline, by height (units)
 _Y = [100, 108, 120, 140, 160, 200, 246, 262, 300, 340, 370, 395, 415, 430, 442, 456, 480]
-_HW = [0, 40, 62, 78, 85, 90, 89, 88, 86, 80, 72, 60, 50, 44, 44, 45, 47]        # half width (lower: the neck)
-_FW = [np.nan] * 9 + [80, 70, 54, 38, 18, np.nan, np.nan, np.nan]                # the jaw in front of the ears
-_ZF = [-10, 40, 62, 84, 94, 102, 102, 96, 98, 100, 98, 94, 86, 66, 44, 40, 40]   # the face's line in profile
-_ZB = [-10, -60, -80, -98, -106, -112, -108, -104, -94, -78, -66, -58, -54, -52, -52, -52, -54]
+_HW = [0, 42, 66, 83, 91, 96, 95, 94, 91, 84, 75, 62, 51, 44, 44, 45, 47]        # half width (lower: the neck)
+_FW = [np.nan] * 9 + [84, 73, 56, 39, 18, np.nan, np.nan, np.nan]                # the jaw in front of the ears
+_ZF = [-8, 38, 58, 78, 87, 94, 94, 89, 91, 93, 91, 88, 80, 62, 42, 38, 38]   # the face's line in profile
+_ZB = [-8, -54, -72, -88, -96, -101, -98, -94, -86, -72, -62, -56, -53, -52, -52, -52, -54]
 DRAW_Y = [482.0, 430.0, 416.0, 398.0, 344.0, 262.0, 240.0, 100.0]
 
 
@@ -48,7 +48,7 @@ def fitted():
     V = M.smooth(V, A, np.ones(len(V)), iters=4, lam=0.5)
     # the base's flare to the shoulders is cut off: the neck ends inside the collar
     yd = CH - V[:, 1] / K
-    P = [p for p in P if (yd[p] < 452).all()]
+    P = [p for p in P if (yd[p] < 460).all()]
     V, P, mm = B.compact(V, P)
     return V, P, ear[mm >= 0]
 
@@ -76,7 +76,7 @@ def forms(V, T):
         out[name] = (U(v), t[:, ::-1])
     # the nose: a bridge from between the brows down to a big round bulb, two wings
     zn = z(0, 330)
-    b, r = Bl.chain([(0, 252, z(0, 252) + 1), (0, 286, z(0, 286) + 15), (0, 316, zn + 34), (0, 336, zn + 46)], [6.5, 10, 20, 29], 20)
+    b, r = Bl.chain([(0, 252, z(0, 252) + 1), (0, 286, z(0, 286) + 15), (0, 316, zn + 32), (0, 336, zn + 43)], [6.5, 10, 20, 29], 20)
     wings = np.array([(sx * 25, 344, zn + 16) for sx in (1, -1)])
     v, t = Bl.solid((np.r_[b, wings], np.r_[r, [19, 19]]), k=5, cell=cell)
     out['nose'] = (U(v), t[:, ::-1])

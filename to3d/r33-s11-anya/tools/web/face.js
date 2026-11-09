@@ -92,7 +92,8 @@ const ell = (g, x, y, rx, ry, rot = 0) => { g.beginPath(); g.ellipse(x, y, Math.
 
 // one eye (lib.eye, kinds 'ring', 'spark', 'closed-happy', 'closed' as one): side +1 → the outer corner is to the right
 function eye(g, cx, cy, rx, ry, e, side, blink, look) {
-  const shut = Math.max(e.lid, blink, e.happy);
+  const hp = Math.min(1, Math.max(0, (e.happy - 0.3) / 0.5));   // half a laugh is not a half-shut eye
+  const shut = Math.max(e.lid * (1 - hp), blink, hp);
   const lashes = (y0, down, a = 1) => {   // three lashes at the outer corner
     g.globalAlpha = a;
     for (let i = 0; i < 3; i++) {
@@ -102,7 +103,7 @@ function eye(g, cx, cy, rx, ry, e, side, blink, look) {
     g.globalAlpha = 1;
   };
   if (shut > 0.93) {
-    if (e.happy >= blink) {
+    if (hp >= blink) {
       tline(g, [[cx - rx, cy + ry * 0.15], [cx, cy - ry * 0.45], [cx + rx, cy + ry * 0.15]], 2, 6.5, 2);
       for (let i = 0; i < 3; i++) { const bx = cx + side * rx * (0.55 + i * 0.22), by = cy - ry * (0.25 - i * 0.18); tline(g, [[bx, by], [bx + side * 9, by - 6 + i * 3]], 3, 2, 0.6); }
     } else {
@@ -119,7 +120,7 @@ function eye(g, cx, cy, rx, ry, e, side, blink, look) {
   if (e.hl > 0.05) { g.globalAlpha = Math.min(1, e.hl); g.fillStyle = WHITE; ell(g, px - prx * 0.3 * side, py - pry * 0.4, prx * 0.28, pry * 0.22); g.fill(); g.globalAlpha = 1; }
   let lashY = cy - ry * 0.45;
   if (shut > 0.02) {
-    const ly = cy - ry + 2 * ry * shut, tilt = e.rot * (1 - Math.max(blink, e.happy)), yIn = ly + tilt * ry * side, yOut = ly - tilt * ry * side;
+    const ly = cy - ry + 2 * ry * shut, tilt = e.rot * (1 - Math.max(blink, hp)), yIn = ly + tilt * ry * side, yOut = ly - tilt * ry * side;
     const xl = cx - rx * 1.3, xr = cx + rx * 1.3, [yl, yr] = side > 0 ? [yIn, yOut] : [yOut, yIn];
     g.beginPath(); g.moveTo(xl, cy - ry * 2); g.lineTo(xr, cy - ry * 2); g.lineTo(xr, yr); g.lineTo(xl, yl); g.closePath(); g.fillStyle = SKIN; g.fill();
     g.beginPath(); g.moveTo(xl, yl); g.lineTo(xr, yr); g.strokeStyle = INK; g.lineWidth = LW; g.stroke();

@@ -15,6 +15,7 @@
   "nose",
   "white",
   "shirt",
+  "collar",
   "vest",
   "apron",
   "trous",
@@ -26,7 +27,7 @@
   "glint",
   "band"
  ],
- "deco": "\nvoid deco(vec3 rp, vec2 uv, float m, inout vec3 base, inout vec3 bshd) {\n  if (abs(m - 3.0) < 0.5) {\n    // trousers below the waist; the vest over the trunk, open in a V at the neck where the shirt and a small tie show\n    if (rp.y < 0.779 && abs(rp.x) < 0.26) { base = vec3(0.459, 0.373, 0.325); bshd = vec3(0.196, 0.161, 0.255); return; }\n    bool trunk = abs(rp.x) < 0.140 - 0.5 * max(0.0, rp.y - 1.161);\n    float v = (rp.y - 1.030) * 0.42;\n    bool open = rp.z > 0.014 && abs(rp.x) < v;\n    if (trunk && !open && (rp.y < 1.276 || rp.z < 0.014)) {\n      base = vec3(0.470, 0.478, 0.341); bshd = vec3(0.200, 0.224, 0.265);\n      float e = min(abs(abs(rp.x) - v), abs(rp.y - 0.779));\n      if (rp.z > 0.014 && abs(abs(rp.x) - v) < 0.004 && v > 0.0) { base *= 0.72; bshd *= 0.8; }\n    } else if (open && abs(rp.x) < 0.012 + 0.006 * sin((rp.y - 1.030) * 30.0) && rp.y < 1.276 - 0.03) { base = vec3(0.50, 0.22, 0.20); bshd = vec3(0.27, 0.12, 0.17); }\n  }\n  if (abs(m - 5.0) < 0.5 && rp.z > 0.0) {\n    float e = min(1.0 - abs(uv.x), min(uv.y, 1.0 - uv.y) * 3.0);\n    if (e > 0.045 && e < 0.06) { base *= 0.8; bshd *= 0.85; }\n    // the apron's pocket with two tools, a stitched edge\n    vec2 p = vec2(rp.x + 0.035, rp.y - 0.84);\n    if (abs(p.x) < 0.05 && abs(p.y) < 0.042) { base *= 0.82; bshd *= 0.85;\n      if ((abs(p.x + 0.022) < 0.0035 || abs(p.x + 0.004) < 0.0035) && p.y > -0.02) { base = vec3(0.60, 0.60, 0.63); bshd = vec3(0.3, 0.28, 0.4); } }\n  }\n}",
+ "deco": "\nvoid deco(vec3 rp, vec2 uv, float m, inout vec3 base, inout vec3 bshd) {\n  if (abs(m - 3.0) < 0.5) {\n    // trousers below the waist; the vest over the trunk, open in a V at the neck where the shirt and a small tie show\n    if (rp.y < 0.779 && abs(rp.x) < 0.26) { base = vec3(0.459, 0.373, 0.325); bshd = vec3(0.196, 0.161, 0.255); return; }\n    bool trunk = abs(rp.x) < 0.140 - 0.5 * max(0.0, rp.y - 1.161);\n    float v = (rp.y - 1.030) * 0.42;\n    bool open = rp.z > 0.014 && abs(rp.x) < v;\n    if (trunk && !open && (rp.y < 1.276 || rp.z < 0.014)) {\n      base = vec3(0.470, 0.478, 0.341); bshd = vec3(0.200, 0.224, 0.265);\n      float e = min(abs(abs(rp.x) - v), abs(rp.y - 0.779));\n      if (rp.z > 0.014 && abs(abs(rp.x) - v) < 0.004 && v > 0.0) { base *= 0.72; bshd *= 0.8; }\n    } else if (open && abs(rp.x) < 0.012 + 0.006 * sin((rp.y - 1.030) * 30.0) && rp.y < 1.276 - 0.03) { base = vec3(0.50, 0.22, 0.20); bshd = vec3(0.27, 0.12, 0.17); }\n  }\n  if (abs(m - 6.0) < 0.5 && rp.z > 0.0) {\n    float e = min(1.0 - abs(uv.x), min(uv.y, 1.0 - uv.y) * 3.0);\n    if (e > 0.045 && e < 0.06) { base *= 0.8; bshd *= 0.85; }\n    // the apron's pocket with two tools, a stitched edge\n    vec2 p = vec2(rp.x + 0.035, rp.y - 0.84);\n    if (abs(p.x) < 0.05 && abs(p.y) < 0.042) { base *= 0.82; bshd *= 0.85;\n      if ((abs(p.x + 0.022) < 0.0035 || abs(p.x + 0.004) < 0.0035) && p.y > -0.02) { base = vec3(0.60, 0.60, 0.63); bshd = vec3(0.3, 0.28, 0.4); } }\n  }\n}",
  "K": 0.001258,
  "headOrigin": [
   0.0,
@@ -37,40 +38,40 @@
   "browL": {
    "ranges": [
     [
-     24406,
-     1744
+     24205,
+     1627
     ]
    ],
    "pivot": [
-    0.06231558225637786,
-    0.2511595138039986,
-    0.12010076724818164
+    0.06103040033052596,
+    0.25100445102458124,
+    0.11753322649901154
    ]
   },
   "browR": {
    "ranges": [
     [
-     26150,
-     1745
+     25832,
+     1628
     ]
    ],
    "pivot": [
-    -0.06270171940044404,
-    0.25101353555776895,
-    0.12008768825345628
+    -0.06094057346147573,
+    0.25107524312866714,
+    0.11768515403573349
    ]
   },
   "moustache": {
    "ranges": [
     [
-     19792,
-     4614
+     19789,
+     4416
     ]
    ],
    "pivot": [
-    0.0002825210871274361,
-    0.05726253144384619,
-    0.09996605192864233
+    1.287711860788672e-05,
+    0.056731642778083735,
+    0.0988017174661841
    ]
   }
  },
@@ -233,7 +234,7 @@
   "positions": {
    "dtype": "float32",
    "shape": [
-    41957,
+    41523,
     3
    ],
    "offset": 0
@@ -241,123 +242,123 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    80412,
+    79590,
     3
    ],
-   "offset": 503488
+   "offset": 498280
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    41957,
+    41523,
     4
    ],
-   "offset": 1468432
+   "offset": 1453360
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    41957,
+    41523,
     4
    ],
-   "offset": 1636264
+   "offset": 1619456
   },
   "joints": {
    "dtype": "float32",
    "shape": [
     231
    ],
-   "offset": 2307576
+   "offset": 2283824
   },
   "frames": {
    "dtype": "float32",
    "shape": [
     308
    ],
-   "offset": 2308504
+   "offset": 2284752
   },
   "col": {
    "dtype": "uint8",
    "shape": [
-    41957,
+    41523,
     3
    ],
-   "offset": 2309736
+   "offset": 2285984
   },
   "shd": {
    "dtype": "uint8",
    "shape": [
-    41957,
+    41523,
     3
    ],
-   "offset": 2435608
+   "offset": 2410560
   },
   "rim": {
    "dtype": "uint8",
    "shape": [
-    41957,
+    41523,
     3
    ],
-   "offset": 2561480
+   "offset": 2535136
   },
   "gloss": {
    "dtype": "uint8",
    "shape": [
-    41957
+    41523
    ],
-   "offset": 2687352
+   "offset": 2659712
   },
   "uv": {
    "dtype": "float32",
    "shape": [
-    41957,
+    41523,
     2
    ],
-   "offset": 2729312
+   "offset": 2701240
   },
   "tw": {
    "dtype": "uint8",
    "shape": [
-    41957
+    41523
    ],
-   "offset": 3064968
+   "offset": 3033424
   },
   "pn": {
    "dtype": "float32",
    "shape": [
-    41957,
+    41523,
     3
    ],
-   "offset": 3106928
+   "offset": 3074952
   },
   "pw": {
    "dtype": "uint8",
    "shape": [
-    41957
+    41523
    ],
-   "offset": 3610416
+   "offset": 3573232
   },
   "two": {
    "dtype": "uint8",
    "shape": [
-    41957
+    41523
    ],
-   "offset": 3652376
+   "offset": 3614760
   },
   "mat": {
    "dtype": "uint8",
    "shape": [
-    41957
+    41523
    ],
-   "offset": 3694336
+   "offset": 3656288
   },
   "rp": {
    "dtype": "float32",
    "shape": [
-    41957,
+    41523,
     3
    ],
-   "offset": 3736296
+   "offset": 3697816
   }
  },
  "bin": "savely.bin"

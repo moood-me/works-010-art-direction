@@ -132,7 +132,7 @@ for s in [798, 1822, 1836, 1812, 1813, 1815, 1816, 1798]:
 outer = hf['outer']
 # and what lies deep behind the lips (the bag's back), found by depth on the final head
 lipz = HV[ring(Q, V0, 767), 2].mean()
-mouth_in |= (HV[:, 2] < lipz - 4) & (HV[:, 2] > 0) & (np.abs(HV[:, 0]) < 13) & (np.abs(HV[:, 1] - MY) < 6) & ~outer
+mouth_in |= (HV[:, 2] < lipz - 4) & (HV[:, 2] > 0) & (np.abs(HV[:, 0]) < 13) & (HV[:, 1] - MY < 5) & (HV[:, 1] - MY > -10) & ~outer
 # the eye sockets' lining (under the lids, behind the balls)
 sock = np.zeros(len(HV), bool)
 for s in LINING: L = ring(Q, V0, s); sock[L] = True; sock[MI[L]] = True
@@ -147,6 +147,13 @@ aux = np.c_[uv, facing, lash]
 L767 = ring(Q, V0, 767); y767 = V0[L767, 1].mean()
 hm = 0.05 + 2.6 * sstep(np.abs(V0[:, 0]), 5.0, 9.8)
 below = sstep(y767 - V0[:, 1], -hm, hm)
+# the lips' rings and the mouth's bag: each ring runs from the middle of one lip round a corner to the middle of the
+# other, so its place along the ring says which lip a vertex is on (by height the two halves of the parting line
+# cannot be told apart: they lie 0.15 units from each other) — the upper half stays, the lower goes with the jaw
+for s_ in [767, 770, 774, 798, 1822, 1836, 1851, 1798, 1812, 1813, 1815, 1816]:
+    L = ring(Q, V0, s_); n_ = len(L)
+    c_ = np.cos(2 * np.pi * np.arange(n_) / n_) * (1 if V0[L[0], 1] > V0[L[n_ // 2], 1] else -1)
+    below[L] = sstep(-c_, -0.3, 0.3)
 jaw = below * (1 - sstep(-HV[:, 1], 58, 72)) * sstep(HV[:, 2], -16, 4) * (1 - sstep(np.abs(HV[:, 0]), 30, 42))
 # the lids: for each vertex of an upper (lower) lid, how far it turns about its ball's x axis to shut the eye (deg),
 # and its weight — the margin's elevation over the ball comes down to a closing line low in the opening
@@ -191,6 +198,14 @@ def teeth_row(y0, h, n, gap, rad, depth_z, name):
     return part(H2W(X), F, sj, sw, 'teeth', name=name)
 parts.append(teeth_row(MY + 0.2, 5.2, 8, -1, 8.0, lipz - 1.6, 'teethUp'))
 parts.append(teeth_row(MY - 3.0, 3.4, 8, -1, 7.5, lipz - 2.4, 'teethLo')); parts[-1]['jaw'] = np.ones(len(parts[-1]['V']))
+
+# the tongue: a flat rounded body on the mouth's floor behind the lower teeth, going with the jaw (the drawing paints one
+# in every open mouth; without it the mouth is a dark pocket — Р6's weak place)
+X, F = sphere(np.zeros(3), 1.0, n=14, m=20)
+X = X * [6.2, 1.7, 7.5] + [0, MY - 3.4, lipz - 10.5]
+X[:, 1] += 0.9 * np.clip((X[:, 2] - (lipz - 10.5)) / 7.5, -1, 1) ** 2 * -1.0          # its tip and root dip a little
+sj, sw = one(len(X), 'Head')
+parts.append(part(H2W(X), F[:, ::-1], sj, sw, 'tongue', name='tongue')); parts[-1]['jaw'] = np.ones(len(X))
 
 # ---------------- the hair: the cap, the bun, the grey streak ----------------
 for hv_, ht_, ha_, hm_ in HAIR.build(HV, HT):
@@ -462,7 +477,7 @@ from pix import mix
 # the drawing's colours; skin and coat a third of the way to their shadow colours (the look's key light is strong, as Р6's)
 PAINT = dict(skin=mix(C['skin'], C['skin_sh'], 0.42), lip=C['lip'], mouth='#5a1f22', eye='#f2ede8', hair=mix(C['hair'].base, C['hair'].dark, 0.45),
              coat=mix('#7d8b97', '#4c5866', 0.55), turtle=mix('#93334a', '#5e1c2c', 0.2), pants='#2e2c33', frame='#2a1f1c', shoe='#1e1c20',
-             sole='#0c0b0d', teeth='#f4eee2', streak='#8f8882', belt='#6c7985')
+             sole='#0c0b0d', teeth='#f4eee2', streak='#8f8882', belt='#6c7985', tongue='#c4545a')
 write(char.NAME, parts, J2, B['frames'], ao=ao, out_dirs=OUT,
       extra=dict(K=K, hs=HS, headY=HY, headZ=HZ, balls=BALLS.tolist(), mouthY=MY, lipZ=float(lipz), floor=FLOOR, paint=PAINT,
                  iris=dict(col=mix(C['iris_col'], '#8a8a86', 0.45), r=C['iris'] / char.EYE_R),

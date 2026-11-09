@@ -93,7 +93,7 @@ def films(which=None):
     F.append(('live-talk', [560, 560], {'clip': 'idle', 'expr': {'neutral': 1}, 'talk': True, 'cam': {**FACE, 'yaw': 18}},
               seq(int(4.98 * 24), talk=lambda k: k < 100, expr=lambda k: {'neutral': 0.5, 'joy': 0.5} if 44 < k < 84 else {'neutral': 1})))
     F.append(('live-dance', [640, 640], {'clip': 'dance', 'expr': {'joy': 1}, 'cam': {**BODY, 'yaw': 20, 'dist': 6.3}}, seq(96)))
-    F.append(('live-wave', [640, 640], {'clip': 'wave', 'expr': {'neutral': 0.5, 'joy': 0.5}, 'talk': True, 'cam': {**BODY, 'yaw': 42, 'dist': 5.6, 'followY': 1.1}}, seq(72)))
+    F.append(('live-wave', [640, 640], {'clip': 'wave', 'expr': {'neutral': 1}, 'talk': True, 'cam': {**BODY, 'yaw': 42, 'dist': 5.6, 'followY': 1.1}}, seq(72)))
     F.append(('live-jump', [640, 640], {'clip': 'jump', 'expr': {'neutral': 1}, 'cam': {**BODY, 'yaw': 30, 'dist': 6.6, 'followY': 1.15}}, seq(72, expr=lambda k: {'surprise': 1} if 14 < k < 40 else {'joy': 1} if k >= 40 else {'neutral': 1})))
     F.append(('live-bw-walk', [640, 640], {'clip': 'walk', 'expr': {'neutral': 1}, 'bw': True, 'cam': {**BODY, 'yaw': -35, 'dist': 5.9}}, seq(96)))
     for name, size, st, frames in F:

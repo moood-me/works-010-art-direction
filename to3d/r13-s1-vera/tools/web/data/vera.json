@@ -17,7 +17,8 @@
   "sole",
   "teeth",
   "streak",
-  "belt"
+  "belt",
+  "tongue"
  ],
  "parts": [
   "head"
@@ -43,42 +44,46 @@
    8118,
    9238
   ],
-  "hair": [
+  "tongue": [
    9238,
-   15261
+   9518
+  ],
+  "hair": [
+   9518,
+   15541
   ],
   "glasses": [
-   15261,
-   15989
+   15541,
+   16269
   ],
   "coat": [
-   15989,
-   18167
+   16269,
+   18447
   ],
   "skirt": [
-   18167,
-   22487
+   18447,
+   22767
   ],
   "turtle": [
-   22487,
-   22887
+   22767,
+   23167
   ],
   "pants": [
-   22887,
-   24691
+   23167,
+   24971
   ],
   "shoes": [
-   24691,
-   26375
+   24971,
+   26655
   ],
   "limbs": [
-   26375,
-   29927
+   26655,
+   30207
   ]
  },
  "K": 0.0028,
  "hs": 1.12,
- "headY": 578.0,
+ "headY": 581.0,
  "headZ": 8.445867880114488,
  "balls": [
   [
@@ -111,7 +116,8 @@
   "sole": "#0c0b0d",
   "teeth": "#f4eee2",
   "streak": "#8f8882",
-  "belt": "#6c7985"
+  "belt": "#6c7985",
+  "tongue": "#c4545a"
  },
  "iris": {
   "col": "#706459",
@@ -141,7 +147,7 @@
   "positions": {
    "dtype": "float32",
    "shape": [
-    29927,
+    30207,
     3
    ],
    "offset": 0
@@ -149,26 +155,26 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    57856,
+    58376,
     3
    ],
-   "offset": 359124
+   "offset": 362484
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    29927,
+    30207,
     4
    ],
-   "offset": 1053396
+   "offset": 1062996
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    29927,
+    30207,
     4
    ],
-   "offset": 1173104
+   "offset": 1183824
   },
   "joints": {
    "dtype": "float32",
@@ -176,7 +182,7 @@
     77,
     3
    ],
-   "offset": 1651936
+   "offset": 1667136
   },
   "frames": {
    "dtype": "float32",
@@ -184,60 +190,60 @@
     77,
     4
    ],
-   "offset": 1652860
+   "offset": 1668060
   },
   "mat": {
    "dtype": "uint8",
    "shape": [
-    29927
+    30207
    ],
-   "offset": 1654092
+   "offset": 1669292
   },
   "pat": {
    "dtype": "float32",
    "shape": [
-    29927,
+    30207,
     3
    ],
-   "offset": 1684020
+   "offset": 1699500
   },
   "aux": {
    "dtype": "float32",
    "shape": [
-    29927,
+    30207,
     4
    ],
-   "offset": 2043144
+   "offset": 2061984
   },
   "ao": {
    "dtype": "float32",
    "shape": [
-    29927
+    30207
    ],
-   "offset": 2521976
+   "offset": 2545296
   },
   "face": {
    "dtype": "float32",
    "shape": [
-    29927,
+    30207,
     4
    ],
-   "offset": 2641684
+   "offset": 2666124
   },
   "jaw": {
    "dtype": "float32",
    "shape": [
-    29927
+    30207
    ],
-   "offset": 3120516
+   "offset": 3149436
   },
   "parts": {
    "dtype": "uint8",
    "shape": [
-    29927,
+    30207,
     1
    ],
-   "offset": 3240224
+   "offset": 3270264
   }
  }
 }

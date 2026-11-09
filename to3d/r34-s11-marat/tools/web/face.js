@@ -34,7 +34,7 @@ export const EXPR = {
   joy: { ...E0, happy: 1, brow: 0.45, browY: -5, blush: 1.35, sq: [1.06, 0.95], mouth: mouthOf('grin', 62, 1), ...lipOf(1, 9.5, 1, 19.2, 5.5) },
   surprise: { ...E0, pupil: 0.45, pie: 0, brow: 0.6, browY: -12, sq: [0.93, 1.09], mouth: mouthOf('o', 34), ...lipOf(0, 6, -10.3, 15, 18) },
   sad: { ...E0, look: [0, 0.65], lid: 0.36, rot: 0.4, brow: 1.0, sq: [1.02, 0.96], mouth: mouthOf('shut', 26), ...lipOf(0, 6, 5.5, 13, 7.5) },
-  angry: { ...E0, look: [0, 0.1], lid: 0.4, rot: -0.45, brow: -1.1, browY: 9, blush: 1.3, sq: [1.05, 0.95], mouth: mouthOf('shout', 42, 1.05), ...lipOf(1, 5, -4.3, 17, 5.5) },
+  angry: { ...E0, look: [0, 0.1], lid: 0.4, rot: -0.45, brow: -1.1, browY: 9, blush: 1.3, sq: [1.05, 0.95], mouth: mouthOf('shout', 42, 1.05), ...lipOf(1, 9, -4.3, 17, 5.5) },
 };
 export const EXPR_RU = { neutral: 'спокойно (улыбается)', joy: 'радость', surprise: 'удивление', sad: 'грусть', angry: 'злость' };
 // speech: mouth shapes in the beard (vowels open, lips shut on м/б/п, a narrow opening on в/ф)
@@ -96,9 +96,10 @@ const ell = (g, x, y, rx, ry, rot = 0) => { g.beginPath(); g.ellipse(x, y, Math.
 
 // one eye (lib.eye, kinds 'pie', 'spark', 'closed-happy', 'closed' as one, with the lower lid): side +1 → outer corner right
 function eye(g, cx, cy, rx, ry, e, side, blink, look) {
-  const shut = Math.max(e.lid, blink, e.happy);
+  const hp = Math.min(1, Math.max(0, (e.happy - 0.3) / 0.5));   // half a laugh is not a half-shut eye
+  const shut = Math.max(e.lid * (1 - hp), blink, hp);
   if (shut > 0.93) {
-    if (e.happy >= blink) tline(g, [[cx - rx, cy + ry * 0.15], [cx, cy - ry * 0.45], [cx + rx, cy + ry * 0.15]], 2, 6.5, 2);
+    if (hp >= blink) tline(g, [[cx - rx, cy + ry * 0.15], [cx, cy - ry * 0.45], [cx + rx, cy + ry * 0.15]], 2, 6.5, 2);
     else tline(g, [[cx - rx, cy + ry * 0.1], [cx, cy + ry * 0.28], [cx + rx, cy + ry * 0.1]], 2, 5.5, 2);
     return;
   }
@@ -112,7 +113,7 @@ function eye(g, cx, cy, rx, ry, e, side, blink, look) {
     g.beginPath(); g.moveTo(px + prx * 0.15 * Math.cos(wa), py + pry * 0.2 * Math.sin(wa)); g.lineTo(px + r1 * Math.cos(wa - h), py + r1 * Math.sin(wa - h)); g.lineTo(px + r1 * Math.cos(wa + h), py + r1 * Math.sin(wa + h)); g.closePath(); g.fillStyle = WHITE; g.fill();
   }
   if (shut > 0.02) {
-    const ly = cy - ry + 2 * ry * shut, tilt = e.rot * (1 - Math.max(blink, e.happy)), yIn = ly + tilt * ry * side, yOut = ly - tilt * ry * side;
+    const ly = cy - ry + 2 * ry * shut, tilt = e.rot * (1 - Math.max(blink, hp)), yIn = ly + tilt * ry * side, yOut = ly - tilt * ry * side;
     const xl = cx - rx * 1.3, xr = cx + rx * 1.3, [yl, yr] = side > 0 ? [yIn, yOut] : [yOut, yIn];
     g.beginPath(); g.moveTo(xl, cy - ry * 2); g.lineTo(xr, cy - ry * 2); g.lineTo(xr, yr); g.lineTo(xl, yl); g.closePath(); g.fillStyle = SKIN; g.fill();
     g.beginPath(); g.moveTo(xl, yl); g.lineTo(xr, yr); g.strokeStyle = INK; g.lineWidth = LW; g.stroke();
@@ -161,8 +162,9 @@ export function drawFace(cv, f, live = {}) {
     const s = y < 0 ? -1 : 1; g.beginPath(); smoothPath(g, [[x - 7, y - 3 * s], [x - 2, y + 5 * s], [x + 6, y + 1 * s]], false); g.stroke();
   }
   g.fillStyle = CHEEK; g.globalAlpha = 0.5;
+  g.save(); g.beginPath(); smoothPath(g, FACE_LOOP, true); g.clip();   // (on the skin only)
   for (const x of [-42, 42]) { ell(g, x, 20, 11 * f.blush, 11 * f.blush * 0.8); g.fill(); }
-  g.globalAlpha = 1;
+  g.restore(); g.globalAlpha = 1;
   const look = live.look || f.look, blink = live.blink || 0;
   for (const [side, x] of [[-1, -18], [1, 18]]) eye(g, x, -2, 15, 19.5, f, side, blink, look);
   mouth(g, f.mouth, f);

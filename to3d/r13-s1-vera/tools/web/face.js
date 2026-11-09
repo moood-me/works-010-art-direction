@@ -19,10 +19,10 @@ export class FaceRig {
     this.KH = K; const EX = h.eye.x, EY = -h.eye.y, BY = EY + h.eye.browH + 0.8;
     this.balls = h.balls; this.MY = h.mouthY; this.LZ = h.lipZ;
     const idx = [];
-    for (const name of ['head', 'eyeL', 'eyeR', 'teethUp', 'teethLo']) { const [s, e] = h.ranges[name]; for (let i = s; i < e; i++) idx.push(i); }
+    for (const name of ['head', 'eyeL', 'eyeR', 'teethUp', 'teethLo', 'tongue']) { const [s, e] = h.ranges[name]; for (let i = s; i < e; i++) idx.push(i); }
     const n = idx.length; this.idx = Int32Array.from(idx);
     this.rest = new Float64Array(n * 3); this.kind = new Uint8Array(n); this.lid = new Float32Array(n * 4);
-    const kindOf = i => { for (const [k, name] of [[1, 'eyeL'], [2, 'eyeR'], [3, 'teethUp'], [4, 'teethLo']]) { const [s, e] = h.ranges[name]; if (i >= s && i < e) return k; } return 0; };
+    const kindOf = i => { for (const [k, name] of [[1, 'eyeL'], [2, 'eyeR'], [3, 'teethUp'], [4, 'teethLo'], [4, 'tongue']]) { const [s, e] = h.ranges[name]; if (i >= s && i < e) return k; } return 0; };
     for (let k = 0; k < n; k++) {
       const i = idx[k];
       this.rest[k * 3] = P[i * 3] / K; this.rest[k * 3 + 1] = P[i * 3 + 1] / K - HY; this.rest[k * 3 + 2] = P[i * 3 + 2] / K - HZ;
@@ -133,9 +133,9 @@ export const EXPRESSIONS = {
   calm: { smile: -0.12, up: 19, low: 7, inner: -0.15, lookY: 1 },
   strict: { smile: -0.3, up: 13, low: 5, brow: -0.25, inner: -0.7, browR: 0.5, lookX: 6 },
   joy: { smile: 0.95, upper: 0.25, wide: 0.3, low: 8, up: 5, brow: 0.35 },
-  surprise: { jaw: 12, pucker: 0.5, up: -7, low: -3, brow: 1.2, pupil: 0.8 },
+  surprise: { jaw: 9, pucker: 0.7, up: -6, low: -3, brow: 1.2, pupil: 0.8 },
   sad: { smile: -0.9, inner: 1.2, brow: -0.1, up: 14, lookY: 11, low: 2 },
-  anger: { smile: -0.55, jaw: 5, upper: 0.7, wide: 0.5, up: 11, low: 8, brow: -0.6, inner: -1.4 },
+  anger: { smile: -0.7, jaw: 1.5, upper: 0.25, wide: 0.35, up: 12, low: 9, brow: -0.6, inner: -1.4 },
 };
 export function mixParams(weights) {
   const out = {}; for (const k of PARAMS) out[k] = k === 'pupil' ? 1 : 0;
