@@ -23,7 +23,7 @@ s = getattr(who, 'EXPR_S', 1.9)
 v = [dict(name=f'e{i}', yaw=-18, s=s, cx=200, cy=40 + 118 * s, W=400, H=440, lw=2.6, bg=who.PANEL) for i in range(n)]
 json.dump(dict(scene=C + '/scene.npz', offsets=C + '/engine/offsets.json', frames=C + '/expr.bin', out=C + '/expr',
                samples=16, pair=True, views=v), open(C + '/job_expr.json', 'w'))
-subprocess.run(['/home/user/cache/blender/blender', '-b', '-P', HERE + '/render.py', '--', C + '/job_expr.json'],
+subprocess.run([HERE + '/heavy.sh', 'blender', '-b', '-P', HERE + '/render.py', '--', C + '/job_expr.json'],
                check=True, stdout=subprocess.DEVNULL)
 sheet = Image.new('RGB', (n * 400, 480), '#f4ecd8')
 d = ImageDraw.Draw(sheet)
