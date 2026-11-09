@@ -68,3 +68,31 @@ Short, in Russian: what the page shows, how it came out honestly, what didn't wo
   `"view3d": "tools/web/view.html"` and a short `"view3dNote"` in entry.json — the site shows it as a «3D» tab.
   If it comes out weak, say so and stop there.
 - Frame the motion videos so the character is big in the frame (a camera following it).
+
+## Third round (two more characters in each style) — also
+The cast is now six: Марат and Кира were added and drawn in every style (their descriptions are in
+[styles-more.md](styles-more.md); the drawings are on the style's page, `styles/<folder>/`). Each style already has
+one character in 3D (`to3d/` Р1–Р12). Now each style gets two more: one of the three old characters not yet made in
+3D in that style, and one of the two new ones — both named in your task. One agent makes both, one after the other,
+each in its own folder `to3d/<folder>/` with its own page.
+- Start from the character of your style that is already in 3D (named in your task): read its `notes.md` and
+  `entry.json`, look at its pictures, reuse its code — the bases chosen for this style, the fit, the face layer, the
+  look, the viewer. The new two must stand beside it as characters of the same style and the same quality or better;
+  what its page names as weak, do better where you can. Read "Drawings to 3D" in `docs/findings.md` first.
+- The earlier agents' caches are gone (a new container): what an old `notes.md` says lies in
+  `/home/user/cache/to3d-…/` or `/home/user/cache/hf/` has to be rebuilt by its scripts or done without. Here now:
+  Blender 4.5 in `/home/user/cache/blender/blender`, the Human Base Meshes bundle in
+  `/home/user/cache/n5-heads/hbm/human-base-meshes-bundle-v1.4.1/`, libigl for Python (`import igl`); the engine,
+  its bodies and motions are in the repository. Anything else you need from pip or npm, install into your cache
+  folder. The network lets through package registries and Blender's download sites only.
+- Марат is far from Anny's usual proportions (huge, barrel chest, thick forearms), Кира is thin and slouching: find
+  the body in the engine's bodies and deformers that suits, as the earlier rounds did for 3 heads tall and for rubber
+  hose. Only the motions in `engine/motions`; choose the ones that suit the character (Марат's wave, Кира's sneak
+  or idle) beside the walk.
+- Work ONLY in your two folders `to3d/<folder>/` and your caches `/home/user/cache/to3d-<folder>/`. Don't touch
+  `to3d/index.html`, the style's page or anything else; no git — the orchestrator commits. Other agents work in
+  parallel on 4 CPU cores and 15 GB of RAM: one Blender or browser at a time, light renders (Cycles with few samples
+  and small frames, short videos), close what you opened.
+- Finish the first character's page (pictures, `entry.json`, `notes.md`) before starting the second, so that an
+  interruption loses little. Final report: for each of the two — how it came out, honestly, the best pictures and
+  the weakest.
