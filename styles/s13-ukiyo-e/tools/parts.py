@@ -572,22 +572,22 @@ def glasses(d, view, r=21, ry=None, y=2, lw=1.8, tint=0.22, sq=0.0, color=INK):
 
 
 def scallop(pts, r=10, closed=False, out=1, n=6):
-    """A curly edge: the curve pts with round bumps on it (curls, a cloud of hair)."""
+    """A curly edge: the curve pts with soft round bumps on it (curls, a cloud of hair)."""
     from kit import curve
     sm = curve(pts, closed, n)
-    res = []
+    res = [sm[0]]
     acc = 0.0
     last = sm[0]
-    res.append(last)
     for i in range(1, len(sm)):
         acc += math.hypot(sm[i][0] - sm[i - 1][0], sm[i][1] - sm[i - 1][1])
-        if acc >= r * 1.5:
+        if acc >= r * 1.7 or i == len(sm) - 1:
             a, b = last, sm[i]
             dx, dy = b[0] - a[0], b[1] - a[1]
             ln = math.hypot(dx, dy) or 1
             nx, ny = -dy / ln * out, dx / ln * out
-            res.append(((a[0] + b[0]) / 2 + nx * r * 0.75, (a[1] + b[1]) / 2 + ny * r * 0.75))
-            res.append((b[0], b[1], 'c'))
+            res.append((a[0] + dx * 0.3 + nx * r * 0.62, a[1] + dy * 0.3 + ny * r * 0.62))
+            res.append((a[0] + dx * 0.7 + nx * r * 0.62, a[1] + dy * 0.7 + ny * r * 0.62))
+            res.append((b[0] - nx * r * 0.12, b[1] - ny * r * 0.12, 'c'))
             last = b
             acc = 0.0
     return res

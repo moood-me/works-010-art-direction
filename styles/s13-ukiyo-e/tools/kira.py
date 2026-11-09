@@ -70,7 +70,7 @@ def bust(d, view='q', expr=None, hand=False):
     with d.g(8, 14, 1.0, -7):
         hair_back(d, 'q')
         parts.neck(d, p, 'q', 40, 70)
-    sh = parts.shoulders('q', 124, drop=22, neck=46, top=156)
+    sh = parts.shoulders('q', 142, drop=10, neck=46, top=156)
     d.shape(sh, PLUM, 4.0, pattern=hemp, nib=0.6)
     # the neck of the hoodie, the cords
     d.shape([(-40, 172), (-30, 200), (10, 214), (52, 200), (66, 160), (54, 152), (40, 184), (8, 194), (-22, 184)],
@@ -79,8 +79,8 @@ def bust(d, view='q', expr=None, hand=False):
     d.line([(22, 208), (26, 270), (22, 330)], 3.4, 'even', '#e9e2cf', nib=0)
     d.line([(-16, 318), (-16, 332)], 5.0, 'even', LIME, nib=0)
     d.line([(22, 330), (22, 344)], 5.0, 'even', LIME, nib=0)
-    d.line([(112, 250), (120, 300), (116, 345)], 3.4, 'taper')
-    d.line([(-60, 256), (-66, 300), (-62, 345)], 3.0, 'taper')
+    d.line([(126, 250), (134, 300), (130, 345)], 3.4, 'taper')
+    d.line([(-72, 262), (-78, 304), (-74, 345)], 3.0, 'taper')
     phones(d, -44, 178, 1.0, far=True)
     phones(d, 82, 176, 1.0)
     with d.g(8, 14, 1.0, -7):

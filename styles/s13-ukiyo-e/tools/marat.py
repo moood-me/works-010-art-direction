@@ -44,7 +44,7 @@ BEARDS = {
 
 def hair(d, view):
     out, inn = HAIRS[view]
-    d.fill(parts.scallop(out, 11) + parts.scallop(inn, 7), HAIR)
+    d.fill(parts.scallop(out, 12) + parts.scallop(inn, 8), HAIR)
     for t in (0.3, 0.62):
         from kit import curve, lerp_pts
         mid = lerp_pts(curve(out), curve(inn[::-1]), t)
@@ -79,7 +79,7 @@ def clothes(d, view):
     d.shape(sh, WHITE, 4.2, nib=0.6)
     if view == 'q':
         d.shape([(124, 162), (176, 200), (188, 345), (128, 345), (120, 250)], WHITE, 3.0, pattern=towel, nib=0.6)
-        d.shape([(-68, 345), (-64, 276), (72, 264), (84, 345)], TERRA, 3.4, pattern=waves, nib=0.6)
+        d.shape([(-68, 345, 'c'), (-64, 276, 'c'), (72, 264, 'c'), (84, 345, 'c')], TERRA, 3.4, pattern=waves, nib=0.6)
         d.line([(-64, 276), (-48, 220), (-40, 168)], 9, 'even', TERRA)
         d.line([(72, 264), (78, 210), (74, 150)], 9, 'even', TERRA)
         d.shape([(-58, 142), (-64, 172), (-14, 196), (52, 184), (90, 144), (80, 122), (40, 158), (-10, 166)], WHITE,
@@ -90,7 +90,7 @@ def clothes(d, view):
         d.line([(-98, 250), (-104, 300), (-100, 345)], 3.4, 'taper')
     elif view == 'f':
         d.shape([(96, 166), (150, 192), (162, 345), (104, 345), (98, 250)], WHITE, 3.0, pattern=towel, nib=0.6)
-        d.shape([(-78, 345), (-72, 270), (72, 270), (78, 345)], TERRA, 3.4, pattern=waves, nib=0.6)
+        d.shape([(-78, 345, 'c'), (-72, 270, 'c'), (72, 270, 'c'), (78, 345, 'c')], TERRA, 3.4, pattern=waves, nib=0.6)
         d.line([(-72, 270), (-64, 214), (-52, 166)], 9, 'even', TERRA)
         d.line([(72, 270), (64, 214), (52, 166)], 9, 'even', TERRA)
         d.shape([(-70, 130), (-74, 168), (-30, 190), (0, 194), (30, 190), (74, 168), (70, 130), (30, 160), (-30, 160)],
@@ -99,7 +99,7 @@ def clothes(d, view):
         for x, y in ((-28, 236), (28, 236)):
             d.shape(parts.oval(x, y, 6, 6, 8), WHITE, 1.6)
     else:
-        d.shape([(-60, 345), (-58, 268), (-20, 262), (-14, 345)], TERRA, 3.4, pattern=waves, nib=0.6)
+        d.shape([(-60, 345, 'c'), (-58, 268, 'c'), (-20, 262, 'c'), (-14, 345, 'c')], TERRA, 3.4, pattern=waves, nib=0.6)
         d.line([(-40, 266), (-24, 210), (-10, 166)], 9, 'even', TERRA)
         d.shape([(-24, 150), (-30, 180), (10, 192), (70, 176), (102, 138), (80, 124), (40, 156), (0, 160)], WHITE, 3.0,
                 nib=0.6)
