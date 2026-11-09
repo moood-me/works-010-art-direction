@@ -45,6 +45,44 @@ and blend modes render as in a browser).
 Close in light and mood; weaker in drawing than SPA: faces milder than their caricature, poses stiffer, no living
 line, no painterly brush. Turnarounds are heads with shoulders, not full figures. Hands are simple.
 
+## Round three: Марат and Кира
+
+Brief: `docs/briefs/styles-more.md`, part A. Two characters added by the same rules and code; the four untouched.
+
+- **New modules** `tools/marat.py`, `tools/kira.py` — each with `head34`, `head_front`, `head_side`, `bust`,
+  `bust_front`, `bust_side`, `figure` and five expressions in `EXPR`, like `anya.py` and `tim.py`.
+  - Марат: the beard, the moustache and the cap of curls are forms with a curly edge (`bumps()` in `marat.py`:
+    a row of shallow bumps for the beard, of round arcs for the curls); `thick_brow()`; `smile_eye()` — an eye shut
+    by laughter; `mouth()` — every open mouth has teeth and a tongue. The figure laughs: the body in one arc, the head
+    thrown back (`rot=5`), the ladle up, a fist on the hip (`_fist()`).
+  - Кира: everything above the neck is turned by `TILT` (the head held down); the far eye is under the fringe; the
+    look goes sideways to the viewer (`look=(0.3, …)`); `calm` is a pressed mouth, `joy` a shut half-smile — she
+    never smiles openly. The figure slouches: head forward, a round back, one hand in the pocket.
+- **Shared code, only added to:** `parts.eye_side()` (an eye in profile, used by the two new ones);
+  `common.ANCHOR` (their chins); `build.py` — `over()`: after the head it draws `<bust>_over` if the module has it
+  (Кира's hood edge and headphones lie over the neck); `cast(places)` takes the list of who stands where, `SIX` is
+  the six. `build.py` renders the old pictures first and in the old order, then the new ones.
+- **The four didn't change:** after the full build every old PNG has the same md5 as before; the old SVGs are
+  byte-identical too, except `rule-eye.svg`, where only the ids differed (the committed file was kept).
+- **By eye:** Марат's hair was a "bottle cap" (bumps too shallow → round arcs), his body was lifted to make him the
+  tallest, a light sliver of the jacket beside the apron was closed. Кира's first calm mouth was a friendly smile
+  (→ pressed, crooked), the neck too long (shoulders raised, `dy=-84`), the headphone band stuck up like horns (→ a
+  band behind the neck drawn in `bust`), trousers and boots went brown in the warm light (cooler base, less key).
+- **Weak:** Кира's front and profile (older and calmer than the three-quarter view; the hair reads as a helmet);
+  hands are still simple (a ball with finger lines; Кира's hand is in the pocket). The folder is now ~20 MB — the
+  grain makes PNGs heavy.
+
+### How to add a character
+
+1. Copy the module closest in build (`tim.py` child, `anya.py`/`kira.py` slim, `savely.py`/`marat.py` heavy).
+   Keep the 500×600 head frame: the near eye about (268, 262), the far one about (210, 258), light from the upper left.
+2. Draw `head34` back to front: back hair, neck, face (`d.form` + tone shapes for the shadow plane, sockets, blush,
+   the hair's cast shadow), ear, eyes (`parts.eye`), brows, nose, mouth, front hair. Then `bust`, `figure`
+   (head put on with `common.place`), then `head_front`/`head_side` and their busts.
+3. Add the chin to `common.ANCHOR`, the module to `CAST` and a backdrop to `BACK` in `build.py`, the pictures to
+   the end of `__main__` (after the existing ones, so their SVG ids stay the same), a place in `SIX`.
+4. `python3 tools/build.py <name>` renders only the names that contain `<name>`; look, redraw.
+
 ## Sources (third-party pictures, kept only as references)
 
 - `refs/01-jesper-line-flat-lit.jpg` — Before & Afters, "Here's what made the 2D animation in Klaus look 3D",

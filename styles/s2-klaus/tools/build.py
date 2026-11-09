@@ -2,7 +2,7 @@
 import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from kit import Doc, Light, bg, render, mix
-import anya, savely, tim, vera
+import anya, savely, tim, vera, marat, kira
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SVG, PNG = os.path.join(HERE, 'svg'), os.path.join(HERE, 'pics')
@@ -10,13 +10,16 @@ os.makedirs(SVG, exist_ok=True)
 os.makedirs(PNG, exist_ok=True)
 FILTER = sys.argv[1] if len(sys.argv) > 1 else ''
 
-CAST = {'anya': anya, 'savely': savely, 'tim': tim, 'vera': vera}
+FOUR = ('anya', 'savely', 'tim', 'vera')
+CAST = {'anya': anya, 'savely': savely, 'tim': tim, 'vera': vera, 'marat': marat, 'kira': kira}
 # each one's backdrop and how high the shoulders sit under the head
 BACK = {
     'anya':   dict(top='#2c2744', bottom='#4c3150', glow='#e8985a', dy=-68),
     'savely': dict(top='#2e2230', bottom='#4a3030', glow='#f0a050', dy=-44),
     'tim':    dict(top='#24304a', bottom='#3c3a52', glow='#e8a060', dy=-66),
     'vera':   dict(top='#222838', bottom='#3a3448', glow='#d89070', dy=-60),
+    'marat':  dict(top='#2e2430', bottom='#4a302c', glow='#f09a48', dy=-30),
+    'kira':   dict(top='#1e2236', bottom='#34283e', glow='#c88a78', dy=-84),
 }
 
 
@@ -34,6 +37,16 @@ def save(d, name):
     print(name)
 
 
+def over(m, bust, d, out, dy):
+    """What a character wears over the neck (a kerchief, a hood's edge, headphones): `<bust>_over`, drawn after
+    the head, if the character's module has it."""
+    fn = getattr(m, bust + '_over', None)
+    if fn:
+        out.append(f'<g transform="translate(0,{dy})">')
+        fn(d, out)
+        out.append('</g>')
+
+
 def portrait(name, expr='calm', flat=False):
     m, b = CAST[name], BACK[name]
     d = Doc(500, 600, light())
@@ -43,6 +56,7 @@ def portrait(name, expr='calm', flat=False):
     m.bust(d, out)
     out.append('</g>')
     m.head34(d, out, expr)
+    over(m, 'bust', d, out, b['dy'])
     for s in out:
         d.add(s)
     return d
@@ -71,6 +85,7 @@ def turnaround(name):
         getattr(m, bf)(d, out)
         out.append('</g>')
         getattr(m, fn)(d, out, 'calm')
+        over(m, bf, d, out, b['dy'])
         out.append('</g>')
     for s in out:
         d.add(s)
@@ -88,15 +103,16 @@ def expressions(name):
         m.bust(d, out)
         out.append('</g>')
         m.head34(d, out, ex)
+        over(m, 'bust', d, out, b['dy'])
         out.append('</g>')
     for s in out:
         d.add(s)
     return d
 
 
-def cast():
-    """The four together, round a street lantern at dusk: the two on the left are turned to the right
-    (mirrored), so each is lit from the lantern's side."""
+def cast(places=(('vera', 420, True), ('savely', 680, True), ('anya', 1110, False), ('tim', 1350, False))):
+    """The cast together, round a street lantern at dusk: those on the left are turned to the right
+    (mirrored), so each is lit from the lantern's side. places: (name, x of the figure's middle, mirrored)."""
     W, H = 1800, 900
     d = Doc(W, H, light())
     bg(d, '#232a44', '#3a3550')
@@ -121,7 +137,6 @@ def cast():
     out = []
     # scale every figure to the scene; the ground in figures is y=846
     s = 0.86
-    places = [('vera', 420, True), ('savely', 680, True), ('anya', 1110, False), ('tim', 1350, False)]
     for name, x, mirror in places:
         tx = x
         ty = 800 - 846 * s
@@ -141,6 +156,9 @@ def cast():
         d.add(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.1f}" fill="#fff4ea" opacity="{rnd.uniform(0.35, 0.8):.2f}"/>')
     return d
 
+
+SIX = (('vera', 270, True), ('kira', 490, True), ('savely', 720, True),
+       ('anya', 1070, False), ('marat', 1330, False), ('tim', 1610, False))
 
 def eye_rule():
     """A close look at one eye: white, big dark iris, heavy lid with its shadow, the lash line wrapping past the
@@ -162,7 +180,7 @@ def eye_rule():
 
 
 if __name__ == '__main__':
-    for n in CAST:
+    for n in FOUR:
         save(portrait(n), f'portrait-{n}')
         save(figure(n), f'figure-{n}')
     save(turnaround('anya'), 'turn-anya')
@@ -172,3 +190,10 @@ if __name__ == '__main__':
     save(portrait('anya', flat=True), 'rule-flat')
     save(eye_rule(), 'rule-eye')
     save(cast(), 'cast')
+    # round three: Марат and Кира
+    for n in ('marat', 'kira'):
+        save(portrait(n), f'portrait-{n}')
+        save(figure(n), f'figure-{n}')
+        save(turnaround(n), f'turn-{n}')
+        save(expressions(n), f'expr-{n}')
+    save(cast(SIX), 'cast-six')

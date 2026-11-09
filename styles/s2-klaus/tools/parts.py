@@ -69,3 +69,21 @@ def brow(p0, p1, p2, width=4.0, col='#5a3020'):
     (x0, y0), (x1, y1), (x2, y2) = p0, p1, p2
     return (f'<path d="M{x0},{y0 - width/2} Q{x1},{y1 - width*0.6} {x2},{y2} Q{x1},{y1 + width*0.6} {x0},{y0 + width/2}Z" '
             f'fill="{col}" stroke="{col}" stroke-width="1" stroke-linejoin="round"/>')
+
+
+def eye_side(ex, ey, s=1.0, iris='#4a3028', skin='#e9b49a', lid=0.4, lash=1.0, low=True):
+    """An eye in profile facing left: a wedge with the iris at its front, the heavy lid over it, the lash line
+    with its tail to the back. ex,ey: the wedge's middle; s: size; lid: how far the upper lid comes down (0..1)."""
+    def P(x, y):
+        return f'{ex + x*s:.1f},{ey + y*s:.1f}'
+    ld = -9 + lid * 12   # the lid's lower edge at the front
+    o = [f'<path d="M{P(-11,-3)} C{P(-5,-12)} {P(7,-12)} {P(11,-5)} C{P(7,7)} {P(-2,9)} {P(-9,5)}Z" fill="#f3ebe3"/>',
+         f'<path d="M{P(-11,-5)} C{P(-8,-10)} {P(-3,-10)} {P(-1,-5)} L{P(-1,7)} C{P(-5,8)} {P(-8,6)} {P(-10,3)}Z" fill="{iris}"/>',
+         f'<path d="M{P(-10,-3)} L{P(-6,-3)} L{P(-6,2)} L{P(-10,1)}Z" fill="#120a0a"/>',
+         f'<path d="M{P(-13,-14)} L{P(13,-14)} L{P(12,-4)} C{P(4,ld)} {P(-4,ld+1)} {P(-13,ld+3)}Z" fill="{skin}"/>',
+         f'<path d="M{P(-12,ld+3.5)} C{P(-5,ld)} {P(4,ld-1)} {P(12,-4)} L{P(17,-7-2*lash)} C{P(5,ld-3-lash)} {P(-5,ld-2-lash)} {P(-13,ld+1)}Z" fill="{INK}"/>',
+         f'<path d="M{P(-13,ld+1)} L{P(-18,ld-1)}" stroke="{INK}" stroke-width="{1.7*s:.1f}" stroke-linecap="round"/>',
+         f'<circle cx="{ex-5.5*s:.1f}" cy="{ey + max(ld+4, -4)*s:.1f}" r="{max(1.3, 1.5*s):.1f}" fill="#fff"/>']
+    if low:
+        o.append(f'<path d="M{P(-7,8)} C{P(0,9)} {P(7,6)} {P(10,0)}" fill="none" stroke="{mix(skin, INK, 0.45)}" stroke-width="1.2" opacity="0.55"/>')
+    return '\n'.join(o)
