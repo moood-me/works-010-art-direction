@@ -13,7 +13,7 @@ from head import Expr
 from body import Figure
 from dress import draw_figure, head_drawer
 import scenes
-import anya, savely, tim, vera
+import anya, savely, tim, vera, marat, kira
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SVG, PNG = os.path.join(HERE, 'svg'), os.path.join(HERE, 'pics')
@@ -27,6 +27,8 @@ CAST = {
     'savely': (savely, 'watch', 'watch', 'workshop'),
     'tim': (tim, 'hips', 'hips', 'thicket'),
     'vera': (vera, 'crossed', 'crossed', 'study'),
+    'marat': (marat, 'ladle', 'ladle', 'kitchen'),
+    'kira': (kira, 'pocket', 'pocket', 'dusk'),
 }
 
 EXPR = {
@@ -43,6 +45,8 @@ CALM = {
     'savely': Expr(smile=-0.5, open=0.85, brow_in=0.6, look=(-0.2, -0.6)),
     'tim': Expr(smile=0.9, mouth_w=1.15, look=(0.35, 0.0), brow_in=-0.3, brow_up=0.2),
     'vera': Expr(open=0.82, smile=-0.25, brow_in=0.25, look=(0.3, 0.0)),
+    'marat': marat.CALM,
+    'kira': kira.CALM,
 }
 
 
@@ -96,13 +100,19 @@ def place(d, w, h, where, floor_y=None, seed=1):
         scenes.study(d, w, h, seed=seed)
         if floor_y:
             scenes.grad(d, 0, floor_y, w, h - floor_y, [(0, '#5a4a3e'), (1, '#3e3028')])
+    elif where == 'kitchen':
+        scenes.kitchen(d, w, h, seed=seed)
+        if floor_y:
+            scenes.kitchen_floor(d, w, h, floor_y)
+    elif where == 'dusk':
+        scenes.dusk(d, w, h, seed=seed, ground=floor_y)
 
 
 def expr_of(name, key):
-    e = Expr(EXPR[key])
     if key == 'calm':
-        e = Expr(CALM[name])
-    return e
+        return Expr(CALM[name])
+    # a character may show a feeling in its own way (its module's EXPR), else the common one
+    return Expr(getattr(CAST[name][0], 'EXPR', {}).get(key, EXPR[key]))
 
 
 # ---------------------------------------------------------------- pictures
@@ -124,7 +134,7 @@ def figure(name):
     floor = H - 70
     place(d, W, H, where, floor_y=floor - 120 if where != 'meadow' else None, seed=3)
     F = Figure(m.B, m.POSES[fp])
-    v = view_at(22, 5.2, (0, 0, 0), W * 0.5, floor)
+    v = view_at(22, m.SPEC.get('figure_scale', 5.2), (0, 0, 0), W * 0.5, floor)   # a giant gets a smaller scale
     scenes.ground_shadow(d, v, F)
     person(d, v, name, fp, expr_of(name, 'calm'))
     if where == 'meadow':
@@ -132,7 +142,8 @@ def figure(name):
     return d
 
 
-def turnaround(name):
+def turnaround(name, calm=False):
+    """calm=True: the character's own resting face instead of the neutral one."""
     m, pp, fp, where = CAST[name]
     W, H = 1500, 1000
     d = Doc(W, H, lw=1.9)
@@ -141,9 +152,9 @@ def turnaround(name):
     floor = H - 70
     for i, yaw in enumerate((0, 35, 90)):
         F = Figure(m.B, m.POSES['stand'])
-        v = view_at(yaw, 5.2, (0, 0, 0), W * (0.18 + 0.32 * i), floor)
+        v = view_at(yaw, m.SPEC.get('figure_scale', 5.2), (0, 0, 0), W * (0.18 + 0.32 * i), floor)
         scenes.ground_shadow(d, v, F)
-        person(d, v, name, 'stand', Expr())
+        person(d, v, name, 'stand', expr_of(name, 'calm') if calm else Expr())
     return d
 
 
@@ -167,6 +178,24 @@ def cast():
     # two grown-ups a step behind, Аня and Тим in front
     places = [('vera', 560, 880, 4.7, 'crossed', 14), ('savely', 900, 868, 4.7, 'watch', 30),
               ('anya', 1190, 950, 5.3, 'hat', 24), ('tim', 1470, 966, 5.4, 'hips', 16)]
+    for name, x, floor, s, pose, yaw in places:
+        m = CAST[name][0]
+        F = Figure(m.B, m.POSES[pose])
+        v = view_at(yaw, s, (0, 0, 0), x, floor)
+        scenes.ground_shadow(d, v, F)
+        person(d, v, name, pose, expr_of(name, 'calm'))
+    scenes.meadow_front(d, W, H)
+    return d
+
+
+def cast6():
+    """all six on the meadow: Марат in the middle of the back row, Кира at the edge, a step apart."""
+    W, H = 1800, 1000
+    d = Doc(W, H, lw=1.8)
+    scenes.meadow(d, W, H, horizon=0.58, seed=11)
+    places = [('vera', 455, 878, 4.4, 'crossed', 14), ('marat', 770, 884, 4.4, 'ladle', 16),
+              ('savely', 1100, 872, 4.4, 'watch', 30), ('kira', 185, 952, 4.9, 'pocket', 20),
+              ('anya', 1350, 950, 4.9, 'hat', 24), ('tim', 1600, 964, 5.0, 'hips', 16)]
     for name, x, floor, s, pose, yaw in places:
         m = CAST[name][0]
         F = Figure(m.B, m.POSES[pose])
@@ -234,11 +263,13 @@ if __name__ == '__main__':
             save(portrait(n), 'portrait-' + n)
         if want('figure-' + n):
             save(figure(n), 'figure-' + n)
-    for n in ('anya', 'tim'):
+    for n in ('anya', 'tim', 'marat', 'kira'):
         if want('turn-' + n):
-            save(turnaround(n), 'turn-' + n)
-    for n in ('anya', 'tim'):
+            save(turnaround(n, calm=n in ('marat', 'kira')), 'turn-' + n)
+    for n in ('anya', 'tim', 'marat', 'kira'):
         if want('expr-' + n):
             save(expressions(n), 'expr-' + n)
     if want('cast'):
         save(cast(), 'cast')
+    if want('six'):
+        save(cast6(), 'six')

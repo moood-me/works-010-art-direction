@@ -30,7 +30,8 @@ def profile(nose_y, nose=0.14, bridge=0.04, mouth_y=None, lip=0.03, chin=0.02, b
 
 def rotm(yaw, nod, tilt):
     """head turn (deg): yaw about y (+ face to the viewer's right at view yaw 0), nod about x (+ looks down),
-    tilt about z (+ head leans to the viewer's right)."""
+    tilt about z (+ head leans to the viewer's right).
+    As built, a positive nod lifts the face (chin forward and up), a negative one lowers it."""
     a, b, c = (math.radians(v) for v in (yaw, nod, tilt))
     Ry = np.array([[math.cos(a), 0, math.sin(a)], [0, 1, 0], [-math.sin(a), 0, math.cos(a)]])
     Rx = np.array([[1, 0, 0], [0, math.cos(b), math.sin(b)], [0, -math.sin(b), math.cos(b)]])
@@ -42,7 +43,7 @@ class Expr(dict):
     """what the face does. Every key has a neutral default."""
     DEF = dict(open=1.0, lid_in=0.0, lid_out=0.0, smile_eye=0.0, closed=0.0, iris=1.0, look=(0.0, 0.0),
                brow_up=0.0, brow_in=0.0, brow_arch=0.0,
-               mouth='line', smile=0.0, mouth_w=1.0, mouth_open=0.0, teeth=False, tongue=True, blush=0.0,
+               mouth='line', smile=0.0, smirk=0.0, mouth_w=1.0, mouth_open=0.0, teeth=False, tongue=True, blush=0.0,
                sweat=False, tear=False)
 
     def __getattr__(self, k):
@@ -408,6 +409,10 @@ class Head:
         if E.mouth == 'line' or E.mouth_open <= 0.01:
             u = np.linspace(-mw, mw, 22)
             v = sm * (u / mw) ** 2 - sm * 0.3 + P.get('mouth_curve', 0.0) * (1 - (u / mw) ** 2)
+            if E.smirk:
+                # a crooked mouth: one corner pulled up and out (+ : the character's left), the other stays
+                t = np.clip(E.smirk * u / mw, 0, 1)
+                v = v + 0.07 * abs(E.smirk) * t ** 1.6
             pts = self.xy(view, self.on(u, my + v, 0.004))
             s = np.linspace(0, 1, len(pts))
             th = lw * (0.45 + 0.55 * np.sin(s * np.pi))

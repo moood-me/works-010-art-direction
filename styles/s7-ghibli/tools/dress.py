@@ -2,10 +2,11 @@
 
 A character file gives `B` (body measures), poses, a garment `spec` and a `head_fn`; `draw_figure` does the rest.
 Garment kinds: top (blouse/shirt/tee/sweater with sleeves, collar, buttons), over (cardigan/vest/jacket — an
-opening at the front), bottom (skirt / trousers / shorts), apron, shoes. Small marks (folds, pockets, cuffs) are
+opening at the front), bottom (skirt / trousers / shorts), apron, shoes, `worn` (things lying over the body
+and arms: a towel, headphones, a hood). Small marks (folds, pockets, cuffs) are
 lines laid on the 3D surface, drawn only where it faces the camera."""
 import numpy as np
-from shapely.geometry import Point, LineString, box
+from shapely.geometry import Point, LineString, Polygon, box
 from shapely.ops import unary_union
 from geo import tube, shift, smooth, polys, lines
 from svgdoc import INK, mix, shade
@@ -65,6 +66,26 @@ def _emit(d, run, w, c, clip):
         d.line(np.asarray(s.coords), w, c)
 
 
+def surface_patch(view, loft, rows, push=0.4, nt=14):
+    """a piece of cloth lying on a loft (an apron, a towel, a pocket): rows of (y, t0, t1) — the azimuths between
+    which it lies at each height. Built from small quads, only those that face the camera, so the piece keeps the
+    body's silhouette where it goes round the side."""
+    G = np.array([[loft.pt(t0 + (t1 - t0) * j / (nt - 1), y, push) for j in range(nt)] for y, t0, t1 in rows])
+    C = view.rot(G.reshape(-1, 3)).reshape(len(rows), nt, 3)
+    S2 = view.xy(G.reshape(-1, 3)).reshape(len(rows), nt, 2)
+    quads = []
+    for i in range(len(rows) - 1):
+        for j in range(nt - 1):
+            e1, e2 = C[i, j + 1] - C[i, j], C[i + 1, j] - C[i, j]
+            nz = e1[0] * e2[1] - e1[1] * e2[0]
+            if (nz > 0) != (rows[i + 1][0] > rows[i][0]):
+                continue
+            q = Polygon([S2[i, j], S2[i, j + 1], S2[i + 1, j + 1], S2[i + 1, j]])
+            if q.is_valid and q.area > 0:
+                quads.append(q.buffer(0.35))
+    return smooth(unary_union(quads), 0.5) if quads else Polygon()
+
+
 def draw_figure(d, view, F, spec, head_fn):
     """F: a posed Figure. head_fn(d, view, F, back) places the head (back='prepare'), draws the hair behind
     (back=True) or the head and front hair (back=False)."""
@@ -100,6 +121,9 @@ def draw_figure(d, view, F, spec, head_fn):
     items.sort(key=lambda x: (x[0], x[1]))
     for _, _, fn in items:
         fn()
+    # ---- things lying over the body and the arms, under the head: a towel on a shoulder, headphones, a hood
+    if S.get('worn'):
+        S['worn'](d, view, F)
     # ---- neck, then the head and front hair
     head_fn(d, view, F, False)
 
@@ -132,7 +156,9 @@ def trousers(d, view, F, S, k):
     legs = {}
     for side in ('l', 'r'):
         tg, _ = F.leg_shape(view, side, ease=e, upto=upto)
-        if bot['kind'] == 'trousers':
+        if bot['kind'] == 'trousers' and bot.get('narrow'):
+            pass        # tight to the leg down to the ankle (tucked into boots)
+        elif bot['kind'] == 'trousers':
             kn, an = J['kn' + side], J['an' + side]
             low = tube(view, [kn, an + [0, -1.5, 0]], [B['leg_r'][len(B['leg_r']) // 2] + e + 0.3, B['leg_r'][-1] + e + 1.6])
             tg = unary_union([tg, low])
@@ -296,6 +322,8 @@ def draw_arm(d, view, F, S, side, torso, k):
 
     def draw_hand():
         hk = 0.12 * view.s
+        if not hand_parts:
+            return
         whole = unary_union(hand_parts)
         hsh = shadow_of(whole, hk * 3)
         for g in hand_parts:
@@ -324,6 +352,10 @@ def draw_arm(d, view, F, S, side, torso, k):
     if upto < 0.98:
         fill_part(d, arm_cut, S['skin'], k * 0.4)
     sh = fill_part(d, sg, c, k * 0.9)
+    if sl.get('roll') and upto < 0.98:
+        # a rolled-up sleeve: a thick band where the sleeve ends
+        rg, _ = F.arm_shape(view, side, ease=sl.get('ease', 0.9) + sl['roll'], start=upto - 0.07, upto=upto + 0.02)
+        fill_part(d, rg, c, k * 0.5)
     # join the sleeve into the shoulder
     blob = Point(shp).buffer(B['arm_r'][0] * view.s * 1.6)
     reg = sg.intersection(tor).intersection(blob).buffer(-lw * 0.6)
@@ -360,6 +392,7 @@ def head_drawer(head, hair, skin, hair_c, iris_c, E, head_c=None, extra=None):
         J = F.J
         p = F.pose
         head.place(J['head'], F.B['head_h'], *p.get('head_rot', (0, 0, 0)))
+        F.expr = E          # for `extra`: what is drawn over the face may need the expression (a mouth in a beard)
         if 'hair' not in state:
             state['hair'] = hair.build(view) if hair else (None, None, [])
         Fh, Bh, st = state['hair']

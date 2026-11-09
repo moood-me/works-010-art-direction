@@ -146,6 +146,8 @@ class Figure:
         sv = unit(np.cross(ax, pn)) * s          # across the knuckles, from the little finger to the index
         r = B['hand_r']
         pieces = []
+        if kind == 'pocket':      # the hand is inside a pocket: nothing to draw
+            return []
         if kind == 'fist':
             k1 = w + ax * L * 0.42
             palm = tube(view, [w, k1], [r * 0.8, r * 1.05])

@@ -35,6 +35,7 @@
      shoulder, a held prop, arms, then the head; `head_drawer()` is the usual head function.
    - `backdrop.py`, `scenes.py` — painted places: sky with cumulus, foliage from leaf clumps in three tones, grass,
      flowers; the meadow, the workshop, the thicket, the study.
+   - `marat.py`, `kira.py` — the two added in round three (see below).
    - `anya.py`, `savely.py`, `tim.py`, `vera.py` — the characters: `FACE`, `HAIRDEF`, `B`, `POSES`, `SPEC`, `extra()`
      (moustache and loupe, a plaster, earrings), props (`hat`, `watch`).
    - `build.py` — composes and renders all pictures.
@@ -67,7 +68,52 @@ python3 tools/build.py portrait   # only names that contain "portrait"
 4. `B` (centimetres; torso rings, joints, radii, `head_c`, `head_h`), `POSES` (at least `stand`), `SPEC` (skin,
    top/over/bottom/shoes, optional `prop`).
 5. Register it in `CAST` in `build.py` (module, portrait pose, figure pose, place) and give it a calm `Expr` in
-   `CALM`. Look at it with `python3 tools/build.py <name>` and against the stills.
+   `CALM` (or keep `CALM` and its own `EXPR` in the module, as `marat.py` and `kira.py` do). Look at it with `python3 tools/build.py <name>` and against the stills.
+
+## Round three: Марат and Кира
+
+Asked for by `docs/briefs/styles-more.md` (part A): two more characters, unlike the four, drawn by this style's rules
+with its code; the four's pictures stay as they were.
+
+What was drawn: for each of the two a portrait, a full figure, a turnaround and an expression sheet
+(`portrait-`, `figure-`, `turn-`, `expr-` + `marat` / `kira`), and all six together (`six`). The four's files were not
+re-rendered (their `pics/` and `svg/` are byte for byte the old ones).
+
+How, so it can be repeated:
+
+- `tools/marat.py`. A broad head on a short neck, a body half as wide again as anyone's (`B`), `figure_scale=4.7` in
+  `SPEC` so the giant fits the same sheet. Curls are `balls` — round clumps along the edge of a low hair shell. The
+  beard is a second `Hair` on the same head (`BEARD`): its "hairline" is the chin, its `top` is the beard's upper
+  edge by azimuth (under the nose, across the cheek, up to the sideburn), `balls` curl its lower edge; `extra()`
+  draws it over the face and then draws the mouth again on top (an open laugh with teeth and tongue; a shut mouth in
+  a black beard gets a lighter line). His resting face is a laugh (`CALM` in the module). The apron (`SPEC['apron']`)
+  and the towel (`SPEC['worn']`) are cloth patches on the torso's form; the ladle is the `prop` of the `ladle` pose.
+- `tools/kira.py`. A narrower face with a small chin, eyes smaller than Аня's with a heavy lid line, low straight
+  brows; short choppy hair, three long fringe locks from a parting on her right down over her left eye. The slouch is
+  in the poses: `lean`, `head_fwd`, `shrug`, the head nodded down, the look coming back from under the brows.
+  `worn()` draws the hood's roll round the neck, the headphones on it, the boots over the narrow trousers (acid
+  laces), and closes the pocket over the hand that is inside. Her own `EXPR`: joy is a crooked half-smile and a
+  blush, anger is bared teeth.
+- Shared code, extended (nothing the four use changed; checked by regenerating their SVG — identical before and after):
+  `Expr.smirk` (one corner of the mouth up), hand kind `pocket` (a hidden hand), sleeve `roll` (a rolled sleeve),
+  trousers `narrow`, `SPEC['worn']` (things over body and arms, under the head), `SPEC['figure_scale']`,
+  `dress.surface_patch` (cloth lying on a form), `F.expr` (the expression, for `extra`), a module's own `CALM` and
+  `EXPR`, `turnaround(name, calm=True)`, the places `kitchen` and `dusk` in `scenes.py`, `cast6()` in `build.py`.
+- By eye, what changed on the way: Марат's first eyes were slits and the mouth small (bigger eye, wider laugh, head
+  thrown back); the beard's cheek line went too high and made the face narrow (lowered); the curls were an afro
+  (smaller clumps, a scalloped forehead line); the cook's stand collar looked like a bib (removed); the towel moved
+  out onto the shoulder. Кира's headphones were twice too big; trousers flared (now `narrow`) and hid the boots.
+- `head_rot`'s second number: positive tilts the face **up**, negative down (the comment in `head.py` says the
+  opposite).
+- `python3 tools/build.py marat`, `… kira`, `… six` build only the new pictures. A full `python3 tools/build.py`
+  re-renders the four as well: their SVG comes out identical except `cast.svg`, where Тим's fringe differs a little
+  from the committed file (so it was before this round) — don't run the full build unless that is wanted.
+
+Weak, honestly: Марат's rolled sleeves are balls and his shoulders have straight corners (the sleeve tops are cut
+by a box — fine for hanging arms, visible on his); the hand on his hip is a paddle; in profile the beard is a thin
+strip. Кира's face under the fringe lives on one eye; in three-quarter views her head reads as tilted further than
+the pose says (the jaw line and the fringe run parallel); the hood is a roll, not a hood. Legs are still smooth
+tubes for both.
 
 ## Honest state
 

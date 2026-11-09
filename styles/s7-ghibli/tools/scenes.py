@@ -5,6 +5,7 @@ import numpy as np
 from shapely.geometry import Point, box, Polygon
 from shapely.ops import unary_union
 from backdrop import grad, painted, cloud, foliage, grass, flowers, sky
+from svgdoc import mix
 
 
 def meadow(d, w, h, horizon=0.62, seed=1, far=True):
@@ -138,3 +139,110 @@ def ground_shadow(d, view, F, w=1.0):
     rx = (span / 2 + 16 * view.s) * w
     d.add(f'<ellipse cx="{p[0]:.1f}" cy="{p[1] + 0.5 * view.s:.1f}" rx="{rx:.1f}" ry="{4.5 * view.s:.1f}" '
           f'fill="#2a3a20" opacity="0.28"/>')
+
+
+def kitchen(d, w, h, seed=8):
+    """a warm kitchen: a cream wall in window light, copper pans hanging from a rail, a shelf of jars, white tiles
+    with a few terracotta ones below."""
+    rnd = random.Random(seed)
+    ro = d.rough(0.03, 4, seed)
+    grad(d, 0, 0, w, h, [(0, '#ecdcb6'), (0.55, '#e2cc9e'), (1, '#cfb486')])
+    gl = d.blur(40)
+    d.add(f'<path d="M{w * 0.55},{-h * 0.02} L{w * 1.02},{h * 0.02} L{w * 1.02},{h * 0.62} L{w * 0.68},{h * 0.55}Z" '
+          f'fill="#fff4cc" opacity="0.5" filter="url(#{gl})"/>')
+    # tiles on the lower wall
+    ty = h * 0.60
+    painted(d, box(-10, ty, w + 10, h + 10), '#efe8d6', ro)
+    ts = w / 9.5
+    y, row = ty, 0
+    while y < h:
+        x = -ts * (0.5 if row % 2 else 0)
+        while x < w:
+            if rnd.random() < 0.16:
+                painted(d, box(x + 2, y + 2, x + ts - 2, y + ts - 2), rnd.choice(['#c8754c', '#d9a05a', '#7f9a8a']), ro, 0.85)
+            d.add(f'<rect x="{x:.0f}" y="{y:.0f}" width="{ts:.0f}" height="{ts:.0f}" fill="none" stroke="#cdbf9f" stroke-width="1.6"/>')
+            x += ts
+        y += ts
+        row += 1
+    painted(d, box(-10, ty - h * 0.012, w + 10, ty + h * 0.012), '#8a5a36', ro)
+    # a rail with hanging pans and spoons
+    ry = h * 0.10
+    painted(d, box(-10, ry - 3, w + 10, ry + 3), '#6a4a34', ro)
+    for cx, r, c in ((0.10, 0.075, '#b8693a'), (0.27, 0.055, '#c27a44'), (0.80, 0.085, '#b8693a'), (0.95, 0.05, '#8a8f90')):
+        X, R = cx * w, r * w
+        Y = ry + R * 2.3
+        painted(d, box(X - R * 0.10, ry, X + R * 0.10, Y), mix(c, '#3a2a20', 0.45), ro)
+        painted(d, Point(X, Y).buffer(R, 32), mix(c, '#3a2018', 0.3), ro)
+        painted(d, Point(X - R * 0.06, Y - R * 0.06).buffer(R * 0.80, 32), c, ro)
+        painted(d, Point(X - R * 0.25, Y - R * 0.28).buffer(R * 0.34, 24), mix(c, '#fff0c8', 0.45), ro)
+    # a shelf with jars and bowls
+    sy = h * 0.47
+    painted(d, box(-10, sy, w * 0.36, sy + h * 0.022), '#7a5234', ro)
+    painted(d, box(w * 0.72, sy, w + 10, sy + h * 0.022), '#7a5234', ro)
+    for x0, x1 in ((0.0, 0.34), (0.74, 1.0)):
+        x = x0 * w + 6
+        while x < x1 * w - 20:
+            bw, bh = rnd.uniform(0.045, 0.08) * w, rnd.uniform(0.05, 0.11) * h
+            c = rnd.choice(['#d8c8a0', '#a8b89a', '#c98a5a', '#e6dcc6', '#b0a48a', '#d4a84a'])
+            painted(d, box(x, sy - bh, x + bw, sy).buffer(4), c, ro)
+            painted(d, box(x - 2, sy - bh - 6, x + bw + 2, sy - bh + 2), mix(c, '#4a3020', 0.45), ro)
+            x += bw + rnd.uniform(6, 22)
+    d.mottle(0.014, 0.35, seed)
+
+
+def kitchen_floor(d, w, h, y, seed=9):
+    grad(d, 0, y, w, h - y, [(0, '#b48a62'), (1, '#8a6444')])
+    for k in range(7):
+        yy = y + (h - y) * (k / 7) ** 1.5
+        d.add(f'<rect x="0" y="{yy:.0f}" width="{w}" height="1.5" fill="#6a4a30" opacity="0.45"/>')
+    for k in range(-3, 12):
+        x0 = w * 0.5 + (k - 4) * w * 0.14
+        x1 = w * 0.5 + (k - 4) * w * 0.26
+        d.add(f'<line x1="{x0:.0f}" y1="{y:.0f}" x2="{x1:.0f}" y2="{h}" stroke="#6a4a30" stroke-width="1.3" opacity="0.4"/>')
+
+
+def dusk(d, w, h, seed=10, ground=None):
+    """the edge of town at dusk: a violet sky going peach at the horizon, pink-lit clouds, roofs with a few lit
+    windows, wires on poles, a wall."""
+    rnd = random.Random(seed)
+    ro = d.rough(0.025, 5, seed)
+    grad(d, 0, 0, w, h, [(0, '#5d5a9a'), (0.42, '#a988ae'), (0.66, '#eeb394'), (0.8, '#f7d7a4'), (1, '#f7d7a4')])
+    for cx, cy, cw, ch in ((0.24, 0.30, 0.42, 0.13), (0.86, 0.18, 0.34, 0.10), (0.62, 0.47, 0.30, 0.07),
+                           (0.08, 0.52, 0.22, 0.05)):
+        cloud(d, cx * w, cy * h, cw * w, ch * h, rnd, ro, top='#fbd9bd', shadow='#7d75aa', mid='#d79aa6')
+    hy = h * (0.70 if ground is None else min(0.70, ground / h - 0.06))
+    # roofs
+    x = -20
+    houses = []
+    while x < w + 20:
+        bw = rnd.uniform(0.10, 0.2) * w
+        bh = rnd.uniform(0.07, 0.19) * h
+        body = box(x, hy - bh, x + bw, hy + 30)
+        from shapely.geometry import Polygon as _Pg
+        roof = _Pg([(x - 6, hy - bh), (x + bw * rnd.uniform(0.35, 0.65), hy - bh - rnd.uniform(0.03, 0.06) * h), (x + bw + 6, hy - bh)])
+        houses.append((body.union(roof), x, bw, bh))
+        x += bw * rnd.uniform(0.8, 1.05)
+    for g, x, bw, bh in houses:
+        painted(d, g, rnd.choice(['#57507d', '#4d4873', '#625884']), ro)
+    for g, x, bw, bh in houses:
+        for _ in range(rnd.randint(0, 2)):
+            wx, wy = x + rnd.uniform(0.15, 0.7) * bw, hy - rnd.uniform(0.25, 0.75) * bh
+            painted(d, box(wx, wy, wx + 0.022 * w, wy + 0.026 * h), '#ffe29a', ro)
+    # poles and wires
+    for px in (0.13, 0.9):
+        painted(d, box(px * w - 4, hy - 0.36 * h, px * w + 4, hy + 20), '#3d3760', ro)
+        painted(d, box(px * w - 30, hy - 0.34 * h, px * w + 30, hy - 0.33 * h), '#3d3760', ro)
+    for k in range(2):
+        y0 = hy - 0.335 * h + k * 10
+        d.add(f'<path d="M{0.13 * w:.0f},{y0:.0f} Q{0.5 * w:.0f},{y0 + 0.07 * h:.0f} {0.9 * w:.0f},{y0:.0f}" fill="none" '
+              f'stroke="#3d3760" stroke-width="1.6"/>')
+        d.add(f'<path d="M{-0.3 * w:.0f},{y0 - 20:.0f} Q{-0.05 * w:.0f},{y0 + 0.05 * h:.0f} {0.13 * w:.0f},{y0:.0f}" fill="none" '
+              f'stroke="#3d3760" stroke-width="1.6"/>')
+    # a wall, the last light on its top; the pavement
+    painted(d, box(-10, hy, w + 10, h + 10), '#6c6186', ro)
+    painted(d, box(-10, hy - 4, w + 10, hy + 0.012 * h), '#c59aa2', ro)
+    for k in range(1, 5):
+        d.add(f'<rect x="0" y="{hy + k * 0.055 * h:.0f}" width="{w}" height="1.5" fill="#4d4568" opacity="0.5"/>')
+    if ground is not None:
+        grad(d, 0, ground, w, h - ground, [(0, '#857a94'), (1, '#5f5674')])
+    d.mottle(0.013, 0.35, seed)
