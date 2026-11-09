@@ -76,11 +76,12 @@ def figure(name, yaw=-22, w=500, h=900):
 
 
 # ------------------------------------------------------------------------------------------------ turnarounds
-def turnaround(name, w=1260, h=520):
+def turnaround(name, w=1260, h=520, side=-1, **kw):
+    """side: -1 turns the character to our left (the four), +1 to our right; kw goes to the figure."""
     d = lc.Doc(w, h, PAPER)
     cw = w / 3
-    for i, (yaw, lab) in enumerate([(0, 'анфас'), (-45, 'три четверти'), (-90, 'профиль')]):
-        f, col, floor = fig(name, True, head_rot=(0, 0, 0))
+    for i, (yaw, lab) in enumerate([(0, 'анфас'), (side * 45, 'три четверти'), (side * 90, 'профиль')]):
+        f, col, floor = fig(name, True, head_rot=(0, 0, 0), **kw)
         x0 = i * cw
         panel(d, x0 + 12, 12, cw - 24, h - 60, PANEL[name])
         g0, g1 = clip_panel(d, f'tc{i}', x0 + 12, 12, cw - 24, h - 60)
