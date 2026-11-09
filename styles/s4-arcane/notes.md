@@ -30,14 +30,15 @@ The style is near-real 3D form with painted, graphic light — so the drawing is
 - Painterly finish by SVG filters: `brush` (displaced edge + streaky alpha) on shadow shapes, `paint` (slight
   displacement) on fills, soft blurs for blush and half-tones, form-following brush strokes on the skin, a canvas
   texture on the backdrop and a fine grain over all.
-- `tools/cast.py` — the four people: head tables, features, palettes, hair, clothes and poses. `tools/body.py` —
+- `tools/cast.py` — the four people: head tables, features, palettes, hair, clothes and poses; `tools/cast2.py` — Марат and
+  Кира, the same way (it adds them to `CAST`). `tools/body.py` —
   figure parts (tubes, shoes, hands, a box for a book or a folder) drawn back to front.
 - `tools/make.py` — builds every picture: the SVG is kept gzipped in `svg/*.svgz` (to keep the folder small; `gunzip -c`
   or open in a browser served with gzip), a plain copy goes to `/home/user/cache/styles-s4-arcane/render/`, where
   headless Chrome renders it to PNG, then it is saved as JPEG in `pics/`.
 
 Repeat: `pip install numpy shapely scikit-image`, then `cd tools && python3 make.py` (or `make.py portraits turns expr figures cast
-construction`, or one item like `portrait-anya`); rendering everything takes several minutes.
+cast-six construction`, or one item like `portrait-anya`); rendering everything takes several minutes.
 
 ## Sources
 
@@ -65,3 +66,58 @@ Downloads and scratch: `/home/user/cache/styles-s4-arcane/`.
 - Figures are stiff (lofts and tubes), cloth does not fold except a skirt's sine folds, hands are mittens.
 - Тим's lower face is too long and heavy for a child; in profile his neck shows in front of the hood.
 - Савелий's legs read too long against a short waistcoat.
+
+## Round three: Марат and Кира
+
+Asked for by the brief `docs/briefs/styles-more.md` (part A): two more characters, sharply unlike the four, drawn by
+this style's rules and code; the four stay as they are.
+
+**What was drawn** — for each of the two a portrait, a full figure, a head turnaround and an expression sheet
+(`portrait-`, `figure-`, `turn-`, `expr-` + `marat` / `kira`), Кира's full-figure turnaround (`figure-turn-kira`), and
+all six together (`cast-six`; `cast` with the four is untouched).
+
+**How** — `tools/cast2.py` holds both: `marat()`, `kira()` (head tables, features, palette, hair) and `marat_body()`,
+`kira_body()` (parts and pose), and adds them to `CAST`. What the two needed and the code did not have was added to
+the shared parts, all of it off unless a character asks for it:
+
+- `arc.HeadView`, `Person.head_pose = dict(pitch, roll, turn)` and the expression keys `nod`, `tilt`, `turn` — the head
+  nods, tilts and turns on the neck while the body keeps its view (Кира's look from under the brows, Марат's head
+  thrown back; in the expression sheets the head moves with the feeling).
+- `tongue` in an expression — a tongue inside an open mouth (with `teeth` it stops the mouth reading as a hole).
+- `P.beard(doc, view, head, e, ms)` — a hook drawn over the face and under the hair. Марат's beard is a `hair_cap`
+  shell over the jaw, cheeks and upper lip with a field that leaves the mouth open and follows the smile and the jaw,
+  plus short hooked strokes for curls. His hair is the same shell with a lumpy thickness and many small hooked locks.
+- `body.hand_parts(...)` — a hand of a palm, four fingers and a thumb (tubes; curl, spread, thumb angles), and
+  `Part.outline` so that fingers of one colour stay apart. Used for Марат's fist on the hip, his hand round the ladle
+  and Кира's hand on her arm.
+- `make.py`: a character may give `bust_body` (arms down, for the head-and-shoulders sheets), `expr` (its own joy,
+  anger… — Кира's joy is a crooked half-smile, Марат's is a laugh) and `fig_s` (Марат's figure sheet is drawn at 0.47
+  instead of 0.5 so that he and the ladle fit the same sheet); `together6()` builds `cast-six`.
+
+**The four did not change**: after the edits every one of their 18 pictures was rebuilt into a scratch folder and its
+SVG compared with the kept one, byte for byte (`/home/user/cache/styles-s4-arcane/verify.py`: it points `make.SVG`,
+`make.PIC` and `make.SCRATCH` at a scratch folder, builds, and compares with `svg/*.svgz`).
+
+**Repeat**: `cd tools && python3 make.py portrait-marat portrait-kira turn-marat turn-kira expr-marat expr-kira
+figure-marat figure-kira figure-turn-kira cast-six`.
+
+**Weak, seen by eye**: Марат's full figure is a tall column in an apron rather than a barrel, and stands almost
+straight; in profile a wedge of bare skin shows between his ear and the beard. Кира's profile is rough (ragged shadow
+shapes on the cheek and at the mouth, the neck in front of the headphone cup), one lock at her right temple ends
+blunt, her legs are stilts. Hands have fingers now but close up are still a bundle of tubes. Марат's full-figure
+turnaround was tried and not kept: in the side view the legs and the ladle come out in front of the apron.
+
+## How to add a character
+
+1. In a module like `tools/cast2.py` write `name()` returning a `Person`: the head tables (`a`, `zf`, `zb`, `p`, `pf`,
+   `bumps` — start from the nearest of the six and change the jaw, cheeks and chin), `nose_k`, `neck_k`, the eye, brow,
+   mouth and ear numbers, `blush`, `freckles`, `pal` (skin by `skinpal`), `lines(e)` for wrinkles, `hair` colours,
+   `hair_cap` (a hairline table or a field) and `hair_locks(head)`; optional `head_pose`, `glasses`, `moustache`,
+   `beard`, `extras`.
+2. Write `name_body(P)` returning the list of parts (in any order: they are sorted by depth; `bias` moves one):
+   a torso `Loft` with flat-mapped `pieces` and `lines`, skirts or aprons as lofts, arms by `arm_tube`, legs as
+   `Tube`, `shoe`, hands by `hand_parts` (or `hand` for a quiet mitten), props as `BoxPart`, `Tube` or `Loft`.
+3. Add it to `CAST`: `make`, `body`, `feet` (y of the soles — the height), `name`, `bg`, `rim`, `neutral` (the resting
+   expression), and if needed `bust_body`, `expr`, `fig_s`.
+4. `python3 make.py portrait-<key> turn-<key> expr-<key> figure-<key>`; look, change the numbers, repeat. Put the
+   figure into `together6()` (or a new group picture) with its place, turn and ground line.

@@ -573,3 +573,32 @@ class Tube(Surf):
         d = (P[..., 0] - C[..., 0]) * n[..., 0] + (P[..., 1] - C[..., 1]) * n[..., 1] + (P[..., 2] - C[..., 2]) * n[..., 2]
         n = np.where((d < 0)[..., None], -n, n)
         return P, n
+
+
+class HeadView(View):
+    """A view of the head alone: the base view plus the head's own nod (pitch > 0 = chin down), tilt (roll > 0 = toward
+    the figure's left shoulder) and turn (> 0 = to the figure's left) about a pivot at the top of the neck."""
+
+    def __init__(self, base, pitch=0.0, roll=0.0, turn=0.0, pivot=(0.0, 70.0, -20.0)):
+        self.__dict__.update(base.__dict__)
+        p, r, t = math.radians(pitch), math.radians(roll), math.radians(turn)
+        Rx = np.array([[1, 0, 0], [0, math.cos(p), math.sin(p)], [0, -math.sin(p), math.cos(p)]])
+        Rz = np.array([[math.cos(r), -math.sin(r), 0], [math.sin(r), math.cos(r), 0], [0, 0, 1]])
+        Ry = np.array([[math.cos(t), 0, math.sin(t)], [0, 1, 0], [-math.sin(t), 0, math.cos(t)]])
+        self.M = Ry @ Rx @ Rz
+        self.pivot = pivot
+
+    def _local(self, X, Y, Z, point):
+        X, Y, Z = np.asarray(X, float), np.asarray(Y, float), np.asarray(Z, float)
+        px, py, pz = self.pivot if point else (0.0, 0.0, 0.0)
+        x, y, z = X - px, Y - py, Z - pz
+        M = self.M
+        return (M[0, 0] * x + M[0, 1] * y + M[0, 2] * z + px, M[1, 0] * x + M[1, 1] * y + M[1, 2] * z + py,
+                M[2, 0] * x + M[2, 1] * y + M[2, 2] * z + pz)
+
+    def rot(self, X, Y, Z):
+        return View.rot(self, *self._local(X, Y, Z, False))
+
+    def proj(self, X, Y, Z):
+        x, y, z = View.rot(self, *self._local(X, Y, Z, True))
+        return self.cx + self.s * x, self.cy + self.s * y, z

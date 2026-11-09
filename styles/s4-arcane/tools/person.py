@@ -6,7 +6,7 @@ from arc import *
 from face import *
 
 NEUTRAL = dict(brow_in=0, brow_out=0, knit=0, lid=0, low=0, smile=0, open=0, wide=0, teeth=0, sad=0, snarl=0,
-               gx=0, gy=0, squint=0)
+               gx=0, gy=0, squint=0, tongue=0, nod=0, tilt=0, turn=0)
 
 
 def mix(c1, c2, t):
@@ -159,7 +159,11 @@ def mouth_shapes(P, e):
         tb = min(op * 0.45, 5) + sn * 2
         teeth = [(mw * 0.62, my + 0.4 - sm(mw) * 0.3 - sn * 2), (0, my + 0.8 - op * 0.2 - sn * 3), (-mw * 0.62, my + 0.4 - sm(-mw) * 0.3 - sn * 2),
                  (-mw * 0.55, my + tb - sm(-mw) * 0.2), (0, my + tb + 1), (mw * 0.55, my + tb - sm(mw) * 0.2)]
-    return dict(upper=upper_lip, lower=lower_lip, opening=opening, teeth=teeth, line=m_up, cy=(cL + cR) / 2, cL=cL, cR=cR, mw=mw, my=my)
+    tongue = None
+    if op > 2.5 and e['tongue']:
+        tongue = [(-mw * 0.5, my + 1 + op * 0.8 - sm(-mw) * 0.2), (-mw * 0.28, my + 1.2 + op * 0.52), (0, my + 1.2 + op * 0.45), (mw * 0.28, my + 1.2 + op * 0.52),
+                  (mw * 0.5, my + 1 + op * 0.8 - sm(mw) * 0.2), (0, my + 1.4 + op)]
+    return dict(upper=upper_lip, lower=lower_lip, opening=opening, teeth=teeth, tongue=tongue, line=m_up, cy=(cL + cR) / 2, cL=cL, cR=cR, mw=mw, my=my)
 
 
 def ear_points(P, side, view, head):
@@ -229,6 +233,14 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
     if e:
         E.update(e)
     e = E
+    # the body keeps the given view; the head may nod, tilt and turn on the neck (P.head_pose, plus the expression's own)
+    bview = view
+    hpose = dict(getattr(P, 'head_pose', None) or {})
+    for a_, b_ in (('nod', 'pitch'), ('tilt', 'roll'), ('turn', 'turn')):
+        if e[a_]:
+            hpose[b_] = hpose.get(b_, 0) + e[a_]
+    if hpose:
+        view = HeadView(view, **hpose)
     jaw = e['open'] * 0.7
     head = P.head(jaw)
     nose = P.nose(head)
@@ -340,7 +352,7 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
     if hasattr(P, 'bun') and abs(math.degrees(view.yaw)) < 60:
         out.append(P.bun(doc, view, None))
     # ---- neck
-    Rn = regions(neck, view)
+    Rn = regions(neck, bview)
     Rh = regions(head, view, extra={'warm': lambda U, V, dl, nz: np.minimum(dl - 0.1, 0.55 - dl), 'half': lambda U, V, dl, nz: np.minimum(dl - 0.1, 0.28 - dl)})
     neck_svg = shade_layers(doc, Rn, pal['neck'])
     # cast shadow of the head on the neck
@@ -351,9 +363,9 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
     out.append(neck_svg)
     # ---- bust
     if bust and hasattr(P, 'bust'):
-        out.append(P.bust(doc, view, head))
+        out.append(P.bust(doc, bview, head))
     if bust and hasattr(P, 'collar'):
-        out.append(P.collar(doc, view, head))
+        out.append(P.collar(doc, bview, head))
     # ---- ears (behind the head when facing away)
     ears = []
     for side in (1, -1):
@@ -398,6 +410,9 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
     if ms['opening']:
         dd, _ = wrap_shape(head, view, ms['opening'], True, 1.2, -0.5)
         g.append(path(dd, pal['mouth']))
+        if ms['tongue']:
+            dt, _ = wrap_shape(head, view, ms['tongue'], True, 1.2, -0.5)
+            g.append(path(dt, pal.get('tongue', '#c4605e'), extra=' filter="url(#edge)"'))
         if ms['teeth']:
             dd, _ = wrap_shape(head, view, ms['teeth'], True, 1.3, -0.5)
             g.append(path(dd, '#f3ece6'))
@@ -565,6 +580,9 @@ def draw_head(doc, P, view, e=None, bust=True, behind_hair=True):
                         % (gid, fmt(r0[0][0]), fmt(r0[0][1]), fmt(r0[1][0]), fmt(r0[1][1])))
         doc.defs.append('<mask id="%s" maskUnits="userSpaceOnUse" x="0" y="0" width="%d" height="%d"><rect x="-5000" y="-5000" width="10000" height="10000" fill="url(#%s)"/></mask>' % (mid, 10000, 10000, gid))
         out.append('<g clip-path="url(#%s)" mask="url(#%s)">' % (ncid, mid) + ns + '</g>')
+    # ---- a beard: the character's own function, drawn over the face and under the hair
+    if hasattr(P, 'beard'):
+        out.append(P.beard(doc, view, head, e, ms))
     # ---- front ears (drawn over the head edge when facing us)
     # ---- hair: cap then front locks
     if hasattr(P, 'hair_cap'):

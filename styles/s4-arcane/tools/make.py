@@ -1,6 +1,7 @@
 """Build every picture of the page: python3 make.py [what...]; SVG into ../svg, PNG into ../pics (headless Chrome)."""
 import os, sys, subprocess, gzip
 from cast import *
+import cast2  # Марат and Кира join CAST
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SVG = os.path.join(HERE, '..', 'svg')
@@ -46,7 +47,7 @@ def portrait(k):
     d = doc(W, H)
     d.add(background(d, W, H, *c['bg'], seed=3))
     v = View(yaw=22, s=2.2, cx=330, cy=330, light=LIGHT, rimcol=c['rim'])
-    d.add(draw_figure(d, P, v, c['neutral'], parts=bust_parts(c['body'](P))))
+    d.add(draw_figure(d, P, v, c['neutral'], parts=bust_parts(c.get('bust_body', c['body'])(P))))
     save(d, 'portrait-' + k)
 
 
@@ -58,7 +59,7 @@ def turnaround(k):
     d.add(background(d, W, H, *c['bg'], seed=5))
     for i, yaw in enumerate([0, 40, 88]):
         v = View(yaw=yaw, s=1.45, cx=260 + i * 490, cy=270, light=LIGHT, rimcol=c['rim'])
-        d.add(draw_figure(d, P, v, c['neutral'], parts=bust_parts(c['body'](P))))
+        d.add(draw_figure(d, P, v, c['neutral'], parts=bust_parts(c.get('bust_body', c['body'])(P))))
     save(d, 'turn-' + k)
 
 
@@ -70,14 +71,15 @@ def expressions(k):
     d.add(background(d, W, H, *c['bg'], seed=7))
     for i, (name, e) in enumerate(EXPR):
         v = View(yaw=14, s=1.3, cx=200 + i * 400, cy=250, light=LIGHT, rimcol=c['rim'])
-        d.add(draw_figure(d, P, v, e, parts=bust_parts(c['body'](P))))
+        e = c.get('expr', {}).get(name, e)  # a character may have its own way of being glad or angry
+        d.add(draw_figure(d, P, v, e, parts=bust_parts(c.get('bust_body', c['body'])(P))))
     save(d, 'expr-' + k)
 
 
 def figure(k, yaws=(18,), name=None):
     c = CAST[k]
     P = c['make']()
-    s = 0.5
+    s = c.get('fig_s', 0.5)  # the biggest of the cast is drawn a little smaller to fit the same sheet
     W, H = 300 + 300 * len(yaws), 960
     d = doc(W, H)
     d.add(background(d, W, H, *c['bg'], seed=9))
@@ -119,6 +121,23 @@ def together():
     save(d, 'cast')
 
 
+def together6():
+    """All six: not in a row — Марат in the middle and a step back, Кира apart at the edge."""
+    W, H = 1600, 1000
+    d = doc(W, H)
+    d.add(room(d, W, H, '#8a6a52', '#5a4640', '#2e2624', '#f6c98a', 690))
+    s = 0.47
+    order = [('marat', 930, 6, s, H - 92), ('vera', 1400, -26, s, H - 74), ('savely', 440, 30, s, H - 76), ('anya', 650, 14, s, H - 58),
+             ('tim', 1190, -14, s * 1.06, H - 30), ('kira', 170, 26, s, H - 40)]
+    for k, x, yaw, sc, gy in order:
+        c = CAST[k]
+        P = c['make']()
+        d.add(ground(x, gy + 2, 80 if k != 'marat' else 130, 0.45))
+        v = View(yaw=yaw, s=sc, cx=x, cy=gy - c['feet'] * sc, light=LIGHT, rimcol=c['rim'])
+        d.add(draw_figure(d, P, v, c['neutral'], parts=c['body'](P)))
+    save(d, 'cast-six')
+
+
 def construction():
     """How a head is built: form, light and shadow, features, hair and texture."""
     c = CAST['anya']
@@ -151,7 +170,7 @@ def construction():
 
 
 if __name__ == '__main__':
-    what = sys.argv[1:] or ['portraits', 'turns', 'expr', 'figures', 'cast']
+    what = sys.argv[1:] or ['portraits', 'turns', 'expr', 'figures', 'cast', 'cast-six']
     for w in what:
         if w == 'portraits':
             for k in CAST:
@@ -160,15 +179,20 @@ if __name__ == '__main__':
             for k in CAST:
                 turnaround(k)
         elif w == 'expr':
-            expressions('anya')
-            expressions('tim')
+            for k in ('anya', 'tim', 'marat', 'kira'):
+                expressions(k)
         elif w == 'figures':
             for k in CAST:
                 figure(k)
             figure('anya', (0, 40, 88), 'figure-turn-anya')
             figure('savely', (0, 40, 88), 'figure-turn-savely')
+            figure('kira', (0, 40, 88), 'figure-turn-kira')
         elif w == 'cast':
             together()
+        elif w == 'cast-six':
+            together6()
+        elif w == 'figure-turn-kira':
+            figure('kira', (0, 40, 88), w)
         elif w == 'construction':
             construction()
         elif w.startswith('portrait-'):

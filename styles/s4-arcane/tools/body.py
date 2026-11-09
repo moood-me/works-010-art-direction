@@ -22,7 +22,11 @@ class Part:
 def part_svg(doc, view, part):
     if part.kind == 'skin':
         R = regions(part.surf, view)
-        return shade_layers(doc, R, part.pal)
+        s = shade_layers(doc, R, part.pal)
+        if getattr(part, 'outline', None) and not R['sil'].is_empty:
+            # a thin dark edge, so fingers next to each other stay apart
+            s += path(poly_path(R['sil']), 'none', part.pal['line'], part.outline * view.s, 0.55)
+        return s
     return draw_cloth(doc, view, part.surf, part.base, part.pieces, shadow=part.shadow or '#7f7590', rim=part.rim, lines=part.lines)
 
 
@@ -109,3 +113,70 @@ def part_any(doc, view, part):
     if getattr(part, 'kind', '') == 'box':
         return part.svg(doc, view)
     return part_svg(doc, view, part)
+
+
+# ---------------------------------------------------------------- hands with fingers
+
+def _unit(v):
+    v = np.array(v, float)
+    return v / (np.linalg.norm(v) + 1e-9)
+
+
+class FTube(Tube):
+    """A tube flattened along a given direction (a palm: thin along its normal)."""
+
+    def __init__(self, pts, radii, flat, normal):
+        Tube.__init__(self, pts, radii, flat)
+        T = np.gradient(self.C, axis=0)
+        T /= np.linalg.norm(T, axis=-1, keepdims=True) + 1e-9
+        n = np.array(normal, float)[None, :]
+        N = n - (n * T).sum(-1, keepdims=True) * T
+        N /= np.linalg.norm(N, axis=-1, keepdims=True) + 1e-9
+        self.N, self.B = N, np.cross(T, N)
+
+
+def hand_parts(wrist, d, n, pal, L=56, wid=24, curl=0.2, spread=0.3, thumb=(0.8, 0.2), side=1, bias=0.0, outline=1.6):
+    """A hand of a palm, four fingers and a thumb, as skin parts.
+    wrist: the point where it starts; d: the direction the hand points; n: where the palm faces (the fingers curl
+    toward it); L: length wrist to fingertip; wid: width of the palm; curl: radians per finger joint (a number or four,
+    index to little finger); spread: fan of the fingers; thumb: (angle away from the fingers, angle toward the palm);
+    side: +1 or -1 puts the thumb on one side or the other."""
+    w = np.array(wrist, float)
+    d = _unit(d)
+    n = np.array(n, float)
+    n = _unit(n - n.dot(d) * d)
+    s = np.cross(n, d) * side
+    curl = [curl] * 4 if not isinstance(curl, (list, tuple)) else list(curl)
+    pl = L * 0.5
+    parts = []
+
+    def add(surf, c, b=0.0):
+        pt = Part(surf, None, kind='skin', pal=pal, center=tuple(c), bias=bias + b)
+        pt.outline = outline
+        parts.append(pt)
+    palm = FTube([w - d * wid * 0.2, w + d * pl * 0.5, w + d * pl * 1.02], [wid * 0.4, wid * 0.53, wid * 0.5], 0.42, n)
+    add(palm, w + d * pl * 0.5)
+    lens = [0.47, 0.52, 0.48, 0.38]
+    for i in range(4):
+        b = w + d * (pl - L * 0.03) + s * wid * (0.38 - 0.253 * i)
+        a = spread * (0.5 - i / 3.0)
+        d0 = _unit(d * math.cos(a) + s * math.sin(a))
+        rf = wid * 0.128 * (1 - 0.07 * i)
+        pts, p = [b], b
+        for k, f in enumerate((0.45, 0.3, 0.25)):
+            ang = curl[i] * (k + 1)
+            dk = d0 * math.cos(ang) + n * math.sin(ang)
+            p = p + dk * L * lens[i] * f
+            pts.append(p)
+        pts.append(p + dk * rf * 0.7)
+        add(Tube([tuple(q) for q in pts], [rf * 1.08, rf, rf * 0.93, rf * 0.86, rf * 0.4]), (pts[1] + pts[2]) / 2 + n * rf, 0.5 + 0.1 * i)
+    t0, t1 = thumb
+    b = w + d * pl * 0.18 + s * wid * 0.36
+    dt = _unit(d * math.cos(t0) + s * math.sin(t0))
+    dt = _unit(dt * math.cos(t1) + n * math.sin(t1))
+    rt = wid * 0.165
+    p1 = b + dt * L * 0.24
+    dt2 = _unit(dt + d * 0.35 + n * 0.2 * (1 if t1 > 0.5 else 0))
+    p2 = p1 + dt2 * L * 0.2
+    add(Tube([tuple(b), tuple(p1), tuple(p2), tuple(p2 + dt2 * rt * 0.7)], [rt * 1.15, rt, rt * 0.88, rt * 0.4]), p1 + n * rt, 0.3)
+    return parts
