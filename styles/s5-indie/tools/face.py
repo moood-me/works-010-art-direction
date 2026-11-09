@@ -144,4 +144,21 @@ def mouth(x, y, fc, ex, P, sw):
         gap = f'<rect x="{f(x - W * .15)}" y="{f(y - 4)}" width="{f(W * .22)}" height="{f(7)}" fill="{MC}"/>' if P.get('gap') else ''
         t = f'<clipPath id="{cid}"><path d="{d}"/></clipPath><g clip-path="url(#{cid})"><path d="{d}" fill="{MC}"/>{teeth}{gap}<ellipse cx="{f(x)}" cy="{f(y + W * .9)}" rx="{f(W * .6)}" ry="{f(W * .4)}" fill="#e0767a"/></g>'
         return t + stroke(d, sw)
+    if k in ('beam', 'laugh'):
+        # a wide open smile: the upper teeth as one white band, a tongue below — never a dark hole
+        W = w * (1.0 if k == 'beam' else 1.05)
+        H = W * (.62 if k == 'beam' else 1.05)
+        d = f'M{f(x - W)},{f(y - 3)} Q{f(x)},{f(y + 3)} {f(x + W)},{f(y - 3)} Q{f(x + W * .85)},{f(y + H * .95)} {f(x)},{f(y + H)} Q{f(x - W * .85)},{f(y + H * .95)} {f(x - W)},{f(y - 3)} Z'
+        cid = uid('m')
+        th = H * (.42 if k == 'beam' else .28)
+        teeth = f'<path d="M{f(x - W)},{f(y - 4)} L{f(x + W)},{f(y - 4)} L{f(x + W)},{f(y + th - 2)} Q{f(x)},{f(y + th + 4)} {f(x - W)},{f(y + th - 2)} Z" fill="#fffaf2"/>'
+        t = f'<clipPath id="{cid}"><path d="{d}"/></clipPath><g clip-path="url(#{cid})"><path d="{d}" fill="{MC}"/><ellipse cx="{f(x)}" cy="{f(y + H * 1.02)}" rx="{f(W * .62)}" ry="{f(H * .42)}" fill="#e0767a"/>{teeth}</g>'
+        return t + stroke(d, sw, P.get('lip', LINE))
+    if k == 'tight':
+        # pressed shut, one corner pulled down
+        return stroke(f'M{f(x - w)},{f(y + .5)} Q{f(x)},{f(y - 1.5)} {f(x + w)},{f(y + 2.5)}', sw * 1.15)
+    if k == 'half':
+        # a crooked half-smirk: flat, one corner up, with a small dimple
+        return (stroke(f'M{f(x - w)},{f(y + 1.5)} Q{f(x + w * .2)},{f(y + 2.5)} {f(x + w * 1.15)},{f(y - 3.5)}', sw * 1.15)
+                + stroke(f'M{f(x + w * 1.45)},{f(y - 6.5)} q2.5,2.5 .5,5.5', sw * .7))
     return ''

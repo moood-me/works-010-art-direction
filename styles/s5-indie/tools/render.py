@@ -10,7 +10,7 @@ def png(svg_path, png_path):
     w = int(re.search(r'width="(\d+)"', s).group(1))
     h = int(re.search(r'height="(\d+)"', s).group(1))
     html = png_path + '.html'
-    open(html, 'w').write(f'<html><body style="margin:0">{s}</body></html>')
+    open(html, 'w').write(f'<html><head><meta charset="utf-8"></head><body style="margin:0">{s}</body></html>')
     subprocess.run(['google-chrome', '--headless', '--no-sandbox', '--disable-gpu', '--hide-scrollbars',
                     f'--screenshot={os.path.abspath(png_path)}', f'--window-size={w},{h}',
                     'file://' + os.path.abspath(html)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=120)
