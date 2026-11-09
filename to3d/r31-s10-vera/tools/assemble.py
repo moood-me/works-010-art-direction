@@ -243,10 +243,9 @@ if WITH_BODY:
     lw = float(os.environ.get('BAKE_LW', '2.2'))
     k = 0
     for mk in marks['calm']:
-        # the 3D lids and eyes draw themselves; the mouth has its own pieces; the nose hook is for still fronts
+        # the pupils are the 3D eyes' own (the lid strokes go with the 3D lids); the mouth has its own pieces; the
+        # nose hook is for still fronts
         if mk['group'] in ('nose', 'mouth') or (mk['group'] == 'eye' and mk['kind'] == 'shape'):
-            continue
-        if mk['group'] == 'eye' and mk['w'] >= 1.3:          # the heavy lid stroke: the 3D lid's contour is it
             continue
         P = np.array(mk['pts'])
         r = (mk['w'] or 0) * lw / 2
@@ -289,8 +288,9 @@ if WITH_BODY:
     add('mouthline', Vt, Ft, '#1b1714', line=False, baked=True, tube=[6, len(loop) + 1, 1.0])
     RIG['mouthline'] = rigid(Vt)
     OPEN['mouthline'] = np.repeat(np.r_[0 * prof, prof[::-1][1:-1], 0.0], 6).round(3).tolist()
-    for mk in marks[who.MOUTH_FROM]:                       # the small strokes by the mouth (corner ticks, the lower lip)
-        if mk['group'] == 'mouth' and mk['kind'] == 'line' and len(mk['pts']) < 12:
+    for mk in marks[who.MOUTH_FROM]:                       # the short stroke under the lower lip (it goes with the jaw)
+        if mk['group'] == 'mouth' and mk['kind'] == 'line' and len(mk['pts']) < 12 and \
+                np.mean(np.array(mk['pts'])[:, 1]) > who.MOUTH_Y + 4:
             P = np.array(mk['pts'])
             Vt, Ft = M.tube(P, mk['w'] * lw / 2, nseg=6)
             add(f'bm{k}', Vt, Ft, '#1b1714', line=False, baked=True, tube=[6, len(P), mk['w']])
@@ -300,7 +300,7 @@ if WITH_BODY:
     offs = json.load(open(os.path.join(C, 'engine/offsets.json')))
     json.dump(dict(K=K, floor=FLOOR, eyes=[np.asarray(hf['sclera' + s + '_v']).mean(0).tolist() for s in 'LR'],
                    rb=float(np.linalg.norm(hf['scleraL_v'] - np.asarray(hf['scleraL_v']).mean(0), axis=1).mean()),
-                   mouthY=who.MOUTH_Y, mouthW=MOUTH_W, mouthZ=float(top[:, 2].mean()) - 3, open=OPEN, jaw=[0.0, 30.0, -25.0],
+                   rest=getattr(who, 'FACE_REST', {}), mouthY=who.MOUTH_Y, mouthW=MOUTH_W, mouthZ=float(top[:, 2].mean()) - 3, open=OPEN, jaw=[0.0, 30.0, -25.0],
                    pieces={n: offs[n] for n in offs if n in ('head', 'irisL', 'irisR') or n in OPEN},
                    marks=[offs[n] for n in offs if n.startswith('bm')],
                    colours={o['name']: o.get('colours', [o['colour']]) for o in objs}),

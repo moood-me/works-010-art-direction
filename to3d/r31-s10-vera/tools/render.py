@@ -273,7 +273,7 @@ def set_view(v):
     sc.render.resolution_percentage = 100
     c = R.T @ np.array([(W / 2 - v['cx']) / s, (Hh / 2 - v['cy']) / s, 0.0])
     toward = R[2]
-    pos = c + toward * 3000
+    pos = c + toward * 12000                 # far off: a walk toward the camera never reaches it
     def dirb(d):
         return np.array([d[0], -d[2], -d[1]])
     right, down, tw = dirb(R[0]), dirb(R[1]), dirb(R[2])
@@ -281,7 +281,7 @@ def set_view(v):
     M.translation = Vector(to_b(pos))
     cam.matrix_world = M
     cam_data.ortho_scale = max(W, Hh) / s * K
-    cam_data.clip_start, cam_data.clip_end = 0.01, 20
+    cam_data.clip_start, cam_data.clip_end = 0.01, 60
     world.node_tree.nodes['Background'].inputs['Color'].default_value = hexrgb(v.get('bg', '#ead9b4')) + [1]
     world.node_tree.nodes['Background'].inputs['Strength'].default_value = 1.0
     lst.thickness = v.get('lw', 2.2)

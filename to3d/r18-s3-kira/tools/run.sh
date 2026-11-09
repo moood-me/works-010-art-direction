@@ -3,7 +3,7 @@
 set -e
 C=/home/user/cache/to3d-r18-s3-kira
 cd "$(dirname "$0")"
-python3 build.py > /dev/null
+python3 -W ignore build.py > /dev/null
 cd $C && node /home/user/works-010-art-direction/to3d/r18-s3-kira/tools/shots.mjs ${1:-t1.json} t1 > /dev/null
 python3 -c "
 from PIL import Image

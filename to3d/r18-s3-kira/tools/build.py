@@ -248,6 +248,15 @@ KV = np.c_[u(px.ravel()), y3(gy_.ravel()), u(pz.ravel())]; KT = grid(14, 25, Fal
 if M.vertex_normals(KV, KT)[:, 2].mean() < 0: KT = KT[:, ::-1]
 Pk = piece(KV, KT, 'hood', 'hoodS', 'hoodL')
 
+# the pocket's drawn outline and the folds of the chest: thin dark cords on the surface (flat colour has no other line there)
+LINES = []
+pout = pk[0]; pout = pout[(pout[:, 1] > 453)]
+for pts in (pout[::3], np.array([[-60, 300], [-46, 340], [-39, 385], [-38, 430]]), np.array([[60, 300], [46, 340], [39, 385], [38, 430]])):
+    zz = hoodie_front(pts[:, 0], pts[:, 1]) + np.where(np.abs(pts[:, 0]) < 110, 0, -4)
+    path = np.c_[u(pts[:, 0]), y3(pts[:, 1]), u(zz + (7.5 if len(pts) > 6 else 0.4))]
+    V_, T_ = tube(path, np.full(len(path), u(1.5)), 6)
+    LINES.append(piece(V_, T_, 'hoodL', 'hoodL', 'hoodL'))
+
 # sleeves: long and wide, down over the hand to the knuckles; a darker cuff; the cap at the shoulder round
 SL, HANDS = [], []
 for s, sg in (('Left', 1), ('Right', -1)):
@@ -294,7 +303,7 @@ for s, sg in (('Left', 1), ('Right', -1)):
     LEGS.append(piece(V_, T_, 'trou', 'trouS', 'trouL', side=s,
                       W=onjoints(len(V_), [(s + 'Leg', (1 - e) * (1 - top)), ('Hips', (1 - e) * top), (s + 'Shin', e)])))
     ys = np.linspace(ANK - 88, ANK + 22, 12)
-    rr = np.interp(ys, [ANK - 88, ANK - 84, ANK - 40, ANK + 22], [33, 36, 37, 40])
+    rr = np.interp(ys, [ANK - 88, ANK - 84, ANK - 40, ANK + 22], [36, 39, 40, 43])
     V_, T_ = tube([axis(yy) for yy in ys], u(rr), 26)
     w = smooth((np.repeat(ys, 26) - ANK + 34) / 40)
     p_ = piece(V_, T_, 'boot', 'boot', 'bootL', side=s, W=onjoints(len(V_), [(s + 'Shin', 1 - w), (s + 'Foot', w)]))
@@ -315,7 +324,7 @@ for s, sg in (('Left', 1), ('Right', -1)):
     # the foot of the boot: a loft along the foot
     cx, z0 = sg * LEGX[2], -57.0
     zs = np.array([-45, -43, -36, -18, 4, 30, 56, 80, 98, 108, 111])
-    aw = np.interp(zs, [-45, -43, -36, 0, 60, 90, 108, 111], [1, 18, 34, 41, 44, 40, 18, 1])
+    aw = np.interp(zs, [-45, -43, -36, 0, 60, 90, 108, 111], [1, 20, 38, 46, 49, 45, 20, 1])
     top = np.interp(zs, [-45, -43, -36, -10, 30, 44, 64, 90, 108, 111], [40, 62, 84, 90, 88, 66, 54, 46, 34, 22])
     V_ = []
     for z_, a_, t_ in zip(zs, aw, top):
@@ -396,17 +405,18 @@ def trunk_w(V):
 Hd_['W'] = smooth_w(trunk_w(HV), HT_)
 ht = cKDTree(HV)
 Ho['W'] = smooth_w(trunk_w(OV) * 0.3 + onjoints(len(OV), [('Chest', 0.7)]), OT, 4)
-for p_ in [Pk] + CORDS:
+for p_ in [Pk] + CORDS + LINES:
     p_['W'] = Hd_['W'][ht.query(p_['V'])[1]]
 
 # ---------------------------------------------------------------- the hair (hair.py), placed with the head
 import hair as HR  # noqa: E402
 Hr = HR.build(dict(C=C, I=I, NJ=NJ))
+UP = dict(head=(V0, pn), hair=(Hr['V'], Hr['pn']))      # upright, in the head's own units: for the page's steps
 Hr['V'] = place(Hr['V']); Hr['pn'] = turn(Hr['pn'])
 
 # ---------------------------------------------------------------- one pack
 pieces = [('leg' + p_['side'], p_) for p_ in LEGS] + BOOTS + [('head', Hh), ('hoodie', Hd_), ('pocket', Pk), ('hood', Ho)] + \
-         [('cord%d' % k_, p_) for k_, p_ in enumerate(CORDS)] + [('sleeve' + p_['side'], p_) for p_ in SL] + \
+         [('cord%d' % k_, p_) for k_, p_ in enumerate(CORDS)] + [('line%d' % k_, p_) for k_, p_ in enumerate(LINES)] + [('sleeve' + p_['side'], p_) for p_ in SL] + \
          [('hand' + p_['side'], p_) for p_ in HANDS] + PHONES + [('hair', Hr)]
 TWO = ('hoodie', 'sleeve', 'hair', 'pocket', 'laces', 'leg', 'shaft')
 Vs, Ts, Ws, cols, shds, lins, ows, uvs, texs, pns, pws, two, bands = [], [], [], [], [], [], [], [], [], [], [], [], []
@@ -426,14 +436,23 @@ SJ = order.astype(np.uint8); SWt = np.take_along_axis(W, order, 1); SWt /= SWt.s
 pj = SJ[:, 0].astype(np.float32)
 f01 = lambda c: [round(x / 255, 4) for x in c]
 BANDS = [[1999, 2021.0, f01(C['sole']), f01(rgb('#46434b'))]]
-pack.save(os.path.join(OUT, 'kira.json'),
-          dict(format='r1/character', version=2, id='kira-s3', label={'ru': 'Кира, графичный стиль'}, skinning='cor',
-               source='Anny moood-girl (engine) + Human Base Meshes stylised head (CC0) + shells from the drawing',
-               pieces=ranges, trianglePieces=tranges, bands=BANDS),
-          dict(positions=V.astype(np.float32).ravel(), triangles=np.vstack(Ts).astype(np.uint32).ravel(),
-               skinJoints=SJ, skinWeights=SWt.astype(np.float32), joints=J1.astype(np.float32).ravel(), frames=FR.ravel(),
-               col=np.vstack(cols).astype(np.uint8), shd=np.vstack(shds).astype(np.uint8), lin=np.vstack(lins).astype(np.uint8),
-               ow=(np.clip(np.concatenate(ows), 0, 1) * 255).astype(np.uint8), uv=np.vstack(uvs).astype(np.float32),
-               tex=np.concatenate(texs).astype(np.uint8), pn=np.vstack(pns).astype(np.float32),
-               pw=(np.clip(np.concatenate(pws), 0, 1) * 255).astype(np.uint8), pj=pj, two=np.concatenate(two).astype(np.uint8), band=np.concatenate(bands).astype(np.float32)))
+def save(name, V, extra, pn_all):
+    pack.save(os.path.join(OUT, name + '.json'),
+              dict(dict(format='r1/character', version=2, id=name, label={'ru': 'Кира, графичный стиль'}, skinning='cor',
+                        source='Anny moood-girl (engine) + Human Base Meshes stylised head (CC0) + shells from the drawing',
+                        pieces=ranges, trianglePieces=tranges, bands=BANDS), **extra),
+              dict(positions=V.astype(np.float32).ravel(), triangles=np.vstack(Ts).astype(np.uint32).ravel(),
+                   skinJoints=SJ, skinWeights=SWt.astype(np.float32), joints=J1.astype(np.float32).ravel(), frames=FR.ravel(),
+                   col=np.vstack(cols).astype(np.uint8), shd=np.vstack(shds).astype(np.uint8), lin=np.vstack(lins).astype(np.uint8),
+                   ow=(np.clip(np.concatenate(ows), 0, 1) * 255).astype(np.uint8), uv=np.vstack(uvs).astype(np.float32),
+                   tex=np.concatenate(texs).astype(np.uint8), pn=pn_all.astype(np.float32),
+                   pw=(np.clip(np.concatenate(pws), 0, 1) * 255).astype(np.uint8), pj=pj, two=np.concatenate(two).astype(np.uint8), band=np.concatenate(bands).astype(np.float32)))
+
+
+save('kira', V, {}, np.vstack(pns))
+# the same pack with the head and the hair left upright where they were built (shown alone, pose "raw")
+V2 = V.copy(); P2 = np.vstack(pns).copy()
+for k_ in ('head', 'hair'):
+    V2[ranges[k_][0]:ranges[k_][1]] = UP[k_][0]; P2[ranges[k_][0]:ranges[k_][1]] = UP[k_][1]
+save('kira-head', V2, {}, P2)
 print('vertices', N, 'triangles', sum(len(t_) for t_ in Ts), {k: v[1] - v[0] for k, v in ranges.items()})

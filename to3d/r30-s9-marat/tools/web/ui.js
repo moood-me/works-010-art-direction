@@ -8,7 +8,7 @@ else {
   const MOTIONS = [[null, 'стоит'], ['walk', 'шаг'], ['run', 'бег'], ['sneak', 'крадётся'], ['wave', 'машет'], ['jump', 'прыжок'],
     ['dance', 'танец'], ['bow', 'поклон'], ['stomp', 'топает'], ['idle', 'оглядывается']];
   const EXPR = [['calm', 'спокойно'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'злость']];
-  const st = { motion: 'walk', frames: 120, fps: 30, t: 0, play: true, talk: false, clock: 0, yaw: -0.5, pitch: 0.08, dist: 6.0, expr: [{ t: 0, name: 'calm' }], cur: 'calm' };
+  const st = { motion: 'wave', frames: 120, fps: 30, t: 0, play: true, talk: false, clock: 0, yaw: -0.5, pitch: 0.08, dist: 6.8, expr: [{ t: 0, name: 'calm' }], cur: 'calm' };
   for (const [id, name] of MOTIONS) { const o = document.createElement('option'); o.value = id ?? ''; o.textContent = name; $('motion').append(o); }
   $('motion').value = st.motion;
   for (const [id, name] of EXPR) {
@@ -43,7 +43,7 @@ else {
       if (st.play) { st.clock += dt; if (st.motion) { st.t += dt * st.fps; if (st.t > st.frames - 1) st.t = 0; } }
       const w = innerWidth, h = innerHeight;
       await A.set({ ground: true, t: st.t, expr: st.expr, talk: st.talk, faceTime: face(), w: Math.round(w * Math.min(devicePixelRatio, 2)), h: Math.round(h * Math.min(devicePixelRatio, 2)),
-        cam: { yaw: st.yaw, pitch: st.pitch, dist: st.dist, follow: [0, 0.85, 0], fov: 22 } });
+        cam: { yaw: st.yaw, pitch: st.pitch, dist: st.dist, follow: [0, 0.93, 0], fov: 22 } });
       canvas.style.width = '100%'; canvas.style.height = '100%';
       A.render();
       $('scrub').value = st.t; $('time').textContent = st.motion ? `${(st.t / st.fps).toFixed(1)} с` : '';

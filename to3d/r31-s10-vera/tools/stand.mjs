@@ -47,9 +47,16 @@ if (HD.pitch) turn('Head', [1, 0, 0], HD.pitch);
 if (HD.yaw) turn('Head', [0, 1, 0], HD.yaw);
 const P = new Float32Array(body.N * 3);
 fig.skinner.skin(pose, P);
+// a face for the still (web/face.mjs): FACE='{"joy": 1}' — a mix of the expressions
+if (process.env.FACE) {
+  const { Face, mix } = await import('./web/face.mjs');
+  const face = new Face(body, JSON.parse(await readFile(path.resolve(cache, 'engine/face.json'), 'utf8')));
+  face.update(mix(JSON.parse(process.env.FACE)));
+  face.apply(P, fig.skinner.matrix(pose, sk.index.Head));
+}
 await writeFile(out, Buffer.from(P.buffer));
 const H = sk.index.Hips;
 // the left hand's turn and shift in this pose (3×4, rest → stand): body.py sets what she holds by it
 const hand = Array.from(fig.skinner.matrix(pose, sk.index.LeftHand)).slice(0, 12);
-await writeFile(out.replace(/\.bin$/, '.json'), JSON.stringify({ frames: 1, N: body.N, times: [0], hips: [[0, pose.P[H * 3 + 1], 0]], hand }));
+await writeFile(out.replace(/\.bin$/, '.json'), JSON.stringify({ frames: 1, N: body.N, times: [0], hips: [[0, pose.P[H * 3 + 1], 0]], head: [[pose.P[sk.index.Head * 3], pose.P[sk.index.Head * 3 + 1], pose.P[sk.index.Head * 3 + 2]]], hand }));
 console.log('stand', body.N);

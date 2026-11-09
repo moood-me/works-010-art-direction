@@ -1,7 +1,7 @@
 """The drawing and the 3D side by side and overlaid, in the drawing's own framings:
-turn  — turn-anya (front, three-quarter, profile busts; head unit 1.25 px, head centres at x 250/750/1250, y 260)
-figure — figure-anya (whole figure; feet at y 820, head unit 0.54 px)
-expr  — expr-anya (three-quarter heads, four expressions; head centres at x 200+400i, y 240, head unit 1.25 px)
+turn  — turn-marat (front, three-quarter, profile busts; head unit 1.25 px, head centres at x 250/750/1250, y 260)
+figure — figure-marat (whole figure; feet at y 820, head unit 0.59 px)
+expr  — expr-marat (three-quarter heads, four expressions; head centres at x 200+400i, y 240, head unit 1.25 px)
 python3 compare.py turn|figure|expr [pose json]"""
 import sys, json, subprocess, os
 import numpy as np
@@ -13,7 +13,7 @@ from compose import compose
 PICS = os.path.join(os.path.dirname(HERE), 'pics')
 YAW34 = float(os.environ.get('YAW34', '-0.5'))
 pose = json.loads(sys.argv[2]) if len(sys.argv) > 2 else {}
-OFF_HEAD = np.array([0, 70 * K, -4 * K])          # the drawing's head centre from the Head joint
+OFF_HEAD = np.array([0, 84 * K, -6 * K])          # the drawing's head centre from the Head joint
 
 
 def shoot(job, out):
@@ -50,22 +50,22 @@ if kind == 'turn':
     shots = [{'name': n, 'set': {**base, 'cam': head_cam(y, ppm, 260, 600)}} for n, y in (('front', 0), ('q34', YAW34), ('side', -np.pi / 2))]
     shoot({'w': 500, 'h': 600, 'shots': shots}, f'{CACHE}/cmp')
     compose(f'{CACHE}/cmp/turn.png', 1500, 600, 'wide', [(f'{CACHE}/cmp/{n}.png', 500 * i, 0) for i, n in enumerate(('front', 'q34', 'side'))])
-    sheet(f'{STYLE}/pics/turn-anya.webp', f'{CACHE}/cmp/turn.png', 1500, 600, 'cmp-turn',
-          ['рисунок (turn-anya): анфас, три четверти, профиль', '3D в тех же видах, через тот же фильтр гуаши', 'наложение: рисунок и 3D пополам'])
+    sheet(f'{STYLE}/pics/turn-marat.webp', f'{CACHE}/cmp/turn.png', 1500, 600, 'cmp-turn',
+          ['рисунок (turn-marat): анфас, три четверти, профиль', '3D в тех же видах, через тот же фильтр гуаши', 'наложение: рисунок и 3D пополам'])
 elif kind == 'expr':
     ppm = 1.25 / K
     names = ['joy', 'surprise', 'sad', 'anger']
     shots = [{'name': n, 'set': {**base, 'face': f'/cache/to3d-r30-s9-marat/face/{n}.png', 'cam': head_cam(YAW34, ppm, 240, 500)}} for n in names]
     shoot({'w': 400, 'h': 500, 'shots': shots}, f'{CACHE}/cmp')
     compose(f'{CACHE}/cmp/expr.png', 1600, 500, 'wide', [(f'{CACHE}/cmp/{n}.png', 400 * i, 0) for i, n in enumerate(names)])
-    sheet(f'{STYLE}/pics/expr-anya.webp', f'{CACHE}/cmp/expr.png', 1600, 500, 'cmp-expr',
-          ['рисунок (expr-anya): радость, удивление, грусть, злость', '3D: те же черты, нарисованные кодом рисунка, на голове', 'наложение'])
+    sheet(f'{STYLE}/pics/expr-marat.webp', f'{CACHE}/cmp/expr.png', 1600, 500, 'cmp-expr',
+          ['рисунок (expr-marat): радость, удивление, грусть, злость', '3D: те же черты, нарисованные кодом рисунка, на голове', 'наложение'])
 elif kind == 'figure':
-    ppm = 0.54 / K
+    ppm = 0.9504 * 0.62 / K
     cam = {'yaw': YAW34, 'follow': [0, (820 - 450) / ppm, 0], 'height': 900 / ppm}
-    shoot({'w': 500, 'h': 900, 'shots': [{'name': 'fig', 'set': {**base, 'cam': cam}}]}, f'{CACHE}/cmp')
+    shoot({'w': 500, 'h': 900, 'shots': [{'name': 'fig', 'set': {**base, 'face': '/cache/to3d-r30-s9-marat/face/joy.png', 'cam': cam}}]}, f'{CACHE}/cmp')
     compose(f'{CACHE}/cmp/figure.png', 500, 900, 'figure', [(f'{CACHE}/cmp/fig.png', 0, 0)])
-    A = Image.open(f'{STYLE}/pics/figure-anya.webp').convert('RGB'); B = Image.open(f'{CACHE}/cmp/figure.png').convert('RGB')
+    A = Image.open(f'{STYLE}/pics/figure-marat.webp').convert('RGB'); B = Image.open(f'{CACHE}/cmp/figure.png').convert('RGB')
     S = Image.new('RGB', (1500, 940), (243, 234, 214))
     for i, (im, cap) in enumerate(((A, 'рисунок'), (B, '3D'), (Image.blend(A, B, 0.5), 'наложение'))):
         S.paste(im, (i * 500, 40)); label(S, cap, (i * 500 + 12, 8))

@@ -6,6 +6,8 @@ import { loadSkeleton } from '../../../../engine/src/skeleton.js';
 import { makeBody } from '../../../../engine/src/body.js';
 import { Figure } from '../../../../engine/src/figure.js';
 import { loadMotion, clipOf } from '../../../../engine/src/motion.js';
+import { build, turnUnder } from '../../../../engine/src/retarget.js';
+import { qBetween, qRot, getQ, qAxisAngle } from '../../../../engine/src/math.js';
 import { resolve } from '../../../../engine/src/character.js';
 import { loadPack } from '../../../../engine/src/pack.js';
 import { normalsOf } from '../../../../engine/src/skin.js';
@@ -101,14 +103,51 @@ function headTrack(c) {
   const r = { fps: c.fps, yaw, pitch }; tracks.set(key, r); return r;
 }
 
+// The drawing's own stance: the rest body with its arms and legs turned so that shoulder → elbow → wrist and
+// hip → knee → ankle point as the drawing's joints do (the pack's `stance`, in the drawing's units; `over` replaces
+// joints by side as the style's poses do: {el: {'1': [x, y, z]}, …}, side 1 the left). No motion: for the stills.
+function stancePose(over) {
+  const S = model.h.stance, pose = figure.restPose(), R = model.body.joints, ix = sk.index;
+  const un = v => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; }, between = (a, b) => qBetween(un(a), un(b));
+  const pt = (k, sd) => { const p = (over && over[k] && over[k][sd]) || [S[k][0] * sd, S[k][1], S[k][2]]; return [p[0], -p[1], p[2]]; };
+  for (const [sd, side] of [[1, 'Left'], [-1, 'Right']])
+    for (const [a, b, c, ja, jb, jc] of [['sh', 'el', 'wr', 'Arm', 'ForeArm', 'Hand'], ['hip', 'kn', 'an', 'Leg', 'Shin', 'Foot']]) {
+      const A_ = pt(a, sd), B_ = pt(b, sd), C_ = pt(c, sd), i = ix[side + ja], k = ix[side + jb], l = ix[side + jc];
+      const rest = (p, q) => [R[q * 3] - R[p * 3], R[q * 3 + 1] - R[p * 3 + 1], R[q * 3 + 2] - R[p * 3 + 2]];
+      turnUnder(pose, sk, i, between(qRot(getQ(pose.Q, i), rest(i, k)), [B_[0] - A_[0], B_[1] - A_[1], B_[2] - A_[2]]));
+      turnUnder(pose, sk, k, between(qRot(getQ(pose.Q, k), rest(k, l)), [C_[0] - B_[0], C_[1] - B_[1], C_[2] - B_[2]]));
+      if (jc === 'Foot') {       // the foot back flat on the floor, pointing where it pointed
+        const t = ix[side + 'ToeBase'], f = qRot(getQ(pose.Q, l), rest(l, t)), r0 = rest(l, t);
+        turnUnder(pose, sk, l, between(f, [f[0], r0[1] * Math.hypot(f[0], f[2]) / Math.hypot(r0[0], r0[2]), f[2]]));
+      }
+    }
+  // the fingers curled a little toward the palm (at rest they lie flat; the palm is the hand's side that looks down there)
+  const curl = (over && over.curl) ?? S.curl ?? 0.3;
+  for (const side of ['Left', 'Right']) {
+    const h = ix[side + 'Hand'], rest = (p, q) => [R[q * 3] - R[p * 3], R[q * 3 + 1] - R[p * 3 + 1], R[q * 3 + 2] - R[p * 3 + 2]];
+    const a = rest(h, ix[side + 'HandIndex1']), b = rest(h, ix[side + 'HandPinky1']);
+    let n = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; if (n[1] > 0) n = [-n[0], -n[1], -n[2]];
+    for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (const [k, w] of [[1, 0.8], [2, 1.1], [3, 0.9]]) {
+      const i = ix[side + 'Hand' + f + k], d = un(qRot(getQ(pose.Q, i), rest(i, ix[side + 'Hand' + f + (k + 1)]))), m = un(qRot(getQ(pose.Q, h), n));
+      turnUnder(pose, sk, i, qAxisAngle([d[1] * m[2] - d[2] * m[1], d[2] * m[0] - d[0] * m[2], d[0] * m[1] - d[1] * m[0]], curl * w));
+    }
+  }
+  const H = ix.Hips; build(pose, model.body, [pose.P[H * 3], pose.P[H * 3 + 1], pose.P[H * 3 + 2]]);
+  figure.skinner.skin(pose, figure.positions);
+  let lo = Infinity; for (let i = 1; i < figure.positions.length; i += 3) if (figure.positions[i] < lo) lo = figure.positions[i];
+  for (let i = 1; i < figure.positions.length; i += 3) figure.positions[i] -= lo;
+  for (let q = 0; q < sk.J; q++) pose.P[q * 3 + 1] -= lo;
+  pose.floor = 0; figure.pose = pose;
+}
+
 const A = window.A = {
   async set(o) {
     if (o.model && o.model !== state.model) { await loadModel(o.model); state.model = o.model; }
-    for (const k of ['motion', 't', 'lightCam', 'still', 'faceTime', 'expr', 'talk', 'look', 'clay', 'groundOn', 'params', 'light', 'floor']) if (k in o) state[k] = o[k];
+    for (const k of ['stance', 'motion', 't', 'lightCam', 'still', 'faceTime', 'expr', 'talk', 'look', 'clay', 'groundOn', 'params', 'light', 'floor']) if (k in o) state[k] = o[k];
     if (o.heading !== undefined) figure.place = { heading: o.heading };
-    const c = state.motion ? await clip(state.motion) : null;
+    const c = state.motion && !state.stance ? await clip(state.motion) : null;
     const tr = c ? headTrack(c) : null;
-    figure.frame(c, state.t);
+    if (state.stance) stancePose(state.stance === true ? null : state.stance); else figure.frame(c, state.t);
     // the face: the life track (blinks, gaze, speech, expressions) at this moment, or fixed params
     const ts = state.faceTime ?? (c ? state.t / c.fps : 0);
     const p = state.params ? { ...state.params } : life.at(ts, { expr: state.expr, talk: state.talk, track: tr, still: state.still, look: state.look });

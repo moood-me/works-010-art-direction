@@ -127,13 +127,15 @@ function rotY(p, c, deg) {
   const x = p[0] - c[0], z = p[2] - c[2]; p[0] = c[0] + x * co + z * si; p[2] = c[2] - x * si + z * co;
 }
 
-// Вера's faces in these numbers. The style drew no expression sheet for her: these follow the style's sheet
-// (styles/s1-pixar/tools/build.py EXPR) held back to her character — she is strict and does not laugh aloud
+// Вера's faces in these numbers. The style drew no expression sheet for her: joy, surprise, sad and anger follow the
+// style's sheet (styles/s1-pixar/tools/build.py EXPR; anger with the lips pressed), calm is her portrait's face,
+// strict and smile are her own
 export const EXPRESSIONS = {
   calm: { smile: -0.12, up: 19, low: 7, inner: -0.15, lookY: 1 },
   strict: { smile: -0.3, up: 13, low: 5, brow: -0.25, inner: -0.7, browR: 0.5, lookX: 6 },
-  joy: { smile: 0.95, upper: 0.25, wide: 0.3, low: 8, up: 5, brow: 0.35 },
-  surprise: { jaw: 9, pucker: 0.7, up: -6, low: -3, brow: 1.2, pupil: 0.8 },
+  joy: { smile: 1.25, jaw: 8, upper: 0.9, wide: 0.5, low: 9, up: 5, brow: 0.4 },
+  smile: { smile: 0.9, upper: 0.2, wide: 0.3, low: 7, up: 8, brow: 0.2 },
+  surprise: { jaw: 13, pucker: 1.25, wide: -0.5, up: -6, low: -3, brow: 1.2, pupil: 0.8 },
   sad: { smile: -0.9, inner: 1.2, brow: -0.1, up: 14, lookY: 11, low: 2 },
   anger: { smile: -0.7, jaw: 1.5, upper: 0.25, wide: 0.35, up: 12, low: 9, brow: -0.6, inner: -1.4 },
 };

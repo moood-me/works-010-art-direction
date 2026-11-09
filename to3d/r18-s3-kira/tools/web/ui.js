@@ -2,8 +2,8 @@
 // expressions (a button — that one; the sliders mix them), talk on/off, the face close.
 const MOTIONS = [['', 'стоит'], ['idle', 'стоит, оглядывается'], ['walk', 'шаг'], ['wave', 'машет'], ['sit', 'садится'],
   ['bow', 'поклон'], ['stomp', 'топает'], ['dance', 'танец'], ['jump', 'прыжок'], ['run', 'бег'], ['sneak', 'крадётся']];
-const EXPR = [['mischief', 'хитрит'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']];
-const FAR = { dist: 4.6, cy: 0.62 }, NEAR = { dist: 1.9, up: 0.13 }, POSE = { out: 0.04 };      // this character's size
+const EXPR = [['sulk', '«не трогайте»'], ['smirk', 'усмешка'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']];
+const FAR = { dist: 5.6, cy: 0.8 }, NEAR = { dist: 2.0, up: 0.11 }, POSE = { out: 0.03 };      // this character's size
 
 export function ui(A, canvas) {
   const css = document.createElement('style');

@@ -33,11 +33,11 @@ def stack(rows, path):
 subprocess.run(['python3', f'{HERE}/step_body.py'], check=True, capture_output=True)
 c = {'clay': True, 'live': False}
 shoot({'w': 420, 'h': 640, 'shots': [
-    {'name': 'anny', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/step-anny.json', 'cam': {'yaw': 0, 'target': [0, 0.87, 0], 'height': 1.9}}},
-    {'name': 'fit', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/step-fit.json', 'cam': {'yaw': 0, 'target': [0, 0.87, 0], 'height': 1.9}}},
-    {'name': 'fitside', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/step-fit.json', 'cam': {'yaw': -1.5708, 'target': [0, 0.87, 0], 'height': 1.9}}},
-    {'name': 'clay', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/marat.json', 'motion': ['bow'], 't': 0, 'cam': {'yaw': -0.45, 'follow': [0, 0.87, 0], 'height': 1.9}}},
-    {'name': 'paint', 'set': {'clay': False, 'live': False, 'face': '/cache/to3d-r30-s9-marat/face/calm.png', 'cam': {'yaw': -0.45, 'follow': [0, 0.87, 0], 'height': 1.9}}},
+    {'name': 'anny', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/step-anny.json', 'cam': {'yaw': 0, 'target': [0, 0.95, 0], 'height': 2.1}}},
+    {'name': 'fit', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/step-fit.json', 'cam': {'yaw': 0, 'target': [0, 0.95, 0], 'height': 2.1}}},
+    {'name': 'fitside', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/step-fit.json', 'cam': {'yaw': -1.5708, 'target': [0, 0.95, 0], 'height': 2.1}}},
+    {'name': 'clay', 'set': {**c, 'model': '/cache/to3d-r30-s9-marat/marat.json', 'motion': ['bow'], 't': 0, 'cam': {'yaw': -0.45, 'follow': [0, 0.95, 0], 'height': 2.1}}},
+    {'name': 'paint', 'set': {'clay': False, 'live': False, 'face': '/cache/to3d-r30-s9-marat/face/calm.png', 'cam': {'yaw': -0.45, 'follow': [0, 0.95, 0], 'height': 2.1}}},
 ]}, f'{CACHE}/steps')
 stack([row([Image.open(f'{CACHE}/steps/{n}.png') for n in ('anny', 'fit', 'fitside')],
            ['Anny, мужчина (moood-man), 1,77 м', 'подогнан: бочка на коротких ногах', 'он же сбоку'])], f'{PICS}/step-body.webp')
@@ -45,10 +45,10 @@ stack([row([Image.open(f'{CACHE}/head_{k}.png').crop((0, 0, 1800, 600))], [cap],
     ('orig', 'Human Base Meshes, стилизованная голова (CC0): как есть'),
     ('faired', 'лицо вырезано и закрыто гладкой заплатой (черты будут нарисованы)'),
     ('warped', 'согнута по контурам рисунка анфас и в профиль (красная линия — контур рисунка)'))], f'{PICS}/step-head.webp')
-faces = [Image.alpha_composite(Image.new('RGBA', (1024, 1024), (246, 215, 191, 255)), Image.open(f'{CACHE}/face/{e}.png').convert('RGBA')).crop((160, 180, 864, 900))
+faces = [Image.alpha_composite(Image.new('RGBA', (1024, 1024), (236, 185, 145, 255)), Image.open(f'{CACHE}/face/{e}.png').convert('RGBA')).crop((130, 60, 894, 1000))
          for e in ('calm', 'joy', 'surprise', 'sad', 'anger')]
 stack([row(faces, ['спокойно', 'радость', 'удивление', 'грусть', 'злость'], h=300)], f'{PICS}/step-face.webp')
 compose(f'{CACHE}/steps/gouache.png', 420, 640, 'portrait', [(f'{CACHE}/steps/paint.png', 0, 0)])
 stack([row([Image.open(f'{CACHE}/steps/{n}.png') for n in ('clay', 'paint', 'gouache')],
-           ['собран: форма', 'краски шейдера', 'на фоне рисунка, фильтр гуаши'], bg=(236, 159, 147))], f'{PICS}/step-paint.webp')
+           ['собран: форма', 'краски шейдера', 'на фоне рисунка, фильтр гуаши'], bg=(152, 163, 92))], f'{PICS}/step-paint.webp')
 print('ok')

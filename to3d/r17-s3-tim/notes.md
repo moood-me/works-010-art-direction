@@ -75,8 +75,7 @@ python3 make_live.py                                    # ../pics: the live face
 
 Files: `views.py` (the front and the profile, the turnaround sheet), `drawing.py` (paths sampled, the scale),
 `head.py`, `hair.py`, `build.py`, `mesh.py`, `pack.py`, `overlay.py`, `compare.py`, `make_pics.py`, `make_live.py`,
-`bases.py`, `face_png.mjs`, `shots.mjs`, `run.sh` (build and look), `web/` (the viewer). `render_svg.mjs` is Р1's,
-unused here. The pack format is Р1's `r1/character`, version 2: plus `bands` in the header.
+`bases.py`, `face_png.mjs`, `shots.mjs`, `run.sh` (build and look), `web/` (the viewer).  The pack format is Р1's `r1/character`, version 2: plus `bands` in the header.
 
 ## Licences of the bases
 

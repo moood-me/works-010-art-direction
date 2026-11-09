@@ -2,14 +2,14 @@
 from the head's widest places — a choppy bob. Its lower edge is the drawing's own: in front the lowest point of the
 front view's hair at each x (kira.NEAR_F and FRINGE_F: the long fringe slanting over her left eye, the lock by her right
 cheek), behind the profile's choppy ends (kira.HAIR_S). On the forehead the edge's last row lies on the skin. A few
-flat cones are the tufts that stick out. Built in the head's own units, upright; build.py pitches it with the head."""
+flat cones are the tufts that stick out (ones at the cheeks were tried and taken away: they read as bows). Built in the head's own units, upright; build.py pitches it with the head."""
 import numpy as np
 import drawing as D, head as Hd, shapes as VW, mesh as M
 
 K = D.K
 smooth = lambda t: (lambda c: c * c * (3 - 2 * c))(np.clip(t, 0, 1))
 P = Hd.P
-Y0, YTOP = -96.0, -139.0          # the dome over the ring at Y0 rises to YTOP
+Y0, YTOP = -96.0, -141.0          # the dome over the ring at Y0 rises to YTOP
 # the hair's own form below the head's widest places: it hangs, it does not follow the jaw in
 W_H = np.maximum.accumulate(Hd.W_T); ZB_H = np.minimum.accumulate(Hd.ZB_T)
 
@@ -44,12 +44,12 @@ def build(ctx):
         s = D.span(sd, float(np.clip(z, -126, -48)), ax=0)
         return s[1] if s else 90.0
 
-    rows, cols, T_TOP, T_EDGE = 30, 280, 12.0, 9.0
+    rows, cols, T_TOP, T_EDGE = 30, 280, 15.0, 12.0
     V = np.zeros((rows + 1, cols, 3))
     for c in range(cols):
         th = 2 * np.pi * c / cols
         d = abs((th + np.pi) % (2 * np.pi) - np.pi)          # 0 in front … π behind
-        lim = np.radians(80 if np.sin(th) > 0 else 62)       # her left: the fringe's side; her right: the lock begins earlier
+        lim = np.radians(80 if np.sin(th) > 0 else 72)       # her left: the fringe's side; her right: the lock begins earlier
         back = ends(-48 - 70 * np.clip((d - lim) / (np.pi - lim), 0, 1))
         ub = smooth((d - lim) / np.radians(12))
         ye = -40.0
@@ -88,12 +88,9 @@ def build(ctx):
         parts.append((np.array(v), np.array(t)))
 
     # x, y, z in the head's units (z forward): base, tip, half-widths across and through, the flat side's direction
-    cone((-92, -98, -40), (-106, -116, -54), 13, 7, (1, 0, 0))
-    cone((-104, -26, -34), (-134, -20, -48), 14, 7, (0, 1, 0))
-    cone((-102, 66, -44), (-128, 90, -56), 14, 7, (0, 1, 0))
-    cone((102, 66, -44), (128, 90, -56), 14, 7, (0, 1, 0))
-    cone((-10, -60, -100), (-16, -46, -126), 14, 7, (1, 0, 0))
-    cone((50, 10, -92), (64, 26, -116), 13, 7, (1, 0, 0))
+    cone((-108, -40, -40), (-128, -22, -54), 24, 7, (0, 1, 0))
+    cone((-10, -60, -104), (-16, -44, -126), 18, 7, (1, 0, 0))
+    cone((50, 10, -96), (62, 28, -116), 16, 7, (1, 0, 0))
     n0 = 0; Vs, Ts = [], []
     for v, t in parts: Vs.append(v); Ts.append(t + n0); n0 += len(v)
     V = np.vstack(Vs); T = np.vstack(Ts)

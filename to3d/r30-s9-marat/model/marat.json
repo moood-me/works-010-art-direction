@@ -1,0 +1,121 @@
+{
+ "format": "s9/model",
+ "version": 1,
+ "id": "marat",
+ "skeleton": "soma77",
+ "mats": [
+  "skin",
+  "skin_d",
+  "hair",
+  "nose",
+  "white",
+  "white_d",
+  "apron",
+  "apron_d",
+  "trous",
+  "shoe",
+  "towel",
+  "clay",
+  "ink"
+ ],
+ "parts": [
+  "head"
+ ],
+ "stripes": {
+  "mat": "towel",
+  "period": 0.14,
+  "width": 0.12,
+  "y0": 1.225
+ },
+ "face": 320,
+ "corrections": {
+  "armsOff": {
+   "degrees": 16
+  },
+  "armsOutOfHead": {
+   "margin": 0.03
+  }
+ },
+ "bin": "marat.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    42420,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    76441,
+    3
+   ],
+   "offset": 509040
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    42420,
+    4
+   ],
+   "offset": 1426332
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    42420,
+    4
+   ],
+   "offset": 1596012
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 2274732
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 2275656
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    42420
+   ],
+   "offset": 2276888
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    42420,
+    3
+   ],
+   "offset": 2319308
+  },
+  "fuv": {
+   "dtype": "float32",
+   "shape": [
+    42420,
+    3
+   ],
+   "offset": 2828348
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    42420,
+    1
+   ],
+   "offset": 3337388
+  }
+ }
+}

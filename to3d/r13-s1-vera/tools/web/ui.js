@@ -3,7 +3,7 @@
 const A = window.A;
 const $ = id => document.getElementById(id);
 const MOTIONS = [['idle', 'стоит'], ['walk', 'идёт'], ['wave', 'машет'], ['sit', 'садится'], ['jump', 'прыгает'], ['bow', 'кланяется'], ['dance', 'танцует'], ['run', 'бежит'], ['sneak', 'крадётся'], ['stomp', 'топает']];
-const EXPR = [['calm', 'спокойна'], ['strict', 'строга'], ['joy', 'улыбка'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']];
+const EXPR = [['calm', 'спокойна'], ['strict', 'строга'], ['smile', 'улыбка'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']];
 const st = { motion: 'idle', t: 0, clock: 0, play: true, talk: false, yaw: -0.35, pitch: 0.08, dist: 3.6, expr: [{ t: 0, name: 'calm' }], talkSpans: [], drag: null, close: false };
 
 const sel = $('motion');

@@ -1,6 +1,6 @@
-// Аня's painted face, alive. The drawing's own marks (styles/s9-midcentury/tools: kit.py path/sample/brush, face.py
-// eye/brow/mouth, anya.py's expressions) are carried over line for line and drawn into a canvas the head takes by its
-// front projection (the drawing's head units −128…128, y down). Every frame the marks are drawn again from a state:
+// Марат's painted face, alive. The drawing's own marks (styles/s9-midcentury/tools: kit.py path/sample/brush, face.py
+// eye/mouth, marat.py's block brows, moustache and expressions) are carried over line for line and drawn into a canvas the head takes by its
+// front projection (the drawing's head units −160…160, y down: his beard reaches 148). Every frame the marks are drawn again from a state:
 //   expression — the sheet's five, blended: numbers (brow ends, mouth size, blush) go over smoothly, a mark of another
 //                kind (dot eye → laughing arc) fades over the old one;
 //   blink      — at uneven intervals (a gamma-like spread round ~3.5 s, sometimes a double blink) and when the head
@@ -11,7 +11,8 @@
 //                into the next (coarticulation), the expression's mouth when silent.
 // All of it is a timeline made once from a seeded random stream, so a moment t always looks the same (films, scrubbing).
 
-const INK = '#2a201c', LIP = '#c23a2c', MOUTH_IN = '#6e1f1c', CHEEK = '#ec7f72', HAIR_L = '#6a4034', NOSE = '#b9775e', WHITE = '#fbf6ea';
+const INK = '#2a201c', LIP = '#c23a2c', MOUTH_IN = '#6e1f1c', CHEEK = '#e0634a', HAIR = '#2b2220', HAIR_L = '#5c463a', SKIN_D = '#d2946c', NOSE_D = '#886350', WHITE = '#fbf6ea', TEETH = '#f8f2e4';
+const HALF = 160;
 
 // ---------- kit.py ----------
 function samplePts(pts, closed = false, per = 10) {
@@ -71,7 +72,7 @@ class Pen {
   }
 }
 
-// ---------- face.py (the kinds Аня uses), with open: 1 open … 0 shut, and gaze (gx, gy) in head units ----------
+// ---------- face.py (the kinds Марат uses), with open: 1 open … 0 shut, and gaze (gx, gy) in head units ----------
 function eye(p, x, y, s, kind, side, open = 1, gx = 0, gy = 0, lid = 0) {
   const w = s;
   if (kind === 'dot') {
@@ -92,7 +93,6 @@ function eye(p, x, y, s, kind, side, open = 1, gx = 0, gy = 0, lid = 0) {
     }
   } else if (kind === 'happy') {
     p.brush([[x - side * 7 * w, y + 2.5 * s], [x, y - 3.5 * s], [x + side * 8 * w, y + 2 * s]], 2.6 * s, INK, [0.25, 0.25]);
-    p.brush([[x + side * 7.5 * w, y + 1.5 * s], [x + side * 11 * w, y - 1 * s]], 1.5 * s, INK, [0, 0.8]);
   } else if (kind === 'wide') {
     const o = Math.max(open, 0.08);
     p.ell(x, y - 1 * s, 7.6 * w, 9 * s * o, '#fbf6ea');
@@ -108,13 +108,26 @@ function eye(p, x, y, s, kind, side, open = 1, gx = 0, gy = 0, lid = 0) {
     p.brush([[x - side * 8.5 * w, sq(y + 1.2 * s)], [x + side * 9.5 * w, sq(y - 4.2 * s)]], 3.0 * s, INK, [0.1, 0.2]);
   }
 }
-function brow(p, x, y, s, side, inner, outer, w) {
-  const L = 1;
-  p.brush([[x - side * 8 * L * s, y + inner * s], [x + side * 1 * L * s, y - 2.4 * s + (inner + outer) * 0.5 * s], [x + side * 10 * L * s, y + outer * s]], w * s, INK, [0.15, 0.6]);
+// marat.py _brow: a thick dark brow, a tapered block
+function brow(p, x, y, side, inner, outer) {
+  p.shape([[x - side * 14, y + inner - 2, 'c'], [x - side * 3, y - 8 + (inner + outer) * 0.45], [x + side * 12, y - 6 + outer],
+    [x + side * 21, y + outer + 3, 'c'], [x + side * 8, y + 1 + outer * 0.7], [x - side * 11, y + inner + 5]], HAIR);
 }
 function mouth(p, x, y, s, kind, side, width) {
   const W = width * s;
-  if (kind === 'lips') {
+  if (kind === 'beam') {         // a wide closed-teeth smile: a white crescent of teeth, the lower lip under it
+    p.shape([[x - side * 13 * W, y - 3.5 * s, 'c'], [x - side * 4 * W, y - 0.6 * s], [x + side * 5 * W, y - 1 * s], [x + side * 13 * W, y - 5 * s, 'c'],
+      [x + side * 7 * W, y + 5.5 * s], [x - side * 5 * W, y + 6 * s]], TEETH);
+    p.brush([[x - side * 13.5 * W, y - 3.2 * s], [x - side * 5 * W, y + 6.6 * s], [x + side * 7 * W, y + 6.2 * s], [x + side * 13.5 * W, y - 4.8 * s]], 2.2 * s, LIP, [0.25, 0.25]);
+  } else if (kind === 'laugh') { // laughing out loud: wide open, upper teeth, tongue, the lower lip
+    const hole = [[x - side * 13 * W, y - 4 * s, 'c'], [x, y - 2.5 * s], [x + side * 13 * W, y - 5.5 * s, 'c'], [x + side * 9 * W, y + 9 * s], [x, y + 13 * s], [x - side * 8 * W, y + 9.5 * s]];
+    p.shape(hole, MOUTH_IN);
+    const c = p.c; c.save(); c.clip(new Path2D(pathD(hole)));
+    p.ell(x + side * 1 * W, y + 12 * s, 7.5 * W, 5.5 * s, '#e2706a');
+    p.shape([[x - side * 14 * W, y - 6 * s, 'c'], [x + side * 14 * W, y - 7 * s, 'c'], [x + side * 12 * W, y + 0.6 * s], [x, y + 2.2 * s], [x - side * 11.5 * W, y + 1 * s]], TEETH);
+    c.restore();
+    p.brush([[x - side * 9 * W, y + 9.5 * s], [x, y + 13.6 * s], [x + side * 9.5 * W, y + 9 * s]], 2.2 * s, LIP, [0.3, 0.3]);
+  } else if (kind === 'lips') {
     p.shape([[x - side * 8 * W, y - 0.5 * s, 'c'], [x - side * 3 * W, y - 3.2 * s], [x - side * 0.5 * W, y - 2 * s, 'c'], [x + side * 2.5 * W, y - 3.4 * s],
       [x + side * 7.5 * W, y - 1.5 * s, 'c'], [x + side * 2 * W, y + 3.8 * s], [x - side * 4 * W, y + 3.2 * s]], LIP);
     p.brush([[x - side * 8.5 * W, y - 0.6 * s], [x, y + 0.3 * s], [x + side * 8 * W, y - 1.8 * s]], 1.3 * s, MOUTH_IN, [0.3, 0.3]);
@@ -140,19 +153,28 @@ function talkMouth(p, x, y, s, o, wd, rd, smile) {
                [x + W, y - 1.5 * s - smile * 1.6 * s, 'c'], [x + W * (0.6 + 0.2 * rd), bot - H * 0.15], [x, bot], [x - W * (0.6 + 0.2 * rd), bot - H * 0.15]];
   p.shape(pts, MOUTH_IN);
   if (o > 0.45) p.ell(x, bot - H * 0.2, W * 0.45, H * 0.22, '#e2706a');
+  if (o > 0.25 && rd < 0.6) {    // his upper teeth show when the mouth opens wide (not on a round O)
+    const c = p.c; c.save(); c.clip(new Path2D(pathD(pts)));
+    p.shape([[x - W * 1.1, top - 3 * s, 'c'], [x + W * 1.1, top - 3 * s, 'c'], [x + W * 0.9, top + H * 0.3], [x, top + H * 0.36], [x - W * 0.9, top + H * 0.3]], TEETH); c.restore();
+  }
   p.brush([[x - W * 1.04, y - 1.5 * s - smile * 1.2 * s], [x, top - H * 0.25 * rd - 0.6 * s], [x + W * 1.04, y - 1.5 * s - smile * 1.6 * s]], 1.7 * s, LIP, [0.12, 0.12]);
 }
 
-// ---------- anya.py's expressions (face.py EXPR, her own calm: a dreamy look under lowered lids, painted lips) ----------
+// ---------- marat.py's expressions: his resting face is already a wide smile; joy is the laugh with the whole face ----------
 export const EXPRS = {
-  calm: { eye: 'look', lid: 0.3, brow: [0, 0], brow2: [0, 0], mouth: 'lips', ms: 1, cheek: 1 },
-  joy: { eye: 'happy', lid: 0, brow: [-3, -1], brow2: [-3, -1], mouth: 'grin', ms: 1.45, cheek: 1.25 },
-  surprise: { eye: 'wide', lid: 0, brow: [-8, -7], brow2: [-8, -7], mouth: 'o', ms: 1.35, cheek: 1 },
-  sad: { eye: 'sad', lid: 0, brow: [-7, 5], brow2: [-7, 5], mouth: 'sad', ms: 1.2, cheek: 1 },
-  anger: { eye: 'glare', lid: 0, brow: [8, -6], brow2: [8, -6], mouth: 'shout', ms: 1.45, cheek: 1.3 },
+  calm: { eye: 'dot', lid: 0, brow: [-2, -1], brow2: [-2, -1], mouth: 'beam', ms: 1.25, cheek: 1.1 },
+  joy: { eye: 'happy', lid: 0, brow: [-5, -3], brow2: [-5, -3], mouth: 'laugh', ms: 1.5, cheek: 1.3 },
+  surprise: { eye: 'wide', lid: 0, brow: [-10, -9], brow2: [-10, -9], mouth: 'o', ms: 2.0, cheek: 1 },
+  sad: { eye: 'sad', lid: 0, brow: [-7, 6], brow2: [-7, 6], mouth: 'sad', ms: 1.8, cheek: 1 },
+  anger: { eye: 'glare', lid: 0, brow: [10, -6], brow2: [10, -6], mouth: 'shout', ms: 1.8, cheek: 1.3 },
 };
-// where the features sit on her front view (anya.py head('front'))
-const F = { ex: 26, ey: 10, es: 1.15, bx: 27, by: -15, bs: 1.0, bw: 2.6, mx: 0, my: 63, ms: 1.0, mw: 0.9, cx: 38, cy: 38, cr: 14 };
+// where the features sit on his front view (marat.py head('front'))
+const F = { ex: 30, ey: 2, es: 1.4, bx: 31, by: -20, mx: 0, my: 76, ms: 1.0, mw: 1.1, cx: 46, cy: 30, cr: 17 };
+const smiling = e => e.mouth === 'beam' || e.mouth === 'laugh' ? 1 : 0;
+function moustache(p) {
+  p.shape([[0, 48], [22, 44], [48, 54], [62, 70, 'c'], [38, 64], [14, 62], [0, 59], [-14, 62], [-38, 64], [-62, 70, 'c'], [-48, 54], [-22, 44]], HAIR);
+  p.brush([[-12, 52], [-40, 62]], 2.0, HAIR_L, [0.3, 0.5], 0.7); p.brush([[12, 52], [40, 62]], 2.0, HAIR_L, [0.3, 0.5], 0.7);
+}
 
 // ---------- the timeline ----------
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -233,9 +255,9 @@ export class LiveFace {
 
   // draw the face at time t into a 2D canvas (square; the head units −128…128)
   draw(ctx, t) {
-    const S = ctx.canvas.width / 256, p = new Pen(ctx); p.scale = S;
+    const S = ctx.canvas.width / (2 * HALF), p = new Pen(ctx); p.scale = S;
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.setTransform(S, 0, 0, S, 128 * S, 128 * S);
+    ctx.setTransform(S, 0, 0, S, HALF * S, HALF * S);
     const { a, b, u } = this.exprAt(t), mix = (x, y) => x + (y - x) * u;
     const cheek = mix(a.cheek, b.cheek), ms = mix(a.ms, b.ms);
     const bi = mix(a.brow[0], b.brow[0]), bo = mix(a.brow[1], b.brow[1]), b2i = mix(a.brow2[0], b.brow2[0]), b2o = mix(a.brow2[1], b.brow2[1]);
@@ -245,28 +267,35 @@ export class LiveFace {
     if (!this.base || this.baseKey !== ck || this.base.width !== ctx.canvas.width) {
       this.base = this.base && this.base.width === ctx.canvas.width ? this.base : Object.assign(document.createElement('canvas'), { width: ctx.canvas.width, height: ctx.canvas.height });
       const bc = this.base.getContext('2d'), bp = new Pen(bc); bp.scale = S;
-      bc.setTransform(1, 0, 0, 1, 0, 0); bc.clearRect(0, 0, this.base.width, this.base.height); bc.setTransform(S, 0, 0, S, 128 * S, 128 * S);
-      bp.brush([[-56, -50], [-20, -100], [30, -112]], 3, HAIR_L, [0.3, 0.5], 0.55);
-      bp.brush([[-10, -62], [30, -100], [64, -86]], 3, HAIR_L, [0.3, 0.5], 0.55);
-      bp.blush(-F.cx, F.cy, F.cr * ck, CHEEK); bp.blush(F.cx, F.cy, F.cr * ck, CHEEK);
-      bp.brush([[4, 22], [8, 38], [1, 42]], 2.4, NOSE, [0.4, 0.2]);
+      bc.setTransform(1, 0, 0, 1, 0, 0); bc.clearRect(0, 0, this.base.width, this.base.height); bc.setTransform(S, 0, 0, S, HALF * S, HALF * S);
+      for (const l of [[[-66, -84], [-48, -104], [-26, -112]], [[-10, -114], [10, -120], [28, -112]], [[46, -106], [64, -92], [74, -74]]]) bp.brush(l, 2.6, HAIR_L, [0.3, 0.5], 0.7);
+      for (const l of [[[-70, 50], [-58, 90], [-30, 112]], [[70, 50], [58, 90], [30, 112]], [[-10, 100], [0, 118], [12, 100]]]) bp.brush(l, 2.4, HAIR_L, [0.3, 0.5], 0.7);
+      bp.blush(-F.cx, F.cy, F.cr * ck, CHEEK, 0.62); bp.blush(F.cx, F.cy, F.cr * ck, CHEEK, 0.62);
+      bp.brush([[-12, 42], [-5, 37], [0, 41]], 2.2, NOSE_D, [0.3, 0.3]); bp.brush([[12, 42], [5, 37], [0, 41]], 2.2, NOSE_D, [0.3, 0.3]);
       this.baseKey = ck;
     }
-    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.drawImage(this.base, 0, 0); ctx.setTransform(S, 0, 0, S, 128 * S, 128 * S);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.drawImage(this.base, 0, 0); ctx.setTransform(S, 0, 0, S, HALF * S, HALF * S);
     // eyes (kinds fading into each other), brows lifting a little with a wide look
     const lift = open < 0.5 ? (0.5 - open) * 2 : 0;
-    const eyes = (e, al) => { p.alpha = al; eye(p, -F.ex, F.ey, F.es, e.eye, -1, open, gx, gy, e.lid); eye(p, F.ex, F.ey, F.es, e.eye, 1, open, gx, gy, e.lid); };
+    const eyes = (e, al) => { p.alpha = al; const ey = F.ey + (e.eye === 'happy' ? 2 : 0); eye(p, -F.ex, ey, F.es, e.eye, -1, open, gx, gy, e.lid); eye(p, F.ex, ey, F.es, e.eye, 1, open, gx, gy, e.lid); };
     if (a.eye !== b.eye && u < 1) { eyes(a, 1 - u); eyes(b, u); } else eyes(b, 1);
     p.alpha = 1;
-    brow(p, -F.bx, F.by + lift * 1.2, F.bs, -1, bi, bo, F.bw); brow(p, F.bx, F.by + lift * 1.2, F.bs, 1, b2i, b2o, F.bw);
+    // the laugh lines by the eyes come with the smile
+    const sm = mix(smiling(a), smiling(b)) * (talk ? 0.5 : 1);
+    if (sm > 0.02) for (const t of [-1, 1]) {
+      p.alpha = sm; p.brush([[t * 48, 6], [t * 56, 2], [t * 60, -5]], 1.8, SKIN_D, [0.2, 0.5]); p.brush([[t * 44, 16], [t * 30, 20], [t * 16, 15]], 1.8, SKIN_D, [0.4, 0.4]);
+    }
+    p.alpha = 1;
+    brow(p, -F.bx, F.by + lift * 1.5, -1, bi, bo); brow(p, F.bx, F.by + lift * 1.5, 1, b2i, b2o);
     // the mouth: speaking shapes, or the expression's own
     if (talk) {
-      const smile = b.mouth === 'lips' || b.mouth === 'grin' ? 1 : b.mouth === 'sad' ? -1 : 0;
-      talkMouth(p, F.mx, F.my, F.ms * 0.8, talk[0], talk[1], talk[2], smile);
+      const smile = smiling(b) ? 1 : b.mouth === 'sad' ? -1 : 0;
+      talkMouth(p, F.mx, F.my + 2, 1.5, talk[0], talk[1], talk[2], smile);
     } else if (a.mouth !== b.mouth && u < 1) {
       p.alpha = 1 - u; mouth(p, F.mx, F.my, F.ms * ms, a.mouth, 1, F.mw);
       p.alpha = u; mouth(p, F.mx, F.my, F.ms * ms, b.mouth, 1, F.mw); p.alpha = 1;
     } else mouth(p, F.mx, F.my, F.ms * ms, b.mouth, 1, F.mw);
+    moustache(p);
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
   }
 }

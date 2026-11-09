@@ -132,7 +132,14 @@ for s in [798, 1822, 1836, 1812, 1813, 1815, 1816, 1798]:
 outer = hf['outer']
 # and what lies deep behind the lips (the bag's back), found by depth on the final head
 lipz = HV[ring(Q, V0, 767), 2].mean()
-mouth_in |= (HV[:, 2] < lipz - 4) & (HV[:, 2] > 0) & (np.abs(HV[:, 0]) < 13) & (HV[:, 1] - MY < 5) & (HV[:, 1] - MY > -10) & ~outer
+_nb = neighbours(HT, len(HV)); _front = [int(v) for v in np.where(mouth_in)[0]]; _seen = set(_front)
+while _front:                          # everything inside, reached from the bag's rings without coming out to the face
+    _nx = []
+    for v in _front:
+        for u in _nb[v]:
+            if u not in _seen and not outer[u] and abs(HV[u, 0]) < 22 and HV[u, 1] < MY + 22: _seen.add(int(u)); _nx.append(int(u))
+    _front = _nx
+mouth_in[list(_seen)] = True
 # the eye sockets' lining (under the lids, behind the balls)
 sock = np.zeros(len(HV), bool)
 for s in LINING: L = ring(Q, V0, s); sock[L] = True; sock[MI[L]] = True
@@ -202,8 +209,8 @@ parts.append(teeth_row(MY - 3.0, 3.4, 8, -1, 7.5, lipz - 2.4, 'teethLo')); parts
 # the tongue: a flat rounded body on the mouth's floor behind the lower teeth, going with the jaw (the drawing paints one
 # in every open mouth; without it the mouth is a dark pocket — Р6's weak place)
 X, F = sphere(np.zeros(3), 1.0, n=14, m=20)
-X = X * [6.2, 1.7, 7.5] + [0, MY - 3.4, lipz - 10.5]
-X[:, 1] += 0.9 * np.clip((X[:, 2] - (lipz - 10.5)) / 7.5, -1, 1) ** 2 * -1.0          # its tip and root dip a little
+X = X * [6.2, 2.0, 7.0] + [0, MY - 1.6, lipz - 12.0]
+X[:, 1] -= 1.2 * np.clip((X[:, 2] - (lipz - 12.0)) / 7.0, -1, 1) ** 2          # its tip and root dip a little
 sj, sw = one(len(X), 'Head')
 parts.append(part(H2W(X), F[:, ::-1], sj, sw, 'tongue', name='tongue')); parts[-1]['jaw'] = np.ones(len(X))
 
@@ -473,14 +480,18 @@ from model import join
 M, _ = join(parts)
 N = vnormals(M['V'], M['T'])
 ao = igl.ambient_occlusion(M['V'], M['T'], M['V'] + N * 1e-4, N, 64)
+# the stance of the stills: the drawing's joints; its arms hang inside its coat (elbow at x 43, the coat's side at 40, the
+# sleeve 12 thick: in the drawing the sleeve is painted over the coat), so here elbow and wrist stand off by the sleeve
+STANCE = {k: list(PERSON[k]) for k in ('sh', 'el', 'wr', 'hip', 'kn', 'an')}
+STANCE['el'] = [55, 196, 2]; STANCE['wr'] = [57, 280, 12]
 from pix import mix
 # the drawing's colours; skin and coat a third of the way to their shadow colours (the look's key light is strong, as Р6's)
-PAINT = dict(skin=mix(C['skin'], C['skin_sh'], 0.42), lip=C['lip'], mouth='#5a1f22', eye='#f2ede8', hair=mix(C['hair'].base, C['hair'].dark, 0.45),
-             coat=mix('#7d8b97', '#4c5866', 0.55), turtle=mix('#93334a', '#5e1c2c', 0.2), pants='#2e2c33', frame='#2a1f1c', shoe='#1e1c20',
+PAINT = dict(skin=mix(C['skin'], C['skin_sh'], 0.52), lip=C['lip'], mouth='#5a1f22', eye='#f2ede8', hair=mix(C['hair'].base, C['hair'].dark, 0.45),
+             coat=mix('#7d8b97', '#4c5866', 0.72), turtle=mix('#93334a', '#5e1c2c', 0.2), pants='#2e2c33', frame='#2a1f1c', shoe='#1e1c20',
              sole='#0c0b0d', teeth='#f4eee2', streak='#8f8882', belt='#6c7985', tongue='#c4545a')
 write(char.NAME, parts, J2, B['frames'], ao=ao, out_dirs=OUT,
       extra=dict(K=K, hs=HS, headY=HY, headZ=HZ, balls=BALLS.tolist(), mouthY=MY, lipZ=float(lipz), floor=FLOOR, paint=PAINT,
                  iris=dict(col=mix(C['iris_col'], '#8a8a86', 0.45), r=C['iris'] / char.EYE_R),
                  legs=dict(r=[0.056, 0.044, 0.036], soft=0.012), hair=dict(light=C['hair'].light, dark=C['hair'].dark),
-                 skinShade=C['skin_sh'], lash=C['lash'], eye=dict(x=C['eye_x'], y=C['eye_y'], browH=C['brow_h'])))
+                 skinShade=C['skin_sh'], lash=C['lash'], stance=STANCE, eye=dict(x=C['eye_x'], y=C['eye_y'], browH=C['brow_h'])))
 np.savez(f'{CACHE}/head_rest.npz', X=HEAD_REST)

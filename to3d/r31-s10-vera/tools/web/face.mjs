@@ -44,7 +44,9 @@ export class Face {
   }
 
   // the displacement of every face vertex for these params, into this.delta (engine axes, metres)
-  update(q) {
+  update(q0) {
+    const q = { ...q0 };                       // the character's own rest (heavy lids, a set mouth) is under every face
+    if (this.d.rest) for (const [k, v] of Object.entries(this.d.rest)) q[k] = (q[k] ?? (k === 'iris' ? 1 : 0)) + v;
     const d = this.d, K = d.K, E = d.eyes, RB = d.rb, MY = d.mouthY, JAW = d.jaw, MW = d.mouthW ?? 15, MZ = d.mouthZ ?? 72;
     const p = [0, 0, 0];
     for (const pc of this.pieces) {
@@ -114,10 +116,10 @@ export class Face {
 // the five expressions of the drawing's sheet, as params
 export const EXPRESSIONS = {
   calm: {},
-  joy: { up: 34, low: 14, jaw: 7, smile: 1.0, brow: 2.5 },
-  surprise: { up: -14, low: -8, jaw: 6, brow: 7, iris: 0.82 },
-  sad: { up: 16, smile: -1.0, brow: 1.5, inner: 4, lookY: 7 },
-  anger: { up: 12, low: 6, jaw: 5, smile: -0.8, brow: -4, inner: -5 },
+  joy: { up: 26, low: 14, jaw: 11, smile: 1.0, wide: 0.35, brow: 2.5 },
+  surprise: { up: -16, low: -8, jaw: 11, pucker: 1.0, brow: 7, iris: 0.82 },
+  sad: { up: 10, smile: -1.0, brow: 1.5, inner: 4, lookY: 7 },
+  anger: { up: 8, low: 6, jaw: 7, smile: -0.7, wide: 0.3, brow: -4, inner: -5 },
 };
 export const PARAMS = ['up', 'low', 'jaw', 'smile', 'wide', 'pucker', 'brow', 'inner', 'lookX', 'lookY', 'iris'];
 

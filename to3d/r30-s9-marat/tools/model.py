@@ -5,7 +5,7 @@ rest place), fuv N×3 (the face picture's coordinates and how much the surface f
 import numpy as np
 from common import pack, CACHE, HERE
 
-MATS = ['skin', 'skin_d', 'hair', 'band', 'dress', 'belt', 'cardi', 'collar', 'shoe', 'clay', 'ink', 'hair_l', 'white', 'nose', 'nose_d']
+MATS = ['skin', 'skin_d', 'hair', 'nose', 'white', 'white_d', 'apron', 'apron_d', 'trous', 'shoe', 'towel', 'clay', 'ink']
 
 
 def part(V, T, sj, sw, mat, fuv=None, pat=None):

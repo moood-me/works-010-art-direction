@@ -119,8 +119,10 @@ for n, p in (('Neck1', (0, 178, -14)), ('Neck2', (0, 152, -12)), ('Head', (0, 12
 # vertices follow their joints: v' = Σ w (J'_k + A_k (v − J_k)); A_k: the joint's own girth
 A = S.copy()
 for n in NAMES:
-    if 'Leg' in n or 'Shin' in n:
+    if 'Shin' in n:
         A[IDX[n]] = (1.0, U, 1.0)                # slim legs, as drawn (the calf's radius 38)
+    if 'Leg' in n:
+        A[IDX[n]] = (0.66, U, 0.66)              # the thighs thin: they are under the skirt and must stay under it
     if 'Foot' in n or 'Toe' in n:
         A[IDX[n]] = (0.8, 0.85, 0.66)
     if 'Arm' in n:
@@ -352,7 +354,9 @@ jacket = H.Shell(TORSO)
 
 # blouse: the torso shell 7 in, from the collar down to the waist
 BLOUSE = inset(TORSO, 7, y1=405)
-Vs, Fs = shell_mesh(BLOUSE, 126, 405, lambda X, Y, Z, U, V: arm_hole(X, Y, Z, HOLE + 1), nu=80, nv=40)
+# (only its front, which the jacket's opening shows: at the shoulders it would come through the jacket in motion)
+Vs, Fs = shell_mesh(BLOUSE, 126, 405, lambda X, Y, Z, U, V: 62 - np.abs(wrapdeg(U)) - np.clip((165 - Y) * 2.0, 0, 60),
+                    nu=96, nv=40)
 add('blouse', Vs, Fs, COL['blouse'], *weights_nearest(Vs, trunk))
 blouse = H.Shell(BLOUSE)
 
@@ -364,7 +368,7 @@ side_l = (trunk | legs_all) & (X1[:, 0] > -2)
 side_r = (trunk | legs_all) & (X1[:, 0] < 2)
 wl = weights_nearest(Vk, side_l, k=32, sigma=30, top4=False)
 wr = weights_nearest(Vk, side_r, k=32, sigma=30, top4=False)
-a = np.clip((Vk[:, 0] + 70) / 140, 0, 1)
+a = np.clip((Vk[:, 0] + 40) / 80, 0, 1)
 a = (a * a * (3 - 2 * a))[:, None]
 add('skirt', Vk, Fk, COL['skirt'], *top_four(wl * a + wr * (1 - a)))
 skirt = H.Shell(SKIRT)
@@ -425,12 +429,12 @@ if os.environ.get('FOLDER', '1') == '1' and os.path.exists(_stand) and 'hand' in
     Ff = np.array([(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)])
     add('folder', Vf, Ff, COL['folder'], *weights_joint(Vf, 'LeftHand'), smooth=False)
 
-# the seams the drawing has, as thin ink: the jacket's pockets and darts, the skirt's slit
+# the seams the drawing has, as thin ink: the jacket's pockets and darts (the skirt's slit line is left out:
+# between the two legs' turns it smears in a step)
 LINES = []
 for s in (1, -1):
     LINES.append((jc([(s * 30, 452), (s * 58, 450)]), 0.6, trunk))
     LINES.append((jc([(s * 40, 230), (s * 44, 330), (s * 40, 410)]), 0.55, trunk))
-LINES.append((skirt.curve([(-20, 700), (-22, 856)]), 0.6, None))
 from scipy.interpolate import CubicSpline
 for i, (P, w, mask) in enumerate(LINES):
     if len(P) > 2:

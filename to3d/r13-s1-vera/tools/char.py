@@ -18,8 +18,28 @@ def person():
 
 # the comparisons (compare.py): the pose the stills stand in, the portrait's turn (the style's yaw −0.32 is the
 # camera's 0.32 here: the style turns the figure, the page turns the camera) and face
-STAND = {'motion': ['stomp'], 't': 0}        # Kimodo's «топает», its first frame: she stands upright, arms down
+STAND = {'stance': True}                # the drawing's own stance (web/char.js stancePose): no Kimodo motion in the stills
 DRAWN_TURN = DRAWN_EXPR = True          # drawn for the comparison by drawn.py (the style's page has none of Вера)
 PORTRAIT_YAW = 0.32
 PORTRAIT_EXPR = 'calm'
-PORTRAIT_SET = {}
+PORTRAIT_SET = {'look': [-4, 0]}
+# the figure sheet's pose (styles/s1-pixar/tools/build.py FIGURE['vera']): her left forearm before her, the right foot a step out
+# (the arm's joints moved out of the coat, as in build.py STANCE)
+FIGURE_SET = {'stance': {'el': {'1': [60, 194, -4]}, 'wr': {'1': [50, 276, 22]}, 'kn': {'-1': [-8, 450, 10]}, 'an': {'-1': [-6, 574, 14]}, 'curl': 0.45}, 'look': [-4, 0]}
+
+
+# the films (films.py)
+def FILMS(follow, motion_film):
+    return {
+        # she walks and speaks, strict, then softens
+        'walk': lambda: motion_film('walk', 120, follow(-0.6, 0.08, 5.6, 0.92, 20), [{'t': 0, 'name': 'strict'}, {'t': 2.6, 'name': 'smile'}], [[0.6, 2.4]]),
+        # a bow: Kimodo's «кланяется»
+        'bow': lambda: motion_film('bow', 100, follow(-0.5, 0.06, 5.6, 0.92, 20), [{'t': 0, 'name': 'calm'}, {'t': 2.2, 'name': 'smile'}]),
+        'wave': lambda: motion_film('wave', 90, follow(-0.3, 0.06, 5.2, 0.98, 20), [{'t': 0, 'name': 'smile'}], [[1.0, 2.6]]),
+    }
+
+
+FACE_EXPR = [{'t': 0, 'name': 'calm'}, {'t': 3.4, 'name': 'strict'}, {'t': 4.9, 'name': 'smile'}, {'t': 6.2, 'name': 'joy'}, {'t': 7.4, 'name': 'surprise'},
+             {'t': 8.6, 'name': 'sad'}, {'t': 9.8, 'name': 'anger'}, {'t': 11.0, 'name': 'calm'}]
+FACE_TALK = [[1.0, 3.2]]
+FACE_FRAMES = 360

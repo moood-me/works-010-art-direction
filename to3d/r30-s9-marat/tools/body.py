@@ -19,12 +19,12 @@ OLD = B['joints']
 TRUNK = ('hips', 'belly', 'chest')
 GROUPS = {
     'hips': (['Hips'], (1.0, 1.55, 1.75)),
-    'belly': (['Spine1', 'Spine2'], (1.5, 2.0, 2.3)),
-    'chest': (['Chest'], (1.5, 1.75, 1.75)),
+    'belly': (['Spine1', 'Spine2'], (1.62, 2.0, 2.3)),
+    'chest': (['Chest'], (1.62, 1.75, 1.75)),
     'neck': (['Neck1', 'Neck2', 'Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'], (0.5, 1.5, 1.5)),
     'clav': (['LeftShoulder', 'RightShoulder'], (1.35, 1.5)),
     'upper': (['LeftArm', 'RightArm'], (1.0, 1.5)),
-    'fore': (['LeftForeArm', 'RightForeArm'], (1.0, 1.4)),
+    'fore': (['LeftForeArm', 'RightForeArm'], (0.9, 1.4)),
     'hand': (['LeftHand', 'RightHand'], (1.25, 1.3)),
     'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (1.1, 1.35)),
     'thumb': ([n for n in NAMES if 'Thumb' in n], (1.1, 1.35)),

@@ -1,4 +1,4 @@
-"""Packs of the bases as they come, for the page's steps: Anny's child body (moood-child) and the Human Base Meshes
+"""Packs of the bases as they come, for the page's steps: Anny's girl body (moood-girl) and the Human Base Meshes
 stylised head (only scaled to the drawing's head height), in the same flat look, no fitting.  python3 bases.py outdir"""
 import os, sys
 import numpy as np
@@ -6,8 +6,8 @@ import pack, mesh as M, head as Hd, drawing as D
 
 out = sys.argv[1]; os.makedirs(out, exist_ok=True)
 sk = pack.skeleton(); I = {j['name']: i for i, j in enumerate(sk['joints'])}
-h, a, th, t = pack.body('moood-child')
-skin, shade, line = [242, 194, 156], [221, 160, 126], [154, 92, 68]
+h, a, th, t = pack.body('moood-girl')
+skin, shade, line = [241, 211, 192], [220, 171, 151], [154, 96, 82]
 
 
 def save(name, V, T, SJ, SW, joints):

@@ -1,4 +1,4 @@
-// Тим in 3D, flat graphic style (Р1 Аня's viewer, made to take any pack of this style): the character pack
+// Кира in 3D, flat graphic style (Р1 Аня's viewer, made to take any pack of this style, as in Р17 Тим): the character pack
 // (tools/build.py) on the engine's skeleton, skinning and Kimodo retargeting; drawn with flat colour, one stepped shade,
 // a coloured outline (inverted hull) and the face drawn live on a canvas from the drawing's own parts (face.js),
 // projected from the front. Stripes, the sock's line and the sole are cut per pixel by the pack's `bands`.
