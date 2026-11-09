@@ -81,6 +81,8 @@ def bust(view, k):
 
 def bustfig(view, k, e, x, y, s, rot=0):
     p = CAST[k]
+    if view == 'f':   # long hair goes behind the neck and the shoulders
+        return g(head(view, p, e, part='back') + neck(view, p) + bust(view, k) + head(view, p, e, part='front'), x, y, s)
     return g(neck(view, p) + bust(view, k) + g(head(view, p, e), 0, 0, 1, rot=rot), x, y, s)
 
 

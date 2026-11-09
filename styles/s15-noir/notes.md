@@ -20,7 +20,7 @@
 4. **By eye.** Rendered, compared, redrew: heads were too small on the bodies (now ~6.5 heads); the side shadow ate
    the women's faces (moved back); Марат's beard merged with the shadow into a mask (the beard is now a lit brown form,
    the shadow moved behind the cheek); Аня's first torso was a post with stripes (redrawn with a waist); Кира's face
-   disappeared when the head was tilted too far; a rim of back light was added so that black sides don't dissolve in
+   disappeared when the head was tilted too far; the front view's neck fell into pieces under a slab of hair shadow (now one form from jaw to collar with the jaw's cast shadow as one black shape, the long hair drawn behind neck and shoulders — `head(..., part='back'|'front')`); a rim of back light was added so that black sides don't dissolve in
    the night; Вера's nose was witch-long.
 
 ## Files

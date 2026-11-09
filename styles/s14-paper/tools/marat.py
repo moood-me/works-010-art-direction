@@ -11,7 +11,7 @@ SPEC = dict(skin=SKIN, rx=92, ry=98, jaw=0.93, chin=0.0, eye_y=4, eye_gap=37, ey
             iris='#3b2a22', brow=HAIR, brow_w=11, brow_len=38, brow_y=-22,
             nose='broad', nose_y=34, nose_s=1.25, mouth_y=66, mouth_w=34, lip='#a8483c', inside='#4a151c',
             cheek='#e86a50', cheek_r=21, cheek_op=0.42, ear=1.2, neck_w=44,
-            rest=dict(open=0.66, low=0.6, brow=0.12, brow_dy=-5, mouth='grin'),
+            rest=dict(open=0.82, low=0.5, brow=0.12, brow_dy=-5, mouth='grin'),
             on=dict(joy=dict(mouth='laugh', open=0.0, brow_dy=-9), sad=dict(mouth='frown'), surprise=dict(mouth='o')))
 
 CURLS_TOP = [(-92, -44, 14), (-78, -78, 15), (-52, -100, 15), (-20, -112, 16), (14, -113, 15), (46, -103, 16), (74, -82, 15), (92, -48, 14),
@@ -48,7 +48,6 @@ def head(yaw=0.5, expr=None, collar=None):
         bcurls = [B.curl(x, y, r, HAIR if i % 2 else lite(HAIR, 0.08), 1) for i, (x, y, r) in enumerate([(-22, 100, 11), (2, 122, 12), (32, 130, 12), (60, 118, 12), (80, 92, 11)])]
         mous = [paint([(40, 48), (70, 44), (90, 58), (84, 72), (62, 64), (44, 62)], lite(HAIR, 0.07), 2, var=1)]
         f['on'] = F.ear(-26, 16, sp, -1, 1.1)
-    lipy = SPEC['mouth_y']
     return [back, F.neck(SPEC, yaw, 30), collar or [], f['ears'], f['skin'], f['on'], f['feats'], beard, bcurls, f['mouth'], mous, f['nose'], cap, curls]
 
 
@@ -107,7 +106,7 @@ def figure(expr='joy', yaw=0.5):
     o2 = []
     # the apron: tied at the waist, long, with folds
     ap = [(-104, -340, 1), (104, -340, 1), (112, -200), (104, -84, 1), (-104, -84, 1), (-112, -200)]
-    o2 += [paint(ap, TERRA, 2, var=0)]
+    o2 += [paint(ap, TERRA, 2, var=2)]
     o2 += B.folds(ap, [((-40, -200), (-18, -202)), ((36, -200), (60, -204))], 0.22)
     o2 += [light(ap, (-42, -200), (-60, -198), 0.2), light(ap, (34, -200), (16, -198), 0.2)]
     o2 += [card(strip([(-122, -330), (0, -322), (122, -330)], 15), dark(TERRA, 0.2), 1)]

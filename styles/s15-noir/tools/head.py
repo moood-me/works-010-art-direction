@@ -270,9 +270,12 @@ def head_f(p, e):
 
 
 def neck_f(p, length=60):
-    o = front_outline(p); k = p['neck']['w']; w = (o['jawr'][0] - 14) * k
-    pts = [(-w, 70), (w, 70), (w + 3, 96 + length), (-w - 3, 96 + length)]
-    return form(pts, p['skin'], lit=(-3, 0), shadows=[[(-w - 9, 60), (w + 9, 60), (w + 9, 200), (-w * 0.45, 200), (-w * 0.5, o['chinl'][1] + 18), (-w - 9, o['chinl'][1] + 4)]], rim=p['rim'])
+    """Neck under the front head: one form from the jaw into the collar; the jaw's cast shadow is one black shape —
+    a band under the chin that runs down the side away from the light."""
+    o = front_outline(p); k = p['neck']['w']; w = (o['jawr'][0] - 12) * k; cy = o['chinl'][1]
+    pts = [(-w, 60), (w, 60), (w + 4, cy + length), (-w - 4, cy + length)]
+    cast = [(-w - 9, 50), (w + 9, 50), (w + 9, cy + length + 10), (w * 0.25, cy + length + 10), (w * 0.2, cy + 34), (-w * 0.35, cy + 24), (-w - 9, cy + 9)]
+    return form(pts, p['skin'], lit=None, shadows=[cast], rim=None)
 
 
 # ---------- the side view ----------
@@ -354,8 +357,14 @@ def neck(view, p, **kw):
     return {'q': neck_q, 'f': neck_f, 's': neck_s}[view](p, **kw)
 
 
-def head(view, p, e=None):
+def head(view, p, e=None, part='all'):
+    """part: 'all'; 'back' — only the hair behind the head; 'front' — everything but it (to put the neck between)."""
     e = e if isinstance(e, dict) else EXPR[e or 'calm']
     if p.get('expr_fix'):
         e = p['expr_fix'](dict(e))
+    hair = p.get('hair')
+    if part == 'back':
+        return hair(view, 'back', p, e) if hair else ''
+    if part == 'front' and hair:
+        p = dict(p, hair=lambda v, layer, pp, ee: '' if layer == 'back' else hair(v, layer, pp, ee))
     return {'q': head_q, 'f': head_f, 's': head_s}[view](p, e)
