@@ -5,11 +5,12 @@ little. An oversized dark plum hoodie, acid-lime headphones round the neck, narr
 with lime laces. Head units as the others'; a longer face than a child's, eyes smaller than Аня's."""
 import math
 from kit import ink, dot, wash, blot, hatch, paper, gouache, gouache_line
-from parts import extra, eye, brow, mouth, hand, chop, tube, EXPR, SKIN, BLUSH, SHADOW
+from parts import extra, eye, brow, mouth, hand, chop, tube, EXPR, SKIN, BLUSH
 
 HAIR = '#2a1f2e'
 HOOD = '#5a3260'        # dark plum
 TROUS = '#3a3a44'       # charcoal
+LIP = '#b8606c'
 ACID = '#c4e01c'        # the one sharp accent: headphones, laces
 
 
@@ -20,38 +21,56 @@ def dark(d, poly, color=HAIR, op=0.85, **kw):
 
 
 def her(expr):
-    """Her face for an expression: joy is not a laugh but the half-smirk, a little warmer."""
+    """Her face for an expression: joy is not a laugh but the half-smirk, a little warmer; brows don't fly as high
+    as the others' (they'd go under the fringe)."""
     e = dict(EXPR[expr])
     if expr == 'joy':
-        e.update(mouth='grin', squint=False, lid=0.25, look=(1.0, 0.2), lift=5, tilt=2, warm=True)
+        e.update(mouth='grin', squint=False, lid=0.3, look=(1.0, 0.2), lift=5, tilt=2, warm=True)
+    e['lift'] = min(e['lift'], 11)
     return e
 
 
 def lips(d, e, x, y, k=1.0, side=-1):
-    """Her mouth, x at its middle: pressed shut, or the crooked half-smirk (the near corner goes up)."""
+    """Her mouth, x at its middle, small and always inside the face: pressed shut, the crooked half-smirk (the near
+    corner goes up), a small round of surprise, the corners down, or teeth set in anger."""
     m = e['mouth']
+    far, near = x + side * 11 * k, x - side * 12 * k
+    if m not in ('O', 'shout'):
+        wash(d, [(far, y - 3), (near, y - 3), (near - side * 2, y + 5), (x, y + 8), (far, y + 4)], LIP, 0.32,
+             rough='S')
     if m in ('flat', 'soft'):
-        ink(d, [(x + side * 13 * k, y - 1), (x, y + 1), (x - side * 11 * k, y), (x - side * 16 * k, y + 4)], w=1.6,
-            start=0.5, end=0.3)
-        ink(d, [(x + side * 4, y + 8), (x - side * 5, y + 8)], w=0.8, jit=0.2, retrace=0)
+        ink(d, [(far, y - 1), (x, y + 1), (near, y), (near - side * 5 * k, y + 4)], w=1.6, start=0.5, end=0.3)
     elif m == 'grin':
-        ink(d, [(x + side * 13 * k, y + 1), (x, y + 2), (x - side * 12 * k, y - 2), (x - side * 18 * k, y - 9)],
-            w=1.7, start=0.5, end=0.25)
-        ink(d, [(x - side * 20 * k, y - 13), (x - side * 23 * k, y - 6)], w=1.0, retrace=0)
-        ink(d, [(x + side * 4, y + 9), (x - side * 5, y + 9)], w=0.8, jit=0.2, retrace=0)
-    else:
-        mouth(d, x - side * 7, y, m, e.get('ms', 1.0) * 0.8, side=side, lips=False)
+        ink(d, [(far, y + 1), (x, y + 2), (near, y - 2), (near - side * 6 * k, y - 9)], w=1.7, start=0.5, end=0.25)
+        ink(d, [(near - side * 8 * k, y - 13), (near - side * 11 * k, y - 6)], w=1.0, retrace=0)
+    elif m == 'down':
+        ink(d, [(far, y + 4), (x, y - 1), (near, y + 1), (near - side * 5 * k, y + 7)], w=1.7, start=0.4, end=0.3)
+        ink(d, [(x + side * 3, y + 9), (x - side * 5, y + 9)], w=0.8, jit=0.2, retrace=0)
+    elif m == 'O':
+        pts = [(x, y - 6), (x + 6, y + 1), (x, y + 9), (x - 6, y + 1)]
+        wash(d, pts, '#b43c38', 0.7, rough='S')
+        ink(d, pts + [pts[0], pts[1]], w=1.5, start=0.8, end=0.5, retrace=0)
+    else:                                   # anger: the teeth set, the corners pulled down
+        box = [(far + side * -1, y - 4), (near, y - 6), (near - side * 3, y + 4), (far, y + 6)]
+        paper(d, box)
+        ink(d, box + [box[0], box[1]], w=1.7, start=0.8, end=0.5, retrace=0)
+        ink(d, [((box[0][0] + box[3][0]) / 2, y + 1), ((box[1][0] + box[2][0]) / 2, y - 1)], w=0.8, jit=0.2,
+            retrace=0)
+        for t in (0.33, 0.66):
+            xx = far + (near - far) * t
+            ink(d, [(xx, y - 4), (xx, y + 4)], w=0.6, jit=0.2, retrace=0, alpha=0.7)
+        ink(d, [(near - side * 3, y + 4), (near - side * 7, y + 10)], w=1.1, retrace=0)
 
 
 def her_eye(d, x, y, s, e, side, seed, look=None):
-    """A smaller eye with a heavy dark upper lid and a tired shade under it."""
+    """Her eye: smaller than Аня's, a heavy dark upper lid; the pupil sits high, under
+    the lid — the look from under the brow."""
     sq = e.get('squint', False)
-    wash(d, [(x - 10 * s, y + 9 * s), (x + 10 * s, y + 9 * s), (x + 8 * s, y + 15 * s), (x - 8 * s, y + 15 * s)],
-         SHADOW, 0.3, rough='S')
-    eye(d, x, y, s * e['eye'], look or e['look'], e['lid'], lash=True, side=side, squint=sq, seed=seed)
+    lk = look or e['look']
+    eye(d, x, y, s * e['eye'], (lk[0], lk[1] - 0.5), e['lid'], lash=True, side=side, squint=sq, seed=seed)
     if not sq:
         top = y - 8.4 * s * e['eye'] * (1 - e['lid'] * 1.1)
-        ink(d, [(x - 9 * s, y - 1 + e['lid'] * 2), (x, top - 1.5), (x + 9 * s, y - 1 + e['lid'] * 2)], w=2.0,
+        ink(d, [(x - 9 * s, y - 1 + e['lid'] * 2), (x, top - 1.5), (x + 9 * s, y - 1 + e['lid'] * 2)], w=1.9,
             start=0.5, end=0.4, retrace=0, seed=seed + 7)
 
 
@@ -62,9 +81,10 @@ def studs(d, pts):
 
 def head34(d, expr='sulk'):
     e = her(expr)
-    wash(d, [(-54, -86), (-66, -30), (-82, 22), (-70, 50), (-62, 84), (-42, 104), (0, 96), (34, 58), (48, 0),
+    wash(d, [(-54, -86), (-66, -30), (-82, 20), (-70, 48), (-62, 76), (-42, 94), (0, 88), (32, 56), (48, 0),
              (40, -70), (0, -96)], SKIN, 0.4, dx=5, dy=3)
-    blot(d, 4, 32, 14, BLUSH, 0.42 if e.get('warm') else 0.2)
+    blot(d, 6, 28, 15, BLUSH, 0.45 if e.get('warm') else 0.26)
+    blot(d, -54, 28, 9, BLUSH, 0.3 if e.get('warm') else 0.16)
     # the back of the hair: short, the ends chopped into uneven points
     back = [(102, -44), (110, -4), (96, -8), (104, 28), (86, 18), (88, 50), (70, 34), (62, 60), (52, 26)]
     dark(d, [(-40, -122), (10, -134), (58, -122), (92, -90)] + back + [(52, 0), (48, -30), (40, -70), (0, -100)],
@@ -74,97 +94,102 @@ def head34(d, expr='sulk'):
     # a lock in front of the ear, to the jaw
     dark(d, [(40, -40), (56, -24), (58, 16), (46, 50), (42, 8)], rough='S')
     chop(d, [(40, -30), (46, 50), (56, 6)], w=1.3, seed=806)
-    # the lobe of the ear under the hair, two studs
     studs(d, [(54, 40), (60, 28)])
-    # nose: small, straight, a sharp tip; lips; a longer, pointed chin; an angular jaw
-    ink(d, [(-62, -24), (-64, -12), (-63, -5), (-71, 10), (-81, 23), (-78, 29), (-68, 30)], w=2.0, start=0.4,
-        end=0.25)
-    ink(d, [(-67, 37), (-70, 44), (-66, 49), (-68, 55), (-66, 72), (-60, 92), (-48, 103), (-34, 104)], w=2.0,
+    # a small nose with a sharp tip; lips; a small pointed chin; a light jaw
+    ink(d, [(-66, -12), (-65, -4), (-72, 9), (-82, 21), (-79, 27), (-70, 28)], w=1.9, start=0.3, end=0.25)
+    ink(d, [(-69, 36), (-72, 42), (-68, 47), (-70, 53), (-67, 64), (-59, 80), (-45, 91), (-29, 92)], w=1.9,
         start=0.3, end=0.15)
-    ink(d, [(-24, 102), (6, 86), (30, 56)], w=1.3, start=0.2, end=0.1, retrace=0)
-    ink(d, [(-73, 26), (-68, 22)], w=1.0, retrace=0)
-    her_eye(d, -18, -2, 1.05, e, 1, 81)
-    brow(d, -15, -21, 26, e['lift'], e['tilt'], side=1, w=2.0, arch=1, seed=83)
-    lips(d, e, -58, 55)
-    extra(d, e, -18, -2, 4, 32, -60)
-    # the fringe: from a parting on the near side, across the forehead, long uneven locks down over the far eye
-    edge = [(-80, 42), (-68, 2), (-57, 28), (-48, -6), (-37, 8), (-30, -26), (-12, -42), (4, -34), (14, -48),
-            (30, -34), (46, -30)]
-    dark(d, [(24, -126), (-30, -124), (-66, -98), (-86, -54), (-91, -4)] + edge + [(46, -80)])
-    ink(d, [(-34, -122), (-66, -98), (-86, -56), (-92, -6), (-80, 42)], w=2.0, start=0.5, end=0.1)
-    chop(d, [(-92, -6)] + edge[:6], w=1.4, seed=812)
-    ink(d, [(-30, -26), (-12, -42), (4, -36)], w=1.2, start=0.3, end=0.1, retrace=0)
-    for k, pts in enumerate([[(18, -124), (-20, -100), (-50, -62), (-62, -20)], [(26, -118), (2, -86), (-18, -56)],
-                             [(30, -114), (40, -74), (48, -36)]]):
+    ink(d, [(-17, 91), (10, 80), (32, 54)], w=1.1, start=0.15, end=0.1, retrace=0)
+    ink(d, [(-74, 24), (-69, 20)], w=1.0, retrace=0)
+    # both eyes in the open: the near one she looks with, its brow low and straight over it
+    her_eye(d, -18, -4, 1.1, e, 1, 81)
+    her_eye(d, -54, -5, 0.8, e, -1, 82)
+    brow(d, -15, -25, 27, e['lift'], e['tilt'], side=1, w=1.9, arch=1, seed=83)
+    lips(d, e, -56, 50)
+    extra(d, e, -18, -4, 6, 28, -132)
+    # the fringe: from a parting on the near side across the forehead; it hides the far brow, one long lock hangs
+    # down the far side of the face past the eye
+    edge = [(-88, 14), (-82, -18), (-66, -22), (-42, -6), (-37, -22), (-24, -34), (-10, -48), (6, -40), (22, -52),
+            (44, -38)]
+    dark(d, [(26, -126), (-30, -124), (-68, -100), (-90, -54), (-95, -10), (-91, 16), (-77, -18)] + edge[2:] + [(46, -80)],
+         rough='S')
+    ink(d, [(-34, -122), (-66, -98), (-86, -56), (-92, -12), (-88, 14)], w=2.0, start=0.5, end=0.1)
+    ink(d, [(-88, 14), (-84, -2), (-82, -18)], w=1.3, start=0.15, end=0.4, retrace=0)
+    chop(d, edge[2:], w=1.4, seed=812)
+    for k, pts in enumerate([[(18, -124), (-20, -100), (-50, -62), (-56, -22)], [(26, -118), (2, -86), (-14, -56)],
+                             [(30, -114), (40, -74), (46, -42)]]):
         ink(d, pts, w=1.1, start=0.5, end=0.05, retrace=0, seed=810 + k)
 
 
 def head_front(d, expr='sulk'):
     e = her(expr)
-    wash(d, [(-54, -60), (-58, 0), (-50, 50), (-28, 90), (0, 106), (28, 90), (50, 50), (58, 0), (54, -60),
+    wash(d, [(-54, -60), (-58, 0), (-50, 46), (-28, 82), (0, 96), (28, 82), (50, 46), (58, 0), (54, -60),
              (0, -90)], SKIN, 0.4, dx=4, dy=3)
-    blot(d, 30, 34, 14, BLUSH, 0.4 if e.get('warm') else 0.2)
+    blot(d, 32, 30, 14, BLUSH, 0.42 if e.get('warm') else 0.24)
+    blot(d, -32, 30, 14, BLUSH, 0.42 if e.get('warm') else 0.24)
     left = [(-56, 26), (-64, 56), (-70, 22), (-82, 34), (-78, -4), (-88, -14)]
     right = [(88, -14), (78, -2), (84, 32), (70, 20), (66, 54), (56, 24)]
     dark(d, left + [(-74, -88), (-32, -132), (30, -134), (74, -88)] + right + [(58, -30), (40, -70), (-40, -70),
                                                                               (-58, -30)])
-    ink(d, [(-54, 24), (-47, 56), (-27, 89), (-5, 105)], w=2.0, start=0.3, end=0.15)
-    ink(d, [(54, -4), (54, 22), (47, 56), (27, 89), (7, 104)], w=1.8, start=0.3, end=0.15)
-    ink(d, [(-3, -2), (-5, 18), (-8, 26), (-2, 31), (6, 28)], w=1.4, start=0.3, end=0.2)
-    her_eye(d, 27, -3, 1.05, e, 1, 85)
-    brow(d, 28, -22, 26, e['lift'], e['tilt'], side=1, w=2.0, arch=1, seed=87)
-    lips(d, e, 0, 58, side=-1)
+    ink(d, [(-54, 24), (-47, 52), (-27, 81), (-5, 95)], w=1.9, start=0.3, end=0.15)
+    ink(d, [(54, -4), (54, 22), (47, 52), (27, 81), (7, 94)], w=1.7, start=0.3, end=0.15)
+    ink(d, [(-3, -2), (-5, 16), (-8, 24), (-2, 29), (6, 26)], w=1.4, start=0.3, end=0.2)
+    her_eye(d, 27, -4, 1.05, e, 1, 85)
+    her_eye(d, -27, -4, 1.05, e, -1, 86)
+    brow(d, 28, -25, 26, e['lift'], e['tilt'], side=1, w=1.9, arch=1, seed=87)
+    lips(d, e, 0, 54, side=-1)
     ink(d, [(-80, -20), (-75, -88), (-34, -130), (0, -137), (34, -131), (75, -88), (80, -20)], w=2.1, start=0.4,
         end=0.3)
     chop(d, left, seed=820)
     chop(d, right, seed=824)
     studs(d, [(60, 40)])
-    # the fringe, over the eye on the viewer's left
-    edge = [(-74, 40), (-63, 4), (-52, 30), (-42, -2), (-32, 14), (-22, -22), (-6, -38), (8, -32), (18, -46),
-            (34, -34), (56, -30)]
+    # the fringe: over the brow on the viewer's left, a long lock down that side of the face
+    edge = [(-70, 30), (-60, -12), (-44, -16), (-30, -18), (-14, -6), (-8, -30), (4, -44), (16, -38), (30, -50),
+            (56, -34)]
     dark(d, [(30, -132), (-30, -132), (-72, -96), (-82, -30)] + edge + [(66, -44), (70, -80)])
-    chop(d, [(-82, -30)] + edge[:6], w=1.4, seed=830)
-    ink(d, [(-22, -22), (-6, -38), (8, -34)], w=1.2, start=0.3, end=0.1, retrace=0)
-    for k, pts in enumerate([[(22, -126), (-18, -100), (-48, -60), (-58, -14)], [(28, -118), (6, -84), (-12, -50)],
-                             [(28, -124), (52, -90), (62, -50), (64, -40)]]):
+    chop(d, [(-82, -30)] + edge[:2], w=1.4, seed=830)
+    chop(d, edge[3:], w=1.4, seed=832)
+    ink(d, [(-60, -12), (-44, -17), (-30, -18)], w=1.2, start=0.3, end=0.2, retrace=0)
+    for k, pts in enumerate([[(22, -126), (-18, -100), (-46, -62), (-52, -22)], [(28, -118), (6, -84), (-8, -50)],
+                             [(28, -124), (52, -90), (62, -52)]]):
         ink(d, pts, w=1.1, start=0.5, end=0.05, retrace=0, seed=834 + k)
 
 
 def head_side(d, expr='sulk'):
     e = her(expr)
-    wash(d, [(-54, -86), (-66, -30), (-84, 22), (-72, 50), (-64, 86), (-46, 104), (-8, 96), (12, 50), (20, -40),
+    wash(d, [(-54, -86), (-66, -30), (-84, 20), (-72, 48), (-64, 78), (-46, 94), (-8, 88), (12, 50), (20, -40),
              (-10, -92)], SKIN, 0.4, dx=4, dy=3)
-    blot(d, -30, 32, 15, BLUSH, 0.4 if e.get('warm') else 0.2)
+    blot(d, -32, 28, 15, BLUSH, 0.42 if e.get('warm') else 0.24)
     back = [(102, -44), (110, -2), (96, -6), (104, 32), (84, 22), (84, 56), (64, 38), (54, 62), (40, 30), (34, 56),
             (24, 10)]
     dark(d, [(-50, -118), (0, -134), (50, -124), (90, -92)] + back + [(10, -40), (-20, -70), (-50, -80),
                                                                      (-70, -90)], dx=-2)
-    ink(d, [(-64, -24), (-66, -12), (-65, -5), (-74, 10), (-85, 23), (-82, 29), (-71, 30)], w=2.0, start=0.4,
-        end=0.25)
-    ink(d, [(-70, 37), (-74, 44), (-69, 49), (-72, 55), (-69, 72), (-63, 92), (-51, 103), (-37, 104)], w=2.0,
+    ink(d, [(-68, -12), (-67, -4), (-75, 9), (-86, 21), (-83, 27), (-73, 28)], w=1.9, start=0.3, end=0.25)
+    ink(d, [(-72, 36), (-76, 42), (-71, 47), (-74, 53), (-70, 64), (-62, 80), (-48, 91), (-32, 92)], w=1.9,
         start=0.3, end=0.15)
-    ink(d, [(-27, 102), (-6, 88), (8, 62)], w=1.3, start=0.2, end=0.1)
-    ink(d, [(-77, 26), (-72, 22)], w=1.0, retrace=0)
-    her_eye(d, -50, -2, 1.0, e, -1, 89, look=(-1, e['look'][1]))
-    brow(d, -48, -21, 21, e['lift'], e['tilt'], side=-1, w=1.9, arch=1, seed=91)
+    ink(d, [(-22, 91), (-4, 80), (8, 58)], w=1.1, start=0.2, end=0.1)
+    ink(d, [(-78, 24), (-73, 20)], w=1.0, retrace=0)
+    her_eye(d, -50, -4, 1.0, e, -1, 89, look=(-1, e['look'][1]))
+    brow(d, -48, -25, 22, e['lift'], e['tilt'], side=-1, w=1.8, arch=1, seed=91)
     m = e['mouth']
+    wash(d, [(-76, 46), (-58, 47), (-58, 56), (-74, 57)], LIP, 0.32, rough='S')
     if m in ('flat', 'soft'):
-        ink(d, [(-73, 54), (-60, 55), (-54, 59)], w=1.6, start=0.5, end=0.3)
+        ink(d, [(-75, 51), (-62, 52), (-56, 56)], w=1.6, start=0.5, end=0.3)
     elif m == 'grin':
-        ink(d, [(-73, 55), (-60, 54), (-52, 47)], w=1.7, start=0.5, end=0.25)
+        ink(d, [(-75, 52), (-62, 51), (-54, 44)], w=1.7, start=0.5, end=0.25)
     else:
-        mouth(d, -64, 55, m, 0.8, side=-1, lips=False)
+        lips(d, e, -62, 51, 0.8)
     studs(d, [(16, 40), (22, 28)])
     ink(d, [(-54, -114), (-10, -132), (40, -130), (84, -102), (102, -44)], w=2.1, start=0.5, end=0.3)
     chop(d, back, seed=840)
     for k, pts in enumerate([[(-14, -122), (8, -84), (22, -40), (26, -4)], [(10, -126), (44, -88), (62, -36)]]):
         ink(d, pts, w=1.0, start=0.5, end=0.05, retrace=0, seed=850 + k)
-    # the fringe hangs in front of the forehead, its points past the brow
-    edge = [(-82, 30), (-76, -10), (-70, 8), (-64, -40)]
-    dark(d, [(-20, -124), (-60, -106), (-82, -70), (-89, -20)] + edge + [(-50, -64), (-20, -78)], rough='S')
-    ink(d, [(-24, -124), (-60, -106), (-83, -70), (-90, -22)], w=2.0, start=0.5, end=0.2)
-    chop(d, [(-90, -22)] + edge, w=1.4, seed=860)
-    ink(d, [(-10, -116), (-48, -92), (-68, -56), (-74, -24)], w=1.1, start=0.5, end=0.05, retrace=0, seed=866)
+    # the fringe in front of the forehead, its points just over the brow
+    edge = [(-84, 4), (-78, -24), (-70, -16), (-62, -44)]
+    dark(d, [(-20, -124), (-60, -106), (-82, -70), (-89, -30)] + edge + [(-50, -64), (-20, -78)], rough='S')
+    ink(d, [(-24, -124), (-60, -106), (-83, -70), (-90, -32)], w=2.0, start=0.5, end=0.2)
+    chop(d, [(-90, -32)] + edge, w=1.4, seed=860)
+    ink(d, [(-10, -116), (-48, -92), (-68, -56), (-72, -34)], w=1.1, start=0.5, end=0.05, retrace=0, seed=866)
 
 
 def cup(d, x, y, rx=18, ry=23, rot=0):
@@ -196,7 +221,7 @@ def bust(d, expr='sulk'):
     dark(d, [(14, 100), (66, 90), (106, 118), (116, 162), (66, 156), (30, 144)], HOOD, 0.8)
     wash(d, [(-38, 92), (14, 86), (22, 146), (-34, 152)], SKIN, 0.36)
     ink(d, [(-36, 100), (-36, 126), (-32, 146)], w=1.3, start=0.3, end=0.2)
-    d.push(-16, 10, 1.0, 9)
+    d.push(-14, 8, 1.0, 7)
     head34(d, expr)
     d.pop()
     ink(d, [(22, 94), (64, 88), (106, 116), (118, 160)], w=2.0, start=0.5, end=0.3)

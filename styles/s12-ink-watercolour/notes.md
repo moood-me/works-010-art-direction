@@ -72,16 +72,21 @@ Asked for by the brief `docs/briefs/styles-more.md` (part A): two more character
   By eye: the first curls were a lace edge with bubbles (fewer, bigger bumps; hooks, not loops), the hair sat like a
   hat (hairline lowered, no bumps along it), the eyes were dots (bigger), the nose a beak (shortened), the figure a
   rectangle with a small head (head 0.62 → 0.72, belly line, longer legs).
-- **`kira.py`.** A longer face, a pointed chin, one eye with a heavy lid and a shade under it (`her_eye`), the
-  other under the fringe; `lips()` — pressed shut or the half-smirk; `her()` turns "joy" into that smirk, a little
+- **`kira.py`.** A longer face than a child's, a small pointed chin, a light jaw; both eyes in the open, with a
+  heavy upper lid and the pupil high under it (`her_eye`), a low straight brow over the near one; the fringe hides
+  only the far brow, one long lock hangs down the far side of the face. `lips()` — her own small mouths, all inside
+  the face: pressed shut, the half-smirk, a round of surprise, corners down, teeth set in anger; `her()` turns "joy" into that smirk, a little
   warmer. Hair: dark washes with a jagged outline and `chop()`. Headphones and laces: `gouache`. `figure`: the body
   turned back 9°, the head forward and bowed 13°. By eye: the first hair was a helmet with a frill (`tufts` → `chop`,
-  a jagged wash, fewer strands in the fringe), the face a child's (longer chin, narrower jaw), the figure a child in
-  a coat (hoodie shortened to the hips, legs longer, sleeves thinner).
+  a jagged wash, fewer strands in the fringe), the figure a child in a coat (hoodie shortened to the hips, legs
+  longer, sleeves thinner). The first head had the fringe over the whole far half of the face and one eye left — it
+  read as an odd boy (the coordinator's remark): redrawn with both eyes open, the fringe lifted to the brow, a
+  lighter jaw, a touch of colour on the lips and cheeks, no grey under the eye; open mouths from `parts.mouth` stuck
+  out of her profile, so she got her own.
 - **Pictures:** `portrait-`, `figure-`, `turn-`, `expr-` for `marat` and `kira`; `cast-six` (all six, 2520 × 880, the
   same scale as `cast`). Repeat: `python3 tools/build.py marat`, `… kira`, `… six`.
 - **Weak:** Марат's hair from the front (like a fur hat); Кира's figure (the hoodie is a sack, both hands mostly
-  hidden) and her expression sheet (one eye carries it; the surprise marks are lost in the hair).
+  hidden) and her head in profile (the fringe is one wedge over the forehead).
 
 ## Honest state
 
