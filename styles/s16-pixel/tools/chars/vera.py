@@ -121,6 +121,7 @@ def portrait(expr='rest'):
     for x0, y0, x1, y1 in [(25, 7, 19, 12), (23, 8, 17, 16)]:
         hair.line(x0, y0, x1, y1, 'v3')
     hair.pxs('v4', (22, 9), (21, 10), (23, 8))
+    hair.line(31, 8, 36, 13, 'v3'); hair.line(32, 8, 37, 13, 'v4')            # a grey strand
     c = P.stack(back, body, head, g, hair)
     P.cast(c, 'v', 's', 1)
     P.jaw(c, 's', 're', dirs=((1, 0), (0, 1)))
