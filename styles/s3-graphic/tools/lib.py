@@ -69,3 +69,13 @@ def mx(d):
             out.append(str(-float(t) if i % 2 == 0 else float(t)).rstrip('0').rstrip('.'))
             i += 1
     return ' '.join(out)
+
+
+def curls(pts, b=.42, start=True):
+    """A curly edge: a bump between every two points, bulging to the left of the way (clockwise path → outward).
+    Returns path data; start=False gives only the segments, to continue a path already at pts[0]."""
+    out = [f'M {pts[0][0]} {pts[0][1]}'] if start else []
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        dx, dy = x1 - x0, y1 - y0
+        out.append(f'Q {(x0 + x1) / 2 + dy * b * 2:.1f} {(y0 + y1) / 2 - dx * b * 2:.1f} {x1} {y1}')
+    return ' '.join(out)

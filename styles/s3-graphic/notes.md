@@ -59,3 +59,42 @@ Downloads and scratch renders are in `/home/user/cache/styles-s3-graphic/`.
 Close to Song of the Sea / Hilda, not to Nimona: no soft sculpted shading, no tapered brush line. Weak: uniform line
 width, thin legs, hands avoided (pockets, behind the back, holding things), calm poses without a line of action,
 front and profile views simpler than the three-quarter. Strongest: Тим and Савелий Петрович.
+
+## Round three: Марат and Кира (brief `docs/briefs/styles-more.md`, part A)
+
+What was done (Claude, one agent of round three): two new characters drawn by this style's rules and code, beside the
+four — for each a portrait, a full figure, a turnaround and an expression sheet — and all six together
+(`cast-six`). The four's files were not touched: after the change `build.py` writes their SVGs byte for byte the same
+(checked by md5), so their PNGs were not re-rendered.
+
+- `tools/marat.py` — Марат: a barrel. Curly hair and the beard are one dark mass each with a wavy edge (`curls` in
+  `lib.py`, new: a bump between every two points). The mouth sits in the beard, so the lower lip is a coloured shape
+  and the moustache goes over the upper edge; the nose is drawn last and hangs over the moustache. `fist()` is a drawn
+  fist (block, thumb, knuckle lines); `far_arm('ladle' | 'hips')` gives the pose with the ladle or the calm one for the
+  portrait and the turnaround (`figure_qn`). The upper body is turned about the hips (`LEAN`) — he laughs leaning back.
+- `tools/kira.py` — Кира: a thin bent hook. The slouch is the same trick the other way: legs slanted back, the upper
+  body turned (`LEAN`), the head pushed forward and tilted down. The fringe covers the upper half of the far eye; the
+  head is drawn in two passes (back hair, then face and front hair) so the headphone band goes behind the neck.
+  The acid colour is only on the headphone cups and the boot laces. Her "joy" is a smirk (`smirk`), not a smile.
+- `tools/build.py` — `CAST` got optional keys (`ps`, `pfig`, `fh`, `chin`, `turn`) so a character can have its own
+  portrait scale, portrait pose, sheet height and turnaround views; `cast_six()` is the new picture. The new sheets
+  are built after the old ones.
+- Tried and changed by eye: Марат's eyes made bigger (the first were sleepy slits), the beard lowered on the cheek and
+  kept inside the far cheek, the nose shortened twice (it was a sausage), the head enlarged, the apron given a belly
+  curve; Кира's face shortened and the eyes enlarged (the first looked 25), the slouch made with the lean (the first
+  stood straight with the head down), the headphone band moved behind the neck.
+- Weak: Марат's profile and the big even apron; Кира's front and profile views, her long neck in profile, the smirk
+  that differs little from the resting face; her second hand is in the pocket.
+
+### How to add a character
+
+A module `tools/<name>.py` with `C` (colours: every fill with its darker line and one shade), `head_q(expr)`,
+`figure_q()` and, for a turnaround, `figure_f()` and `figure_s()`; the face from `face.py` (`eye`, `brow`,
+`closed_eye`, `shout`), forms from `lib.py` (`shaded`, `F`, `L`, `clip`, `curls`). Add it to `CAST` and `EXPR` in
+`build.py` and to the last loop in `__main__` (after the existing sheets, so their files don't change), then:
+
+```
+cd styles/s3-graphic/tools
+python3 build.py
+NODE_PATH=/opt/node-tools/node_modules node render.js ../pics 1 ../svg/*<name>*.svg ../svg/cast-six.svg
+```

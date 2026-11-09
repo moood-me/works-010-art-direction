@@ -4,7 +4,7 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lib import svg, g, F, L, text, LW
-import anya, savely, tim, vera
+import anya, savely, tim, vera, marat, kira
 from face import eye
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'svg')
@@ -22,7 +22,14 @@ CAST = {
     'savely': dict(m=savely, head=(14, 26), feet=848, crown=-98, bg='#d8ccb5', disc='#efe4cc', name='Савелий Петрович'),
     'tim': dict(m=tim, head=(0, 4), feet=682, crown=-156, bg='#cfe0df', disc='#f3d26e', name='Тим'),
     'vera': dict(m=vera, head=(0, 26), feet=1480, crown=-108, bg='#d4d8da', disc='#ebe5da', name='Вера'),
+    # optional keys: ps — portrait scale, pfig — the figure for the portrait, fh — height on the figure sheet,
+    # chin — the chin line of the turnaround, turn — the three views of the turnaround
+    'marat': dict(m=marat, head=(-60, -6), feet=1310, crown=-200, bg='#ead8c2', disc='#f2b98c', name='Марат',
+                  ps=1.12, pfig='figure_qn', fh=850, chin=150, turn=('figure_f', 'figure_qn', 'figure_s')),
+    'kira': dict(m=kira, head=(26, 14), feet=1350, crown=-130, bg='#cfccd6', disc='#e4e8a8', name='Кира',
+                 ps=1.4, fh=770, chin=128),
 }
+FOUR = ('anya', 'savely', 'tim', 'vera')
 
 
 def clockface(cx, cy, r, col, tick):
@@ -51,10 +58,10 @@ def portrait(key):
     c = CAST[key]
     m = c['m']
     W, H = 700, 800
-    s = 1.45
+    s = c.get('ps', 1.45)
     hx, hy = c['head']
     body = backdrop(key, W, H, 350, 330, 260)
-    body += g(m.figure_q(), 350 - hx * s - 10, 360 - (hy + 0) * s, s)
+    body += g(getattr(m, c.get('pfig', 'figure_q'))(), 350 - hx * s - 10, 360 - (hy + 0) * s, s)
     save(f'portrait-{key}', W, H, body, c['bg'])
 
 
@@ -64,7 +71,7 @@ def figure(key):
     m = c['m']
     W, H = 600, 1000
     tall = c['feet'] - c['crown']
-    s = 820 / tall if key in ('anya', 'vera') else (620 / tall if key == 'savely' else 520 / tall)
+    s = c['fh'] / tall if 'fh' in c else 820 / tall if key in ('anya', 'vera') else (620 / tall if key == 'savely' else 520 / tall)
     gy = 930
     body = backdrop(key, W, H, 300, 420, 220)
     body += f'<rect x="0" y="{gy}" width="{W}" height="{H - gy}" fill="{c["disc"]}" opacity=".55"/>'
@@ -83,9 +90,9 @@ def turnaround(key, label):
     gy = 900
     top = gy - tall * s
     body = ''
-    for y in (top, gy - (c['feet'] - 120 - c['head'][1]) * s, gy):
+    for y in (top, gy - (c['feet'] - c.get('chin', 120 + c['head'][1])) * s, gy):
         body += L(f'M 40 {y:.1f} L {W - 40} {y:.1f}', '#b9a993', 1.4, 'stroke-dasharray="8 8"')
-    views = [('figure_f', 'анфас'), ('figure_q', 'три четверти'), ('figure_s', 'профиль')]
+    views = zip(c.get('turn', ('figure_f', 'figure_q', 'figure_s')), ('анфас', 'три четверти', 'профиль'))
     for i, (fn, lab) in enumerate(views):
         x = 260 + i * 490
         body += f'<ellipse cx="{x}" cy="{gy}" rx="120" ry="12" fill="#000" opacity=".1"/>'
@@ -101,6 +108,8 @@ EXPR = {
     'savely': [('grump', 'ворчит'), ('joy', 'радость'), ('surprise', 'удивление'), ('sad', 'грусть'), ('anger', 'гнев')],
     'tim': [('mischief', 'хитрит'), ('joy', 'радость'), ('surprise', 'удивление'), ('sad', 'грусть'), ('anger', 'гнев')],
     'vera': [('strict', 'строгость'), ('joy', 'радость'), ('surprise', 'удивление'), ('sad', 'грусть'), ('anger', 'гнев')],
+    'marat': [('smile', 'улыбается'), ('joy', 'радость'), ('surprise', 'удивление'), ('sad', 'грусть'), ('anger', 'гнев')],
+    'kira': [('sulk', '«не трогайте»'), ('smirk', 'радость: усмешка'), ('surprise', 'удивление'), ('sad', 'грусть'), ('anger', 'гнев')],
 }
 
 
@@ -129,6 +138,22 @@ def cast():
         body += f'<ellipse cx="{x}" cy="{gy}" rx="{120 if key != "savely" else 110}" ry="14" fill="#000" opacity=".14"/>'
         body += g(c['m'].figure_q(), x, gy - c['feet'] * s, s)
     save('cast', W, H, body, '#e9d3b4')
+
+
+def cast_six():
+    """All six: the four at the scales of cast(), Марат behind the middle, Кира apart, turned away."""
+    W, H = 2500, 1150
+    gy = 1050
+    body = clockface(1230, 520, 430, '#f1dfbf', '#dcc396')
+    body += f'<rect x="0" y="{gy}" width="{W}" height="{H - gy}" fill="#d9b98c"/>'
+    order = [('vera', 300, .5), ('savely', 650, .62), ('marat', 1090, .56), ('anya', 1520, .47), ('tim', 1820, .56),
+             ('kira', 2210, .46)]
+    for key, x, s in order:
+        c = CAST[key]
+        rx = {'savely': 110, 'marat': 170}.get(key, 120)
+        body += f'<ellipse cx="{x}" cy="{gy}" rx="{rx}" ry="14" fill="#000" opacity=".14"/>'
+        body += g(c['m'].figure_q(), x, gy - c['feet'] * s, s)
+    save('cast-six', W, H, body, '#e9d3b4')
 
 
 # ---------------------------------------------------------------- rule diagrams
@@ -187,7 +212,7 @@ def eyes():
 
 
 if __name__ == '__main__':
-    for k in CAST:
+    for k in FOUR:
         portrait(k)
         figure(k)
         expressions(k)
@@ -196,4 +221,12 @@ if __name__ == '__main__':
     cast()
     shapes()
     eyes()
+    # round three: Марат and Кира (after the four, so the four's files stay byte for byte the same)
+    for k in ('marat', 'kira'):
+        portrait(k)
+        figure(k)
+        expressions(k)
+    turnaround('marat', 'Марат — поворот')
+    turnaround('kira', 'Кира — поворот')
+    cast_six()
     print('ok')
