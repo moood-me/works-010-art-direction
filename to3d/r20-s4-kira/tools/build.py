@@ -240,7 +240,7 @@ arms = bpart('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm', 'Lhand', 'Rhand')
 legw = bpart('Lthigh', 'Rthigh', 'Lshin', 'Rshin', 'Lfoot', 'Rfoot')
 mat = np.full(len(bv), mi('suit'))
 du = Winv(bv)                                       # rest places in drawing units
-HEM = 606.0                                         # the hoodie's lower edge (drawing units)
+HEM = 640.0                                         # the hoodie's lower edge (drawing units)
 # the sleeves are long: they end over the hand's heel; hands are skin
 wrist = np.zeros(len(bv))
 for s in ('Left', 'Right'):
@@ -257,13 +257,21 @@ Ab = M.adjacency(len(bv), bT)
 hood_w = sm((HEM + 3 - du[:, 1]) / 6) * cloth
 trunk_w = sm((0.62 - arms) / 0.3)
 nb = M.vertex_normals(bv, bT)
-off = cloth * 0.003 + hood_w * (0.016 + 0.012 * trunk_w * sm((du[:, 1] - 250) / 300) + 0.004 * (1 - trunk_w))
-off += np.where(cloth & (wrist > 0), 0.006 * (1 - wrist), 0)
+off = cloth * 0.003 + hood_w * (0.016 + 0.008 * (1 - trunk_w) * sm((du[:, 1] - 230) / 80))
+off += np.where(cloth & (wrist > 0), 0.008 * (1 - wrist), 0)
 bv = bv + nb * off[:, None]
-bv = M.smooth(bv, Ab, hood_w * trunk_w * sm((du[:, 1] - 190) / 40), iters=30, lam=0.5)
+# the trunk is boxy: below the chest every section is pushed out to at least an ellipse (the waist does not show),
+# wider toward the hem; the pocket's pouch stands out on the belly (the hands go into it)
+tr = np.where(hood_w * trunk_w > 0.01)[0]
+kb = sm((du[tr, 1] - 200) / 90) * hood_w[tr] * trunk_w[tr]
+zc_ = float(np.median(bv[tr, 2]))
+ea = 0.142 + 0.016 * sm((du[tr, 1] - 300) / 300); eb = 0.1 + 0.014 * sm((du[tr, 1] - 300) / 300)
+pouch = 0.022 * np.exp(-((du[tr, 1] - 520) / 60) ** 2) * np.exp(-(du[tr, 0] / 70) ** 2) * (bv[tr, 2] > zc_)
+f = np.sqrt((bv[tr, 0] / ea) ** 2 + ((bv[tr, 2] - zc_) / (eb + pouch)) ** 2)
+g = 1 + (np.maximum(1 / np.maximum(f, 1e-3), 1) - 1) * kb
+bv[tr, 0] *= g; bv[tr, 2] = zc_ + (bv[tr, 2] - zc_) * g
+bv = M.smooth(bv, Ab, hood_w * trunk_w * sm((du[:, 1] - 190) / 40), iters=12, lam=0.5)
 bv = M.smooth(bv, Ab, hood_w * (1 - trunk_w) * (1 - wrist), iters=8, lam=0.5)
-nb = M.vertex_normals(bv, bT)
-bv = bv + nb * (hood_w * trunk_w * sm((du[:, 1] - 190) / 40) * 0.012)[:, None]      # smoothing shrinks: given back
 # the neckband (Anny's lower neck in the hoodie's cloth): round the fitted head's neck, loose, its top edge level
 hn = hv[(hv[:, 1] > COLLAR_TOP - 5) & (hv[:, 1] < COLLAR_TOP + 7)]
 ncz = float((hn[:, 2].max() + hn[:, 2].min()) / 2)
@@ -298,14 +306,14 @@ th_, ph_ = np.meshgrid(np.linspace(0.05, np.pi - 0.05, 22), np.linspace(-np.pi, 
 back_z = float(du2[(np.abs(du2[:, 0]) < 20) & (np.abs(du2[:, 1] - 185) < 12), 2].min())
 hc_ = np.array([0.0, 158.0, back_z + 6.0])
 lump = 1 + 0.06 * np.sin(3 * ph_ + 1) * np.sin(th_)
-hood_v = np.stack([62 * np.sin(th_) * np.cos(ph_) * lump, hc_[1] + 44 * np.cos(th_) * -1 + 10 * np.sin(th_) * np.sin(ph_), hc_[2] - 30 * np.sin(th_) * np.sin(ph_) * lump], -1).reshape(-1, 3)
+hood_v = np.stack([74 * np.sin(th_) * np.cos(ph_) * lump, hc_[1] + 8 - 56 * np.cos(th_) + 14 * np.sin(th_) * np.sin(ph_), hc_[2] - 34 * np.sin(th_) * np.sin(ph_) * lump], -1).reshape(-1, 3)
 hood_t = []
 for i in range(21):
     for j in range(40):
         j2 = (j + 1) % 40
         a0, a1, b0, b1 = i * 40 + j, i * 40 + j2, (i + 1) * 40 + j, (i + 1) * 40 + j2
         hood_t += [[a0, a1, b0], [a1, b1, b0]]
-hood_t = PT.orient(hood_v, np.array(hood_t), hc_)
+hood_t = PT.orient(W(hood_v), np.array(hood_t), W(hc_))       # in the world: the drawing's y is down
 hoodW = np.zeros((len(hood_v), NJ)); hoodW[:, I['Chest']] = 0.75; hoodW[:, I['Neck1']] = 0.25
 
 # the headphones round the neck: two lime cups on the collarbones, dark pads under them, a band behind the neck
@@ -321,7 +329,7 @@ def ellipsoid(c, ax_, r, n1=14, n2=24):
             j2 = (j + 1) % n2
             a0, a1, b0, b1 = i * n2 + j, i * n2 + j2, (i + 1) * n2 + j, (i + 1) * n2 + j2
             tt += [[a0, a1, b0], [a1, b1, b0]]
-    return v, PT.orient(v, np.array(tt), np.array(c))
+    return v, PT.orient(W(v), np.array(tt), W(np.array(c)))
 
 
 lime_v, lime_t, pad_v, pad_t = [], [], [], []
@@ -370,7 +378,7 @@ def add(name, V, T, mat, SJ=None, SW=None, Wt=None, **attr):
 add('body', bv, bT, mat, bSJ, bSW, hg=trunk_w * sm((0.5 - bpart('neck')) / 0.3), two=two)
 # the mouth's inside: what is hardly seen from outside (export_hbm.py's rays), in the mouth's box
 vis = np.load(os.path.join(C, 'hbm_head.npz'))['head_vis']
-inside = (vis < 26) & (np.abs(hv[:, 0]) < mouth['w'] + 2) & (np.abs(hv[:, 1] - mouth['y']) < 16) & (hv[:, 2] > 40)
+inside = (vis < 14) & (np.abs(hv[:, 0]) < mouth['w'] + 2) & (np.abs(hv[:, 1] - mouth['y']) < 16) & (hv[:, 2] > 40)
 tw = tw * ~(inside | hf['mouth_in'])               # no painted layer inside the mouth
 head_mat = np.where(inside | (hf['mouth_in'] & (hv[:, 2] > 50)), mi('mouth'), mi('skin'))
 add('head', HV, HT, head_mat, Wt=headW, uv=uv, tw=tw, pn=pn, pw=pw, dr=hv)

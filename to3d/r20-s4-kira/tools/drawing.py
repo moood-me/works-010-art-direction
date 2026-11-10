@@ -26,7 +26,7 @@ FEET = cast.CAST[WHO]['feet']
 # base's wide mouth drawn in
 FIT = dict(eye_scale=1.2, eye_wide=1.1, eye_back=3.0, neck_x=1.45, neck_z=1.25, ear=0.9, mouth_narrow=0.74)
 # the painted face layer (faces.py): dark brows painted, a heavy lash line, freckles over the nose
-FACE = dict(lid_shade=0.42, mouth_w=0.84, ulip=1.0, lip_hi=0.4, spots=0.45, nose_blush=0.16, brow_hairs=0)
+FACE = dict(lid_shade=0.28, mouth_w=0.84, ulip=1.0, lip_hi=0.4, spots=0.45, nose_blush=0.16, brow_hairs=0)
 
 
 def person():

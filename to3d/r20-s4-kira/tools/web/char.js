@@ -1,6 +1,6 @@
 // What belongs to Кира alone: where her pack is, her colours, the clothes painted by place (the hoodie's pocket, hem
 // and drawstrings, the trousers below its hem, the boots' acid laces and soles), the standing pose (a slouch, the head
-// down, arms crossed — as drawn), the drawing's expressions as params of the 3D face, the motions offered in the viewer.
+// down, hands in the hoodie's pocket), the drawing's expressions as params of the 3D face, the motions offered in the viewer.
 export const CHAR = {
   pack: 'data/kira.json',
   bg: ['#a892bc', '#4e3c60', '#17131d'],          // the drawing's backdrop (cast2.py: CAST.kira.bg)
@@ -38,7 +38,7 @@ export const CHAR = {
         return;
       }
       if (abs(m - ${M('suit')}) > 0.5) return;
-      const float HEM = 606.0;
+      const float HEM = 640.0;
       if (trunk > 0.5 && y > HEM) {                                    // the trousers: narrow, charcoal
         base = vec3(0.172, 0.168, 0.196); bshd = vec3(0.075, 0.07, 0.1); glw = vec3(0.3, 0.2, 0.3);
         return;
@@ -50,17 +50,17 @@ export const CHAR = {
       if (y > HEM - 24.0) { base *= 0.74; bshd *= 0.8;                 // the hem's ribbing
         if (fract(dw.x * 0.22) < 0.22) base *= 0.86; return; }
       if (dw.z > 0.0) {
-        float px = mix(64.0, 82.0, clamp((y - 440.0) / 120.0, 0.0, 1.0));       // the pocket on the belly
-        if (y > 440.0 && y < 560.0 && ax < px) {
+        float px = mix(70.0, 96.0, clamp((y - 462.0) / 120.0, 0.0, 1.0));       // the pocket on the belly
+        if (y > 462.0 && y < 584.0 && ax < px) {
           base *= 0.9;
-          if (ax > px - 1.6 || y < 442.0 || y > 558.4) { base *= 0.62; bshd *= 0.8; }
+          if (ax > px - 1.6 || y < 464.0) { base *= 0.62; bshd *= 0.8; }
         }
         float end = dw.x > 0.0 ? 262.0 : 244.0;                        // the drawstrings, of uneven length
         float xs = 11.0 + 2.5 * sin(y * 0.045 + (dw.x > 0.0 ? 0.0 : 1.3));
         if (y > 150.0 && y < end && abs(ax - xs) < 1.25) { base = vec3(0.81, 0.77, 0.84); bshd = vec3(0.5, 0.46, 0.58); if (y > end - 7.0) { base = vec3(0.79, 0.93, 0.17); bshd = vec3(0.45, 0.56, 0.1); } }
       }
     }`,
-  // a slouch (the back round, the head forward and down, the look from under the brows) and arms crossed on the chest
+  // a slouch (the back round, the head forward and down, the look from under the brows), hands in the pocket
   stand(T) {
     const { pose, I, reach, turnUnder, sk, getV, qAxisAngle, normalize, sub, body, o } = T;
     const X = [1, 0, 0];
@@ -75,8 +75,6 @@ export const CHAR = {
     turnUnder(pose, sk, I.Head, qAxisAngle([0, 0, 1], 0.07 * sl));
     turnUnder(pose, sk, I.Head, qAxisAngle([0, 1, 0], -0.08 * sl));
     T.build();
-    const L = getV(pose.P, I.LeftArm), R = getV(pose.P, I.RightArm);
-    const mid = [(L[0] + R[0]) / 2, (L[1] + R[1]) / 2, (L[2] + R[2]) / 2];
     if (o.arms === 'down') {
       for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
         const Sh = getV(pose.P, I[s + 'Arm']), Wr = getV(pose.P, I[s + 'Hand']), El = getV(pose.P, I[s + 'ForeArm']);
@@ -84,12 +82,12 @@ export const CHAR = {
         reach(pose, s, [Sh[0] + sg * 0.06, Sh[1] - Ln * 0.985, Sh[2] + 0.04], [sg * 0.2, 0, -1]);
       }
     } else {
-      // the right forearm under, the left over it; each hand toward the other arm's elbow
-      const fz = o.fz ?? 0.17, dy = o.dy ?? 0.2, hx = o.hx ?? 0.09;
-      reach(pose, 'Right', [mid[0] + hx, mid[1] - dy - 0.015, mid[2] + fz], o.poleR ?? [-1, -0.9, 0.25]);
-      reach(pose, 'Left', [mid[0] - hx, mid[1] - dy + 0.025, mid[2] + fz + 0.045], o.poleL ?? [1, -0.9, 0.25]);
-      for (const [s, sg] of [['Left', 1], ['Right', -1]])
-        turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle(normalize(sub(getV(pose.P, I[s + 'Hand']), getV(pose.P, I[s + 'ForeArm']))), sg * (o.twist ?? 1.0)));
+      // hands in the hoodie's pocket: each wrist put on the belly under the pouch, elbows out and a little back
+      const hips = getV(pose.P, I.Hips);
+      for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
+        reach(pose, s, [hips[0] + sg * (o.hx ?? 0.085), hips[1] + (o.hy ?? 0.075), hips[2] + (o.hz ?? 0.1)], o.pole ?? [sg * 1.0, -0.1, -0.55]);
+        turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle(normalize(sub(getV(pose.P, I[s + 'Hand']), getV(pose.P, I[s + 'ForeArm']))), sg * (o.twist ?? 0.9)));
+      }
     }
     for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
       const P0 = body.joints, jp = n => [P0[I[s + n] * 3], P0[I[s + n] * 3 + 1], P0[I[s + n] * 3 + 2]];

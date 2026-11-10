@@ -8,7 +8,7 @@
  "topology": "kira-arcane",
  "skeleton": "soma",
  "source": "to3d/r20-s4-kira/tools/build.py",
- "floor": 7.834763948721957e-10,
+ "floor": 8.257824083557352e-05,
  "materials": [
   "skin",
   "hair",
