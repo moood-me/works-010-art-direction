@@ -82,7 +82,7 @@ new version is a new folder beside the old (as `engine-full/` is beside `engine/
 
 ## Branches
 
-`catalog` is this catalogue. It was put together from `claude/gallant-knuth-5qo916` (styles, drawings to 3D, tools;
+`main` is this catalogue (made in the branch `catalog`, merged on 2026-11-10). It was put together from `claude/gallant-knuth-5qo916` (styles, drawings to 3D, tools;
 it contains `main` and `ccr-a7af59de-aubv8d`) and `engine` (the late engine); those stay as they were. The third round
 of drawings to 3D is still being made in `claude/gallant-knuth-5qo916` — `docs/status.md` says how its finished
 characters come here.

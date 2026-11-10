@@ -1,13 +1,13 @@
-# Status — where the work stands (2026-11-10, branch `catalog`)
+# Status — where the work stands (2026-11-10, `main`)
 
-`catalog` is the catalogue put together from `claude/gallant-knuth-5qo916` and `engine`
+`main` is the catalogue (made in the branch `catalog`), put together from `claude/gallant-knuth-5qo916` and `engine`
 ([history/2026-11-10-catalogue.md](history/2026-11-10-catalogue.md)). The drawn styles below are all in it. The third
 round of drawings to 3D is not: its agents were stopped half-way and go on in `claude/gallant-knuth-5qo916`, where
 this file's tables were written on 2026-11-09 (kept below as the list of what is still to come).
 
 ## A finished character of the third round comes here so
 
-When its agent has finished it and the orchestrator has looked at it, in `catalog`:
+When its agent has finished it and the orchestrator has looked at it, in `main`:
 
 ```
 git fetch origin claude/gallant-knuth-5qo916

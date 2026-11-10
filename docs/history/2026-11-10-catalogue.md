@@ -55,3 +55,6 @@ viewers were not played through, and nothing was compared by eye with how it loo
 **How, to repeat it.** `git checkout -b catalog origin/claude/gallant-knuth-5qo916`; `git merge origin/engine`
 (the root page ours, the gallery's menu both); `git mv engine engine-full`, `git checkout <gallant> -- engine`; then
 the lists and the pages as above. To look: `python3 -m http.server` at the repository's root.
+
+**Merged into main (2026-11-10).** Pavel looked at the branch and said to merge it: main was fast-forwarded to it
+(main was an ancestor of it), nothing else changed. The branch `catalog` stays at the same commit.
