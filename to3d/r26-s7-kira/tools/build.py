@@ -354,9 +354,9 @@ if hasattr(who, 'HOOD_EASE'):
     # headphones over the chest; here they must lie outside it)
     R_ = []
     for y in _ys:
-        u = float(smooth((y - y_sh - 0.5) / (y_neck - y_sh - 0.5)))
+        u = float(smooth((y - y_sh + 3.0) / (y_neck - y_sh + 3.0)))
         a_, zf_, zb_, _, z0 = torso.at(y)
-        R_.append((y,) + tuple(np.array(top_lo.at(y)[:3]) * (1 - u) + np.array([a_ + 0.8, zf_ + z0 + 0.8, zb_ + z0 - 0.8]) * u))
+        R_.append((y,) + tuple(np.array(top_lo.at(y)[:3]) * (1 - u) + np.array([a_ + 0.2, zf_ + z0 + 0.2, zb_ + z0 - 0.2]) * u))
     top_lo = D.Loft(R_, 2.4)
 TV, TT, _ = S.shell(grid_loft(top_lo, lambda c, v: top_s['hem'] + (y_neck - top_s['hem']) * v, TS), True, 0.0025, axis_ref)
 TOP = piece(TV, TT, top_s['c'], trunk_weights(TV, TT))
