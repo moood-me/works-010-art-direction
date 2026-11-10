@@ -148,7 +148,7 @@ function relaxHands(pose, k = 1) {
     // together: each finger's base turned toward the middle finger's direction
     for (const f of ['Index', 'Ring', 'Pinky']) {
       const d = normalize(sub(V3(pose, J_(f + '2')), V3(pose, J_(f + '1'))));
-      const tg = normalize(d.map((v, i) => v * 0.25 + dirM[i] * 0.75));
+      const tg = normalize(d.map((v, i) => v * 0.1 + dirM[i] * 0.9));
       turnUnder(pose, sk, J_(f + '1'), qBetween(d, tg)); re();
     }
     // bent toward the palm, a little more at the middle joints
@@ -185,7 +185,7 @@ function standPose() {
   return pose;
 }
 
-const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', relax: 0.5,
+const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', relax: 0.3,
   cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.84, h: 1.8, dist: 6, target: null, follow: false } };
 let clip = null;
 function headTrack(c) {
