@@ -155,6 +155,7 @@ _prof = (1 - _t ** 2) ** 0.9
 V0[:, 2] = np.where(_m & ~np.isnan(_h), np.maximum(V0[:, 2], _plane(_yd) + np.nan_to_num(_h) * _prof), V0[:, 2])
 nh = len(V0)
 HT = M.triangulate(hP)
+HT = HT[~earm[HT].any(1)]          # the ears are under the hair: taken out (their tips came through it)
 xd, yd = V0[:, 0] / K, ydr(V0[:, 1])
 yde = yd - 18 * smooth(V0[:, 2] / 0.03)      # the chin and the jaw stay with the head
 SW = np.zeros((nh, NJ))
@@ -302,7 +303,7 @@ def hair_row(y):
     """A row's ring: (half-width, centre, back depth, the opening's half-angle, front depth)."""
     k = 1.0
     if y < -104:      # the crown: a dome
-        k = np.sqrt(max(1 - ((-104 - y) / 14.2) ** 2, 0.0004)); y = -104
+        k = np.sqrt(max(1 - ((-104 - y) / 13.62) ** 2, 0.0004)); y = -104
     a_, zc, zb = float(a_of(y)) * k, zc_of(y), zc_of(y) - k * (zc_of(y) - float(zb_of(y)))
     if y <= -86: return a_, zc, zc - zb, 0.0, k * (zt_of(y) - zc)
     yy = min(y, -26.0)

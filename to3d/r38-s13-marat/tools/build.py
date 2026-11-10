@@ -78,7 +78,7 @@ def rot_between(a_, b_):
     return np.eye(3) + vx + vx @ vx * ((1 - c) / s ** 2)
 
 
-RADIAL = {'Leg': 1.3, 'Shin': 1.35, 'Arm': 1.45, 'ForeArm': 1.4}
+RADIAL = {'Leg': 1.3, 'Shin': 1.35, 'Arm': 1.45, 'ForeArm': 1.6}
 
 
 def joint_affine(j):
@@ -208,8 +208,8 @@ for s, sg in (('Left', 1), ('Right', -1)):
     A_, E_, W_ = J1[I[s + 'Arm']], J1[I[s + 'ForeArm']], J1[I[s + 'Hand']]
     d1 = (E_ - A_) / np.linalg.norm(E_ - A_)
     # the sleeve rolled up to the elbow: a thick tube, the roll a fuller ring at its end
-    path = np.array([A_ + (E_ - A_) * t_ for t_ in np.linspace(-0.12, 0.93, 13)])
-    radii = np.interp(np.linspace(0, 1, 13), [0, 0.15, 0.6, 0.86, 0.9, 1.0], [0.070, 0.074, 0.066, 0.062, 0.069, 0.069])
+    path = np.array([A_ + (E_ - A_) * t_ for t_ in np.linspace(0.0, 0.93, 13)])
+    radii = np.interp(np.linspace(0, 1, 13), [0, 0.15, 0.6, 0.86, 0.9, 1.0], [0.058, 0.070, 0.066, 0.062, 0.069, 0.069])
     V_, T_ = S.tube(path, radii, 26)
     arm = set(under(I[s + 'Shoulder'])); tr = np.array([j in arm for j in range(NJ)])
     SL.append(dict(V=V_, T=T_, W=WT.limb(V_, T_, tr, A_, 0.12), side=s))
@@ -335,7 +335,12 @@ TB = np.radians(104)
 n_half = 22
 BV_ = []; open_mid = []
 for yv, a_, f_, zc_, xin in zip(by_, b_a, b_f, b_zc, b_in):
+    # the bare cheek: in front as the front view's inner edge, and back to where the profile's inner edge runs
+    # (BEARDS 's': from the mouth's corner up to the ear) — the further back of the two
     th_in = np.arcsin(min(1.0, (xin / a_)) ** (P_ / 2)) if xin > 0 else 0.0
+    if xin > 0:
+        zin = np.interp(yv, [-8, 10, 30, 44, 47], [0, 8, 24, 48, 95]); cq = (zin - zc_) / (f_ - zc_)
+        th_in = max(th_in, np.arccos(np.clip(np.sign(cq) * abs(cq) ** (P_ / 2), -0.3, 1)))
     ths = th_in + (TB - th_in) * np.linspace(0, 1, n_half)
     ths = np.r_[-ths[::-1], ths]
     x_, z_ = S.ring(a_, zc_, f_ - zc_, 34, ths)
@@ -450,8 +455,6 @@ for x_, v0_ in [(-0.15, 566), (-0.03, 560), (0.1, 570)]:                        
     strokes.append(dict(kind='fold', w=3.0, v=[int(a0 + r * AC + col_of(r, x_ * (1 + 0.0002 * (sk_y[r] - WAIST)))) for r in range(row_of(v0_), nrow, 2)]))
 j0, j1 = ranges['jacket']; jtree = cKDTree(P[j0:j1])
 jv = lambda x, v: int(j0 + jtree.query([x, float(y3(v)), jfront(x, v)])[1])
-r_c = int(np.argmin(np.abs(ydr(np.array([r[0] for r in jrows])) - 150)))               # the rolled collar's lower line
-strokes.append(dict(kind='collar', w=3.0, v=[int(j0 + r_c * JC + c) for c in list(range(JC)) + [0]]))
 strokes.append(dict(kind='flap', w=3.0, v=[jv(u(2), v) for v in range(156, 317, 10)]))
 for x_, v in [(-34, 236), (30, 236)]: marks.append(dict(kind='button', v=jv(u(x_), v), r=6))
 b0 = ranges['hair'][0]

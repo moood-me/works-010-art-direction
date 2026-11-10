@@ -82,7 +82,7 @@ export function drawFace(d, F) {
     { const s = -side * (far ? 13 * t + back * 0.7 : 4 * t + 18 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
     useFrame(d, f, sx, 0);
     K.eye(d, Pn, sx, 0, k, -sg, { ...ex, look: [ex.look[0] + side * t * 2, ex.look[1]] });
-    K.brow(d, Pn, sx + sg, k, -sg, ex);
+    K.brow(d, Pn, sx + sg - (far ? side * 8 * t : 0), k * (far ? 0.85 : 1 - 0.25 * tn), -sg, ex);       // the far brow keeps on the face
   }
   // the nose: parts.nose's stroke — down with a hook at the tip, and the nostril — laid on the 3D nose, on its far
   // side, so it turns with the head; in profile the head's own contour carries the nose

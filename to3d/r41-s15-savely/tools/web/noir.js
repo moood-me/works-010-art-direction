@@ -330,7 +330,7 @@ export function start(def) {
     const I = placed[0];
     let at = [0, cam.ty, 0];
     if (I && cam.follow) { I.bones.Hips.getWorldPosition(_v); at = [_v.x, cam.ty + (cam.followY || 0) * (_v.y - J.Hips[1]), _v.z]; }
-    cam.at = snap || !cam.at ? at : cam.at.map((a, i) => lerp(a, at[i], 0.12));
+    cam.at = snap || !cam.at ? at : cam.at.map((a, i) => lerp(a, at[i], cam.soft ?? 0.12));   // soft: how fast the aim follows (1 — at once)
     const yw = cam.yaw * Math.PI / 180, pt = cam.pitch * Math.PI / 180;
     persp.fov = cam.fov;
     persp.position.set(cam.at[0] + cam.dist * Math.sin(yw) * Math.cos(pt), cam.at[1] + cam.dist * Math.sin(pt), cam.at[2] + cam.dist * Math.cos(yw) * Math.cos(pt));

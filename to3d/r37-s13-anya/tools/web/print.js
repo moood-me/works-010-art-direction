@@ -393,6 +393,13 @@ function blocks(d) {
   }
   mctx.putImageData(im, 0, 0);
   d.blocks.push(`<image href="${mcv.toDataURL()}" width="${W}" height="${Hh}"/>`);
+  if (seen_[G.skin]) {        // the skin's block as a mask: the cheeks' bokashi is printed on skin only
+    const mk = mctx.createImageData(W, Hh), M = mk.data;
+    for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) if ((buf[((Hh - 1 - y) * W + x) * 4] & 31) === G.skin) M[(y * W + x) * 4 + 3] = 255;
+    mctx.putImageData(mk, 0, 0);
+    d.defs.push(`<mask id="mskin" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${Hh}" style="mask-type:alpha"><image href="${mcv.toDataURL()}" width="${W}" height="${Hh}"/></mask>`);
+    d.skinMask = true;
+  }
   if (S.noPattern) return;
   for (const b of BLOCKS) {
     if (!b.pattern || !b.groups.some(gid => seen_[gid])) continue;

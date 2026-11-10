@@ -165,11 +165,11 @@ export class Doc {
     this.put(`<path d="${brushPoly(sm, w * this.wk, 'even', o.nib ?? 0.45, true, ++this.n)}" fill="${o.color || INK}" fill-rule="evenodd"/>`, o.layer || 'key');
   }
   dot(x, y, r, color = INK, layer = 'col') { this.put(`<circle cx="${F(x)}" cy="${F(y)}" r="${F2(r)}" fill="${color}" transform="${this.mat()}"/>`, layer); }
-  // bokashi, a round soft patch (a cheek)
+  // bokashi, a round soft patch (a cheek); printed on skin only (skinMask: print.js gives the skin's block as a mask)
   blush(x, y, r, color, op) {
     const gid = this.id('b');
     this.defs.push(`<radialGradient id="${gid}"><stop offset="0" stop-color="${color}" stop-opacity="${F2(op)}"/><stop offset="0.55" stop-color="${color}" stop-opacity="${F2(op * 0.55)}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`);
-    this.put(`<circle cx="${F(x)}" cy="${F(y)}" r="${F(r)}" fill="url(#${gid})" transform="${this.mat()}"/>`, 'col');
+    this.put(`<g${this.skinMask ? ' mask="url(#mskin)"' : ''}><circle cx="${F(x)}" cy="${F(y)}" r="${F(r)}" fill="url(#${gid})" transform="${this.mat()}"/></g>`, 'col');
   }
   // a cloth pattern, printed flat over a colour block: kind and its numbers (kit.py), where its origin is in the
   // picture and how many picture pixels a drawing unit is; maskHref — the block as a picture

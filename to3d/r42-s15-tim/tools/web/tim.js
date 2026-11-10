@@ -17,9 +17,9 @@ const J = {
 };
 for (const [s, k] of [['Left', 1], ['Right', -1]]) Object.assign(J, {
   [s + 'Shoulder']: side(k, [12, 372, 0]), [s + 'Arm']: side(k, [38, 374, 0]), [s + 'ForeArm']: side(k, [44, 322, -1]), [s + 'Hand']: side(k, [46, 272, 3]),
-  [s + 'Leg']: side(k, [17, 200, 0]), [s + 'Shin']: side(k, [19, 110, 1]), [s + 'Foot']: side(k, [20, 24, -2]), [s + 'ToeBase']: side(k, [20, 7, 22]), [s + 'ToeEnd']: side(k, [20, 7, 36]),
+  [s + 'Leg']: side(k, [19, 200, 0]), [s + 'Shin']: side(k, [24, 110, 1]), [s + 'Foot']: side(k, [28, 24, -2]), [s + 'ToeBase']: side(k, [28, 7, 22]), [s + 'ToeEnd']: side(k, [28, 7, 36]),
 });
-const SOLE = s => [[-9, 0, -13], [9, 0, -13], [8, 0, 32], [-8, 0, 32]].map(p => [p[0] + s * 20, p[1], p[2]]);
+const SOLE = s => [[-9, 0, -13], [9, 0, -13], [8, 0, 32], [-8, 0, 32]].map(p => [p[0] + s * 28, p[1], p[2]]);
 // the shirt's bands, bottom to top: red and cream by turns (the drawing: a red band of 14 every 30)
 const BANDS = [250, 264, 280, 294, 310, 324, 340, 354, 370, 384];
 const trunkW = y => y < 320 ? lerp(37, 40, (y - 250) / 70) : y < 372 ? lerp(40, 41, (y - 320) / 52) : lerp(41, 36, (y - 372) / 12);
@@ -27,12 +27,13 @@ const trunkW = y => y < 320 ? lerp(37, 40, (y - 250) / 70) : y < 372 ? lerp(40, 
 function forms(F) {
   // ——— head: a rounder skull, a small nose (only the plane under its tip goes black), big ears, the cap of hair
   skull(F, K, { col: C.skin });
-  nose(F, K, { col: C.skin, set: 'soft', lean: 0, bridge: 2 });
+  nose(F, K, { col: C.skin, set: 'soft', lean: -1.2, bridge: 2, rim: 0 });
   ears(F, K, { col: C.skin, set: 'soft', out: 11 });
   // fair hair: the fringe's teeth over the forehead, short over the ears, tufts down the nape; uneven — tufts
-  const R = [[0, -42, 13], [13, -60, 17], [27, -40, 13], [41, -58, 18], [55, -30, 13], [69, -48, 17], [83, -24, 12], [98, -8, 15], [112, 20, 12], [127, 2, 17], [142, 28, 13], [157, 10, 18], [171, 30, 13]];
-  const L = [[-14, -62, 18], [-28, -44, 13], [-43, -60, 17], [-57, -34, 13], [-71, -50, 18], [-85, -22, 12], [-99, -6, 16], [-113, 22, 12], [-128, 4, 18], [-143, 28, 13], [-158, 8, 17], [-172, 26, 13]];
-  cap(F, K, [...R, [180, 12, 17], ...L.reverse()], { col: C.hair, apex: [0, -112, 4] });
+  const R = [[0, -42, 12], [13, -60, 16], [27, -40, 12], [41, -58, 17], [55, -30, 13], [69, -48, 18], [83, -24, 14], [98, -8, 19], [112, 20, 18], [127, 2, 25], [142, 28, 20], [157, 10, 27], [171, 30, 21]];
+  const L = [[-14, -62, 16], [-28, -44, 12], [-43, -60, 17], [-57, -34, 13], [-71, -50, 18], [-85, -22, 14], [-99, -6, 19], [-113, 22, 18], [-128, 4, 26], [-143, 28, 20], [-158, 8, 26], [-172, 26, 21]];
+  cap(F, K, [...R, [180, 12, 26], ...L.reverse()], { col: C.hair, apex: [0, -116, 0],
+    spikes: [[20, -92, 16, 16, 12, 0.9], [-70, -84, 14, 14, 14, 0.7], [150, -80, 16, 15, 20, 0.6], [100, -60, 14, 13, 20, 0.3], [-140, -66, 15, 14, 22, 0.4], [180, -40, 14, 13, 24, 0.1], [130, -30, 13, 12, 24, 0], [-110, -34, 13, 12, 20, 0]] });
   F.loft(F.part({ col: C.skin, w: chain(J, ['Neck1', 'Neck2', 'Head']) }), [box8(0, 378, 0, 12, 11, 0.5), box8(0, 392, 1, 12, 11, 0.5), box8(0, 410, 3, 13, 12, 0.5)]);
   // ——— the striped shirt: its bands are the rings' own faces
   const tw = chain(J, ['Hips', 'Spine1', 'Spine2', 'Chest']);
@@ -41,11 +42,11 @@ function forms(F) {
   // shorts: the hips and a wide leg each, going with its thigh
   F.loft(F.part({ col: C.shorts, w: 'Hips' }), [box8(0, 200, 1, 37, 23, 0.4), box8(0, 257, 1, 38.5, 24.5, 0.4)]);
   for (const [s, k] of [['Left', 1], ['Right', -1]]) {
-    F.loft(F.part({ col: C.shorts, w: s + 'Leg' }), [box8(k * 19, 166, 1, 21, 23, 0.4), box8(k * 18, 236, 1, 20, 23, 0.4)]);
+    F.loft(F.part({ col: C.shorts, w: s + 'Leg' }), [box8(k * 23.5, 166, 1, 18, 22, 0.4), box8(k * 19, 236, 1, 18, 22, 0.4)]);
     // thin bare legs, socks, red shoes
-    limb(F, { col: C.skin }, J, [s + 'Leg', s + 'Shin'], [[k * 17, 226, 0], J[s + 'Shin'], [k * 20, 46, -1]], [[11, 12], [9, 9.5], [7, 7.5]]);
-    F.loft(F.part({ col: C.cream, w: s + 'Shin' }), [box8(k * 20, 20, -1.5, 8.2, 8.6, 0.4), box8(k * 20, 52, -1, 8.4, 8.8, 0.4)]);
-    const x = k * 20, shoe = F.part({ col: C.shoe, w: s + 'Foot' });
+    limb(F, { col: C.skin }, J, [s + 'Leg', s + 'Shin'], [[k * 19, 226, 0], J[s + 'Shin'], [k * 28, 46, -1]], [[11, 12], [9, 9.5], [7, 7.5]]);
+    F.loft(F.part({ col: C.cream, w: s + 'Shin' }), [box8(k * 28, 20, -1.5, 8.2, 8.6, 0.4), box8(k * 27, 52, -1, 8.4, 8.8, 0.4)]);
+    const x = k * 28, shoe = F.part({ col: C.shoe, w: s + 'Foot' });
     const sec = (z, w, hh) => [[x - w, 0, z], [x + w, 0, z], [x + w, hh, z], [x - w, hh, z]];
     F.loft(shoe, [sec(-13, 9, 21), sec(6, 10, 21), sec(32, 8, 7)]);
     // bare arms out of short sleeves, fists

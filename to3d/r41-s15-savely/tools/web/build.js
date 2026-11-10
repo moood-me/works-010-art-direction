@@ -167,7 +167,7 @@ export function limb(F, part0, J, [b0, b1], pts, r, { n = 6, side = [1, 0, 0], t
 // ———————————— the head from the drawing's front and side outlines ————————————
 // D: drawing.py's numbers. place: {c: [x, y, z] figure units of the head's centre, s: scale}. Returns the head's
 // surface as functions (for hair, moustache, glasses) in head units, and `to` (head units → figure units).
-export function headKit(D, place) {
+export function headKit(D, place, { ang = 1 } = {}) {
   const ZS = 18;                                   // the side outline's middle (its x runs −65 … +100)
   const ext = (poly, y) => {
     let lo = 1e9, hi = -1e9;
@@ -188,7 +188,7 @@ export function headKit(D, place) {
   // the half section, front to back: the face in planes (half of the front, the cheek, the side), the skull round
   const ANG = [0, 26, 56, 90, 122, 152, 180].map(a => a * Math.PI / 180);
   function half(y) {
-    const { w, zf, zb } = dims(y), Dp = zf - zb, t = smooth((y + 62) / 44);
+    const { w, zf, zb } = dims(y), Dp = zf - zb, t = ang * smooth((y + 62) / 44);   // ang < 1: a rounder face (a child's)
     const A = [[0, zf], [0.76 * w, zf - 0.27 * w], [0.96 * w, zf - 0.36 * Dp], [w, zf - 0.55 * Dp], [0.92 * w, zf - 0.78 * Dp], [0.5 * w, zb + 0.04 * Dp], [0, zb]];
     const zc = (zf + zb) / 2;
     return A.map((p, i) => [lerp(w * Math.sin(ANG[i]), p[0], t), lerp(zc + Dp / 2 * Math.cos(ANG[i]), p[1], t)]);
@@ -228,11 +228,11 @@ export function skull(F, K, { col, w = 'Head', ys = [-99, -95, -86, -72, -54, -3
   return part;
 }
 // the nose: its own piece of light with the side plane and the plane under the tip (those go black by themselves)
-export function nose(F, K, { col, w = 'Head', width = null, bridge = 3, set = 'body', lean = 0.43 } = {}) {
+export function nose(F, K, { col, w = 'Head', width = null, bridge = 3, set = 'body', lean = 0.43, rim = 1 } = {}) {
   // the side planes are lit as if turned further from the front than they are: the style draws the side of a man's
   // nose black as soon as the light is on its other side (a three-quarter view too), which the true plane would not give
   const nrm = lean ? n => Math.abs(n[0]) > 0.5 ? [Math.sign(n[0]) * 0.9, n[1] * 0.3, -lean] : n : null;
-  const n = K.D.nose, sp = K.D.sidePts, part = F.part({ col, w, set, nrm });
+  const n = K.D.nose, sp = K.D.sidePts, part = F.part({ col, w, set, nrm, rim });
   const yr = n.root[1] - 4, yt = sp.tip[1], yb = sp.nosebase[1], nw = width ?? (n.wing[0] - n.base[0]) * 0.75;
   const R = K.to(0, yr, K.frontZ(0, yr) + 1), T = K.to(0, yt, K.ZS - sp.tip[0]), Bm = K.to(0, yb, K.frontZ(0, yb) - 1);
   const yw = n.wing[1], WL = K.to(-nw, yw, K.frontZ(nw, yw) - 2), WR = K.to(nw, yw, K.frontZ(nw, yw) - 2);
@@ -270,4 +270,26 @@ export function curtain(F, K, cols, { col, w = 'Head', thick = 10, yHold = 20, r
   }
   if (closeEnds) for (const [e, nb] of [[colPts[0], colPts[1]], [colPts[colPts.length - 1], colPts[colPts.length - 2]]]) F.poly(part, [e.i0, ...e.o, e.i1], mid(e, nb));
   return { part, colPts };
+}
+
+// hair as a cap: columns [phi°, bottom y, thickness] all round the head, meeting at the crown; the bottom line's zigzag
+// is the fringe's and the nape's pointed ends, uneven thickness gives tufts; `spikes`: [phi°, y, length, width] — tufts
+// that stand out of the cap
+export function cap(F, K, cols, { col, w = 'Head', yHold = 20, apex = [0, -112, 0], yTop = -100, rows = [0, 0.22, 0.48, 0.74, 1], spikes = [] } = {}) {
+  const part = F.part({ col, w });
+  const P = (phi, y, out) => { const q = K.surf(phi * Math.PI / 180, Math.min(y, yHold), out); return K.to(q[0], y, q[2]); };
+  const A = K.to(...apex), n = cols.length, ins = K.to(0, -30, 0);
+  const C = cols.map(([phi, yb, th]) => ({ o: rows.map(t => P(phi, lerp(yTop, yb, t), th * (t === 1 ? 0.7 : t === 0 ? 0.55 : 1))), i: P(phi, yb - (yb - yTop) * 0.1, 0.5) }));
+  for (let c = 0; c < n; c++) {
+    const a = C[c], b = C[(c + 1) % n];
+    F.tri(part, A, a.o[0], b.o[0], ins);
+    for (let r = 0; r < rows.length - 1; r++) F.quad(part, a.o[r], b.o[r], b.o[r + 1], a.o[r + 1], ins);
+    F.quad(part, a.o[rows.length - 1], b.o[rows.length - 1], b.i, a.i, [(a.i[0] + b.i[0]) / 2, (a.i[1] + b.i[1]) / 2 + 10, (a.i[2] + b.i[2]) / 2]);
+  }
+  for (const [phi, y, len, wd, th = 14, up = 0.5] of spikes) {
+    const c = P(phi, y, th * 0.6), tip0 = P(phi, y, th + len), tip = [tip0[0], tip0[1] + len * up * K.place.s, tip0[2]];
+    const base = [P(phi - wd, y, th * 0.8), P(phi, y - wd * 0.9, th * 0.8), P(phi + wd, y, th * 0.8), P(phi, y + wd * 0.9, th * 0.8)];
+    for (let i = 0; i < 4; i++) F.tri(part, base[i], base[(i + 1) % 4], tip, c);
+  }
+  return part;
 }

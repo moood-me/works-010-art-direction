@@ -104,7 +104,7 @@ export function drawFace(d, F) {
     { const s = -side * (far ? 13 * t + back * 0.7 : 4 * t + 18 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
     useFrame(d, f, sx, 0);
     K.eye(d, Pn, sx, 0, k, -sg, { ...ex, look: [ex.look[0] + side * t * 2, ex.look[1]] });
-    K.brow(d, Pn, sx + sg, k, -sg, ex);
+    K.brow(d, Pn, sx + sg - (far ? side * 8 * t : 0), k * (far ? 0.85 : 1 - 0.25 * tn), -sg, ex);       // the far brow keeps on the face
   }
   if (front > 0.12) {
     d.map = (x, y) => F.faceMap(x, y, true); d.T = [[1, 0, 0, 1, 0, 0]];
@@ -116,7 +116,7 @@ export function drawFace(d, F) {
   if (fm0 && front > 0.05) {
     const t = 1 - Math.min(1, fm0.r), fm = frameAt(d, -side * 9 * t, MY, 0.55, true);
     if (fm) {
-      const s = -side * 16 * t; fm.c = [fm.c[0] + fm.ax[0] * s, fm.c[1] + fm.ax[1] * s];
+      const s = -side * (16 * t + 14 * Math.max(0, 0.5 - front) / 0.5); fm.c = [fm.c[0] + fm.ax[0] * s, fm.c[1] + fm.ax[1] * s];
       useFrame(d, fm, 0, MY);
       const fs = 0.5 - 0.08 * t - 0.36 * Math.max(0, 0.5 - front) / 0.5, ns = 0.5 + 0.08 * t;
       K.mouth(d, Pn, ex, 0, MY, side < 0 ? fs : ns, side < 0 ? ns : fs);

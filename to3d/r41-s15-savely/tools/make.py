@@ -77,14 +77,21 @@ def compare():
     jobs = [{'name': v, 'size': [600, 700], 'set': {'floor': False, 'view': 'style', 'bg': {'col': BACK[0]}, 'figures': [{'clip': 'rest', 'yaw': yaw, 'ex': 'neutral'}], 'cam': bust_cam()}} for v, yaw, _ in VIEWS]
     out = shots('compare', jobs)
     R = os.path.join(CACHE, 'refs'); ims = []; ov = []
+    labs = []; rv = CFG.get('refViews', 'fqs')      # the views the style drew this character in
     for v, yaw, lab in VIEWS:
-        a = Image.open(f'{R}/ref-{v}-{CFG["rest"]}.png').convert('RGB'); b = Image.open(f'{out}/{v}.png').convert('RGB')
-        ims += [a, b]; ov.append(Image.blend(a, b, 0.5))
-    save(row(ims, ['рисунок', '3D'] * 3, h=560), 'compare.jpg')
-    save(row(ov, [l for _, _, l in VIEWS], h=560), 'overlay.jpg')
+        b = Image.open(f'{out}/{v}.png').convert('RGB')
+        if v in rv:
+            a = Image.open(f'{R}/ref-{v}-{CFG["rest"]}.png').convert('RGB')
+            ims += [a, b]; labs += ['рисунок, ' + lab, '3D, ' + lab]; ov.append(Image.blend(a, b, 0.5))
+        else:
+            ims.append(b); labs.append('3D, ' + lab)
+    save(row(ims, labs, h=560), 'compare.jpg')
+    save(row(ov, [l for v, _, l in VIEWS if v in rv], h=560), 'overlay.jpg')
 
 
 STREET = {'floor': True, 'bg': None, 'view': 'style'}
+FULL = CFG.get('full', [0, 0.86, 0.9])     # the whole figure: [x, y of the middle, half height] in metres
+PCAM = {'yaw': 0, 'pitch': 4, 'dist': FULL[2] * 6.9, 'ty': FULL[1], 'fov': 20, 'follow': False}
 PLAIN = {'floor': False, 'bg': {'col': BACK[0]}, 'view': 'style'}
 
 
@@ -93,9 +100,9 @@ def figure():
     px = S / 1.16
     cam = {'ortho': [-10 * px, 430 * px, 500 * px]}
     jobs = [{'name': 'fig', 'size': [700, 1000], 'set': {**PLAIN, 'bg': {'col': '#11121b', 'disc': None}, 'figures': [{'clip': 'stand', 'yaw': CFG.get('figYaw', -42)}], 'cam': cam}},
-            {'name': 'street', 'size': [700, 1000], 'set': {**STREET, 'figures': [{'clip': 'stand', 'yaw': CFG.get('figYaw', -42)}], 'cam': {'yaw': 0, 'pitch': 4, 'dist': 6.2, 'ty': 0.86, 'fov': 20, 'follow': False}}},
-            {'name': 'back', 'size': [700, 1000], 'set': {**STREET, 'figures': [{'clip': 'stand', 'yaw': 150}], 'cam': {'yaw': 0, 'pitch': 4, 'dist': 6.2, 'ty': 0.86, 'fov': 20, 'follow': False}}},
-            {'name': 'left', 'size': [700, 1000], 'set': {**STREET, 'figures': [{'clip': 'stand', 'yaw': 60}], 'cam': {'yaw': 0, 'pitch': 4, 'dist': 6.2, 'ty': 0.86, 'fov': 20, 'follow': False}}}]
+            {'name': 'street', 'size': [700, 1000], 'set': {**STREET, 'figures': [{'clip': 'stand', 'yaw': CFG.get('figYaw', -42)}], 'cam': PCAM}},
+            {'name': 'back', 'size': [700, 1000], 'set': {**STREET, 'figures': [{'clip': 'stand', 'yaw': 150}], 'cam': PCAM}},
+            {'name': 'left', 'size': [700, 1000], 'set': {**STREET, 'figures': [{'clip': 'stand', 'yaw': 60}], 'cam': PCAM}}]
     out = shots('figure', jobs)
     d = Image.open(os.path.join(HERE, f'../../../styles/s15-noir/pics/figure-{K}.png')).convert('RGB')
     a = Image.open(f'{out}/fig.png').convert('RGB')
@@ -116,7 +123,7 @@ def portrait():
 
 
 def steps():
-    cam = {'ortho': [0, 1.02, 0.66]}
+    cam = {'ortho': [0, FULL[1] * 1.19, FULL[2] * 0.73]}
     fg = [{'clip': 'rest', 'yaw': -38}]
     base = {'floor': False, 'bg': {'col': BACK[0]}, 'figures': fg, 'cam': cam}
     jobs = [{'name': '1', 'size': [520, 760], 'set': {**base, 'view': 'clay'}}, {'name': '0', 'size': [520, 760], 'set': {'view': 'bones'}},
@@ -138,6 +145,18 @@ def expr():
     labs = [CFG['restRu']] + [l for _, l in EXPRS[1:]]
     save(row([Image.open(f'{out}/{e}.png') for e, _ in EXPRS], labs, h=520), 'expr.jpg')
     save(row([Image.open(f'{out}/{e}-f.png') for e, _ in EXPRS], labs, h=520), 'expr-front.jpg')
+
+
+def exprsheet():
+    """The style's sheet of expressions (three-quarter busts by its own code) over the 3D with the same numbers."""
+    names = [('joy', 'joy'), ('surprise', 'surprise'), ('sad', 'sadness'), ('anger', 'anger')]
+    jobs = [{'name': e, 'size': [600, 700], 'set': {**PLAIN, 'figures': [{'clip': 'rest', 'yaw': -40, 'ex': e}], 'cam': bust_cam()}} for e, _ in names]
+    out = shots('exprsheet', jobs)
+    R = os.path.join(CACHE, 'refs'); labs = ['радость', 'удивление', 'грусть', 'злость']
+    top = row([Image.open(f'{R}/ref-q-{r}.png') for _, r in names], ['рисунок: ' + l for l in labs], h=460)
+    bot = row([Image.open(f'{out}/{e}.png') for e, _ in names], ['3D: ' + l for l in labs], h=460)
+    o = Image.new('RGB', (top.width, top.height + bot.height), '#11121b'); o.paste(top, (0, 0)); o.paste(bot, (0, top.height))
+    save(o, 'expr-sheet.jpg')
 
 
 def film(name, size, st, frames, fps=24):
@@ -168,7 +187,7 @@ def films(*names):
 
 
 def all():
-    refs(); compare(); portrait(); figure(); steps(); expr(); films()
+    refs(); compare(); portrait(); figure(); steps(); expr(); exprsheet(); films()
 
 
 if __name__ == '__main__':

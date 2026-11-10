@@ -57,12 +57,13 @@
    "clip": "run",
    "sec": 3,
    "cam": {
-    "yaw": -55,
+    "yaw": -50,
     "pitch": 6,
-    "dist": 4.0,
+    "dist": 4.2,
     "ty": 0.68,
     "fov": 22,
-    "follow": true
+    "follow": true,
+    "soft": 0.6
    }
   },
   "jump": {
