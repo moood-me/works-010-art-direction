@@ -31,7 +31,7 @@ export const blocks = G => [
 ];
 // the slipper: the foot below its low cut
 export const glsl = G => `
-  if (abs(gg - ${G.skin}.0) < 0.5 && vB >= 0.0 && vB < 0.06) gg = ${G.shoe}.0;`;
+  if (abs(gg - ${G.skin}.0) < 0.5 && vB >= 0.0 && vB < 0.042) gg = ${G.shoe}.0;`;
 export const FLAT = { skin: '#f4e7d0', hair: HAIR, card: CARD, dress: DRESS, shoe: SHOE };
 // the key block's weights (kit.py: lines on cloth are heavier and follow direction more than lines on skin): [w, nib]
 export const lineW = { body: [1.9, 0.3], head: [2.0, 0.3], chest: [2.0, 0.3], dress: [3.4, 0.6], cardigan: [3.3, 0.6],

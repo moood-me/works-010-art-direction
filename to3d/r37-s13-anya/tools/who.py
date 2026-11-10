@@ -10,8 +10,8 @@ Q_YAW = 0.55               # the drawing's three-quarter is a modest turn: at mo
 FIG_EXPR = 'dream'
 FIG_PROPS = None
 # the figure as drawn: the head bent to a sprig held at the chest, the near arm across the chest, the far arm hanging
-FIG_POSE = dict(headNod=0.16, headTurn=0.12, headTilt=-0.1,
-                arms={'Right': {'upper': [-0.2, -1, 0.12], 'fore': [0.7, 0.62, 0.5]}})
+FIG_POSE = dict(headNod=0.16, headTurn=-0.14, headTilt=0.1,
+                arms={'Left': {'upper': [0.22, -1, 0.1], 'fore': [-0.72, 0.6, 0.5]}})
 BUST_POSE = dict(out=0.14)
 BUST_CX = (0.0, 0.0)           # the camera's shift in the three-quarter and the side bust (metres)
 

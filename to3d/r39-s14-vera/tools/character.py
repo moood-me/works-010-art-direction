@@ -29,4 +29,4 @@ MID = .86                         # the middle of the figure, metres: where the 
 BUST_SET = {}
 OTHER_SIDE = False
 SIDE_RU = 'профиль'
-HERO_WARM = 1.2
+HERO_WARM = 1.5

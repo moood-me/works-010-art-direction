@@ -97,7 +97,7 @@ if (!SHOTS) {
   const ui = document.getElementById('ui'); ui.classList.add('on');
   const fit = () => { const w = innerWidth, h = innerHeight, k = Math.min(1, 900 / Math.max(w, h)); canvas.style.width = w + 'px'; canvas.style.height = h + 'px'; S.size = [Math.round(w * k), Math.round(h * k)]; };
   fit(); addEventListener('resize', fit);
-  set({ expr: 'calm', headYaw: 0 }); S.cam.yaw = -.35; S.cam.dist = 12; S.cam.h = .72;
+  set({ expr: 'calm', headYaw: 0 }); S.cam.yaw = -.35; S.cam.dist = 13; S.cam.h = .5;
   let playing = true, last = performance.now(), step = -1;
   const btn = (el, label, on) => { const b = document.createElement('button'); b.textContent = label; b.onclick = on; el.appendChild(b); return b; };
   const mB = [], eB = [], press = (list, v) => list.forEach(([b, k]) => b.setAttribute('aria-pressed', String(k === v)));
@@ -118,7 +118,7 @@ if (!SHOTS) {
   canvas.addEventListener('pointerdown', e => { drag = [e.clientX, e.clientY]; canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener('pointermove', e => { if (!drag) return; S.cam.yaw -= (e.clientX - drag[0]) * .008; S.cam.pitch = Math.max(-.1, Math.min(.8, S.cam.pitch + (e.clientY - drag[1]) * .005)); drag = [e.clientX, e.clientY]; });
   canvas.addEventListener('pointerup', () => { drag = null; });
-  canvas.addEventListener('wheel', e => { e.preventDefault(); S.cam.dist = Math.max(2.5, Math.min(22, S.cam.dist * Math.exp(e.deltaY * .001))); S.cam.h = S.cam.dist < 6 ? 1.4 : .72; }, { passive: false });
+  canvas.addEventListener('wheel', e => { e.preventDefault(); S.cam.dist = Math.max(2.5, Math.min(22, S.cam.dist * Math.exp(e.deltaY * .001))); S.cam.h = S.cam.dist < 6 ? 1.35 : .5; }, { passive: false });
   const tick = now => {
     let dt = Math.min(.1, (now - last) / 1000); last = now;
     if (S.twos) { acc += dt; const n = Math.floor(acc * 12); if (n === step) { requestAnimationFrame(tick); return; } dt = (n - step) / 12; if (step < 0) dt = 1 / 12; step = n; } else step = -1, acc = 0;

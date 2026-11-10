@@ -46,7 +46,7 @@ function forms(F) {
     limb(F, { col: C.shirt }, J, [s + 'Arm', s + 'ForeArm'], [a, e, h], [[14, 15], [15, 15], [12, 12]]);
     const hp = F.part({ col: C.skin, w: s + 'Hand' });
     F.loft(hp, [box8(h[0], h[1] + 2, h[2], 6, 9, 0.3), box8(h[0], h[1] - 16, h[2] + 1, 7, 11, 0.3), box8(h[0] - k * 1, h[1] - 36, h[2] + 2, 4, 7, 0.3)]);
-    F.bar(F.part({ col: C.skin, w: s + 'Hand' }), [h[0] - k * 2, h[1] - 6, h[2] + 9], [h[0] - k * 4, h[1] - 22, h[2] + 17], 6, 6);
+    if (k < 0) F.bar(F.part({ col: C.skin, w: s + 'Hand' }), [h[0] - k * 2, h[1] - 6, h[2] + 9], [h[0] - k * 4, h[1] - 22, h[2] + 17], 6, 6);
     // legs, shoes
     limb(F, { col: C.trous }, J, [s + 'Leg', s + 'Shin'], [[J[s + 'Leg'][0], 270, 0], J[s + 'Shin'], [J[s + 'Foot'][0], 14, J[s + 'Foot'][2]]], [[20, 21], [16, 16], [13.5, 14]]);
     const x = k * 21, shoe = F.part({ col: C.shoe, w: s + 'Foot' });
@@ -58,9 +58,9 @@ function forms(F) {
     const h = J.LeftHand, c = [h[0] - 5, h[1] - 22, h[2] + 15], n = [0, -0.26, 0.966], u = [1, 0, 0], v = [0, 0.966, 0.26];
     const circ = (r, off) => Array.from({ length: 16 }, (_, i) => { const a = i / 16 * 2 * Math.PI; return [0, 1, 2].map(q => c[q] + n[q] * off + u[q] * r * Math.cos(a) + v[q] * r * Math.sin(a)); });
     const wp = F.part({ col: C.gold, w: 'LeftHand', unlit: 1, set: 'props', rim: 0 });
-    F.loft(wp, [circ(15, -2), circ(15, 2)]);
+    F.loft(wp, [circ(17, -2), circ(17, 2)]);
     const dp = F.part({ col: C.dial, w: 'LeftHand', unlit: 1, set: 'props', rim: 0 });
-    F.poly(dp, circ(11, 2.4), c);
+    F.poly(dp, circ(12.5, 2.4), c);
     const at = (a, b, off = 2.8) => [0, 1, 2].map(q => c[q] + n[q] * off + u[q] * a + v[q] * b);
     const hd = F.part({ col: '#07070b', w: 'LeftHand', unlit: 1, set: 'props', rim: 0 });
     F.quad(hd, at(-0.8, 0), at(0.8, 0), at(0.8, 8), at(-0.8, 8), c); F.quad(hd, at(0, -0.8), at(5, -3.8), at(5.6, -2.4), at(0.6, 0.8), c);
@@ -77,7 +77,7 @@ function forms(F) {
   // ——— the moustache: two white wings that the mouth moves
   const my = D.mouth.y;
   for (const [name, sg] of [['mouL', 1], ['mouR', -1]]) {
-    const part = F.part({ col: C.mous, w: 'Head', set: name });
+    const part = F.part({ col: C.mous, w: 'Head', set: name, rim: 0 });
     const shp = [[0, my - 15, 9], [16, my - 13, 8], [32, my, 5], [39, my + 15, 3], [20, my + 5, 6], [0, my + 2, 8]];
     const front = shp.map(([x, y, o]) => K.to(sg * x, y, K.frontZ(Math.min(x, K.dims(y).w * 0.86), y) + o));
     const back = shp.map(([x, y]) => K.to(sg * x, y, K.frontZ(Math.min(x, K.dims(y).w * 0.86), y) - 4));

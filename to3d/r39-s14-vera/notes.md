@@ -39,7 +39,9 @@ filter), Р23 (the drawing's own solids on SOMA, no Anny).
 | `tools/web/app.js`, `view.html` | the page and the viewer; `window.A` for pictures and films (`?shots`) |
 | `tools/character.py`, `drawing.py`, `make.py`, `shots.mjs`, `svg2png.mjs`, `heavy.sh`, `view_check.mjs` | the drawing's views by the style's code; pictures and films through the page; the shared locks |
 
-To add a character of this style: copy `vera.js` and `character.py`, write its pieces, point `web/char.js` at it.
+To add a character of this style: copy `vera.js` and `character.py`, write its pieces, point `web/char.js` at it
+(Р40, Кира, is made so; what she added to the shared code is listed in her `notes.md`, and these pictures were made
+again with it).
 
 ## Repeat
 

@@ -1,0 +1,125 @@
+{
+ "key": "tim",
+ "rest": "smile",
+ "restRu": "улыбка",
+ "back": [
+  "#2b3550",
+  "#c8553a"
+ ],
+ "head": {
+  "c": [
+   0,
+   452,
+   5
+  ],
+  "s": 0.68
+ },
+ "neck": [
+  6,
+  384
+ ],
+ "figYaw": -40,
+ "portraitScale": 3.3,
+ "refViews": "q",
+ "full": [
+  0,
+  0.68,
+  0.74
+ ],
+ "films": {
+  "turn": {
+   "clip": "stand",
+   "sec": 5,
+   "turn": true,
+   "yaw0": 0,
+   "cam": {
+    "yaw": 0,
+    "pitch": 5,
+    "dist": 3.9,
+    "ty": 0.68,
+    "fov": 20,
+    "follow": false
+   }
+  },
+  "walk": {
+   "clip": "walk",
+   "sec": 4,
+   "cam": {
+    "yaw": 8,
+    "pitch": 6,
+    "dist": 3.8,
+    "ty": 0.68,
+    "fov": 22,
+    "follow": true
+   }
+  },
+  "run": {
+   "clip": "run",
+   "sec": 3,
+   "cam": {
+    "yaw": -55,
+    "pitch": 6,
+    "dist": 4.0,
+    "ty": 0.68,
+    "fov": 22,
+    "follow": true
+   }
+  },
+  "jump": {
+   "clip": "jump",
+   "sec": 3,
+   "cam": {
+    "yaw": -20,
+    "pitch": 4,
+    "dist": 4.6,
+    "ty": 0.8,
+    "fov": 22,
+    "follow": false
+   }
+  },
+  "face": {
+   "clip": "talk",
+   "sec": 9,
+   "talk": true,
+   "size": [
+    640,
+    640
+   ],
+   "cam": {
+    "yaw": -8,
+    "pitch": 0,
+    "ty": 1.08,
+    "dist": 2.1,
+    "fov": 20,
+    "follow": true
+   },
+   "keys": [
+    [
+     2.5,
+     "expr",
+     "joy"
+    ],
+    [
+     4.5,
+     "expr",
+     "surprise"
+    ],
+    [
+     6.0,
+     "expr",
+     "anger"
+    ],
+    [
+     7.5,
+     "expr",
+     "neutral"
+    ],
+    [
+     6.0,
+     "talk",
+     false
+    ]
+   ]
+  }
+ }
+}

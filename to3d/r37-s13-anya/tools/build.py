@@ -311,7 +311,7 @@ def hair_row(y):
     if np.isnan(ze): ze = zt_of(-44)
     df = (ze - zc) / max(np.cos(thw), 0.12) ** (2 / P_)
     if y > -26:       # behind the ear and down behind the shoulders
-        thw = np.interp(y, [-26, -10, 36, 96, 140, 322], [thw, np.radians(80), np.radians(84), np.radians(100), np.radians(106), np.radians(104)])
+        thw = np.interp(y, [-26, -10, 40, 96, 140, 322], [thw, np.radians(73), np.radians(76), np.radians(98), np.radians(106), np.radians(104)])
     return a_, zc, zc - zb, thw, df
 
 

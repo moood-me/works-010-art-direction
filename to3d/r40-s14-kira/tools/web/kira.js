@@ -53,7 +53,7 @@ export const C = {
     fig.piece({ name: 'stringR', geo: hood.on(strip([[9, -416], [10, -368]], 3.5), 1.2), color: lite(HOOD, .55), kind: 'card', weights: W });
     // the hood heaped on the back, behind the neck
     const heap = []; for (let i = 0; i <= 8; i++) { const a = -Math.PI / 2 + Math.PI * (i + (i === 0 ? .25 : i === 8 ? -.25 : 0)) / 8, c = Math.cos(a); heap.push(ringAt((432 + 26 * Math.sin(a)) * U, 44 * c * U, (-14 + 20 * c) * U, (-14 - 30 * c) * U, 24, .9)); }
-    fig.piece({ name: 'hood', joint: 'Chest', geo: loft(heap, { cap0: true, cap1: true }), color: dark(HOOD, .2), kind: 'paint', v: 1 });
+    fig.piece({ name: 'heap', joint: 'Chest', geo: loft(heap, { cap0: true, cap1: true }), color: dark(HOOD, .2), kind: 'paint', v: 1 });
     // ---- headphones round the neck: the band behind, two lime cups in front
     const hy = 420, hx = 21, zc = hood.z(hx, hy) + 3.5;
     for (const s of [-1, 1]) {

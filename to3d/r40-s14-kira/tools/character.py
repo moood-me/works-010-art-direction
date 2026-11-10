@@ -22,7 +22,7 @@ HERO_YAW = -30
 MID = .80
 WALK = dict(motion='walk', ground='path')
 FILMS = ['turn', 'walk', 'life', 'sneak']
-STEPS = [['f:', 'hair', 'fringe', 'nose', 'ear', 'cup', 'phones', 'pocket', 'string', 'hood', 'hem', 'LeftLace', 'RightLace'], ['f:']]
+STEPS = [['f:', 'hair', 'fringe', 'nose', 'ear', 'cup', 'phones', 'pocket', 'string', 'heap', 'hem', 'LeftLace', 'RightLace'], ['f:']]
 STEP_RU = ['полосы и оболочки на скелете SOMA', 'волосы, нос, капюшон, карман, наушники', 'лицо из кусков', 'бумага: тени, кромки, зерно']
 MOTIONS = dict(sneak=dict(frames=48, yaw=-.75, ground='path'))
 LIFE_EXPR = [(18, 'joy'), (40, 'calm'), (58, 'surprise'), (76, 'sad'), (94, 'angry'), (112, 'calm')]

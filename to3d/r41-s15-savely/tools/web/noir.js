@@ -51,8 +51,13 @@ void main() {
       if (sc.x > 0.002 && sc.x < 0.998 && sc.y > 0.002 && sc.y < 0.998 && sc.z < 1.0) {
         float z = sc.z - 0.0009;
         vec2 t = sc.xy * uSZ - 0.5, f = fract(t), b = (floor(t) + 0.5) / uSZ; float d = 1.0 / uSZ;
-        float s = mix(mix(tap(b, z), tap(b + vec2(d, 0.0), z), f.x), mix(tap(b + vec2(0.0, d), z), tap(b + vec2(d, d), z), f.x), f.y);
-        lit *= smoothstep(0.38, 0.62, s);
+        // the shadow's edge: 4 × 4 depths weighed into a soft step, then cut hard again — a clean line, not the picture's stairs
+        float s = 0.0;
+        for (int j = -1; j <= 2; j++) for (int i = -1; i <= 2; i++) {
+          float wx = i == -1 ? 1.0 - f.x : (i == 2 ? f.x : 1.0), wy = j == -1 ? 1.0 - f.y : (j == 2 ? f.y : 1.0);
+          s += wx * wy * tap(b + vec2(float(i), float(j)) * d, z);
+        }
+        lit *= smoothstep(0.42, 0.58, s / 9.0);
       }
     }
     c = mix(uBlack, vC, lit);
