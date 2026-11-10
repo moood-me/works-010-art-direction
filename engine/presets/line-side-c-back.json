@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "line-side-c-back",
+ "label": {
+  "ru": "линия действия: сбоку C назад",
+  "en": "line of action: side C back"
+ },
+ "group": "line",
+ "about": {
+  "ru": "Т5: вся фигура изогнута одной кривой",
+  "en": "Т5: the whole figure bent along one curve"
+ },
+ "changes": [
+  {
+   "kind": "line",
+   "view": "side",
+   "curve": "C",
+   "bend": -0.1
+  }
+ ]
+}

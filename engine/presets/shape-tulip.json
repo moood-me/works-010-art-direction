@@ -1,0 +1,19 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-tulip",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: тюльпан",
+  "en": "silhouette: tulip"
+ },
+ "about": {
+  "ru": "расширяется на бёдрах и сужается к подолу (силуэт О1: форма, к которой тянется ткань)",
+  "en": "widens over the hips and narrows to the hem (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "tulip",
+  "flare": 0.7,
+  "from": "waist"
+ }
+}

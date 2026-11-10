@@ -1,0 +1,58 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "masses-shoulders",
+ "label": {
+  "ru": "массы: плечо — шапка и скат от шеи",
+  "en": "masses: the shoulder — its cap and the slope from the neck"
+ },
+ "group": "masses",
+ "about": {
+  "ru": "Т7: одна круглая шапка над корнем руки и ровный скат к ней от шеи — без полки и без ямки под ней",
+  "en": "Т7: one round cap over the arm's root, reached from the neck by a plain slope — no shelf, no hollow under it"
+ },
+ "changes": [
+  {
+   "kind": "masses",
+   "items": [
+    {
+     "shape": "ellipsoid",
+     "unit": "arm",
+     "mirror": true,
+     "at": {
+      "from": "LeftArm",
+      "to": "LeftForeArm",
+      "along": 0.25,
+      "offset": [
+       0,
+       0.1,
+       0
+      ]
+     },
+     "radii": [
+      1.2075,
+      1.15,
+      1.15
+     ],
+     "blend": 0.9
+    },
+    {
+     "shape": "capsule",
+     "unit": "arm",
+     "mirror": true,
+     "at": {
+      "from": "LeftShoulder"
+     },
+     "to": {
+      "from": "LeftArm"
+     },
+     "r": [
+      1.035,
+      0.9
+     ],
+     "blend": 0.5
+    }
+   ]
+  }
+ ]
+}

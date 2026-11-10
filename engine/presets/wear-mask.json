@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "wear-mask",
+ "group": "headwear",
+ "label": {
+  "ru": "убор: девушка в маске",
+  "en": "headwear: masked girl"
+ },
+ "about": {
+  "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
+  "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
+ },
+ "pieces": [
+  {
+   "id": "earDevice",
+   "kind": "earDevice",
+   "color": "#b5b6c5",
+   "dark": "#5a5b70"
+  }
+ ]
+}

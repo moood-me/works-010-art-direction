@@ -1,0 +1,50 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-old",
+ "group": "head",
+ "label": {
+  "ru": "голова: старик",
+  "en": "head: old man"
+ },
+ "about": {
+  "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.12,
+  "skin": "#f2c49f",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-old@29df848353cf96ee"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-old@31d5dc7866c69063"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-old@f4a521c75ecab8a6"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

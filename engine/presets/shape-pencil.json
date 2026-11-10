@@ -1,0 +1,18 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-pencil",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: карандаш",
+  "en": "silhouette: pencil"
+ },
+ "about": {
+  "ru": "сужается к подолу (силуэт О1: форма, к которой тянется ткань)",
+  "en": "narrows toward the hem (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "pencil",
+  "flare": 0.4
+ }
+}

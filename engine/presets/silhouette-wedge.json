@@ -1,0 +1,63 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "silhouette-wedge",
+ "label": {
+  "ru": "силуэт: клин",
+  "en": "silhouette: wedge"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т6: грудь и плечи широкие, ниже — уже",
+  "en": "Т6: a wide chest and shoulders, narrower below"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    {
+     "at": 0,
+     "width": 0.94,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": 0.3,
+     "width": 0.92,
+     "depth": 0.98,
+     "forward": 0
+    },
+    {
+     "at": 0.5,
+     "width": 0.88,
+     "depth": 0.95,
+     "forward": 0
+    },
+    {
+     "at": 0.62,
+     "width": 1.02,
+     "depth": 1.05,
+     "forward": 0
+    },
+    {
+     "at": 0.78,
+     "width": 1.32,
+     "depth": 1.16,
+     "forward": 0
+    },
+    {
+     "at": 0.9,
+     "width": 1.04,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": 1,
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
+   ]
+  }
+ ]
+}

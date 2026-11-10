@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-v1-gwen",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: Гвен: каре с косым пробором",
+  "en": "В1 hairstyle: Gwen: a bob with a deep side part"
+ },
+ "about": {
+  "ru": "светлое каре, длинная чёлка набок через глаз, другая сторона короче — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "a blonde bob, a long fringe swept over one eye, the other side shorter — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "gwen"
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "format": "engine/wrap",
+ "version": 1,
+ "key": "95c9cf50cdd9bf32",
+ "about": "head-jesper: its head wrapped (src/head/wrap.js), by wrapKey",
+ "bin": "95c9cf50cdd9bf32.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  }
+ }
+}

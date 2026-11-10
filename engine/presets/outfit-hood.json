@@ -1,0 +1,45 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-hood",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: женщина в капюшоне",
+  "en": "outfit: hooded woman"
+ },
+ "about": {
+  "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+  "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+ },
+ "clothes": [
+  {
+   "id": "oversized",
+   "kind": "garment",
+   "pattern": "mh-oversized",
+   "fabric": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "color": "#6b5aa8"
+  },
+  {
+   "id": "pants",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#3d3256"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b2530"
+  },
+  {
+   "id": "hood",
+   "kind": "garment",
+   "pattern": "hood",
+   "fabric": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "color": "#a6b4ea",
+   "strength": 0.6
+  }
+ ]
+}

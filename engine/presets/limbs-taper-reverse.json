@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "limbs-taper-reverse",
+ "label": {
+  "ru": "конечности: обратное сужение",
+  "en": "limbs: reverse taper"
+ },
+ "group": "limbs",
+ "about": {
+  "ru": "Т5: тоньше у корня, толще к концу",
+  "en": "Т5: thin at the root, thick at the end"
+ },
+ "changes": [
+  {
+   "kind": "taper",
+   "amount": -0.6
+  }
+ ]
+}

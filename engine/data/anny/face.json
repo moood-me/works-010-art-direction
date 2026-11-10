@@ -1,0 +1,4412 @@
+{
+ "format": "engine/face-targets",
+ "version": 2,
+ "topology": "anny-moood",
+ "unit": 2e-06,
+ "about": "Anny's local changes of the head and face (tools/face_targets.py), on moood's mesh as changes of moood's woman at +1 and −1, sampled through moood's head mapped onto Anny's fitted onto it; i<key>: the vertices moved, p<key>/n<key>: their moves (int16 × unit metres)",
+ "fit": {
+  "stiffness": [
+   30,
+   10,
+   4,
+   2,
+   1,
+   0.5,
+   0.25
+  ],
+  "rounds": 3,
+  "facing": 0.5,
+  "near": 0.012
+ },
+ "changes": [
+  {
+   "name": "chin-bones-incr",
+   "key": 0,
+   "vertices": 3336,
+   "most": 0.01328,
+   "unlinear": 0.01268,
+   "spikes": [
+    10,
+    16
+   ]
+  },
+  {
+   "name": "chin-cleft-incr",
+   "key": 1,
+   "vertices": 66,
+   "most": 0.00297,
+   "unlinear": 0.00283,
+   "spikes": [
+    20,
+    21
+   ]
+  },
+  {
+   "name": "chin-height-incr",
+   "key": 2,
+   "vertices": 8713,
+   "most": 0.01884,
+   "unlinear": 0.01895,
+   "spikes": [
+    38,
+    12
+   ]
+  },
+  {
+   "name": "chin-jaw-drop-incr",
+   "key": 3,
+   "vertices": 348,
+   "most": 0.00157,
+   "unlinear": 0.00118,
+   "spikes": [
+    30,
+    24
+   ]
+  },
+  {
+   "name": "chin-prognathism-incr",
+   "key": 4,
+   "vertices": 2930,
+   "most": 0.00749,
+   "unlinear": 0.00559,
+   "spikes": [
+    39,
+    36
+   ]
+  },
+  {
+   "name": "chin-prominent-incr",
+   "key": 5,
+   "vertices": 2498,
+   "most": 0.01184,
+   "unlinear": 0.00394,
+   "spikes": [
+    4,
+    0
+   ]
+  },
+  {
+   "name": "chin-width-incr",
+   "key": 6,
+   "vertices": 268,
+   "most": 0.01167,
+   "unlinear": 0.00767,
+   "spikes": [
+    0,
+    2
+   ]
+  },
+  {
+   "name": "eyebrows-angle-up",
+   "key": 7,
+   "vertices": 2543,
+   "most": 0.00898,
+   "unlinear": 0.00888,
+   "spikes": [
+    1,
+    19
+   ]
+  },
+  {
+   "name": "eyebrows-trans-forward",
+   "key": 8,
+   "vertices": 2683,
+   "most": 0.01583,
+   "unlinear": 0.01233,
+   "spikes": [
+    17,
+    0
+   ]
+  },
+  {
+   "name": "eyebrows-trans-up",
+   "key": 9,
+   "vertices": 3176,
+   "most": 0.00822,
+   "unlinear": 0.00693,
+   "spikes": [
+    0,
+    2
+   ]
+  },
+  {
+   "name": "forehead-nubian-incr",
+   "key": 10,
+   "vertices": 3457,
+   "most": 0.04603,
+   "unlinear": 0.01196,
+   "spikes": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "forehead-scale-vert-incr",
+   "key": 11,
+   "vertices": 3420,
+   "most": 0.03647,
+   "unlinear": 0.01533,
+   "spikes": [
+    11,
+    9
+   ]
+  },
+  {
+   "name": "forehead-temple-incr",
+   "key": 12,
+   "vertices": 193,
+   "most": 0.00591,
+   "unlinear": 0.00453,
+   "spikes": [
+    2,
+    34
+   ]
+  },
+  {
+   "name": "forehead-trans-forward",
+   "key": 13,
+   "vertices": 3455,
+   "most": 0.01712,
+   "unlinear": 0.00855,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "head-age-incr",
+   "key": 14,
+   "vertices": 3365,
+   "most": 0.00461,
+   "unlinear": 0.00461,
+   "spikes": [
+    4,
+    2
+   ]
+  },
+  {
+   "name": "head-angle-out",
+   "key": 15,
+   "vertices": 8076,
+   "most": 0.02594,
+   "unlinear": 0.01799,
+   "spikes": [
+    41,
+    43
+   ]
+  },
+  {
+   "name": "head-back-scale-depth-incr",
+   "key": 16,
+   "vertices": 3461,
+   "most": 0.02615,
+   "unlinear": 0.0136,
+   "spikes": [
+    14,
+    0
+   ]
+  },
+  {
+   "name": "head-fat-incr",
+   "key": 17,
+   "vertices": 3397,
+   "most": 0.01093,
+   "unlinear": 0.0081,
+   "spikes": [
+    44,
+    16
+   ]
+  },
+  {
+   "name": "head-scale-depth-incr",
+   "key": 18,
+   "vertices": 3458,
+   "most": 0.02043,
+   "unlinear": 0.00549,
+   "spikes": [
+    33,
+    7
+   ]
+  },
+  {
+   "name": "head-scale-horiz-incr",
+   "key": 19,
+   "vertices": 7893,
+   "most": 0.01709,
+   "unlinear": 0.00014,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "head-scale-vert-incr",
+   "key": 20,
+   "vertices": 8458,
+   "most": 0.02336,
+   "unlinear": 0.00159,
+   "spikes": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "head-trans-forward",
+   "key": 21,
+   "vertices": 8969,
+   "most": 0.01689,
+   "unlinear": 0.01288,
+   "spikes": [
+    19,
+    11
+   ]
+  },
+  {
+   "name": "head-trans-out",
+   "key": 22,
+   "vertices": 8937,
+   "most": 0.0103,
+   "unlinear": 0.00626,
+   "spikes": [
+    12,
+    13
+   ]
+  },
+  {
+   "name": "head-trans-up",
+   "key": 23,
+   "vertices": 8842,
+   "most": 0.03034,
+   "unlinear": 0.00177,
+   "spikes": [
+    14,
+    15
+   ]
+  },
+  {
+   "name": "l-cheek-bones-incr",
+   "key": 24,
+   "vertices": 2765,
+   "most": 0.00712,
+   "unlinear": 0.00488,
+   "spikes": [
+    9,
+    0
+   ]
+  },
+  {
+   "name": "l-cheek-inner-incr",
+   "key": 25,
+   "vertices": 993,
+   "most": 0.00653,
+   "unlinear": 0.00423,
+   "spikes": [
+    11,
+    0
+   ]
+  },
+  {
+   "name": "l-cheek-trans-up",
+   "key": 26,
+   "vertices": 2905,
+   "most": 0.00752,
+   "unlinear": 0.00385,
+   "spikes": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "l-cheek-volume-incr",
+   "key": 27,
+   "vertices": 2898,
+   "most": 0.00789,
+   "unlinear": 0.00666,
+   "spikes": [
+    3,
+    10
+   ]
+  },
+  {
+   "name": "l-ear-flap-incr",
+   "key": 28,
+   "vertices": 3033,
+   "most": 0.0132,
+   "unlinear": 0.00904,
+   "spikes": [
+    20,
+    2
+   ]
+  },
+  {
+   "name": "l-ear-lobe-incr",
+   "key": 29,
+   "vertices": 241,
+   "most": 0.00145,
+   "unlinear": 0.00129,
+   "spikes": [
+    14,
+    11
+   ]
+  },
+  {
+   "name": "l-ear-rot-forward",
+   "key": 30,
+   "vertices": 3127,
+   "most": 0.00956,
+   "unlinear": 0.00363,
+   "spikes": [
+    12,
+    9
+   ]
+  },
+  {
+   "name": "l-ear-scale-depth-incr",
+   "key": 31,
+   "vertices": 3065,
+   "most": 0.00623,
+   "unlinear": 5e-05,
+   "spikes": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "l-ear-scale-incr",
+   "key": 32,
+   "vertices": 3177,
+   "most": 0.00965,
+   "unlinear": 0.00069,
+   "spikes": [
+    5,
+    6
+   ]
+  },
+  {
+   "name": "l-ear-scale-vert-incr",
+   "key": 33,
+   "vertices": 3114,
+   "most": 0.00809,
+   "unlinear": 1e-05,
+   "spikes": [
+    10,
+    10
+   ]
+  },
+  {
+   "name": "l-ear-shape-round",
+   "key": 34,
+   "vertices": 2917,
+   "most": 0.00807,
+   "unlinear": 0.00957,
+   "spikes": [
+    18,
+    43
+   ]
+  },
+  {
+   "name": "l-ear-shape-triangle",
+   "key": 35,
+   "vertices": 3081,
+   "most": 0.0184,
+   "unlinear": 0.02616,
+   "spikes": [
+    18,
+    19
+   ]
+  },
+  {
+   "name": "l-ear-trans-forward",
+   "key": 36,
+   "vertices": 3316,
+   "most": 0.01132,
+   "unlinear": 0.00228,
+   "spikes": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "l-ear-trans-up",
+   "key": 37,
+   "vertices": 3303,
+   "most": 0.01877,
+   "unlinear": 0.0007,
+   "spikes": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "l-ear-wing-incr",
+   "key": 38,
+   "vertices": 3098,
+   "most": 0.01139,
+   "unlinear": 0.00431,
+   "spikes": [
+    11,
+    14
+   ]
+  },
+  {
+   "name": "l-eye-bag-height-incr",
+   "key": 39,
+   "vertices": 2278,
+   "most": 0.00661,
+   "unlinear": 0.00189,
+   "spikes": [
+    1,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-bag-incr",
+   "key": 40,
+   "vertices": 59,
+   "most": 0.00073,
+   "unlinear": 0.00074,
+   "spikes": [
+    13,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-bag-out",
+   "key": 41,
+   "vertices": 1443,
+   "most": 0.00357,
+   "unlinear": 0.00277,
+   "spikes": [
+    6,
+    8
+   ]
+  },
+  {
+   "name": "l-eye-corner1-up",
+   "key": 42,
+   "vertices": 2087,
+   "most": 0.00207,
+   "unlinear": 0.00039,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-corner2-up",
+   "key": 43,
+   "vertices": 2134,
+   "most": 0.00246,
+   "unlinear": 0.0,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-epicanthus-out",
+   "key": 44,
+   "vertices": 2879,
+   "most": 0.00576,
+   "unlinear": 0.00522,
+   "spikes": [
+    14,
+    5
+   ]
+  },
+  {
+   "name": "l-eye-eyefold-angle-up",
+   "key": 45,
+   "vertices": 54,
+   "most": 0.00186,
+   "unlinear": 0.00184,
+   "spikes": [
+    4,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-eyefold-up",
+   "key": 46,
+   "vertices": 52,
+   "most": 0.00176,
+   "unlinear": 0.00149,
+   "spikes": [
+    5,
+    9
+   ]
+  },
+  {
+   "name": "l-eye-height1-incr",
+   "key": 47,
+   "vertices": 194,
+   "most": 0.00286,
+   "unlinear": 0.0023,
+   "spikes": [
+    5,
+    2
+   ]
+  },
+  {
+   "name": "l-eye-height2-incr",
+   "key": 48,
+   "vertices": 314,
+   "most": 0.00282,
+   "unlinear": 0.0018,
+   "spikes": [
+    4,
+    2
+   ]
+  },
+  {
+   "name": "l-eye-height3-incr",
+   "key": 49,
+   "vertices": 318,
+   "most": 0.00327,
+   "unlinear": 0.00264,
+   "spikes": [
+    5,
+    6
+   ]
+  },
+  {
+   "name": "l-eye-push1-out",
+   "key": 50,
+   "vertices": 3027,
+   "most": 0.00334,
+   "unlinear": 0.00087,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-push2-out",
+   "key": 51,
+   "vertices": 2963,
+   "most": 0.00293,
+   "unlinear": 0.00129,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-scale-incr",
+   "key": 52,
+   "vertices": 2135,
+   "most": 0.00302,
+   "unlinear": 0.00246,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-trans-out",
+   "key": 53,
+   "vertices": 3126,
+   "most": 0.00416,
+   "unlinear": 0.00106,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "l-eye-trans-up",
+   "key": 54,
+   "vertices": 3159,
+   "most": 0.00575,
+   "unlinear": 0.00302,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "mouth-angles-up",
+   "key": 55,
+   "vertices": 3071,
+   "most": 0.00505,
+   "unlinear": 0.00104,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "mouth-cupidsbow-incr",
+   "key": 56,
+   "vertices": 133,
+   "most": 0.00246,
+   "unlinear": 0.00219,
+   "spikes": [
+    3,
+    0
+   ]
+  },
+  {
+   "name": "mouth-cupidsbow-width-incr",
+   "key": 57,
+   "vertices": 102,
+   "most": 0.00211,
+   "unlinear": 0.00048,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "mouth-dimples-out",
+   "key": 58,
+   "vertices": 58,
+   "most": 0.00108,
+   "unlinear": 0.0011,
+   "spikes": [
+    6,
+    9
+   ]
+  },
+  {
+   "name": "mouth-laugh-lines-out",
+   "key": 59,
+   "vertices": 119,
+   "most": 0.00161,
+   "unlinear": 0.00188,
+   "spikes": [
+    28,
+    16
+   ]
+  },
+  {
+   "name": "mouth-lowerlip-ext-up",
+   "key": 60,
+   "vertices": 267,
+   "most": 0.00348,
+   "unlinear": 0.00216,
+   "spikes": [
+    4,
+    0
+   ]
+  },
+  {
+   "name": "mouth-lowerlip-height-incr",
+   "key": 61,
+   "vertices": 1911,
+   "most": 0.00572,
+   "unlinear": 0.00323,
+   "spikes": [
+    0,
+    1
+   ]
+  },
+  {
+   "name": "mouth-lowerlip-middle-up",
+   "key": 62,
+   "vertices": 215,
+   "most": 0.00458,
+   "unlinear": 0.00438,
+   "spikes": [
+    3,
+    5
+   ]
+  },
+  {
+   "name": "mouth-lowerlip-volume-incr",
+   "key": 63,
+   "vertices": 212,
+   "most": 0.00435,
+   "unlinear": 0.00221,
+   "spikes": [
+    12,
+    3
+   ]
+  },
+  {
+   "name": "mouth-lowerlip-width-incr",
+   "key": 64,
+   "vertices": 221,
+   "most": 0.00588,
+   "unlinear": 0.00179,
+   "spikes": [
+    19,
+    23
+   ]
+  },
+  {
+   "name": "mouth-philtrum-volume-incr",
+   "key": 65,
+   "vertices": 31,
+   "most": 0.00103,
+   "unlinear": 0.00082,
+   "spikes": [
+    3,
+    4
+   ]
+  },
+  {
+   "name": "mouth-scale-depth-incr",
+   "key": 66,
+   "vertices": 1864,
+   "most": 0.00388,
+   "unlinear": 0.00097,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "mouth-scale-horiz-incr",
+   "key": 67,
+   "vertices": 651,
+   "most": 0.00545,
+   "unlinear": 0.00228,
+   "spikes": [
+    4,
+    0
+   ]
+  },
+  {
+   "name": "mouth-scale-vert-incr",
+   "key": 68,
+   "vertices": 2044,
+   "most": 0.00397,
+   "unlinear": 0.00308,
+   "spikes": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "mouth-trans-forward",
+   "key": 69,
+   "vertices": 3139,
+   "most": 0.0102,
+   "unlinear": 0.00386,
+   "spikes": [
+    4,
+    0
+   ]
+  },
+  {
+   "name": "mouth-trans-out",
+   "key": 70,
+   "vertices": 3193,
+   "most": 0.00473,
+   "unlinear": 0.00211,
+   "spikes": [
+    0,
+    1
+   ]
+  },
+  {
+   "name": "mouth-trans-up",
+   "key": 71,
+   "vertices": 3219,
+   "most": 0.00784,
+   "unlinear": 0.00384,
+   "spikes": [
+    2,
+    14
+   ]
+  },
+  {
+   "name": "mouth-upperlip-ext-up",
+   "key": 72,
+   "vertices": 1715,
+   "most": 0.00301,
+   "unlinear": 0.00205,
+   "spikes": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "mouth-upperlip-height-incr",
+   "key": 73,
+   "vertices": 2214,
+   "most": 0.00327,
+   "unlinear": 0.00274,
+   "spikes": [
+    11,
+    0
+   ]
+  },
+  {
+   "name": "mouth-upperlip-middle-up",
+   "key": 74,
+   "vertices": 2158,
+   "most": 0.00353,
+   "unlinear": 0.00232,
+   "spikes": [
+    3,
+    0
+   ]
+  },
+  {
+   "name": "mouth-upperlip-volume-incr",
+   "key": 75,
+   "vertices": 1850,
+   "most": 0.00231,
+   "unlinear": 0.00238,
+   "spikes": [
+    7,
+    0
+   ]
+  },
+  {
+   "name": "mouth-upperlip-width-incr",
+   "key": 76,
+   "vertices": 492,
+   "most": 0.00549,
+   "unlinear": 0.00508,
+   "spikes": [
+    11,
+    4
+   ]
+  },
+  {
+   "name": "nose-base-up",
+   "key": 77,
+   "vertices": 3088,
+   "most": 0.00462,
+   "unlinear": 0.00387,
+   "spikes": [
+    3,
+    9
+   ]
+  },
+  {
+   "name": "nose-compression-uncompress",
+   "key": 78,
+   "vertices": 2030,
+   "most": 0.00523,
+   "unlinear": 0.00452,
+   "spikes": [
+    2,
+    4
+   ]
+  },
+  {
+   "name": "nose-curve-convex",
+   "key": 79,
+   "vertices": 186,
+   "most": 0.00389,
+   "unlinear": 0.00346,
+   "spikes": [
+    19,
+    8
+   ]
+  },
+  {
+   "name": "nose-flaring-incr",
+   "key": 80,
+   "vertices": 194,
+   "most": 0.00381,
+   "unlinear": 0.00291,
+   "spikes": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "nose-greek-incr",
+   "key": 81,
+   "vertices": 46,
+   "most": 0.00304,
+   "unlinear": 0.00223,
+   "spikes": [
+    2,
+    7
+   ]
+  },
+  {
+   "name": "nose-hump-incr",
+   "key": 82,
+   "vertices": 3088,
+   "most": 0.00342,
+   "unlinear": 0.00342,
+   "spikes": [
+    16,
+    5
+   ]
+  },
+  {
+   "name": "nose-nostrils-angle-up",
+   "key": 83,
+   "vertices": 2415,
+   "most": 0.00489,
+   "unlinear": 0.00373,
+   "spikes": [
+    6,
+    16
+   ]
+  },
+  {
+   "name": "nose-nostrils-width-incr",
+   "key": 84,
+   "vertices": 294,
+   "most": 0.00497,
+   "unlinear": 0.0027,
+   "spikes": [
+    2,
+    0
+   ]
+  },
+  {
+   "name": "nose-point-up",
+   "key": 85,
+   "vertices": 2486,
+   "most": 0.01381,
+   "unlinear": 0.01,
+   "spikes": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "nose-point-width-incr",
+   "key": 86,
+   "vertices": 88,
+   "most": 0.00207,
+   "unlinear": 0.00138,
+   "spikes": [
+    0,
+    2
+   ]
+  },
+  {
+   "name": "nose-scale-depth-incr",
+   "key": 87,
+   "vertices": 1981,
+   "most": 0.0117,
+   "unlinear": 0.00754,
+   "spikes": [
+    17,
+    16
+   ]
+  },
+  {
+   "name": "nose-scale-horiz-incr",
+   "key": 88,
+   "vertices": 445,
+   "most": 0.00439,
+   "unlinear": 0.00251,
+   "spikes": [
+    0,
+    14
+   ]
+  },
+  {
+   "name": "nose-scale-vert-incr",
+   "key": 89,
+   "vertices": 3128,
+   "most": 0.00718,
+   "unlinear": 0.00288,
+   "spikes": [
+    5,
+    9
+   ]
+  },
+  {
+   "name": "nose-septumangle-incr",
+   "key": 90,
+   "vertices": 2494,
+   "most": 0.00435,
+   "unlinear": 0.00191,
+   "spikes": [
+    4,
+    0
+   ]
+  },
+  {
+   "name": "nose-trans-forward",
+   "key": 91,
+   "vertices": 1912,
+   "most": 0.0059,
+   "unlinear": 0.00292,
+   "spikes": [
+    4,
+    0
+   ]
+  },
+  {
+   "name": "nose-trans-out",
+   "key": 92,
+   "vertices": 3111,
+   "most": 0.0026,
+   "unlinear": 2e-05,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "nose-trans-up",
+   "key": 93,
+   "vertices": 3124,
+   "most": 0.00374,
+   "unlinear": 0.00227,
+   "spikes": [
+    3,
+    11
+   ]
+  },
+  {
+   "name": "nose-volume-incr",
+   "key": 94,
+   "vertices": 146,
+   "most": 0.00764,
+   "unlinear": 0.01241,
+   "spikes": [
+    6,
+    16
+   ]
+  },
+  {
+   "name": "nose-width1-incr",
+   "key": 95,
+   "vertices": 57,
+   "most": 0.00225,
+   "unlinear": 0.00092,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "nose-width2-incr",
+   "key": 96,
+   "vertices": 86,
+   "most": 0.00236,
+   "unlinear": 0.00133,
+   "spikes": [
+    6,
+    2
+   ]
+  },
+  {
+   "name": "nose-width3-incr",
+   "key": 97,
+   "vertices": 395,
+   "most": 0.00474,
+   "unlinear": 0.00428,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "r-cheek-bones-incr",
+   "key": 98,
+   "vertices": 2765,
+   "most": 0.00712,
+   "unlinear": 0.00489,
+   "spikes": [
+    10,
+    0
+   ]
+  },
+  {
+   "name": "r-cheek-inner-incr",
+   "key": 99,
+   "vertices": 857,
+   "most": 0.0065,
+   "unlinear": 0.00423,
+   "spikes": [
+    8,
+    0
+   ]
+  },
+  {
+   "name": "r-cheek-trans-up",
+   "key": 100,
+   "vertices": 2905,
+   "most": 0.00756,
+   "unlinear": 0.00387,
+   "spikes": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "r-cheek-volume-incr",
+   "key": 101,
+   "vertices": 2898,
+   "most": 0.00788,
+   "unlinear": 0.00667,
+   "spikes": [
+    4,
+    10
+   ]
+  },
+  {
+   "name": "r-ear-flap-incr",
+   "key": 102,
+   "vertices": 3034,
+   "most": 0.01319,
+   "unlinear": 0.00904,
+   "spikes": [
+    20,
+    2
+   ]
+  },
+  {
+   "name": "r-ear-lobe-incr",
+   "key": 103,
+   "vertices": 241,
+   "most": 0.00166,
+   "unlinear": 0.00154,
+   "spikes": [
+    14,
+    10
+   ]
+  },
+  {
+   "name": "r-ear-rot-forward",
+   "key": 104,
+   "vertices": 3125,
+   "most": 0.00956,
+   "unlinear": 0.00364,
+   "spikes": [
+    11,
+    9
+   ]
+  },
+  {
+   "name": "r-ear-scale-depth-incr",
+   "key": 105,
+   "vertices": 3066,
+   "most": 0.00623,
+   "unlinear": 5e-05,
+   "spikes": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "r-ear-scale-incr",
+   "key": 106,
+   "vertices": 3177,
+   "most": 0.00964,
+   "unlinear": 0.00069,
+   "spikes": [
+    5,
+    6
+   ]
+  },
+  {
+   "name": "r-ear-scale-vert-incr",
+   "key": 107,
+   "vertices": 3114,
+   "most": 0.00809,
+   "unlinear": 1e-05,
+   "spikes": [
+    10,
+    10
+   ]
+  },
+  {
+   "name": "r-ear-shape-round",
+   "key": 108,
+   "vertices": 2916,
+   "most": 0.00807,
+   "unlinear": 0.00957,
+   "spikes": [
+    19,
+    44
+   ]
+  },
+  {
+   "name": "r-ear-shape-triangle",
+   "key": 109,
+   "vertices": 3081,
+   "most": 0.01839,
+   "unlinear": 0.02617,
+   "spikes": [
+    18,
+    22
+   ]
+  },
+  {
+   "name": "r-ear-trans-forward",
+   "key": 110,
+   "vertices": 3320,
+   "most": 0.01133,
+   "unlinear": 0.00228,
+   "spikes": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "r-ear-trans-up",
+   "key": 111,
+   "vertices": 3307,
+   "most": 0.01877,
+   "unlinear": 0.00069,
+   "spikes": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "r-ear-wing-incr",
+   "key": 112,
+   "vertices": 3097,
+   "most": 0.01139,
+   "unlinear": 0.00431,
+   "spikes": [
+    12,
+    14
+   ]
+  },
+  {
+   "name": "r-eye-bag-height-incr",
+   "key": 113,
+   "vertices": 2262,
+   "most": 0.00655,
+   "unlinear": 0.0018,
+   "spikes": [
+    1,
+    0
+   ]
+  },
+  {
+   "name": "r-eye-bag-incr",
+   "key": 114,
+   "vertices": 65,
+   "most": 0.00095,
+   "unlinear": 0.00088,
+   "spikes": [
+    13,
+    0
+   ]
+  },
+  {
+   "name": "r-eye-bag-out",
+   "key": 115,
+   "vertices": 1454,
+   "most": 0.00357,
+   "unlinear": 0.00273,
+   "spikes": [
+    5,
+    8
+   ]
+  },
+  {
+   "name": "r-eye-corner1-up",
+   "key": 116,
+   "vertices": 2057,
+   "most": 0.00206,
+   "unlinear": 0.0003,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "r-eye-corner2-up",
+   "key": 117,
+   "vertices": 2135,
+   "most": 0.00246,
+   "unlinear": 0.0,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "r-eye-epicanthus-out",
+   "key": 118,
+   "vertices": 2879,
+   "most": 0.00309,
+   "unlinear": 0.00247,
+   "spikes": [
+    26,
+    4
+   ]
+  },
+  {
+   "name": "r-eye-eyefold-angle-up",
+   "key": 119,
+   "vertices": 50,
+   "most": 0.00165,
+   "unlinear": 0.00161,
+   "spikes": [
+    2,
+    4
+   ]
+  },
+  {
+   "name": "r-eye-eyefold-up",
+   "key": 120,
+   "vertices": 49,
+   "most": 0.00157,
+   "unlinear": 0.00116,
+   "spikes": [
+    2,
+    15
+   ]
+  },
+  {
+   "name": "r-eye-height1-incr",
+   "key": 121,
+   "vertices": 201,
+   "most": 0.00291,
+   "unlinear": 0.00235,
+   "spikes": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "r-eye-height2-incr",
+   "key": 122,
+   "vertices": 313,
+   "most": 0.00284,
+   "unlinear": 0.00177,
+   "spikes": [
+    5,
+    3
+   ]
+  },
+  {
+   "name": "r-eye-height3-incr",
+   "key": 123,
+   "vertices": 327,
+   "most": 0.00337,
+   "unlinear": 0.00263,
+   "spikes": [
+    6,
+    7
+   ]
+  },
+  {
+   "name": "r-eye-push1-out",
+   "key": 124,
+   "vertices": 3026,
+   "most": 0.00334,
+   "unlinear": 0.00086,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "r-eye-push2-out",
+   "key": 125,
+   "vertices": 2963,
+   "most": 0.00294,
+   "unlinear": 0.00129,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "r-eye-scale-incr",
+   "key": 126,
+   "vertices": 2135,
+   "most": 0.00298,
+   "unlinear": 0.0024,
+   "spikes": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "r-eye-trans-out",
+   "key": 127,
+   "vertices": 3126,
+   "most": 0.00416,
+   "unlinear": 0.00106,
+   "spikes": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "r-eye-trans-up",
+   "key": 128,
+   "vertices": 3160,
+   "most": 0.00575,
+   "unlinear": 0.00302,
+   "spikes": [
+    0,
+    0
+   ]
+  }
+ ],
+ "bin": "face.bin",
+ "arrays": {
+  "i0": {
+   "dtype": "uint32",
+   "shape": [
+    3336
+   ],
+   "offset": 0
+  },
+  "p0": {
+   "dtype": "int16",
+   "shape": [
+    3336,
+    3
+   ],
+   "offset": 13344
+  },
+  "n0": {
+   "dtype": "int16",
+   "shape": [
+    3336,
+    3
+   ],
+   "offset": 33360
+  },
+  "i1": {
+   "dtype": "uint32",
+   "shape": [
+    66
+   ],
+   "offset": 53376
+  },
+  "p1": {
+   "dtype": "int16",
+   "shape": [
+    66,
+    3
+   ],
+   "offset": 53640
+  },
+  "n1": {
+   "dtype": "int16",
+   "shape": [
+    66,
+    3
+   ],
+   "offset": 54036
+  },
+  "i2": {
+   "dtype": "uint32",
+   "shape": [
+    8713
+   ],
+   "offset": 54432
+  },
+  "p2": {
+   "dtype": "int16",
+   "shape": [
+    8713,
+    3
+   ],
+   "offset": 89284
+  },
+  "n2": {
+   "dtype": "int16",
+   "shape": [
+    8713,
+    3
+   ],
+   "offset": 141564
+  },
+  "i3": {
+   "dtype": "uint32",
+   "shape": [
+    348
+   ],
+   "offset": 193844
+  },
+  "p3": {
+   "dtype": "int16",
+   "shape": [
+    348,
+    3
+   ],
+   "offset": 195236
+  },
+  "n3": {
+   "dtype": "int16",
+   "shape": [
+    348,
+    3
+   ],
+   "offset": 197324
+  },
+  "i4": {
+   "dtype": "uint32",
+   "shape": [
+    2930
+   ],
+   "offset": 199412
+  },
+  "p4": {
+   "dtype": "int16",
+   "shape": [
+    2930,
+    3
+   ],
+   "offset": 211132
+  },
+  "n4": {
+   "dtype": "int16",
+   "shape": [
+    2930,
+    3
+   ],
+   "offset": 228712
+  },
+  "i5": {
+   "dtype": "uint32",
+   "shape": [
+    2498
+   ],
+   "offset": 246292
+  },
+  "p5": {
+   "dtype": "int16",
+   "shape": [
+    2498,
+    3
+   ],
+   "offset": 256284
+  },
+  "n5": {
+   "dtype": "int16",
+   "shape": [
+    2498,
+    3
+   ],
+   "offset": 271272
+  },
+  "i6": {
+   "dtype": "uint32",
+   "shape": [
+    268
+   ],
+   "offset": 286260
+  },
+  "p6": {
+   "dtype": "int16",
+   "shape": [
+    268,
+    3
+   ],
+   "offset": 287332
+  },
+  "n6": {
+   "dtype": "int16",
+   "shape": [
+    268,
+    3
+   ],
+   "offset": 288940
+  },
+  "i7": {
+   "dtype": "uint32",
+   "shape": [
+    2543
+   ],
+   "offset": 290548
+  },
+  "p7": {
+   "dtype": "int16",
+   "shape": [
+    2543,
+    3
+   ],
+   "offset": 300720
+  },
+  "n7": {
+   "dtype": "int16",
+   "shape": [
+    2543,
+    3
+   ],
+   "offset": 315980
+  },
+  "i8": {
+   "dtype": "uint32",
+   "shape": [
+    2683
+   ],
+   "offset": 331240
+  },
+  "p8": {
+   "dtype": "int16",
+   "shape": [
+    2683,
+    3
+   ],
+   "offset": 341972
+  },
+  "n8": {
+   "dtype": "int16",
+   "shape": [
+    2683,
+    3
+   ],
+   "offset": 358072
+  },
+  "i9": {
+   "dtype": "uint32",
+   "shape": [
+    3176
+   ],
+   "offset": 374172
+  },
+  "p9": {
+   "dtype": "int16",
+   "shape": [
+    3176,
+    3
+   ],
+   "offset": 386876
+  },
+  "n9": {
+   "dtype": "int16",
+   "shape": [
+    3176,
+    3
+   ],
+   "offset": 405932
+  },
+  "i10": {
+   "dtype": "uint32",
+   "shape": [
+    3457
+   ],
+   "offset": 424988
+  },
+  "p10": {
+   "dtype": "int16",
+   "shape": [
+    3457,
+    3
+   ],
+   "offset": 438816
+  },
+  "n10": {
+   "dtype": "int16",
+   "shape": [
+    3457,
+    3
+   ],
+   "offset": 459560
+  },
+  "i11": {
+   "dtype": "uint32",
+   "shape": [
+    3420
+   ],
+   "offset": 480304
+  },
+  "p11": {
+   "dtype": "int16",
+   "shape": [
+    3420,
+    3
+   ],
+   "offset": 493984
+  },
+  "n11": {
+   "dtype": "int16",
+   "shape": [
+    3420,
+    3
+   ],
+   "offset": 514504
+  },
+  "i12": {
+   "dtype": "uint32",
+   "shape": [
+    193
+   ],
+   "offset": 535024
+  },
+  "p12": {
+   "dtype": "int16",
+   "shape": [
+    193,
+    3
+   ],
+   "offset": 535796
+  },
+  "n12": {
+   "dtype": "int16",
+   "shape": [
+    193,
+    3
+   ],
+   "offset": 536956
+  },
+  "i13": {
+   "dtype": "uint32",
+   "shape": [
+    3455
+   ],
+   "offset": 538116
+  },
+  "p13": {
+   "dtype": "int16",
+   "shape": [
+    3455,
+    3
+   ],
+   "offset": 551936
+  },
+  "n13": {
+   "dtype": "int16",
+   "shape": [
+    3455,
+    3
+   ],
+   "offset": 572668
+  },
+  "i14": {
+   "dtype": "uint32",
+   "shape": [
+    3365
+   ],
+   "offset": 593400
+  },
+  "p14": {
+   "dtype": "int16",
+   "shape": [
+    3365,
+    3
+   ],
+   "offset": 606860
+  },
+  "n14": {
+   "dtype": "int16",
+   "shape": [
+    3365,
+    3
+   ],
+   "offset": 627052
+  },
+  "i15": {
+   "dtype": "uint32",
+   "shape": [
+    8076
+   ],
+   "offset": 647244
+  },
+  "p15": {
+   "dtype": "int16",
+   "shape": [
+    8076,
+    3
+   ],
+   "offset": 679548
+  },
+  "n15": {
+   "dtype": "int16",
+   "shape": [
+    8076,
+    3
+   ],
+   "offset": 728004
+  },
+  "i16": {
+   "dtype": "uint32",
+   "shape": [
+    3461
+   ],
+   "offset": 776460
+  },
+  "p16": {
+   "dtype": "int16",
+   "shape": [
+    3461,
+    3
+   ],
+   "offset": 790304
+  },
+  "n16": {
+   "dtype": "int16",
+   "shape": [
+    3461,
+    3
+   ],
+   "offset": 811072
+  },
+  "i17": {
+   "dtype": "uint32",
+   "shape": [
+    3397
+   ],
+   "offset": 831840
+  },
+  "p17": {
+   "dtype": "int16",
+   "shape": [
+    3397,
+    3
+   ],
+   "offset": 845428
+  },
+  "n17": {
+   "dtype": "int16",
+   "shape": [
+    3397,
+    3
+   ],
+   "offset": 865812
+  },
+  "i18": {
+   "dtype": "uint32",
+   "shape": [
+    3458
+   ],
+   "offset": 886196
+  },
+  "p18": {
+   "dtype": "int16",
+   "shape": [
+    3458,
+    3
+   ],
+   "offset": 900028
+  },
+  "n18": {
+   "dtype": "int16",
+   "shape": [
+    3458,
+    3
+   ],
+   "offset": 920776
+  },
+  "i19": {
+   "dtype": "uint32",
+   "shape": [
+    7893
+   ],
+   "offset": 941524
+  },
+  "p19": {
+   "dtype": "int16",
+   "shape": [
+    7893,
+    3
+   ],
+   "offset": 973096
+  },
+  "n19": {
+   "dtype": "int16",
+   "shape": [
+    7893,
+    3
+   ],
+   "offset": 1020456
+  },
+  "i20": {
+   "dtype": "uint32",
+   "shape": [
+    8458
+   ],
+   "offset": 1067816
+  },
+  "p20": {
+   "dtype": "int16",
+   "shape": [
+    8458,
+    3
+   ],
+   "offset": 1101648
+  },
+  "n20": {
+   "dtype": "int16",
+   "shape": [
+    8458,
+    3
+   ],
+   "offset": 1152396
+  },
+  "i21": {
+   "dtype": "uint32",
+   "shape": [
+    8969
+   ],
+   "offset": 1203144
+  },
+  "p21": {
+   "dtype": "int16",
+   "shape": [
+    8969,
+    3
+   ],
+   "offset": 1239020
+  },
+  "n21": {
+   "dtype": "int16",
+   "shape": [
+    8969,
+    3
+   ],
+   "offset": 1292836
+  },
+  "i22": {
+   "dtype": "uint32",
+   "shape": [
+    8937
+   ],
+   "offset": 1346652
+  },
+  "p22": {
+   "dtype": "int16",
+   "shape": [
+    8937,
+    3
+   ],
+   "offset": 1382400
+  },
+  "n22": {
+   "dtype": "int16",
+   "shape": [
+    8937,
+    3
+   ],
+   "offset": 1436024
+  },
+  "i23": {
+   "dtype": "uint32",
+   "shape": [
+    8842
+   ],
+   "offset": 1489648
+  },
+  "p23": {
+   "dtype": "int16",
+   "shape": [
+    8842,
+    3
+   ],
+   "offset": 1525016
+  },
+  "n23": {
+   "dtype": "int16",
+   "shape": [
+    8842,
+    3
+   ],
+   "offset": 1578068
+  },
+  "i24": {
+   "dtype": "uint32",
+   "shape": [
+    2765
+   ],
+   "offset": 1631120
+  },
+  "p24": {
+   "dtype": "int16",
+   "shape": [
+    2765,
+    3
+   ],
+   "offset": 1642180
+  },
+  "n24": {
+   "dtype": "int16",
+   "shape": [
+    2765,
+    3
+   ],
+   "offset": 1658772
+  },
+  "i25": {
+   "dtype": "uint32",
+   "shape": [
+    993
+   ],
+   "offset": 1675364
+  },
+  "p25": {
+   "dtype": "int16",
+   "shape": [
+    993,
+    3
+   ],
+   "offset": 1679336
+  },
+  "n25": {
+   "dtype": "int16",
+   "shape": [
+    993,
+    3
+   ],
+   "offset": 1685296
+  },
+  "i26": {
+   "dtype": "uint32",
+   "shape": [
+    2905
+   ],
+   "offset": 1691256
+  },
+  "p26": {
+   "dtype": "int16",
+   "shape": [
+    2905,
+    3
+   ],
+   "offset": 1702876
+  },
+  "n26": {
+   "dtype": "int16",
+   "shape": [
+    2905,
+    3
+   ],
+   "offset": 1720308
+  },
+  "i27": {
+   "dtype": "uint32",
+   "shape": [
+    2898
+   ],
+   "offset": 1737740
+  },
+  "p27": {
+   "dtype": "int16",
+   "shape": [
+    2898,
+    3
+   ],
+   "offset": 1749332
+  },
+  "n27": {
+   "dtype": "int16",
+   "shape": [
+    2898,
+    3
+   ],
+   "offset": 1766720
+  },
+  "i28": {
+   "dtype": "uint32",
+   "shape": [
+    3033
+   ],
+   "offset": 1784108
+  },
+  "p28": {
+   "dtype": "int16",
+   "shape": [
+    3033,
+    3
+   ],
+   "offset": 1796240
+  },
+  "n28": {
+   "dtype": "int16",
+   "shape": [
+    3033,
+    3
+   ],
+   "offset": 1814440
+  },
+  "i29": {
+   "dtype": "uint32",
+   "shape": [
+    241
+   ],
+   "offset": 1832640
+  },
+  "p29": {
+   "dtype": "int16",
+   "shape": [
+    241,
+    3
+   ],
+   "offset": 1833604
+  },
+  "n29": {
+   "dtype": "int16",
+   "shape": [
+    241,
+    3
+   ],
+   "offset": 1835052
+  },
+  "i30": {
+   "dtype": "uint32",
+   "shape": [
+    3127
+   ],
+   "offset": 1836500
+  },
+  "p30": {
+   "dtype": "int16",
+   "shape": [
+    3127,
+    3
+   ],
+   "offset": 1849008
+  },
+  "n30": {
+   "dtype": "int16",
+   "shape": [
+    3127,
+    3
+   ],
+   "offset": 1867772
+  },
+  "i31": {
+   "dtype": "uint32",
+   "shape": [
+    3065
+   ],
+   "offset": 1886536
+  },
+  "p31": {
+   "dtype": "int16",
+   "shape": [
+    3065,
+    3
+   ],
+   "offset": 1898796
+  },
+  "n31": {
+   "dtype": "int16",
+   "shape": [
+    3065,
+    3
+   ],
+   "offset": 1917188
+  },
+  "i32": {
+   "dtype": "uint32",
+   "shape": [
+    3177
+   ],
+   "offset": 1935580
+  },
+  "p32": {
+   "dtype": "int16",
+   "shape": [
+    3177,
+    3
+   ],
+   "offset": 1948288
+  },
+  "n32": {
+   "dtype": "int16",
+   "shape": [
+    3177,
+    3
+   ],
+   "offset": 1967352
+  },
+  "i33": {
+   "dtype": "uint32",
+   "shape": [
+    3114
+   ],
+   "offset": 1986416
+  },
+  "p33": {
+   "dtype": "int16",
+   "shape": [
+    3114,
+    3
+   ],
+   "offset": 1998872
+  },
+  "n33": {
+   "dtype": "int16",
+   "shape": [
+    3114,
+    3
+   ],
+   "offset": 2017556
+  },
+  "i34": {
+   "dtype": "uint32",
+   "shape": [
+    2917
+   ],
+   "offset": 2036240
+  },
+  "p34": {
+   "dtype": "int16",
+   "shape": [
+    2917,
+    3
+   ],
+   "offset": 2047908
+  },
+  "n34": {
+   "dtype": "int16",
+   "shape": [
+    2917,
+    3
+   ],
+   "offset": 2065412
+  },
+  "i35": {
+   "dtype": "uint32",
+   "shape": [
+    3081
+   ],
+   "offset": 2082916
+  },
+  "p35": {
+   "dtype": "int16",
+   "shape": [
+    3081,
+    3
+   ],
+   "offset": 2095240
+  },
+  "n35": {
+   "dtype": "int16",
+   "shape": [
+    3081,
+    3
+   ],
+   "offset": 2113728
+  },
+  "i36": {
+   "dtype": "uint32",
+   "shape": [
+    3316
+   ],
+   "offset": 2132216
+  },
+  "p36": {
+   "dtype": "int16",
+   "shape": [
+    3316,
+    3
+   ],
+   "offset": 2145480
+  },
+  "n36": {
+   "dtype": "int16",
+   "shape": [
+    3316,
+    3
+   ],
+   "offset": 2165376
+  },
+  "i37": {
+   "dtype": "uint32",
+   "shape": [
+    3303
+   ],
+   "offset": 2185272
+  },
+  "p37": {
+   "dtype": "int16",
+   "shape": [
+    3303,
+    3
+   ],
+   "offset": 2198484
+  },
+  "n37": {
+   "dtype": "int16",
+   "shape": [
+    3303,
+    3
+   ],
+   "offset": 2218304
+  },
+  "i38": {
+   "dtype": "uint32",
+   "shape": [
+    3098
+   ],
+   "offset": 2238124
+  },
+  "p38": {
+   "dtype": "int16",
+   "shape": [
+    3098,
+    3
+   ],
+   "offset": 2250516
+  },
+  "n38": {
+   "dtype": "int16",
+   "shape": [
+    3098,
+    3
+   ],
+   "offset": 2269104
+  },
+  "i39": {
+   "dtype": "uint32",
+   "shape": [
+    2278
+   ],
+   "offset": 2287692
+  },
+  "p39": {
+   "dtype": "int16",
+   "shape": [
+    2278,
+    3
+   ],
+   "offset": 2296804
+  },
+  "n39": {
+   "dtype": "int16",
+   "shape": [
+    2278,
+    3
+   ],
+   "offset": 2310472
+  },
+  "i40": {
+   "dtype": "uint32",
+   "shape": [
+    59
+   ],
+   "offset": 2324140
+  },
+  "p40": {
+   "dtype": "int16",
+   "shape": [
+    59,
+    3
+   ],
+   "offset": 2324376
+  },
+  "n40": {
+   "dtype": "int16",
+   "shape": [
+    59,
+    3
+   ],
+   "offset": 2324732
+  },
+  "i41": {
+   "dtype": "uint32",
+   "shape": [
+    1443
+   ],
+   "offset": 2325088
+  },
+  "p41": {
+   "dtype": "int16",
+   "shape": [
+    1443,
+    3
+   ],
+   "offset": 2330860
+  },
+  "n41": {
+   "dtype": "int16",
+   "shape": [
+    1443,
+    3
+   ],
+   "offset": 2339520
+  },
+  "i42": {
+   "dtype": "uint32",
+   "shape": [
+    2087
+   ],
+   "offset": 2348180
+  },
+  "p42": {
+   "dtype": "int16",
+   "shape": [
+    2087,
+    3
+   ],
+   "offset": 2356528
+  },
+  "n42": {
+   "dtype": "int16",
+   "shape": [
+    2087,
+    3
+   ],
+   "offset": 2369052
+  },
+  "i43": {
+   "dtype": "uint32",
+   "shape": [
+    2134
+   ],
+   "offset": 2381576
+  },
+  "p43": {
+   "dtype": "int16",
+   "shape": [
+    2134,
+    3
+   ],
+   "offset": 2390112
+  },
+  "n43": {
+   "dtype": "int16",
+   "shape": [
+    2134,
+    3
+   ],
+   "offset": 2402916
+  },
+  "i44": {
+   "dtype": "uint32",
+   "shape": [
+    2879
+   ],
+   "offset": 2415720
+  },
+  "p44": {
+   "dtype": "int16",
+   "shape": [
+    2879,
+    3
+   ],
+   "offset": 2427236
+  },
+  "n44": {
+   "dtype": "int16",
+   "shape": [
+    2879,
+    3
+   ],
+   "offset": 2444512
+  },
+  "i45": {
+   "dtype": "uint32",
+   "shape": [
+    54
+   ],
+   "offset": 2461788
+  },
+  "p45": {
+   "dtype": "int16",
+   "shape": [
+    54,
+    3
+   ],
+   "offset": 2462004
+  },
+  "n45": {
+   "dtype": "int16",
+   "shape": [
+    54,
+    3
+   ],
+   "offset": 2462328
+  },
+  "i46": {
+   "dtype": "uint32",
+   "shape": [
+    52
+   ],
+   "offset": 2462652
+  },
+  "p46": {
+   "dtype": "int16",
+   "shape": [
+    52,
+    3
+   ],
+   "offset": 2462860
+  },
+  "n46": {
+   "dtype": "int16",
+   "shape": [
+    52,
+    3
+   ],
+   "offset": 2463172
+  },
+  "i47": {
+   "dtype": "uint32",
+   "shape": [
+    194
+   ],
+   "offset": 2463484
+  },
+  "p47": {
+   "dtype": "int16",
+   "shape": [
+    194,
+    3
+   ],
+   "offset": 2464260
+  },
+  "n47": {
+   "dtype": "int16",
+   "shape": [
+    194,
+    3
+   ],
+   "offset": 2465424
+  },
+  "i48": {
+   "dtype": "uint32",
+   "shape": [
+    314
+   ],
+   "offset": 2466588
+  },
+  "p48": {
+   "dtype": "int16",
+   "shape": [
+    314,
+    3
+   ],
+   "offset": 2467844
+  },
+  "n48": {
+   "dtype": "int16",
+   "shape": [
+    314,
+    3
+   ],
+   "offset": 2469728
+  },
+  "i49": {
+   "dtype": "uint32",
+   "shape": [
+    318
+   ],
+   "offset": 2471612
+  },
+  "p49": {
+   "dtype": "int16",
+   "shape": [
+    318,
+    3
+   ],
+   "offset": 2472884
+  },
+  "n49": {
+   "dtype": "int16",
+   "shape": [
+    318,
+    3
+   ],
+   "offset": 2474792
+  },
+  "i50": {
+   "dtype": "uint32",
+   "shape": [
+    3027
+   ],
+   "offset": 2476700
+  },
+  "p50": {
+   "dtype": "int16",
+   "shape": [
+    3027,
+    3
+   ],
+   "offset": 2488808
+  },
+  "n50": {
+   "dtype": "int16",
+   "shape": [
+    3027,
+    3
+   ],
+   "offset": 2506972
+  },
+  "i51": {
+   "dtype": "uint32",
+   "shape": [
+    2963
+   ],
+   "offset": 2525136
+  },
+  "p51": {
+   "dtype": "int16",
+   "shape": [
+    2963,
+    3
+   ],
+   "offset": 2536988
+  },
+  "n51": {
+   "dtype": "int16",
+   "shape": [
+    2963,
+    3
+   ],
+   "offset": 2554768
+  },
+  "i52": {
+   "dtype": "uint32",
+   "shape": [
+    2135
+   ],
+   "offset": 2572548
+  },
+  "p52": {
+   "dtype": "int16",
+   "shape": [
+    2135,
+    3
+   ],
+   "offset": 2581088
+  },
+  "n52": {
+   "dtype": "int16",
+   "shape": [
+    2135,
+    3
+   ],
+   "offset": 2593900
+  },
+  "i53": {
+   "dtype": "uint32",
+   "shape": [
+    3126
+   ],
+   "offset": 2606712
+  },
+  "p53": {
+   "dtype": "int16",
+   "shape": [
+    3126,
+    3
+   ],
+   "offset": 2619216
+  },
+  "n53": {
+   "dtype": "int16",
+   "shape": [
+    3126,
+    3
+   ],
+   "offset": 2637972
+  },
+  "i54": {
+   "dtype": "uint32",
+   "shape": [
+    3159
+   ],
+   "offset": 2656728
+  },
+  "p54": {
+   "dtype": "int16",
+   "shape": [
+    3159,
+    3
+   ],
+   "offset": 2669364
+  },
+  "n54": {
+   "dtype": "int16",
+   "shape": [
+    3159,
+    3
+   ],
+   "offset": 2688320
+  },
+  "i55": {
+   "dtype": "uint32",
+   "shape": [
+    3071
+   ],
+   "offset": 2707276
+  },
+  "p55": {
+   "dtype": "int16",
+   "shape": [
+    3071,
+    3
+   ],
+   "offset": 2719560
+  },
+  "n55": {
+   "dtype": "int16",
+   "shape": [
+    3071,
+    3
+   ],
+   "offset": 2737988
+  },
+  "i56": {
+   "dtype": "uint32",
+   "shape": [
+    133
+   ],
+   "offset": 2756416
+  },
+  "p56": {
+   "dtype": "int16",
+   "shape": [
+    133,
+    3
+   ],
+   "offset": 2756948
+  },
+  "n56": {
+   "dtype": "int16",
+   "shape": [
+    133,
+    3
+   ],
+   "offset": 2757748
+  },
+  "i57": {
+   "dtype": "uint32",
+   "shape": [
+    102
+   ],
+   "offset": 2758548
+  },
+  "p57": {
+   "dtype": "int16",
+   "shape": [
+    102,
+    3
+   ],
+   "offset": 2758956
+  },
+  "n57": {
+   "dtype": "int16",
+   "shape": [
+    102,
+    3
+   ],
+   "offset": 2759568
+  },
+  "i58": {
+   "dtype": "uint32",
+   "shape": [
+    58
+   ],
+   "offset": 2760180
+  },
+  "p58": {
+   "dtype": "int16",
+   "shape": [
+    58,
+    3
+   ],
+   "offset": 2760412
+  },
+  "n58": {
+   "dtype": "int16",
+   "shape": [
+    58,
+    3
+   ],
+   "offset": 2760760
+  },
+  "i59": {
+   "dtype": "uint32",
+   "shape": [
+    119
+   ],
+   "offset": 2761108
+  },
+  "p59": {
+   "dtype": "int16",
+   "shape": [
+    119,
+    3
+   ],
+   "offset": 2761584
+  },
+  "n59": {
+   "dtype": "int16",
+   "shape": [
+    119,
+    3
+   ],
+   "offset": 2762300
+  },
+  "i60": {
+   "dtype": "uint32",
+   "shape": [
+    267
+   ],
+   "offset": 2763016
+  },
+  "p60": {
+   "dtype": "int16",
+   "shape": [
+    267,
+    3
+   ],
+   "offset": 2764084
+  },
+  "n60": {
+   "dtype": "int16",
+   "shape": [
+    267,
+    3
+   ],
+   "offset": 2765688
+  },
+  "i61": {
+   "dtype": "uint32",
+   "shape": [
+    1911
+   ],
+   "offset": 2767292
+  },
+  "p61": {
+   "dtype": "int16",
+   "shape": [
+    1911,
+    3
+   ],
+   "offset": 2774936
+  },
+  "n61": {
+   "dtype": "int16",
+   "shape": [
+    1911,
+    3
+   ],
+   "offset": 2786404
+  },
+  "i62": {
+   "dtype": "uint32",
+   "shape": [
+    215
+   ],
+   "offset": 2797872
+  },
+  "p62": {
+   "dtype": "int16",
+   "shape": [
+    215,
+    3
+   ],
+   "offset": 2798732
+  },
+  "n62": {
+   "dtype": "int16",
+   "shape": [
+    215,
+    3
+   ],
+   "offset": 2800024
+  },
+  "i63": {
+   "dtype": "uint32",
+   "shape": [
+    212
+   ],
+   "offset": 2801316
+  },
+  "p63": {
+   "dtype": "int16",
+   "shape": [
+    212,
+    3
+   ],
+   "offset": 2802164
+  },
+  "n63": {
+   "dtype": "int16",
+   "shape": [
+    212,
+    3
+   ],
+   "offset": 2803436
+  },
+  "i64": {
+   "dtype": "uint32",
+   "shape": [
+    221
+   ],
+   "offset": 2804708
+  },
+  "p64": {
+   "dtype": "int16",
+   "shape": [
+    221,
+    3
+   ],
+   "offset": 2805592
+  },
+  "n64": {
+   "dtype": "int16",
+   "shape": [
+    221,
+    3
+   ],
+   "offset": 2806920
+  },
+  "i65": {
+   "dtype": "uint32",
+   "shape": [
+    31
+   ],
+   "offset": 2808248
+  },
+  "p65": {
+   "dtype": "int16",
+   "shape": [
+    31,
+    3
+   ],
+   "offset": 2808372
+  },
+  "n65": {
+   "dtype": "int16",
+   "shape": [
+    31,
+    3
+   ],
+   "offset": 2808560
+  },
+  "i66": {
+   "dtype": "uint32",
+   "shape": [
+    1864
+   ],
+   "offset": 2808748
+  },
+  "p66": {
+   "dtype": "int16",
+   "shape": [
+    1864,
+    3
+   ],
+   "offset": 2816204
+  },
+  "n66": {
+   "dtype": "int16",
+   "shape": [
+    1864,
+    3
+   ],
+   "offset": 2827388
+  },
+  "i67": {
+   "dtype": "uint32",
+   "shape": [
+    651
+   ],
+   "offset": 2838572
+  },
+  "p67": {
+   "dtype": "int16",
+   "shape": [
+    651,
+    3
+   ],
+   "offset": 2841176
+  },
+  "n67": {
+   "dtype": "int16",
+   "shape": [
+    651,
+    3
+   ],
+   "offset": 2845084
+  },
+  "i68": {
+   "dtype": "uint32",
+   "shape": [
+    2044
+   ],
+   "offset": 2848992
+  },
+  "p68": {
+   "dtype": "int16",
+   "shape": [
+    2044,
+    3
+   ],
+   "offset": 2857168
+  },
+  "n68": {
+   "dtype": "int16",
+   "shape": [
+    2044,
+    3
+   ],
+   "offset": 2869432
+  },
+  "i69": {
+   "dtype": "uint32",
+   "shape": [
+    3139
+   ],
+   "offset": 2881696
+  },
+  "p69": {
+   "dtype": "int16",
+   "shape": [
+    3139,
+    3
+   ],
+   "offset": 2894252
+  },
+  "n69": {
+   "dtype": "int16",
+   "shape": [
+    3139,
+    3
+   ],
+   "offset": 2913088
+  },
+  "i70": {
+   "dtype": "uint32",
+   "shape": [
+    3193
+   ],
+   "offset": 2931924
+  },
+  "p70": {
+   "dtype": "int16",
+   "shape": [
+    3193,
+    3
+   ],
+   "offset": 2944696
+  },
+  "n70": {
+   "dtype": "int16",
+   "shape": [
+    3193,
+    3
+   ],
+   "offset": 2963856
+  },
+  "i71": {
+   "dtype": "uint32",
+   "shape": [
+    3219
+   ],
+   "offset": 2983016
+  },
+  "p71": {
+   "dtype": "int16",
+   "shape": [
+    3219,
+    3
+   ],
+   "offset": 2995892
+  },
+  "n71": {
+   "dtype": "int16",
+   "shape": [
+    3219,
+    3
+   ],
+   "offset": 3015208
+  },
+  "i72": {
+   "dtype": "uint32",
+   "shape": [
+    1715
+   ],
+   "offset": 3034524
+  },
+  "p72": {
+   "dtype": "int16",
+   "shape": [
+    1715,
+    3
+   ],
+   "offset": 3041384
+  },
+  "n72": {
+   "dtype": "int16",
+   "shape": [
+    1715,
+    3
+   ],
+   "offset": 3051676
+  },
+  "i73": {
+   "dtype": "uint32",
+   "shape": [
+    2214
+   ],
+   "offset": 3061968
+  },
+  "p73": {
+   "dtype": "int16",
+   "shape": [
+    2214,
+    3
+   ],
+   "offset": 3070824
+  },
+  "n73": {
+   "dtype": "int16",
+   "shape": [
+    2214,
+    3
+   ],
+   "offset": 3084108
+  },
+  "i74": {
+   "dtype": "uint32",
+   "shape": [
+    2158
+   ],
+   "offset": 3097392
+  },
+  "p74": {
+   "dtype": "int16",
+   "shape": [
+    2158,
+    3
+   ],
+   "offset": 3106024
+  },
+  "n74": {
+   "dtype": "int16",
+   "shape": [
+    2158,
+    3
+   ],
+   "offset": 3118972
+  },
+  "i75": {
+   "dtype": "uint32",
+   "shape": [
+    1850
+   ],
+   "offset": 3131920
+  },
+  "p75": {
+   "dtype": "int16",
+   "shape": [
+    1850,
+    3
+   ],
+   "offset": 3139320
+  },
+  "n75": {
+   "dtype": "int16",
+   "shape": [
+    1850,
+    3
+   ],
+   "offset": 3150420
+  },
+  "i76": {
+   "dtype": "uint32",
+   "shape": [
+    492
+   ],
+   "offset": 3161520
+  },
+  "p76": {
+   "dtype": "int16",
+   "shape": [
+    492,
+    3
+   ],
+   "offset": 3163488
+  },
+  "n76": {
+   "dtype": "int16",
+   "shape": [
+    492,
+    3
+   ],
+   "offset": 3166440
+  },
+  "i77": {
+   "dtype": "uint32",
+   "shape": [
+    3088
+   ],
+   "offset": 3169392
+  },
+  "p77": {
+   "dtype": "int16",
+   "shape": [
+    3088,
+    3
+   ],
+   "offset": 3181744
+  },
+  "n77": {
+   "dtype": "int16",
+   "shape": [
+    3088,
+    3
+   ],
+   "offset": 3200272
+  },
+  "i78": {
+   "dtype": "uint32",
+   "shape": [
+    2030
+   ],
+   "offset": 3218800
+  },
+  "p78": {
+   "dtype": "int16",
+   "shape": [
+    2030,
+    3
+   ],
+   "offset": 3226920
+  },
+  "n78": {
+   "dtype": "int16",
+   "shape": [
+    2030,
+    3
+   ],
+   "offset": 3239100
+  },
+  "i79": {
+   "dtype": "uint32",
+   "shape": [
+    186
+   ],
+   "offset": 3251280
+  },
+  "p79": {
+   "dtype": "int16",
+   "shape": [
+    186,
+    3
+   ],
+   "offset": 3252024
+  },
+  "n79": {
+   "dtype": "int16",
+   "shape": [
+    186,
+    3
+   ],
+   "offset": 3253140
+  },
+  "i80": {
+   "dtype": "uint32",
+   "shape": [
+    194
+   ],
+   "offset": 3254256
+  },
+  "p80": {
+   "dtype": "int16",
+   "shape": [
+    194,
+    3
+   ],
+   "offset": 3255032
+  },
+  "n80": {
+   "dtype": "int16",
+   "shape": [
+    194,
+    3
+   ],
+   "offset": 3256196
+  },
+  "i81": {
+   "dtype": "uint32",
+   "shape": [
+    46
+   ],
+   "offset": 3257360
+  },
+  "p81": {
+   "dtype": "int16",
+   "shape": [
+    46,
+    3
+   ],
+   "offset": 3257544
+  },
+  "n81": {
+   "dtype": "int16",
+   "shape": [
+    46,
+    3
+   ],
+   "offset": 3257820
+  },
+  "i82": {
+   "dtype": "uint32",
+   "shape": [
+    3088
+   ],
+   "offset": 3258096
+  },
+  "p82": {
+   "dtype": "int16",
+   "shape": [
+    3088,
+    3
+   ],
+   "offset": 3270448
+  },
+  "n82": {
+   "dtype": "int16",
+   "shape": [
+    3088,
+    3
+   ],
+   "offset": 3288976
+  },
+  "i83": {
+   "dtype": "uint32",
+   "shape": [
+    2415
+   ],
+   "offset": 3307504
+  },
+  "p83": {
+   "dtype": "int16",
+   "shape": [
+    2415,
+    3
+   ],
+   "offset": 3317164
+  },
+  "n83": {
+   "dtype": "int16",
+   "shape": [
+    2415,
+    3
+   ],
+   "offset": 3331656
+  },
+  "i84": {
+   "dtype": "uint32",
+   "shape": [
+    294
+   ],
+   "offset": 3346148
+  },
+  "p84": {
+   "dtype": "int16",
+   "shape": [
+    294,
+    3
+   ],
+   "offset": 3347324
+  },
+  "n84": {
+   "dtype": "int16",
+   "shape": [
+    294,
+    3
+   ],
+   "offset": 3349088
+  },
+  "i85": {
+   "dtype": "uint32",
+   "shape": [
+    2486
+   ],
+   "offset": 3350852
+  },
+  "p85": {
+   "dtype": "int16",
+   "shape": [
+    2486,
+    3
+   ],
+   "offset": 3360796
+  },
+  "n85": {
+   "dtype": "int16",
+   "shape": [
+    2486,
+    3
+   ],
+   "offset": 3375712
+  },
+  "i86": {
+   "dtype": "uint32",
+   "shape": [
+    88
+   ],
+   "offset": 3390628
+  },
+  "p86": {
+   "dtype": "int16",
+   "shape": [
+    88,
+    3
+   ],
+   "offset": 3390980
+  },
+  "n86": {
+   "dtype": "int16",
+   "shape": [
+    88,
+    3
+   ],
+   "offset": 3391508
+  },
+  "i87": {
+   "dtype": "uint32",
+   "shape": [
+    1981
+   ],
+   "offset": 3392036
+  },
+  "p87": {
+   "dtype": "int16",
+   "shape": [
+    1981,
+    3
+   ],
+   "offset": 3399960
+  },
+  "n87": {
+   "dtype": "int16",
+   "shape": [
+    1981,
+    3
+   ],
+   "offset": 3411848
+  },
+  "i88": {
+   "dtype": "uint32",
+   "shape": [
+    445
+   ],
+   "offset": 3423736
+  },
+  "p88": {
+   "dtype": "int16",
+   "shape": [
+    445,
+    3
+   ],
+   "offset": 3425516
+  },
+  "n88": {
+   "dtype": "int16",
+   "shape": [
+    445,
+    3
+   ],
+   "offset": 3428188
+  },
+  "i89": {
+   "dtype": "uint32",
+   "shape": [
+    3128
+   ],
+   "offset": 3430860
+  },
+  "p89": {
+   "dtype": "int16",
+   "shape": [
+    3128,
+    3
+   ],
+   "offset": 3443372
+  },
+  "n89": {
+   "dtype": "int16",
+   "shape": [
+    3128,
+    3
+   ],
+   "offset": 3462140
+  },
+  "i90": {
+   "dtype": "uint32",
+   "shape": [
+    2494
+   ],
+   "offset": 3480908
+  },
+  "p90": {
+   "dtype": "int16",
+   "shape": [
+    2494,
+    3
+   ],
+   "offset": 3490884
+  },
+  "n90": {
+   "dtype": "int16",
+   "shape": [
+    2494,
+    3
+   ],
+   "offset": 3505848
+  },
+  "i91": {
+   "dtype": "uint32",
+   "shape": [
+    1912
+   ],
+   "offset": 3520812
+  },
+  "p91": {
+   "dtype": "int16",
+   "shape": [
+    1912,
+    3
+   ],
+   "offset": 3528460
+  },
+  "n91": {
+   "dtype": "int16",
+   "shape": [
+    1912,
+    3
+   ],
+   "offset": 3539932
+  },
+  "i92": {
+   "dtype": "uint32",
+   "shape": [
+    3111
+   ],
+   "offset": 3551404
+  },
+  "p92": {
+   "dtype": "int16",
+   "shape": [
+    3111,
+    3
+   ],
+   "offset": 3563848
+  },
+  "n92": {
+   "dtype": "int16",
+   "shape": [
+    3111,
+    3
+   ],
+   "offset": 3582516
+  },
+  "i93": {
+   "dtype": "uint32",
+   "shape": [
+    3124
+   ],
+   "offset": 3601184
+  },
+  "p93": {
+   "dtype": "int16",
+   "shape": [
+    3124,
+    3
+   ],
+   "offset": 3613680
+  },
+  "n93": {
+   "dtype": "int16",
+   "shape": [
+    3124,
+    3
+   ],
+   "offset": 3632424
+  },
+  "i94": {
+   "dtype": "uint32",
+   "shape": [
+    146
+   ],
+   "offset": 3651168
+  },
+  "p94": {
+   "dtype": "int16",
+   "shape": [
+    146,
+    3
+   ],
+   "offset": 3651752
+  },
+  "n94": {
+   "dtype": "int16",
+   "shape": [
+    146,
+    3
+   ],
+   "offset": 3652628
+  },
+  "i95": {
+   "dtype": "uint32",
+   "shape": [
+    57
+   ],
+   "offset": 3653504
+  },
+  "p95": {
+   "dtype": "int16",
+   "shape": [
+    57,
+    3
+   ],
+   "offset": 3653732
+  },
+  "n95": {
+   "dtype": "int16",
+   "shape": [
+    57,
+    3
+   ],
+   "offset": 3654076
+  },
+  "i96": {
+   "dtype": "uint32",
+   "shape": [
+    86
+   ],
+   "offset": 3654420
+  },
+  "p96": {
+   "dtype": "int16",
+   "shape": [
+    86,
+    3
+   ],
+   "offset": 3654764
+  },
+  "n96": {
+   "dtype": "int16",
+   "shape": [
+    86,
+    3
+   ],
+   "offset": 3655280
+  },
+  "i97": {
+   "dtype": "uint32",
+   "shape": [
+    395
+   ],
+   "offset": 3655796
+  },
+  "p97": {
+   "dtype": "int16",
+   "shape": [
+    395,
+    3
+   ],
+   "offset": 3657376
+  },
+  "n97": {
+   "dtype": "int16",
+   "shape": [
+    395,
+    3
+   ],
+   "offset": 3659748
+  },
+  "i98": {
+   "dtype": "uint32",
+   "shape": [
+    2765
+   ],
+   "offset": 3662120
+  },
+  "p98": {
+   "dtype": "int16",
+   "shape": [
+    2765,
+    3
+   ],
+   "offset": 3673180
+  },
+  "n98": {
+   "dtype": "int16",
+   "shape": [
+    2765,
+    3
+   ],
+   "offset": 3689772
+  },
+  "i99": {
+   "dtype": "uint32",
+   "shape": [
+    857
+   ],
+   "offset": 3706364
+  },
+  "p99": {
+   "dtype": "int16",
+   "shape": [
+    857,
+    3
+   ],
+   "offset": 3709792
+  },
+  "n99": {
+   "dtype": "int16",
+   "shape": [
+    857,
+    3
+   ],
+   "offset": 3714936
+  },
+  "i100": {
+   "dtype": "uint32",
+   "shape": [
+    2905
+   ],
+   "offset": 3720080
+  },
+  "p100": {
+   "dtype": "int16",
+   "shape": [
+    2905,
+    3
+   ],
+   "offset": 3731700
+  },
+  "n100": {
+   "dtype": "int16",
+   "shape": [
+    2905,
+    3
+   ],
+   "offset": 3749132
+  },
+  "i101": {
+   "dtype": "uint32",
+   "shape": [
+    2898
+   ],
+   "offset": 3766564
+  },
+  "p101": {
+   "dtype": "int16",
+   "shape": [
+    2898,
+    3
+   ],
+   "offset": 3778156
+  },
+  "n101": {
+   "dtype": "int16",
+   "shape": [
+    2898,
+    3
+   ],
+   "offset": 3795544
+  },
+  "i102": {
+   "dtype": "uint32",
+   "shape": [
+    3034
+   ],
+   "offset": 3812932
+  },
+  "p102": {
+   "dtype": "int16",
+   "shape": [
+    3034,
+    3
+   ],
+   "offset": 3825068
+  },
+  "n102": {
+   "dtype": "int16",
+   "shape": [
+    3034,
+    3
+   ],
+   "offset": 3843272
+  },
+  "i103": {
+   "dtype": "uint32",
+   "shape": [
+    241
+   ],
+   "offset": 3861476
+  },
+  "p103": {
+   "dtype": "int16",
+   "shape": [
+    241,
+    3
+   ],
+   "offset": 3862440
+  },
+  "n103": {
+   "dtype": "int16",
+   "shape": [
+    241,
+    3
+   ],
+   "offset": 3863888
+  },
+  "i104": {
+   "dtype": "uint32",
+   "shape": [
+    3125
+   ],
+   "offset": 3865336
+  },
+  "p104": {
+   "dtype": "int16",
+   "shape": [
+    3125,
+    3
+   ],
+   "offset": 3877836
+  },
+  "n104": {
+   "dtype": "int16",
+   "shape": [
+    3125,
+    3
+   ],
+   "offset": 3896588
+  },
+  "i105": {
+   "dtype": "uint32",
+   "shape": [
+    3066
+   ],
+   "offset": 3915340
+  },
+  "p105": {
+   "dtype": "int16",
+   "shape": [
+    3066,
+    3
+   ],
+   "offset": 3927604
+  },
+  "n105": {
+   "dtype": "int16",
+   "shape": [
+    3066,
+    3
+   ],
+   "offset": 3946000
+  },
+  "i106": {
+   "dtype": "uint32",
+   "shape": [
+    3177
+   ],
+   "offset": 3964396
+  },
+  "p106": {
+   "dtype": "int16",
+   "shape": [
+    3177,
+    3
+   ],
+   "offset": 3977104
+  },
+  "n106": {
+   "dtype": "int16",
+   "shape": [
+    3177,
+    3
+   ],
+   "offset": 3996168
+  },
+  "i107": {
+   "dtype": "uint32",
+   "shape": [
+    3114
+   ],
+   "offset": 4015232
+  },
+  "p107": {
+   "dtype": "int16",
+   "shape": [
+    3114,
+    3
+   ],
+   "offset": 4027688
+  },
+  "n107": {
+   "dtype": "int16",
+   "shape": [
+    3114,
+    3
+   ],
+   "offset": 4046372
+  },
+  "i108": {
+   "dtype": "uint32",
+   "shape": [
+    2916
+   ],
+   "offset": 4065056
+  },
+  "p108": {
+   "dtype": "int16",
+   "shape": [
+    2916,
+    3
+   ],
+   "offset": 4076720
+  },
+  "n108": {
+   "dtype": "int16",
+   "shape": [
+    2916,
+    3
+   ],
+   "offset": 4094216
+  },
+  "i109": {
+   "dtype": "uint32",
+   "shape": [
+    3081
+   ],
+   "offset": 4111712
+  },
+  "p109": {
+   "dtype": "int16",
+   "shape": [
+    3081,
+    3
+   ],
+   "offset": 4124036
+  },
+  "n109": {
+   "dtype": "int16",
+   "shape": [
+    3081,
+    3
+   ],
+   "offset": 4142524
+  },
+  "i110": {
+   "dtype": "uint32",
+   "shape": [
+    3320
+   ],
+   "offset": 4161012
+  },
+  "p110": {
+   "dtype": "int16",
+   "shape": [
+    3320,
+    3
+   ],
+   "offset": 4174292
+  },
+  "n110": {
+   "dtype": "int16",
+   "shape": [
+    3320,
+    3
+   ],
+   "offset": 4194212
+  },
+  "i111": {
+   "dtype": "uint32",
+   "shape": [
+    3307
+   ],
+   "offset": 4214132
+  },
+  "p111": {
+   "dtype": "int16",
+   "shape": [
+    3307,
+    3
+   ],
+   "offset": 4227360
+  },
+  "n111": {
+   "dtype": "int16",
+   "shape": [
+    3307,
+    3
+   ],
+   "offset": 4247204
+  },
+  "i112": {
+   "dtype": "uint32",
+   "shape": [
+    3097
+   ],
+   "offset": 4267048
+  },
+  "p112": {
+   "dtype": "int16",
+   "shape": [
+    3097,
+    3
+   ],
+   "offset": 4279436
+  },
+  "n112": {
+   "dtype": "int16",
+   "shape": [
+    3097,
+    3
+   ],
+   "offset": 4298020
+  },
+  "i113": {
+   "dtype": "uint32",
+   "shape": [
+    2262
+   ],
+   "offset": 4316604
+  },
+  "p113": {
+   "dtype": "int16",
+   "shape": [
+    2262,
+    3
+   ],
+   "offset": 4325652
+  },
+  "n113": {
+   "dtype": "int16",
+   "shape": [
+    2262,
+    3
+   ],
+   "offset": 4339224
+  },
+  "i114": {
+   "dtype": "uint32",
+   "shape": [
+    65
+   ],
+   "offset": 4352796
+  },
+  "p114": {
+   "dtype": "int16",
+   "shape": [
+    65,
+    3
+   ],
+   "offset": 4353056
+  },
+  "n114": {
+   "dtype": "int16",
+   "shape": [
+    65,
+    3
+   ],
+   "offset": 4353448
+  },
+  "i115": {
+   "dtype": "uint32",
+   "shape": [
+    1454
+   ],
+   "offset": 4353840
+  },
+  "p115": {
+   "dtype": "int16",
+   "shape": [
+    1454,
+    3
+   ],
+   "offset": 4359656
+  },
+  "n115": {
+   "dtype": "int16",
+   "shape": [
+    1454,
+    3
+   ],
+   "offset": 4368380
+  },
+  "i116": {
+   "dtype": "uint32",
+   "shape": [
+    2057
+   ],
+   "offset": 4377104
+  },
+  "p116": {
+   "dtype": "int16",
+   "shape": [
+    2057,
+    3
+   ],
+   "offset": 4385332
+  },
+  "n116": {
+   "dtype": "int16",
+   "shape": [
+    2057,
+    3
+   ],
+   "offset": 4397676
+  },
+  "i117": {
+   "dtype": "uint32",
+   "shape": [
+    2135
+   ],
+   "offset": 4410020
+  },
+  "p117": {
+   "dtype": "int16",
+   "shape": [
+    2135,
+    3
+   ],
+   "offset": 4418560
+  },
+  "n117": {
+   "dtype": "int16",
+   "shape": [
+    2135,
+    3
+   ],
+   "offset": 4431372
+  },
+  "i118": {
+   "dtype": "uint32",
+   "shape": [
+    2879
+   ],
+   "offset": 4444184
+  },
+  "p118": {
+   "dtype": "int16",
+   "shape": [
+    2879,
+    3
+   ],
+   "offset": 4455700
+  },
+  "n118": {
+   "dtype": "int16",
+   "shape": [
+    2879,
+    3
+   ],
+   "offset": 4472976
+  },
+  "i119": {
+   "dtype": "uint32",
+   "shape": [
+    50
+   ],
+   "offset": 4490252
+  },
+  "p119": {
+   "dtype": "int16",
+   "shape": [
+    50,
+    3
+   ],
+   "offset": 4490452
+  },
+  "n119": {
+   "dtype": "int16",
+   "shape": [
+    50,
+    3
+   ],
+   "offset": 4490752
+  },
+  "i120": {
+   "dtype": "uint32",
+   "shape": [
+    49
+   ],
+   "offset": 4491052
+  },
+  "p120": {
+   "dtype": "int16",
+   "shape": [
+    49,
+    3
+   ],
+   "offset": 4491248
+  },
+  "n120": {
+   "dtype": "int16",
+   "shape": [
+    49,
+    3
+   ],
+   "offset": 4491544
+  },
+  "i121": {
+   "dtype": "uint32",
+   "shape": [
+    201
+   ],
+   "offset": 4491840
+  },
+  "p121": {
+   "dtype": "int16",
+   "shape": [
+    201,
+    3
+   ],
+   "offset": 4492644
+  },
+  "n121": {
+   "dtype": "int16",
+   "shape": [
+    201,
+    3
+   ],
+   "offset": 4493852
+  },
+  "i122": {
+   "dtype": "uint32",
+   "shape": [
+    313
+   ],
+   "offset": 4495060
+  },
+  "p122": {
+   "dtype": "int16",
+   "shape": [
+    313,
+    3
+   ],
+   "offset": 4496312
+  },
+  "n122": {
+   "dtype": "int16",
+   "shape": [
+    313,
+    3
+   ],
+   "offset": 4498192
+  },
+  "i123": {
+   "dtype": "uint32",
+   "shape": [
+    327
+   ],
+   "offset": 4500072
+  },
+  "p123": {
+   "dtype": "int16",
+   "shape": [
+    327,
+    3
+   ],
+   "offset": 4501380
+  },
+  "n123": {
+   "dtype": "int16",
+   "shape": [
+    327,
+    3
+   ],
+   "offset": 4503344
+  },
+  "i124": {
+   "dtype": "uint32",
+   "shape": [
+    3026
+   ],
+   "offset": 4505308
+  },
+  "p124": {
+   "dtype": "int16",
+   "shape": [
+    3026,
+    3
+   ],
+   "offset": 4517412
+  },
+  "n124": {
+   "dtype": "int16",
+   "shape": [
+    3026,
+    3
+   ],
+   "offset": 4535568
+  },
+  "i125": {
+   "dtype": "uint32",
+   "shape": [
+    2963
+   ],
+   "offset": 4553724
+  },
+  "p125": {
+   "dtype": "int16",
+   "shape": [
+    2963,
+    3
+   ],
+   "offset": 4565576
+  },
+  "n125": {
+   "dtype": "int16",
+   "shape": [
+    2963,
+    3
+   ],
+   "offset": 4583356
+  },
+  "i126": {
+   "dtype": "uint32",
+   "shape": [
+    2135
+   ],
+   "offset": 4601136
+  },
+  "p126": {
+   "dtype": "int16",
+   "shape": [
+    2135,
+    3
+   ],
+   "offset": 4609676
+  },
+  "n126": {
+   "dtype": "int16",
+   "shape": [
+    2135,
+    3
+   ],
+   "offset": 4622488
+  },
+  "i127": {
+   "dtype": "uint32",
+   "shape": [
+    3126
+   ],
+   "offset": 4635300
+  },
+  "p127": {
+   "dtype": "int16",
+   "shape": [
+    3126,
+    3
+   ],
+   "offset": 4647804
+  },
+  "n127": {
+   "dtype": "int16",
+   "shape": [
+    3126,
+    3
+   ],
+   "offset": 4666560
+  },
+  "i128": {
+   "dtype": "uint32",
+   "shape": [
+    3160
+   ],
+   "offset": 4685316
+  },
+  "p128": {
+   "dtype": "int16",
+   "shape": [
+    3160,
+    3
+   ],
+   "offset": 4697956
+  },
+  "n128": {
+   "dtype": "int16",
+   "shape": [
+    3160,
+    3
+   ],
+   "offset": 4716916
+  }
+ }
+}

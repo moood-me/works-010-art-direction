@@ -1,0 +1,71 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "features-alva",
+ "group": "features",
+ "label": {
+  "ru": "черты: Альва",
+  "en": "features: Alva"
+ },
+ "about": {
+  "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.4,
+   "y": -0.34,
+   "w": 0.32,
+   "h": 0.17,
+   "tilt": 0.02,
+   "iris": [
+    "#3a2418",
+    "#7a5038"
+   ],
+   "lash": "#2a1a14",
+   "lashW": 0.045,
+   "wing": 0.08,
+   "lower": 0.2,
+   "glints": 1,
+   "crease": true,
+   "irisScale": 0.75
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.12,
+   "x1": 0.66,
+   "y0": -0.1,
+   "y1": -0.07,
+   "arch": 0.05,
+   "peak": 0.55,
+   "w0": 0.035,
+   "w1": 0.01,
+   "color": "#6a4a24"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.88,
+   "w": 0.13,
+   "sag": 0,
+   "corners": 0.01,
+   "upper": 0.012,
+   "lower": 0.022,
+   "lip": "#c8706a",
+   "line": "#7a3a36",
+   "lineW": 0.012
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.3
+  }
+ ]
+}

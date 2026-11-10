@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-v1-kbuns",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: K-pop: два пучка",
+  "en": "В1 hairstyle: K-pop: two buns"
+ },
+ "about": {
+  "ru": "гладкие тёмно-синие, короткая чёлка, два пучка низко сзади — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "sleek dark blue hair, a short fringe, two buns low at the back — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "kbuns"
+  }
+ ]
+}

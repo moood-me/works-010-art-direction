@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-of-toddler",
+ "group": "head-form",
+ "label": {
+  "ru": "голова малыша",
+  "en": "a toddler's head"
+ },
+ "about": {
+  "ru": "голова другого возраста: голова малыша Anny на этом теле, в размер его головы",
+  "en": "a head of another age: Anny's toddler's head on this body, as big as its own"
+ },
+ "changes": [
+  {
+   "kind": "headOf",
+   "body": "anny-f-toddler@740a50f9059193e4",
+   "size": 1.05
+  }
+ ]
+}

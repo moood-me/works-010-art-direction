@@ -1,0 +1,60 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "anime-girl",
+ "label": {
+  "ru": "Аниме: девушка",
+  "en": "Anime: a girl"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "smooth-4cm@ee31c824e0a00e1b",
+   "strength": 0.9,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-long-legs@9d1c58118eefc1a2",
+   "strength": 0.8,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "contour-anime@25302c7a10ef9724",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "masses-anime-bust@50b497261d39c34c",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "masses-shoulders@24985df2002c8feb",
+   "strength": 0.7,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-small-hands-feet@b1a1b04ba231cc0c",
+   "strength": 0.5,
+   "frames": "keep"
+  }
+ ],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#f1cdb2",
+  "roughness": 0.65
+ }
+}

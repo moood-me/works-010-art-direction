@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-neoprene",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: неопрен",
+  "en": "fabric: neoprene"
+ },
+ "about": {
+  "ru": "толстый, упругий, держит форму (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "thick, springy, keeps its shape (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.9,
+  "stretch": 150,
+  "compress": 0.5,
+  "bend": 0.0002,
+  "damping": 1,
+  "friction": 0.7,
+  "thick": 0.0035,
+  "air": 1,
+  "sheen": 0.1,
+  "rough": 0.6
+ }
+}

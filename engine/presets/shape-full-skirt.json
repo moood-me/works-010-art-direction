@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-full-skirt",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: пышная юбка",
+  "en": "silhouette: full skirt"
+ },
+ "about": {
+  "ru": "пышная, длиннее, глубокие складки (силуэт О1: форма, к которой тянется ткань)",
+  "en": "full, longer, deep folds (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "full",
+  "flare": 0.9,
+  "folds": 0.35,
+  "foldN": 11,
+  "length": 1.15
+ }
+}

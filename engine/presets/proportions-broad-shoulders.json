@@ -1,0 +1,32 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "proportions-broad-shoulders",
+ "label": {
+  "ru": "пропорции: широкие плечи",
+  "en": "proportions: broad shoulders"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: ключицы длиннее (руки дальше от шеи), плечо чуть полнее; Т7: шапка плеча и скат от шеи — плечо круглое, без угла",
+  "en": "Т1: longer collarbones (the arms farther from the neck), a slightly fuller upper arm; Т7: the shoulder's cap and its slope from the neck — a round shoulder, no corner"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "clav": {
+     "length": 1.25
+    },
+    "arm": {
+     "width": 1.06
+    }
+   }
+  },
+  {
+   "kind": "preset",
+   "id": "masses-shoulders@24985df2002c8feb",
+   "strength": 0.8
+  }
+ ]
+}

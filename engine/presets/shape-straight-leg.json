@@ -1,0 +1,17 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-straight-leg",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: прямые штанины",
+  "en": "silhouette: straight legs"
+ },
+ "about": {
+  "ru": "штанины прямые, ткань мостом (силуэт О1: форма, к которой тянется ткань)",
+  "en": "straight legs, the cloth bridging (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "leg": "straight"
+ }
+}

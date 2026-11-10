@@ -1,0 +1,44 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-hood",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: женщина в капюшоне",
+  "en": "hair: hooded woman"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#1e1a26",
+   "parts": [
+    [
+     "cap",
+     {
+      "front": 0.3
+     }
+    ],
+    [
+     "sides",
+     {
+      "n": 2,
+      "len": 2,
+      "w": 0.22,
+      "z": 0.3
+     }
+    ],
+    [
+     "bangsSide",
+     {
+      "n": 5
+     }
+    ]
+   ]
+  }
+ ]
+}

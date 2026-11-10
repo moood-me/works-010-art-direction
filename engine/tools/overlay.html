@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Head overlay check</title>
+<style>html, body { margin: 0; background: #fff; } canvas { display: block; }</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<script type="module">
+// The overlay check's page (tools/overlay.mjs): a character's head seen at its picture's angle, its landmarks projected,
+// laid over the picture by the similarity that best carries them onto the picture's own landmarks; the error in the
+// picture's pixels. The head's landmarks are what a person sees: the eyes' and the mouth's — where the drawn features
+// are on the skin (their places in the face's picture, found on the head's triangles), the nose's tip — of a nose piece
+// when it has one, the chin — of the skin. What is drawn: the picture, the face's outline without its pieces (hair,
+// headwear) over it (orange), the picture's points (blue) and the head's (orange) joined by a line.
+import * as THREE from 'three';
+import { createEngine } from '../src/engine.js';
+import { makeStage, figureView } from '../src/view3d.js';
+import { landmarksOf } from '../src/head/face.js';
+import { SPAN, CY, mouthLines, grinLines } from '../src/head/paint.js';
+const E = await createEngine(), S = 512, stage = makeStage(THREE, document.getElementById('cv'), { background: '#ffffff' });
+stage.floor.visible = false;
+const KEYS = ['eL', 'eR', 'tip', 'mouth', 'mL', 'mR', 'chin'];
+// where (x, y) of the face's picture is on the skin (the front-most triangle showing it there), or null
+function onSkin(mesh, P, x, y) {
+  const T = mesh.triangles, u = 0.5 + x / (2 * SPAN), v = 0.5 + (y - CY) / (2 * SPAN), U = mesh.uv; let best = null;
+  for (let t = 0; t < T.length; t += 3) {
+    const a = T[t], b = T[t + 1], c = T[t + 2]; if (Math.min(mesh.paintMask[a], mesh.paintMask[b], mesh.paintMask[c]) < 0.05) continue;
+    const d = (U[b * 2 + 1] - U[c * 2 + 1]) * (U[a * 2] - U[c * 2]) + (U[c * 2] - U[b * 2]) * (U[a * 2 + 1] - U[c * 2 + 1]); if (Math.abs(d) < 1e-14) continue;
+    const w0 = ((U[b * 2 + 1] - U[c * 2 + 1]) * (u - U[c * 2]) + (U[c * 2] - U[b * 2]) * (v - U[c * 2 + 1])) / d, w1 = ((U[c * 2 + 1] - U[a * 2 + 1]) * (u - U[c * 2]) + (U[a * 2] - U[c * 2]) * (v - U[c * 2 + 1])) / d, w2 = 1 - w0 - w1;
+    if (w0 < 0 || w1 < 0 || w2 < 0) continue;
+    const p = [0, 1, 2].map(k => w0 * P[a * 3 + k] + w1 * P[b * 3 + k] + w2 * P[c * 3 + k]); if (!best || p[2] > best[2]) best = p;
+  }
+  return best;
+}
+window.overlay = async (char, fitView) => {
+  const spec = await E.character(char), ref = spec.head?.ref; if (!ref?.points) throw new Error(`${char}: its head has no picture with landmarks (head.ref)`);
+  const fig = await E.figure(spec); fig.frame(null, 0, fig.pose);
+  const view = figureView(THREE, fig, spec.look); view.update(); stage.scene.add(view.group);
+  const L = landmarksOf(fig.body), mesh = fig.body.mesh, P = fig.outputs[0].positions, keys = KEYS.filter(k => k in ref.points);
+  const eye = fig.body.head.features.find(f => f.kind === 'eye'), mouth = fig.body.head.features.find(f => f.kind === 'mouth' && f.type !== 'none');
+  const ends = mouth ? (mouth.type === 'grin' ? (({ top }) => [top[0], top[top.length - 1]])(grinLines(mouth)) : (({ line }) => [line[0], line[line.length - 1]])(mouthLines(mouth))) : null;
+  const nose = fig.outputs.find(o => o.name === 'nose'), skin = i => [P[i * 3], P[i * 3 + 1], P[i * 3 + 2]];
+  let tip = skin(L.noseTip); if (nose) for (const i of nose.mesh.used) if (nose.positions[i * 3 + 2] > tip[2]) tip = [nose.positions[i * 3], nose.positions[i * 3 + 1], nose.positions[i * 3 + 2]];
+  const place = { eL: eye && onSkin(mesh, P, eye.x, eye.y), eR: eye && onSkin(mesh, P, -eye.x, eye.y), tip, mouth: mouth && onSkin(mesh, P, 0, mouth.y), mL: ends && onSkin(mesh, P, ...ends[1]), mR: ends && onSkin(mesh, P, ...ends[0]), chin: skin(L.chin) };
+  for (const k of keys) if (!place[k]) throw new Error(`${char}: no ${k} drawn on its face to lay on the picture's`);
+  const at = k => new THREE.Vector3(...place[k]);
+  // the face's outline: without its pieces
+  for (const p of view.parts) if (p.o?.mesh.piece) p.mesh.visible = false;
+  const H = E.skeleton.index.Head, hh = fig.body.measures.headHeight, c = [fig.pose.P[H * 3], fig.pose.P[H * 3 + 1] + hh * 0.35, fig.pose.P[H * 3 + 2]];
+  const box = { center: c, min: c.map(v => v - hh * 0.8), max: c.map(v => v + hh * 0.8), size: [1, 1, 1].map(() => hh * 1.6) };
+  stage.size(S, S);
+  // a view: its projected landmarks (pixels of the render), the similarity onto the picture's, the error
+  const B = keys.map(k => ref.points[k]);
+  const solve = (yaw, pitch) => {
+    const cam = { yaw, pitch }, { target, dist } = stage.fit(box, { ...cam, margin: 0.04 }); stage.look(target, { ...cam, dist }); stage.camera.updateMatrixWorld();
+    const A = keys.map(k => { const v = at(k).project(stage.camera); return [(v.x + 1) / 2 * S, (1 - v.y) / 2 * S]; });
+    const ma = mean(A), mb = mean(B), Ac = A.map(p => [p[0] - ma[0], p[1] - ma[1]]), Bc = B.map(p => [p[0] - mb[0], p[1] - mb[1]]);
+    const n2 = Ac.reduce((s, p) => s + p[0] * p[0] + p[1] * p[1], 0), a = Ac.reduce((s, p, i) => s + p[0] * Bc[i][0] + p[1] * Bc[i][1], 0) / n2, b = Ac.reduce((s, p, i) => s + p[0] * Bc[i][1] - p[1] * Bc[i][0], 0) / n2;
+    const to = p => [a * (p[0] - ma[0]) - b * (p[1] - ma[1]) + mb[0], b * (p[0] - ma[0]) + a * (p[1] - ma[1]) + mb[1]];
+    const err = A.map((p, i) => { const q = to(p); return Math.hypot(q[0] - B[i][0], q[1] - B[i][1]); });
+    return { yaw, pitch, A, to, a, b, err, rms: Math.sqrt(err.reduce((s, e) => s + e * e, 0) / err.length) };
+  };
+  let best = solve(ref.view?.yaw ?? 0, ref.view?.pitch ?? 0);
+  if (fitView) for (let step = 0.2; step > 0.004; step /= 2) for (let k = 0; k < 6; k++) {
+    let moved = false;
+    for (const [dy, dp] of [[step, 0], [-step, 0], [0, step / 2], [0, -step / 2]]) { const s = solve(best.yaw + dy, best.pitch + dp); if (s.rms < best.rms) { best = s; moved = true; } }
+    if (!moved) break;
+  }
+  best = solve(best.yaw, best.pitch);
+  stage.light(fig.bounds()); stage.render();
+  // the render's silhouette (against the white), carried onto the picture
+  const r = document.createElement('canvas'); r.width = r.height = S; r.getContext('2d').drawImage(stage.renderer.domElement, 0, 0, S, S);
+  const px = r.getContext('2d').getImageData(0, 0, S, S).data, inside = (x, y) => { const i = (y * S + x) * 4; return px[i] + px[i + 1] + px[i + 2] < 750; };
+  const img = new Image(); img.src = `../../docs/pictures/references/${ref.image}`; await img.decode();
+  // the part of the picture shown: its crop, or a box round the landmarks as big as the head
+  const span = Math.max(...B.map(p => p[1])) - Math.min(...B.map(p => p[1])), m = mean(B);
+  const [x0, y0, x1, y1] = ref.crop ?? [m[0] - 1.6 * span, m[1] - 2.2 * span, m[0] + 1.6 * span, m[1] + 1.4 * span].map(Math.round);
+  const k = 640 / Math.max(x1 - x0, y1 - y0), out = document.createElement('canvas'); out.width = Math.round((x1 - x0) * k); out.height = Math.round((y1 - y0) * k); const g = out.getContext('2d');
+  g.imageSmoothingEnabled = true; g.fillStyle = '#ffffff'; g.fillRect(0, 0, out.width, out.height); g.drawImage(img, x0, y0, x1 - x0, y1 - y0, 0, 0, out.width, out.height);
+  g.fillStyle = 'rgba(255,255,255,0.25)'; g.fillRect(0, 0, out.width, out.height); g.translate(-x0 * k, -y0 * k);
+  g.fillStyle = '#e0592a';
+  for (let y = 1; y < S - 1; y++) for (let x = 1; x < S - 1; x++) if (inside(x, y) && (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1))) { const q = best.to([x, y]); g.fillRect(q[0] * k - 1.5, q[1] * k - 1.5, 3, 3); }
+  keys.forEach((key, i) => {
+    const q = best.to(best.A[i]), p = B[i];
+    g.strokeStyle = '#e0592a'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(q[0] * k, q[1] * k); g.lineTo(p[0] * k, p[1] * k); g.stroke();
+    g.fillStyle = '#2a7ab4'; g.beginPath(); g.arc(p[0] * k, p[1] * k, 3, 0, 7); g.fill();
+    g.fillStyle = '#e0592a'; g.beginPath(); g.arc(q[0] * k, q[1] * k, 3, 0, 7); g.fill();
+  });
+  stage.scene.remove(view.group); view.dispose();
+  return { png: out.toDataURL('image/png').split(',')[1], yaw: best.yaw, pitch: best.pitch, rms: best.rms, worst: Math.max(...best.err), errors: Object.fromEntries(keys.map((k, i) => [k, +best.err[i].toFixed(2)])), scale: Math.hypot(best.a, best.b) };
+};
+const mean = A => [A.reduce((s, p) => s + p[0], 0) / A.length, A.reduce((s, p) => s + p[1], 0) / A.length];
+window.ready = true;
+</script>
+</body>
+</html>

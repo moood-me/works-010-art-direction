@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-v1-gogo",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: Гоу-Гоу: тёмное каре с прядью",
+  "en": "В1 hairstyle: Go Go: a dark bob with a streak"
+ },
+ "about": {
+  "ru": "тёмное рваное каре, чёлка крупными кусками, фиолетовая прядь — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "a dark choppy bob, the fringe in a few big pieces, a purple streak — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "gogo"
+  }
+ ]
+}

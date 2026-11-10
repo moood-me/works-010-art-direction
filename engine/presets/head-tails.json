@@ -1,0 +1,50 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-tails",
+ "group": "head",
+ "label": {
+  "ru": "голова: мальчик с хвостиками",
+  "en": "head: boy with tails"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.04,
+  "skin": "#e9b8a8",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-tails@ceb7f1c829f09e83"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-tails@5b1279c96ebc022d"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-tails@2649c0d1a1d6f10a"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

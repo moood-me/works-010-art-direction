@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-v1-ginger",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: рыжий мальчик: начёс",
+  "en": "В1 hairstyle: ginger boy: a quiff"
+ },
+ "about": {
+  "ru": "большой зачёс со лба назад и набок, жёсткий — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "a big quiff from the forehead, over and back to one side, set hard — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "ginger"
+  }
+ ]
+}

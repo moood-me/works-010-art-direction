@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-v1-kpony",
+ "group": "hair",
+ "label": {
+  "ru": "причёска В1: K-pop: высокий хвост",
+  "en": "В1 hairstyle: K-pop: a high ponytail"
+ },
+ "about": {
+  "ru": "длинный высокий хвост, тяжёлый, прядь у лица — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+  "en": "a long high ponytail, heavy, a side lock framing the face — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "style",
+   "style": "kpony"
+  }
+ ]
+}

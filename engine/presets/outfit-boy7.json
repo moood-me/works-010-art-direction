@@ -1,0 +1,37 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-boy7",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: мальчик с каре",
+  "en": "outfit: boy with a bob"
+ },
+ "about": {
+  "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+  "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+ },
+ "clothes": [
+  {
+   "id": "sweater",
+   "kind": "garment",
+   "pattern": "mh-sweater",
+   "fabric": "fabric-fineknit@3f0b9dbffafbc738",
+   "color": "#a6533a"
+  },
+  {
+   "id": "shorts",
+   "kind": "garment",
+   "pattern": "mh-shorts",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#2c2c34"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#c8b38a"
+  }
+ ]
+}

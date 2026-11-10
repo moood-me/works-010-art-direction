@@ -1,0 +1,108 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "features-old",
+ "group": "features",
+ "label": {
+  "ru": "черты: старик",
+  "en": "features: old man"
+ },
+ "about": {
+  "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.4,
+   "y": -0.26,
+   "w": 0.3,
+   "h": 0.14,
+   "iris": [
+    "#3a2a1a",
+    "#5a4030"
+   ],
+   "lash": "#2a1a12",
+   "lashW": 0.045,
+   "lower": 0,
+   "glints": 0,
+   "smiley": true
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.14,
+   "x1": 0.68,
+   "y0": -0.08,
+   "y1": -0.07,
+   "arch": 0.1,
+   "peak": 0.45,
+   "w0": 0.08,
+   "w1": 0.05,
+   "color": "#b0682e"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "y": -0.9,
+   "w": 0.46,
+   "type": "grin",
+   "crooked": 0.12
+  },
+  {
+   "id": "marks",
+   "kind": "marks",
+   "lines": [
+    {
+     "mirror": true,
+     "pts": [
+      [
+       0.32,
+       -0.62
+      ],
+      [
+       0.42,
+       -0.78
+      ],
+      [
+       0.4,
+       -0.95
+      ]
+     ],
+     "w": 0.014,
+     "color": "#a0602e",
+     "alpha": 0.55
+    },
+    {
+     "mirror": true,
+     "pts": [
+      [
+       0.55,
+       -0.32
+      ],
+      [
+       0.62,
+       -0.3
+      ],
+      [
+       0.66,
+       -0.26
+      ]
+     ],
+     "w": 0.01,
+     "color": "#8a5030",
+     "alpha": 0.5
+    }
+   ]
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.8
+  }
+ ]
+}

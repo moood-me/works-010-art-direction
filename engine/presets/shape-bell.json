@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-bell",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: колокол",
+  "en": "silhouette: bell"
+ },
+ "about": {
+  "ru": "пышный колокол от талии, складки по подолу (силуэт О1: форма, к которой тянется ткань)",
+  "en": "a full bell from the waist, folds round the hem (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "full",
+  "flare": 1.1,
+  "folds": 0.12,
+  "foldN": 10,
+  "length": 1.05
+ }
+}

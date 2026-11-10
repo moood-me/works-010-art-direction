@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "proportions-long-torso",
+ "label": {
+  "ru": "пропорции: длинное туловище",
+  "en": "proportions: a long torso"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "torso": {
+     "length": 1.2
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-mini-pleats",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: короткая в складку",
+  "en": "silhouette: short pleats"
+ },
+ "about": {
+  "ru": "короче, частые складки (силуэт О1: форма, к которой тянется ткань)",
+  "en": "shorter, many folds (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "aline",
+  "flare": 0.45,
+  "folds": 0.35,
+  "foldN": 18,
+  "length": 0.8
+ }
+}

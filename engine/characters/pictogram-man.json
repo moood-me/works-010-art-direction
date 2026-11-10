@@ -1,0 +1,30 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "pictogram-man",
+ "label": {
+  "ru": "Пиктограмма: мужчина",
+  "en": "Pictogram: a man"
+ },
+ "body": "moood-man@ae2fe31d3d61c6e7",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "pictogram-rectangle@14ed046d46d51c68",
+   "strength": 1,
+   "frames": "keep"
+  }
+ ],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#d8cdbf",
+  "roughness": 0.65
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-bishop-sleeve",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: рукав-епископ",
+  "en": "silhouette: bishop sleeve"
+ },
+ "about": {
+  "ru": "облегает, рукава пышные у кисти (силуэт О1: форма, к которой тянется ткань)",
+  "en": "fitted, sleeves full at the wrist (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "fit": 0.95,
+  "sleeve": "bishop"
+ }
+}

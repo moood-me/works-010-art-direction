@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-dress",
+ "kind": "top",
+ "label": {
+  "ru": "платье",
+  "en": "dress"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/dress.js)",
+ "bin": "mh-dress.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    1120,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    1120,
+    3
+   ],
+   "offset": 6720
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    1120,
+    3
+   ],
+   "offset": 20160
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 26880
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 26892
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    2116,
+    3
+   ],
+   "offset": 26904
+  }
+ }
+}

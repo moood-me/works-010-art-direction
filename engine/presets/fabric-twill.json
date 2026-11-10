@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-twill",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: хлопковый твил",
+  "en": "fabric: cotton twill"
+ },
+ "about": {
+  "ru": "плотный хлопок: чиносы, шорты (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "firm cotton: chinos, shorts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.25,
+  "stretch": 5000,
+  "compress": 0.25,
+  "bend": 0.00005,
+  "damping": 0.5,
+  "friction": 0.5,
+  "thick": 0.003,
+  "air": 1,
+  "sheen": 0.1,
+  "rough": 0.85
+ }
+}

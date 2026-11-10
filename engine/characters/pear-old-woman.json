@@ -1,0 +1,54 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "pear-old-woman",
+ "label": {
+  "ru": "Груша: старушка",
+  "en": "Pear: an old woman"
+ },
+ "body": "moood-oldwoman@ba4150ce719fe12f",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "smooth-4cm@ee31c824e0a00e1b",
+   "strength": 0.7,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "silhouette-pear@5279fc6dfce69da1",
+   "strength": 0.6,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "line-side-c-forward@1ed47f7b02da8346",
+   "strength": 0.4,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-short-legs@85be42a136451060",
+   "strength": 0.5,
+   "frames": "keep"
+  }
+ ],
+ "pose": [
+  {
+   "kind": "armsOff",
+   "degrees": 6,
+   "clear": 0.008
+  }
+ ],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#e3b597",
+  "roughness": 0.65
+ }
+}

@@ -1,0 +1,37 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-anime",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: аниме-девушка",
+  "en": "outfit: anime girl"
+ },
+ "about": {
+  "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+  "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+ },
+ "clothes": [
+  {
+   "id": "tshirt",
+   "kind": "garment",
+   "pattern": "mh-tshirt",
+   "fabric": "fabric-jersey@fbeb796abdcdb8ec",
+   "color": "#eef1f4"
+  },
+  {
+   "id": "skirt",
+   "kind": "garment",
+   "pattern": "mh-skirt",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2d3a55"
+  },
+  {
+   "id": "flats",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b2a33"
+  }
+ ]
+}

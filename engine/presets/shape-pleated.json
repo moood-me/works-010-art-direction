@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-pleated",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: юбка в складку",
+  "en": "silhouette: pleated skirt"
+ },
+ "about": {
+  "ru": "А-силуэт с глубокими нарисованными складками (силуэт О1: форма, к которой тянется ткань)",
+  "en": "an A-line with deep drawn folds (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "aline",
+  "flare": 0.5,
+  "folds": 0.3,
+  "foldN": 9
+ }
+}

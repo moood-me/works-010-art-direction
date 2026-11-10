@@ -1,0 +1,60 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "burton-thin",
+ "label": {
+  "ru": "Бёртон: тонкий",
+  "en": "Burton: thin"
+ },
+ "body": "anny-C-burton@4cabc23adfc32379",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "silhouette-reed@bb7ca6c510ba3e8c",
+   "strength": 0.8,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-thin-limbs@21c396c0a2e2e72f",
+   "strength": 0.7,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "limbs-taper@2cc5eb43a39feb66",
+   "strength": 0.6,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-long-neck@050350da518dc8b2",
+   "strength": 0.5,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "line-side-s@908cd829e4959ec1",
+   "strength": 0.35,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "smooth-2cm@c5958027f4b76911",
+   "strength": 1,
+   "frames": "keep"
+  }
+ ],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#e8d2c4",
+  "roughness": 0.65
+ }
+}

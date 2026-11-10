@@ -1,0 +1,17 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-balloon-leg",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: шаровары",
+  "en": "silhouette: balloon legs"
+ },
+ "about": {
+  "ru": "штанины надуты и собраны у щиколотки (силуэт О1: форма, к которой тянется ткань)",
+  "en": "legs puffed out, gathered at the ankle (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "leg": "balloon"
+ }
+}

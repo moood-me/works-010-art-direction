@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-pants",
+ "kind": "bottom",
+ "label": {
+  "ru": "брюки",
+  "en": "trousers"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/pants.js)",
+ "bin": "mh-pants.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    1293,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    1293,
+    3
+   ],
+   "offset": 7760
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    1293,
+    3
+   ],
+   "offset": 23276
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 31036
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 31048
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    2518,
+    3
+   ],
+   "offset": 31060
+  }
+ }
+}

@@ -1,0 +1,65 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "features-dots",
+ "group": "features",
+ "label": {
+  "ru": "черты: глаза-точки",
+  "en": "features: dot eyes"
+ },
+ "about": {
+  "ru": "как у инди-героев: два тёмных глаза-точки на месте её глаз, короткие брови, маленький рот на её губах — нарисованы на коже Anny до изменений формы и следуют за ней",
+  "en": "as the indie heroes: two dark dot eyes where her eyes are, short brows, a small mouth on her lips — painted on Anny's skin before the form's changes, and following it"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.25,
+   "y": -0.06,
+   "w": 0.16,
+   "h": 0.2,
+   "iris": [
+    "#1d1a20",
+    "#2a2630"
+   ],
+   "lash": "#1d1a20",
+   "lashW": 0,
+   "smiley": false,
+   "round": true,
+   "irisScale": 2.2,
+   "glints": 1
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.13,
+   "x1": 0.35,
+   "y0": 0.13,
+   "y1": 0.14,
+   "arch": 0.02,
+   "peak": 0.5,
+   "w0": 0.03,
+   "w1": 0.02,
+   "color": "#4a3426"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.77,
+   "w": 0.12,
+   "sag": 0.012,
+   "line": "#6a2a26",
+   "lineW": 0.014
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.5
+  }
+ ]
+}

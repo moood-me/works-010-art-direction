@@ -1,0 +1,27 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "proportions-long-arms",
+ "label": {
+  "ru": "пропорции: длинные руки",
+  "en": "proportions: long arms"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "arm": {
+     "length": 1.2
+    },
+    "fore": {
+     "length": 1.2
+    }
+   }
+  }
+ ]
+}

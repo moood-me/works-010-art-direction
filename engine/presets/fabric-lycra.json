@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-lycra",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: бифлекс (нейлон с лайкрой)",
+  "en": "fabric: lycra (nylon with spandex)"
+ },
+ "about": {
+  "ru": "тянется сильно, облегает: купальники (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "very stretchy, clings: swimsuits (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.19,
+  "stretch": 60,
+  "compress": 0.3,
+  "bend": 0.000004,
+  "damping": 0.8,
+  "friction": 0.6,
+  "thick": 0.0015,
+  "air": 1,
+  "sheen": 0.4,
+  "rough": 0.4
+ }
+}

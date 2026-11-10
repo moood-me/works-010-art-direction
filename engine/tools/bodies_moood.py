@@ -67,8 +67,8 @@ def topology(base):
         'unused': int((~used).sum()),
     }
     pack.write(os.path.join(ROOT, 'data/topology/anny-moood.json'), header, {
-        'triangles': base['tris'].astype(np.uint16), 'skinJoints': base['joint'].astype(np.uint8), 'skinWeights': weights,
-        'parts': np.round(parts * 255).astype(np.uint8), 'face': base['face'].astype(np.uint16)})
+        'triangles': base['tris'].astype(pack.index_type(N)), 'skinJoints': base['joint'].astype(np.uint8), 'skinWeights': weights,
+        'parts': np.round(parts * 255).astype(np.uint8), 'face': base['face'].astype(pack.index_type(N))})
 
 
 def body_file(bid, label, source, pos, R, P, extra_header=None, extra=None):

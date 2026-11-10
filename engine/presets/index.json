@@ -1,0 +1,2566 @@
+{
+ "format": "engine/presets",
+ "version": 1,
+ "about": "Presets of parts (each presets/<id>.json): changes a character takes into its rest or pose by {kind: \"preset\", id: \"<pin>\", strength, frames | space}; heads a character or another head takes by head.preset; a head's features, expressions and light; winds; fabrics, garments' shapes and outfits a character's clothes take. Written by engine/tools/characters.mjs presets.",
+ "groups": [
+  "silhouette",
+  "line",
+  "squash",
+  "contrapposto",
+  "limbs",
+  "proportions",
+  "caricature",
+  "surface",
+  "contour",
+  "masses",
+  "pictogram",
+  "head",
+  "head-form",
+  "features",
+  "hair",
+  "headwear",
+  "expressions",
+  "face-light",
+  "wind",
+  "fabric",
+  "garment-shape",
+  "outfit"
+ ],
+ "presets": [
+  {
+   "id": "silhouette-bean",
+   "pin": "silhouette-bean@ed42ec595b80abfb",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: фасолина",
+    "en": "silhouette: bean"
+   },
+   "about": {
+    "ru": "Т5 и Т6: живот вперёд, спина назад — изгиб фасолины сбоку",
+    "en": "Т5 and Т6: the belly forwards, the back curved — a bean seen from the side"
+   }
+  },
+  {
+   "id": "silhouette-column",
+   "pin": "silhouette-column@cffdd00675819d4e",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: колонна",
+    "en": "silhouette: column"
+   },
+   "about": {
+    "ru": "Т6: ровный столб от ног до груди, полная талия",
+    "en": "Т6: an even column from the legs to the chest, a full waist"
+   }
+  },
+  {
+   "id": "silhouette-diamond",
+   "pin": "silhouette-diamond@f562a9186476cbe1",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: ромб",
+    "en": "silhouette: diamond"
+   },
+   "about": {
+    "ru": "Т5: широкое — бёдра и талия, узко — стопы и плечи",
+    "en": "Т5: wide at the hips and waist, narrow at the feet and shoulders"
+   }
+  },
+  {
+   "id": "silhouette-egg",
+   "pin": "silhouette-egg@3a31c8bc7c87439d",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: яйцо",
+    "en": "silhouette: egg"
+   },
+   "about": {
+    "ru": "Т5 и Т6: самое широкое — живот, к ногам и плечам уже",
+    "en": "Т5 and Т6: widest at the belly, narrower to the feet and the shoulders"
+   }
+  },
+  {
+   "id": "silhouette-hourglass",
+   "pin": "silhouette-hourglass@0097d55939ccfdf2",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: песочные часы",
+    "en": "silhouette: hourglass"
+   },
+   "about": {
+    "ru": "Т5: узкая талия между широкими бёдрами и грудью",
+    "en": "Т5: a narrow waist between wide hips and chest"
+   }
+  },
+  {
+   "id": "silhouette-inverted-trapezoid",
+   "pin": "silhouette-inverted-trapezoid@d25bcb0319da5037",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: перевёрнутая трапеция",
+    "en": "silhouette: inverted trapezoid"
+   },
+   "about": {
+    "ru": "Т5: шире кверху",
+    "en": "Т5: wider towards the shoulders"
+   }
+  },
+  {
+   "id": "silhouette-mass-on-legs",
+   "pin": "silhouette-mass-on-legs@f22199e517651859",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: масса на ножках",
+    "en": "silhouette: mass on legs"
+   },
+   "about": {
+    "ru": "Т6: тяжёлое туловище на тонких ногах",
+    "en": "Т6: a heavy trunk on thin legs"
+   }
+  },
+  {
+   "id": "silhouette-pear",
+   "pin": "silhouette-pear@5279fc6dfce69da1",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: груша",
+    "en": "silhouette: pear"
+   },
+   "about": {
+    "ru": "Т5: вес низко — широкие бёдра, узкие плечи",
+    "en": "Т5: the weight low — wide hips, narrow shoulders"
+   }
+  },
+  {
+   "id": "silhouette-rectangle",
+   "pin": "silhouette-rectangle@39dbe5e984b4989c",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: прямоугольник",
+    "en": "silhouette: rectangle"
+   },
+   "about": {
+    "ru": "Т5: прямые бока — талия заполнена до бёдер и груди",
+    "en": "Т5: straight sides — the waist filled out to the hips and the chest"
+   }
+  },
+  {
+   "id": "silhouette-reed",
+   "pin": "silhouette-reed@bb7ca6c510ba3e8c",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: тростинка",
+    "en": "silhouette: reed"
+   },
+   "about": {
+    "ru": "Т6: всё тоньше, кроме головы и плеч",
+    "en": "Т6: everything slimmer but the head and the shoulders"
+   }
+  },
+  {
+   "id": "silhouette-trapezoid",
+   "pin": "silhouette-trapezoid@87c93b01e13b1f6c",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: трапеция",
+    "en": "silhouette: trapezoid"
+   },
+   "about": {
+    "ru": "Т5: шире книзу",
+    "en": "Т5: wider towards the feet"
+   }
+  },
+  {
+   "id": "silhouette-triangle",
+   "pin": "silhouette-triangle@4415b65f2f340338",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: треугольник",
+    "en": "silhouette: triangle"
+   },
+   "about": {
+    "ru": "Т5: от узких плеч к широкому низу",
+    "en": "Т5: from narrow shoulders to a wide base"
+   }
+  },
+  {
+   "id": "silhouette-v",
+   "pin": "silhouette-v@34d15df2a5681746",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: V",
+    "en": "silhouette: V"
+   },
+   "about": {
+    "ru": "Т5: широкие плечи и грудь, узкие бёдра и ноги",
+    "en": "Т5: broad shoulders and chest, narrow hips and legs"
+   }
+  },
+  {
+   "id": "silhouette-wedge",
+   "pin": "silhouette-wedge@205d32aa22785206",
+   "group": "silhouette",
+   "label": {
+    "ru": "силуэт: клин",
+    "en": "silhouette: wedge"
+   },
+   "about": {
+    "ru": "Т6: грудь и плечи широкие, ниже — уже",
+    "en": "Т6: a wide chest and shoulders, narrower below"
+   }
+  },
+  {
+   "id": "line-front-c",
+   "pin": "line-front-c@13cce833c2fa592d",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: спереди C",
+    "en": "line of action: front C"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-front-s",
+   "pin": "line-front-s@39471faa41f27712",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: спереди S",
+    "en": "line of action: front S"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-c-back",
+   "pin": "line-side-c-back@861e2191c8c8ce7c",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку C назад",
+    "en": "line of action: side C back"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-c-forward",
+   "pin": "line-side-c-forward@1ed47f7b02da8346",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку C вперёд",
+    "en": "line of action: side C forwards"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-s",
+   "pin": "line-side-s@908cd829e4959ec1",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку S",
+    "en": "line of action: side S"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "line-side-s-reverse",
+   "pin": "line-side-s-reverse@d08c09065a8ff470",
+   "group": "line",
+   "label": {
+    "ru": "линия действия: сбоку обратная S",
+    "en": "line of action: side reversed S"
+   },
+   "about": {
+    "ru": "Т5: вся фигура изогнута одной кривой",
+    "en": "Т5: the whole figure bent along one curve"
+   }
+  },
+  {
+   "id": "squash",
+   "pin": "squash@bd14e68be9daffc8",
+   "group": "squash",
+   "label": {
+    "ru": "сжатие",
+    "en": "squash"
+   },
+   "about": {
+    "ru": "Т5: ниже и шире, объём тот же",
+    "en": "Т5: lower and wider, the volume kept"
+   }
+  },
+  {
+   "id": "stretch",
+   "pin": "stretch@f336e24b5641d9c4",
+   "group": "squash",
+   "label": {
+    "ru": "растяжение",
+    "en": "stretch"
+   },
+   "about": {
+    "ru": "Т5: выше и тоньше, объём тот же",
+    "en": "Т5: taller and slimmer, the volume kept"
+   }
+  },
+  {
+   "id": "contrapposto",
+   "pin": "contrapposto@9ac3793f62e3070a",
+   "group": "contrapposto",
+   "label": {
+    "ru": "контрапост",
+    "en": "contrapposto"
+   },
+   "about": {
+    "ru": "Т5: таз в одну сторону, плечи в другую",
+    "en": "Т5: the pelvis tilted one way, the shoulders the other"
+   }
+  },
+  {
+   "id": "limbs-arcs",
+   "pin": "limbs-arcs@7c32e694f7eb0af0",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: дугой",
+    "en": "limbs: in arcs"
+   },
+   "about": {
+    "ru": "Т5: руки и ноги одной дугой",
+    "en": "Т5: arms and legs as one arc each"
+   }
+  },
+  {
+   "id": "limbs-legs-bowed-in",
+   "pin": "limbs-legs-bowed-in@979327dfaddb4816",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: ноги дугой внутрь",
+    "en": "limbs: legs bowed in"
+   },
+   "about": {
+    "ru": "Т5: ноги дугой внутрь (колени вместе)",
+    "en": "Т5: legs bowed inwards (knees together)"
+   }
+  },
+  {
+   "id": "limbs-straight-curved",
+   "pin": "limbs-straight-curved@2055e08173270cd3",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: прямое против кривого",
+    "en": "limbs: straight against curved"
+   },
+   "about": {
+    "ru": "Т5: одна сторона конечности прямая, другая выпуклая",
+    "en": "Т5: one side of each limb straight, the other swelling"
+   }
+  },
+  {
+   "id": "limbs-taper",
+   "pin": "limbs-taper@2cc5eb43a39feb66",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: сужение к концам",
+    "en": "limbs: taper"
+   },
+   "about": {
+    "ru": "Т5: толще у корня, тоньше к концу",
+    "en": "Т5: thick at the root, thin at the end"
+   }
+  },
+  {
+   "id": "limbs-taper-reverse",
+   "pin": "limbs-taper-reverse@d788217e96b2fc7c",
+   "group": "limbs",
+   "label": {
+    "ru": "конечности: обратное сужение",
+    "en": "limbs: reverse taper"
+   },
+   "about": {
+    "ru": "Т5: тоньше у корня, толще к концу",
+    "en": "Т5: thin at the root, thick at the end"
+   }
+  },
+  {
+   "id": "proportions-big-hands-feet",
+   "pin": "proportions-big-hands-feet@8bc0ee11aa28febf",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: большие кисти и стопы",
+    "en": "proportions: big hands and feet"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-big-head",
+   "pin": "proportions-big-head@214a8c56a3438f0c",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: большая голова",
+    "en": "proportions: a big head"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-broad-shoulders",
+   "pin": "proportions-broad-shoulders@d898da2194551ba0",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: широкие плечи",
+    "en": "proportions: broad shoulders"
+   },
+   "about": {
+    "ru": "Т1: ключицы длиннее (руки дальше от шеи), плечо чуть полнее; Т7: шапка плеча и скат от шеи — плечо круглое, без угла",
+    "en": "Т1: longer collarbones (the arms farther from the neck), a slightly fuller upper arm; Т7: the shoulder's cap and its slope from the neck — a round shoulder, no corner"
+   }
+  },
+  {
+   "id": "proportions-long-arms",
+   "pin": "proportions-long-arms@59d137cc085b2a66",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинные руки",
+    "en": "proportions: long arms"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-long-legs",
+   "pin": "proportions-long-legs@9d1c58118eefc1a2",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинные ноги",
+    "en": "proportions: long legs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-long-neck",
+   "pin": "proportions-long-neck@050350da518dc8b2",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинная шея",
+    "en": "proportions: a long neck"
+   },
+   "about": {
+    "ru": "Т1: шея длиннее той же толщины — голова поднята, не вперёд",
+    "en": "Т1: a longer neck of the same girth — the head lifted, not pushed forwards"
+   }
+  },
+  {
+   "id": "proportions-long-torso",
+   "pin": "proportions-long-torso@499b96bbec4d4ec5",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: длинное туловище",
+    "en": "proportions: a long torso"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-narrow-shoulders",
+   "pin": "proportions-narrow-shoulders@43ed7a37a3688cba",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: узкие плечи",
+    "en": "proportions: narrow shoulders"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-short-legs",
+   "pin": "proportions-short-legs@85be42a136451060",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: короткие ноги",
+    "en": "proportions: short legs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-short-neck",
+   "pin": "proportions-short-neck@ec2513db2baf1b64",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: короткая шея",
+    "en": "proportions: a short neck"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-slim-torso",
+   "pin": "proportions-slim-torso@5eee45f37516ef93",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: узкое туловище",
+    "en": "proportions: a slim torso"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-small-hands-feet",
+   "pin": "proportions-small-hands-feet@b1a1b04ba231cc0c",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: маленькие кисти и стопы",
+    "en": "proportions: small hands and feet"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-small-head",
+   "pin": "proportions-small-head@db8142fd0f5dca22",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: маленькая голова",
+    "en": "proportions: a small head"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-thick-limbs",
+   "pin": "proportions-thick-limbs@969d3388c3802036",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: толстые руки и ноги",
+    "en": "proportions: thick limbs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "proportions-thin-limbs",
+   "pin": "proportions-thin-limbs@21c396c0a2e2e72f",
+   "group": "proportions",
+   "label": {
+    "ru": "пропорции: тонкие руки и ноги",
+    "en": "proportions: thin limbs"
+   },
+   "about": {
+    "ru": "Т1: длина и ширина частей, суставы идут с ними",
+    "en": "Т1: the parts' lengths and widths, the joints moving with them"
+   }
+  },
+  {
+   "id": "average",
+   "pin": "average@1c0cbbd3ef69956c",
+   "group": "caricature",
+   "label": {
+    "ru": "ближе к среднему",
+    "en": "towards the average"
+   },
+   "about": {
+    "ru": "Т1: своё отличие от среднего тела, ослабленное",
+    "en": "Т1: the body's own difference from the average, taken back"
+   }
+  },
+  {
+   "id": "caricature",
+   "pin": "caricature@9d0b745c548ae184",
+   "group": "caricature",
+   "label": {
+    "ru": "шарж",
+    "en": "caricature"
+   },
+   "about": {
+    "ru": "Т1: своё отличие от среднего тела семи тел moood, усиленное",
+    "en": "Т1: the body's own difference from the average of moood's seven bodies, drawn out"
+   }
+  },
+  {
+   "id": "anatomy-defined",
+   "pin": "anatomy-defined@f35316de0f8d2876",
+   "group": "surface",
+   "label": {
+    "ru": "анатомия чётче",
+    "en": "anatomy drawn out"
+   },
+   "about": {
+    "ru": "Т1: мелкие формы тела выявлены",
+    "en": "Т1: the body's small forms drawn out"
+   }
+  },
+  {
+   "id": "anatomy-soft",
+   "pin": "anatomy-soft@21ec915f1dd05ae4",
+   "group": "surface",
+   "label": {
+    "ru": "анатомия мягче",
+    "en": "anatomy softened"
+   },
+   "about": {
+    "ru": "Т1: мелкие формы тела сглажены",
+    "en": "Т1: the body's small forms softened"
+   }
+  },
+  {
+   "id": "smooth-2cm",
+   "pin": "smooth-2cm@c5958027f4b76911",
+   "group": "surface",
+   "label": {
+    "ru": "сглаживание 2 см",
+    "en": "smoothing 2 cm"
+   },
+   "about": {
+    "ru": "Т9: мелкие формы в пределах 2 см уходят, руки и ноги не худеют; голова и пальцы свои",
+    "en": "Т9: the small forms within 2 cm go, the limbs keep their girth; the head and fingers keep theirs"
+   }
+  },
+  {
+   "id": "smooth-4cm",
+   "pin": "smooth-4cm@ee31c824e0a00e1b",
+   "group": "surface",
+   "label": {
+    "ru": "сглаживание 4 см",
+    "en": "smoothing 4 cm"
+   },
+   "about": {
+    "ru": "Т9: мелкие формы в пределах 4 см уходят, руки и ноги не худеют; голова и пальцы свои",
+    "en": "Т9: the small forms within 4 cm go, the limbs keep their girth; the head and fingers keep theirs"
+   }
+  },
+  {
+   "id": "smooth-8cm",
+   "pin": "smooth-8cm@395b8e2b06c6ca6d",
+   "group": "surface",
+   "label": {
+    "ru": "сглаживание 8 см",
+    "en": "smoothing 8 cm"
+   },
+   "about": {
+    "ru": "Т9: мелкие формы в пределах 8 см уходят, руки и ноги не худеют; голова и пальцы свои",
+    "en": "Т9: the small forms within 8 cm go, the limbs keep their girth; the head and fingers keep theirs"
+   }
+  },
+  {
+   "id": "contour-anime",
+   "pin": "contour-anime@25302c7a10ef9724",
+   "group": "contour",
+   "label": {
+    "ru": "контур: аниме",
+    "en": "contour: anime"
+   },
+   "about": {
+    "ru": "девушка аниме: прямые тонкие линии, едва колено, лёгкая икра, маленькая грудь — рисунок весь длина и покой (Т7)",
+    "en": "anime's girl: straight slender lines, hardly a knee, a slight calf, a small chest — the drawing all length and calm (Т7)"
+   }
+  },
+  {
+   "id": "contour-disney",
+   "pin": "contour-disney@23acce3772b83e19",
+   "group": "contour",
+   "label": {
+    "ru": "контур: Дисней",
+    "en": "contour: Disney"
+   },
+   "about": {
+    "ru": "героиня Диснея: длинная, сужается к концам, узкая талия между круглыми бёдрами и маленькой высокой грудью; икра снаружи высоко, внутри низко (Т7)",
+    "en": "Disney's heroine: long, tapering, a narrow waist between round hips and a small high bust; the outer calf high, the inner low (Т7)"
+   }
+  },
+  {
+   "id": "contour-pixar",
+   "pin": "contour-pixar@122aaddbca87054e",
+   "group": "contour",
+   "label": {
+    "ru": "контур: Pixar",
+    "en": "contour: Pixar"
+   },
+   "about": {
+    "ru": "мама Pixar: мягкая и полная, груша — вес низко и кругло, всё сужается к маленьким кистям и стопам (Т7)",
+    "en": "Pixar's mother: soft and full, a pear — the weight low and round, everything tapering to small hands and feet (Т7)"
+   }
+  },
+  {
+   "id": "masses-anime-bust",
+   "pin": "masses-anime-bust@50b497261d39c34c",
+   "group": "masses",
+   "label": {
+    "ru": "массы: грудь (аниме)",
+    "en": "masses: bust (anime)"
+   },
+   "about": {
+    "ru": "грудь как у аниме в Т7: мягкий шар, вплавленный в торс",
+    "en": "the bust as anime in Т7: a soft ball melted into the torso"
+   }
+  },
+  {
+   "id": "masses-anime-glutes",
+   "pin": "masses-anime-glutes@0dc49d09f23cc340",
+   "group": "masses",
+   "label": {
+    "ru": "массы: ягодицы (аниме)",
+    "en": "masses: buttocks (anime)"
+   },
+   "about": {
+    "ru": "ягодицы как у аниме в Т7",
+    "en": "the buttocks as anime in Т7"
+   }
+  },
+  {
+   "id": "masses-disney-bust",
+   "pin": "masses-disney-bust@499af6fb6e389d95",
+   "group": "masses",
+   "label": {
+    "ru": "массы: грудь (Дисней)",
+    "en": "masses: bust (Disney)"
+   },
+   "about": {
+    "ru": "грудь как у Дисней в Т7: мягкий шар, вплавленный в торс",
+    "en": "the bust as Disney in Т7: a soft ball melted into the torso"
+   }
+  },
+  {
+   "id": "masses-disney-glutes",
+   "pin": "masses-disney-glutes@0042820e3947b25f",
+   "group": "masses",
+   "label": {
+    "ru": "массы: ягодицы (Дисней)",
+    "en": "masses: buttocks (Disney)"
+   },
+   "about": {
+    "ru": "ягодицы как у Дисней в Т7",
+    "en": "the buttocks as Disney in Т7"
+   }
+  },
+  {
+   "id": "masses-pixar-bust",
+   "pin": "masses-pixar-bust@0dee19e2790807db",
+   "group": "masses",
+   "label": {
+    "ru": "массы: грудь (Pixar)",
+    "en": "masses: bust (Pixar)"
+   },
+   "about": {
+    "ru": "грудь как у Pixar в Т7: мягкий шар, вплавленный в торс",
+    "en": "the bust as Pixar in Т7: a soft ball melted into the torso"
+   }
+  },
+  {
+   "id": "masses-pixar-glutes",
+   "pin": "masses-pixar-glutes@525fe9d92a11cdbf",
+   "group": "masses",
+   "label": {
+    "ru": "массы: ягодицы (Pixar)",
+    "en": "masses: buttocks (Pixar)"
+   },
+   "about": {
+    "ru": "ягодицы как у Pixar в Т7",
+    "en": "the buttocks as Pixar in Т7"
+   }
+  },
+  {
+   "id": "masses-shoulders",
+   "pin": "masses-shoulders@24985df2002c8feb",
+   "group": "masses",
+   "label": {
+    "ru": "массы: плечо — шапка и скат от шеи",
+    "en": "masses: the shoulder — its cap and the slope from the neck"
+   },
+   "about": {
+    "ru": "Т7: одна круглая шапка над корнем руки и ровный скат к ней от шеи — без полки и без ямки под ней",
+    "en": "Т7: one round cap over the arm's root, reached from the neck by a plain slope — no shelf, no hollow under it"
+   }
+  },
+  {
+   "id": "pictogram-inverted",
+   "pin": "pictogram-inverted@1a636ceb34c2bfe6",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: перевёрнутая трапеция",
+    "en": "pictogram: inverted trapezoid"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  },
+  {
+   "id": "pictogram-oval",
+   "pin": "pictogram-oval@43e7315a5476e455",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: овал",
+    "en": "pictogram: oval"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  },
+  {
+   "id": "pictogram-rectangle",
+   "pin": "pictogram-rectangle@14ed046d46d51c68",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: прямоугольник",
+    "en": "pictogram: rectangle"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  },
+  {
+   "id": "pictogram-trapezoid",
+   "pin": "pictogram-trapezoid@14ed24c0c167c4a9",
+   "group": "pictogram",
+   "label": {
+    "ru": "пиктограмма: трапеция",
+    "en": "pictogram: trapezoid"
+   },
+   "about": {
+    "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+    "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+   }
+  },
+  {
+   "id": "head-alva",
+   "pin": "head-alva@caebe9a2ceac800a",
+   "group": "head",
+   "label": {
+    "ru": "голова: Альва",
+    "en": "head: Alva"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-anime",
+   "pin": "head-anime@0ef38b7469404e04",
+   "group": "head",
+   "label": {
+    "ru": "голова: аниме-девушка",
+    "en": "head: anime girl"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-blond",
+   "pin": "head-blond@9d8f93930621043a",
+   "group": "head",
+   "label": {
+    "ru": "голова: блондин",
+    "en": "head: blond boy"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-boy7",
+   "pin": "head-boy7@c01448cf8c58de80",
+   "group": "head",
+   "label": {
+    "ru": "голова: мальчик с каре",
+    "en": "head: boy with a bob"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-hood",
+   "pin": "head-hood@09abcc3002f36bd6",
+   "group": "head",
+   "label": {
+    "ru": "голова: женщина в капюшоне",
+    "en": "head: hooded woman"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-jesper",
+   "pin": "head-jesper@5ec2524db296f5ba",
+   "group": "head",
+   "label": {
+    "ru": "голова: Джеспер",
+    "en": "head: Jesper"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-mask",
+   "pin": "head-mask@e4c3308f97096cae",
+   "group": "head",
+   "label": {
+    "ru": "голова: девушка в маске",
+    "en": "head: masked girl"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-old",
+   "pin": "head-old@6f3632720637bbae",
+   "group": "head",
+   "label": {
+    "ru": "голова: старик",
+    "en": "head: old man"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-red",
+   "pin": "head-red@28bee1e96f6de81e",
+   "group": "head",
+   "label": {
+    "ru": "голова: рыжая девушка",
+    "en": "head: red-haired girl"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-semi",
+   "pin": "head-semi@e7235d5a4cb44a87",
+   "group": "head",
+   "label": {
+    "ru": "голова: парень с длинным носом",
+    "en": "head: long-nosed man"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "head-tails",
+   "pin": "head-tails@ba04fa52c09cfcc3",
+   "group": "head",
+   "label": {
+    "ru": "голова: мальчик с хвостиками",
+    "en": "head: boy with tails"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+   }
+  },
+  {
+   "id": "face-anny-big-eyes",
+   "pin": "face-anny-big-eyes@548161cc84e03aea",
+   "group": "head-form",
+   "label": {
+    "ru": "лицо Anny: большие глаза",
+    "en": "Anny's face: big eyes"
+   },
+   "about": {
+    "ru": "собственные ползунки Anny: глаза крупнее и шире раскрыты",
+    "en": "Anny's own settings: the eyes larger and wider open"
+   }
+  },
+  {
+   "id": "face-anny-small-nose",
+   "pin": "face-anny-small-nose@8b4cd2bf6e474360",
+   "group": "head-form",
+   "label": {
+    "ru": "лицо Anny: маленький курносый нос",
+    "en": "Anny's face: a small upturned nose"
+   },
+   "about": {
+    "ru": "собственные ползунки лица Anny: нос короче, уже и вздёрнут",
+    "en": "Anny's own face settings: the nose shorter, narrower, turned up"
+   }
+  },
+  {
+   "id": "face-anny-soft-chin",
+   "pin": "face-anny-soft-chin@3c7addc0286a19cb",
+   "group": "head-form",
+   "label": {
+    "ru": "лицо Anny: мягкий маленький подбородок",
+    "en": "Anny's face: a soft small chin"
+   },
+   "about": {
+    "ru": "ползунки Anny: подбородок короче и уже, щёки полнее",
+    "en": "Anny's settings: the chin shorter and narrower, the cheeks fuller"
+   }
+  },
+  {
+   "id": "face-anny-strong",
+   "pin": "face-anny-strong@229d76329f5be3f4",
+   "group": "head-form",
+   "label": {
+    "ru": "лицо Anny: сильное",
+    "en": "Anny's face: strong"
+   },
+   "about": {
+    "ru": "ползунки Anny: подбородок вперёд и шире, скулы, нос с горбинкой, брови вперёд",
+    "en": "Anny's settings: the chin forward and wider, cheekbones, a humped nose, the brows forward"
+   }
+  },
+  {
+   "id": "face-points-cute",
+   "pin": "face-points-cute@78c0262e500550c5",
+   "group": "head-form",
+   "label": {
+    "ru": "лицо по точкам: мило",
+    "en": "face by points: cute"
+   },
+   "about": {
+    "ru": "точки лица: глаза ниже и шире, нос короче, рот выше, подбородок мягче и короче — детские пропорции",
+    "en": "face by points: eyes lower and wider, the nose shorter, the mouth higher, the chin softer and shorter — a child's proportions"
+   }
+  },
+  {
+   "id": "face-points-long",
+   "pin": "face-points-long@469800a514277c9a",
+   "group": "head-form",
+   "label": {
+    "ru": "лицо по точкам: длинное",
+    "en": "face by points: long"
+   },
+   "about": {
+    "ru": "точки лица: подбородок ниже и вперёд, нос длиннее, скулы и челюсть уже — длинное лицо",
+    "en": "face by points: the chin lower and forward, the nose longer, cheeks and jaw narrower — a long face"
+   }
+  },
+  {
+   "id": "form-alva",
+   "pin": "form-alva@5617da0c0f410bbb",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: Альва",
+    "en": "form: Alva"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-anime",
+   "pin": "form-anime@d9556d7681208692",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: аниме-девушка",
+    "en": "form: anime girl"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-blond",
+   "pin": "form-blond@2078bd064df0f77b",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: блондин",
+    "en": "form: blond boy"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-boy7",
+   "pin": "form-boy7@61e605acd6c418f2",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: мальчик с каре",
+    "en": "form: boy with a bob"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-hood",
+   "pin": "form-hood@9f8734ffe3aaa112",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: женщина в капюшоне",
+    "en": "form: hooded woman"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-jesper",
+   "pin": "form-jesper@ca625204224efb04",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: Джеспер",
+    "en": "form: Jesper"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-mask",
+   "pin": "form-mask@238aa169baf23193",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: девушка в маске",
+    "en": "form: masked girl"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-old",
+   "pin": "form-old@29df848353cf96ee",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: старик",
+    "en": "form: old man"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-red",
+   "pin": "form-red@050eaf0c9bdbedeb",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: рыжая девушка",
+    "en": "form: red-haired girl"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-semi",
+   "pin": "form-semi@882d7a32927dce50",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: парень с длинным носом",
+    "en": "form: long-nosed man"
+   },
+   "about": {
+    "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "form-solid-giulia",
+   "pin": "form-solid-giulia@a7d98cea0fd44b2d",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: тело по картинке (Джулия, Г2)",
+    "en": "form: a solid fitted to a picture (Giulia, Г2)"
+   },
+   "about": {
+    "ru": "Г2: голова Anny, обтянутая на тело, подогнанное к картинке Джулии (её числа из картинки), без шеи тоньше; на горле остаётся складка — пример способа, не готовая голова",
+    "en": "Г2: Anny's head wrapped onto a solid fitted to Giulia's picture (its numbers read off the picture), the neck not slimmed; a crease stays at the throat — an example of the way, not a ready head"
+   }
+  },
+  {
+   "id": "form-tails",
+   "pin": "form-tails@ceb7f1c829f09e83",
+   "group": "head-form",
+   "label": {
+    "ru": "форма: мальчик с хвостиками",
+    "en": "form: boy with tails"
+   },
+   "about": {
+    "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка",
+    "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves"
+   }
+  },
+  {
+   "id": "head-cage-pear",
+   "pin": "head-cage-pear@9da5ae30bc912a9b",
+   "group": "head-form",
+   "label": {
+    "ru": "каркас головы: груша",
+    "en": "cage on the head: pear"
+   },
+   "about": {
+    "ru": "решётка вокруг головы: низ шире, верх уже — голова-груша одним движением",
+    "en": "a lattice round the head: the bottom wider, the top narrower — a pear in one gesture"
+   }
+  },
+  {
+   "id": "head-cage-tall",
+   "pin": "head-cage-tall@abfbc2fedd605a3f",
+   "group": "head-form",
+   "label": {
+    "ru": "каркас головы: высокий череп",
+    "en": "cage on the head: a tall cranium"
+   },
+   "about": {
+    "ru": "решётка: верх головы выше и шире, подбородок на месте",
+    "en": "a lattice: the top of the head higher and wider, the chin where it was"
+   }
+  },
+  {
+   "id": "head-of-toddler",
+   "pin": "head-of-toddler@3929fd9bff3a090a",
+   "group": "head-form",
+   "label": {
+    "ru": "голова малыша",
+    "en": "a toddler's head"
+   },
+   "about": {
+    "ru": "голова другого возраста: голова малыша Anny на этом теле, в размер его головы",
+    "en": "a head of another age: Anny's toddler's head on this body, as big as its own"
+   }
+  },
+  {
+   "id": "head-warps-cheeks",
+   "pin": "head-warps-cheeks@a35f074e6d04a4ec",
+   "group": "head-form",
+   "label": {
+    "ru": "плавные сдвиги: щёки и затылок",
+    "en": "smooth warps: cheeks and the back of the head"
+   },
+   "about": {
+    "ru": "плавные сдвиги: круглые щёки наружу, затылок назад, челюсть чуть уже",
+    "en": "smooth warps: round cheeks out, the back of the head back, the jaw a little narrower"
+   }
+  },
+  {
+   "id": "features-alva",
+   "pin": "features-alva@25f27b389e2ad4c8",
+   "group": "features",
+   "label": {
+    "ru": "черты: Альва",
+    "en": "features: Alva"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-anime",
+   "pin": "features-anime@b835447b1fb67de7",
+   "group": "features",
+   "label": {
+    "ru": "черты: аниме-девушка",
+    "en": "features: anime girl"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-blond",
+   "pin": "features-blond@250f4975f5f59848",
+   "group": "features",
+   "label": {
+    "ru": "черты: блондин",
+    "en": "features: blond boy"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-boy7",
+   "pin": "features-boy7@0d08b89f63552485",
+   "group": "features",
+   "label": {
+    "ru": "черты: мальчик с каре",
+    "en": "features: boy with a bob"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-dots",
+   "pin": "features-dots@6de146a7440e54ac",
+   "group": "features",
+   "label": {
+    "ru": "черты: глаза-точки",
+    "en": "features: dot eyes"
+   },
+   "about": {
+    "ru": "как у инди-героев: два тёмных глаза-точки на месте её глаз, короткие брови, маленький рот на её губах — нарисованы на коже Anny до изменений формы и следуют за ней",
+    "en": "as the indie heroes: two dark dot eyes where her eyes are, short brows, a small mouth on her lips — painted on Anny's skin before the form's changes, and following it"
+   }
+  },
+  {
+   "id": "features-hood",
+   "pin": "features-hood@be56b3fa0375b3ff",
+   "group": "features",
+   "label": {
+    "ru": "черты: женщина в капюшоне",
+    "en": "features: hooded woman"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-jesper",
+   "pin": "features-jesper@bacef4c29e49cf4d",
+   "group": "features",
+   "label": {
+    "ru": "черты: Джеспер",
+    "en": "features: Jesper"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-mask",
+   "pin": "features-mask@3a16977bb2f6f1e1",
+   "group": "features",
+   "label": {
+    "ru": "черты: девушка в маске",
+    "en": "features: masked girl"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-old",
+   "pin": "features-old@31d5dc7866c69063",
+   "group": "features",
+   "label": {
+    "ru": "черты: старик",
+    "en": "features: old man"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-red",
+   "pin": "features-red@06674836fef930fb",
+   "group": "features",
+   "label": {
+    "ru": "черты: рыжая девушка",
+    "en": "features: red-haired girl"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-relief",
+   "pin": "features-relief@48703c057a92fd5e",
+   "group": "features",
+   "label": {
+    "ru": "черты объёмом",
+    "en": "features as volume"
+   },
+   "about": {
+    "ru": "глаза, брови и губы — объёмом на коже (рельеф своей формы, тот же рисунок), следуют за кожей; смешиваются с нарисованными",
+    "en": "eyes, brows and lips as volume on the skin (a relief of their own shape with the same drawing), following the skin; they mix with painted ones"
+   }
+  },
+  {
+   "id": "features-semi",
+   "pin": "features-semi@ed275512caccab0d",
+   "group": "features",
+   "label": {
+    "ru": "черты: парень с длинным носом",
+    "en": "features: long-nosed man"
+   },
+   "about": {
+    "ru": "Г3: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г3: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "features-tails",
+   "pin": "features-tails@5b1279c96ebc022d",
+   "group": "features",
+   "label": {
+    "ru": "черты: мальчик с хвостиками",
+    "en": "features: boy with tails"
+   },
+   "about": {
+    "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+    "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+   }
+  },
+  {
+   "id": "hair-alva",
+   "pin": "hair-alva@e7985172976b3a4d",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: Альва",
+    "en": "hair: Alva"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-anime",
+   "pin": "hair-anime@7d9b9d4581dcb87c",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: аниме-девушка",
+    "en": "hair: anime girl"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-blond",
+   "pin": "hair-blond@da5e07dceb78b9f4",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: блондин",
+    "en": "hair: blond boy"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-boy7",
+   "pin": "hair-boy7@c7d3e1626fa9c91a",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: мальчик с каре",
+    "en": "hair: boy with a bob"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-hood",
+   "pin": "hair-hood@270414768a283dbb",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: женщина в капюшоне",
+    "en": "hair: hooded woman"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-jesper",
+   "pin": "hair-jesper@ace6bf2870bee50e",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: Джеспер",
+    "en": "hair: Jesper"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-mask",
+   "pin": "hair-mask@0b2a4e2712f8c5c8",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: девушка в маске",
+    "en": "hair: masked girl"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-old",
+   "pin": "hair-old@f4a521c75ecab8a6",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: старик",
+    "en": "hair: old man"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-red",
+   "pin": "hair-red@bb08b400b6cc3fa5",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: рыжая девушка",
+    "en": "hair: red-haired girl"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-semi",
+   "pin": "hair-semi@09bf48d61daa54ce",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: парень с длинным носом",
+    "en": "hair: long-nosed man"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-tails",
+   "pin": "hair-tails@2649c0d1a1d6f10a",
+   "group": "hair",
+   "label": {
+    "ru": "волосы: мальчик с хвостиками",
+    "en": "hair: boy with tails"
+   },
+   "about": {
+    "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+    "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+   }
+  },
+  {
+   "id": "hair-v1-alva",
+   "pin": "hair-v1-alva@5141d72a60695da8",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: Альва: шторка",
+    "en": "В1 hairstyle: Alva: a curtain"
+   },
+   "about": {
+    "ru": "длинные с прямым пробором, тяжёлая шторка у лица, кончики наружу — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "long, centre-parted, a heavy curtain framing the face, flicking out at the ends — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-anime",
+   "pin": "hair-v1-anime@9c647d77759c95a9",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: аниме: чёлка и длинные",
+    "en": "В1 hairstyle: anime: bangs and long hair"
+   },
+   "about": {
+    "ru": "ровная чёлка острыми прядями, длинные прямые, пряди у лица — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "blunt bangs in a few pointed clumps, long straight hair, locks framing the face — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-ariel",
+   "pin": "hair-v1-ariel@67965514f3f2430a",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: рыжая девушка: длинные волны",
+    "en": "В1 hairstyle: red-haired girl: long waves"
+   },
+   "about": {
+    "ru": "длинные красные, объём на макушке, большая волна набок, волны до пояса — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "long red hair, volume at the crown, a big swoop to one side, waves to the waist — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-doll",
+   "pin": "hair-v1-doll@5411685c2722455f",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: девочка-кукла: фиолетовые",
+    "en": "В1 hairstyle: doll girl: violet"
+   },
+   "about": {
+    "ru": "пышные фиолетовые, чёлка волной через бровь, пряди до плеч, кончики наружу — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "voluminous violet hair, a swooping fringe over one brow, locks to the shoulders flicking out — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-ginger",
+   "pin": "hair-v1-ginger@748b2263c859ae2c",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: рыжий мальчик: начёс",
+    "en": "В1 hairstyle: ginger boy: a quiff"
+   },
+   "about": {
+    "ru": "большой зачёс со лба назад и набок, жёсткий — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "a big quiff from the forehead, over and back to one side, set hard — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-giulia",
+   "pin": "hair-v1-giulia@fb24abad0ee60a96",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: Джулия: кудри под шапкой",
+    "en": "В1 hairstyle: Giulia: curls under a beanie"
+   },
+   "about": {
+    "ru": "крупные рыжие локоны-спирали, шапка сдвинута назад — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "big red ringlets, a beanie pushed back on the head — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-gogo",
+   "pin": "hair-v1-gogo@e8cf770d009c361d",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: Гоу-Гоу: тёмное каре с прядью",
+    "en": "В1 hairstyle: Go Go: a dark bob with a streak"
+   },
+   "about": {
+    "ru": "тёмное рваное каре, чёлка крупными кусками, фиолетовая прядь — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "a dark choppy bob, the fringe in a few big pieces, a purple streak — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-gwen",
+   "pin": "hair-v1-gwen@820ab0a8034b3b6c",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: Гвен: каре с косым пробором",
+    "en": "В1 hairstyle: Gwen: a bob with a deep side part"
+   },
+   "about": {
+    "ru": "светлое каре, длинная чёлка набок через глаз, другая сторона короче — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "a blonde bob, a long fringe swept over one eye, the other side shorter — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-jack",
+   "pin": "hair-v1-jack@ab18545a8b88e3c2",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: Джек: растрёпанные белые",
+    "en": "В1 hairstyle: Jack: tousled white"
+   },
+   "about": {
+    "ru": "короткие белые, вихры вперёд и в стороны — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "short white hair, tufts flopping forward and to the sides — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-kbraid",
+   "pin": "hair-v1-kbraid@e6772e336a5c1f09",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: K-pop: коса",
+    "en": "В1 hairstyle: K-pop: a braid"
+   },
+   "about": {
+    "ru": "гладко назад со лба в одну длинную косу, тяжёлую — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "swept back sleek from the forehead into one long heavy braid — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-kbuns",
+   "pin": "hair-v1-kbuns@ff7492a41b1f51f6",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: K-pop: два пучка",
+    "en": "В1 hairstyle: K-pop: two buns"
+   },
+   "about": {
+    "ru": "гладкие тёмно-синие, короткая чёлка, два пучка низко сзади — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "sleek dark blue hair, a short fringe, two buns low at the back — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-kpony",
+   "pin": "hair-v1-kpony@c0baa725b1d13e14",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: K-pop: высокий хвост",
+    "en": "В1 hairstyle: K-pop: a high ponytail"
+   },
+   "about": {
+    "ru": "длинный высокий хвост, тяжёлый, прядь у лица — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "a long high ponytail, heavy, a side lock framing the face — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-marco",
+   "pin": "hair-v1-marco@92018e60e00ccd29",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: Марко: чёлка набок",
+    "en": "В1 hairstyle: Marco: a fringe to the side"
+   },
+   "about": {
+    "ru": "мальчишеская стрижка, большая круглая чёлка набок — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "a boy's cut, a big rounded fringe swept to one side — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "hair-v1-nimona",
+   "pin": "hair-v1-nimona@86b683020fcc098e",
+   "group": "hair",
+   "label": {
+    "ru": "причёска В1: Нимона: вихры, бок выбрит",
+    "en": "В1 hairstyle: Nimona: tufts, one side shaved"
+   },
+   "about": {
+    "ru": "короткие вихры, падающие на одну сторону, другая выбрита — пряди вдоль направляющих (В1), движутся: инерция, ветер, столкновения с телом",
+    "en": "short tufts flopping over to one side, the other side shaved — locks along guide curves (В1), moving: inertia, wind, collisions with the body"
+   }
+  },
+  {
+   "id": "wear-jesper",
+   "pin": "wear-jesper@022cf656076f6335",
+   "group": "headwear",
+   "label": {
+    "ru": "убор: Джеспер",
+    "en": "headwear: Jesper"
+   },
+   "about": {
+    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
+    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
+   }
+  },
+  {
+   "id": "wear-mask",
+   "pin": "wear-mask@022e28d8c95044b5",
+   "group": "headwear",
+   "label": {
+    "ru": "убор: девушка в маске",
+    "en": "headwear: masked girl"
+   },
+   "about": {
+    "ru": "головной убор, как нарисован, — грубой оболочкой на голове (одеждой, что не проходит сквозь тело, он станет на этапе одежды)",
+    "en": "the headwear as it was drawn — a coarse shell on the head (the clothes stage makes it a garment that does not go through the body)"
+   }
+  },
+  {
+   "id": "expressions-drawn",
+   "pin": "expressions-drawn@be414f295b73fceb",
+   "group": "expressions",
+   "label": {
+    "ru": "выражения: нарисованное лицо",
+    "en": "expressions: a drawn face"
+   },
+   "about": {
+    "ru": "Г3 и Г1: моргание (веко над глазом), рот открыт (челюсть сустава Jaw), улыбка (уголки и щёки), брови вверх и вниз; нарисованные черты следуют за кожей и рисуются по выражению",
+    "en": "Г3 and Г1: a blink (the lid over the eye), the mouth open (the Jaw joint), a smile (corners and cheeks), brows up and down; the painted features follow the skin and redraw as the expression asks"
+   }
+  },
+  {
+   "id": "light-plain",
+   "pin": "light-plain@5acbe8db01ec7ddd",
+   "group": "face-light",
+   "label": {
+    "ru": "свет: обычный",
+    "en": "light: plain"
+   },
+   "about": {
+    "ru": "обычный свет сцены, как у тел",
+    "en": "the stage's usual light, as the bodies have"
+   }
+  },
+  {
+   "id": "light-soft-form",
+   "pin": "light-soft-form@01c280e63291ee71",
+   "group": "face-light",
+   "label": {
+    "ru": "свет: мягкий, по форме",
+    "en": "light: soft, by the form"
+   },
+   "about": {
+    "ru": "обычный свет сцены, но тени лица — от придуманной формы, без падающих теней на лице",
+    "en": "the stage's usual light, the face shaded by its designed form, no cast shadows on it"
+   }
+  },
+  {
+   "id": "light-toon",
+   "pin": "light-toon@9ec46ec5097eba0c",
+   "group": "face-light",
+   "label": {
+    "ru": "свет: мультяшный",
+    "en": "light: toon"
+   },
+   "about": {
+    "ru": "три мягких тона с контуром, тени лица — от самой сетки",
+    "en": "three soft tones with an outline, the face shaded by its own mesh"
+   }
+  },
+  {
+   "id": "light-toon-form",
+   "pin": "light-toon-form@4a5001203610c6f5",
+   "group": "face-light",
+   "label": {
+    "ru": "свет: мультяшный, по форме",
+    "en": "light: toon, by the form"
+   },
+   "about": {
+    "ru": "как у Г3: три мягких тона с контуром, тени лица — от придуманной формы, на лице нет падающих теней",
+    "en": "as Г3's: three soft tones with an outline, the face shaded by its designed form, no cast shadows on the face"
+   }
+  },
+  {
+   "id": "wind-calm",
+   "pin": "wind-calm@30b7b2e318b1461e",
+   "group": "wind",
+   "label": {
+    "ru": "ветер: тихо",
+    "en": "wind: calm"
+   },
+   "about": {
+    "ru": "едва заметный ветерок (дует спереди справа)",
+    "en": "a barely felt breeze (blowing from the front right)"
+   }
+  },
+  {
+   "id": "wind-gusty",
+   "pin": "wind-gusty@b4ca5265c3f22e0c",
+   "group": "wind",
+   "label": {
+    "ru": "ветер: порывы",
+    "en": "wind: gusts"
+   },
+   "about": {
+    "ru": "неровный ветер: сильные порывы между затишьями (дует спереди справа)",
+    "en": "an uneven wind: strong gusts between lulls (blowing from the front right)"
+   }
+  },
+  {
+   "id": "wind-light",
+   "pin": "wind-light@ecb351e6471f5e97",
+   "group": "wind",
+   "label": {
+    "ru": "ветер: лёгкий ветер",
+    "en": "wind: light wind"
+   },
+   "about": {
+    "ru": "лёгкий ветер с порывами: длинные волосы клонятся на 20° (дует спереди справа)",
+    "en": "a light wind with gusts: long hair leans some 20° (blowing from the front right)"
+   }
+  },
+  {
+   "id": "wind-strong",
+   "pin": "wind-strong@64bb0a2cb59fea0d",
+   "group": "wind",
+   "label": {
+    "ru": "ветер: сильный ветер",
+    "en": "wind: strong wind"
+   },
+   "about": {
+    "ru": "сильный порывистый ветер: длинные волосы клонятся на 60° (дует спереди справа)",
+    "en": "a strong gusty wind: long hair leans some 60° (blowing from the front right)"
+   }
+  },
+  {
+   "id": "fabric-chiffon",
+   "pin": "fabric-chiffon@f305643886762bd4",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: шифон",
+    "en": "fabric: chiffon"
+   },
+   "about": {
+    "ru": "тончайший, летит на ветру, полупрозрачный (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "the finest, flies in the wind, translucent (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-denim",
+   "pin": "fabric-denim@08106be05917918a",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: деним",
+    "en": "fabric: denim"
+   },
+   "about": {
+    "ru": "тяжёлый, жёсткий, крупные складки: джинсы, куртки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "heavy, stiff, big folds: jeans, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-fineknit",
+   "pin": "fabric-fineknit@3f0b9dbffafbc738",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: тонкая вязка (мерино)",
+    "en": "fabric: fine knit (merino)"
+   },
+   "about": {
+    "ru": "тонкая, мягкая, тянется (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thin, soft, stretchy (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-fleece",
+   "pin": "fabric-fleece@9e206d9258a01436",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: флис",
+    "en": "fabric: fleece"
+   },
+   "about": {
+    "ru": "пушистый, объёмный (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "fluffy, voluminous (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-heavyjersey",
+   "pin": "fabric-heavyjersey@d41ebbde61fa7c9f",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: плотный трикотаж (футер)",
+    "en": "fabric: heavy jersey (sweatshirt fleece)"
+   },
+   "about": {
+    "ru": "толще и тяжелее трикотажа, держит объём: толстовки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thicker and heavier than jersey, keeps some volume: sweatshirts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-jersey",
+   "pin": "fabric-jersey@fbeb796abdcdb8ec",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: хлопковый трикотаж",
+    "en": "fabric: cotton jersey"
+   },
+   "about": {
+    "ru": "мягкий, тянется, ложится по телу: футболки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "soft, stretchy, lies on the body: T-shirts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-linen",
+   "pin": "fabric-linen@904bf4c72f9721b5",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: лён",
+    "en": "fabric: linen"
+   },
+   "about": {
+    "ru": "не тянется, мнётся крупно (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "does not stretch, creases in big folds (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-lycra",
+   "pin": "fabric-lycra@28ef387d27e68e98",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: бифлекс (нейлон с лайкрой)",
+    "en": "fabric: lycra (nylon with spandex)"
+   },
+   "about": {
+    "ru": "тянется сильно, облегает: купальники (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "very stretchy, clings: swimsuits (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-neoprene",
+   "pin": "fabric-neoprene@2b0d6732944a2644",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: неопрен",
+    "en": "fabric: neoprene"
+   },
+   "about": {
+    "ru": "толстый, упругий, держит форму (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thick, springy, keeps its shape (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-nylon",
+   "pin": "fabric-nylon@bf8c5cf21852d892",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: нейлон (ветровка)",
+    "en": "fabric: nylon (windbreaker)"
+   },
+   "about": {
+    "ru": "лёгкий, не тянется, ловит ветер (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "light, does not stretch, catches the wind (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-poplin",
+   "pin": "fabric-poplin@d20ecf344a94963e",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: хлопок-поплин",
+    "en": "fabric: cotton poplin"
+   },
+   "about": {
+    "ru": "лёгкий плотный хлопок: рубашки, платья (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "light, firm cotton: shirts, dresses (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-silk",
+   "pin": "fabric-silk@8dee0e65301326ad",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: шёлк",
+    "en": "fabric: silk"
+   },
+   "about": {
+    "ru": "лёгкий, скользкий, течёт мелкими складками, блестит (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "light, slippery, flows in small folds, shines (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-suiting",
+   "pin": "fabric-suiting@cfe77341b470ad80",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: костюмная шерсть",
+    "en": "fabric: suiting wool"
+   },
+   "about": {
+    "ru": "держит линию: брюки, юбки, пиджаки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "keeps its line: trousers, skirts, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-tweed",
+   "pin": "fabric-tweed@eb14b1101a2f5b5e",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: твид",
+    "en": "fabric: tweed"
+   },
+   "about": {
+    "ru": "толстая жёсткая шерсть: пальто, куртки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thick stiff wool: coats, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-twill",
+   "pin": "fabric-twill@926bd20764dc9758",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: хлопковый твил",
+    "en": "fabric: cotton twill"
+   },
+   "about": {
+    "ru": "плотный хлопок: чиносы, шорты (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "firm cotton: chinos, shorts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "fabric-woolknit",
+   "pin": "fabric-woolknit@27bad4928d150dc3",
+   "group": "fabric",
+   "label": {
+    "ru": "ткань: толстая шерстяная вязка",
+    "en": "fabric: chunky wool knit"
+   },
+   "about": {
+    "ru": "толстая, тяжёлая, тянется, держит объём (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+    "en": "thick, heavy, stretchy, keeps volume (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+   }
+  },
+  {
+   "id": "shape-aline",
+   "pin": "shape-aline@ccf194e7b54dc21e",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: А-силуэт",
+    "en": "silhouette: A-line"
+   },
+   "about": {
+    "ru": "расширяется от талии к подолу ровной трапецией, мягкие складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "widens from the waist to the hem as an even trapeze, soft folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-balloon-leg",
+   "pin": "shape-balloon-leg@a480f9ef9e35e695",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: шаровары",
+    "en": "silhouette: balloon legs"
+   },
+   "about": {
+    "ru": "штанины надуты и собраны у щиколотки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs puffed out, gathered at the ankle (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bell",
+   "pin": "shape-bell@3ec8e4c677e97227",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: колокол",
+    "en": "silhouette: bell"
+   },
+   "about": {
+    "ru": "пышный колокол от талии, складки по подолу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a full bell from the waist, folds round the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bell-sleeve",
+   "pin": "shape-bell-sleeve@22c57c280485af77",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: трапеция, рукав-колокол",
+    "en": "silhouette: trapeze, bell sleeve"
+   },
+   "about": {
+    "ru": "от груди трапецией, рукава расширяются к кисти (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a trapeze from the bust, sleeves widening to the hand (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bishop-sleeve",
+   "pin": "shape-bishop-sleeve@4c3ab651252645ab",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: рукав-епископ",
+    "en": "silhouette: bishop sleeve"
+   },
+   "about": {
+    "ru": "облегает, рукава пышные у кисти (силуэт О1: форма, к которой тянется ткань)",
+    "en": "fitted, sleeves full at the wrist (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-block",
+   "pin": "shape-block@2a359016b2b3bfa2",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: блок оверсайз",
+    "en": "silhouette: oversized block"
+   },
+   "about": {
+    "ru": "висит с плеч прямым квадратным блоком, прямые рукава (силуэт О1: форма, к которой тянется ткань)",
+    "en": "hangs from the shoulders as a straight square block, straight sleeves (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-bubble",
+   "pin": "shape-bubble@43d9a320bab8771f",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: баллон",
+    "en": "silhouette: bubble"
+   },
+   "about": {
+    "ru": "надут шаром и собран у подола (силуэт О1: форма, к которой тянется ткань)",
+    "en": "puffed out like a ball, gathered at the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-cap-sleeve",
+   "pin": "shape-cap-sleeve@2ac398f6f5e9969f",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: трапеция, рукав-крылышко",
+    "en": "silhouette: trapeze, cap sleeve"
+   },
+   "about": {
+    "ru": "от груди трапецией, рукава-крылышки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a trapeze from the bust, cap sleeves (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-empire",
+   "pin": "shape-empire@7aae918183f6ee4b",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: ампир",
+    "en": "silhouette: empire"
+   },
+   "about": {
+    "ru": "висит от груди трапецией, мелкие складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "hangs from the bust as a trapeze, fine folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-fitted",
+   "pin": "shape-fitted@5b5641d9c4ef3697",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: по фигуре",
+    "en": "silhouette: fitted"
+   },
+   "about": {
+    "ru": "плотно по телу, без мостов (силуэт О1: форма, к которой тянется ткань)",
+    "en": "close to the body, no bridging (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-flare-leg",
+   "pin": "shape-flare-leg@913db52266899498",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: клёш",
+    "en": "silhouette: flared legs"
+   },
+   "about": {
+    "ru": "штанины расширяются от колена (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs flaring from the knee (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-full-skirt",
+   "pin": "shape-full-skirt@6f6541c3b97e4588",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: пышная юбка",
+    "en": "silhouette: full skirt"
+   },
+   "about": {
+    "ru": "пышная, длиннее, глубокие складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "full, longer, deep folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-mini-pleats",
+   "pin": "shape-mini-pleats@f545c29737d35805",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: короткая в складку",
+    "en": "silhouette: short pleats"
+   },
+   "about": {
+    "ru": "короче, частые складки (силуэт О1: форма, к которой тянется ткань)",
+    "en": "shorter, many folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-pencil",
+   "pin": "shape-pencil@95a9413a3b041a6e",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: карандаш",
+    "en": "silhouette: pencil"
+   },
+   "about": {
+    "ru": "сужается к подолу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "narrows toward the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-pleated",
+   "pin": "shape-pleated@53c8fc2c03626702",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: юбка в складку",
+    "en": "silhouette: pleated skirt"
+   },
+   "about": {
+    "ru": "А-силуэт с глубокими нарисованными складками (силуэт О1: форма, к которой тянется ткань)",
+    "en": "an A-line with deep drawn folds (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-puff-sleeve",
+   "pin": "shape-puff-sleeve@146bcd8bff713e30",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: рукав-фонарик",
+    "en": "silhouette: puff sleeve"
+   },
+   "about": {
+    "ru": "облегает, рукава-фонарики у плеча (силуэт О1: форма, к которой тянется ткань)",
+    "en": "fitted, sleeves puffed at the shoulder (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-sheath",
+   "pin": "shape-sheath@0a992f880069e556",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: платье-футляр",
+    "en": "silhouette: sheath"
+   },
+   "about": {
+    "ru": "прямой силуэт, ткань мостом через впадины (силуэт О1: форма, к которой тянется ткань)",
+    "en": "a straight line, the cloth bridging the hollows (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-straight-leg",
+   "pin": "shape-straight-leg@88e6de992128d032",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: прямые штанины",
+    "en": "silhouette: straight legs"
+   },
+   "about": {
+    "ru": "штанины прямые, ткань мостом (силуэт О1: форма, к которой тянется ткань)",
+    "en": "straight legs, the cloth bridging (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-taper-leg",
+   "pin": "shape-taper-leg@0e0c921b42f4fc02",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: зауженные",
+    "en": "silhouette: tapered legs"
+   },
+   "about": {
+    "ru": "штанины сужаются к низу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs narrowing downward (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-trapeze-robe",
+   "pin": "shape-trapeze-robe@055386dae3eabc94",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: халат-трапеция",
+    "en": "silhouette: trapeze robe"
+   },
+   "about": {
+    "ru": "с плеч жёсткой квадратной трапецией (силуэт О1: форма, к которой тянется ткань)",
+    "en": "from the shoulders as a stiff square trapeze (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-tulip",
+   "pin": "shape-tulip@aa31739b63173fda",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: тюльпан",
+    "en": "silhouette: tulip"
+   },
+   "about": {
+    "ru": "расширяется на бёдрах и сужается к подолу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "widens over the hips and narrows to the hem (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "shape-wide-leg",
+   "pin": "shape-wide-leg@0370789d5662bce7",
+   "group": "garment-shape",
+   "label": {
+    "ru": "силуэт: широкие штанины",
+    "en": "silhouette: wide legs"
+   },
+   "about": {
+    "ru": "штанины расширяются к низу (силуэт О1: форма, к которой тянется ткань)",
+    "en": "legs widening downward (О1's silhouette: the form the cloth is pulled toward)"
+   }
+  },
+  {
+   "id": "outfit-alva",
+   "pin": "outfit-alva@bf4de70ff0a6a35f",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: Альва",
+    "en": "outfit: Alva"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-anime",
+   "pin": "outfit-anime@1afc3373119cbc8d",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: аниме-девушка",
+    "en": "outfit: anime girl"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-blond",
+   "pin": "outfit-blond@08995452c2c243d3",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: блондин",
+    "en": "outfit: blond boy"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-boy7",
+   "pin": "outfit-boy7@06406ed6c0d15a0a",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: мальчик с каре",
+    "en": "outfit: boy with a bob"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-hood",
+   "pin": "outfit-hood@05ea8d1a69fcf55e",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: женщина в капюшоне",
+    "en": "outfit: hooded woman"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-jesper",
+   "pin": "outfit-jesper@c558675bfeba3874",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: Джеспер",
+    "en": "outfit: Jesper"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-mask",
+   "pin": "outfit-mask@7b360afb10bf8b3a",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: девушка в маске",
+    "en": "outfit: masked girl"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-old",
+   "pin": "outfit-old@cd11d6f94102980d",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: старик",
+    "en": "outfit: old man"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-red",
+   "pin": "outfit-red@7ccb8c4baa3c3586",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: рыжая девушка",
+    "en": "outfit: red-haired girl"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  },
+  {
+   "id": "outfit-semi",
+   "pin": "outfit-semi@f09aa6aa9f2c4459",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: парень с длинным носом",
+    "en": "outfit: long-nosed man"
+   },
+   "about": {
+    "ru": "Г3: что надето, как нарисовано, — тканью (вещи MakeHuman, капюшон или ворот)",
+    "en": "Г3: what it was drawn wearing — as cloth (MakeHuman's garments, a hood or a collar)"
+   }
+  },
+  {
+   "id": "outfit-tails",
+   "pin": "outfit-tails@6ffadf8351b9cf4e",
+   "group": "outfit",
+   "label": {
+    "ru": "наряд: мальчик с хвостиками",
+    "en": "outfit: boy with tails"
+   },
+   "about": {
+    "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+    "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+   }
+  }
+ ]
+}

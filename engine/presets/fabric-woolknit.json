@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-woolknit",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: толстая шерстяная вязка",
+  "en": "fabric: chunky wool knit"
+ },
+ "about": {
+  "ru": "толстая, тяжёлая, тянется, держит объём (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "thick, heavy, stretchy, keeps volume (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.45,
+  "stretch": 250,
+  "compress": 0.75,
+  "bend": 0.00004,
+  "damping": 0.8,
+  "friction": 0.7,
+  "thick": 0.0055,
+  "air": 0.8,
+  "sheen": 0.6,
+  "rough": 1
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-alva",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: Альва",
+  "en": "outfit: Alva"
+ },
+ "about": {
+  "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+  "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+ },
+ "clothes": [
+  {
+   "id": "dress",
+   "kind": "garment",
+   "pattern": "mh-dress",
+   "fabric": "fabric-poplin@d20ecf344a94963e",
+   "color": "#2c3240"
+  },
+  {
+   "id": "flats",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b211d"
+  }
+ ]
+}

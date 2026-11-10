@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "proportions-small-head",
+ "label": {
+  "ru": "пропорции: маленькая голова",
+  "en": "proportions: a small head"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "head": {
+     "size": 0.8
+    }
+   }
+  }
+ ]
+}

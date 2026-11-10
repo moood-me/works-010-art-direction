@@ -1,0 +1,1289 @@
+{
+ "about": "The checks' moments (check/numbers.mjs: skinned positions; check/pictures.mjs: pictures). `each`: every character preset in these; `cases`: one character in moments that exercise an option. A case: {name, char, clip (a motion id, a chain id, or null: at rest), t (frames), over? (keys of the character's description replaced: still checked against its schema), place?, wind? (a wind preset: hair that moves is stepped in it), view (front | side | back | three | top: from where the figure faces then), picture (also a picture), w, h (its size; 400 × 400)}. The stored numbers keep the hashes of the bodies, motions and descriptions they were made from: a difference names what changed under them.",
+ "each": [
+  {
+   "name": "rest",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "picture": true
+  },
+  {
+   "name": "walk30",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "picture": true
+  },
+  {
+   "name": "run20",
+   "clip": "run",
+   "t": 20,
+   "view": "three"
+  },
+  {
+   "name": "sit100",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "lie170",
+   "clip": "lie",
+   "t": 170,
+   "view": "three",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "chain186",
+   "clip": "lie-rollover",
+   "t": 186,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  }
+ ],
+ "cases": [
+  {
+   "name": "dqs-sit100",
+   "char": "man",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "skinning": {
+     "method": "dqs"
+    }
+   },
+   "picture": true
+  },
+  {
+   "name": "lbs-sit100",
+   "char": "man",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "skinning": {
+     "method": "lbs"
+    }
+   },
+   "picture": true
+  },
+  {
+   "name": "dqs-wave40",
+   "char": "woman",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "dqs"
+    }
+   }
+  },
+  {
+   "name": "lbs-wave40",
+   "char": "woman",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "lbs"
+    }
+   }
+  },
+  {
+   "name": "sigma-wave40",
+   "char": "woman",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "cor",
+     "sigma": 0.2
+    }
+   }
+  },
+  {
+   "name": "clavicle-idle60",
+   "char": "woman",
+   "clip": "idle",
+   "t": 60,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "clavicleShare"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "seam-idle60",
+   "char": "woman",
+   "clip": "idle",
+   "t": 60,
+   "view": "front",
+   "over": {
+    "skinning": {
+     "method": "cor",
+     "seam": {}
+    }
+   },
+   "picture": true
+  },
+  {
+   "name": "armsOff-walk30",
+   "char": "oldwoman",
+   "clip": "walk",
+   "t": 30,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "armsOff",
+      "degrees": 10
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "armsOutOfHead-jump45",
+   "char": "princess-toddler-head",
+   "clip": "jump",
+   "t": 45,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "armsOutOfHead"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "amplify-dance50",
+   "char": "hero",
+   "clip": "dance",
+   "t": 50,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "amplifyLimbs",
+      "factor": 1.4
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "damp-bow45",
+   "char": "elf",
+   "clip": "bow",
+   "t": 45,
+   "view": "side",
+   "over": {
+    "pose": [
+     {
+      "kind": "dampHeadSpine"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "turnPose-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "pose": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12
+     }
+    ]
+   }
+  },
+  {
+   "name": "turnRestKeep-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "turnRestTurn-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12,
+      "frames": "turn"
+     }
+    ]
+   }
+  },
+  {
+   "name": "turnRestTurn-rest",
+   "char": "woman",
+   "clip": null,
+   "t": 0,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "turn",
+      "joint": "Spine1",
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "degrees": 12,
+      "frames": "turn"
+     }
+    ]
+   }
+  },
+  {
+   "name": "morphRest-rest",
+   "char": "girl",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "over": {
+    "rest": [
+     {
+      "kind": "morph",
+      "name": "plainFace",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "morphPose-wave40",
+   "char": "girl",
+   "clip": "wave",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "morph",
+      "name": "plainFace",
+      "weight": 0.5
+     }
+    ]
+   }
+  },
+  {
+   "name": "pelvisFloor-sit100",
+   "char": "child",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "motion": {
+     "floor": "pelvis"
+    }
+   }
+  },
+  {
+   "name": "placed-walk60",
+   "char": "boy",
+   "clip": "walk",
+   "t": 60.5,
+   "view": "three",
+   "place": {
+    "position": [
+     1.5,
+     0.3,
+     -2
+    ],
+    "heading": 2
+   },
+   "picture": true
+  },
+  {
+   "name": "join178",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 178,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join180",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 180,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join182",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 182,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join186",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 186,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "join195",
+   "char": "woman",
+   "clip": "lie-rollover",
+   "t": 195,
+   "view": "side",
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "rollover-prone",
+   "char": "man",
+   "clip": "lie-rollover",
+   "t": 240,
+   "view": "top",
+   "picture": true
+  },
+  {
+   "name": "chain4-120",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 120,
+   "view": "three"
+  },
+  {
+   "name": "chain4-123",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 123,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "chain4-190",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 190,
+   "view": "three"
+  },
+  {
+   "name": "chain4-305",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 305,
+   "view": "three"
+  },
+  {
+   "name": "chain4-360",
+   "char": "woman",
+   "clip": "walk-stop-look-back",
+   "t": 360,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "squash-rest",
+   "char": "boy",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "over": {
+    "rest": [
+     {
+      "kind": "squash",
+      "stretch": -0.25,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "straightArc-walk30",
+   "char": "man",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "limbs-straight-curved@2055e08173270cd3",
+      "strength": 1,
+      "frames": "keep"
+     },
+     {
+      "kind": "preset",
+      "id": "limbs-arcs@7c32e694f7eb0af0",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "caricature-rest",
+   "char": "woman",
+   "clip": null,
+   "t": 0,
+   "view": "front",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "caricature@9d0b745c548ae184",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "lineTurn-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "line-side-c-forward@1ed47f7b02da8346",
+      "strength": 1,
+      "frames": "turn"
+     }
+    ]
+   }
+  },
+  {
+   "name": "silhouetteKeep-run20",
+   "char": "woman",
+   "clip": "run",
+   "t": 20,
+   "view": "three",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "silhouette-hourglass@0097d55939ccfdf2",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "linePose-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "linePoseUpright-lie170",
+   "char": "woman",
+   "clip": "lie",
+   "t": 170,
+   "view": "three",
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08,
+      "space": "upright"
+     }
+    ]
+   },
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "linePosePelvis-lie170",
+   "char": "woman",
+   "clip": "lie",
+   "t": 170,
+   "view": "three",
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08,
+      "space": "pelvis"
+     }
+    ]
+   },
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "linePosePlaced-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "place": {
+    "position": [
+     2,
+     0,
+     1
+    ],
+    "heading": 1.9
+   },
+   "over": {
+    "pose": [
+     {
+      "kind": "line",
+      "view": "side",
+      "curve": "C",
+      "bend": 0.08
+     }
+    ]
+   }
+  },
+  {
+   "name": "squashPose-jump40",
+   "char": "child",
+   "clip": "jump",
+   "t": 40,
+   "view": "front",
+   "over": {
+    "pose": [
+     {
+      "kind": "squash",
+      "stretch": -0.3
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "smoothPose-walk30",
+   "char": "man",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "pose": [
+     {
+      "kind": "preset",
+      "id": "smooth-8cm@395b8e2b06c6ca6d",
+      "strength": 0.7
+     }
+    ]
+   }
+  },
+  {
+   "name": "contourHalf-sit100",
+   "char": "girl",
+   "clip": "sit",
+   "t": 100,
+   "view": "three",
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "contour-anime@25302c7a10ef9724",
+      "strength": 0.5,
+      "frames": "keep"
+     },
+     {
+      "kind": "preset",
+      "id": "masses-shoulders@24985df2002c8feb",
+      "strength": 1,
+      "frames": "keep"
+     }
+    ]
+   },
+   "picture": true
+  },
+  {
+   "name": "newBody-walk30",
+   "char": "woman",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "body": "anny-m-heavy@213d83e01027934d"
+   },
+   "picture": true
+  },
+  {
+   "name": "blink",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "blink",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "open",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "open",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "smile",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "smile",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "face",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "look60",
+   "char": "head-red",
+   "clip": "look-around",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "look60-smile",
+   "char": "head-red",
+   "clip": "look-around",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "smile",
+      "weight": 0.7
+     }
+    ]
+   }
+  },
+  {
+   "name": "dqs-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "over": {
+    "skinning": {
+     "method": "dqs"
+    }
+   }
+  },
+  {
+   "name": "lbs-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "skinning": {
+     "method": "lbs"
+    }
+   }
+  },
+  {
+   "name": "hourglass-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "rest": [
+     {
+      "kind": "preset",
+      "id": "silhouette-hourglass@0097d55939ccfdf2",
+      "strength": 0.8,
+      "frames": "keep"
+     }
+    ]
+   }
+  },
+  {
+   "name": "line-walk30",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 30,
+   "view": "side",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "preset",
+      "id": "line-side-c-forward@1ed47f7b02da8346",
+      "strength": 1,
+      "space": "upright"
+     }
+    ]
+   }
+  },
+  {
+   "name": "placed-walk60",
+   "char": "head-red",
+   "clip": "walk",
+   "t": 60,
+   "view": "three",
+   "place": {
+    "position": [
+     2,
+     0,
+     -1
+    ],
+    "heading": 1.2
+   }
+  },
+  {
+   "name": "light-plain",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true,
+   "over": {
+    "head": {
+     "preset": "head-red@28bee1e96f6de81e",
+     "light": {
+      "kind": "preset",
+      "id": "light-plain@5acbe8db01ec7ddd"
+     }
+    }
+   }
+  },
+  {
+   "name": "light-toon",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true,
+   "over": {
+    "head": {
+     "preset": "head-red@28bee1e96f6de81e",
+     "light": {
+      "kind": "preset",
+      "id": "light-toon@9ec46ec5097eba0c"
+     }
+    }
+   }
+  },
+  {
+   "name": "light-soft-form",
+   "char": "head-red",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true,
+   "over": {
+    "head": {
+     "preset": "head-red@28bee1e96f6de81e",
+     "light": {
+      "kind": "preset",
+      "id": "light-soft-form@01c280e63291ee71"
+     }
+    }
+   }
+  },
+  {
+   "name": "run20-face",
+   "char": "head-old",
+   "clip": "run",
+   "t": 20,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "open",
+   "char": "head-old",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-red-mine",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "blink",
+   "char": "head-red-mine",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "blink",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "dance60-face",
+   "char": "head-red-mine",
+   "clip": "dance",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-anny-age",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "smile",
+   "char": "head-points",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "level",
+   "picture": true,
+   "over": {
+    "pose": [
+     {
+      "kind": "expression",
+      "name": "smile",
+      "weight": 1
+     }
+    ]
+   }
+  },
+  {
+   "name": "face",
+   "char": "head-cage",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-anny-face",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "face",
+   "char": "head-semi",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.32,
+   "view": "profile",
+   "picture": true
+  },
+  {
+   "name": "wind-idle90",
+   "char": "hair-alva",
+   "clip": "idle",
+   "t": 90,
+   "focus": "Head",
+   "size": 0.6,
+   "view": "front",
+   "picture": true,
+   "wind": "wind-strong@64bb0a2cb59fea0d"
+  },
+  {
+   "name": "gusts-idle90",
+   "char": "hair-kpony",
+   "clip": "idle",
+   "t": 90,
+   "focus": "Head",
+   "size": 0.7,
+   "view": "side",
+   "picture": true,
+   "wind": "wind-gusty@b4ca5265c3f22e0c"
+  },
+  {
+   "name": "look60",
+   "char": "hair-g3-red",
+   "clip": "look-around",
+   "t": 60,
+   "focus": "Head",
+   "size": 0.6,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "jump40",
+   "char": "hair-gwen",
+   "clip": "jump",
+   "t": 40,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "dance60",
+   "char": "hair-g1-alva",
+   "clip": "dance",
+   "t": 60,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "bow50",
+   "char": "hair-kpony",
+   "clip": "bow",
+   "t": 50,
+   "view": "side",
+   "picture": true
+  },
+  {
+   "name": "roll40",
+   "char": "hair-marco",
+   "clip": "roll",
+   "t": 40,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "face",
+   "char": "hair-red-ariel",
+   "clip": null,
+   "t": 0,
+   "focus": "Head",
+   "size": 0.5,
+   "view": "tq",
+   "picture": true
+  },
+  {
+   "name": "wind-idle90",
+   "char": "clothes-wind",
+   "clip": "idle",
+   "t": 90,
+   "view": "three",
+   "picture": true,
+   "wind": "wind-strong@64bb0a2cb59fea0d"
+  },
+  {
+   "name": "light-walk40",
+   "char": "clothes-wind",
+   "clip": "walk",
+   "t": 40,
+   "view": "side",
+   "picture": true,
+   "wind": "wind-light@ecb351e6471f5e97"
+  },
+  {
+   "name": "free-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-poplin@d20ecf344a94963e",
+      "color": "#3d5f8c",
+      "shape": "shape-bell@3ec8e4c677e97227",
+      "strength": 0
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "half-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-poplin@d20ecf344a94963e",
+      "color": "#3d5f8c",
+      "shape": "shape-bell@3ec8e4c677e97227",
+      "strength": 0.5
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "chiffon-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "picture": true,
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-chiffon@f305643886762bd4",
+      "color": "#3d5f8c"
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "denim-walk30",
+   "char": "clothes-dress",
+   "clip": "walk",
+   "t": 30,
+   "view": "three",
+   "over": {
+    "clothes": [
+     {
+      "id": "dress",
+      "kind": "garment",
+      "pattern": "mh-dress",
+      "fabric": "fabric-denim@08106be05917918a",
+      "color": "#3d5f8c"
+     },
+     {
+      "id": "shoes",
+      "kind": "garment",
+      "pattern": "mh-flats",
+      "fabric": "fabric-suiting@cfe77341b470ad80",
+      "color": "#2a2230"
+     }
+    ]
+   }
+  },
+  {
+   "name": "jump40",
+   "char": "clothes-child",
+   "clip": "jump",
+   "t": 40,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "dance60",
+   "char": "clothes-jacket",
+   "clip": "dance",
+   "t": 60,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "roll40",
+   "char": "clothes-jeans",
+   "clip": "roll",
+   "t": 40,
+   "view": "side",
+   "picture": true,
+   "w": 560,
+   "h": 340
+  },
+  {
+   "name": "bow50",
+   "char": "clothes-granny",
+   "clip": "bow",
+   "t": 50,
+   "view": "side",
+   "picture": true
+  },
+  {
+   "name": "look60",
+   "char": "head-hood",
+   "clip": "look-around",
+   "t": 60,
+   "view": "three",
+   "picture": true
+  },
+  {
+   "name": "hair-walk40",
+   "char": "clothes-hair",
+   "clip": "walk",
+   "t": 40,
+   "view": "back",
+   "picture": true
+  }
+ ]
+}

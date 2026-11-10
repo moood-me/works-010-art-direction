@@ -1,0 +1,8223 @@
+{
+ "format": "engine/check-numbers",
+ "version": 1,
+ "about": "check/numbers.mjs: each case's joints and every 4th used vertex, metres",
+ "stride": 4,
+ "jobs": {
+  "anime-girl-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "anime-girl-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "anime-girl-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "anime-girl-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "anime-girl-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "anime-girl-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "boy-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "boy-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "boy-placed-walk60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "boy-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441"
+   }
+  },
+  "boy-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "boy-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "boy-squash-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441"
+   }
+  },
+  "boy-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-boy@4c7e09025ff44441",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "burton-thin-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "burton-thin-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "burton-thin-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379"
+   }
+  },
+  "burton-thin-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "burton-thin-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "burton-thin-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-burton@4cabc23adfc32379",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "child-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "child-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "child-pelvisFloor-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "child-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54"
+   }
+  },
+  "child-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "child-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "child-squashPose-jump40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "jump@c8e333e5c41655fe"
+    ]
+   }
+  },
+  "child-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-child-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-child-jump40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "jump@c8e333e5c41655fe"
+    ]
+   }
+  },
+  "clothes-child-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-child-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54"
+   }
+  },
+  "clothes-child-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-child-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-child-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-disney-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-disney-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-disney-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189"
+   }
+  },
+  "clothes-disney-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-disney-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-disney-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-dress-chiffon-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-denim-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-free-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-half-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-dress-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-dress-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "clothes-dress-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-dress-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-dress-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-granny-bow50": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "bow@d9fabdc14e115150"
+    ]
+   }
+  },
+  "clothes-granny-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-granny-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-granny-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f"
+   }
+  },
+  "clothes-granny-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-granny-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-granny-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-hair-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-hair-walk40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-hair-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "clothes-heavy-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-heavy-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-heavy-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d"
+   }
+  },
+  "clothes-heavy-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-heavy-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-heavy-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-hero-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-hero-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-hero-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "clothes-hero-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-hero-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-hero-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-jacket-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-jacket-dance60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "dance@b66768274b1b929c"
+    ]
+   }
+  },
+  "clothes-jacket-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-jacket-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e"
+   }
+  },
+  "clothes-jacket-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-jacket-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-jacket-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-jeans-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-jeans-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-jeans-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "clothes-jeans-roll40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "roll@e3a7828522e32b20"
+    ]
+   }
+  },
+  "clothes-jeans-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-jeans-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-jeans-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-wind-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "clothes-wind-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "clothes-wind-light-walk40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-wind-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "clothes-wind-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "clothes-wind-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "clothes-wind-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "clothes-wind-wind-idle90": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "idle@5a4c6299ee254153"
+    ]
+   }
+  },
+  "disney-princess-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "disney-princess-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "disney-princess-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189"
+   }
+  },
+  "disney-princess-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "disney-princess-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "disney-princess-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-princess@d351f5dda87f7189",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "egg-baby-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "egg-baby-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "egg-baby-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9"
+   }
+  },
+  "egg-baby-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "egg-baby-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "egg-baby-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-chibi-baby17@1d20b1020a25a5f9",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "elf-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-elf@85ac3d063932c900",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "elf-damp-bow45": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-elf@85ac3d063932c900",
+    "motions": [
+     "bow@d9fabdc14e115150"
+    ]
+   }
+  },
+  "elf-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-elf@85ac3d063932c900",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "elf-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-elf@85ac3d063932c900"
+   }
+  },
+  "elf-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-elf@85ac3d063932c900",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "elf-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-elf@85ac3d063932c900",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "elf-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-elf@85ac3d063932c900",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "girl-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "girl-contourHalf-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "girl-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "girl-morphPose-wave40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "wave@e6263441c80bc6cc"
+    ]
+   }
+  },
+  "girl-morphRest-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e"
+   }
+  },
+  "girl-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e"
+   }
+  },
+  "girl-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "girl-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "girl-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "hair-alva-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-alva-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-alva-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-alva-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-alva-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-alva-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-alva-wind-idle90": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "idle@5a4c6299ee254153"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-g1-alva-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "hair-g1-alva-dance60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "dance@b66768274b1b929c"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "hair-g1-alva-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "hair-g1-alva-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "hair-g1-alva-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "hair-g1-alva-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "hair-g1-alva-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "hair-g3-red-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-g3-red-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-g3-red-look60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "look-around@07f516ad42bf68ca"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-g3-red-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-g3-red-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-g3-red-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-g3-red-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-gwen-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-gwen-jump40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "jump@c8e333e5c41655fe"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-gwen-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-gwen-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-gwen-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-gwen-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-gwen-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-jack-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "742d398e88f40775"
+   }
+  },
+  "hair-jack-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "742d398e88f40775"
+   }
+  },
+  "hair-jack-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "742d398e88f40775"
+   }
+  },
+  "hair-jack-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "742d398e88f40775"
+   }
+  },
+  "hair-jack-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "742d398e88f40775"
+   }
+  },
+  "hair-jack-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "742d398e88f40775"
+   }
+  },
+  "hair-kpony-bow50": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "bow@d9fabdc14e115150"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-kpony-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-kpony-gusts-idle90": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "idle@5a4c6299ee254153"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-kpony-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-kpony-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-kpony-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-kpony-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-kpony-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b5aa51ca20f9a0eb"
+   }
+  },
+  "hair-marco-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "946a1c10642b06dc"
+   }
+  },
+  "hair-marco-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "946a1c10642b06dc"
+   }
+  },
+  "hair-marco-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "946a1c10642b06dc"
+   }
+  },
+  "hair-marco-roll40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "roll@e3a7828522e32b20"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "946a1c10642b06dc"
+   }
+  },
+  "hair-marco-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "946a1c10642b06dc"
+   }
+  },
+  "hair-marco-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "946a1c10642b06dc"
+   }
+  },
+  "hair-marco-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "946a1c10642b06dc"
+   }
+  },
+  "hair-red-ariel-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-red-ariel-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-red-ariel-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-red-ariel-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-red-ariel-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-red-ariel-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "hair-red-ariel-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-alva-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "head-alva-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "head-alva-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "head-alva-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "head-alva-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "head-alva-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6e8dec4ae7daf3a3"
+   }
+  },
+  "head-anime-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b000c846d4a01f73"
+   }
+  },
+  "head-anime-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b000c846d4a01f73"
+   }
+  },
+  "head-anime-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b000c846d4a01f73"
+   }
+  },
+  "head-anime-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b000c846d4a01f73"
+   }
+  },
+  "head-anime-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b000c846d4a01f73"
+   }
+  },
+  "head-anime-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "b000c846d4a01f73"
+   }
+  },
+  "head-anny-age-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d73e9a6f13681739"
+   }
+  },
+  "head-anny-age-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d73e9a6f13681739"
+   }
+  },
+  "head-anny-age-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d73e9a6f13681739"
+   }
+  },
+  "head-anny-age-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d73e9a6f13681739"
+   }
+  },
+  "head-anny-age-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d73e9a6f13681739"
+   }
+  },
+  "head-anny-age-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d73e9a6f13681739"
+   }
+  },
+  "head-anny-age-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d73e9a6f13681739"
+   }
+  },
+  "head-anny-face-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "c707e8b13da70b2f"
+   }
+  },
+  "head-anny-face-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "c707e8b13da70b2f"
+   }
+  },
+  "head-anny-face-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "c707e8b13da70b2f"
+   }
+  },
+  "head-anny-face-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "c707e8b13da70b2f"
+   }
+  },
+  "head-anny-face-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "c707e8b13da70b2f"
+   }
+  },
+  "head-anny-face-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "c707e8b13da70b2f"
+   }
+  },
+  "head-anny-face-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "c707e8b13da70b2f"
+   }
+  },
+  "head-blond-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "3d12fc0fbf69b892"
+   }
+  },
+  "head-blond-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "3d12fc0fbf69b892"
+   }
+  },
+  "head-blond-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "3d12fc0fbf69b892"
+   }
+  },
+  "head-blond-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "3d12fc0fbf69b892"
+   }
+  },
+  "head-blond-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "3d12fc0fbf69b892"
+   }
+  },
+  "head-blond-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "3d12fc0fbf69b892"
+   }
+  },
+  "head-boy7-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f3d8f979c8d333be"
+   }
+  },
+  "head-boy7-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f3d8f979c8d333be"
+   }
+  },
+  "head-boy7-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f3d8f979c8d333be"
+   }
+  },
+  "head-boy7-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f3d8f979c8d333be"
+   }
+  },
+  "head-boy7-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f3d8f979c8d333be"
+   }
+  },
+  "head-boy7-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f3d8f979c8d333be"
+   }
+  },
+  "head-cage-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "29f8b94e113bffa4"
+   }
+  },
+  "head-cage-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "29f8b94e113bffa4"
+   }
+  },
+  "head-cage-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "29f8b94e113bffa4"
+   }
+  },
+  "head-cage-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "29f8b94e113bffa4"
+   }
+  },
+  "head-cage-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "29f8b94e113bffa4"
+   }
+  },
+  "head-cage-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "29f8b94e113bffa4"
+   }
+  },
+  "head-cage-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-child@5c187b05e70b6a54",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "29f8b94e113bffa4"
+   }
+  },
+  "head-hood-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-hood-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-hood-look60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "look-around@07f516ad42bf68ca"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-hood-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-hood-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-hood-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-hood-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "d45ba8473c57c888"
+   }
+  },
+  "head-jesper-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9725422c0e602368"
+   }
+  },
+  "head-jesper-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9725422c0e602368"
+   }
+  },
+  "head-jesper-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9725422c0e602368"
+   }
+  },
+  "head-jesper-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9725422c0e602368"
+   }
+  },
+  "head-jesper-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9725422c0e602368"
+   }
+  },
+  "head-jesper-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9725422c0e602368"
+   }
+  },
+  "head-mask-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "8d847deea7b6211f"
+   }
+  },
+  "head-mask-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "8d847deea7b6211f"
+   }
+  },
+  "head-mask-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "8d847deea7b6211f"
+   }
+  },
+  "head-mask-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "8d847deea7b6211f"
+   }
+  },
+  "head-mask-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "8d847deea7b6211f"
+   }
+  },
+  "head-mask-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "8d847deea7b6211f"
+   }
+  },
+  "head-old-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-old-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-old-open": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-old-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-old-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-old-run20-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-old-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-old-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "f9f1542a2926b433"
+   }
+  },
+  "head-points-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "85e798cd64f796fb"
+   }
+  },
+  "head-points-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "85e798cd64f796fb"
+   }
+  },
+  "head-points-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "85e798cd64f796fb"
+   }
+  },
+  "head-points-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "85e798cd64f796fb"
+   }
+  },
+  "head-points-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "85e798cd64f796fb"
+   }
+  },
+  "head-points-smile": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "15cfa56086d07e69"
+   }
+  },
+  "head-points-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-girl@a2f190bc6fd1cf0e",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "85e798cd64f796fb"
+   }
+  },
+  "head-red-blink": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9db5ab3fae8a6fe2"
+   }
+  },
+  "head-red-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-dqs-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-hourglass-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "fe2b780fa0343560"
+   }
+  },
+  "head-red-lbs-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-light-plain": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-light-soft-form": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-light-toon": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-line-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-look60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "look-around@07f516ad42bf68ca"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-look60-smile": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "look-around@07f516ad42bf68ca"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "6589f9381bd63806"
+   }
+  },
+  "head-red-mine-blink": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "9db5ab3fae8a6fe2"
+   }
+  },
+  "head-red-mine-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-mine-dance60-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "dance@b66768274b1b929c"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-mine-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-mine-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-mine-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-mine-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-mine-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-mine-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "a7471fb071098724"
+   }
+  },
+  "head-red-open": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7ed3ef6bccaf062a"
+   }
+  },
+  "head-red-placed-walk60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-red-smile": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "5fb47d2c20790e1c"
+   }
+  },
+  "head-red-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "cff960f7af83e3a3"
+   }
+  },
+  "head-semi-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7df17a32e3531532"
+   }
+  },
+  "head-semi-face": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7df17a32e3531532"
+   }
+  },
+  "head-semi-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7df17a32e3531532"
+   }
+  },
+  "head-semi-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7df17a32e3531532"
+   }
+  },
+  "head-semi-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7df17a32e3531532"
+   }
+  },
+  "head-semi-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7df17a32e3531532"
+   }
+  },
+  "head-semi-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "7df17a32e3531532"
+   }
+  },
+  "head-tails-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "228060a16277635f"
+   }
+  },
+  "head-tails-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "228060a16277635f"
+   }
+  },
+  "head-tails-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "228060a16277635f"
+   }
+  },
+  "head-tails-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "228060a16277635f"
+   }
+  },
+  "head-tails-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "228060a16277635f"
+   }
+  },
+  "head-tails-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ],
+    "heads": {
+     "wrap": 2,
+     "picture": 2,
+     "expressions": 2,
+     "pieces": 3,
+     "hair": 5
+    },
+    "picture": "228060a16277635f"
+   }
+  },
+  "hero-amplify-dance50": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-hero@c0cd495bd6b84292",
+    "motions": [
+     "dance@b66768274b1b929c"
+    ]
+   }
+  },
+  "hero-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-hero@c0cd495bd6b84292",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "hero-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-hero@c0cd495bd6b84292",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "hero-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-hero@c0cd495bd6b84292"
+   }
+  },
+  "hero-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-hero@c0cd495bd6b84292",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "hero-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-hero@c0cd495bd6b84292",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "hero-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-C-hero@c0cd495bd6b84292",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "man-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "man-dqs-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "man-lbs-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "man-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "man-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "man-rollover-prone": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "man-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "man-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "man-smoothPose-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "man-straightArc-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "man-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "oldman-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "oldman-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "oldman-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e"
+   }
+  },
+  "oldman-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "oldman-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "oldman-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldman@4cc8baf71d85269e",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "oldwoman-armsOff-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "oldwoman-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "oldwoman-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "oldwoman-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f"
+   }
+  },
+  "oldwoman-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "oldwoman-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "oldwoman-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "pear-old-woman-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pear-old-woman-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pear-old-woman-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f"
+   }
+  },
+  "pear-old-woman-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pear-old-woman-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pear-old-woman-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-oldwoman@ba4150ce719fe12f",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "pictogram-man-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pictogram-man-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pictogram-man-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "pictogram-man-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pictogram-man-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pictogram-man-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "pictogram-woman-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pictogram-woman-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pictogram-woman-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "pictogram-woman-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pictogram-woman-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pictogram-woman-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "pixar-mother-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "pixar-mother-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "pixar-mother-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "pixar-mother-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "pixar-mother-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "pixar-mother-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "princess-toddler-head-armsOutOfHead-jump45": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-princ-tod125@05af589e5765c40f",
+    "motions": [
+     "jump@c8e333e5c41655fe"
+    ]
+   }
+  },
+  "princess-toddler-head-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-princ-tod125@05af589e5765c40f",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "princess-toddler-head-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-princ-tod125@05af589e5765c40f",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "princess-toddler-head-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-princ-tod125@05af589e5765c40f"
+   }
+  },
+  "princess-toddler-head-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-princ-tod125@05af589e5765c40f",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "princess-toddler-head-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-princ-tod125@05af589e5765c40f",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "princess-toddler-head-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-T-princ-tod125@05af589e5765c40f",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "v-hero-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "v-hero-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "v-hero-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7"
+   }
+  },
+  "v-hero-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "v-hero-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "v-hero-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-man@ae2fe31d3d61c6e7",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-caricature-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "woman-chain186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "woman-chain4-120": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-123": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-190": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-305": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-chain4-360": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180",
+     "stop@bc91f274b5970c06",
+     "look-around@07f516ad42bf68ca",
+     "turn-back@963439fb42d8aa1f"
+    ]
+   }
+  },
+  "woman-clavicle-idle60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "idle@5a4c6299ee254153"
+    ]
+   }
+  },
+  "woman-dqs-wave40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "wave@e6263441c80bc6cc"
+    ]
+   }
+  },
+  "woman-join178": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "woman-join180": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "woman-join182": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "woman-join186": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "woman-join195": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758",
+     "rollover@2c11a8445eeb3beb"
+    ]
+   }
+  },
+  "woman-lbs-wave40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "wave@e6263441c80bc6cc"
+    ]
+   }
+  },
+  "woman-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "woman-linePose-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-linePosePelvis-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "woman-linePosePlaced-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-linePoseUpright-lie170": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "lie@c24c5ad967fd5758"
+    ]
+   }
+  },
+  "woman-lineTurn-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-newBody-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "anny-m-heavy@213d83e01027934d",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "woman-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "woman-seam-idle60": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "idle@5a4c6299ee254153"
+    ]
+   }
+  },
+  "woman-sigma-wave40": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "wave@e6263441c80bc6cc"
+    ]
+   }
+  },
+  "woman-silhouetteKeep-run20": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "run@f8f5871f3b39fff4"
+    ]
+   }
+  },
+  "woman-sit100": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "sit@b2da03b05736323e"
+    ]
+   }
+  },
+  "woman-turnPose-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-turnRestKeep-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-turnRestTurn-rest": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa"
+   }
+  },
+  "woman-turnRestTurn-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  },
+  "woman-walk30": {
+   "joints": 77,
+   "sources": {
+    "body": "moood-woman@271c46992b9495aa",
+    "motions": [
+     "walk@19f9d850a0b23180"
+    ]
+   }
+  }
+ },
+ "bin": "numbers.bin",
+ "arrays": {
+  "anime-girl-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 0
+  },
+  "anime-girl-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37692
+  },
+  "anime-girl-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 75384
+  },
+  "anime-girl-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 113076
+  },
+  "anime-girl-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 150768
+  },
+  "anime-girl-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 188460
+  },
+  "boy-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 226152
+  },
+  "boy-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 263844
+  },
+  "boy-placed-walk60": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 301536
+  },
+  "boy-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 339228
+  },
+  "boy-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 376920
+  },
+  "boy-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 414612
+  },
+  "boy-squash-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 452304
+  },
+  "boy-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 489996
+  },
+  "burton-thin-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 527688
+  },
+  "burton-thin-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 565380
+  },
+  "burton-thin-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 603072
+  },
+  "burton-thin-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 640764
+  },
+  "burton-thin-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 678456
+  },
+  "burton-thin-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 716148
+  },
+  "child-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 753840
+  },
+  "child-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 791532
+  },
+  "child-pelvisFloor-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 829224
+  },
+  "child-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 866916
+  },
+  "child-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 904608
+  },
+  "child-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 942300
+  },
+  "child-squashPose-jump40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 979992
+  },
+  "child-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 1017684
+  },
+  "clothes-child-chain186": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1055376
+  },
+  "clothes-child-jump40": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1124676
+  },
+  "clothes-child-lie170": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1193976
+  },
+  "clothes-child-rest": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1263276
+  },
+  "clothes-child-run20": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1332576
+  },
+  "clothes-child-sit100": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1401876
+  },
+  "clothes-child-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5775,
+    3
+   ],
+   "offset": 1471176
+  },
+  "clothes-disney-chain186": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1540476
+  },
+  "clothes-disney-lie170": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1605432
+  },
+  "clothes-disney-rest": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1670388
+  },
+  "clothes-disney-run20": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1735344
+  },
+  "clothes-disney-sit100": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1800300
+  },
+  "clothes-disney-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1865256
+  },
+  "clothes-dress-chain186": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1930212
+  },
+  "clothes-dress-chiffon-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 1995168
+  },
+  "clothes-dress-denim-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2060124
+  },
+  "clothes-dress-free-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2125080
+  },
+  "clothes-dress-half-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2190036
+  },
+  "clothes-dress-lie170": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2254992
+  },
+  "clothes-dress-rest": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2319948
+  },
+  "clothes-dress-run20": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2384904
+  },
+  "clothes-dress-sit100": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2449860
+  },
+  "clothes-dress-walk30": {
+   "dtype": "float32",
+   "shape": [
+    5413,
+    3
+   ],
+   "offset": 2514816
+  },
+  "clothes-granny-bow50": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2579772
+  },
+  "clothes-granny-chain186": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2679792
+  },
+  "clothes-granny-lie170": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2779812
+  },
+  "clothes-granny-rest": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2879832
+  },
+  "clothes-granny-run20": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 2979852
+  },
+  "clothes-granny-sit100": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 3079872
+  },
+  "clothes-granny-walk30": {
+   "dtype": "float32",
+   "shape": [
+    8335,
+    3
+   ],
+   "offset": 3179892
+  },
+  "clothes-hair-chain186": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3279912
+  },
+  "clothes-hair-hair-walk40": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3470268
+  },
+  "clothes-hair-lie170": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3660624
+  },
+  "clothes-hair-rest": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 3850980
+  },
+  "clothes-hair-run20": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 4041336
+  },
+  "clothes-hair-sit100": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 4231692
+  },
+  "clothes-hair-walk30": {
+   "dtype": "float32",
+   "shape": [
+    15863,
+    3
+   ],
+   "offset": 4422048
+  },
+  "clothes-heavy-chain186": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4612404
+  },
+  "clothes-heavy-lie170": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4703004
+  },
+  "clothes-heavy-rest": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4793604
+  },
+  "clothes-heavy-run20": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4884204
+  },
+  "clothes-heavy-sit100": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 4974804
+  },
+  "clothes-heavy-walk30": {
+   "dtype": "float32",
+   "shape": [
+    7550,
+    3
+   ],
+   "offset": 5065404
+  },
+  "clothes-hero-chain186": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5156004
+  },
+  "clothes-hero-lie170": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5246484
+  },
+  "clothes-hero-rest": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5336964
+  },
+  "clothes-hero-run20": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5427444
+  },
+  "clothes-hero-sit100": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5517924
+  },
+  "clothes-hero-walk30": {
+   "dtype": "float32",
+   "shape": [
+    7540,
+    3
+   ],
+   "offset": 5608404
+  },
+  "clothes-jacket-chain186": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5698884
+  },
+  "clothes-jacket-dance60": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5787492
+  },
+  "clothes-jacket-lie170": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5876100
+  },
+  "clothes-jacket-rest": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 5964708
+  },
+  "clothes-jacket-run20": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 6053316
+  },
+  "clothes-jacket-sit100": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 6141924
+  },
+  "clothes-jacket-walk30": {
+   "dtype": "float32",
+   "shape": [
+    7384,
+    3
+   ],
+   "offset": 6230532
+  },
+  "clothes-jeans-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6319140
+  },
+  "clothes-jeans-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6400632
+  },
+  "clothes-jeans-rest": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6482124
+  },
+  "clothes-jeans-roll40": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6563616
+  },
+  "clothes-jeans-run20": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6645108
+  },
+  "clothes-jeans-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6726600
+  },
+  "clothes-jeans-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6791,
+    3
+   ],
+   "offset": 6808092
+  },
+  "clothes-wind-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 6889584
+  },
+  "clothes-wind-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 6965448
+  },
+  "clothes-wind-light-walk40": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7041312
+  },
+  "clothes-wind-rest": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7117176
+  },
+  "clothes-wind-run20": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7193040
+  },
+  "clothes-wind-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7268904
+  },
+  "clothes-wind-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7344768
+  },
+  "clothes-wind-wind-idle90": {
+   "dtype": "float32",
+   "shape": [
+    6322,
+    3
+   ],
+   "offset": 7420632
+  },
+  "disney-princess-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7496496
+  },
+  "disney-princess-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7534188
+  },
+  "disney-princess-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7571880
+  },
+  "disney-princess-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7609572
+  },
+  "disney-princess-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7647264
+  },
+  "disney-princess-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7684956
+  },
+  "egg-baby-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7722648
+  },
+  "egg-baby-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7760340
+  },
+  "egg-baby-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7798032
+  },
+  "egg-baby-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7835724
+  },
+  "egg-baby-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7873416
+  },
+  "egg-baby-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7911108
+  },
+  "elf-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7948800
+  },
+  "elf-damp-bow45": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 7986492
+  },
+  "elf-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8024184
+  },
+  "elf-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8061876
+  },
+  "elf-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8099568
+  },
+  "elf-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8137260
+  },
+  "elf-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8174952
+  },
+  "girl-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8212644
+  },
+  "girl-contourHalf-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8250336
+  },
+  "girl-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8288028
+  },
+  "girl-morphPose-wave40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8325720
+  },
+  "girl-morphRest-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8363412
+  },
+  "girl-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8401104
+  },
+  "girl-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8438796
+  },
+  "girl-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8476488
+  },
+  "girl-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 8514180
+  },
+  "hair-alva-chain186": {
+   "dtype": "float32",
+   "shape": [
+    12367,
+    3
+   ],
+   "offset": 8551872
+  },
+  "hair-alva-lie170": {
+   "dtype": "float32",
+   "shape": [
+    12367,
+    3
+   ],
+   "offset": 8700276
+  },
+  "hair-alva-rest": {
+   "dtype": "float32",
+   "shape": [
+    12367,
+    3
+   ],
+   "offset": 8848680
+  },
+  "hair-alva-run20": {
+   "dtype": "float32",
+   "shape": [
+    12367,
+    3
+   ],
+   "offset": 8997084
+  },
+  "hair-alva-sit100": {
+   "dtype": "float32",
+   "shape": [
+    12367,
+    3
+   ],
+   "offset": 9145488
+  },
+  "hair-alva-walk30": {
+   "dtype": "float32",
+   "shape": [
+    12367,
+    3
+   ],
+   "offset": 9293892
+  },
+  "hair-alva-wind-idle90": {
+   "dtype": "float32",
+   "shape": [
+    12367,
+    3
+   ],
+   "offset": 9442296
+  },
+  "hair-g1-alva-chain186": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 9590700
+  },
+  "hair-g1-alva-dance60": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 9778188
+  },
+  "hair-g1-alva-lie170": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 9965676
+  },
+  "hair-g1-alva-rest": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 10153164
+  },
+  "hair-g1-alva-run20": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 10340652
+  },
+  "hair-g1-alva-sit100": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 10528140
+  },
+  "hair-g1-alva-walk30": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 10715628
+  },
+  "hair-g3-red-chain186": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 10903116
+  },
+  "hair-g3-red-lie170": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 11059392
+  },
+  "hair-g3-red-look60": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 11215668
+  },
+  "hair-g3-red-rest": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 11371944
+  },
+  "hair-g3-red-run20": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 11528220
+  },
+  "hair-g3-red-sit100": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 11684496
+  },
+  "hair-g3-red-walk30": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 11840772
+  },
+  "hair-gwen-chain186": {
+   "dtype": "float32",
+   "shape": [
+    10855,
+    3
+   ],
+   "offset": 11997048
+  },
+  "hair-gwen-jump40": {
+   "dtype": "float32",
+   "shape": [
+    10855,
+    3
+   ],
+   "offset": 12127308
+  },
+  "hair-gwen-lie170": {
+   "dtype": "float32",
+   "shape": [
+    10855,
+    3
+   ],
+   "offset": 12257568
+  },
+  "hair-gwen-rest": {
+   "dtype": "float32",
+   "shape": [
+    10855,
+    3
+   ],
+   "offset": 12387828
+  },
+  "hair-gwen-run20": {
+   "dtype": "float32",
+   "shape": [
+    10855,
+    3
+   ],
+   "offset": 12518088
+  },
+  "hair-gwen-sit100": {
+   "dtype": "float32",
+   "shape": [
+    10855,
+    3
+   ],
+   "offset": 12648348
+  },
+  "hair-gwen-walk30": {
+   "dtype": "float32",
+   "shape": [
+    10855,
+    3
+   ],
+   "offset": 12778608
+  },
+  "hair-jack-chain186": {
+   "dtype": "float32",
+   "shape": [
+    11721,
+    3
+   ],
+   "offset": 12908868
+  },
+  "hair-jack-lie170": {
+   "dtype": "float32",
+   "shape": [
+    11721,
+    3
+   ],
+   "offset": 13049520
+  },
+  "hair-jack-rest": {
+   "dtype": "float32",
+   "shape": [
+    11721,
+    3
+   ],
+   "offset": 13190172
+  },
+  "hair-jack-run20": {
+   "dtype": "float32",
+   "shape": [
+    11721,
+    3
+   ],
+   "offset": 13330824
+  },
+  "hair-jack-sit100": {
+   "dtype": "float32",
+   "shape": [
+    11721,
+    3
+   ],
+   "offset": 13471476
+  },
+  "hair-jack-walk30": {
+   "dtype": "float32",
+   "shape": [
+    11721,
+    3
+   ],
+   "offset": 13612128
+  },
+  "hair-kpony-bow50": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 13752780
+  },
+  "hair-kpony-chain186": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 13910196
+  },
+  "hair-kpony-gusts-idle90": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 14067612
+  },
+  "hair-kpony-lie170": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 14225028
+  },
+  "hair-kpony-rest": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 14382444
+  },
+  "hair-kpony-run20": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 14539860
+  },
+  "hair-kpony-sit100": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 14697276
+  },
+  "hair-kpony-walk30": {
+   "dtype": "float32",
+   "shape": [
+    13118,
+    3
+   ],
+   "offset": 14854692
+  },
+  "hair-marco-chain186": {
+   "dtype": "float32",
+   "shape": [
+    10320,
+    3
+   ],
+   "offset": 15012108
+  },
+  "hair-marco-lie170": {
+   "dtype": "float32",
+   "shape": [
+    10320,
+    3
+   ],
+   "offset": 15135948
+  },
+  "hair-marco-rest": {
+   "dtype": "float32",
+   "shape": [
+    10320,
+    3
+   ],
+   "offset": 15259788
+  },
+  "hair-marco-roll40": {
+   "dtype": "float32",
+   "shape": [
+    10320,
+    3
+   ],
+   "offset": 15383628
+  },
+  "hair-marco-run20": {
+   "dtype": "float32",
+   "shape": [
+    10320,
+    3
+   ],
+   "offset": 15507468
+  },
+  "hair-marco-sit100": {
+   "dtype": "float32",
+   "shape": [
+    10320,
+    3
+   ],
+   "offset": 15631308
+  },
+  "hair-marco-walk30": {
+   "dtype": "float32",
+   "shape": [
+    10320,
+    3
+   ],
+   "offset": 15755148
+  },
+  "hair-red-ariel-chain186": {
+   "dtype": "float32",
+   "shape": [
+    15999,
+    3
+   ],
+   "offset": 15878988
+  },
+  "hair-red-ariel-face": {
+   "dtype": "float32",
+   "shape": [
+    15999,
+    3
+   ],
+   "offset": 16070976
+  },
+  "hair-red-ariel-lie170": {
+   "dtype": "float32",
+   "shape": [
+    15999,
+    3
+   ],
+   "offset": 16262964
+  },
+  "hair-red-ariel-rest": {
+   "dtype": "float32",
+   "shape": [
+    15999,
+    3
+   ],
+   "offset": 16454952
+  },
+  "hair-red-ariel-run20": {
+   "dtype": "float32",
+   "shape": [
+    15999,
+    3
+   ],
+   "offset": 16646940
+  },
+  "hair-red-ariel-sit100": {
+   "dtype": "float32",
+   "shape": [
+    15999,
+    3
+   ],
+   "offset": 16838928
+  },
+  "hair-red-ariel-walk30": {
+   "dtype": "float32",
+   "shape": [
+    15999,
+    3
+   ],
+   "offset": 17030916
+  },
+  "head-alva-chain186": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 17222904
+  },
+  "head-alva-lie170": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 17410392
+  },
+  "head-alva-rest": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 17597880
+  },
+  "head-alva-run20": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 17785368
+  },
+  "head-alva-sit100": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 17972856
+  },
+  "head-alva-walk30": {
+   "dtype": "float32",
+   "shape": [
+    15624,
+    3
+   ],
+   "offset": 18160344
+  },
+  "head-anime-chain186": {
+   "dtype": "float32",
+   "shape": [
+    15541,
+    3
+   ],
+   "offset": 18347832
+  },
+  "head-anime-lie170": {
+   "dtype": "float32",
+   "shape": [
+    15541,
+    3
+   ],
+   "offset": 18534324
+  },
+  "head-anime-rest": {
+   "dtype": "float32",
+   "shape": [
+    15541,
+    3
+   ],
+   "offset": 18720816
+  },
+  "head-anime-run20": {
+   "dtype": "float32",
+   "shape": [
+    15541,
+    3
+   ],
+   "offset": 18907308
+  },
+  "head-anime-sit100": {
+   "dtype": "float32",
+   "shape": [
+    15541,
+    3
+   ],
+   "offset": 19093800
+  },
+  "head-anime-walk30": {
+   "dtype": "float32",
+   "shape": [
+    15541,
+    3
+   ],
+   "offset": 19280292
+  },
+  "head-anny-age-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 19466784
+  },
+  "head-anny-age-face": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 19547676
+  },
+  "head-anny-age-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 19628568
+  },
+  "head-anny-age-rest": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 19709460
+  },
+  "head-anny-age-run20": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 19790352
+  },
+  "head-anny-age-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 19871244
+  },
+  "head-anny-age-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 19952136
+  },
+  "head-anny-face-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 20033028
+  },
+  "head-anny-face-face": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 20107488
+  },
+  "head-anny-face-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 20181948
+  },
+  "head-anny-face-rest": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 20256408
+  },
+  "head-anny-face-run20": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 20330868
+  },
+  "head-anny-face-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 20405328
+  },
+  "head-anny-face-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 20479788
+  },
+  "head-blond-chain186": {
+   "dtype": "float32",
+   "shape": [
+    19598,
+    3
+   ],
+   "offset": 20554248
+  },
+  "head-blond-lie170": {
+   "dtype": "float32",
+   "shape": [
+    19598,
+    3
+   ],
+   "offset": 20789424
+  },
+  "head-blond-rest": {
+   "dtype": "float32",
+   "shape": [
+    19598,
+    3
+   ],
+   "offset": 21024600
+  },
+  "head-blond-run20": {
+   "dtype": "float32",
+   "shape": [
+    19598,
+    3
+   ],
+   "offset": 21259776
+  },
+  "head-blond-sit100": {
+   "dtype": "float32",
+   "shape": [
+    19598,
+    3
+   ],
+   "offset": 21494952
+  },
+  "head-blond-walk30": {
+   "dtype": "float32",
+   "shape": [
+    19598,
+    3
+   ],
+   "offset": 21730128
+  },
+  "head-boy7-chain186": {
+   "dtype": "float32",
+   "shape": [
+    15551,
+    3
+   ],
+   "offset": 21965304
+  },
+  "head-boy7-lie170": {
+   "dtype": "float32",
+   "shape": [
+    15551,
+    3
+   ],
+   "offset": 22151916
+  },
+  "head-boy7-rest": {
+   "dtype": "float32",
+   "shape": [
+    15551,
+    3
+   ],
+   "offset": 22338528
+  },
+  "head-boy7-run20": {
+   "dtype": "float32",
+   "shape": [
+    15551,
+    3
+   ],
+   "offset": 22525140
+  },
+  "head-boy7-sit100": {
+   "dtype": "float32",
+   "shape": [
+    15551,
+    3
+   ],
+   "offset": 22711752
+  },
+  "head-boy7-walk30": {
+   "dtype": "float32",
+   "shape": [
+    15551,
+    3
+   ],
+   "offset": 22898364
+  },
+  "head-cage-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 23084976
+  },
+  "head-cage-face": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 23159436
+  },
+  "head-cage-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 23233896
+  },
+  "head-cage-rest": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 23308356
+  },
+  "head-cage-run20": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 23382816
+  },
+  "head-cage-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 23457276
+  },
+  "head-cage-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6205,
+    3
+   ],
+   "offset": 23531736
+  },
+  "head-hood-chain186": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 23606196
+  },
+  "head-hood-lie170": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 23814816
+  },
+  "head-hood-look60": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 24023436
+  },
+  "head-hood-rest": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 24232056
+  },
+  "head-hood-run20": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 24440676
+  },
+  "head-hood-sit100": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 24649296
+  },
+  "head-hood-walk30": {
+   "dtype": "float32",
+   "shape": [
+    17385,
+    3
+   ],
+   "offset": 24857916
+  },
+  "head-jesper-chain186": {
+   "dtype": "float32",
+   "shape": [
+    20427,
+    3
+   ],
+   "offset": 25066536
+  },
+  "head-jesper-lie170": {
+   "dtype": "float32",
+   "shape": [
+    20427,
+    3
+   ],
+   "offset": 25311660
+  },
+  "head-jesper-rest": {
+   "dtype": "float32",
+   "shape": [
+    20427,
+    3
+   ],
+   "offset": 25556784
+  },
+  "head-jesper-run20": {
+   "dtype": "float32",
+   "shape": [
+    20427,
+    3
+   ],
+   "offset": 25801908
+  },
+  "head-jesper-sit100": {
+   "dtype": "float32",
+   "shape": [
+    20427,
+    3
+   ],
+   "offset": 26047032
+  },
+  "head-jesper-walk30": {
+   "dtype": "float32",
+   "shape": [
+    20427,
+    3
+   ],
+   "offset": 26292156
+  },
+  "head-mask-chain186": {
+   "dtype": "float32",
+   "shape": [
+    16420,
+    3
+   ],
+   "offset": 26537280
+  },
+  "head-mask-lie170": {
+   "dtype": "float32",
+   "shape": [
+    16420,
+    3
+   ],
+   "offset": 26734320
+  },
+  "head-mask-rest": {
+   "dtype": "float32",
+   "shape": [
+    16420,
+    3
+   ],
+   "offset": 26931360
+  },
+  "head-mask-run20": {
+   "dtype": "float32",
+   "shape": [
+    16420,
+    3
+   ],
+   "offset": 27128400
+  },
+  "head-mask-sit100": {
+   "dtype": "float32",
+   "shape": [
+    16420,
+    3
+   ],
+   "offset": 27325440
+  },
+  "head-mask-walk30": {
+   "dtype": "float32",
+   "shape": [
+    16420,
+    3
+   ],
+   "offset": 27522480
+  },
+  "head-old-chain186": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 27719520
+  },
+  "head-old-lie170": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 27924216
+  },
+  "head-old-open": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 28128912
+  },
+  "head-old-rest": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 28333608
+  },
+  "head-old-run20": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 28538304
+  },
+  "head-old-run20-face": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 28743000
+  },
+  "head-old-sit100": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 28947696
+  },
+  "head-old-walk30": {
+   "dtype": "float32",
+   "shape": [
+    17058,
+    3
+   ],
+   "offset": 29152392
+  },
+  "head-points-chain186": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 29357088
+  },
+  "head-points-lie170": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 29437980
+  },
+  "head-points-rest": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 29518872
+  },
+  "head-points-run20": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 29599764
+  },
+  "head-points-sit100": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 29680656
+  },
+  "head-points-smile": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 29761548
+  },
+  "head-points-walk30": {
+   "dtype": "float32",
+   "shape": [
+    6741,
+    3
+   ],
+   "offset": 29842440
+  },
+  "head-red-blink": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 29923332
+  },
+  "head-red-chain186": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 30079608
+  },
+  "head-red-dqs-walk30": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 30235884
+  },
+  "head-red-face": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 30392160
+  },
+  "head-red-hourglass-walk30": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 30548436
+  },
+  "head-red-lbs-walk30": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 30704712
+  },
+  "head-red-lie170": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 30860988
+  },
+  "head-red-light-plain": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 31017264
+  },
+  "head-red-light-soft-form": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 31173540
+  },
+  "head-red-light-toon": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 31329816
+  },
+  "head-red-line-walk30": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 31486092
+  },
+  "head-red-look60": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 31642368
+  },
+  "head-red-look60-smile": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 31798644
+  },
+  "head-red-mine-blink": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 31954920
+  },
+  "head-red-mine-chain186": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 32099760
+  },
+  "head-red-mine-dance60-face": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 32244600
+  },
+  "head-red-mine-face": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 32389440
+  },
+  "head-red-mine-lie170": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 32534280
+  },
+  "head-red-mine-rest": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 32679120
+  },
+  "head-red-mine-run20": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 32823960
+  },
+  "head-red-mine-sit100": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 32968800
+  },
+  "head-red-mine-walk30": {
+   "dtype": "float32",
+   "shape": [
+    12070,
+    3
+   ],
+   "offset": 33113640
+  },
+  "head-red-open": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 33258480
+  },
+  "head-red-placed-walk60": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 33414756
+  },
+  "head-red-rest": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 33571032
+  },
+  "head-red-run20": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 33727308
+  },
+  "head-red-sit100": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 33883584
+  },
+  "head-red-smile": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 34039860
+  },
+  "head-red-walk30": {
+   "dtype": "float32",
+   "shape": [
+    13023,
+    3
+   ],
+   "offset": 34196136
+  },
+  "head-semi-chain186": {
+   "dtype": "float32",
+   "shape": [
+    21966,
+    3
+   ],
+   "offset": 34352412
+  },
+  "head-semi-face": {
+   "dtype": "float32",
+   "shape": [
+    21966,
+    3
+   ],
+   "offset": 34616004
+  },
+  "head-semi-lie170": {
+   "dtype": "float32",
+   "shape": [
+    21966,
+    3
+   ],
+   "offset": 34879596
+  },
+  "head-semi-rest": {
+   "dtype": "float32",
+   "shape": [
+    21966,
+    3
+   ],
+   "offset": 35143188
+  },
+  "head-semi-run20": {
+   "dtype": "float32",
+   "shape": [
+    21966,
+    3
+   ],
+   "offset": 35406780
+  },
+  "head-semi-sit100": {
+   "dtype": "float32",
+   "shape": [
+    21966,
+    3
+   ],
+   "offset": 35670372
+  },
+  "head-semi-walk30": {
+   "dtype": "float32",
+   "shape": [
+    21966,
+    3
+   ],
+   "offset": 35933964
+  },
+  "head-tails-chain186": {
+   "dtype": "float32",
+   "shape": [
+    16628,
+    3
+   ],
+   "offset": 36197556
+  },
+  "head-tails-lie170": {
+   "dtype": "float32",
+   "shape": [
+    16628,
+    3
+   ],
+   "offset": 36397092
+  },
+  "head-tails-rest": {
+   "dtype": "float32",
+   "shape": [
+    16628,
+    3
+   ],
+   "offset": 36596628
+  },
+  "head-tails-run20": {
+   "dtype": "float32",
+   "shape": [
+    16628,
+    3
+   ],
+   "offset": 36796164
+  },
+  "head-tails-sit100": {
+   "dtype": "float32",
+   "shape": [
+    16628,
+    3
+   ],
+   "offset": 36995700
+  },
+  "head-tails-walk30": {
+   "dtype": "float32",
+   "shape": [
+    16628,
+    3
+   ],
+   "offset": 37195236
+  },
+  "hero-amplify-dance50": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37394772
+  },
+  "hero-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37432464
+  },
+  "hero-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37470156
+  },
+  "hero-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37507848
+  },
+  "hero-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37545540
+  },
+  "hero-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37583232
+  },
+  "hero-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37620924
+  },
+  "man-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37658616
+  },
+  "man-dqs-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37696308
+  },
+  "man-lbs-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37734000
+  },
+  "man-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37771692
+  },
+  "man-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37809384
+  },
+  "man-rollover-prone": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37847076
+  },
+  "man-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37884768
+  },
+  "man-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37922460
+  },
+  "man-smoothPose-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37960152
+  },
+  "man-straightArc-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 37997844
+  },
+  "man-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38035536
+  },
+  "oldman-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38073228
+  },
+  "oldman-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38110920
+  },
+  "oldman-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38148612
+  },
+  "oldman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38186304
+  },
+  "oldman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38223996
+  },
+  "oldman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38261688
+  },
+  "oldwoman-armsOff-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38299380
+  },
+  "oldwoman-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38337072
+  },
+  "oldwoman-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38374764
+  },
+  "oldwoman-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38412456
+  },
+  "oldwoman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38450148
+  },
+  "oldwoman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38487840
+  },
+  "oldwoman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38525532
+  },
+  "pear-old-woman-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38563224
+  },
+  "pear-old-woman-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38600916
+  },
+  "pear-old-woman-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38638608
+  },
+  "pear-old-woman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38676300
+  },
+  "pear-old-woman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38713992
+  },
+  "pear-old-woman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38751684
+  },
+  "pictogram-man-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38789376
+  },
+  "pictogram-man-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38827068
+  },
+  "pictogram-man-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38864760
+  },
+  "pictogram-man-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38902452
+  },
+  "pictogram-man-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38940144
+  },
+  "pictogram-man-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 38977836
+  },
+  "pictogram-woman-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39015528
+  },
+  "pictogram-woman-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39053220
+  },
+  "pictogram-woman-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39090912
+  },
+  "pictogram-woman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39128604
+  },
+  "pictogram-woman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39166296
+  },
+  "pictogram-woman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39203988
+  },
+  "pixar-mother-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39241680
+  },
+  "pixar-mother-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39279372
+  },
+  "pixar-mother-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39317064
+  },
+  "pixar-mother-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39354756
+  },
+  "pixar-mother-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39392448
+  },
+  "pixar-mother-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39430140
+  },
+  "princess-toddler-head-armsOutOfHead-jump45": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39467832
+  },
+  "princess-toddler-head-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39505524
+  },
+  "princess-toddler-head-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39543216
+  },
+  "princess-toddler-head-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39580908
+  },
+  "princess-toddler-head-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39618600
+  },
+  "princess-toddler-head-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39656292
+  },
+  "princess-toddler-head-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39693984
+  },
+  "v-hero-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39731676
+  },
+  "v-hero-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39769368
+  },
+  "v-hero-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39807060
+  },
+  "v-hero-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39844752
+  },
+  "v-hero-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39882444
+  },
+  "v-hero-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39920136
+  },
+  "woman-caricature-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39957828
+  },
+  "woman-chain186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 39995520
+  },
+  "woman-chain4-120": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40033212
+  },
+  "woman-chain4-123": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40070904
+  },
+  "woman-chain4-190": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40108596
+  },
+  "woman-chain4-305": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40146288
+  },
+  "woman-chain4-360": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40183980
+  },
+  "woman-clavicle-idle60": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40221672
+  },
+  "woman-dqs-wave40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40259364
+  },
+  "woman-join178": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40297056
+  },
+  "woman-join180": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40334748
+  },
+  "woman-join182": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40372440
+  },
+  "woman-join186": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40410132
+  },
+  "woman-join195": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40447824
+  },
+  "woman-lbs-wave40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40485516
+  },
+  "woman-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40523208
+  },
+  "woman-linePose-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40560900
+  },
+  "woman-linePosePelvis-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40598592
+  },
+  "woman-linePosePlaced-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40636284
+  },
+  "woman-linePoseUpright-lie170": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40673976
+  },
+  "woman-lineTurn-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40711668
+  },
+  "woman-newBody-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40749360
+  },
+  "woman-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40787052
+  },
+  "woman-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40824744
+  },
+  "woman-seam-idle60": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40862436
+  },
+  "woman-sigma-wave40": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40900128
+  },
+  "woman-silhouetteKeep-run20": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40937820
+  },
+  "woman-sit100": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 40975512
+  },
+  "woman-turnPose-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 41013204
+  },
+  "woman-turnRestKeep-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 41050896
+  },
+  "woman-turnRestTurn-rest": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 41088588
+  },
+  "woman-turnRestTurn-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 41126280
+  },
+  "woman-walk30": {
+   "dtype": "float32",
+   "shape": [
+    3141,
+    3
+   ],
+   "offset": 41163972
+  }
+ }
+}

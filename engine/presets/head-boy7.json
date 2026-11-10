@@ -1,0 +1,46 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-boy7",
+ "group": "head",
+ "label": {
+  "ru": "голова: мальчик с каре",
+  "en": "head: boy with a bob"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.12,
+  "skin": "#f6d6be",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-boy7@61e605acd6c418f2"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-boy7@0d08b89f63552485"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "kind": "preset",
+    "id": "hair-boy7@c7d3e1626fa9c91a"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

@@ -1,0 +1,1922 @@
+{
+ "about": "Sheets of hair (stage 3) for docs/pictures/engine/hair: node engine/tools/sheets.mjs engine/tools/sheets/hair.json [names]",
+ "sheets": [
+  {
+   "name": "styles-short",
+   "out": "docs/pictures/engine/hair/styles-short.png",
+   "title": "Причёски В1 в движке на головах Anny: спереди, три четверти, сбоку (покой)",
+   "cols": 6,
+   "w": 300,
+   "h": 340,
+   "items": [
+    {
+     "label": "gwen · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-gwen"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "gwen · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-gwen"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "gwen · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-gwen"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "gogo · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-gogo"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "gogo · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-gogo"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "gogo · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-gogo"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "jack · спереди",
+     "char": "man",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-jack"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "jack · ¾",
+     "char": "man",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-jack"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "jack · сбоку",
+     "char": "man",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-jack"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "marco · спереди",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-marco"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "marco · ¾",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-marco"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "marco · сбоку",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-marco"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "ginger · спереди",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ginger"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "ginger · ¾",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ginger"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "ginger · сбоку",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ginger"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "kbuns · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kbuns"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "kbuns · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kbuns"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "kbuns · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kbuns"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "nimona · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-nimona"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "nimona · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-nimona"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.34
+    },
+    {
+     "label": "nimona · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-nimona"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.34
+    }
+   ]
+  },
+  {
+   "name": "styles-long",
+   "out": "docs/pictures/engine/hair/styles-long.png",
+   "title": "Причёски В1 в движке на головах Anny: спереди, три четверти, сбоку (покой)",
+   "cols": 6,
+   "w": 300,
+   "h": 340,
+   "items": [
+    {
+     "label": "ariel · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ariel"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "ariel · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ariel"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "ariel · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ariel"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "doll · спереди",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-doll"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "doll · ¾",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-doll"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "doll · сбоку",
+     "char": "child",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-doll"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "kbraid · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kbraid"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "kbraid · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kbraid"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "kbraid · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kbraid"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "kpony · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kpony"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "kpony · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kpony"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "kpony · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-kpony"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "giulia · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-giulia"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "giulia · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-giulia"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "giulia · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-giulia"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "alva · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-alva"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "alva · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-alva"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "alva · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-alva"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "anime · спереди",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-anime"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "anime · ¾",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-anime"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "anime · сбоку",
+     "char": "woman",
+     "head": {
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-anime"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    }
+   ]
+  },
+  {
+   "name": "styles-designed",
+   "out": "docs/pictures/engine/hair/styles-designed.png",
+   "title": "Причёски В1 на придуманных головах Г1 и Г3 (по их форме): спереди, ¾, сбоку",
+   "cols": 6,
+   "w": 300,
+   "h": 340,
+   "items": [
+    {
+     "label": "red + ariel · спереди",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ariel"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "red + ariel · ¾",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ariel"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "red + ariel · сбоку",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ariel"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "alva + alva · спереди",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-alva"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "alva + alva · ¾",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-alva"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "alva + alva · сбоку",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-alva"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "boy7 + marco · спереди",
+     "char": "head-boy7",
+     "head": {
+      "preset": "head-boy7",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-marco"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "boy7 + marco · ¾",
+     "char": "head-boy7",
+     "head": {
+      "preset": "head-boy7",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-marco"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "boy7 + marco · сбоку",
+     "char": "head-boy7",
+     "head": {
+      "preset": "head-boy7",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-marco"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "semi + jack · спереди",
+     "char": "head-semi",
+     "head": {
+      "preset": "head-semi",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-jack"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "semi + jack · ¾",
+     "char": "head-semi",
+     "head": {
+      "preset": "head-semi",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-jack"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "semi + jack · сбоку",
+     "char": "head-semi",
+     "head": {
+      "preset": "head-semi",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-jack"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "jesper + ginger · спереди",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ginger"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "jesper + ginger · ¾",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ginger"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "jesper + ginger · сбоку",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-ginger"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.4
+    },
+    {
+     "label": "anime + anime · спереди",
+     "char": "head-anime",
+     "head": {
+      "preset": "head-anime",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-anime"
+       }
+      ]
+     },
+     "view": "level",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "anime + anime · ¾",
+     "char": "head-anime",
+     "head": {
+      "preset": "head-anime",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-anime"
+       }
+      ]
+     },
+     "view": "tq",
+     "focus": "Head",
+     "size": 0.56
+    },
+    {
+     "label": "anime + anime · сбоку",
+     "char": "head-anime",
+     "head": {
+      "preset": "head-anime",
+      "pieces": [
+       {
+        "kind": "preset",
+        "id": "hair-v1-anime"
+       }
+      ]
+     },
+     "view": "profile",
+     "focus": "Head",
+     "size": 0.56
+    }
+   ]
+  },
+  {
+   "name": "ready",
+   "out": "docs/pictures/engine/hair/ready.png",
+   "title": "Волосы готовых голов: жёсткие, как были (слева) и движутся (справа) — покой, оглядывается (60), идёт (30)",
+   "cols": 6,
+   "w": 280,
+   "h": 330,
+   "items": [
+    {
+     "label": "red · покой · жёсткие",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red"
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "red · покой · движутся",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "red · look-around · жёсткие",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red"
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "red · look-around · движутся",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "red · walk · жёсткие",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red"
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "red · walk · движутся",
+     "char": "head-red",
+     "head": {
+      "preset": "head-red",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "old · покой · жёсткие",
+     "char": "head-old",
+     "head": {
+      "preset": "head-old"
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "old · покой · движутся",
+     "char": "head-old",
+     "head": {
+      "preset": "head-old",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "old · look-around · жёсткие",
+     "char": "head-old",
+     "head": {
+      "preset": "head-old"
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "old · look-around · движутся",
+     "char": "head-old",
+     "head": {
+      "preset": "head-old",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "old · walk · жёсткие",
+     "char": "head-old",
+     "head": {
+      "preset": "head-old"
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "old · walk · движутся",
+     "char": "head-old",
+     "head": {
+      "preset": "head-old",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "alva · покой · жёсткие",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva"
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "alva · покой · движутся",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "alva · look-around · жёсткие",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva"
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "alva · look-around · движутся",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "alva · walk · жёсткие",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva"
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "alva · walk · движутся",
+     "char": "head-alva",
+     "head": {
+      "preset": "head-alva",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "blond · покой · жёсткие",
+     "char": "head-blond",
+     "head": {
+      "preset": "head-blond"
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "blond · покой · движутся",
+     "char": "head-blond",
+     "head": {
+      "preset": "head-blond",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "blond · look-around · жёсткие",
+     "char": "head-blond",
+     "head": {
+      "preset": "head-blond"
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "blond · look-around · движутся",
+     "char": "head-blond",
+     "head": {
+      "preset": "head-blond",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "blond · walk · жёсткие",
+     "char": "head-blond",
+     "head": {
+      "preset": "head-blond"
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "blond · walk · движутся",
+     "char": "head-blond",
+     "head": {
+      "preset": "head-blond",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "tails · покой · жёсткие",
+     "char": "head-tails",
+     "head": {
+      "preset": "head-tails"
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "tails · покой · движутся",
+     "char": "head-tails",
+     "head": {
+      "preset": "head-tails",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "tails · look-around · жёсткие",
+     "char": "head-tails",
+     "head": {
+      "preset": "head-tails"
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "tails · look-around · движутся",
+     "char": "head-tails",
+     "head": {
+      "preset": "head-tails",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "tails · walk · жёсткие",
+     "char": "head-tails",
+     "head": {
+      "preset": "head-tails"
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "tails · walk · движутся",
+     "char": "head-tails",
+     "head": {
+      "preset": "head-tails",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "jesper · покой · жёсткие",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper"
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "jesper · покой · движутся",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": null,
+     "t": 0,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "jesper · look-around · жёсткие",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper"
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "jesper · look-around · движутся",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "look-around",
+     "t": 60,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "jesper · walk · жёсткие",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper"
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "jesper · walk · движутся",
+     "char": "head-jesper",
+     "head": {
+      "preset": "head-jesper",
+      "pieces": [
+       {
+        "id": "hair",
+        "moves": true
+       }
+      ]
+     },
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "focus": "Head",
+     "size": 0.6
+    }
+   ]
+  },
+  {
+   "name": "motion",
+   "out": "docs/pictures/engine/hair/motion.png",
+   "title": "Волосы в движениях Kimodo (шаг симуляции движка от начала движения)",
+   "cols": 9,
+   "w": 260,
+   "h": 340,
+   "items": [
+    {
+     "label": "alva · идёт",
+     "char": "hair-alva",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "alva · бежит",
+     "char": "hair-alva",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "alva · прыгает",
+     "char": "hair-alva",
+     "clip": "jump",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "alva · танцует",
+     "char": "hair-alva",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "alva · кланяется",
+     "char": "hair-alva",
+     "clip": "bow",
+     "t": 50,
+     "view": "three"
+    },
+    {
+     "label": "alva · садится",
+     "char": "hair-alva",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "alva · ложится",
+     "char": "hair-alva",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "alva · кувырок",
+     "char": "hair-alva",
+     "clip": "roll",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "alva · оглядывается",
+     "char": "hair-alva",
+     "clip": "look-around",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "kpony · идёт",
+     "char": "hair-kpony",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "kpony · бежит",
+     "char": "hair-kpony",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "kpony · прыгает",
+     "char": "hair-kpony",
+     "clip": "jump",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "kpony · танцует",
+     "char": "hair-kpony",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "kpony · кланяется",
+     "char": "hair-kpony",
+     "clip": "bow",
+     "t": 50,
+     "view": "three"
+    },
+    {
+     "label": "kpony · садится",
+     "char": "hair-kpony",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "kpony · ложится",
+     "char": "hair-kpony",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "kpony · кувырок",
+     "char": "hair-kpony",
+     "clip": "roll",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "kpony · оглядывается",
+     "char": "hair-kpony",
+     "clip": "look-around",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "gwen · идёт",
+     "char": "hair-gwen",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "gwen · бежит",
+     "char": "hair-gwen",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "gwen · прыгает",
+     "char": "hair-gwen",
+     "clip": "jump",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "gwen · танцует",
+     "char": "hair-gwen",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "gwen · кланяется",
+     "char": "hair-gwen",
+     "clip": "bow",
+     "t": 50,
+     "view": "three"
+    },
+    {
+     "label": "gwen · садится",
+     "char": "hair-gwen",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "gwen · ложится",
+     "char": "hair-gwen",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "gwen · кувырок",
+     "char": "hair-gwen",
+     "clip": "roll",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "gwen · оглядывается",
+     "char": "hair-gwen",
+     "clip": "look-around",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · идёт",
+     "char": "hair-g3-red",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · бежит",
+     "char": "hair-g3-red",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · прыгает",
+     "char": "hair-g3-red",
+     "clip": "jump",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · танцует",
+     "char": "hair-g3-red",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · кланяется",
+     "char": "hair-g3-red",
+     "clip": "bow",
+     "t": 50,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · садится",
+     "char": "hair-g3-red",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · ложится",
+     "char": "hair-g3-red",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · кувырок",
+     "char": "hair-g3-red",
+     "clip": "roll",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "g3-red · оглядывается",
+     "char": "hair-g3-red",
+     "clip": "look-around",
+     "t": 60,
+     "view": "three"
+    }
+   ]
+  },
+  {
+   "name": "wind",
+   "out": "docs/pictures/engine/hair/wind.png",
+   "title": "Ветер (пресеты), стоит, 3 с от начала",
+   "cols": 5,
+   "w": 300,
+   "h": 340,
+   "items": [
+    {
+     "label": "alva · нет ветра",
+     "char": "hair-alva",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "alva · тихо",
+     "char": "hair-alva",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-calm"
+    },
+    {
+     "label": "alva · лёгкий",
+     "char": "hair-alva",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-light"
+    },
+    {
+     "label": "alva · порывы",
+     "char": "hair-alva",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-gusty"
+    },
+    {
+     "label": "alva · сильный",
+     "char": "hair-alva",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-strong"
+    },
+    {
+     "label": "kpony · нет ветра",
+     "char": "hair-kpony",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "kpony · тихо",
+     "char": "hair-kpony",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-calm"
+    },
+    {
+     "label": "kpony · лёгкий",
+     "char": "hair-kpony",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-light"
+    },
+    {
+     "label": "kpony · порывы",
+     "char": "hair-kpony",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-gusty"
+    },
+    {
+     "label": "kpony · сильный",
+     "char": "hair-kpony",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-strong"
+    },
+    {
+     "label": "red-ariel · нет ветра",
+     "char": "hair-red-ariel",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6
+    },
+    {
+     "label": "red-ariel · тихо",
+     "char": "hair-red-ariel",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-calm"
+    },
+    {
+     "label": "red-ariel · лёгкий",
+     "char": "hair-red-ariel",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-light"
+    },
+    {
+     "label": "red-ariel · порывы",
+     "char": "hair-red-ariel",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-gusty"
+    },
+    {
+     "label": "red-ariel · сильный",
+     "char": "hair-red-ariel",
+     "clip": "idle",
+     "t": 90,
+     "view": "front",
+     "focus": "Head",
+     "size": 0.6,
+     "wind": "wind-strong"
+    }
+   ]
+  }
+ ]
+}

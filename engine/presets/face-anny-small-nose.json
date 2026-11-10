@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "face-anny-small-nose",
+ "group": "head-form",
+ "label": {
+  "ru": "лицо Anny: маленький курносый нос",
+  "en": "Anny's face: a small upturned nose"
+ },
+ "about": {
+  "ru": "собственные ползунки лица Anny: нос короче, уже и вздёрнут",
+  "en": "Anny's own face settings: the nose shorter, narrower, turned up"
+ },
+ "changes": [
+  {
+   "kind": "face",
+   "changes": {
+    "nose-scale-vert-incr": -0.8,
+    "nose-scale-horiz-incr": -0.5,
+    "nose-point-up": 0.8,
+    "nose-scale-depth-incr": -0.5,
+    "nose-volume-incr": -0.4
+   }
+  }
+ ]
+}

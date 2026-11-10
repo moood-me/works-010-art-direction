@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "line-front-c",
+ "label": {
+  "ru": "линия действия: спереди C",
+  "en": "line of action: front C"
+ },
+ "group": "line",
+ "about": {
+  "ru": "Т5: вся фигура изогнута одной кривой",
+  "en": "Т5: the whole figure bent along one curve"
+ },
+ "changes": [
+  {
+   "kind": "line",
+   "view": "front",
+   "curve": "C",
+   "bend": 0.1
+  }
+ ]
+}

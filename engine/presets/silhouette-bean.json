@@ -1,0 +1,63 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "silhouette-bean",
+ "label": {
+  "ru": "силуэт: фасолина",
+  "en": "silhouette: bean"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т5 и Т6: живот вперёд, спина назад — изгиб фасолины сбоку",
+  "en": "Т5 and Т6: the belly forwards, the back curved — a bean seen from the side"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    {
+     "at": 0,
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": 0.25,
+     "width": 1.02,
+     "depth": 1.04,
+     "forward": -0.015
+    },
+    {
+     "at": 0.5,
+     "width": 1.1,
+     "depth": 1.18,
+     "forward": 0.06
+    },
+    {
+     "at": 0.64,
+     "width": 1.12,
+     "depth": 1.26,
+     "forward": 0.045
+    },
+    {
+     "at": 0.8,
+     "width": 1,
+     "depth": 1.08,
+     "forward": -0.05
+    },
+    {
+     "at": 0.92,
+     "width": 1,
+     "depth": 1,
+     "forward": -0.03
+    },
+    {
+     "at": 1,
+     "width": 1,
+     "depth": 1,
+     "forward": -0.01
+    }
+   ]
+  }
+ ]
+}

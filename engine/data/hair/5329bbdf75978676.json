@@ -1,0 +1,140 @@
+{
+ "format": "engine/hair",
+ "version": 2,
+ "key": "5329bbdf75978676",
+ "style": "gogo",
+ "off": [],
+ "only": null,
+ "meshes": [
+  {
+   "kind": "inner",
+   "palette": [
+    "#241d28",
+    "#8a3fc0"
+   ],
+   "rough": null,
+   "ink": null,
+   "box": [
+    [
+     -0.11833804845809937,
+     -0.0715804398059845,
+     -0.12353770434856415
+    ],
+    [
+     0.11495339125394821,
+     0.12341047078371048,
+     0.10087332874536514
+    ]
+   ]
+  },
+  {
+   "kind": "locks",
+   "palette": [
+    "#241d28",
+    "#8a3fc0"
+   ],
+   "rough": null,
+   "ink": null
+  }
+ ],
+ "about": "gogo: built in its design space (src/hair/hair.js), by styleKey",
+ "bin": "5329bbdf75978676.bin",
+ "arrays": {
+  "m0.positions": {
+   "dtype": "uint16",
+   "shape": [
+    4073,
+    3
+   ],
+   "offset": 0
+  },
+  "m0.normals": {
+   "dtype": "uint8",
+   "shape": [
+    4073,
+    3
+   ],
+   "offset": 24440
+  },
+  "m0.triangles": {
+   "dtype": "uint16",
+   "shape": [
+    8212,
+    3
+   ],
+   "offset": 36660
+  },
+  "m0.colors": {
+   "dtype": "uint8",
+   "shape": [
+    4073,
+    1
+   ],
+   "offset": 85932
+  },
+  "m0.tangents": {
+   "dtype": "uint8",
+   "shape": [
+    4073,
+    3
+   ],
+   "offset": 90008
+  },
+  "m0.uv": {
+   "dtype": "int16",
+   "shape": [
+    4073,
+    2
+   ],
+   "offset": 102228
+  },
+  "m0.seed": {
+   "dtype": "uint8",
+   "shape": [
+    4073,
+    1
+   ],
+   "offset": 118520
+  },
+  "m0.ao": {
+   "dtype": "uint8",
+   "shape": [
+    4073,
+    1
+   ],
+   "offset": 122596
+  },
+  "m0.bindC": {
+   "dtype": "uint16",
+   "shape": [
+    4073,
+    3
+   ],
+   "offset": 126672
+  },
+  "m0.bindU": {
+   "dtype": "uint16",
+   "shape": [
+    4073,
+    3
+   ],
+   "offset": 151112
+  },
+  "m0.bindW": {
+   "dtype": "uint8",
+   "shape": [
+    4073,
+    3
+   ],
+   "offset": 175552
+  },
+  "m1.ao": {
+   "dtype": "uint8",
+   "shape": [
+    14427,
+    1
+   ],
+   "offset": 187772
+  }
+ }
+}

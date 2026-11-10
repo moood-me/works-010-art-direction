@@ -13,6 +13,10 @@ narrow what is here without asking him.
   mouth (shape, size, where it sits against nose and chin) — different characters have clearly different faces.
 - Breadth first, to find the principles of beauty and learn, instrumentally, to make the characters Pavel wants.
 
+- On "limbs as arcs" (Т5): Pavel never wanted to deform people or bend their limbs. The thought was that even a
+  conventional, simple form can convey a real body if it has living, symbolic curves — an explanation of where the
+  theme came from, not a rule to bend arms or legs.
+
 ## The engine
 
 - It is an engine: few assumptions, much allowed. The agents who write concrete characters have their own vision,
@@ -79,7 +83,43 @@ Smooth transitions between motions; smooth and combined facial expressions; mout
 when speaking (else just the mouth); brows and face during speech; a gaze that follows; blinking and small eye
 movements by themselves; speed of cloth and hair for several characters.
 
+## After the engine is finished (Pavel, 2026-11-03, going to sleep)
+
+Pavel, 2026-11-04: the two items below (contacts; two people) are not started automatically — only when he asks,
+a little later. Now: the engine (hair, clothes). The characters not from Anny (П1 and П2 in one constructor) are not
+started automatically either — only when Pavel asks (2026-11-04).
+
+- Motions that come to the right places — a common task. A person walks up to a table and leans on it: the hands
+  touch the table; we tell the model, say, a second before the stop the hands must be here, and at the last frame
+  still there — the person comes up, leans, holds it about a second. One character comes up to another and puts a
+  hand on the shoulder. A character sits down in an armchair standing in the scene, with armrests of a known height,
+  puts the hands on the armrests and sits properly. If the model understands some motions badly, never mind — try
+  other similar tasks and motions; the main thing is to make the principle work.
+- After that, talk with Pavel (a discussion, not a build): how to make two people interact properly — one lifts the
+  other in their arms and carries them; A stands, B comes up and touches A's shoulder, A reacts and looks round.
+
+- Two people (Pavel, 2026-11-03): through Kimodo's constraints. One leads, the other follows, the roles change in
+  turn; made in parts, by the logic of the script — who reacts to what. The carrier: try by simple means, through
+  Kimodo; may be left if too hard. The carried one may be attached — they're moved by the other person's Kimodo
+  motion, and that's fine; the rule meant only that people aren't moved by formulas ("не воспринимай меня слишком
+  прямо… возможно что-то и ок").
+- Reaching to a place: not stretched by formulas afterwards — when we reach, the body leans in, the elbow turns, many
+  muscles work. Ask Kimodo to make it right by giving it the right coordinates, as far as possible and easy. An
+  idea of direction, not a hard requirement.
+- Two people are done for sure, not "if time is left": even what Pavel didn't think through is worked on. B touches
+  A's shoulder and A looks round (the hand possibly staying on the turning shoulder); one carries another (comes up,
+  bends, lifts, carries, maybe puts down; the carried one attached, posed by Kimodo); if Kimodo understands some
+  badly — similar ones (a handshake, a hug, leading by the hand). Checked by numbers (touches, no passing through)
+  and by eye; pictures and animations in the gallery; history.
+- On the way: find your bearings and use common sense; don't take on overly complex tasks; try to do it well and in
+  the spirit of these requirements, as far as possible (Pavel, 2026-11-04).
+- Borderline tasks — ones that may take days and still not be done — aren't aimed better than the earlier
+  experiments did ("иначе это просто какая-то нереалистичная хрень, которая может делаться ещё 3 дня и в итоге так и
+  не сделаться"). E.g. clothes in rolls and lying: О3's level is the target. No new workarounds; old ones removed only
+  where that's realistic (Pavel, 2026-11-04).
+- Add what Pavel asks to this file, so it isn't lost.
+
 ## Not now
 
-Breathing and idle life; hands, fingers and grips (Kimodo has none); feet on the ground; contacts with the world;
-turning to a target; cartoon timing; scenes.
+Breathing and idle life; fingers and grips (Kimodo has none); feet on the ground; turning to a target; cartoon timing;
+scenes. (Contacts of the hands with the world — see above, after the engine.)

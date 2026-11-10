@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "features-relief",
+ "group": "features",
+ "label": {
+  "ru": "черты объёмом",
+  "en": "features as volume"
+ },
+ "about": {
+  "ru": "глаза, брови и губы — объёмом на коже (рельеф своей формы, тот же рисунок), следуют за кожей; смешиваются с нарисованными",
+  "en": "eyes, brows and lips as volume on the skin (a relief of their own shape with the same drawing), following the skin; they mix with painted ones"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "volume",
+   "x": 0.25,
+   "y": -0.06,
+   "w": 0.3,
+   "h": 0.26,
+   "iris": [
+    "#2a4f7a",
+    "#6aa0c8"
+   ],
+   "lash": "#2a2024",
+   "lashW": 0.05,
+   "wing": 0.05,
+   "lower": 0.2,
+   "glints": 2,
+   "round": true
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "volume",
+   "x0": 0.08,
+   "x1": 0.46,
+   "y0": 0.15,
+   "y1": 0.17,
+   "arch": 0.06,
+   "peak": 0.5,
+   "w0": 0.045,
+   "w1": 0.018,
+   "color": "#5a3a26"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "volume",
+   "type": "drawn",
+   "y": -0.77,
+   "w": 0.16,
+   "sag": 0.004,
+   "upper": 0.025,
+   "bow": 0.01,
+   "lower": 0.035,
+   "lip": "#c86a62",
+   "line": "#6a2a26",
+   "lineW": 0.012
+  },
+  {
+   "id": "blush",
+   "kind": "blush",
+   "amount": 0.35
+  }
+ ]
+}

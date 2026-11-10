@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "silhouette-triangle",
+ "label": {
+  "ru": "силуэт: треугольник",
+  "en": "silhouette: triangle"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т5: от узких плеч к широкому низу",
+  "en": "Т5: from narrow shoulders to a wide base"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    {
+     "at": "ankle",
+     "width": 2,
+     "depth": 1.5,
+     "forward": 0
+    },
+    {
+     "at": "knee",
+     "width": 1.65,
+     "depth": 1.325,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 1.35,
+     "depth": 1.175,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 1.25,
+     "depth": 1.125,
+     "forward": 0
+    },
+    {
+     "at": "waist",
+     "width": 1.12,
+     "depth": 1.06,
+     "forward": 0
+    },
+    {
+     "at": "chest",
+     "width": 0.85,
+     "depth": 0.925,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 0.65,
+     "depth": 0.825,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
+   ]
+  }
+ ]
+}

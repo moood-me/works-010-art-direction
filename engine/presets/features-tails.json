@@ -1,0 +1,65 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "features-tails",
+ "group": "features",
+ "label": {
+  "ru": "черты: мальчик с хвостиками",
+  "en": "features: boy with tails"
+ },
+ "about": {
+  "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.4,
+   "y": -0.33,
+   "w": 0.32,
+   "h": 0.16,
+   "tilt": -0.08,
+   "iris": [
+    "#2a1612",
+    "#5a3428"
+   ],
+   "lash": "#1d0f0c",
+   "lashW": 0.055,
+   "wing": 0.06,
+   "lower": 0.12,
+   "glints": 1,
+   "sharp": true,
+   "look": 0.5
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.12,
+   "x1": 0.72,
+   "y0": -0.13,
+   "y1": -0.02,
+   "arch": 0.05,
+   "peak": 0.55,
+   "w0": 0.095,
+   "w1": 0.03,
+   "color": "#2a1210"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.82,
+   "w": 0.11,
+   "sag": 0.004,
+   "cL": -0.004,
+   "cR": 0.026,
+   "lineW": 0.015,
+   "line": "#7a3a36",
+   "dimple": true
+  }
+ ]
+}

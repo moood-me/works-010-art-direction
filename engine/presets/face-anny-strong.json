@@ -1,0 +1,29 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "face-anny-strong",
+ "group": "head-form",
+ "label": {
+  "ru": "лицо Anny: сильное",
+  "en": "Anny's face: strong"
+ },
+ "about": {
+  "ru": "ползунки Anny: подбородок вперёд и шире, скулы, нос с горбинкой, брови вперёд",
+  "en": "Anny's settings: the chin forward and wider, cheekbones, a humped nose, the brows forward"
+ },
+ "changes": [
+  {
+   "kind": "face",
+   "changes": {
+    "chin-prominent-incr": 0.8,
+    "chin-width-incr": 0.7,
+    "chin-bones-incr": 0.6,
+    "l-cheek-bones-incr": 0.8,
+    "r-cheek-bones-incr": 0.8,
+    "nose-hump-incr": 0.8,
+    "eyebrows-trans-forward": 0.6,
+    "mouth-scale-horiz-incr": 0.2
+   }
+  }
+ ]
+}

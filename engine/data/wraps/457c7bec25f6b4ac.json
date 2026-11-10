@@ -1,0 +1,17 @@
+{
+ "format": "engine/wrap",
+ "version": 1,
+ "key": "457c7bec25f6b4ac",
+ "about": "head-blond: its head wrapped (src/head/wrap.js), by wrapKey",
+ "bin": "457c7bec25f6b4ac.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  }
+ }
+}

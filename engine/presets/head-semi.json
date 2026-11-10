@@ -1,0 +1,50 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-semi",
+ "group": "head",
+ "label": {
+  "ru": "голова: парень с длинным носом",
+  "en": "head: long-nosed man"
+ },
+ "about": {
+  "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1,
+  "skin": "#efd2d4",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-semi@882d7a32927dce50"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-semi@ed275512caccab0d"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-semi@09bf48d61daa54ce"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

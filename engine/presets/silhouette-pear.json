@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "silhouette-pear",
+ "label": {
+  "ru": "силуэт: груша",
+  "en": "silhouette: pear"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т5: вес низко — широкие бёдра, узкие плечи",
+  "en": "Т5: the weight low — wide hips, narrow shoulders"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    {
+     "at": "ankle",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "knee",
+     "width": 1.15,
+     "depth": 1.075,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 1.4,
+     "depth": 1.2,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 1.35,
+     "depth": 1.175,
+     "forward": 0
+    },
+    {
+     "at": "waist",
+     "width": 1.05,
+     "depth": 1.025,
+     "forward": 0
+    },
+    {
+     "at": "chest",
+     "width": 0.85,
+     "depth": 0.925,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 0.8,
+     "depth": 0.9,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
+   ]
+  }
+ ]
+}

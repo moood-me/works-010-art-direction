@@ -1,0 +1,50 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-mask",
+ "group": "head",
+ "label": {
+  "ru": "голова: девушка в маске",
+  "en": "head: masked girl"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.08,
+  "skin": "#f1c6bd",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-mask@238aa169baf23193"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-mask@3a16977bb2f6f1e1"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "kind": "preset",
+    "id": "hair-mask@0b2a4e2712f8c5c8"
+   },
+   {
+    "kind": "preset",
+    "id": "wear-mask@022e28d8c95044b5"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

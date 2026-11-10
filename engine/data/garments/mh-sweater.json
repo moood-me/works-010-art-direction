@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-sweater",
+ "kind": "top",
+ "label": {
+  "ru": "свитер",
+  "en": "sweater"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/sweater.js)",
+ "bin": "mh-sweater.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    1944,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    1944,
+    3
+   ],
+   "offset": 11664
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    1944,
+    3
+   ],
+   "offset": 34992
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 46656
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 46668
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    3828,
+    3
+   ],
+   "offset": 46680
+  }
+ }
+}

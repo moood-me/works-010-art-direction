@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-empire",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: ампир",
+  "en": "silhouette: empire"
+ },
+ "about": {
+  "ru": "висит от груди трапецией, мелкие складки (силуэт О1: форма, к которой тянется ткань)",
+  "en": "hangs from the bust as a trapeze, fine folds (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "trapeze",
+  "flare": 0.6,
+  "from": "bust",
+  "folds": 0.08,
+  "foldN": 12
+ }
+}

@@ -1,0 +1,56 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "face-points-long",
+ "group": "head-form",
+ "label": {
+  "ru": "лицо по точкам: длинное",
+  "en": "face by points: long"
+ },
+ "about": {
+  "ru": "точки лица: подбородок ниже и вперёд, нос длиннее, скулы и челюсть уже — длинное лицо",
+  "en": "face by points: the chin lower and forward, the nose longer, cheeks and jaw narrower — a long face"
+ },
+ "changes": [
+  {
+   "kind": "points",
+   "moves": {
+    "chin": [
+     0,
+     -0.18,
+     0.04
+    ],
+    "chinFront": [
+     0,
+     -0.16,
+     0.04
+    ],
+    "mouth": [
+     0,
+     -0.08,
+     0
+    ],
+    "mouthL": [
+     0,
+     -0.08,
+     0
+    ],
+    "noseTip": [
+     0,
+     -0.06,
+     0.06
+    ],
+    "jawL": [
+     -0.06,
+     -0.08,
+     0
+    ],
+    "cheekL": [
+     -0.04,
+     0,
+     0
+    ]
+   }
+  }
+ ]
+}

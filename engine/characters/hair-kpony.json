@@ -1,0 +1,20 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "hair-kpony",
+ "label": {
+  "ru": "Волосы: хвост (В1) на женщине",
+  "en": "Hair: the ponytail (В1) on the woman"
+ },
+ "base": "woman@689d8b42269acb03",
+ "head": {
+  "pieces": [
+   {
+    "kind": "preset",
+    "id": "hair-v1-kpony@c0baa725b1d13e14"
+   }
+  ]
+ },
+ "rest": [],
+ "pose": []
+}

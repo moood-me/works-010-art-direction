@@ -1,0 +1,60 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "disney-princess",
+ "label": {
+  "ru": "Дисней: принцесса",
+  "en": "Disney: a princess"
+ },
+ "body": "anny-C-princess@d351f5dda87f7189",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "smooth-4cm@ee31c824e0a00e1b",
+   "strength": 0.8,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "contour-disney@23acce3772b83e19",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "masses-disney-bust@499af6fb6e389d95",
+   "strength": 1,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "masses-shoulders@24985df2002c8feb",
+   "strength": 0.8,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-small-hands-feet@b1a1b04ba231cc0c",
+   "strength": 0.6,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "limbs-taper@2cc5eb43a39feb66",
+   "strength": 0.35,
+   "frames": "keep"
+  }
+ ],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#efc4a4",
+  "roughness": 0.65
+ }
+}

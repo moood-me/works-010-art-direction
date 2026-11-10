@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Engine check pictures</title>
+<style>html, body { margin: 0; background: #cfc8bd; } canvas { display: block; }</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<script type="module">
+// The picture check's own page (check/pictures.mjs): one case drawn on the engine's stage, the camera framed by the
+// figure's bounds from where it faces — nothing of the viewer's panel or camera in it.
+import * as THREE from 'three';
+import { createEngine } from '../src/engine.js';
+import { makeStage, figureView } from '../src/view3d.js';
+import { figureOf } from './cases.mjs';
+const E = await createEngine(), stage = makeStage(THREE, document.getElementById('cv'));
+const VIEWS = { front: [0, 0.06], side: [Math.PI / 2, 0.06], back: [Math.PI, 0.06], three: [0.6, 0.18], top: [0.3, 1.15], tq: [0.62, 0.02], level: [0, 0.02], profile: [1.45, 0.02] };
+let view = null;
+window.render = async (job, w, h) => {
+  const { fig } = await figureOf(E, job);
+  if (view) { stage.scene.remove(view.group); view.dispose(); }
+  view = figureView(THREE, fig, (await E.character(job.char)).look); view.update(); stage.scene.add(view.group);
+  const sk = E.skeleton, P = fig.pose.P, l = sk.index.LeftLeg * 3, r = sk.index.RightLeg * 3, facing = Math.atan2(-(P[l + 2] - P[r + 2]), P[l] - P[r]);
+  const [dy, pitch] = VIEWS[job.view] ?? (() => { throw new Error(`no view ${job.view}`); })();
+  stage.size(w, h);
+  // focus: a box of `size` metres around a joint instead of the whole figure (close-ups)
+  const F = job.focus && sk.index[job.focus], half = (job.size ?? 0.4) / 2;
+  const b = job.focus ? (c => ({ center: c, min: c.map(v => v - half), max: c.map(v => v + half), size: [2 * half, 2 * half, 2 * half] }))([P[F * 3], P[F * 3 + 1], P[F * 3 + 2]]) : fig.bounds(), cam = { yaw: facing + dy, pitch }, { target, dist } = stage.fit(b, { ...cam, margin: 0.08 });
+  stage.light(b); stage.look(target, { ...cam, dist }); stage.render();
+};
+window.ready = true;
+</script>
+</body>
+</html>

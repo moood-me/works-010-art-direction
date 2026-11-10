@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "wind-strong",
+ "group": "wind",
+ "label": {
+  "ru": "ветер: сильный ветер",
+  "en": "wind: strong wind"
+ },
+ "about": {
+  "ru": "сильный порывистый ветер: длинные волосы клонятся на 60° (дует спереди справа)",
+  "en": "a strong gusty wind: long hair leans some 60° (blowing from the front right)"
+ },
+ "wind": {
+  "speed": 12,
+  "dir": [
+   0.42,
+   0,
+   -0.91
+  ],
+  "gust": 1,
+  "turbulence": 1
+ }
+}

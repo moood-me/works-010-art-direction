@@ -1,0 +1,83 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-red",
+ "group": "head",
+ "label": {
+  "ru": "голова: рыжая девушка",
+  "en": "head: red-haired girl"
+ },
+ "about": {
+  "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.12,
+  "skin": "#fbe2d2",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-red@050eaf0c9bdbedeb"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-red@06674836fef930fb"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "kind": "preset",
+    "id": "hair-red@bb08b400b6cc3fa5"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  },
+  "ref": {
+   "image": "cartoon-anatomical-2.png",
+   "points": {
+    "eL": [
+     113,
+     79
+    ],
+    "eR": [
+     83,
+     80
+    ],
+    "tip": [
+     99,
+     95
+    ],
+    "mouth": [
+     102,
+     105
+    ],
+    "mL": [
+     107,
+     103
+    ],
+    "mR": [
+     97,
+     104
+    ],
+    "chin": [
+     102,
+     115
+    ]
+   },
+   "view": {
+    "yaw": -0.22,
+    "pitch": 0.18
+   }
+  }
+ }
+}

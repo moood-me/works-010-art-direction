@@ -1,0 +1,19 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "light-plain",
+ "group": "face-light",
+ "label": {
+  "ru": "свет: обычный",
+  "en": "light: plain"
+ },
+ "about": {
+  "ru": "обычный свет сцены, как у тел",
+  "en": "the stage's usual light, as the bodies have"
+ },
+ "light": {
+  "toon": false,
+  "design": 0,
+  "faceShadows": true
+ }
+}

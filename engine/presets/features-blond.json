@@ -1,0 +1,65 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "features-blond",
+ "group": "features",
+ "label": {
+  "ru": "черты: блондин",
+  "en": "features: blond boy"
+ },
+ "about": {
+  "ru": "Г1: глаза, брови, рот и пометки — нарисованы на коже",
+  "en": "Г1: eyes, brows, mouth and marks — painted on the skin"
+ },
+ "features": [
+  {
+   "id": "eyes",
+   "kind": "eye",
+   "as": "paint",
+   "x": 0.38,
+   "y": -0.31,
+   "w": 0.3,
+   "h": 0.14,
+   "tilt": -0.04,
+   "iris": [
+    "#1d3b6a",
+    "#3d78b8"
+   ],
+   "lash": "#2a1714",
+   "lashW": 0.05,
+   "wing": 0.04,
+   "lower": 0.15,
+   "glints": 1,
+   "sharp": true,
+   "look": 0.55
+  },
+  {
+   "id": "brows",
+   "kind": "brow",
+   "as": "paint",
+   "x0": 0.12,
+   "x1": 0.72,
+   "y0": -0.1,
+   "y1": -0.05,
+   "arch": 0.025,
+   "peak": 0.4,
+   "w0": 0.095,
+   "w1": 0.04,
+   "color": "#3a1e1a"
+  },
+  {
+   "id": "mouth",
+   "kind": "mouth",
+   "as": "paint",
+   "type": "drawn",
+   "y": -0.84,
+   "w": 0.13,
+   "sag": 0,
+   "cL": 0,
+   "cR": 0.018,
+   "lineW": 0.016,
+   "line": "#7a3a36",
+   "lowerLine": 0.3
+  }
+ ]
+}

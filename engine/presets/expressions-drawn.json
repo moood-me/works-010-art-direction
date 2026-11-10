@@ -1,0 +1,96 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "expressions-drawn",
+ "group": "expressions",
+ "label": {
+  "ru": "выражения: нарисованное лицо",
+  "en": "expressions: a drawn face"
+ },
+ "about": {
+  "ru": "Г3 и Г1: моргание (веко над глазом), рот открыт (челюсть сустава Jaw), улыбка (уголки и щёки), брови вверх и вниз; нарисованные черты следуют за кожей и рисуются по выражению",
+  "en": "Г3 and Г1: a blink (the lid over the eye), the mouth open (the Jaw joint), a smile (corners and cheeks), brows up and down; the painted features follow the skin and redraw as the expression asks"
+ },
+ "expressions": [
+  {
+   "name": "blink",
+   "label": {
+    "ru": "моргание",
+    "en": "blink"
+   },
+   "mesh": [
+    {
+     "kind": "lids",
+     "amount": 1
+    }
+   ],
+   "paint": {
+    "close": 1
+   }
+  },
+  {
+   "name": "open",
+   "label": {
+    "ru": "рот открыт",
+    "en": "mouth open"
+   },
+   "jaw": 8,
+   "paint": {
+    "open": 1
+   }
+  },
+  {
+   "name": "smile",
+   "label": {
+    "ru": "улыбка",
+    "en": "smile"
+   },
+   "mesh": [
+    {
+     "kind": "corners",
+     "amount": 1
+    },
+    {
+     "kind": "cheeks",
+     "amount": 1
+    }
+   ],
+   "paint": {
+    "smile": 1,
+    "happy": 1
+   }
+  },
+  {
+   "name": "browsUp",
+   "label": {
+    "ru": "брови вверх",
+    "en": "brows up"
+   },
+   "mesh": [
+    {
+     "kind": "brows",
+     "amount": 1
+    }
+   ],
+   "paint": {
+    "up": 1
+   }
+  },
+  {
+   "name": "browsDown",
+   "label": {
+    "ru": "брови вниз",
+    "en": "brows down"
+   },
+   "mesh": [
+    {
+     "kind": "brows",
+     "amount": -0.6
+    }
+   ],
+   "paint": {
+    "down": 1
+   }
+  }
+ ]
+}

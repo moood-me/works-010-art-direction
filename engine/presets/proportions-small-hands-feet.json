@@ -1,0 +1,29 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "proportions-small-hands-feet",
+ "label": {
+  "ru": "пропорции: маленькие кисти и стопы",
+  "en": "proportions: small hands and feet"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "hand": {
+     "length": 0.75,
+     "width": 0.75
+    },
+    "foot": {
+     "length": 0.75,
+     "width": 0.8
+    }
+   }
+  }
+ ]
+}

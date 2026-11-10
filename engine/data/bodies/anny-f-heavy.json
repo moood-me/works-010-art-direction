@@ -1,0 +1,62 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "anny-f-heavy",
+ "label": {
+  "ru": "Anny: женщина полная",
+  "en": "Anny: woman, heavy"
+ },
+ "source": "data/anny/specs.json (anny-f-heavy): Anny's own settings run by tools/bodies_new.py, carried onto moood's mesh as Т8's bodies are; joints by Anny's SOMA regression carried onto this mesh",
+ "topology": "anny-moood",
+ "skeleton": "soma77",
+ "anny": {
+  "ph": {
+   "muscle": 0.4,
+   "weight": 1.2,
+   "height": 0.5,
+   "proportions": 0.5,
+   "cupsize": 0.5,
+   "firmness": 0.5,
+   "gender": 1,
+   "age": 0.6
+  },
+  "lc": {
+   "upperarm-fat-incr": 1.0,
+   "lowerarm-fat-incr": 0.8,
+   "upperleg-fat-incr": 1.0,
+   "lowerleg-fat-incr": 0.7,
+   "neck-double-incr": 0.8,
+   "head-fat-incr": 0.5,
+   "stomach-pregnant-incr": 0.5,
+   "measure-waist-circ-incr": 0.9,
+   "measure-hips-circ-incr": 0.7
+  }
+ },
+ "bin": "anny-f-heavy.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 165768
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 166692
+  }
+ }
+}

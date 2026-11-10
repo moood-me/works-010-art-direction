@@ -1,0 +1,33 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "proportions-thick-limbs",
+ "label": {
+  "ru": "пропорции: толстые руки и ноги",
+  "en": "proportions: thick limbs"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "arm": {
+     "width": 1.3
+    },
+    "fore": {
+     "width": 1.3
+    },
+    "thigh": {
+     "width": 1.2
+    },
+    "shin": {
+     "width": 1.25
+    }
+   }
+  }
+ ]
+}

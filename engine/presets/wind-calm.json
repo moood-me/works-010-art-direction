@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "wind-calm",
+ "group": "wind",
+ "label": {
+  "ru": "ветер: тихо",
+  "en": "wind: calm"
+ },
+ "about": {
+  "ru": "едва заметный ветерок (дует спереди справа)",
+  "en": "a barely felt breeze (blowing from the front right)"
+ },
+ "wind": {
+  "speed": 1,
+  "dir": [
+   0.42,
+   0,
+   -0.91
+  ],
+  "gust": 0.5,
+  "turbulence": 0.6
+ }
+}

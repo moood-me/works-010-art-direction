@@ -1,0 +1,42 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "masses-disney-glutes",
+ "label": {
+  "ru": "массы: ягодицы (Дисней)",
+  "en": "masses: buttocks (Disney)"
+ },
+ "group": "masses",
+ "about": {
+  "ru": "ягодицы как у Дисней в Т7",
+  "en": "the buttocks as Disney in Т7"
+ },
+ "changes": [
+  {
+   "kind": "masses",
+   "items": [
+    {
+     "shape": "ellipsoid",
+     "unit": "torso",
+     "mirror": true,
+     "at": {
+      "from": "Hips",
+      "to": "Neck1",
+      "t": -0.02,
+      "offset": [
+       0.4,
+       0,
+       -0.28
+      ]
+     },
+     "radii": [
+      0.38,
+      0.38,
+      0.3
+     ],
+     "blend": 0.12
+    }
+   ]
+  }
+ ]
+}

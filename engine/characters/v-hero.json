@@ -1,0 +1,55 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "v-hero",
+ "label": {
+  "ru": "V: герой",
+  "en": "V: a hero"
+ },
+ "body": "moood-man@ae2fe31d3d61c6e7",
+ "rest": [
+  {
+   "kind": "preset",
+   "id": "silhouette-v@34d15df2a5681746",
+   "strength": 0.6,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-small-head@db8142fd0f5dca22",
+   "strength": 0.5,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "proportions-long-legs@9d1c58118eefc1a2",
+   "strength": 0.5,
+   "frames": "keep"
+  },
+  {
+   "kind": "preset",
+   "id": "anatomy-defined@f35316de0f8d2876",
+   "strength": 0.6,
+   "frames": "keep"
+  }
+ ],
+ "pose": [
+  {
+   "kind": "preset",
+   "id": "contrapposto@9ac3793f62e3070a",
+   "strength": 0.35,
+   "space": "upright"
+  }
+ ],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#d9a37f",
+  "roughness": 0.65
+ }
+}

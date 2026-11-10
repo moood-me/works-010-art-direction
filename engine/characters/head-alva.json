@@ -1,0 +1,25 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "head-alva",
+ "label": {
+  "ru": "Голова: Альва",
+  "en": "Head: Alva"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "head": {
+  "preset": "head-alva@caebe9a2ceac800a"
+ },
+ "clothes": [
+  {
+   "kind": "preset",
+   "id": "outfit-alva@bf4de70ff0a6a35f"
+  }
+ ],
+ "look": {
+  "skin": "#f2c9b6",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

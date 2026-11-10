@@ -1,0 +1,20 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "hair-g1-alva",
+ "label": {
+  "ru": "Волосы: Альва (Г1), движутся",
+  "en": "Hair: Alva (Г1), moving"
+ },
+ "base": "head-alva@39667c7c60e7c87d",
+ "head": {
+  "pieces": [
+   {
+    "id": "hair",
+    "moves": true
+   }
+  ]
+ },
+ "rest": [],
+ "pose": []
+}

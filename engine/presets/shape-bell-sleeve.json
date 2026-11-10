@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-bell-sleeve",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: трапеция, рукав-колокол",
+  "en": "silhouette: trapeze, bell sleeve"
+ },
+ "about": {
+  "ru": "от груди трапецией, рукава расширяются к кисти (силуэт О1: форма, к которой тянется ткань)",
+  "en": "a trapeze from the bust, sleeves widening to the hand (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "from": "bust",
+  "shape": "trapeze",
+  "flare": 0.4,
+  "sleeve": "bell",
+  "folds": 0.2,
+  "foldN": 7
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-alva",
+ "group": "head",
+ "label": {
+  "ru": "голова: Альва",
+  "en": "head: Alva"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1,
+  "skin": "#f2c9b6",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-alva@5617da0c0f410bbb"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-alva@25f27b389e2ad4c8"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-alva@e7985172976b3a4d"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

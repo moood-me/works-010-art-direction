@@ -1,0 +1,44 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-jacket",
+ "label": {
+  "ru": "Одежда: куртка, футболка, широкие брюки",
+  "en": "Clothes: a jacket, a T-shirt, wide trousers"
+ },
+ "base": "girl@c0c9b3e9d3100e58",
+ "clothes": [
+  {
+   "id": "tshirt",
+   "kind": "garment",
+   "pattern": "mh-tshirt",
+   "fabric": "fabric-jersey@fbeb796abdcdb8ec",
+   "color": "#e8e4dc"
+  },
+  {
+   "id": "trousers",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#2f3036",
+   "shape": "shape-wide-leg@0370789d5662bce7",
+   "strength": 0.4
+  },
+  {
+   "id": "jacket",
+   "kind": "garment",
+   "pattern": "jacket",
+   "fabric": "fabric-denim@08106be05917918a",
+   "color": "#5a7aa0"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2e231c"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

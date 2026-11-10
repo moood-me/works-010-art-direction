@@ -1,0 +1,54 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-jesper",
+ "group": "head",
+ "label": {
+  "ru": "голова: Джеспер",
+  "en": "head: Jesper"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 0.98,
+  "skin": "#f0c4a8",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-jesper@ca625204224efb04"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-jesper@bacef4c29e49cf4d"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-jesper@ace6bf2870bee50e"
+   },
+   {
+    "kind": "preset",
+    "id": "wear-jesper@022cf656076f6335"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

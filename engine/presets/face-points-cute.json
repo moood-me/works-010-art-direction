@@ -1,0 +1,76 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "face-points-cute",
+ "group": "head-form",
+ "label": {
+  "ru": "лицо по точкам: мило",
+  "en": "face by points: cute"
+ },
+ "about": {
+  "ru": "точки лица: глаза ниже и шире, нос короче, рот выше, подбородок мягче и короче — детские пропорции",
+  "en": "face by points: eyes lower and wider, the nose shorter, the mouth higher, the chin softer and shorter — a child's proportions"
+ },
+ "changes": [
+  {
+   "kind": "points",
+   "moves": {
+    "eyeL": [
+     0.05,
+     -0.04,
+     0.02
+    ],
+    "eyeOutL": [
+     0.08,
+     -0.03,
+     0
+    ],
+    "browL": [
+     0.04,
+     0.02,
+     0
+    ],
+    "noseTip": [
+     0,
+     0.05,
+     -0.03
+    ],
+    "mouth": [
+     0,
+     0.08,
+     0
+    ],
+    "mouthL": [
+     -0.02,
+     0.08,
+     0
+    ],
+    "chin": [
+     0,
+     0.12,
+     0.02
+    ],
+    "chinFront": [
+     0,
+     0.1,
+     0
+    ],
+    "jawL": [
+     0.04,
+     0.06,
+     0
+    ],
+    "cheekL": [
+     0.04,
+     0,
+     0.04
+    ],
+    "forehead": [
+     0,
+     0.04,
+     0.03
+    ]
+   }
+  }
+ ]
+}

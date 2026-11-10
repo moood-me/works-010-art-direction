@@ -1,0 +1,19 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "light-soft-form",
+ "group": "face-light",
+ "label": {
+  "ru": "свет: мягкий, по форме",
+  "en": "light: soft, by the form"
+ },
+ "about": {
+  "ru": "обычный свет сцены, но тени лица — от придуманной формы, без падающих теней на лице",
+  "en": "the stage's usual light, the face shaded by its designed form, no cast shadows on it"
+ },
+ "light": {
+  "toon": false,
+  "design": 1,
+  "faceShadows": false
+ }
+}

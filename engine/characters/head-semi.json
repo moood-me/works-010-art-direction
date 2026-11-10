@@ -1,0 +1,25 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "head-semi",
+ "label": {
+  "ru": "Голова: парень с длинным носом",
+  "en": "Head: long-nosed man"
+ },
+ "body": "moood-man@ae2fe31d3d61c6e7",
+ "head": {
+  "preset": "head-semi@e7235d5a4cb44a87"
+ },
+ "clothes": [
+  {
+   "kind": "preset",
+   "id": "outfit-semi@f09aa6aa9f2c4459"
+  }
+ ],
+ "look": {
+  "skin": "#efd2d4",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

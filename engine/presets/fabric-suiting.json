@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-suiting",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: костюмная шерсть",
+  "en": "fabric: suiting wool"
+ },
+ "about": {
+  "ru": "держит линию: брюки, юбки, пиджаки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "keeps its line: trousers, skirts, jackets (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.26,
+  "stretch": 4000,
+  "compress": 0.25,
+  "bend": 0.00003,
+  "damping": 0.5,
+  "friction": 0.55,
+  "thick": 0.003,
+  "air": 1,
+  "sheen": 0.2,
+  "rough": 0.75
+ }
+}

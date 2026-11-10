@@ -1,0 +1,40 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-boy7",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: мальчик с каре",
+  "en": "hair: boy with a bob"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#e2d38a",
+   "ink": "#6a5a2a",
+   "parts": [
+    [
+     "cap",
+     {
+      "front": 0.2
+     }
+    ],
+    [
+     "bowl",
+     {
+      "n": 26
+     }
+    ],
+    [
+     "sideSweep",
+     {}
+    ]
+   ]
+  }
+ ]
+}

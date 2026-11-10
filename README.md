@@ -10,6 +10,7 @@ beautiful: scenes first, then people.
   and open `/gallery/`.
 - [docs/](docs/README.md) — the problem, thoughts on scenes, thoughts on people, history.
 - [engine/](engine/README.md) — the character engine's foundation: one body description, one skinning, Kimodo motions
-  and their retargeting, versioned characters and a picture check; its viewer is in the gallery (Д1).
+  and their retargeting, characters as checked data and the checks; bodies (stage 1): Anny's bodies, deformers, presets
+  of parts and full-body presets; its viewer is in the gallery (Д1; bodies Д2–Д4).
 - [experiments/](experiments/README.md) — pages we built to try ideas: a mid-shot dialogue in 2D, a code-sculpted
   body with cloth, Anny's bodies from moood, and the page of body styles and simplification.

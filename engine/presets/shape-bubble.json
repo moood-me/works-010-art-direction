@@ -1,0 +1,18 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-bubble",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: баллон",
+  "en": "silhouette: bubble"
+ },
+ "about": {
+  "ru": "надут шаром и собран у подола (силуэт О1: форма, к которой тянется ткань)",
+  "en": "puffed out like a ball, gathered at the hem (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "bubble",
+  "flare": 0.8
+ }
+}

@@ -1,0 +1,59 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-mask",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: девушка в маске",
+  "en": "hair: masked girl"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#4a3b38",
+   "parts": [
+    [
+     "mass",
+     {
+      "n": 18,
+      "scale": 1.12,
+      "front": 0.4,
+      "bang": 0.35,
+      "bangEl": 0.5,
+      "len": 0.3,
+      "flick": 0.12,
+      "side": 0.1,
+      "r": 0.22,
+      "tufts": [
+       [
+        0.5,
+        0.75,
+        0.25,
+        -0.45,
+        0.25,
+        0.26
+       ]
+      ]
+     }
+    ],
+    [
+     "topBun",
+     {
+      "color2": "#3aa0d8"
+     }
+    ],
+    [
+     "bangsSide",
+     {
+      "n": 3
+     }
+    ]
+   ]
+  }
+ ]
+}

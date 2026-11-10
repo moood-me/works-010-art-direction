@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-heavyjersey",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: плотный трикотаж (футер)",
+  "en": "fabric: heavy jersey (sweatshirt fleece)"
+ },
+ "about": {
+  "ru": "толще и тяжелее трикотажа, держит объём: толстовки (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "thicker and heavier than jersey, keeps some volume: sweatshirts (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.3,
+  "stretch": 600,
+  "compress": 0.4,
+  "bend": 0.000022,
+  "damping": 0.5,
+  "friction": 0.55,
+  "thick": 0.0035,
+  "air": 1,
+  "sheen": 0.4,
+  "rough": 0.9
+ }
+}

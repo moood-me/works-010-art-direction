@@ -1,0 +1,35 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "clothes-hair",
+ "label": {
+  "ru": "Одежда и волосы: блузка и юбка-трапеция",
+  "en": "Clothes and hair: a blouse and a flared skirt"
+ },
+ "base": "hair-alva@2a7de4a98047df09",
+ "clothes": [
+  {
+   "id": "blouse",
+   "kind": "garment",
+   "pattern": "blouse",
+   "fabric": "fabric-silk@8dee0e65301326ad",
+   "color": "#e8e0d0"
+  },
+  {
+   "id": "skirt",
+   "kind": "garment",
+   "pattern": "flared-skirt",
+   "fabric": "fabric-chiffon@f305643886762bd4",
+   "color": "#c47a96"
+  },
+  {
+   "id": "shoes",
+   "kind": "garment",
+   "pattern": "mh-flats",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#2b211d"
+  }
+ ],
+ "rest": [],
+ "pose": []
+}

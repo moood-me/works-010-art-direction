@@ -1,11 +1,11 @@
 # A pack: the engine's plain data file — a JSON header and a binary file of little-endian arrays beside it.
 #   <name>.json: {"format": ..., "version": ..., ..., "bin": "<name>.bin",
-#                 "arrays": {<key>: {"dtype": "float32" | "uint16" | "uint8" | "int16" | "uint32", "shape": [...], "offset": bytes}}}
+#                 "arrays": {<key>: {"dtype": "float32" | "float64" | "uint32" | "int32" | "uint16" | "int16" | "uint8", "shape": [...], "offset": bytes}}}
 #   <name>.bin:  the arrays one after another, each starting at a multiple of 4 bytes.
 # src/pack.js reads the same.
 import json, os, numpy as np
 
-DTYPES = {'float32': '<f4', 'uint16': '<u2', 'uint8': 'u1', 'int16': '<i2', 'uint32': '<u4'}
+DTYPES = {'float32': '<f4', 'float64': '<f8', 'uint32': '<u4', 'int32': '<i4', 'uint16': '<u2', 'int16': '<i2', 'uint8': 'u1'}
 
 
 def write(path_json, header, arrays):
@@ -40,3 +40,8 @@ def read(path_json):
         n = int(np.prod(m['shape']))
         arrays[key] = np.frombuffer(raw, dt, n, m['offset']).reshape(m['shape'])
     return h, arrays
+
+
+def index_type(n_vertices):
+    """the smallest index type for a mesh of n vertices (triangles of more than 65,536 vertices: uint32)"""
+    return np.uint16 if n_vertices <= 65536 else np.uint32

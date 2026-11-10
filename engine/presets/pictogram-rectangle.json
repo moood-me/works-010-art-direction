@@ -1,0 +1,29 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "pictogram-rectangle",
+ "label": {
+  "ru": "пиктограмма: прямоугольник",
+  "en": "pictogram: rectangle"
+ },
+ "group": "pictogram",
+ "about": {
+  "ru": "Т4: тело как знак на табличке — голова шаром, туловище фигурой, руки и ноги палочками (после сглаживания)",
+  "en": "Т4: the body as a sign — the head a ball, the trunk one figure, the limbs sticks (after smoothing)"
+ },
+ "changes": [
+  {
+   "kind": "smooth",
+   "cm": 6,
+   "keep": {
+    "fingers": 0,
+    "toes": 0
+   }
+  },
+  {
+   "kind": "sign",
+   "figure": "rectangle",
+   "gap": 0
+  }
+ ]
+}

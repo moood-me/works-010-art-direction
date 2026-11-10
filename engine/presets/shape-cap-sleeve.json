@@ -1,0 +1,21 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-cap-sleeve",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: трапеция, рукав-крылышко",
+  "en": "silhouette: trapeze, cap sleeve"
+ },
+ "about": {
+  "ru": "от груди трапецией, рукава-крылышки (силуэт О1: форма, к которой тянется ткань)",
+  "en": "a trapeze from the bust, cap sleeves (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "from": "bust",
+  "stiff": 1,
+  "shape": "trapeze",
+  "flare": 0.3,
+  "sleeve": "cap"
+ }
+}

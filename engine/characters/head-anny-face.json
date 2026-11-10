@@ -1,0 +1,50 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "head-anny-face",
+ "label": {
+  "ru": "Голова: лицо Anny её ползунками",
+  "en": "Head: Anny's face by her own settings"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "head": {
+  "size": 1.1,
+  "form": [
+   {
+    "kind": "preset",
+    "id": "face-anny-small-nose@8b4cd2bf6e474360"
+   },
+   {
+    "kind": "preset",
+    "id": "face-anny-big-eyes@548161cc84e03aea"
+   },
+   {
+    "kind": "preset",
+    "id": "face-anny-soft-chin@3c7addc0286a19cb",
+    "strength": 0.3
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-dots@6de146a7440e54ac"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-plain@5acbe8db01ec7ddd"
+  }
+ },
+ "look": {
+  "skin": "#e9bb9c",
+  "roughness": 0.65
+ },
+ "rest": [],
+ "pose": []
+}

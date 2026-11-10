@@ -1,0 +1,48 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-tails",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: мальчик с хвостиками",
+  "en": "hair: boy with tails"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#5a2a24",
+   "ink": "#1d0c0a",
+   "parts": [
+    [
+     "mass",
+     {
+      "n": 18,
+      "scale": 1.12,
+      "front": 0.5,
+      "bang": -0.25,
+      "bangEl": 0.55,
+      "len": 0.35,
+      "flick": 0.1,
+      "side": 0.05,
+      "r": 0.22
+     }
+    ],
+    [
+     "twoTails",
+     {}
+    ],
+    [
+     "bangsSide",
+     {
+      "n": 2
+     }
+    ]
+   ]
+  }
+ ]
+}

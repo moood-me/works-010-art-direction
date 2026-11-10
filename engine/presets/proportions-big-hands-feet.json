@@ -1,0 +1,29 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "proportions-big-hands-feet",
+ "label": {
+  "ru": "пропорции: большие кисти и стопы",
+  "en": "proportions: big hands and feet"
+ },
+ "group": "proportions",
+ "about": {
+  "ru": "Т1: длина и ширина частей, суставы идут с ними",
+  "en": "Т1: the parts' lengths and widths, the joints moving with them"
+ },
+ "changes": [
+  {
+   "kind": "proportions",
+   "parts": {
+    "hand": {
+     "length": 1.3,
+     "width": 1.3
+    },
+    "foot": {
+     "length": 1.25,
+     "width": 1.2
+    }
+   }
+  }
+ ]
+}

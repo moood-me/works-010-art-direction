@@ -1,0 +1,38 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-semi",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: парень с длинным носом",
+  "en": "hair: long-nosed man"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#2a1f2c",
+   "parts": [
+    [
+     "mass",
+     {
+      "n": 22,
+      "scale": 1.14,
+      "front": 0.3,
+      "bang": 0.75,
+      "bangEl": 0.5,
+      "len": 0.9,
+      "flick": 0.35,
+      "spread": 0.45,
+      "side": 0.35,
+      "r": 0.2
+     }
+    ]
+   ]
+  }
+ ]
+}

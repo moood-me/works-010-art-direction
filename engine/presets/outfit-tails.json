@@ -1,0 +1,37 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "outfit-tails",
+ "group": "outfit",
+ "label": {
+  "ru": "наряд: мальчик с хвостиками",
+  "en": "outfit: boy with tails"
+ },
+ "about": {
+  "ru": "Г1: что надето, как нарисовано, — тканью (вещи MakeHuman)",
+  "en": "Г1: what it was drawn wearing — as cloth (MakeHuman's garments)"
+ },
+ "clothes": [
+  {
+   "id": "tshirt",
+   "kind": "garment",
+   "pattern": "mh-tshirt",
+   "fabric": "fabric-jersey@fbeb796abdcdb8ec",
+   "color": "#e46a2c"
+  },
+  {
+   "id": "pants",
+   "kind": "garment",
+   "pattern": "mh-pants",
+   "fabric": "fabric-twill@926bd20764dc9758",
+   "color": "#56423a"
+  },
+  {
+   "id": "boots",
+   "kind": "garment",
+   "pattern": "mh-boots",
+   "fabric": "fabric-suiting@cfe77341b470ad80",
+   "color": "#3b2c2c"
+  }
+ ]
+}

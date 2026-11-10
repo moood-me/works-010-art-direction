@@ -1,0 +1,47 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "hair-alva",
+ "group": "hair",
+ "label": {
+  "ru": "волосы: Альва",
+  "en": "hair: Alva"
+ },
+ "about": {
+  "ru": "волосы Г1, как они были нарисованы, — жёсткими кусками на голове, следуют за ней (волосы, что движутся, — этап волос)",
+  "en": "Г1's hair as it was drawn — rigid pieces on the head, following it (hair that moves is the hair stage)"
+ },
+ "pieces": [
+  {
+   "id": "hair",
+   "kind": "hair",
+   "color": "#8a6a3a",
+   "ink": "#3a2a14",
+   "parts": [
+    [
+     "cap",
+     {
+      "front": 0.55
+     }
+    ],
+    [
+     "centerPart",
+     {
+      "n": 8,
+      "w": 0.44
+     }
+    ],
+    [
+     "back",
+     {
+      "n": 11,
+      "len": 3.2,
+      "w": 0.5,
+      "wave": 0.15,
+      "lift": 0.18
+     }
+    ]
+   ]
+  }
+ ]
+}

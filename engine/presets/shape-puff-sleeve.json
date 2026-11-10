@@ -1,0 +1,18 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-puff-sleeve",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: рукав-фонарик",
+  "en": "silhouette: puff sleeve"
+ },
+ "about": {
+  "ru": "облегает, рукава-фонарики у плеча (силуэт О1: форма, к которой тянется ткань)",
+  "en": "fitted, sleeves puffed at the shoulder (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "fit": 0.9,
+  "sleeve": "puff"
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-flare-leg",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: клёш",
+  "en": "silhouette: flared legs"
+ },
+ "about": {
+  "ru": "штанины расширяются от колена (силуэт О1: форма, к которой тянется ткань)",
+  "en": "legs flaring from the knee (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "leg": "flare"
+ }
+}

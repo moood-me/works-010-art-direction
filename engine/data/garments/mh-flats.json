@@ -1,0 +1,63 @@
+{
+ "format": "engine/garment",
+ "version": 1,
+ "id": "mh-flats",
+ "kind": "shoes",
+ "label": {
+  "ru": "туфли",
+  "en": "flats"
+ },
+ "topology": "anny-moood",
+ "unit": 0.0001,
+ "source": "MakeHuman (CC0), as moood bakes it onto Anny's mesh (experiments/data/flats.js)",
+ "bin": "mh-flats.bin",
+ "arrays": {
+  "refs": {
+   "dtype": "uint16",
+   "shape": [
+    1207,
+    3
+   ],
+   "offset": 0
+  },
+  "bary": {
+   "dtype": "float32",
+   "shape": [
+    1207,
+    3
+   ],
+   "offset": 7244
+  },
+  "offset": {
+   "dtype": "int16",
+   "shape": [
+    1207,
+    3
+   ],
+   "offset": 21728
+  },
+  "measure": {
+   "dtype": "uint16",
+   "shape": [
+    3,
+    2
+   ],
+   "offset": 28972
+  },
+  "span": {
+   "dtype": "float32",
+   "shape": [
+    3
+   ],
+   "offset": 28984
+  },
+  "triangles": {
+   "dtype": "uint16",
+   "shape": [
+    2319,
+    3
+   ],
+   "offset": 28996
+  }
+ }
+}

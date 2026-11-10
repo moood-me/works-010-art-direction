@@ -1,0 +1,51 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "silhouette-reed",
+ "label": {
+  "ru": "силуэт: тростинка",
+  "en": "silhouette: reed"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т6: всё тоньше, кроме головы и плеч",
+  "en": "Т6: everything slimmer but the head and the shoulders"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    {
+     "at": 0,
+     "width": 0.8,
+     "depth": 0.82,
+     "forward": 0
+    },
+    {
+     "at": 0.5,
+     "width": 0.8,
+     "depth": 0.82,
+     "forward": 0
+    },
+    {
+     "at": 0.75,
+     "width": 0.82,
+     "depth": 0.84,
+     "forward": 0
+    },
+    {
+     "at": 0.88,
+     "width": 0.95,
+     "depth": 0.96,
+     "forward": 0
+    },
+    {
+     "at": 1,
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
+   ]
+  }
+ ]
+}

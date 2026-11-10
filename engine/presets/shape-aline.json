@@ -1,0 +1,20 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "shape-aline",
+ "group": "garment-shape",
+ "label": {
+  "ru": "силуэт: А-силуэт",
+  "en": "silhouette: A-line"
+ },
+ "about": {
+  "ru": "расширяется от талии к подолу ровной трапецией, мягкие складки (силуэт О1: форма, к которой тянется ткань)",
+  "en": "widens from the waist to the hem as an even trapeze, soft folds (О1's silhouette: the form the cloth is pulled toward)"
+ },
+ "shape": {
+  "shape": "aline",
+  "flare": 0.6,
+  "folds": 0.1,
+  "foldN": 7
+ }
+}

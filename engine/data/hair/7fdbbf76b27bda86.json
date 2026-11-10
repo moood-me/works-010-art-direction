@@ -1,0 +1,174 @@
+{
+ "format": "engine/hair",
+ "version": 2,
+ "key": "7fdbbf76b27bda86",
+ "style": "giulia",
+ "off": [],
+ "only": null,
+ "meshes": [
+  {
+   "kind": "inner",
+   "palette": [
+    "#a8231b"
+   ],
+   "rough": null,
+   "ink": null,
+   "box": [
+    [
+     -0.15428093075752258,
+     -0.1135500892996788,
+     -0.16062471270561218
+    ],
+    [
+     0.15467135608196259,
+     0.1339913159608841,
+     0.1289535015821457
+    ]
+   ]
+  },
+  {
+   "kind": "locks",
+   "palette": [
+    "#a8231b"
+   ],
+   "rough": null,
+   "ink": null
+  },
+  {
+   "kind": "fabric",
+   "palette": [
+    "#1d8ec4"
+   ],
+   "rough": 0.85,
+   "ink": null,
+   "box": [
+    [
+     -0.07856618613004684,
+     0.005518454592674971,
+     -0.1265963613986969
+    ],
+    [
+     0.12999677658081055,
+     0.1455746442079544,
+     0.09897347539663315
+    ]
+   ]
+  }
+ ],
+ "about": "giulia: built in its design space (src/hair/hair.js), by styleKey",
+ "bin": "7fdbbf76b27bda86.bin",
+ "arrays": {
+  "m0.positions": {
+   "dtype": "uint16",
+   "shape": [
+    11873,
+    3
+   ],
+   "offset": 0
+  },
+  "m0.normals": {
+   "dtype": "uint8",
+   "shape": [
+    11873,
+    3
+   ],
+   "offset": 71240
+  },
+  "m0.triangles": {
+   "dtype": "uint16",
+   "shape": [
+    24078,
+    3
+   ],
+   "offset": 106860
+  },
+  "m0.tangents": {
+   "dtype": "uint8",
+   "shape": [
+    11873,
+    3
+   ],
+   "offset": 251328
+  },
+  "m0.uv": {
+   "dtype": "int16",
+   "shape": [
+    11873,
+    2
+   ],
+   "offset": 286948
+  },
+  "m0.seed": {
+   "dtype": "uint8",
+   "shape": [
+    11873,
+    1
+   ],
+   "offset": 334440
+  },
+  "m0.ao": {
+   "dtype": "uint8",
+   "shape": [
+    11873,
+    1
+   ],
+   "offset": 346316
+  },
+  "m0.bindC": {
+   "dtype": "uint16",
+   "shape": [
+    11873,
+    3
+   ],
+   "offset": 358192
+  },
+  "m0.bindU": {
+   "dtype": "uint16",
+   "shape": [
+    11873,
+    3
+   ],
+   "offset": 429432
+  },
+  "m0.bindW": {
+   "dtype": "uint8",
+   "shape": [
+    11873,
+    3
+   ],
+   "offset": 500672
+  },
+  "m1.ao": {
+   "dtype": "uint8",
+   "shape": [
+    69905,
+    1
+   ],
+   "offset": 536292
+  },
+  "m2.positions": {
+   "dtype": "uint16",
+   "shape": [
+    1976,
+    3
+   ],
+   "offset": 606200
+  },
+  "m2.normals": {
+   "dtype": "uint8",
+   "shape": [
+    1976,
+    3
+   ],
+   "offset": 618056
+  },
+  "m2.triangles": {
+   "dtype": "uint16",
+   "shape": [
+    3948,
+    3
+   ],
+   "offset": 623984
+  }
+ }
+}

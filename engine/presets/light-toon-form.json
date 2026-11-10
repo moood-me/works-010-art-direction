@@ -1,0 +1,22 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "light-toon-form",
+ "group": "face-light",
+ "label": {
+  "ru": "свет: мультяшный, по форме",
+  "en": "light: toon, by the form"
+ },
+ "about": {
+  "ru": "как у Г3: три мягких тона с контуром, тени лица — от придуманной формы, на лице нет падающих теней",
+  "en": "as Г3's: three soft tones with an outline, the face shaded by its designed form, no cast shadows on the face"
+ },
+ "light": {
+  "toon": true,
+  "soft": 3,
+  "outline": 0.0012,
+  "outlineColor": "#2a1e24",
+  "design": 1,
+  "faceShadows": false
+ }
+}

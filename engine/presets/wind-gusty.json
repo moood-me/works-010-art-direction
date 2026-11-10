@@ -1,0 +1,24 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "wind-gusty",
+ "group": "wind",
+ "label": {
+  "ru": "ветер: порывы",
+  "en": "wind: gusts"
+ },
+ "about": {
+  "ru": "неровный ветер: сильные порывы между затишьями (дует спереди справа)",
+  "en": "an uneven wind: strong gusts between lulls (blowing from the front right)"
+ },
+ "wind": {
+  "speed": 7,
+  "dir": [
+   0.42,
+   0,
+   -0.91
+  ],
+  "gust": 2.2,
+  "turbulence": 1.6
+ }
+}

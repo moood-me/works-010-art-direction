@@ -209,3 +209,18 @@ moves through the scene only by Kimodo and only along the coordinates Kimodo giv
 body, the neck, the arms, anything. Grips of objects later (Kimodo has none). Today's viewers break this: the
 retargeting (gallery/player-core.js, the root keeps its rest x and z, only the pelvis height follows) plays walking
 and running on the spot.
+
+## Two people interacting (talk with Pavel, 2026-11-03, my understanding, not decided)
+
+Kimodo makes one person and knows nothing of a second, so two people are tied through constraints: what one does
+becomes a condition for the other, made in the order of cause and effect. B touches A's shoulder, A looks round: A's
+motion first (stands), from it A's shoulder at every frame; B's motion — walks up, the hand at that place at the
+touch frame; then A's continuation (`after`) — looks back over the shoulder, a fraction of a second after the touch;
+if B's hand stays on the shoulder while A turns, B is made again with the hand on the moving shoulder. Kimodo misses by
+centimetres and our characters' sizes differ from its body, so a small correction on top reaches the point, and a
+check measures contact and passing through. One carries another: the carrier from Kimodo with the hands where the
+other lies; the carried one can't be led by Kimodo (doesn't walk) — a pose from Kimodo attached to the carrier's
+arms; the lift itself the hardest (frame by frame with constraints from both sides, or physics). Research on two
+people: InterGen (trained on pairs), InterControl (two people from a one-person model by distances between joints —
+our way in essence). Open question to Pavel: may the carried one be attached to the carrier's arms instead of led by
+Kimodo?

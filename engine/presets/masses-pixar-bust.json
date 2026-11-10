@@ -1,0 +1,42 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "masses-pixar-bust",
+ "label": {
+  "ru": "массы: грудь (Pixar)",
+  "en": "masses: bust (Pixar)"
+ },
+ "group": "masses",
+ "about": {
+  "ru": "грудь как у Pixar в Т7: мягкий шар, вплавленный в торс",
+  "en": "the bust as Pixar in Т7: a soft ball melted into the torso"
+ },
+ "changes": [
+  {
+   "kind": "masses",
+   "items": [
+    {
+     "shape": "ellipsoid",
+     "unit": "torso",
+     "mirror": true,
+     "at": {
+      "from": "Hips",
+      "to": "Neck1",
+      "t": 0.56,
+      "offset": [
+       0.34,
+       0,
+       0.36
+      ]
+     },
+     "radii": [
+      0.32,
+      0.28,
+      0.26
+     ],
+     "blend": 0.18
+    }
+   ]
+  }
+ ]
+}

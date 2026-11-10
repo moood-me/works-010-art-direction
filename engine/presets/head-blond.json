@@ -1,0 +1,50 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-blond",
+ "group": "head",
+ "label": {
+  "ru": "голова: блондин",
+  "en": "head: blond boy"
+ },
+ "about": {
+  "ru": "Г1: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г1: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1,
+  "skin": "#eab6a6",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-blond@2078bd064df0f77b"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-blond@250f4975f5f59848"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-blond@da5e07dceb78b9f4"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

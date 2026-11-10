@@ -1,0 +1,50 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "head-hood",
+ "group": "head",
+ "label": {
+  "ru": "голова: женщина в капюшоне",
+  "en": "head: hooded woman"
+ },
+ "about": {
+  "ru": "Г3: голова Anny, обтянутая на придуманную форму из кривых рисунка; черты нарисованы на коже; волосы Г1 — жёсткими кусками на голове",
+  "en": "Г3: Anny's head wrapped onto a form designed from the drawing's curves; features painted on the skin; Г1's hair as rigid pieces on the head"
+ },
+ "head": {
+  "size": 1.06,
+  "skin": "#ecbcc4",
+  "form": [
+   {
+    "kind": "preset",
+    "id": "form-hood@9f8734ffe3aaa112"
+   }
+  ],
+  "features": [
+   {
+    "kind": "preset",
+    "id": "features-hood@be56b3fa0375b3ff"
+   }
+  ],
+  "expressions": [
+   {
+    "kind": "preset",
+    "id": "expressions-drawn@be414f295b73fceb"
+   }
+  ],
+  "pieces": [
+   {
+    "id": "nose",
+    "kind": "nose"
+   },
+   {
+    "kind": "preset",
+    "id": "hair-hood@270414768a283dbb"
+   }
+  ],
+  "light": {
+   "kind": "preset",
+   "id": "light-toon-form@4a5001203610c6f5"
+  }
+ }
+}

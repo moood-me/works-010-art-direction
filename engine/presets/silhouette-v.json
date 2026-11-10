@@ -1,0 +1,69 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "silhouette-v",
+ "label": {
+  "ru": "силуэт: V",
+  "en": "silhouette: V"
+ },
+ "group": "silhouette",
+ "about": {
+  "ru": "Т5: широкие плечи и грудь, узкие бёдра и ноги",
+  "en": "Т5: broad shoulders and chest, narrow hips and legs"
+ },
+ "changes": [
+  {
+   "kind": "silhouette",
+   "keys": [
+    {
+     "at": "ankle",
+     "width": 0.65,
+     "depth": 0.825,
+     "forward": 0
+    },
+    {
+     "at": "knee",
+     "width": 0.7,
+     "depth": 0.85,
+     "forward": 0
+    },
+    {
+     "at": "crotch",
+     "width": 0.8,
+     "depth": 0.9,
+     "forward": 0
+    },
+    {
+     "at": "hips",
+     "width": 0.85,
+     "depth": 0.925,
+     "forward": 0
+    },
+    {
+     "at": "waist",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    },
+    {
+     "at": "chest",
+     "width": 1.35,
+     "depth": 1.175,
+     "forward": 0
+    },
+    {
+     "at": "shoulders",
+     "width": 1.5,
+     "depth": 1.25,
+     "forward": 0
+    },
+    {
+     "at": "neck",
+     "width": 1,
+     "depth": 1,
+     "forward": 0
+    }
+   ]
+  }
+ ]
+}

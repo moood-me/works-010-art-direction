@@ -1,0 +1,26 @@
+{
+ "format": "engine/preset",
+ "version": 6,
+ "id": "fabric-poplin",
+ "group": "fabric",
+ "label": {
+  "ru": "ткань: хлопок-поплин",
+  "en": "fabric: cotton poplin"
+ },
+ "about": {
+  "ru": "лёгкий плотный хлопок: рубашки, платья (ткань О3: вес, растяжение, изгиб по Кавабате, затухание, трение, толщина)",
+  "en": "light, firm cotton: shirts, dresses (О3's fabric: weight, stretch, Kawabata's bending, damping, friction, thickness)"
+ },
+ "fabric": {
+  "density": 0.12,
+  "stretch": 4000,
+  "compress": 0.25,
+  "bend": 0.000012,
+  "damping": 0.35,
+  "friction": 0.4,
+  "thick": 0.0022,
+  "air": 1,
+  "sheen": 0.1,
+  "rough": 0.8
+ }
+}
