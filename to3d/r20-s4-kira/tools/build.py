@@ -38,7 +38,6 @@ MAT = {
     'sclera':  (rgb('#e6dad6'), rgb('#a8949a'), rgb('#e6dad6'), rgb('#e6dad6')),
     'iris':    (rgb('#4e6660'), rgb('#1c2224'), rgb('#4e6660'), rgb('#a9c0a8')),
     'mouth':   (rgb('#4a2026'), rgb('#2e1418'), rgb('#5a2428'), rgb('#4a2026')),
-    'teeth':   (rgb('#e6dccf'), rgb('#a08c88'), rgb('#e6dccf'), rgb('#e6dccf')),
     'lime':    (rgb('#c9ee2c'), rgb('#7c9a1c'), rgb('#e6f060'), rgb('#ffffff')),
     'pad':     (rgb('#34323a'), rgb('#19181d'), rgb('#4a3c4a'), rgb('#dcf78e')),
 }
@@ -148,7 +147,7 @@ HV = W(hv)
 yd_h = hv[:, 1]
 # proxy normals for the face's shade: the head smoothed into big planes (Arcane's shadow is one shape)
 Ah = M.adjacency(len(HV), HT)
-hs_ = M.smooth(HV, Ah, np.ones(len(HV)), iters=45, lam=0.5)
+hs_ = M.smooth(HV, Ah, np.ones(len(HV)), iters=90, lam=0.5)       # a young face: bigger, calmer planes than Вера's 45
 pn = M.vertex_normals(hs_, HT)
 pw = 0.88 * (1 - sm((yd_h - 120) / 30)) * (1 - 0.5 * hf['ear'])
 # the painted layer: front projection (faces.py frame, drawing units)
@@ -214,18 +213,6 @@ HRV = W(hair_v)
 HRT = PT.orient(HRV, hair_t, W(HC))
 print('hair', len(hair_v), 'vertices,', nlock, 'locks')
 shells = []
-
-# upper teeth: a band behind the lips (seen when the jaw opens)
-tx = np.linspace(-1, 1, 21); ty = np.linspace(0, 1, 5)
-TX, TY = np.meshgrid(tx, ty, indexing='ij')
-tw_ = mouth['w'] * 0.82
-teeth_v = np.stack([TX * tw_, mouth['y'] - 6.5 + TY * 7.2, mouth['z'] - 5.5 - 9.0 * TX ** 2 + 0 * TY], -1).reshape(-1, 3)
-teeth_t = []
-for i in range(20):
-    for j in range(4):
-        a0, a1, b0, b1 = i * 5 + j, (i + 1) * 5 + j, i * 5 + j + 1, (i + 1) * 5 + j + 1
-        teeth_t += [[a0, a1, b0], [a1, b1, b0]]
-teeth_t = np.array(teeth_t)
 
 # ---------------------------------------------------------------- Anny's body: the hoodie, the trousers
 COLLAR_TOP = 132.0                                  # the hoodie's neckband's top edge (drawing units)
@@ -378,7 +365,7 @@ def add(name, V, T, mat, SJ=None, SW=None, Wt=None, **attr):
 add('body', bv, bT, mat, bSJ, bSW, hg=trunk_w * sm((0.5 - bpart('neck')) / 0.3), two=two)
 # the mouth's inside: what is hardly seen from outside (export_hbm.py's rays), in the mouth's box
 vis = np.load(os.path.join(C, 'hbm_head.npz'))['head_vis']
-inside = (vis < 14) & (np.abs(hv[:, 0]) < mouth['w'] + 2) & (np.abs(hv[:, 1] - mouth['y']) < 16) & (hv[:, 2] > 40)
+inside = (vis < 14) & (np.abs(hv[:, 0]) < mouth['w'] + 2) & (np.abs(hv[:, 1] - mouth['y']) < 16) & (hv[:, 2] > 40) & (hv[:, 2] < mouth['z'] - 5)      # behind the lips' front
 tw = tw * ~(inside | hf['mouth_in'])               # no painted layer inside the mouth
 head_mat = np.where(inside | (hf['mouth_in'] & (hv[:, 2] > 50)), mi('mouth'), mi('skin'))
 add('head', HV, HT, head_mat, Wt=headW, uv=uv, tw=tw, pn=pn, pw=pw, dr=hv)
@@ -387,7 +374,6 @@ for prt, k, v, tri in balls:
 add('hair', HRV, HRT, mi('hair'), Wt=chain_w(hair_v[:, 1], len(HRV)), hs=hair_s, hm=hair_m, ha=hair_a, dr=hair_v, two=1)
 for name, v, tt, m_, hs in shells:
     add(name, W(v), tt, mi('hair'), Wt=rigid(len(v)), hs=hs, hm=m_, ha=0.3 + 0.01 * v[:, 0], dr=v, two=2)       # two = 2: drawn from both sides, casts no shadow
-add('teeth', W(teeth_v), teeth_t, mi('teeth'), Wt=rigid(len(teeth_v)), two=1, dr=teeth_v)
 add('shoes', SHOE_V, SHOE_T, mi('shoe'), Wt=SHOE_W, two=1)
 add('hood', W(hood_v), hood_t, mi('suit'), Wt=hoodW, hg=0.0, dr=hood_v)
 add('pads', W(pad_v), pad_t, mi('pad'), Wt=chestW(len(pad_v)), two=1)

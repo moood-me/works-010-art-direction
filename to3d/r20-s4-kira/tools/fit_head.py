@@ -1,11 +1,12 @@
-"""Fit Blender's Human Base Meshes head «for animation» (realistic, CC0) to Вера's head from the Arcane drawing.
-After Р2's fit_head.py (to3d/r2-s10-savely), changed for this drawing:
-  1. placement by landmarks: eyes (±31, 0), crown −122, chin 112, separate vertical scales above and below the eyes;
-  2. the nose enlarged about its root toward the drawing's long nose (tip and length from the drawing's nose surface),
-     so the Laplacian keeps a nose's form at the drawing's size;
+"""Fit Blender's Human Base Meshes head «for animation» (realistic, CC0) to the character's head from the Arcane
+drawing (drawing.WHO; what this face needs is in drawing.FIT). After Р7's fit_head.py (to3d/r7-s4-vera):
+  1. placement by landmarks: the eyes, the crown and the chin, and a monotone map of the base's heights (chin, mouth
+     line, nose base, nose tip, eye, crown) to the drawing's; the base's wide mouth drawn in (FIT['mouth_narrow']);
+  2. the nose's protrusion scaled toward the drawing's nose (tip from the drawing's nose surface), so the Laplacian
+     keeps a nose's form at the drawing's size;
   3. non-rigid ICP onto the drawing's head, nose and neck surfaces (drawing.py) — the eye regions (balls and lids)
-     and the ears carried as a whole; the inside of the mouth follows the Laplacian only; stiffness 30 → 2.
-The drawn neck (54–64 units wide) is a stick in 3D; it is taken 1.45× wider (a slim woman's neck), as Р5 did.
+     and the ears carried as a whole; the inside of the mouth follows the Laplacian only; stiffness 40 → 10.
+The drawn neck is a stick in 3D; it is taken wider (FIT['neck_x'], FIT['neck_z']).
 usage: python3 fit_head.py CACHE  → CACHE/head_fit.npz, CACHE/head_fit.png"""
 import sys, os
 import numpy as np

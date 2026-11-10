@@ -88,7 +88,17 @@ by the body).
 The first agent's run was cut off by a container restart after the stills and the turn, walk and run films. A second
 agent (same task, from the coordinator) made the three films the page named but didn't have — `python3 make.py sneak
 look face`, through the shared lock (`flock /home/user/cache/heavy.N.lock …`) —, looked at every picture and film, and
-moved the face film's camera back (dist 1.05 → 1.2: the ear was cut by the frame). Nothing else was changed.
+moved the face film's camera back (dist 1.05 → 1.2: the ear was cut by the frame). See also the next section.
+
+## The viewer and the skeleton picture (fixed by the second agent, in both Р21 and Р22)
+
+- `core.js`, the camera with the controls open: the view was set as a part of a taller frame, which stretched the
+  picture upward by (window + controls) / window and cut the head off. Now the view is only moved down by half the
+  controls' height; `ui.js` starts further back by as much as the controls take, so the figure fits above them.
+  (Вера's viewer, Р4, has the old code.)
+- `core.js`, the skeleton overlay: its lines and points took the floor's fog and vanished in the drawing's views (the
+  camera stands 10 m away), so `pics/step1-skeleton.jpg` showed no skeleton. They are now drawn without fog.
+`core.js` and `ui.js` are the same files in `r21-s5-tim` and `r22-s5-kira`.
 
 ## Licences
 

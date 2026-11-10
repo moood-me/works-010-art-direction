@@ -6,6 +6,8 @@ export const CHAR = {
   bg: ['#d7a45a', '#5a4a3a', '#1f2324'],          // the drawing's backdrop (cast.py: CAST.savely.bg)
   iris: ['#26303a', '#5a7284', '#a9bcc6'],
   hair: { streak: 5.0, depth: 0.22, light: '#ffffff', shine: 0.5 },
+  eyeShade: [27.0, 15.0, 0.8],                    // cast shadows fade round the eyes: from, to (units from an eye's centre), by how much
+  faceRim: 1.0,                                    // how much of the rim light the face's front takes (a coloured rim on lips and lids reads as dirt)
   frameGlint: '#fff0c0',
   blinkUp: 30,
   faceY: 1.44, midY: 0.86,

@@ -480,7 +480,8 @@ export function start(def) {
     persp.position.set(cam.at[0] + cam.dist * Math.sin(yw) * Math.cos(pt), cam.at[1] + cam.dist * Math.sin(pt), cam.at[2] + cam.dist * Math.cos(yw) * Math.cos(pt));
     persp.lookAt(...cam.at);
     // pad: pixels at the bottom covered by the viewer's controls; the picture is centred in what is left above them
-    if (cam.pad) persp.setViewOffset(cv.width, cv.height + cam.pad, 0, cam.pad, cv.width, cv.height); else persp.clearViewOffset();
+    // (the view is moved down by half of them: its size and proportions stay)
+    if (cam.pad) persp.setViewOffset(cv.width, cv.height, 0, cam.pad / 2, cv.width, cv.height); else persp.clearViewOffset();
     persp.updateProjectionMatrix();
   }
   async function set(o) {
@@ -530,9 +531,9 @@ export function start(def) {
       const pb = PARENT[bn]; if (pb) { I.bones[pb].getWorldPosition(b); p.push(b.x, b.y, b.z, a.x, a.y, a.z); }
     }
     const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
-    const ln = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: '#c8413b', depthTest: false, transparent: true }));
+    const ln = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: '#c8413b', depthTest: false, transparent: true, fog: false }));
     const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.Float32BufferAttribute(d, 3));
-    const pt = new THREE.Points(pg, new THREE.PointsMaterial({ color: '#c8413b', size: 7, sizeAttenuation: false, depthTest: false, transparent: true }));
+    const pt = new THREE.Points(pg, new THREE.PointsMaterial({ color: '#c8413b', size: 7, sizeAttenuation: false, depthTest: false, transparent: true, fog: false }));
     ln.renderOrder = pt.renderOrder = 10;
     overlay.add(ln, pt); scene.add(overlay);
   }

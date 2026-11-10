@@ -17,7 +17,6 @@
   "sclera",
   "iris",
   "mouth",
-  "teeth",
   "lime",
   "pad"
  ],
@@ -50,25 +49,21 @@
    25440,
    48999
   ],
-  "teeth": [
-   48999,
-   49104
-  ],
   "shoes": [
-   49104,
-   50644
+   48999,
+   50539
   ],
   "hood": [
-   50644,
-   51524
+   50539,
+   51419
   ],
   "pads": [
-   51524,
-   52596
+   51419,
+   52491
   ],
   "cups": [
-   52596,
-   53268
+   52491,
+   53163
   ]
  },
  "K": 0.00097,
@@ -84,7 +79,7 @@
   "positions": {
    "dtype": "float32",
    "shape": [
-    53268,
+    53163,
     3
    ],
    "offset": 0
@@ -92,160 +87,160 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    96479,
+    96319,
     3
    ],
-   "offset": 639216
+   "offset": 637960
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    53268,
+    53163,
     4
    ],
-   "offset": 1796968
+   "offset": 1793792
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    53268,
+    53163,
     4
    ],
-   "offset": 2010040
+   "offset": 2006448
   },
   "joints": {
    "dtype": "float32",
    "shape": [
     231
    ],
-   "offset": 2862328
+   "offset": 2857056
   },
   "frames": {
    "dtype": "float32",
    "shape": [
     308
    ],
-   "offset": 2863256
+   "offset": 2857984
   },
   "col": {
    "dtype": "uint8",
    "shape": [
-    53268,
+    53163,
     3
    ],
-   "offset": 2864488
+   "offset": 2859216
   },
   "shd": {
    "dtype": "uint8",
    "shape": [
-    53268,
+    53163,
     3
    ],
-   "offset": 3024296
+   "offset": 3018712
   },
   "glw": {
    "dtype": "uint8",
    "shape": [
-    53268,
+    53163,
     3
    ],
-   "offset": 3184104
+   "offset": 3178208
   },
   "rim": {
    "dtype": "uint8",
    "shape": [
-    53268,
+    53163,
     3
    ],
-   "offset": 3343912
+   "offset": 3337704
   },
   "mat": {
    "dtype": "uint8",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 3503720
+   "offset": 3497200
   },
   "uv": {
    "dtype": "float32",
    "shape": [
-    53268,
+    53163,
     2
    ],
-   "offset": 3556992
+   "offset": 3550368
   },
   "tw": {
    "dtype": "uint8",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 3983136
+   "offset": 3975672
   },
   "pn": {
    "dtype": "float32",
    "shape": [
-    53268,
+    53163,
     3
    ],
-   "offset": 4036408
+   "offset": 4028840
   },
   "pw": {
    "dtype": "uint8",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 4675624
+   "offset": 4666800
   },
   "two": {
    "dtype": "uint8",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 4728896
+   "offset": 4719968
   },
   "hs": {
    "dtype": "float32",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 4782168
+   "offset": 4773136
   },
   "hg": {
    "dtype": "uint8",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 4995240
+   "offset": 4985792
   },
   "hm": {
    "dtype": "float32",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 5048512
+   "offset": 5038960
   },
   "ha": {
    "dtype": "float32",
    "shape": [
-    53268
+    53163
    ],
-   "offset": 5261584
+   "offset": 5251616
   },
   "rp": {
    "dtype": "float32",
    "shape": [
-    53268,
+    53163,
     3
    ],
-   "offset": 5474656
+   "offset": 5464272
   },
   "dr": {
    "dtype": "float32",
    "shape": [
-    53268,
+    53163,
     3
    ],
-   "offset": 6113872
+   "offset": 6102232
   }
  },
  "bin": "kira.bin"

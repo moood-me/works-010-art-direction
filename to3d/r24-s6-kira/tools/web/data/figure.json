@@ -1,0 +1,85 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "kira-s6",
+ "label": {
+  "ru": "Кира (С6)"
+ },
+ "source": "styles/s6-symbolic cast_more.kira solids on SOMA (to3d/r24-s6-kira/tools/build.py)",
+ "skeleton": "soma77",
+ "topology": "kira-s6",
+ "parts": [
+  "leg",
+  "shin",
+  "foot",
+  "hood",
+  "neck",
+  "arm",
+  "hand",
+  "pocket",
+  "hair",
+  "coat",
+  "head",
+  "phones",
+  "phonesOn"
+ ],
+ "vertices": 23458,
+ "bin": "figure.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    23458,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    46360,
+    3
+   ],
+   "offset": 281496
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    23458,
+    4
+   ],
+   "offset": 837816
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    23458,
+    4
+   ],
+   "offset": 931648
+  },
+  "part": {
+   "dtype": "uint8",
+   "shape": [
+    23458
+   ],
+   "offset": 1306976
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1330436
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1331360
+  }
+ }
+}

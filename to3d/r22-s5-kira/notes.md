@@ -71,6 +71,16 @@ Heavy runs go through the shared locks: `flock /home/user/cache/heavy.N.lock pyt
 - Sitting down, she first folds so that only the crown shows; the hoodie is a rigid shell, the hood and hair don't move.
 - Speech has no sound.
 
+## The viewer and the skeleton picture (fixed by the second agent, in both Р21 and Р22)
+
+- `core.js`, the camera with the controls open: the view was set as a part of a taller frame, which stretched the
+  picture upward by (window + controls) / window and cut the head off. Now the view is only moved down by half the
+  controls' height; `ui.js` starts further back by as much as the controls take, so the figure fits above them.
+  (Вера's viewer, Р4, has the old code.)
+- `core.js`, the skeleton overlay: its lines and points took the floor's fog and vanished in the drawing's views (the
+  camera stands 10 m away), so `pics/step1-skeleton.jpg` showed no skeleton. They are now drawn without fog.
+`core.js` and `ui.js` are the same files in `r21-s5-tim` and `r22-s5-kira`.
+
 ## Licences
 
 Ours: the drawing and its code (`styles/s5-indie`), the constructor's forms and mesher (`experiments/indie`), Вера's

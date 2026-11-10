@@ -27,19 +27,19 @@ MOODS = {
                                              armR=(-16, 40, 10, -86), legL=(0, 4, 0, 0), legR=(0, 5, 0, 0)), arms=(1, 1), yaw=-50),
     # tired: the shoulders go down, the head sinks, the free hand comes up to the bridge of the nose under the glasses
     'tired': dict(label='устала', pose=dict(lean=3, hunch=14, neck=10, nod=24, headRoll=4, slump=3, shrug=-1.6,
-                                            armR=(38, 2, 118, -22)), arms=(1, 1), yaw=-64),
+                                            armR=(70, 2, 128, -10)), arms=(1, 1), yaw=-64),
     # thinking: the weight on one leg, the head a little aside, the free hand at the chin
     'thinks': dict(label='думает', pose=dict(lean=-2, hunch=5, neck=4, nod=2, headRoll=-7, slump=1,
-                                             armR=(30, 4, 132, -14), legR=(8, 3, 10, 0), footR=(6, 12)), arms=(1, 1), yaw=-60),
+                                             armR=(25, 4, 142, -10), legR=(5, 3, 7, 0), footR=(0, 12)), arms=(1, 1), yaw=-60),
     # surprised: she draws back, the head goes back, the free hand flies up before the chest, the fingers spread
     'surprised': dict(label='удивлена', pose=dict(lean=-9, hunch=2, neck=-6, nod=-8, headRoll=0, slump=-1, shrug=2.2,
-                                                  armR=(24, 20, 124, 0), legL=(-8, 2, 2, 0), legR=(8, 2, 4, 0)), arms=(1, 1), yaw=-62),
+                                                  armR=(62, 22, 96, 0), legL=(-8, 2, 2, 0), legR=(8, 2, 4, 0)), arms=(1, 1), yaw=-62),
     # angry: the body forward from the hips, the head pushed out, the free arm thrown out straight — «вон»
     'angry': dict(label='сердится', pose=dict(lean=9, hunch=4, neck=14, nod=-10, headRoll=0, slump=1, shrug=2.4,
-                                              armR=(76, 6, 8, 0), legL=(-10, 2, 2, 0), legR=(12, 2, 4, 0)), arms=(1, 1), yaw=-66),
+                                              armR=(76, 6, 8, 0), legL=(-10, 2, 2, 0), legR=(12, 2, 4, 0)), arms=(1, 1), yaw=-66, dx=45),
     # glad (rare, small): the head tilts, the shoulders let go, the free hand opens a little aside
     'glad': dict(label='довольна', pose=dict(lean=-4, hunch=-1, neck=-2, nod=-12, headRoll=-8, slump=0, shrug=-.4,
-                                             armR=(6, 24, 34, 12), legR=(6, 4, 8, 0), footR=(4, 14)), arms=(1, 1), yaw=-52),
+                                             armR=(24, 34, 62, 30), legR=(4, 4, 5, 0), footR=(0, 14)), arms=(1, 1), yaw=-40),
     # on a motion: her own carriage (the head a little down, the shoulders tired) and the folder at the chest;
     # the free arm is the motion's
     'plain': dict(label='идёт с папкой', pose={}, arms=(0, 1), menu=False),
@@ -49,3 +49,15 @@ MOOD_SHEET = ['folder', 'strict', 'tired', 'thinks', 'surprised', 'angry', 'glad
 # the drawing's sheets this figure is compared with
 TURN = dict(k=3.2, light=1, pic='turn-vera.jpg')
 FULL = dict(yaw=-58, k=3.55, x=.5, light=-1, pic='full-vera.jpg')
+
+# ------------------------------------------------------------------ pictures and films (make.py)
+# standing in her world: where she is turned, where the window is, where we look from
+HERO = dict(heading=-1.3, lamp=[-1.65, 0, -4.2], mood='folder',
+            cam=dict(yaw=0.1, pitch=-0.03, dist=4.9, h=.98, fov=33))
+WALK = dict(motion='walk', mood='plain', heading=1.5708, position=[-3.0, 0, 0], lamp=[1.0, 0, -3.0],
+            cam=dict(yaw=0.18, pitch=0.0, dist=3.9, h=.9, fov=34, smooth=2.5), frames=200)
+# standing and living: moods one after another (seconds, mood), a few words
+LIFE = dict(plan=[(0, 'folder'), (2.6, 'thinks'), (5.2, 'tired'), (7.8, 'strict'), (10.2, 'folder')], talk=(8.2, 10.0), seconds=12)
+FILMS = [('bow', 105, 'plain'), ('run', 110, 'plain', dict(heading=1.5708, position=[-2.2, 0, 0], lamp=[1.6, 0, -2.2]))]
+WORLD_LABEL = 'окно, туман, тень, зерно'
+MOOD_K = 2.95

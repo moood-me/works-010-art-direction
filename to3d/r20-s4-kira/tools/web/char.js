@@ -6,6 +6,8 @@ export const CHAR = {
   bg: ['#a892bc', '#4e3c60', '#17131d'],          // the drawing's backdrop (cast2.py: CAST.kira.bg)
   iris: ['#1c2224', '#4e6660', '#a9c0a8'],
   hair: { streak: 6.0, depth: 0.34, light: '#8c74a0', shine: 0.6 },
+  eyeShade: [54.0, 30.0, 1.0],                    // cast shadows fade round the eyes: from, to (units from an eye's centre), by how much
+  faceRim: 0.15,                                    // how much of the rim light the face's front takes (a coloured rim on lips and lids reads as dirt)
   frameGlint: '#ffffff',
   blinkUp: 32,
   faceY: 1.4, midY: 0.84,
@@ -85,7 +87,7 @@ export const CHAR = {
       // hands in the hoodie's pocket: each wrist put on the belly under the pouch, elbows out and a little back
       const hips = getV(pose.P, I.Hips);
       for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
-        reach(pose, s, [hips[0] + sg * (o.hx ?? 0.085), hips[1] + (o.hy ?? 0.075), hips[2] + (o.hz ?? 0.1)], o.pole ?? [sg * 1.0, -0.1, -0.55]);
+        reach(pose, s, [hips[0] + sg * (o.hx ?? 0.06), hips[1] + (o.hy ?? 0.04), hips[2] + (o.hz ?? 0.06)], o.pole ?? [sg * 1.0, -0.1, -0.8]);
         turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle(normalize(sub(getV(pose.P, I[s + 'Hand']), getV(pose.P, I[s + 'ForeArm']))), sg * (o.twist ?? 0.9)));
       }
     }

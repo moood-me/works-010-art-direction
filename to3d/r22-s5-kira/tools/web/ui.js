@@ -23,6 +23,8 @@ if (!new URLSearchParams(location.search).has('shots') && !new URLSearchParams(l
   const pad = () => { A.cam.pad = ui.classList.contains('folded') ? 0 : ui.offsetHeight + 12; };
   fold.addEventListener('click', () => { ui.classList.toggle('folded'); fold.textContent = ui.classList.contains('folded') ? 'настройки' : 'свернуть'; pad(); });
   new ResizeObserver(pad).observe(ui); pad();
+  // the clip's distance is for a free window: further back by as much as the controls take, so the figure fits above them
+  A.cam.dist = CAM[S.clip][1] * innerHeight / Math.max(innerHeight - A.cam.pad, innerHeight * 0.4);
   // controls
   const clips = document.getElementById('clips'), exprs = document.getElementById('exprs'), mix = document.getElementById('mix');
   for (const [id, c] of Object.entries(A.CLIPS)) { const b = document.createElement('button'); b.textContent = c.ru; b.dataset.clip = id; b.setAttribute('aria-pressed', String(id === S.clip)); clips.appendChild(b); }

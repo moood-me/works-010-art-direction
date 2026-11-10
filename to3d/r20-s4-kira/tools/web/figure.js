@@ -175,7 +175,7 @@ const toon = new THREE.ShaderMaterial({
       float sh = lit_by_map();
       float csh = smoothstep(0.25, 0.75, sh);
       // round the eyes cast shadows are weak (a deep socket under a brow must not read as a bruise)
-      if (is(${M('skin')})) { float de = min(length(vDr - eyeL), length(vDr - eyeR)); csh = mix(csh, 1.0, 0.8 * smoothstep(27.0, 15.0, de)); }
+      if (is(${M('skin')})) { float de = min(length(vDr - eyeL), length(vDr - eyeR)); csh = mix(csh, 1.0, ${CHAR.eyeShade[2].toFixed(2)} * smoothstep(${CHAR.eyeShade[0].toFixed(1)}, ${CHAR.eyeShade[1].toFixed(1)}, de)); }
       if (is(${M('hair')})) csh = mix(1.0, csh, 0.7);
       float l = lam * csh;
       vec3 litc = mix(base, base * key * 1.08, kLit);
@@ -208,7 +208,7 @@ const toon = new THREE.ShaderMaterial({
       // rim: a cool light along the edge on the shadow's side
       float edge = smoothstep(0.55, 0.85, 1.0 - abs(dot(n, Vd)));
       float rs = smoothstep(-0.05, 0.45, dot(n, Lr));
-      c = mix(c, vRim, edge * rs * 0.5 * (1.0 - l * 0.7) * (back ? 0.0 : 1.0));
+      c = mix(c, vRim, edge * rs * 0.5 * (1.0 - l * 0.7) * (back ? 0.0 : 1.0) * (1.0 - ${(1 - CHAR.faceRim).toFixed(2)} * vTw));
       if (back) c = vShd * 0.7;
       // the face's painted layer (brows, lids, lips, blush, lines), in shade a little dimmer and warmer
       if (vTw > 0.0 && !back) {
