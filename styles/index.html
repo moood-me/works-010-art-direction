@@ -93,13 +93,8 @@
 <button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
 <script>
 // Each style lives in its own folder: <folder>/entry.json (format in README.md); picture paths are relative to the folder.
-const ITEMS = [
-  ['С1', 's1-pixar'], ['С2', 's2-klaus'], ['С3', 's3-graphic'],
-  ['С4', 's4-arcane'], ['С5', 's5-indie'], ['С6', 's6-symbolic'],
-  ['С7', 's7-ghibli'], ['С8', 's8-stopmotion'], ['С9', 's9-midcentury'],
-  ['С10', 's10-ligne-claire'], ['С11', 's11-rubberhose'], ['С12', 's12-ink-watercolour'],
-  ['С13', 's13-ukiyo-e'], ['С14', 's14-paper'], ['С15', 's15-noir'], ['С16', 's16-pixel'],
-];
+// The list of pages is items.json: [code, folder] — a new page is a new line there.
+let ITEMS = [];
 const letters = 'абвгдежзиклмнопрстуфхцчшэюя';
 const side = document.getElementById('side'), view = document.getElementById('view'), sel = document.getElementById('menuSel');
 const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
@@ -107,6 +102,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 let all = [], cur = null, pics = [], idx = 0;
 const isVideo = s => /\.(mp4|webm)$/i.test(s);
 async function load() {
+  ITEMS = await (await fetch('items.json', { cache: 'no-cache' })).json();
   all = await Promise.all(ITEMS.map(async ([id, dir]) => {
     try { const r = await fetch(dir + '/entry.json', { cache: 'no-cache' }); if (!r.ok) throw 0; return { ...(await r.json()), id, dir }; }
     catch (e) { return { id, dir, name: dir, missing: true }; }
@@ -147,7 +143,7 @@ function show(id) {
   if (it.missing) { view.innerHTML = `<h2><span class="id">${it.id}</span>ещё не готово</h2>`; return; }
   const src = (it.sources || []).map(t => `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.name)}</a>`).join(', ');
   view.innerHTML = `<h2><span class="id">${it.id}</span>${esc(it.name)}<span class="st ${it.status}">${esc(it.statusText)}</span></h2>
-    ${src ? `<p class="tool refs">Образцы: ${src}</p>` : ''}<p class="what">${esc(it.what)}</p>${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ''}
+    ${src ? `<p class="tool refs">Образцы: ${src}</p>` : ''}<p class="tool refs">Код и заметки: <code>styles/${esc(it.dir)}/</code> — <code>notes.md</code> (что сделано и как повторить), <code>tools/</code></p><p class="what">${esc(it.what)}</p>${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ''}
     ${(it.blocks || []).map(b => `<section class="blk"><h3>${esc(b.title)}</h3>${b.text ? `<p class="what">${esc(b.text)}</p>` : ''}${(b.list || []).length ? `<ul>${b.list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}${(b.pics || []).length ? `<div class="grid">${figs(it, b.pics)}</div>` : ''}</section>`).join('')}`;
   view.querySelectorAll('figure[data-k]').forEach(f => f.onclick = () => openLb(+f.dataset.k));
   window.scrollTo(0, 0);

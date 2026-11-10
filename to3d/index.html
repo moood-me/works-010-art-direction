@@ -93,20 +93,9 @@
 <button id="lbPrev" aria-label="Предыдущая">‹</button><button id="lbNext" aria-label="Следующая">›</button><button id="lbClose" aria-label="Закрыть">×</button></div>
 <script>
 // Each style lives in its own folder: <folder>/entry.json (format in README.md); picture paths are relative to the folder.
-const ITEMS = [
-  ['Р1', 'r1-s3-anya'], ['Р2', 'r2-s10-savely'], ['Р3', 'r3-s9-tim'], ['Р4', 'r4-s5-vera'], ['Р5', 'r5-s2-anya'],
-  ['Р6', 'r6-s1-tim'], ['Р7', 'r7-s4-vera'], ['Р8', 'r8-s6-savely'], ['Р9', 'r9-s7-anya'],
-  ['Р10', 'r10-s8-tim'], ['Р11', 'r11-s11-savely'], ['Р12', 'r12-s12-anya'],
-  ['Р13', 'r13-s1-vera'], ['Р14', 'r14-s1-kira'], ['Р15', 'r15-s2-savely'], ['Р16', 'r16-s2-marat'],
-  ['Р17', 'r17-s3-tim'], ['Р18', 'r18-s3-kira'], ['Р19', 'r19-s4-savely'], ['Р20', 'r20-s4-kira'],
-  ['Р21', 'r21-s5-tim'], ['Р22', 'r22-s5-kira'], ['Р23', 'r23-s6-vera'], ['Р24', 'r24-s6-kira'],
-  ['Р25', 'r25-s7-vera'], ['Р26', 'r26-s7-kira'], ['Р27', 'r27-s8-savely'], ['Р28', 'r28-s8-marat'],
-  ['Р29', 'r29-s9-anya'], ['Р30', 'r30-s9-marat'], ['Р31', 'r31-s10-vera'], ['Р32', 'r32-s10-marat'],
-  ['Р33', 'r33-s11-anya'], ['Р34', 'r34-s11-marat'], ['Р35', 'r35-s12-tim'], ['Р36', 'r36-s12-marat'],
-  ['Р37', 'r37-s13-anya'], ['Р38', 'r38-s13-marat'], ['Р39', 'r39-s14-vera'], ['Р40', 'r40-s14-marat'],
-  ['Р41', 'r41-s15-savely'], ['Р42', 'r42-s15-kira'], ['Р43', 'r43-s16-tim'], ['Р44', 'r44-s16-kira'],
-];
-const LABEL = {"Р1": "С3 Аня", "Р2": "С10 Савелий", "Р3": "С9 Тим", "Р4": "С5 Вера", "Р5": "С2 Аня", "Р6": "С1 Тим", "Р7": "С4 Вера", "Р8": "С6 Савелий", "Р9": "С7 Аня", "Р10": "С8 Тим", "Р11": "С11 Савелий", "Р12": "С12 Аня", "Р13": "С1 Вера", "Р14": "С1 Кира", "Р15": "С2 Савелий", "Р16": "С2 Марат", "Р17": "С3 Тим", "Р18": "С3 Кира", "Р19": "С4 Савелий", "Р20": "С4 Кира", "Р21": "С5 Тим", "Р22": "С5 Кира", "Р23": "С6 Вера", "Р24": "С6 Кира", "Р25": "С7 Вера", "Р26": "С7 Кира", "Р27": "С8 Савелий", "Р28": "С8 Марат", "Р29": "С9 Аня", "Р30": "С9 Марат", "Р31": "С10 Вера", "Р32": "С10 Марат", "Р33": "С11 Аня", "Р34": "С11 Марат", "Р35": "С12 Тим", "Р36": "С12 Марат", "Р37": "С13 Аня", "Р38": "С13 Марат", "Р39": "С14 Вера", "Р40": "С14 Марат", "Р41": "С15 Савелий", "Р42": "С15 Кира", "Р43": "С16 Тим", "Р44": "С16 Кира"};
+// The list of pages is items.json: [code, folder, what the menu adds in brackets] — a new page is a new line there.
+let ITEMS = [];
+let LABEL = {};
 const letters = 'абвгдежзиклмнопрстуфхцчшэюя';
 const side = document.getElementById('side'), view = document.getElementById('view'), sel = document.getElementById('menuSel');
 const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
@@ -114,6 +103,8 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 let all = [], cur = null, pics = [], idx = 0;
 const isVideo = s => /\.(mp4|webm)$/i.test(s);
 async function load() {
+  ITEMS = await (await fetch('items.json', { cache: 'no-cache' })).json();
+  LABEL = Object.fromEntries(ITEMS.map(([id, , label]) => [id, label]));
   all = await Promise.all(ITEMS.map(async ([id, dir]) => {
     try { const r = await fetch(dir + '/entry.json', { cache: 'no-cache' }); if (!r.ok) throw 0; return { ...(await r.json()), id, dir }; }
     catch (e) { return { id, dir, name: dir, missing: true }; }
@@ -154,7 +145,7 @@ function show(id) {
   if (it.missing) { view.innerHTML = `<h2><span class="id">${it.id}</span>ещё не готово</h2>`; return; }
   const src = (it.sources || []).map(t => `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.name)}</a>`).join(', ');
   view.innerHTML = `<h2><span class="id">${it.id}</span>${esc(it.name)}<span class="st ${it.status}">${esc(it.statusText)}</span></h2>
-    ${src ? `<p class="tool refs">Исходное: ${src}</p>` : ''}<p class="what">${esc(it.what)}</p>${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ''}
+    ${src ? `<p class="tool refs">Исходное: ${src}</p>` : ''}<p class="tool refs">Код и заметки: <code>to3d/${esc(it.dir)}/</code> — <code>notes.md</code> (что сделано и как повторить), <code>tools/</code></p><p class="what">${esc(it.what)}</p>${it.verdict ? `<p class="verdict">${esc(it.verdict)}</p>` : ''}
     ${it.view3d ? `<div class="tabs"><button data-t="pics" aria-pressed="true">Картинки</button><button data-t="3d" aria-pressed="false">3D: вращать, двигать, лицо</button></div><div class="d3"></div>` : ''}<div class="picsbox">
     ${(it.blocks || []).map(b => `<section class="blk"><h3>${esc(b.title)}</h3>${b.text ? `<p class="what">${esc(b.text)}</p>` : ''}${(b.list || []).length ? `<ul>${b.list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}${(b.pics || []).length ? `<div class="grid">${figs(it, b.pics)}</div>` : ''}</section>`).join('')}</div>`;
   if (it.view3d) {

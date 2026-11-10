@@ -3,30 +3,134 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Art direction</title>
+<title>Art direction — каталог</title>
 <style>
-  :root { --bg: #f4f1ec; --card: #fffdf9; --ink: #26231f; --muted: #75706a; --line: #e2ddd5; --accent: #b4532a; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; } }
-  :root[data-theme="dark"] { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; }
+  :root { --bg: #f4f1ec; --card: #fffdf9; --ink: #26231f; --muted: #75706a; --line: #e2ddd5; --accent: #b4532a; --good: #3f8a4b; --mid: #b98a1d; --bad: #b0473c; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6fbf7b; --mid: #d9ad45; --bad: #e07a6e; } }
+  :root[data-theme="dark"] { --bg: #1b1a18; --card: #24221f; --ink: #ece7df; --muted: #a39d94; --line: #39352f; --accent: #e08a5c; --good: #6fbf7b; --mid: #d9ad45; --bad: #e07a6e; }
+  * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 1100px; margin: 0 auto; padding: 32px 16px 64px; }
-  h1 { font-size: 26px; margin: 0 0 6px; } p.sub { color: var(--muted); margin: 0 0 24px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-  a.card { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; color: inherit; text-decoration: none; }
+  a { color: var(--accent); }
+  code { font: 12.5px/1.4 ui-monospace, Menlo, Consolas, monospace; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+  .wrap { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+  aside { position: sticky; top: 0; align-self: start; height: 100vh; overflow: auto; padding: 22px 12px 24px 16px; border-right: 1px solid var(--line); }
+  aside h1 { font-size: 20px; margin: 0 8px 4px; } aside p { font-size: 13px; color: var(--muted); margin: 0 8px 12px; }
+  aside input { width: 100%; padding: 7px 10px; margin: 0 0 12px; font: inherit; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+  aside nav a { display: flex; gap: 8px; align-items: baseline; padding: 5px 8px; border-radius: 7px; color: inherit; text-decoration: none; font-size: 14px; }
+  aside nav a:hover { background: var(--card); }
+  aside nav a b { color: var(--accent); min-width: 16px; } aside nav a i { margin-left: auto; font-style: normal; font-size: 12px; color: var(--muted); }
+  aside nav hr { border: 0; border-top: 1px solid var(--line); margin: 8px; }
+  main { padding: 26px 22px 80px; min-width: 0; }
+  .lead { max-width: 860px; margin: 0 0 8px; } .lead.small { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; }
+  section { margin: 0 0 34px; scroll-margin-top: 14px; }
+  section h2 { font-size: 20px; margin: 0 0 2px; } section h2 b { color: var(--accent); margin-right: 8px; }
+  section h2 a { font-size: 13px; font-weight: 400; margin-left: 12px; white-space: nowrap; }
+  section > p { max-width: 860px; margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 14px; }
+  a.card { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; color: inherit; text-decoration: none; }
   a.card:hover { border-color: var(--accent); }
-  a.card img { display: block; width: 100%; height: 190px; object-fit: cover; background: #d9d4cb; }
-  a.card div { padding: 10px 12px 14px; } a.card b { color: var(--accent); display: block; font-size: 16px; margin-bottom: 2px; }
-  a.card span { font-size: 13px; color: var(--muted); }
+  a.card img { display: block; width: 100%; height: 165px; object-fit: cover; object-position: center top; background: #d9d4cb; }
+  a.card div { padding: 9px 11px 11px; display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  a.card .t b { color: var(--accent); margin-right: 6px; } a.card .t { font-size: 14.5px; line-height: 1.3; }
+  a.card .s { font-size: 12.5px; color: var(--muted); line-height: 1.35; } a.card .s::before { content: '●'; margin-right: 5px; }
+  a.card .s.good::before { color: var(--good); } a.card .s.mid::before { color: var(--mid); } a.card .s.bad::before { color: var(--bad); }
+  a.card .c { font-size: 11.5px; color: var(--muted); margin-top: auto; padding-top: 4px; font-family: ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+  .hide { display: none !important; }
+  ul.plain { max-width: 860px; margin: 0; padding-left: 20px; } ul.plain li { margin: 0 0 6px; }
+  .none { color: var(--muted); font-style: italic; }
+  @media (max-width: 760px) {
+    .wrap { display: block; } aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 16px; }
+    aside nav { display: flex; flex-wrap: wrap; gap: 2px; } aside nav hr { display: none; } aside nav a i { margin-left: 4px; }
+    main { padding: 18px 16px 60px; } .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } a.card img { height: 120px; }
+  }
 </style>
 </head>
-<body><main>
-<h1>Art direction</h1>
-<p class="sub">Красивые персонажи для игр moood: всё, что сделано, по разделам.</p>
-<div class="grid">
-  <a class="card" href="gallery/"><img src="docs/pictures/indie/motion/gif-dance.gif" alt="" onerror="this.style.visibility='hidden'"><div><b>Галерея путей</b><span>Все пути поиска: тела, головы, волосы, одежда, персонажи, движок.</span></div></a>
-  <a class="card" href="tools-demo/"><img src="tools-demo/n5-heads/pics/heads-angles.webp" alt=""><div><b>Чужие инструменты</b><span>Готовые открытые инструменты против того, что у нас: деформации, одежда, ткань, волосы, головы, свет, 3D из картинки.</span></div></a>
-  <a class="card" href="styles/"><img src="styles/s9-midcentury/pics/cast.webp" alt=""><div><b>Стили персонажей</b><span>Двенадцать стилей из настоящих работ: образцы, правила и одни и те же четверо, нарисованные по ним.</span></div></a>
-  <a class="card" href="to3d/"><img src="to3d/r1-s3-anya/pics/compare-side.webp" alt=""><div><b>Рисунок в 3D</b><span>Наши рисунки как 3D-персонажи на скелете, с движениями Kimodo и живым лицом; вкладка «3D» — крутить и переключать.</span></div></a>
+<body>
+<div class="wrap">
+<aside>
+  <h1>Art direction</h1>
+  <p>Каталог: всё, что сделано для красивых персонажей moood.</p>
+  <input id="q" type="search" placeholder="Найти: код, имя, слово…" aria-label="Найти">
+  <nav id="nav"></nav>
+</aside>
+<main>
+  <p class="lead">Здесь лежат <b>способы</b> сделать персонажа — рисованного или в 3D — и части для него: тела, головы, волосы, одежда. У каждого способа есть код (буква раздела и номер: <b>Т5</b>, <b>С9</b>, <b>Р3</b>), страница, где его видно, и папка с кодом и заметками.</p>
+  <p class="lead small">Персонажи на страницах — примеры того, что этим способом получается; в свою игру берут способ и делают своих. Как взять и как положить своё — в <code>README.md</code> в корне репозитория. Сайт открывается из папки репозитория: <code>python3 -m http.server</code>.</p>
+  <div id="sections"></div>
+  <p class="none hide" id="empty">Ничего не нашлось.</p>
+</main>
 </div>
-</main></body>
+<script src="gallery/paths.js"></script>
+<script>
+// The catalogue reads the lists the four sites keep themselves: gallery/paths.js (groups, VIEW3D, PAGE) and each of
+// styles/, to3d/, tools-demo/ — items.json and every page's entry.json. Nothing is listed here by hand but the
+// sections' order and words (SECTIONS) and what is shared (SHARED).
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const SECTIONS = [
+  { letter: 'С', title: 'Стили: рисунок', site: 'styles', about: 'Стиль взят из настоящих красивых работ: образцы, правила стиля и одни и те же шестеро, нарисованные по этим правилам кодом в SVG. В заметках каждого стиля — как добавить своего персонажа.' },
+  { letter: 'Р', title: 'Рисунок в 3D', site: 'to3d', about: 'Нарисованный персонаж, собранный в 3D из готовых основ и подогнанный под рисунок: на скелете, с движениями Kimodo и живым лицом. Стоят на раннем движке (engine/).' },
+  { letter: 'П', title: 'Готовые персонажи не от Anny', about: 'Свои конструкторы персонажей из простых форм: инди-герои и выразительные, с руками-шлангами.' },
+  { letter: 'Т', title: 'Тело', about: 'Тела Anny: её собственные настройки и деформации поверх них.' },
+  { letter: 'Г', title: 'Голова', about: 'Головы разными путями: по рисунку, обтяжкой сетки Anny, лепкой.' },
+  { letter: 'В', title: 'Волосы', about: 'Причёски из больших прядей по кривым, в движении.' },
+  { letter: 'О', title: 'Одежда', about: 'Одежда со своей формой и одежда как настоящая ткань.' },
+  { letter: 'Д', title: 'Движок (поздний)', about: 'Тела, головы, волосы и одежда, собранные в один просмотрщик (engine-full/). Ткань здесь слабее, чем в О3; что не получилось — в docs/reviews/.' },
+  { letter: 'Н', title: 'Чужие инструменты', site: 'tools-demo', about: 'Открытые инструменты рядом с нашим: что каждый умеет сам по себе и сравнение.' },
+  { letter: 'И', title: 'Истоки', about: 'С чего началось и самые ранние опыты.' },
+];
+const SHARED = [
+  ['engine/', 'ранний движок: тело, скелет SOMA, перенос движений Kimodo, скиннинг. На нём стоят страницы Р; на месте его не меняют — новая версия кладётся новой папкой рядом.'],
+  ['engine/motions/', 'движения Kimodo в формате движка (шаг, бег, прыжок, сесть, лечь…).'],
+  ['engine-full/', 'поздний движок целиком (Д1–Д13): свои тела, пресеты, движения и цепочки движений.'],
+  ['experiments/data/', 'тела и одежда Anny, как их запекает moood, — общие данные опытов.'],
+  ['experiments/motions-raw/', 'исходные движения Kimodo для опытов с тканью и инди-героями.'],
+  ['docs/findings.md', 'что нашли круги стилей, 3D по рисунку и чужих инструментов.'],
+  ['docs/briefs/', 'задания, по которым работали агенты страниц, — чтобы повторить.'],
+  ['docs/requirements.md', 'что Павел сказал важным.'],
+  ['docs/history/', 'что делалось, почему и как, по сессиям.'],
+];
+const byLetter = Object.fromEntries(SECTIONS.map(s => [s.letter, { ...s, items: [] }]));
+// the gallery's paths
+for (const g of groups) for (const it of g.items) {
+  byLetter[it.id[0]]?.items.push({ id: it.id, name: it.id[0] === 'Д' ? it.name : it.name.replace(/^[^:(]+:\s*/, '').replace(/^./, c => c.toUpperCase()),
+    st: it.st, stt: it.stt, href: 'gallery/#' + it.id, cover: it.pics[0] ? 'docs/pictures/' + it.pics[0][0] : '', code: (it.code || []).join(', '), words: [it.what, it.verdict, it.rel].join(' ') });
+}
+async function site(sec) {
+  const rows = await (await fetch(sec.site + '/items.json', { cache: 'no-cache' })).json();
+  sec.items = await Promise.all(rows.map(async ([id, dir, label]) => {
+    try {
+      const e = await (await fetch(`${sec.site}/${dir}/entry.json`, { cache: 'no-cache' })).json();
+      // a page with no cover of its own (the tools' pages): its first picture
+      const cover = e.cover || [...(e.uses || []), ...(e.compare || []).map(c => c.with || {}), ...(e.blocks || [])].flatMap(b => b.pics || []).map(p => p[0]).find(f => !/\.(mp4|webm)$/i.test(f) && !f.startsWith('..'));
+      return { id, name: e.name + (label ? ` (${label.split(' ')[0]})` : ''), st: e.status, stt: e.statusText, href: `${sec.site}/#${id}`, cover: cover ? `${sec.site}/${dir}/${cover}` : '', code: `${sec.site}/${dir}`, words: [e.what, e.verdict].join(' ') };
+    } catch (err) { return { id, name: dir, st: 'bad', stt: 'страница не открылась', href: `${sec.site}/#${id}`, cover: '', code: `${sec.site}/${dir}`, words: '' }; }
+  }));
+}
+function draw() {
+  const nav = document.getElementById('nav'), box = document.getElementById('sections');
+  for (const s of SECTIONS.map(x => byLetter[x.letter])) {
+    nav.insertAdjacentHTML('beforeend', `<a href="#${s.letter}"><b>${s.letter}</b><span>${esc(s.title)}</span><i>${s.items.length}</i></a>`);
+    const open = s.site ? `${s.site}/` : 'gallery/';
+    box.insertAdjacentHTML('beforeend', `<section id="${s.letter}"><h2><b>${s.letter}</b>${esc(s.title)}<a href="${open}">${s.site ? 'открыть раздел' : 'галерея путей'} →</a></h2><p>${esc(s.about)}</p><div class="grid">${s.items.map(it =>
+      `<a class="card" href="${it.href}" data-w="${esc([it.id, it.name, it.stt, it.code, it.words].join(' ').toLowerCase())}">${it.cover ? `<img loading="lazy" src="${esc(it.cover)}" alt="">` : ''}<div><span class="t"><b>${it.id}</b>${esc(it.name)}</span><span class="s ${it.st || ''}">${esc(it.stt)}</span><span class="c">${esc(it.code)}/</span></div></a>`).join('')}</div></section>`);
+  }
+  nav.insertAdjacentHTML('beforeend', '<hr><a href="#shared"><b>·</b><span>Общее и документы</span></a>');
+  box.insertAdjacentHTML('beforeend', `<section id="shared"><h2>Общее и документы</h2><p>То, чем пользуются несколько страниц сразу, и где читать.</p><ul class="plain">${SHARED.map(([p, t]) => `<li><code>${p}</code> — ${esc(t)}</li>`).join('')}</ul></section>`);
+}
+document.getElementById('q').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase(); let shown = 0;
+  for (const sec of document.querySelectorAll('#sections section')) {
+    if (sec.id === 'shared') { sec.classList.toggle('hide', !!q); continue; }
+    let n = 0; for (const c of sec.querySelectorAll('.card')) { const on = !q || c.dataset.w.includes(q); c.classList.toggle('hide', !on); n += on; }
+    sec.classList.toggle('hide', !n); shown += n;
+  }
+  document.getElementById('empty').classList.toggle('hide', !!shown || !q);
+});
+Promise.all(SECTIONS.filter(s => s.site).map(s => site(byLetter[s.letter]))).then(() => {
+  draw();
+  // a link to a section opened from elsewhere: its section is here only now
+  if (location.hash.length > 1) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+});
+</script>
+</body>
 </html>
