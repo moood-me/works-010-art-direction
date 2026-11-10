@@ -19,8 +19,8 @@ np.concatenate(fr).tofile(C + '/expr.bin')
 j = json.load(open(C + '/ex.json'))
 n = len(EX)
 json.dump(dict(j, frames=n, times=list(range(n)), hips=j['hips'] * n, head=j['head'] * n), open(C + '/expr.json', 'w'))
-s = getattr(who, 'EXPR_S', 1.9)
-v = [dict(name=f'e{i}', yaw=-18, s=s, cx=200, cy=40 + 118 * s, W=400, H=440, lw=2.6, bg=who.PANEL) for i in range(n)]
+s = getattr(who, 'EXPR_S', 1.4)
+v = [dict(name=f'e{i}', yaw=-18, s=s, cx=200, cy=64 + 118 * s, W=400, H=440, lw=2.6, bg=who.PANEL) for i in range(n)]
 json.dump(dict(scene=C + '/scene.npz', offsets=C + '/engine/offsets.json', frames=C + '/expr.bin', out=C + '/expr',
                samples=16, pair=True, views=v), open(C + '/job_expr.json', 'w'))
 subprocess.run([HERE + '/heavy.sh', 'blender', '-b', '-P', HERE + '/render.py', '--', C + '/job_expr.json'],

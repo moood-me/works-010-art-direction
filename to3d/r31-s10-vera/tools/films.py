@@ -12,8 +12,8 @@ if kind == 'full':
     v = dict(name=name, yaw=yaw, pitch=-7, s=s, cx=240, cy=600 - who.FLOOR * s, W=480, H=640, lw=2.0, bg=who.PANEL,
              follow=True)
 else:
-    s = 2.1
-    v = dict(name=name, yaw=yaw, pitch=-4, s=s, cx=240, cy=215, W=480, H=480, lw=2.6, bg=who.PANEL, follow='head')
+    s = 1.55                                        # the Head joint (the neck's top) is kept at (cx, cy)
+    v = dict(name=name, yaw=yaw, pitch=-4, s=s, cx=240, cy=395, W=480, H=480, lw=2.6, bg=who.PANEL, follow='head')
 json.dump(dict(scene=C + '/scene.npz', offsets=C + '/engine/offsets.json', frames=frames, out=f'{C}/film/{name}',
                samples=8, no_subsurf=kind == 'full', views=[v]), open(f'{C}/job_{name}.json', 'w'))
 print(json.dumps(v))

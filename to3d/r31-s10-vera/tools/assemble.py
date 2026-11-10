@@ -163,6 +163,15 @@ def radial_clear(P, V, clear, skip):
 
 hv0 = np.asarray(arrays['obj_head_v'])
 hair_v = radial_clear(d['hair_v'], hv0, 2.0, hf['ear'])
+# at the crown the rays from the axis are no measure: there the hair is kept above the skull by height
+_gx, _gz = lambda x: np.clip(((x + 100) / 5).astype(int), 0, 39), lambda z: np.clip(((z + 130) / 5).astype(int), 0, 49)
+_top = np.full((40, 50), 1e9)
+np.minimum.at(_top, (_gx(hv0[:, 0]), _gz(hv0[:, 2])), hv0[:, 1])
+from scipy.ndimage import minimum_filter
+_top = minimum_filter(_top, 3)
+_lim = _top[_gx(hair_v[:, 0]), _gz(hair_v[:, 2])] - 3.0
+_cr = np.clip((45 - np.hypot(hair_v[:, 0], hair_v[:, 2] + 14)) / 20, 0, 1) * (hair_v[:, 1] < -20)
+hair_v[:, 1] = np.where(_cr > 0, np.minimum(hair_v[:, 1], hair_v[:, 1] + _cr * (_lim - hair_v[:, 1])), hair_v[:, 1])
 hair_v, hair_q = M.compact(hair_v, np.asarray(d['hair_q']))
 add('hair', hair_v, hair_q, col['hair'])
 hair = Surface(hair_v, hair_q)

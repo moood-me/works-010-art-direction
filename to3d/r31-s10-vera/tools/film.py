@@ -7,7 +7,8 @@ pat, out, fps, fy = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
 sheet = sys.argv[5] if len(sys.argv) > 5 else None
 every = int(sys.argv[6]) if len(sys.argv) > 6 else 6
 files = sorted(glob.glob(pat))
-INK, BAND = '#1b1714', '#cbbd9d'
+import os as _os
+INK, BAND = '#1b1714', _os.environ.get('BAND', '#cbbd9d')
 tmp = tempfile.mkdtemp()
 ims = []
 for i, f in enumerate(files):
