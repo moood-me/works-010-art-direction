@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пиксель-арт в 3D</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d1624; color: #e9dcc8; font: 14px/1.4 system-ui, sans-serif; overflow: hidden; }
+  #wrap { position: absolute; inset: 0 0 132px 0; display: flex; align-items: center; justify-content: center; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; cursor: grab; touch-action: none; }
+  #ui { position: absolute; left: 0; right: 0; bottom: 0; height: 132px; box-sizing: border-box; padding: 8px 12px; background: #231c38; border-top: 2px solid #5a4a72; display: flex; flex-direction: column; gap: 6px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  button { font: inherit; color: inherit; background: #3a2f55; border: 1px solid #5a4a72; padding: 3px 9px; cursor: pointer; }
+  button.on { background: #8a4f6a; border-color: #f6b36a; }
+  input[type=range] { flex: 1; min-width: 120px; accent-color: #f6b36a; }
+  label { white-space: nowrap; }
+  .dim { color: #8a6f8c; }
+</style>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="ui">
+  <div class="row"><span class="dim">движение</span><span id="clips"></span><button id="play">пауза</button><input id="scrub" type="range" min="0" max="1" step="0.001" value="0"></div>
+  <div class="row"><span class="dim">лицо</span><span id="exprs"></span><button id="talk">говорит</button><button id="box" class="on">портрет</button></div>
+  <div class="row"><button id="snap" class="on">16 направлений</button><button id="steady" class="on">ровные пиксели</button><button id="hold" class="on">12 рисунков в секунду</button><span class="dim">поворот — мышью по картинке</span></div>
+</div>
+<script type="module" src="app.js"></script>
+</html>

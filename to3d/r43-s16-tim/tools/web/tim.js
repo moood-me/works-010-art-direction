@@ -111,7 +111,7 @@ const MOUTH = { // five wide from row 10; the side view shows three
 const key3 = (a, t) => t <= 45 ? a[0] + (a[1] - a[0]) * t / 45 : a[1] + (a[2] - a[1]) * (t - 45) / 45;
 export function face({ psi, pitch, expr = 'rest', blink = false, mouth = null }) {
   const t = Math.abs(psi), out = [];
-  if (t > 120) return out;
+  if (t > 128) return out;
   if (t > 100) { out.push({ x: psi < 0 ? 7 : 17, y: 7 + (pitch > 16 ? -1 : pitch < -16 ? 1 : 0), rows: ['k', 'k'] }); return out; }   // going away: one column of the eye is left
   const E = EYES[blink && expr !== 'joy' ? 'blink' : expr] || EYES.rest, M = MOUTH[mouth || expr] || MOUTH.rest;
   const dy = pitch > 16 ? -1 : pitch < -16 ? 1 : 0, left = psi < 0, sideways = t > 62;
@@ -133,11 +133,11 @@ export const PORTRAIT = { eyes: [19, 26, 42, 30], mouth: [23, 34, 38, 41], talk:
 
 // ———— held poses and clips
 // the sprite's own pose: he waves with his right hand, the left is on the hip (directions of the upper arm and forearm)
-export const HOLD = { drawn: { RightArm: [-0.86, 0.5, 0.1], RightForeArm: [-0.42, 0.9, 0.1], LeftArm: [0.62, -0.76, -0.2], LeftForeArm: [-0.72, -0.66, 0.22] } };
+export const HOLD = { drawn: { RightArm: [-0.64, 0.76, 0.1], RightForeArm: [-0.5, 0.86, 0.1], LeftArm: [0.62, -0.76, -0.2], LeftForeArm: [-0.72, -0.66, 0.22] } };
 export const STEP = 30;         // the head and the trunk turn by whole steps of so many degrees
 // his wave is the drawing's: the raised forearm swings (Kimodo's wave on arms this short ends at the cheek); the body
 // under it is Kimodo's
-const swing = t => { const a = [0.55, 0.2, -0.15, 0.2][Math.floor(t * 8) % 4]; return { ...HOLD.drawn, RightForeArm: [-0.42 - a, 0.9, 0.1] }; };
+const swing = t => { const a = [0.55, 0.2, -0.15, 0.2][Math.floor(t * 8) % 4]; return { ...HOLD.drawn, RightForeArm: [-0.5 - a, 0.86, 0.1] }; };
 export const CLIPS = [
   { id: 'stand', label: 'стоит', hold: 'drawn', yaw: 0, dur: 4 },
   { id: 'walk', label: 'идёт', motion: 'walk', travel: true, yaw: 90 },
@@ -147,3 +147,5 @@ export const CLIPS = [
   { id: 'wave', label: 'машет', motion: 'wave', arms: false, holdAt: swing, yaw: 0 },
 ];
 export const SAY = 'Тим';
+// the views of the comparison with the drawing: the turn and the pose of each drawn view
+export const COMPARE = [{ yaw: 0, clip: 'stand' }, { yaw: 22.5, clip: 'stand' }, { yaw: 90, clip: null }];

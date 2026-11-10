@@ -89,7 +89,9 @@ export function Figure(ch, pal) {
   const headI = parts.findIndex(p => p.name === ch.FACE_ON);
   const toW = ([X, Y, Z]) => [X - ch.CX, ch.FLOOR - Y, Z - ch.CZ];
   const J = Object.fromEntries(Object.entries(ch.J).map(([b, p]) => [b, toW(p)]));
-  const STEP = (ch.STEP ?? 20) * Math.PI / 180;
+  const STEP = (ch.STEP ?? 20) * Math.PI / 180, SKIN = new Set([...(ch.SKIN || 's')]);
+  const MIX = ch.MIX || 0;      // 0: one map a part; else how much the front and back maps are preferred when maps are chosen pixel by pixel
+  const SIDE = Math.tan((ch.SIDE_FROM ?? 45) * Math.PI / 180);     // from what turn a part is read from its side map
 
   // o: pose {W, P}, yaw (degrees: the figure turned to the picture's right), w, h (the picture, pixels), ox, oy (where
   // the figure's own column 0 and row 0 fall), cam: [x, y] whole pixels the view is moved by, steady (true),
@@ -124,7 +126,7 @@ export function Figure(ch, pal) {
       const lim = [p.w, p.h, p.d], vz = [M[6], M[7], M[8]];     // the eye's direction in the part's own frame
       // the part's colours are read from one map — the one drawn for the view nearest to the eye's (front, back,
       // right side, left side): no two drawings are mixed on one form
-      const view = Math.abs(vz[2]) >= Math.abs(vz[0]) - 1e-6 ? (vz[2] >= 0 ? 0 : 1) : (vz[0] < 0 ? 2 : 3);
+      const pview = Math.abs(vz[2]) * SIDE >= Math.abs(vz[0]) - 1e-6 ? (vz[2] >= 0 ? 0 : 1) : (vz[0] < 0 ? 2 : 3);
       for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
         const vx = (c + 0.5) / res - ch.CX - ox + cam[0] - t[0], vy = ch.FLOOR - ((r + 0.5) / res - oy) + cam[1] - t[1];
         const g0 = [A[0] * vx + A[1] * vy - A[2] * t[2] + off[0], A[3] * vx + A[4] * vy - A[5] * t[2] + off[1], A[6] * vx + A[7] * vy - A[8] * t[2] + off[2]];
@@ -151,7 +153,13 @@ export function Figure(ch, pal) {
         let nx = -(tri(p.soft, p, gx + 1, gy, gz) - tri(p.soft, p, gx - 1, gy, gz)), ny = tri(p.soft, p, gx, gy + 1, gz) - tri(p.soft, p, gx, gy - 1, gz), nz = -(tri(p.soft, p, gx, gy, gz + 1) - tri(p.soft, p, gx, gy, gz - 1));
         const nl = Math.hypot(nx, ny, nz) || 1; nx /= nl; ny /= nl; nz /= nl;
         const i = Math.floor(gx), j = Math.floor(gy), k = Math.floor(gz);
-        let kk, baked;
+        let kk, baked, view = pview;
+        if (MIX) { // by the form's own facing too: the side of a head is read from its side map while its face is still read from the front
+          const wF = Math.max(0, nz) * Math.max(0, vz[2]) * MIX, wB = Math.max(0, -nz) * Math.max(0, -vz[2]) * MIX, wR = Math.max(0, -nx) * Math.max(0, -vz[0]), wL = Math.max(0, nx) * Math.max(0, vz[0]), best = Math.max(wF, wB, wR, wL);
+          if (best > 0) view = best === wF ? 0 : best === wB ? 1 : best === wR ? 2 : 3;
+          // but skin is read only from the map of the part's own view: a cheek from the side map beside a face from the front is two faces
+          if (view !== pview && SKIN.has(pal.ramp(view === 0 ? texel(p.F, Math.floor(gx), Math.floor(gy)) : view === 1 ? texel(p.B, p.w - 1 - Math.floor(gx), Math.floor(gy)) : texel(p.S, Math.floor(gz), Math.floor(gy))))) view = pview;
+        }
         if (view === 0) { kk = texel(p.F, i, j); baked = level(nx, ny, nz); }
         else if (view === 1) { kk = texel(p.B, p.w - 1 - i, j); baked = level(-nx, ny, -nz); }
         else if (view === 2) { kk = texel(p.S, k, j); baked = level(nz, ny, -nx); }
@@ -159,7 +167,8 @@ export function Figure(ch, pal) {
         base[o2] = kk;
         const nc = mv(M, [nx, ny, nz]);
         if (lum) lum[o2] = nc[0] * LIGHT[0] + nc[1] * LIGHT[1] + nc[2] * LIGHT[2];
-        if (relight && !p.def.flat) { const k2 = pal.shift(kk, clamp(level(nc[0], nc[1], nc[2]) - baked, -1, 1)); if ((k2 - 1) % 5 <= p.top[((kk - 1) / 5) | 0]) kk = k2; }
+        // the light: shade comes and goes with the form's turn; a highlight stays only where it is drawn
+        if (relight && !p.def.flat) { const now = level(nc[0], nc[1], nc[2]), k2 = pal.shift(kk, now < baked ? -1 : now > baked && baked === 0 ? 1 : 0); if ((k2 - 1) % 5 <= p.top[((kk - 1) / 5) | 0]) kk = k2; }
         key[o2] = kk;
       }
     });
@@ -183,6 +192,7 @@ export function Figure(ch, pal) {
         if (row[ii] === '.' || row[ii] === ' ') continue;
         const c = st.x + ii + dx + ox - cam[0], r = st.y + jj - dy + oy + cam[1];
         if (c < 0 || r < 0 || c >= w || r >= h || part[r * w + c] !== headI) continue;
+        if (!SKIN.has(pal.ramp(base[r * w + c]))) continue;      // only onto skin: hair that hangs over the face hides it
         key[r * w + c] = pal.idx[leg[row[ii]]];
       } });
     }

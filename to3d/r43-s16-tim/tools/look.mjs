@@ -2,10 +2,10 @@
 import { ch, pal, fig, stage, player, img, sheet, write, CACHE } from './lib.mjs';
 import path from 'node:path';
 const out = n => path.join(CACHE, n);
-const stand = { hold: 'drawn' }, plain = {};
+const stand = ch.CLIPS[0], plain = {};
 // the turn: the drawing above, the 3D below
 {
-  const w = 96, h = 46, by = 24, top = stage.ground('backdrop', w, h, 0, by);
+  const w = 96, h = ch.FLOOR + 10, by = 67 - h, top = stage.ground('backdrop', w, h, 0, by);
   ['front', 'q', 'side'].forEach((v, i) => stage.sprites[v] && stage.drawn(top, w, h, v, 16 + i * 32, by));
   const cells = [img(top, w, h)];
   for (const yaws of [[0, 22.5, 90], [0, 45, 90]]) {
@@ -18,7 +18,7 @@ const stand = { hold: 'drawn' }, plain = {};
 // all round
 for (const [nm, clip] of [['around', plain], ['around-drawn', stand]]) {
   const cells = [];
-  for (let i = 0; i < 16; i++) { const f = stage.frame({ w: 34, h: 44, by: 24, x: 17, pose: player.at(clip, 0).pose, yaw: i * 22.5 }); cells.push(img(f.key, 34, 44, 6)); }
+  for (let i = 0; i < 16; i++) { const f = stage.frame({ w: 34, h: ch.FLOOR + 10, by: 57 - ch.FLOOR, x: 17, pose: player.at(clip, 0).pose, yaw: i * 22.5 }); cells.push(img(f.key, 34, ch.FLOOR + 10, 6)); }
   write(out(nm + '.png'), sheet(cells, 8, 4));
 }
 // faces
@@ -26,7 +26,7 @@ for (const [nm, clip] of [['around', plain], ['around-drawn', stand]]) {
   const cells = [];
   for (const expr of [...ch.EXPRS, 'blink', 'open', 'round', 'closed']) for (const yaw of [0, 22.5, 45, 67.5, 90, -45, -90]) {
     const face = ch.EXPRS.includes(expr) ? { expr } : expr === 'blink' ? { blink: true } : { mouth: expr };
-    const f = stage.frame({ w: 24, h: 18, by: 26, x: 12, pose: player.at(plain, 0).pose, yaw, face, shadow: false });
+    const f = stage.frame({ w: 24, h: 18, by: 60 - ch.FLOOR, x: 12, pose: player.at(plain, 0).pose, yaw, face, shadow: false });
     cells.push(img(f.key, 24, 18, 8));
   }
   write(out('faces.png'), sheet(cells, 7, 4));

@@ -18,8 +18,8 @@ const P = {
     const n = Math.max(views.length, 3), w = 32 * n, h = figH, by = figBy;
     const top = stage.ground('backdrop', w, h, 0, by);
     views.forEach((v, i) => stage.drawn(top, w, h, v, 16 + i * 32, by));
-    const low = stage.ground('backdrop', w, h, 0, by), yaws = WHO.compareYaws || [0, 22.5, 90];
-    yaws.forEach((yaw, i) => { const f = stage.frame({ clear: true, w, h, by, x: 16 + i * 32, pose: poseOf(STAND), yaw, shadow: false }); stage.shadow(low, w, h, 16 + i * 32, 62 - by); for (let j = 0; j < w * h; j++) if (f.fig.key[j]) low[j] = f.fig.key[j]; });
+    const low = stage.ground('backdrop', w, h, 0, by);
+    ch.COMPARE.forEach(({ yaw, clip: c }, i) => { const f = stage.frame({ clear: true, w, h, by, x: 16 + i * 32, pose: poseOf(c ? clip(c) : DOWN), yaw, shadow: false }); stage.shadow(low, w, h, 16 + i * 32, 62 - by); for (let j = 0; j < w * h; j++) if (f.fig.key[j]) low[j] = f.fig.key[j]; });
     write('compare.png', sheet([img(top, w, h), img(low, w, h)], 1));
   },
   // pixel against pixel, from the front: the drawing, the 3D in the drawing's pose, the 3D standing, and where they differ
@@ -78,30 +78,27 @@ const P = {
   },
   // what the rule forbids: a smooth picture shrunk by a machine — beside the same pose looked at pixel by pixel
   mush() {
-    const w = 26, h = 22, by = figBy, x = 13, res = 8, cells = [];
-    for (const yaw of [22.5]) {
-      const a = player.at(clip('walk'), 0.5), ox = x - Math.floor(ch.CX), oy = 63 - by - ch.FLOOR;
-      const f = fig.render({ pose: a.pose, yaw, w: w * res, h: h * res, ox, oy, res, lum: true, steady: false });
-      const big = blank(w * res, h * res, BGC), small = blank(w, h, BGC), cols = new Set();
-      for (let j = 0; j < f.key.length; j++) if (f.key[j]) { const g = 0.72 + 0.4 * Math.max(-0.3, f.lum[j]), c = pal.rgb[pal.shift(f.key[j], 0)]; big.rgba.set([c[0] * g, c[1] * g, c[2] * g, 255], j * 4); }
-      for (let r = 0; r < h; r++) for (let c = 0; c < w; c++) { const s = [0, 0, 0]; for (let y = 0; y < res; y++) for (let xx = 0; xx < res; xx++) { const o = ((r * res + y) * w * res + c * res + xx) * 4; s[0] += big.rgba[o]; s[1] += big.rgba[o + 1]; s[2] += big.rgba[o + 2]; } const v = s.map(q => Math.round(q / res / res)); small.rgba.set([...v, 255], (r * w + c) * 4); cols.add(v.join()); }
-      const ours = stage.frame({ w, h, by, x, pose: a.pose, yaw, shadow: false, clear: true }), ok = ours.key.map(k => k || pal.idx.d1);
-      cells.push(up(big, 2), up(small, 16), img(ok, w, h, 16));
-      console.log('mush: colours in the shrunk picture', cols.size, '· in ours', new Set(ours.key).size - 1);
-    }
-    write('mush.png', sheet(cells, 3));
+    const w = figW, h = figH, by = figBy, x = w >> 1, res = 8, yaw = 22.5;
+    const a = player.at(clip('walk'), 0.5), ox = x - Math.floor(ch.CX), oy = 63 - by - ch.FLOOR;
+    const f = fig.render({ pose: a.pose, yaw, w: w * res, h: h * res, ox, oy, res, lum: true, steady: false });
+    const big = blank(w * res, h * res, BGC), small = blank(w, h, BGC), cols = new Set();
+    for (let j = 0; j < f.key.length; j++) if (f.key[j]) { const g = 0.72 + 0.4 * Math.max(-0.3, f.lum[j]), c = pal.rgb[f.key[j]]; big.rgba.set([c[0] * g, c[1] * g, c[2] * g, 255], j * 4); }
+    for (let r = 0; r < h; r++) for (let c = 0; c < w; c++) { const s = [0, 0, 0]; for (let y = 0; y < res; y++) for (let xx = 0; xx < res; xx++) { const o = ((r * res + y) * w * res + c * res + xx) * 4; s[0] += big.rgba[o]; s[1] += big.rgba[o + 1]; s[2] += big.rgba[o + 2]; } const v = s.map(q => Math.round(q / res / res)); small.rgba.set([...v, 255], (r * w + c) * 4); cols.add(v.join()); }
+    const ours = stage.frame({ w, h, by, x, pose: a.pose, yaw, shadow: false, clear: true }), ok = ours.key.map(k => k || pal.idx.d1);
+    write('mush.png', sheet([big, up(small, 8), img(ok, w, h, 8)], 3));
+    console.log('mush: colours in the shrunk picture', cols.size, '· in ours', new Set(ours.key).size - 1);
   },
   faces() {
-    const cells = [], w = 26, h = 19, by = figBy;
-    for (const expr of ch.EXPRS) for (const yaw of [0, 22.5, 90]) cells.push(img(stage.frame({ w, h, by, x: 13, pose: poseOf(DOWN), yaw, face: { expr }, shadow: false }).key, w, h, 8));
-    write('faces.png', sheet(cells, 6, 4));
+    const cells = [], w = 26, h = ch.FACE_H || 19, by = 63 - ch.FLOOR - 3;
+    for (const yaw of [0, 22.5, 90]) for (const expr of ch.EXPRS) cells.push(img(stage.frame({ w, h, by, x: 13, pose: poseOf(DOWN), yaw, face: { expr }, shadow: false }).key, w, h, 8));
+    write('faces.png', sheet(cells, ch.EXPRS.length, 4));
     const ps = [...ch.EXPRS.map(expr => ({ expr })), { blink: true }, { mouth: 'open' }, { mouth: 'round' }].map(f => { const p = stage.portrait(f); return img(p.key, p.w, p.h, 4); });
     write('portraits.png', sheet(ps, 4, 4));
   },
-  hero() { write('hero.png', talkFrame(1.0, 'rest', 8)); },
+  hero() { write('hero.png', talkFrame(0.4, 'rest', 8, false)); },
 
   // ———— films
-  turn() { const c = STAND; film('turn', 16 * 2 / 4, (i) => img(stage.frame({ bg: 'street', w: 64, h: 60, by: 38, bx: 78, x: 32, pose: poseOf(c), yaw: Math.floor(i / 3) * 22.5, face: life(i / FPS) }).key, 64, 60, 8), 6 * 2); },
+  turn() { const c = STAND, FW = WHO.film?.w || 72, FH = WHO.film?.h || 54; film('turn', 16 * 2 / 4, (i) => img(stage.frame({ bg: 'street', w: FW, h: FH, by: 98 - FH, bx: 74, x: FW >> 1, pose: poseOf(c), yaw: Math.floor(i / 3) * 22.5, face: life(i / FPS) }).key, FW, FH, 10), 6 * 2); },
   talk() { const E = ch.EXPRS; film('talk', E.length * 2.5, (i, t) => talkFrame(t, E[Math.floor(t / 2.5) % E.length], 6)); },
   // the same walk twice: as the 3D gives it (every part where the motion puts it, 24 pictures a second) and as the
   // sprite is made (whole pixels and whole steps for the head and the trunk, 12 drawings a second)
@@ -110,16 +107,17 @@ const P = {
     film('steady', 4, (i, t) => { const cells = [false, true].map(st => { const a = player.at(c, t, st ? FPS : 0); return img(stage.frame({ w: 40, h: 46, by: figBy, x: 20, pose: a.pose, yaw: 90, follow: true, steady: st, face: life(st ? Math.floor(t * FPS) / FPS : t) }).key, 40, 46, 10); }); return sheet(cells, 2, 8); }, 24);
   },
 };
-function talkFrame(t, expr, scale) {
-  const w = 128, h = 76, by = 24, a = player.at(clip(WHO.talkClip || 'stand'), t), face = life(t, { talk: true, expr });
+function talkFrame(t, expr, scale, talk = true) {
+  const w = 128, h = 76, by = 24, a = player.at(clip(WHO.talkClip || 'stand'), t), face = life(t, { talk, expr });
   const f = stage.frame({ bg: 'street', w, h, by, bx: 62, x: 38, pose: a.pose, yaw: 22.5, face });
   const p = stage.portrait(face);
   for (let r = 0; r < p.h; r++) for (let c = 0; c < p.w; c++) f.key[(r + 5) * w + c + 60] = p.key[r * p.w + c];
   return img(f.key, w, h, scale);
 }
+const FW = WHO.film?.w || 72, FH = WHO.film?.h || 54;      // the films' window of the street: the figure is big in it
 for (const c of ch.CLIPS) if (c.motion) P[c.id] = () => {
   const dur = Math.min(player.dur(c), c.cut || 5), strip = [];
-  film(c.id, dur, (i, t) => { const a = player.at(c, t), f = stage.frame({ bg: 'street', w: 96, h: 64, by: 34, bx: c.travel ? 40 : 62, x: 48, pose: a.pose, lift: a.lift, yaw: c.yaw || 0, follow: !!c.travel, face: life(t, { expr: c.expr || 'rest' }) }); const im = img(f.key, 96, 64, 8); if (i % 6 === 0) strip.push(img(f.key, 96, 64, 3)); return im; });
+  film(c.id, dur, (i, t) => { const a = player.at(c, t), f = stage.frame({ bg: 'street', w: FW, h: FH, by: 98 - FH, bx: c.travel ? 40 : 74, x: FW >> 1, pose: a.pose, lift: a.lift, yaw: c.yaw || 0, follow: !!c.travel, face: life(t, { expr: c.expr || 'rest' }) }); const im = img(f.key, FW, FH, 10); if (i % 4 === 0) strip.push(img(f.key, FW, FH, 4)); return im; });
   write(path.join(CACHE, `strip-${c.id}.png`), sheet(strip, 6, 4));
 };
 const STILLS = ['compare', 'exact', 'around', 'steps', 'mush', 'faces', 'hero'], FILMS = ['turn', 'talk', 'steady', ...ch.CLIPS.filter(c => c.motion).map(c => c.id)];

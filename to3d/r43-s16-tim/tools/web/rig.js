@@ -52,10 +52,11 @@ export const qmat = q => { // rows of the 3×3 matrix
     2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w),
     2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)];
 };
-// a turn rounded to whole steps of `step` radians about its own axis (a part that must keep its pixels steady)
+// a turn rounded to whole steps of `step` radians about its own axis (a part that must keep its pixels steady);
+// below three quarters of a step it is no turn at all, so that a small sway doesn't click the part aside
 export function qsnap(q, step) {
   if (q[3] < 0) q = q.map(x => -x);
-  const s = Math.hypot(q[0], q[1], q[2]), a = 2 * Math.atan2(s, q[3]), b = Math.round(a / step) * step;
+  const s = Math.hypot(q[0], q[1], q[2]), a = 2 * Math.atan2(s, q[3]), b = a < 0.75 * step ? 0 : Math.max(1, Math.round(a / step)) * step;
   if (b === 0 || s < 1e-9) return Q0;
   return qaxis([q[0], q[1], q[2]], b);
 }
