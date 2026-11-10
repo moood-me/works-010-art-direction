@@ -83,6 +83,8 @@ def tube(pts, r, nseg=8, closed=False):
         P = np.vstack([P, P[:1]])
     n = len(P)
     T = np.gradient(P, axis=0)
+    for i in np.nonzero(np.linalg.norm(T, axis=1) < 1e-9)[0]:      # a point where the line turns back on itself
+        T[i] = P[i] - P[i - 1] if i else P[1] - P[0]
     T /= np.linalg.norm(T, axis=1, keepdims=True) + 1e-12
     S = np.cross(T, [0, 0, 1.0])
     bad = np.linalg.norm(S, axis=1) < 1e-4

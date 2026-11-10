@@ -79,8 +79,16 @@ by the body).
 - In profile the mouth is almost out of sight (the drawing shows it on the edge); the ear is smaller than drawn.
 - The face's turn on the head is a trick of the picture: with it the eyes come nearer the ear in profile than in
   the drawing, where ears and hairline turn too.
+- In the sneak, with the arms bent before the chest, the short sleeve's edge pinches into a sharp corner at the elbow.
 - Clothes are rigid shells: the tee doesn't crease, the shorts' legs go with the thighs and show a fold at the hip.
 - Speech has no sound; its rhythm is the text's.
+
+## Finished by a second agent
+
+The first agent's run was cut off by a container restart after the stills and the turn, walk and run films. A second
+agent (same task, from the coordinator) made the three films the page named but didn't have — `python3 make.py sneak
+look face`, through the shared lock (`flock /home/user/cache/heavy.N.lock …`) —, looked at every picture and film, and
+moved the face film's camera back (dist 1.05 → 1.2: the ear was cut by the frame). Nothing else was changed.
 
 ## Licences
 

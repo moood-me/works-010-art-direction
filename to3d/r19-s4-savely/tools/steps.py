@@ -1,12 +1,12 @@
 """The steps along the way, as clay (software raster, mesh.raster): what each base gave.
   1 the HBM head as it comes; 2 fitted to the drawing (eyes carried, nose lengthened, the drawing's surface as dots);
-  3 Anny's body as it comes; 4 Anny made Вера (longer legs, slimmer, legs together) with the fitted head.
+  3 Anny's body as it comes; 4 Anny made the character, dressed, with the fitted head.
 usage: python3 steps.py CACHE OUT.jpg"""
 import os, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
-import mesh as M, pack  # noqa: E402
+import mesh as M, pack, drawing as DR  # noqa: E402
 
 C, OUT = sys.argv[1], sys.argv[2]
 d = np.load(os.path.join(C, 'hbm_head.npz')); hf = np.load(os.path.join(C, 'head_fit.npz'))
@@ -31,16 +31,16 @@ panels += [shot(V, T, 0, bx), shot(V, T, -1.2, bx)]
 V2 = hf['v'] * [1, -1, 1]; T2 = hf['tris']
 b2 = (-135, 135, -170, 150)
 panels += [shot(V2, T2, 0, b2), shot(V2, T2, -1.2, b2)]
-# 3: Anny as it comes; 4: the pack's body (Вера's)
-h, a, th, t = pack.body('moood-woman')
+# 3: Anny as it comes; 4: the pack
+h, a, th, t = pack.body(DR.BODY)
 P0 = a['positions'].reshape(-1, 3); T0 = t['triangles'].reshape(-1, 3)
-b3 = (-0.6, 0.6, -0.02, 1.78)
+b3 = (-0.62, 0.62, -0.02, 1.84)
 panels += [shot(P0, T0, -0.3, b3)]
-hd, ar = pack.load(os.path.join(C, 'out', 'vera.json'))
+hd, ar = pack.load(os.path.join(C, 'out', DR.WHO + '.json'))
 P1 = ar['positions'].reshape(-1, 3); T1 = ar['triangles'].reshape(-1, 3).astype(np.int64)
 col = ar['col'].astype(float) / 255
 panels += [shot(P1, T1, -0.3, b3, col=col)]
-names = ['1. голова HBM как есть', '', '2. подогнана к рисунку', '', '3. тело Anny как есть', '4. собранная Вера (цвета без света)']
+names = ['1. голова HBM как есть', '', '2. подогнана к рисунку', '', '3. тело Anny как есть', '4. собранный персонаж (цвета без света)']
 W = sum(p.width for p in panels); H = max(p.height for p in panels) + 30
 im = Image.new('RGB', (W, H), 'white'); dr = ImageDraw.Draw(im)
 try:

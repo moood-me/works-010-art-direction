@@ -18,11 +18,14 @@ import cast2  # noqa: E402,F401  (adds Марат and Кира to CAST)
 import person  # noqa: E402
 
 WHO = 'savely'
+BODY = 'moood-man'                                  # Anny's body the build starts from (engine/data/bodies)
 NEUTRAL = dict(person.NEUTRAL, **cast.CAST[WHO]['neutral'])
 FEET = cast.CAST[WHO]['feet']
 # the head fit: the eye region's size over the head's scale and its widening (an old man's eyes are small and deep-set),
 # how far the ball sits behind the face, the drawn neck's widening (the drawn neck is a stick in 3D)
-FIT = dict(eye_scale=1.1, eye_wide=1.04, eye_back=3.5, neck_x=1.12, neck_z=1.1, ear=0.95)
+FIT = dict(eye_scale=1.1, eye_wide=1.04, eye_back=3.5, neck_x=1.3, neck_z=1.2, ear=0.95, mouth_narrow=0.78)
+# the painted face layer (faces.py): brows and moustache are 3D shells of hair, age spots on the bald head
+FACE = dict(brows3d=True, lid_shade=0.22, mouth_w=0.8, ulip=0.9, lip_hi=0.25, spots=0.4, nose_blush=0.28, ear_blush=0.16)
 
 
 def person():

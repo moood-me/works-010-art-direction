@@ -1,0 +1,39 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "marat",
+ "label": {
+  "ru": "Марат",
+  "en": "Marat"
+ },
+ "source": "to3d/r32-s10-marat: Anny (moood-man) fitted to the С10 drawing, HBM head",
+ "topology": "marat",
+ "skeleton": "soma77",
+ "bin": "marat.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    59728,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 716736
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 717660
+  }
+ }
+}

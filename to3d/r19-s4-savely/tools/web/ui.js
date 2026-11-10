@@ -2,12 +2,12 @@
 // expression (buttons or a mix by sliders), speech on/off, play/pause and a scrub bar. ?shots: no controls
 // (shots.mjs drives window.A itself).
 const q = new URLSearchParams(location.search);
-await import('./vera.js');
+await import('./figure.js');
+const { CHAR } = await import('./char.js');
 const A = window.A;
 document.getElementById('msg')?.remove();
 if (!q.has('shots')) {
-  const MOTIONS = [['stand', 'стоит'], ['walk', 'идёт'], ['idle', 'ждёт'], ['wave', 'машет']];
-  const EXPR = [['calm', 'спокойна'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']];
+  const MOTIONS = CHAR.motions, EXPR = CHAR.exprNames;
   const ui = document.createElement('div'); ui.id = 'ui'; document.body.appendChild(ui);
   const el = (tag, props = {}, parent = ui) => { const e = Object.assign(document.createElement(tag), props); parent.appendChild(e); return e; };
   const fold = el('button', { id: 'fold', textContent: '☰' }); fold.onclick = () => ui.classList.toggle('folded');
@@ -32,7 +32,7 @@ if (!q.has('shots')) {
   }
   async function setMotion(id) {
     st.motion = id; st.t = 0;
-    await A.set({ clip: id === 'stand' ? null : id, pose: 'stand', folder: true, floor3d: id !== 'stand', lightSpace: 'world', light: [-0.45, 0.62, 0.65] });
+    await A.set({ clip: id === 'stand' ? null : id, pose: 'stand', floor3d: id !== 'stand', lightSpace: 'world', light: [-0.45, 0.62, 0.65] });
     st.len = id === 'stand' ? 12 : A.frames() - 1;
     exprTrack = [[0, st.mix]]; await setLive();
   }
@@ -57,7 +57,7 @@ if (!q.has('shots')) {
   async function loop(now) {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     if (st.playing) { st.t += st.motion === 'stand' ? dt : dt * 30; if (st.t > st.len) st.t = 0; scrub.value = st.t / st.len * 1000; }
-    const cy = st.close ? 1.58 : 0.95, dist = st.close ? st.dist * 0.22 : st.dist;
+    const cy = st.close ? CHAR.faceY : CHAR.midY, dist = st.close ? st.dist * 0.22 : st.dist;
     await A.set({ t: st.t, cam: { mode: 'persp', yaw: st.yaw, pitch: st.pitch, cy, dist, fov: 24, follow: true } });
     const cvs = document.getElementById('cv'); const hh = innerHeight - (ui.classList.contains('folded') ? 0 : ui.offsetHeight);
     if (cvs.style.height !== hh + 'px') cvs.style.height = hh + 'px';

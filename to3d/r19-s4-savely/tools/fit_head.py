@@ -75,6 +75,9 @@ def eye_carry(Pt, k):
 
 
 V = place(V0)
+# the base's mouth is wide for this face: drawn in toward the middle (FIT['mouth_narrow'])
+_dm0 = np.linalg.norm((V0 - np.array([cx, -0.155, 0.693])) / [0.032, 0.03, 0.02], axis=1)
+V[:, 0] *= 1 - (1 - FIT.get('mouth_narrow', 1.0)) * np.clip(1.7 - _dm0, 0, 1) * np.clip((0.710 - V0[:, 2]) / 0.008, 0, 1)      # not the nose's base
 
 # the nose: the drawing's is longer and stands further out; its protrusion is scaled (depth only, about the face
 # behind it) so the Laplacian keeps a nose's form at the drawing's size

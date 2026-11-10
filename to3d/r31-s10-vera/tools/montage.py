@@ -3,7 +3,8 @@ import sys
 from PIL import Image
 ims = [Image.open(f).convert('RGB') for f in sys.argv[3:]]
 h = max(i.height for i in ims)
-s = Image.new('RGB', (sum(i.width for i in ims), h), 'white')
+import os
+s = Image.new('RGB', (sum(i.width for i in ims), h), os.environ.get('BG', 'white'))
 x = 0
 for i in ims:
     s.paste(i, (x, 0)); x += i.width

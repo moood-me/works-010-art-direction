@@ -1,6 +1,6 @@
-"""Вера's painted face layer, in the drawing's flat face coordinates (= the front view's x, y), projected onto the
+"""The painted face layer, in the drawing's flat face coordinates (= the front view's x, y), projected onto the
 fitted head from the front (build.py gives each head vertex uv = its rest x, y).
-What is painted, by the style's rules (styles/s4-arcane/entry.json) and Вера's own numbers (cast.vera):
+What is painted, by the style's rules (styles/s4-arcane/entry.json) and the character's own numbers (cast.py / cast2.py; drawing.FACE says what this face has):
   brows — the drawing's brow shape (person.brow_shape, the neutral expression), a dark block with hairs at the start;
   the upper lid's edge — the darkest, thickest line of the face, thicker to the outer corner, a short wing past it;
     it is laid along the fitted lids' real edge (where the ball shows from the front), so it rides on the lid;
@@ -8,7 +8,8 @@ What is painted, by the style's rules (styles/s4-arcane/entry.json) and Вера
   lips — the upper darker (it looks down), the lower lighter with a highlight, the mouth's line dark, corners short;
   blush on the cheeks, the nose's tip and the ears' line; the nostrils; the lines of a tired forty — nasolabial
   folds, a crease between the brows, soft bags under the eyes.
-usage: python3 faces.py CACHE   → CACHE/out/face.png (6 px per drawing unit; x −80…80, y −110…130)"""
+  age spots or freckles (P.freckles); brows are left out when they are 3D shells (drawing.FACE['brows3d']).
+usage: python3 faces.py CACHE   → CACHE/out/face.png (6 px per drawing unit; x −80…80, y −125…130)"""
 import os, sys, json
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
@@ -21,10 +22,12 @@ import person  # noqa: E402
 C = sys.argv[1]
 hf = np.load(os.path.join(C, 'head_fit.npz'))
 fj = json.load(open(os.path.join(C, 'out', 'face.json')))
-P = DR.vera()
+P = DR.person()
+F = DR.FACE
+HEAD, NOSE, NECK = DR.surfaces(P)
 E = DR.NEUTRAL
 PX = 6
-X0, X1, Y0, Y1 = -80.0, 80.0, -110.0, 130.0
+X0, X1, Y0, Y1 = -80.0, 80.0, -125.0, 130.0
 SS = 2                                                      # supersampling
 Wp, Hp = int((X1 - X0) * PX), int((Y1 - Y0) * PX)
 
@@ -107,8 +110,10 @@ def tones(d):
     for sd in (1, -1):
         bx, by, rx, ry, a = P.blush[0]
         d.ellipse(to_px([(sd * bx - rx, by - ry), (sd * bx + rx, by + ry)]), fill=rgba(pal['blush'], 0.22))
-    d.ellipse(to_px([(-7, 36), (7, 50)]), fill=rgba(pal['blush'], 0.2))       # the nose's tip
-    d.ellipse(to_px([(-14, 82), (14, 96)]), fill=rgba(pal['blush'], 0.08))     # under the lip
+    ty = float(NOSE.tip)
+    d.ellipse(to_px([(-7, ty - 11), (7, ty + 3)]), fill=rgba(pal['blush'], F.get('nose_blush', 0.2)))       # the nose's tip
+    for sd in (1, -1):                                                      # the ears' line
+        d.ellipse(to_px([(sd * 74 - 8, P.ear_y - 16), (sd * 74 + 8, P.ear_y + 18)]), fill=rgba(pal['blush'], F.get('ear_blush', 0.0)))
 
 
 paint(tones, blur=4.0)
@@ -118,10 +123,10 @@ def lid_shade(d):
     for (up, lo), (ex, ey, ez) in zip(margins, eyes):
         c = smooth_curve(up)
         top = c.copy(); top[:, 1] -= 7.5 * np.sin(np.linspace(0.15, np.pi - 0.15, len(c))) + 1.0
-        d.polygon(to_px(np.r_[c, top[::-1]]), fill=rgba('#9e7a80', 0.35))
+        d.polygon(to_px(np.r_[c, top[::-1]]), fill=rgba(pal['lidshadow'], F.get('lid_shade', 0.35)))
         # bags: a soft darker arc under the eye (forty, tired)
         b = smooth_curve(lo); b2 = b.copy(); b[:, 1] += 2.5; b2[:, 1] += 2.5 + 4.5 * np.sin(np.linspace(0, np.pi, len(b)))
-        d.polygon(to_px(np.r_[b, b2[::-1]]), fill=rgba('#a77a78', 0.22 * P.bags / 0.45))
+        d.polygon(to_px(np.r_[b, b2[::-1]]), fill=rgba('#a77a78', 0.22 * getattr(P, 'bags', 0.0) / 0.45))
 
 
 paint(lid_shade, blur=1.6)
@@ -136,8 +141,8 @@ paint(lines, blur=0.5)
 
 # ------------------------------------------------------------------ lips (on the fitted mouth: its slit and corners)
 MY, MW = fj['mouth']['y'], fj['mouth']['w']
-mw = MW * 0.9
-ul, ll = P.ulip * 1.15, P.llip * 1.0
+mw = MW * F.get('mouth_w', 0.9)
+ul, ll = P.ulip * F.get('ulip', 1.15), P.llip * 1.0
 xs = np.linspace(-mw, mw, 41)
 t = xs / mw
 slit = MY + 0.4 * (1 - t ** 2) - 0.6 * t ** 2
@@ -156,7 +161,7 @@ paint(lips, blur=0.45)
 def lip_marks(d):
     # the highlight on the lower lip, the mouth's line, the corners
     hx = np.linspace(-mw * 0.4, mw * 0.25, 12)
-    d.polygon(to_px(np.r_[np.c_[hx, MY + ll * 0.35 + 0.2 * (hx / mw) ** 2], np.c_[hx[::-1], MY + ll * 0.62 - 0.2 * (hx[::-1] / mw) ** 2]]), fill=rgba('#e8a8a0', 0.45))
+    d.polygon(to_px(np.r_[np.c_[hx, MY + ll * 0.35 + 0.2 * (hx / mw) ** 2], np.c_[hx[::-1], MY + ll * 0.62 - 0.2 * (hx[::-1] / mw) ** 2]]), fill=rgba('#e8a8a0', F.get('lip_hi', 0.45)))
     stroke(d, np.c_[xs, slit], 0.5, 0.5, rgba(pal['mouth'], 0.85), wmid=1.1)
     for sd in (1, -1):
         stroke(d, [(sd * mw * 0.96, MY - 0.2), (sd * (mw + 2.2), MY + 1.2)], 0.8, 0.2, rgba(pal['mouthline'], 0.6))
@@ -171,7 +176,8 @@ nn = V[(V[:, 1] > 46) & (V[:, 1] < 60) & (np.abs(V[:, 0]) > 3) & (np.abs(V[:, 0]
 
 def nostrils(d):
     for sd in (1, -1):
-        d.ellipse(to_px([(sd * 7.5 - 3.4, 53.0 - 1.6), (sd * 7.5 + 3.4, 53.0 + 1.6)]), fill=rgba(pal['nostril'], 0.7))
+        ny = float(NOSE.sub) - 1.0
+        d.ellipse(to_px([(sd * 7.5 - 3.4, ny - 1.6), (sd * 7.5 + 3.4, ny + 1.6)]), fill=rgba(pal['nostril'], 0.7))
 
 
 paint(nostrils, blur=0.6)
@@ -183,20 +189,30 @@ def brows(d):
         d.polygon(to_px(pts), fill=rgba(pal['brow'], 0.92))
 
 
-paint(brows, blur=0.35)
+if not F.get('brows3d'):
+    paint(brows, blur=0.35)
 
 
 def brow_hairs(d):
     rnd = np.random.default_rng(3)
     for sd in (1, -1):
-        for _ in range(26):
+        for _ in range(F.get('brow_hairs', 26)):
             x = sd * rnd.uniform(9.5, 22); y = rnd.uniform(-22, -16)
             ang = np.radians(rnd.uniform(-75, -45)) * sd
             L = rnd.uniform(2.5, 4.5)
             stroke(d, [(x, y), (x + np.cos(ang) * L * sd * 0.6, y + np.sin(-abs(ang)) * L)], 0.45, 0.1, rgba(pal['brow'], 0.6))
 
 
-paint(brow_hairs, blur=0.1)
+if not F.get('brows3d'):
+    paint(brow_hairs, blur=0.1)
+
+
+def spots(d):
+    for x, y, r in getattr(P, 'freckles', []):
+        d.ellipse(to_px([(x - r, y - r), (x + r, y + r)]), fill=rgba(pal['freckle'], F.get('spots', 0.5)))
+
+
+paint(spots, blur=0.25)
 
 
 # ------------------------------------------------------------------ the lids' lines (on the real lid edges)
@@ -205,18 +221,18 @@ def lid_lines(d):
         c = smooth_curve(up, 4)
         c = c[np.argsort(sd * c[:, 0])]                     # from the inner corner outward
         n = len(c)
-        w = np.interp(np.linspace(0, 1, n), [0, 0.35, 0.8, 1], [0.7, 1.6, 2.6, 2.2])
+        w = np.interp(np.linspace(0, 1, n), [0, 0.35, 0.8, 1], [0.7, 1.6, 2.6, 2.2]) * P.lash_w[2] / 3.2
         tg = np.gradient(c, axis=0); tg /= np.linalg.norm(tg, axis=1, keepdims=True) + 1e-9
         nr = np.c_[-tg[:, 1], tg[:, 0]]; nr *= np.sign(-nr[:, 1:2] + 1e-9)        # pointing up
         inner_e = c + nr * 0.3                               # on the lid, just over the edge
         outer_e = c + nr * (0.3 + w)[:, None]
         # the wing: past the outer corner, a little up
         o = c[-1]; dvec = c[-1] - c[-4]; dvec /= np.linalg.norm(dvec)
-        wing_tip = o + dvec * (P.eye_w * P.wing + 2.5) + np.array([0, -1.8])
+        wing_tip = o + dvec * (P.eye_w * P.wing + 2.5) + np.array([0, -1.8]) if P.wing > 0 else o + dvec * 1.0
         d.polygon(to_px(np.r_[inner_e, [wing_tip], outer_e[::-1]]), fill=rgba(pal['lash'], 0.95))
         # the crease: thin, pale, close over the edge
         cr = c + nr * (P.crease + 3.2) * np.sin(np.linspace(0.25, np.pi - 0.25, n))[:, None]
-        stroke(d, cr[2:-1], 0.25, 0.25, rgba('#8a6066', 0.5), wmid=0.7)
+        stroke(d, cr[2:-1], 0.25, 0.25, rgba(pal['mouthline'], 0.45), wmid=0.7)
         # the lower lid: thin, only the outer half
         b = smooth_curve(lo, 4); b = b[np.argsort(sd * b[:, 0])]
         half = b[len(b) // 2:]

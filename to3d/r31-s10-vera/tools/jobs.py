@@ -16,3 +16,8 @@ s = 780 / 1410
 json.dump(dict(base, frames=C + '/stand_fig.bin', out=C + '/cmp',
                views=[dict(name='figure', yaw=-22, pitch=-7, s=s, cx=250, cy=840 - who.FLOOR * s, W=500, H=900, lw=1.9,
                            bg=who.PANEL)]), open(C + '/job_figure.json', 'w'))
+H = who.FLOOR + 110
+s = 600 / H
+json.dump(dict(base, frames=C + '/stand.bin', out=C + '/film/turn', samples=8, no_subsurf=True,
+               views=[dict(name=f't{i:02d}', yaw=-i * 15, pitch=-7, s=s, cx=240, cy=600 - who.FLOOR * s, W=480, H=640, lw=2.0,
+                           bg=who.PANEL) for i in range(24)]), open(C + '/job_turnaround.json', 'w'))

@@ -1,4 +1,4 @@
-// After Р2's life.mjs (to3d/r2-s10-savely), for Вера's face (face.js). Small life on the face, as a track of face params over a clip's time (face.mjs): blinks, the eyes' jumps and a gaze
+// After Р2's life.mjs (to3d/r2-s10-savely), for the face of face.js. Small life on the face, as a track of face params over a clip's time (face.mjs): blinks, the eyes' jumps and a gaze
 // that leads the head, speech, and expressions going one into another. Computed once for the whole clip at 120 Hz
 // (so scrubbing back and forth gives the same face), deterministic from a seed.
 //
@@ -15,7 +15,8 @@
 import { mix, PARAMS } from './face.js';
 
 const HZ = 120;
-export const BLINK_UP = 34;     // the upper lid's turn that shuts Вера's eye (measured on the model)
+import { CHAR } from './char.js';
+export const BLINK_UP = CHAR.blinkUp ?? 34;     // the upper lid's turn that shuts the eye (measured on the model)
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; }; }
 const lerp = (a, b, t) => a + (b - a) * t;

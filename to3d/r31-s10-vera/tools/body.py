@@ -6,7 +6,7 @@
    Kimodo's motions carry as they do on any engine body.  The trunk is kept inside the drawing's own shells.
    The fingers are laid side by side (each finger's joints set along the middle finger's direction) and a little
    thicker, so the hand reads as the style's hand: one shape with short lines between the fingers.
-2. Clothes are made to the drawing: the jacket (with its V opening and arm holes) and the blouse are the drawing's
+2. Clothes are made to the drawing: the jacket (with its V opening) and the blouse are the drawing's
    own torso shells, the skirt is its skirt shell; the sleeves are shells laid over Anny's arms, widened to the
    drawing's sleeve; the legs in tights are Anny's own; shoes, the blouse's collar, the lapels, buttons and the
    seams from the drawing's shapes.  The folder is a box held in the left hand.
@@ -69,7 +69,7 @@ def scale_of(name):
     if name in ('LeftLeg', 'RightLeg'):
         return (0.46 * U, U, U)              # the drawing's legs stand close together under the narrow skirt
     if 'Shin' in name or ('Foot' in name and 'Toe' not in name):
-        return (0.0, U, U)                   # and straight down, not splayed as Anny's rest
+        return (0.0, U, 0.45 * U)            # and straight down, not splayed as Anny's rest; the ankle under the knee
     if 'Toe' in name:
         return (0.7 * U, 0.7 * U, 0.58 * U)  # small shoes
     if name in ('LeftForeArm', 'RightForeArm', 'LeftHand', 'RightHand'):
@@ -282,24 +282,6 @@ def widen(V):
 
 
 # ------------------------------------------------------------------ the drawing's own garments
-la, ra = J1[IDX['LeftArm']], J1[IDX['RightArm']]
-le, re_ = J1[IDX['LeftForeArm']], J1[IDX['RightForeArm']]
-HOLE = 36.0
-
-
-def arm_hole(X, Y, Z, r):
-    """Margin of a hole where an arm passes through a torso shell (distance to the upper arm's axis − r)."""
-    out = np.full(X.shape, 1e9)
-    for a, e in ((la, le), (ra, re_)):
-        a2 = a - (e - a) * 0.6
-        d = e - a2
-        P = np.stack([X, Y, Z], -1)
-        t = np.clip(((P - a2) @ d) / (d @ d), 0, 1)
-        c = a2 + t[..., None] * d
-        out = np.minimum(out, np.linalg.norm(P - c, axis=-1) - r)
-    return out
-
-
 def shell_mesh(rows, y0, y1, margin=None, nu=200, nv=80):
     sh = H.Shell(rows)
     u = np.linspace(0, 2 * np.pi, nu, endpoint=False)
@@ -332,23 +314,14 @@ def smooth_edge(V, F, it=4):
 def jacket_margin(X, Y, Z, U, V):
     d = np.abs(wrapdeg(U))
     t = np.clip((330 - Y) / (330 - 140), 0, 1)         # figures.vneck(330, 140, 30)
-    return np.minimum(d - 30 * t, arm_hole(X, Y, Z, HOLE))
+    return d - 30 * t
 
 
 Vj, Fj = shell_mesh(TORSO, 126, 505, jacket_margin, nu=128, nv=64)
 
 
-def tuck(V):
-    """The sleeve's top kept under the jacket where the jacket covers it, so it comes out of the arm hole (whose
-    edge the line draws: the sleeve's seam) instead of through the cloth."""
-    r, zm = rho(TORSO, V[:, 0], V[:, 1], V[:, 2])
-    hole = arm_hole(V[:, 0], V[:, 1], V[:, 2], HOLE)
-    sel = (hole > -6) & (r > 0.9) & (r < 1.25) & (V[:, 1] < 480)
-    sel |= (part('Lclavicle', 'Rclavicle') > 0.35) & (r > 0.96)       # the shoulder's top stays under the jacket's
-    return keep_inside(V, TORSO, 0.96, sel)
-
-
-anny_region(arm, 2.5, 'sleeves', COL['jacket'], extra=lambda V: tuck(widen(V)))
+# the sleeves go into the jacket's shoulder as they are (an arm hole there opens at the back when the arm is down)
+anny_region(arm, 2.5, 'sleeves', COL['jacket'], extra=widen)
 add('jacket', Vj, Fj, COL['jacket'], *weights_nearest(Vj, trunk))
 jacket = H.Shell(TORSO)
 
@@ -423,7 +396,9 @@ if os.environ.get('FOLDER', '1') == '1' and os.path.exists(_stand) and 'hand' in
     cube = np.array([[x, y, z] for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)], float) * sz
     tilt = np.radians(-8)                                              # leaning forward a little at the top
     Rt = np.array([[1, 0, 0], [0, np.cos(tilt), -np.sin(tilt)], [0, np.sin(tilt), np.cos(tilt)]])
-    Ps = cube @ Rt.T + c
+    yw = np.radians(-32)                                               # its face turned a little to the front
+    Ry = np.array([[np.cos(yw), 0, np.sin(yw)], [0, 1, 0], [-np.sin(yw), 0, np.cos(yw)]])
+    Ps = cube @ (Ry @ Rt).T + c + np.array([0.012, 0, 0.02])
     Pe = (Ps - tm) @ Rm                                                # back to the rest pose (Rm is a turn)
     Vf = np.stack([Pe[:, 0] / K, FLOOR - Pe[:, 1] / K, Pe[:, 2] / K], 1)
     Ff = np.array([(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)])

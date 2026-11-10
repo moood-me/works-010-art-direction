@@ -45,9 +45,31 @@ python3 make.py stills
 python3 make.py turn walk sneak sit look face
 ```
 
+## Finished by a second agent
+
+The first agent was lost in a container restart with the code written and one test picture made. A second agent
+(same task, from the coordinator) rendered everything, looked, and changed in `kira.js`:
+- the ear stands proud of the hair (out 0.5 → 3.6, thicker): it was buried under the hair cap, which comes down
+  behind it; the drawing tucks the hair behind this ear;
+- no thinning of the hair on the crown (the hairline's angle is ill-defined there: ridges and a ragged outline);
+- headphones: the band starts behind the cups and lies closer to the neck (its end stuck out beside the cup like a
+  handle), the cups a little smaller;
+- boots: the sole is a rounded elliptic slab, the boot's flat ends are cut by planes — ring stacks that close flat
+  mesh into flaps, and the outline drew them as torn rags under a lifted foot;
+- sneak: 55 % of the motion's average stoop taken out (`upright`), on top of her own slouch the face was gone;
+- `make.py`: the sheets' crop for her height, the face film's camera further back (the head was cut by the frame).
+Heavy runs go through the shared locks: `flock /home/user/cache/heavy.N.lock python3 make.py …`.
+
 ## What is weak (honestly)
 
-see `entry.json`, «Что слабо» (written after looking at the pictures).
+- The headphone cups are honest discs on the chest; the drawing shows narrow half-rings half under the chin. The
+  band's end shows beside her right cup.
+- In the sneak the head is so low that the face is nearly hidden, even with half the stoop taken out.
+- The ear shows from the front with its rings (not in the drawing's front view); from the side it sits nearer the
+  face than drawn (the drawing turns it further round the head).
+- The pocket is an outline, not a patch; the arm enters it from above.
+- Sitting down, she first folds so that only the crown shows; the hoodie is a rigid shell, the hood and hair don't move.
+- Speech has no sound.
 
 ## Licences
 

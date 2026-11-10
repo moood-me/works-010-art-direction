@@ -1,6 +1,8 @@
-// Вера's face moved by a few numbers, on top of the skinned body (after Р2's face.mjs, to3d/r2-s10-savely).
+// The face moved by a few numbers, on top of the skinned body (after Р2's face.mjs and Р7's face.js).
+import { CHAR } from './char.js';
 // The measures come from face.json (build.py): eye centres, the ball's radius, the mouth's line and corners, in the
-// drawing's units (y down, z toward the viewer); which vertices are the head and the irises (ranges).
+// drawing's units (y down, z toward the viewer); which vertices are the skin (the head, shells of hair on it) and
+// the irises (ranges, skin).
 // params (all 0 at rest):
 //   up, low   — the upper / lower lid turned over the ball (degrees; up > 0 closes down, low > 0 closes up)
 //   jaw       — the jaw opened (degrees, about a pivot below the ear)
@@ -30,14 +32,14 @@ export class Face {
     const take = ([a, b]) => { const out = new Float64Array((b - a) * 3);
       for (let i = a; i < b; i++) { out[(i - a) * 3] = P[i * 3] / K; out[(i - a) * 3 + 1] = F - P[i * 3 + 1] / K; out[(i - a) * 3 + 2] = (P[i * 3 + 2] - Z) / K; }
       return out; };
-    this.pieces = ['head', 'irisL', 'irisR'].map(name => ({ name, r: data.ranges[name], rest: take(data.ranges[name]) }));
+    this.pieces = [...(data.skin || ['head']), 'irisL', 'irisR'].map(name => ({ name, r: data.ranges[name], rest: take(data.ranges[name]) }));
     this.delta = new Float32Array(body.N * 3);
   }
   update(q) {
     const d = this.d, K = this.K, E = d.eyes, RB = d.rb, MY = d.mouth.y, MW = d.mouth.w, MZ = d.mouth.z, JAW = d.jaw;
     const p = [0, 0, 0];
     for (const pc of this.pieces) {
-      const head = pc.name === 'head', iris = pc.name.startsWith('iris');
+      const iris = pc.name.startsWith('iris'), head = !iris;   // skin: the head and the hair shells lying on it (brows, moustache)
       const [a] = pc.r, R = pc.rest, n = R.length / 3;
       for (let i = 0; i < n; i++) {
         p[0] = R[i * 3]; p[1] = R[i * 3 + 1]; p[2] = R[i * 3 + 2];
@@ -98,14 +100,8 @@ export class Face {
   }
 }
 
-// the drawing's expressions (styles/s4-arcane/tools/cast.py: CAST.vera.neutral and EXPR), as params of the 3D face
-export const EXPRESSIONS = {
-  calm: { up: 7, brow: -0.6, knit: 0.25, inner: 0.4 },
-  joy: { up: 12, low: 18, jaw: 5, smile: 1.25, brow: 2.0, inner: 0.6 },
-  surprise: { up: -12, low: -4, jaw: 9, brow: 5.5, inner: 1.2, iris: 0.86 },
-  sad: { up: 15, smile: -0.9, brow: 0.4, inner: 3.6, knit: 0.25, lookY: 9 },
-  anger: { up: 10, low: 9, jaw: 4, smile: -0.6, wide: 0.5, brow: -3.2, inner: -2.2, knit: 1.0 },
-};
+// the drawing's expressions as params of the 3D face: char.js
+export const EXPRESSIONS = CHAR.expressions;
 export const PARAMS = ['up', 'low', 'jaw', 'smile', 'wide', 'pucker', 'brow', 'inner', 'knit', 'lookX', 'lookY', 'iris'];
 
 // a mix of expressions: {joy: 0.6, surprise: 0.4} → params (weights normalised when their sum is over 1)

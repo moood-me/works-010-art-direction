@@ -54,7 +54,7 @@ def stills():
     o = lambda n: os.path.join(OUT, n + '.png')
     d = lambda n: os.path.join(STY, f'{n}-{WHO}.png')
     # the drawing above, the 3D below; and the drawing's lines over the 3D. The turnaround sheet is cut to the figure
-    cut = {'turn': (0, 290, 1080, 802)}
+    cut = {'turn': (0, 150, 1080, 802)}
     for n, vert in [('turn', True), ('figure', False), ('portrait', False), ('expr', True)]:
         a = Image.open(d(n)).convert('RGB')
         b = Image.open(o(n)).convert('RGB').resize(a.size)
@@ -66,7 +66,7 @@ def stills():
     a = Image.open(d('turn')).convert('RGB').crop(cut['turn'])
     b = Image.open(o('turn')).convert('RGB').crop(cut['turn'])
     c = Image.open(o('turn-nocheat')).convert('RGB').crop(cut['turn'])
-    box = (380, 0, 1080, 250)
+    box = (380, 0, 1080, 270)
     compare.side(compare.side(a.crop(box), b.crop(box), True), c.crop(box), True).save(os.path.join(PICS, 'cheat.jpg'), quality=86)
     # steps: the skeleton on the faded drawing, then the forms, the paints, the face
     a = Image.open(d('turn')).convert('RGB')
@@ -121,15 +121,15 @@ def live_film(name, clip, n, cam, size=(520, 680), fps=15, events=None, hold=Non
 
 LIVE = {
     # the walk with a hand in the pocket, the camera going along
-    'walk': lambda: live_film('walk', 'walk', 120, {'yaw': 32, 'pitch': 7, 'dist': 2.3, 'ty': 0.47, 'fov': 26, 'follow': True}),
-    'sneak': lambda: live_film('sneak', 'sneak', 120, {'yaw': 30, 'pitch': 7, 'dist': 2.3, 'ty': 0.45, 'fov': 26, 'follow': True}),
+    'walk': lambda: live_film('walk', 'walk', 120, {'yaw': 32, 'pitch': 7, 'dist': 2.55, 'ty': 0.47, 'fov': 26, 'follow': True}),
+    'sneak': lambda: live_film('sneak', 'sneak', 120, {'yaw': 30, 'pitch': 7, 'dist': 2.55, 'ty': 0.45, 'fov': 26, 'follow': True}),
     # sitting down on the floor
     'sit': lambda: live_film('sit', 'sit', 135, {'yaw': 34, 'pitch': 12, 'dist': 2.4, 'ty': 0.47, 'fov': 26, 'follow': True, 'followY': 0.7},
                              events={3.3: {'expr': {'neutral': 0.5, 'sad': 0.5}}}, hold=3.95),
     # looking round from under the fringe: the eyes go first, the head follows
     'look': lambda: live_film('look', 'look', 150, {'yaw': -14, 'pitch': 4, 'dist': 1.5, 'ty': 0.62, 'fov': 24}, size=(560, 560)),
     # the face close: speaking, then the sheet's expressions one after another, then a mix and speaking again
-    'face': lambda: live_film('face', 'idle', 270, fps=20, cam={'yaw': -12, 'pitch': 2, 'dist': 1.15, 'ty': 0.74, 'fov': 22}, size=(560, 560),
+    'face': lambda: live_film('face', 'idle', 270, fps=20, cam={'yaw': -12, 'pitch': 2, 'dist': 1.6, 'ty': 0.7, 'fov': 22}, size=(560, 560),
                               events={0.3: {'talk': True}, 3.9: {'talk': False}, 4.1: {'expr': 'joy'}, 5.2: {'expr': 'surprise'},
                                       6.3: {'expr': 'sad'}, 7.4: {'expr': 'anger'}, 8.3: {'expr': {'joy': 0.5, 'neutral': 0.5}, 'talk': True}}),
 }

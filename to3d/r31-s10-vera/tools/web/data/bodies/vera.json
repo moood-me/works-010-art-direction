@@ -1,0 +1,39 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "vera",
+ "label": {
+  "ru": "Вера",
+  "en": "Vera"
+ },
+ "source": "to3d/r31-s10-vera: Anny (moood-woman) fitted to the С10 drawing, HBM head",
+ "topology": "vera",
+ "skeleton": "soma77",
+ "bin": "vera.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    56119,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 673428
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 674352
+  }
+ }
+}

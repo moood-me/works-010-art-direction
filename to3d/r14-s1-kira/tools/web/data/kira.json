@@ -1,0 +1,275 @@
+{
+ "format": "tim-pixar/model",
+ "version": 1,
+ "id": "kira",
+ "skeleton": "soma77",
+ "mats": [
+  "skin",
+  "lip",
+  "mouth",
+  "eye",
+  "hair",
+  "hoodie",
+  "rib",
+  "pants",
+  "phone",
+  "shoe",
+  "sole",
+  "teeth",
+  "streak",
+  "lime",
+  "tongue"
+ ],
+ "parts": [
+  "head"
+ ],
+ "ranges": {
+  "head": [
+   0,
+   4118
+  ],
+  "eyeL": [
+   4118,
+   5558
+  ],
+  "eyeR": [
+   5558,
+   6998
+  ],
+  "teethUp": [
+   6998,
+   8118
+  ],
+  "teethLo": [
+   8118,
+   9238
+  ],
+  "tongue": [
+   9238,
+   9518
+  ],
+  "hair": [
+   9518,
+   16476
+  ],
+  "hoodie": [
+   16476,
+   19105
+  ],
+  "hood": [
+   19105,
+   20163
+  ],
+  "phones": [
+   20163,
+   20853
+  ],
+  "pants": [
+   20853,
+   22557
+  ],
+  "shoes": [
+   22557,
+   25329
+  ],
+  "limbs": [
+   25329,
+   28877
+  ]
+ },
+ "K": 0.0028,
+ "hs": 1.0,
+ "headY": 542.0,
+ "headZ": 23.414458429085357,
+ "balls": [
+  [
+   17.0,
+   1.4229110513277323,
+   22.22662677495317,
+   10.8
+  ],
+  [
+   -17.0,
+   1.4229110513277323,
+   22.22662677495317,
+   10.8
+  ]
+ ],
+ "mouthY": -34.5,
+ "lipZ": 36.876462433361,
+ "floor": 564.0,
+ "paint": {
+  "skin": "#e5bbaa",
+  "lip": "#bb6670",
+  "mouth": "#5a1f22",
+  "eye": "#f2ede8",
+  "hair": "#26212b",
+  "hoodie": "#4b2d4e",
+  "rib": "#3d2444",
+  "pants": "#34313a",
+  "phone": "#33303a",
+  "shoe": "#2b2730",
+  "sole": "#0f0d13",
+  "teeth": "#f4eee2",
+  "streak": "#000000",
+  "lime": "#d6f23c",
+  "tongue": "#c4545a"
+ },
+ "iris": {
+  "col": "#68736b",
+  "r": 0.5833333333333333
+ },
+ "hair": {
+  "light": "#5f5769",
+  "dark": "#110e15"
+ },
+ "skinShade": "#cf968a",
+ "lash": "#17101a",
+ "stance": {
+  "sh": [
+   27,
+   106,
+   7.831736622561112
+  ],
+  "el": [
+   43,
+   196,
+   -10.507088372093023
+  ],
+  "wr": [
+   44,
+   286,
+   10.170701298811277
+  ],
+  "hip": [
+   12,
+   300,
+   3.0
+  ],
+  "kn": [
+   11,
+   428,
+   10.0
+  ],
+  "an": [
+   10,
+   544,
+   -1.0354786928926978
+  ]
+ },
+ "eye": {
+  "x": 17.0,
+  "y": 0.5,
+  "browH": 10.2
+ },
+ "band": [
+  286,
+  302,
+  0.78
+ ],
+ "noShadow": -1,
+ "bin": "kira.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    28877,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    55180,
+    3
+   ],
+   "offset": 346524
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    28877,
+    4
+   ],
+   "offset": 1008684
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    28877,
+    4
+   ],
+   "offset": 1124192
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1586224
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1587148
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    28877
+   ],
+   "offset": 1588380
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    28877,
+    3
+   ],
+   "offset": 1617260
+  },
+  "aux": {
+   "dtype": "float32",
+   "shape": [
+    28877,
+    4
+   ],
+   "offset": 1963784
+  },
+  "ao": {
+   "dtype": "float32",
+   "shape": [
+    28877
+   ],
+   "offset": 2425816
+  },
+  "face": {
+   "dtype": "float32",
+   "shape": [
+    28877,
+    4
+   ],
+   "offset": 2541324
+  },
+  "jaw": {
+   "dtype": "float32",
+   "shape": [
+    28877
+   ],
+   "offset": 3003356
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    28877,
+    1
+   ],
+   "offset": 3118864
+  }
+ }
+}

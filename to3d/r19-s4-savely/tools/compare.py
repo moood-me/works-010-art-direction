@@ -3,6 +3,8 @@
   python3 compare.py one DRAWING.jpg RENDER.png OUT"""
 import sys, os
 import numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import drawing as DR  # noqa: E402
 from PIL import Image, ImageDraw, ImageFont
 S4 = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../styles/s4-arcane/pics')
 
@@ -27,6 +29,6 @@ def pair(dr, rn, out, label=('рисунок', '3D')):
 if __name__ == '__main__':
     if sys.argv[1] == 'turn':
         r = turn(sys.argv[2]); r.save(os.path.join(sys.argv[2], 'turn.png'))
-        pair(Image.open(os.path.join(S4, 'turn-vera.jpg')), r, sys.argv[3])
+        pair(Image.open(os.path.join(S4, 'turn-%s.jpg' % DR.WHO)), r, sys.argv[3])
     else:
         pair(Image.open(sys.argv[2]), Image.open(sys.argv[3]), sys.argv[4])

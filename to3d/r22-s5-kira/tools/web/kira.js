@@ -24,7 +24,18 @@ const HOODIE = [[-264, 0, 0, 0, -5], [-260, 28, 25, 0, -5], [-250, 41, 32, 0, -6
 const HOOD = [[-276, 0, 0, 0, -20], [-270, 30, 18, 0, -26], [-254, 42, 24, 0, -32], [-236, 36, 20, 0, -30], [-226, 0, 0, 0, -26]];
 const NK = [[-270, 34, 29, 0, -6], [-250, 43, 34, 0, -6], [-224, 49, 39, 0, -4]];
 const boot = (X, Z) => [[-48, 0, 0, X, Z + 1], [-45, 13, 13, X, Z + 1], [-32, 14, 15, X, Z + 2], [-20, 16, 21, X, Z + 7], [-9, 17, 26, X, Z + 10], [-7, 0, 0, X, Z + 10]];
-const sole = (X, Z) => [[-10, 0, 0, X, Z + 10], [-9, 18.5, 27.5, X, Z + 10], [0, 18.5, 27.5, X, Z + 10], [1, 0, 0, X, Z + 10]];
+// the same boot with its flat ends moved away, to be cut level at the top and inside the sole: a ring stack that
+// closes flat meshes into flaps there, and the outline drew them
+const bootLong = (X, Z) => [[-59, 0, 0, X, Z + 1], [-58, 13, 13, X, Z + 1], [-45, 13, 13, X, Z + 1], [-32, 14, 15, X, Z + 2], [-20, 16, 21, X, Z + 7], [-9, 17, 26, X, Z + 10],
+  [5, 17, 26, X, Z + 10], [6, 0, 0, X, Z + 10]];
+const between = (Y0, Y1) => (x, y, z) => Math.max(Y0 + y / S, -y / S - Y1) * S;
+// the sole: the drawing's flat ring (18.5 × 27.5, from y −9.5 to 0.5) as a rounded elliptic slab — so thin a ring stack
+// meshes into flaps
+const sole = (X, Z) => (x, y, z) => {
+  const a = 18.5, b = 27.5, r = 1.5, q = Math.hypot((x / S - X) / a, (z / S - Z - 10) / b);
+  const dx = (q - 1) * a + r, dy = Math.abs(-y / S + 4.5) - 5 + r;
+  return (Math.min(Math.max(dx, dy), 0) + Math.hypot(Math.max(dx, 0), Math.max(dy, 0)) - r) * S;
+};
 const HO = [0, HEAD_Y, 0], headT = ringTable(HEAD), backT = ringTable(BACK), hoodieT = ringTable(HOODIE), nkT = ringTable(NK);
 
 // ———————————— the slouch: turns in space (metres, y up) ————————————
@@ -73,9 +84,9 @@ function parts(J) {
   put('head', 'Head', hd(ell(P(0, HEAD_Y + 26, 52), [4 * S, 5 * S, 5 * S])), C.skin, C.skinSh);
   // the ear on the open side (her right), two small rings in it
   {
-    const e = surf(headT, -1.72, 12, 0.5, HO);
-    put('ears', 'Head', hd(oell(P(...e), [-1, 0, 0.03], [0, 1, 0], 3.2 * S, 11 * S, 8.5 * S)), C.skin, C.skinSh);
-    for (const dy of [-6, 1]) put('rings', 'Head', hd(torus(P(e[0] - 3.4, e[1] + dy, e[2] - 4.5), 2.3 * S, 0.75 * S, 'x')), C.ring);
+    const e = surf(headT, -1.72, 12, 3.6, HO);   // proud of the hair: the hair is tucked behind this ear
+    put('ears', 'Head', hd(oell(P(...e), [-1, 0, 0.03], [0, 1, 0], 4.2 * S, 11 * S, 8.5 * S)), C.skin, C.skinSh);
+    for (const dy of [-6, 1]) put('rings', 'Head', hd(torus(P(e[0] - 4.4, e[1] + dy, e[2] - 4.5), 2.3 * S, 0.75 * S, 'x')), C.ring);
   }
   // hair. Over the head: the head grown by 6 units, kept above the hairline — a parting on her right, the fringe in
   // choppy locks across the face and over her left eye; it thins toward its edge, and a dark line runs along it
@@ -87,7 +98,8 @@ function parts(J) {
     return (Y - line(phi)) / Math.hypot(1, sl);
   };
   const cap6 = rings(HEAD, { out: 6, o: HO });
-  const thin = (x, y, z) => { const t = clamp(-over(hairY, x, y, z) / 12, 0, 1); return cap6(x, y, z) + 4.2 * S * (1 - t) * (1 - t); };
+  // (no thinning on the crown: there the hairline's angle is ill-defined and the thinning made ridges)
+  const thin = (x, y, z) => { const t = Math.max(clamp(-over(hairY, x, y, z) / 12, 0, 1), clamp((-50 - (-y / S - HEAD_Y)) / 6, 0, 1)); return cap6(x, y, z) + 4.2 * S * (1 - t) * (1 - t); };
   put('hair', 'Head', hd(inter(thin, (x, y, z) => over(hairY, x, y, z) * S, 0.6 * S)), C.hair);
   const shell = rings(HEAD, { out: 1.6, o: HO });
   put('edges', 'Head', hd((x, y, z) => Math.hypot(over(hairY, x, y, z) * S, shell(x, y, z)) - 1.1 * S), C.line);
@@ -121,13 +133,13 @@ function parts(J) {
   const skin1 = rings(HOODIE, { out: 0.6 });
   put('hem', bodyW, up((x, y, z) => Math.hypot(skin1(x, y, z), pouch(x, y, z)) - 1.0 * S), C.line);
   // headphones round the neck — the one acid thing: a band behind the neck, a cup on each side of the chest
-  const bandAt = p => P(...surf(nkT, p, -248 + 22 * Math.cos(p), 3.5));
-  for (let p = 0.8; p < 5.45; p += 0.155) put('phones', bodyW, up(capsule(bandAt(p), bandAt(p + 0.155), 3.3 * S)), C.acid);
+  const bandAt = p => P(...surf(nkT, p, -248 + 22 * Math.cos(p), 1.5));
+  for (let p = 1.2; p < 5.05; p += 0.155) put('phones', bodyW, up(capsule(bandAt(p), bandAt(p + 0.155), 3.3 * S)), C.acid);
   for (const k of [-1, 1]) {
     const a = k * 0.8, [w, d] = nkT.at(-231), c = surf(nkT, a, -231, 4), n = [Math.sin(a) / w, 0, Math.cos(a) / d], l = Math.hypot(...n);
     const nn = n.map(v => v / l);
-    put('phones', bodyW, up(oell(P(...c), nn, [0, 1, 0], 4.5 * S, 16 * S, 13 * S)), C.acid);
-    put('pads', bodyW, up(oell(P(c[0] + nn[0] * 3.4, c[1], c[2] + nn[2] * 3.4), nn, [0, 1, 0], 2.4 * S, 9.5 * S, 7 * S)), C.pad);
+    put('phones', bodyW, up(oell(P(...c), nn, [0, 1, 0], 4.5 * S, 15 * S, 11.5 * S)), C.acid);
+    put('pads', bodyW, up(oell(P(c[0] + nn[0] * 3.4, c[1], c[2] + nn[2] * 3.4), nn, [0, 1, 0], 2.4 * S, 9 * S, 6 * S)), C.pad);
   }
   // arms in sleeves that widen to the cuff. Her right hand is deep in the pocket: that arm goes with the body; when
   // a motion frees the arms, the same sleeve is on the arm's own bones with a hand at its end
@@ -147,8 +159,8 @@ function parts(J) {
     put('legs', s + 'Leg', capsule(J[s + 'Leg'], J[s + 'Shin'], 6.5 * S), C.trous);
     put('legs', s + 'Shin', capsule(J[s + 'Shin'], J[s + 'Foot'], 6.5 * S), C.trous);
     const bt = ringTable(boot(X, Z));
-    put('boots', s + 'Foot', rings(boot(X, Z)), C.boot);
-    put('soles', s + 'Foot', rings(sole(X, Z)), C.sole);
+    put('boots', s + 'Foot', inter(rings(bootLong(X, Z)), between(-47.5, -6), 1.2 * S), C.boot);
+    put('soles', s + 'Foot', sole(X, Z), C.sole);
     for (const y of [-39, -31, -23]) put('laces', s + 'Foot', horn(P(...surf(bt, -0.5, y, 0.6)), P(...surf(bt, 0, y + 1, 2.2)), P(...surf(bt, 0.5, y + 2, 0.6)), 1.2 * S, 1.2 * S, 6), C.acid);
   }
   return out;
@@ -173,7 +185,7 @@ start({
   CLIPS: {
     stand: { ru: 'стоит', cam: [0.47, 2.6] },
     walk: { ru: 'идёт, рука в кармане', motion: 'walk', travel: true, cam: [0.47, 2.8] },
-    sneak: { ru: 'крадётся', motion: 'sneak', travel: true, free: true, cam: [0.45, 2.8] },
+    sneak: { ru: 'крадётся', motion: 'sneak', travel: true, free: true, upright: 0.55, cam: [0.45, 2.8] },
     idle: { ru: 'ждёт', motion: 'idle', upright: 0.8, cam: [0.47, 2.6] },
     look: { ru: 'оглядывается', motion: 'idle', look: true, upright: 0.8, cam: [0.62, 1.9] },
     sit: { ru: 'садится', motion: 'sit', travel: true, once: true, followY: 0.7, cam: [0.47, 2.7] },
