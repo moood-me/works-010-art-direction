@@ -496,10 +496,10 @@ for s, side in (('Left', 'l'), ('Right', 'r')):
         # a heavy boot: the foot and a shaft up the shin as one piece, a thick sole, laces
         up = unit(D.J['kn' + side] - an)
         f = blob.above(blob.join([foot, blob.tube([an + up * 13, an + up * 2], [r * 0.92, r * 0.98])], 0.8), 0.0)
-        V_, T_ = blob.mesh(f, 0.55)
+        V_, T_ = blob.mesh(f, 0.7)
         SHOES.append(piece(V_, T_, shoe_s['c'], smooth_w(foot_w(V_), T_, len(V_), 6), side=s))
         sole_h = 0.24 * (an[1] + r * 0.6 + r * 0.85)
-        V_, T_ = blob.mesh(blob.below(blob.grow(f, 0.2), sole_h), 0.5)
+        V_, T_ = blob.mesh(blob.below(blob.grow(f, 0.2), sole_h), 0.7)
         EXTRA.append(('sole' + s, piece(V_, T_, shoe_s['sole'], smooth_w(foot_w(V_), T_, len(V_), 6), ow=np.full(len(V_), 0.7))))
         acid = D.rgb(who.ACID)
         for i, h_ in enumerate((2.5, 5.2, 7.9, 10.6)):
@@ -526,7 +526,7 @@ if hasattr(who, 'HOOD_EASE'):
               for a_ in np.linspace(100, 15, 10)]
         fs.append(blob.tube(fr, np.linspace(3.9, 2.3, len(fr))))
         strings.append((s_, fr[-1] + np.array([0, -1.5, 1.2])))
-    V_, T_ = blob.mesh(blob.join(fs, 0.6), 0.6)
+    V_, T_ = blob.mesh(blob.join(fs, 0.6), 0.7)
     HOOD = piece(V_, T_, top_s['c'], rigid(V_, Chest=1.0))
     EXTRA.append(('hood', HOOD))
     # the drawstrings: light cords lying on the chest
@@ -542,14 +542,14 @@ if hasattr(who, 'HOOD_EASE'):
         EXTRA.append(('string%d' % s_, piece(V_, T_, '#e9e1d4', TOP['W'][cKDTree(TOP['V']).query(V_)[1]], ow=np.full(len(V_), 0.4))))
     # the headphones: the band behind the neck, the cups resting on the collarbones, turned outward
     band = [ring(a_, 7.6, 6.0 - 2.4 * abs(abs(a_) - 180) / 100, -1.0) for a_ in np.linspace(80, 280, 17)]
-    V_, T_ = blob.mesh(blob.tube(band, [1.25] * len(band)), 0.4)
+    V_, T_ = blob.mesh(blob.tube(band, [1.25] * len(band)), 0.45)
     EXTRA.append(('band', piece(V_, T_, who.COAL, rigid(V_, Chest=1.0))))
     for s_ in (-1, 1):
         c = ring(s_ * 60, 7.6, 0.6, 0.5)
         n_ = unit([s_ * 0.80, 0.25, 0.55])
-        V_, T_ = blob.mesh(blob.tube([c - n_ * 1.5, c - n_ * 0.2], [3.5, 3.7]), 0.4)
+        V_, T_ = blob.mesh(blob.tube([c - n_ * 1.5, c - n_ * 0.2], [3.5, 3.7]), 0.55)
         EXTRA.append(('pad%d' % s_, piece(V_, T_, who.COAL, rigid(V_, Chest=1.0))))
-        V_, T_ = blob.mesh(blob.tube([c, c + n_ * 2.0], [3.4, 2.8]), 0.35)
+        V_, T_ = blob.mesh(blob.tube([c, c + n_ * 2.0], [3.4, 2.8]), 0.5)
         CUP = piece(V_, T_, who.ACID, rigid(V_, Chest=1.0))
         EXTRA.append(('cup%d' % s_, CUP))
         u_ = unit(np.cross(n_, [0, 1, 0])); v_ = np.cross(n_, u_)

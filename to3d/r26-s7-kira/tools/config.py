@@ -12,3 +12,4 @@ MOTION_FILMS = {
     'sneak': ('sneak', 0.7, 120, [[0, 'calm'], [2.2, 'surprise'], [3.2, 'calm']], None),
     'sit': ('sit', 0.9, 120, [[0, 'calm'], [2.6, 'sad']], None),
 }
+LOCK = (26, 10)                            # a hair lock's mesh: points along it, points round it

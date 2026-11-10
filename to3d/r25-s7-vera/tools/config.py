@@ -12,3 +12,4 @@ MOTION_FILMS = {
     'bow': ('bow', 0.6, 90, [[0, 'calm'], [1.9, 'plain']], None),
     'sit': ('sit', 0.9, 120, [[0, 'calm'], [2.6, 'sad']], None),
 }
+LOCK = (40, 16)                            # a hair lock's mesh: points along it, points round it

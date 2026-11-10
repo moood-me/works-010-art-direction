@@ -6,7 +6,7 @@ shell) as thin dark strips on them."""
 import math
 import numpy as np
 from scipy.spatial import cKDTree
-import drawing as D, mesh as M, shapes as S
+import config, drawing as D, mesh as M, shapes as S
 from geo import bezier, spline
 
 H, HR = D.HEAD, D.HAIR
@@ -46,7 +46,7 @@ def lock_geo(L):
     for k, (t, y) in enumerate(roots):
         r = HR.shell_pt(t, y)
         ctrl = [r] + [r + np.array([(-dx if k else dx), dy, dz]) for dx, dy, dz in L['to']]
-        c = bezier(*ctrl, n=40)
+        c = bezier(*ctrl, n=config.LOCK[0])
         s = np.linspace(0, 1, len(c))
         prof = L.get('prof', 1.2)
         w = L['w'] * (1 - s ** prof) * (0.6 + 0.4 * np.sin(np.clip(s * 3, 0, 1) * np.pi / 2))
@@ -59,7 +59,8 @@ def lock_geo(L):
     return out
 
 
-def lock_mesh(c, w, side, o, cols=16):
+def lock_mesh(c, w, side, o):
+    cols = config.LOCK[1]
     R = len(c); G = np.zeros((R, cols, 3))
     th = np.maximum(w * 0.26, 0.012)
     for i in range(R):
