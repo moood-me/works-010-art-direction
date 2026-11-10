@@ -1,24 +1,24 @@
-"""Anny's old man (moood-oldman, the engine's) fitted to Савелий Петрович's puppet proportions (figure-savely of С8:
-3.88 heads tall, the head 0.311 m: a long pear of a body, short legs, a short wide neck, small hands and feet).
+"""Anny's man (moood-man, the engine's) fitted to Марат's puppet proportions (figure-marat of С8: 4.32 heads tall, the
+head 0.316 m: a barrel of a body, heavy shoulders far apart, thick forearms, big hands, short thick legs).
 
 The deformer (after Р3, as Р10): each joint gets an affine map — a scale along its bone and across it — and the joints
 are rebuilt down the chain with their parents' maps; every vertex moves by its skin weights' blend of its joints' maps
 (the weights that later move it in motion). Frames are kept (the retargeting reference).
 
-Targets (head units below the head's centre → metres above the floor, from cast.SAVELY_FIG; floor 3.38):
-hip joints y 2.05 (±0.22), knees 2.7, ankles 3.27; shoulders y 0.8 (±0.52); upper arm 0.72, forearm 0.66 long;
+Targets (head units below the head's centre → metres above the floor, from marat.MARAT_FIG; floor 3.82):
+hip joints y 2.3 (±0.32), knees 3.05, ankles 3.7; shoulders y 0.92 (±0.72); upper arm 0.62, forearm 0.6 long;
 the head's pivot 0.4 under the head's centre. The scales below are worked out from these and the base's own joints."""
 import numpy as np
 from common import load_body, NAMES, IX, PARENT, children, CACHE, HH, FEET
 
-BASE = 'moood-oldman'
+BASE = 'moood-man'
 B = load_body(BASE)
 OLD = B['joints']
 yw = lambda yd: (FEET - yd) * HH                 # the drawing's height (head units down from the head's centre) → metres up
 
-HIP_Y, KNEE_Y, ANKLE_Y, HIP_X = yw(2.05), yw(2.7), yw(3.27), 0.22 * HH
-SH_Y, SH_X = yw(0.8), 0.52 * HH
-UPPER, FORE = 0.72 * HH, 0.66 * HH
+HIP_Y, KNEE_Y, ANKLE_Y, HIP_X = yw(2.3), yw(3.05), yw(3.7), 0.32 * HH
+SH_Y, SH_X = yw(0.92), 0.72 * HH
+UPPER, FORE = 0.62 * HH, 0.6 * HH
 HEAD_PIVOT = yw(0.4)
 O = lambda n: OLD[IX[n]]
 ln = lambda a, b: np.linalg.norm(O(b) - O(a))
@@ -34,18 +34,18 @@ s_neck = (HEAD_PIVOT - neck1) / (O('Head')[1] - O('Neck1')[1])
 
 # (along the bone, across it); trunk joints: (along, x, z)
 GROUPS = {
-    'trunk': (['Hips', 'Spine1', 'Spine2', 'Chest'], (s_trunk, 1.0, 0.9)),
+    'trunk': (['Hips', 'Spine1', 'Spine2', 'Chest'], (s_trunk, 1.15, 1.0)),
     'neck': (['Neck1', 'Neck2'], (s_neck, 0.95, 0.95)),
     'head': (['Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'], (1.0, 1.0, 1.0)),
-    'clav': (['LeftShoulder', 'RightShoulder'], (s_clav, 0.85)),
-    'upper': (['LeftArm', 'RightArm'], (UPPER / ln('LeftArm', 'LeftForeArm'), 0.7)),
-    'fore': (['LeftForeArm', 'RightForeArm'], (FORE / ln('LeftForeArm', 'LeftHand'), 0.72)),
-    'hand': (['LeftHand', 'RightHand'], (0.6, 0.76)),
-    'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (0.55, 0.9)),
-    'thumb': ([n for n in NAMES if 'Thumb' in n], (0.62, 0.9)),
-    'thigh': (['LeftLeg', 'RightLeg'], (s_thigh, 0.6)),
-    'shin': (['LeftShin', 'RightShin'], (s_shin, 0.5)),
-    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (s_foot, 0.6)),
+    'clav': (['LeftShoulder', 'RightShoulder'], (s_clav, 1.0)),
+    'upper': (['LeftArm', 'RightArm'], (UPPER / ln('LeftArm', 'LeftForeArm'), 0.95)),
+    'fore': (['LeftForeArm', 'RightForeArm'], (FORE / ln('LeftForeArm', 'LeftHand'), 1.12)),
+    'hand': (['LeftHand', 'RightHand'], (0.66, 0.92)),
+    'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (0.6, 1.0)),
+    'thumb': ([n for n in NAMES if 'Thumb' in n], (0.66, 1.0)),
+    'thigh': (['LeftLeg', 'RightLeg'], (s_thigh, 0.8)),
+    'shin': (['LeftShin', 'RightShin'], (s_shin, 0.7)),
+    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (s_foot, 0.75)),
 }
 
 

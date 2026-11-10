@@ -56,13 +56,13 @@ Not started at all (planned, waiting for Pavel's word):
 | С6 symbolic | Р23 Вера, Р24 Кира |
 | С7 Ghibli | Р25 Вера, Р26 Кира |
 | С8 stop-motion | Р27 Савелий, Р28 Марат |
-| С13 woodblock print | Р37 Аня, Р38 Кира |
-| С14 cut paper | Р39 Вера, Р40 Аня |
-| С15 noir | Р41 Савелий, Р42 Аня |
+| С13 woodblock print | Р37 Аня, Р38 Марат |
+| С14 cut paper | Р39 Вера, Р40 Кира |
+| С15 noir | Р41 Савелий, Р42 Тим |
 | С16 pixel art | Р43 Тим, Р44 Аня |
 
 In the four new styles the second character was drawn by lot from the six at Pavel's word (2026-11-10), the first
-one excluded: Кира, Аня, Аня, Аня.
+one excluded and no second character repeated: Марат, Кира, Тим, Аня.
 
 ## To go on
 

@@ -1,4 +1,4 @@
-"""Савелий Петрович's face pieces, as a stop-motion puppet's: the head is one sculpted cast, and the expressions are made by
+"""Марат's face pieces, as a stop-motion puppet's: the head is one sculpted cast, and the expressions are made by
 replacement pieces laid on it — a mouth (lips, the dark of the mouth, teeth) and brows — and by lids that turn over
 the glass eyes. Each replacement piece has one mesh (fixed topology) and a library of shapes, one per expression of
 the drawing's sheet and one per mouth shape of speech; a face is a weighted mix of them (`tools/web/face.mjs`).
@@ -31,10 +31,9 @@ VISEMES = {
     'F': dict(mopen=0.1, wide=1.0),
 }
 BROW_UP = 0.03
-BROW_H = 0.024       # how far the bushy brows stand off the forehead
-MOUST = dict(col='#e4ded4', w=0.215, droop=0.08, thick=0.115)     # cast.savely_under_nose → props.moustache
+BROW_H = 0.02        # how far the thick black brows stand off the forehead
 LID_K = 0.6          # the sheet's lids turn this much: a lid over a glass ball covers more than a painted one
-FACES = ['calm', 'stern', 'grumpy', 'tired', 'joy', 'surprise', 'sad', 'anger']
+FACES = ['calm', 'beam', 'laugh', 'surprise', 'sad', 'anger']      # beam is his resting face; his joy is the laugh
 
 
 def on_head(X):
@@ -124,30 +123,42 @@ def brow(side, ex, n=12, R=5):
     return laid(np.tile(x, (R, 1)), yy, phi, yb, h)
 
 
-MR, MN = 9, 33
+import hair as H
+import fit_hair
+
+_spots = H.curl_spots(H0, lambda phi, y: abs(phi) <= 0.64 and P['nose_tip'] + 0.05 <= y <= P['mouth_y'] - 0.03, 0.038,
+                      P['nose_tip'] + 0.055, P['mouth_y'] + 0.03, out=0.03, seed=6, place=lambda phi, y: (phi, y, 0.0))
 
 
 def moustache(ex):
-    """props.moustache: one mass of two drooping wings under the nose — the same curves (its upper and lower edge,
-    lifted at the ends by a smile), raised into a rounded body on the drawing's own head; it rides up a little with an
-    opening mouth. Returns the grid (MR rows from the upper edge to the lower, MN columns across) and its uv."""
-    w, droop, thick = MOUST['w'], MOUST['droop'], MOUST['thick']
-    y0 = (P['nose_tip'] + P['mouth_y']) / 2 + 0.005 - 0.012 * ex.get('mopen', 0.0)
-    smile = ex.get('smile', 0.0)
-    i = np.linspace(-1, 1, MN); t = np.abs(i)
-    x = w * i
-    lift = -smile * 0.03 * t
-    up = -thick * 0.55 * (1 - t ** 1.8) + droop * t ** 1.5 + lift - 0.004 * np.cos(np.pi * t * 3) * (1 - t)
-    lo = thick * 0.4 * (1 - t ** 1.2) + droop * t ** 1.3 + 0.008 + lift + 0.012 * (1 - t) * np.sin(np.pi * t * 4)
-    r = np.linspace(0, 1, MR)[:, None]
-    yy = up + (lo - up) * r
-    xx = x * (1 - 0.03 * r)
-    body = np.sin(np.pi * r) ** 0.7 * (1 - t ** 2.5) ** 0.5 * (0.72 + 0.28 * np.minimum(1, t / 0.12))   # a parting under the nose
-    out = 0.003 + 0.055 * body
-    a = np.array([H0.a(y0 + v) for v in yy.ravel()])
-    V = np.array([drawing.surf(xv / av, y0 + yv, ov) for xv, yv, av, ov in zip(xx.ravel(), yy.ravel(), a, out.ravel())])
-    uv = np.c_[np.tile(r, (1, MN)).ravel() * 0.9, np.tile(t, (MR, 1)).ravel()]
-    return V, uv
+    """marat.marat_hair's moustache: curls between the nose and the mouth (the same honeycomb, seed 6). In the drawing its
+    lower edge rises with the corners of a smile, so the open mouth is never covered; here the same curls are squeezed up
+    under that edge (one set of curls for every face, so the faces mix), and ride up a little with an opening mouth."""
+    y0, y1 = P['nose_tip'] + 0.05, P['mouth_y'] - 0.03
+    lift = 0.035 * ex.get('smile', 0.0) + 0.012 * ex.get('mopen', 0.0)
+    spots = []
+    for (phi, y, _), r, fc, a0, wind in _spots:
+        edge = y1 - max(lift, -0.01) * min(1.0, abs(phi) / 0.45) ** 1.6 - 0.006 * ex.get('mopen', 0.0)
+        yy = y0 + (y - y0) * (edge - y0) / (y1 - y0)
+        spots.append((H0.surf(phi, yy, 0.03), r, fc, a0, wind))
+    V, T, uv = fit_hair.curls(spots, lambda c: np.array([0.0, c[1] + 0.02, 0.0]))
+    return V, T, uv
+
+
+def tongue(ex):
+    """head.mouth's tongue: an ellipse low in the open mouth (it and the teeth keep the laugh from reading as a hole)"""
+    ym = P['mouth_y']; w = P['mouth_w'] * ex.get('wide', 1.0)
+    smile, opn = ex.get('smile', 0.0), ex.get('mopen', 0.0)
+    t = np.linspace(0, 1, NX); e = np.abs(2 * t - 1); s = np.sin(np.pi * t)
+    y = -smile * e ** 1.6 * 0.035 + smile * 0.01 * (1 - e)
+    top = y - opn * 0.03 * s ** 0.7; bot = y + opn * 0.06 * s ** 0.8 + smile * 0.012 * s
+    cy = bot.max() * 0.7; rx, ry = w * 0.55, opn * 0.03
+    u = np.linspace(-1, 1, NX); r = np.linspace(-1, 1, 6)[:, None]
+    xx = np.tile(u * rx, (6, 1)); yy = cy + r * ry * np.sqrt(np.maximum(0, 1 - u ** 2))
+    lim_b = np.interp(u * rx, -w + 2 * w * t, bot) - 0.003; lim_t = np.interp(u * rx, -w + 2 * w * t, top) + 0.002
+    yy = np.maximum(np.minimum(yy, lim_b), np.minimum(lim_t, lim_b))
+    h = 0.003 + 0.004 * (1 - r ** 2) * (1 - u ** 2) * min(1.0, opn * 3)
+    return laid(xx, yy, 0.0, ym, np.broadcast_to(h, yy.shape))
 
 
 def lids():
@@ -243,8 +254,8 @@ def main():
     L = lids()
     lashes = [lash(L[k], s) for k, s in (('L', 1), ('R', -1))]
     res = {}
-    for k in allm: res['moust_' + k] = res_m[k][0]
-    res['moust_T'] = grid_tris(MR, MN); res['moust_uv'] = res_m['calm'][1]
+    for k in allm: res['moust_' + k] = res_m[k][0]; res['tongue_' + k] = tongue(allm[k])
+    res['moust_T'] = res_m['calm'][1]; res['moust_uv'] = res_m['calm'][2]; res['tongue_T'] = grid_tris(6, NX)
     R6, n = 6, NX
     for part in ('lipU', 'lipL', 'cav', 'teethU', 'teethL'):
         flip = part in ('lipL',)
