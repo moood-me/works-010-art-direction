@@ -14,6 +14,7 @@
   code { font: 12.5px/1.4 ui-monospace, Menlo, Consolas, monospace; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
   .wrap { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
   aside { position: sticky; top: 0; align-self: start; height: 100vh; overflow: auto; padding: 22px 12px 24px 16px; border-right: 1px solid var(--line); }
+  aside a.lab { display: block; margin: 0 8px 10px; font-size: 13px; color: var(--muted); text-decoration: none; } aside a.lab:hover { color: var(--accent); }
   aside h1 { font-size: 20px; margin: 0 8px 4px; } aside p { font-size: 13px; color: var(--muted); margin: 0 8px 12px; }
   aside input { width: 100%; padding: 7px 10px; margin: 0 0 12px; font: inherit; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
   aside nav a { display: flex; gap: 8px; align-items: baseline; padding: 5px 8px; border-radius: 7px; color: inherit; text-decoration: none; font-size: 14px; }
@@ -48,6 +49,7 @@
 <body>
 <div class="wrap">
 <aside>
+  <a class="lab" href="https://lab.moood.me/">← Лаборатория moood</a>
   <h1>Art direction</h1>
   <p>Каталог: всё, что сделано для красивых персонажей moood.</p>
   <input id="q" type="search" placeholder="Найти: код, имя, слово…" aria-label="Найти">
