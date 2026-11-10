@@ -51,7 +51,8 @@ vec3 point(vec2 px) {
   vec3 c = id < .5 ? bg : texture(tC, px / res).rgb;
   if (flatLook > .5) return c;
   vec4 q = I(px + vec2(-.7, 1.) * s * shadowK); float qi = idn(q);
-  if (casts(qi) && qi != id && dep(q) < d - .0004) c = mix(c, SH, .5);
+  float dq = d - dep(q);
+  if (casts(qi) && qi != id && dq > .0004) c = mix(c, SH, dq < .004 ? .3 : .5);
   else if (casts(id)) { q = I(px + vec2(-.9, 1.1) * max(s * shadowK, .75)); if (idn(q) != id && dep(q) > d + .0004) c = mix(c, vec3(1.), .42); }
   return c;
 }
@@ -78,7 +79,7 @@ void main() {
   // the sheet's grain: fine tooth and fibres, fixed on the picture
   if (grain > 0.) {
     float fine = clamp(1.5 * fbm(px * .85 * 1.6) - .25, 0., 1.), fibre = clamp(1.2 * fbm(px * vec2(.9, .05) * 1.6 + 31.) - .1, 0., 1.);
-    c *= mix(1., .90 + .2 * fine, grain); c *= mix(1., .965 + .07 * fibre, grain);
+    c *= mix(1., .925 + .15 * fine, grain); c *= mix(1., .965 + .07 * fibre, grain);
   }
   o = vec4(c, 1.);
 }`;

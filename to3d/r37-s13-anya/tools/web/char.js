@@ -37,6 +37,7 @@ export const FLAT = { skin: '#f4e7d0', hair: HAIR, card: CARD, dress: DRESS, sho
 export const lineW = { body: [1.9, 0.3], head: [2.0, 0.3], chest: [2.0, 0.3], dress: [3.4, 0.6], cardigan: [3.3, 0.6],
   sleeveLeft: [3.1, 0.6], sleeveRight: [3.1, 0.6], hair: [1.6, 0.3] };
 export const STAND = { out: 0.1, fwd: 0.03 };
+export const MOTIONS = [['', 'стоит'], ['idle', 'стоит, оглядывается'], ['walk', 'шаг'], ['bow', 'поклон'], ['wave', 'машет'], ['dance', 'танец']];
 export const VIEW = { far: { dist: 6.2, cy: 0.86 }, near: { dist: 1.9, up: 0.03 } };
 
 export function strokeStyle(st) {

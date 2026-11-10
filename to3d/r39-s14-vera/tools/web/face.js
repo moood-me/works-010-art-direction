@@ -27,11 +27,11 @@ export function exprOf(spec, name) {
   else Object.assign(e, EXPR[name], (spec.on || {})[name] || {});
   return e;
 }
-const NUM = ['open', 'tilt', 'brow', 'brow_dy', 'low', 'eye'];
+const NUM = ['open', 'tilt', 'brow', 'brow_dy', 'low', 'eye', 'look', 'look_y'];
 // a mix of expressions {name: weight}: numbers mixed, the mouth is the heaviest one's (paper mouths are swapped, not bent)
 export function mixExpr(spec, W) {
   const e = {}; let sum = 0, best = null, bw = -1;
-  for (const k in W) if (W[k] > 1e-4) { const x = exprOf(spec, k); sum += W[k]; for (const n of NUM) e[n] = (e[n] || 0) + x[n] * W[k]; if (W[k] > bw) { bw = W[k]; best = x; } }
+  for (const k in W) if (W[k] > 1e-4) { const x = exprOf(spec, k); sum += W[k]; for (const n of NUM) e[n] = (e[n] || 0) + (x[n] || 0) * W[k]; if (W[k] > bw) { bw = W[k]; best = x; } }
   if (!best) return exprOf(spec, 'calm');
   for (const n of NUM) e[n] /= sum;
   e.mouth = best.mouth;
@@ -58,11 +58,13 @@ export function headShape(spec) {
   };
   H.hw = y => wOf(sOf(y));
   // the shell: grow — scaled about the centre, add — pushed out (hair lies over the skull)
-  H.shell = (grow = 1, add = 0, n = 40, m = 30) => {
+  // puff: hair wider than the skull toward the top (a flat wide crown), units
+  H.shell = (grow = 1, add = 0, n = 40, m = 30, puff = 0) => {
     const rings = [];
     for (let i = 0; i <= m; i++) {
       const a = -Math.PI / 2 + Math.PI * (i + (i === 0 ? .12 : i === m ? -.12 : 0)) / m, s = Math.sin(a), y = yOf(s);
-      rings.push(ringAt(y * grow, wOf(s) * grow + add, H.zf(y) * grow + add, H.zb(y) * grow - add, n, P).map(p => [p[0], p[1] - (i === 0 ? add : 0), p[2]]));
+      const t = Math.min(1, Math.max(0, (-.2 - s) / .65)), e = puff * t * t * (3 - 2 * t);
+      rings.push(ringAt(y * grow + add * s, wOf(s) * grow + add * Math.cos(a) + e, H.zf(y) * grow + add * Math.cos(a) + e * .55, H.zb(y) * grow - add * Math.cos(a) - e * .55, n, P));
     }
     return loft(rings, { cap0: true, cap1: true });
   };
@@ -112,6 +114,7 @@ function mouth(x, y, sp, e) {
   if (kind === 'flat') return one(L(t => -w * .03 * S(t), t => w * .17 * S(t)));
   if (kind === 'frown') return one(L(t => -w * .34 * S(t), t => -w * .10 * S(t)));
   if (kind === 'smirk') { const up = t => -w * .42 * t ** 2.2 + w * .10 * S(t); return one(L(up, t => up(t) + w * .22 * S(t))); }
+  if (kind === 'pout') return [{ key: 'mouth', pts: ell(x, y, w * .42, w * .26, 0, 8), color: lip, kind: 'card', layer: 2 }];
   if (kind === 'o') return [{ key: 'mouth', pts: ell(x, y + w * .25, w * .50, w * .66, 0, 10), color: inside, kind: 'card', layer: 2 }, { key: 'tongue', pts: ell(x, y + w * .62, w * .30, w * .22, 0, 8), color: '#d9606a', kind: 'flat', layer: 3 }];
   if (kind === 'talk') {                                   // speaking: the mouth open by e.say (0..1); teeth show when wide
     const a = e.say ?? .5, up = t => -w * .05 * S(t), lo = t => w * (.14 + .62 * a) * S(t) ** .8, k = .78;
@@ -141,7 +144,7 @@ export function facePieces(sp, e) {
   const out = [], ey = sp.eye_y, g = sp.eye_gap, cr = sp.cheek_r;
   for (const side of [-1, 1]) {
     const x = side * g;
-    out.push({ key: 'cheek' + side, pts: ell(x + side * g * .42, ey + sp.ry * .36 - (e.low > .3 ? 4 : 0), cr, cr, 0, 10), color: mix(sp.skin, sp.cheek, sp.cheek_op * .7), kind: 'flat', layer: 1 });
+    out.push({ key: 'cheek' + side, pts: ell(x + side * g * (sp.cheek_x ?? .42), ey + sp.ry * .36 - (e.low > .3 ? 4 : 0), cr, cr, 0, 10), color: mix(sp.skin, sp.cheek, sp.cheek_op * .7), kind: 'flat', layer: 1 });
     out.push(...eye(x, ey, sp.eye_w, sp.eye_h, sp, e, side));
     out.push(brow(x + side * 2, ey + sp.brow_y, sp, e, side));
   }
@@ -153,8 +156,14 @@ export function facePieces(sp, e) {
 export const LAYER = .0006;                               // metres between glued layers
 // hu: metres in one head unit. A piece's outline laid on the head's front, `layer` layers above the skin.
 export function onHead(H, hu, pts, layer, o = {}) {
-  const g = o.grow ?? 1, a = o.add ?? 0;
-  return patch(pts, (x, y) => [x * hu, -y * hu, (H.z(x, y, g, a)) * hu + layer * LAYER], { maxEdge: o.maxEdge ?? 6, holes: o.holes || [], dense: o.dense, seg: o.seg ?? 4 });
+  const g = o.grow ?? 1, a = o.add ?? 0, z = (x, y) => H.z(x, y, g, a), e = .6;
+  return patch(pts, (x0, y) => {
+    // a piece does not go round the edge of the head: it ends a little before it; it is lifted along the surface's normal
+    const lim = .93 * (H.hw(y / g) * g + a), x = Math.max(-lim, Math.min(lim, x0));
+    const zx = (z(Math.min(lim, x + e), y) - z(Math.max(-lim, x - e), y)) / (Math.min(lim, x + e) - Math.max(-lim, x - e)), zy = (z(x, y + e) - z(x, y - e)) / (2 * e);
+    const l = Math.hypot(zx, zy, 1), d = layer * LAYER;
+    return [x * hu - zx / l * d, -y * hu + zy / l * d, z(x, y) * hu + d / l];
+  }, { maxEdge: o.maxEdge ?? 6, holes: o.holes || [], dense: o.dense, seg: o.seg ?? 4 });
 }
 // the nose: its front outline on the face, folded along the middle and standing off by `out` units at the tip
 export function noseGeo(H, hu, sp) {

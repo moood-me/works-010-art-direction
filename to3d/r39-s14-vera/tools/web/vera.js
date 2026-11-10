@@ -20,7 +20,7 @@ export const C = {
     on: { joy: { mouth: 'smile', open: .7, low: .45, brow_dy: -4 } },
   },
   exprs: [['calm', 'спокойна'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['angry', 'злость']],
-  motions: [{ id: 'walk', label: 'идёт' }, { id: 'bow', label: 'поклон' }, { id: 'idle', label: 'стоит (Kimodo)' }],
+  motions: [{ id: 'walk', label: 'идёт' }, { id: 'bow', label: 'поклон' }],
   hold: ['RightShoulder'],                                 // the arm that presses the papers to the chest: kept on every motion
   breath: 1, headTurn: 14,
   view: { yaw: 0, pitch: .03, dist: 9.5, h: .92, fov: 13 },
@@ -37,13 +37,13 @@ export const C = {
       shoe(fig, S, { L: 40, h: 19, w: 17, color: '#2a2428', toeOut: 26 });
     }
     // ---- the coat: one shell, heights in units — shoulders, chest, waist, hem
-    const coat = fig.coat = shell([[466, 30, 15, -17], [452, 44, 22, -23], [430, 52, 28, -27], [380, 51, 31, -28], [330, 50, 29, -28], [220, 57, 34, -35], [100, 66, 41, -42]]);
+    const coat = fig.coat = shell([[466, 30, 15, -17], [452, 44, 22, -23], [430, 52, 28, -27], [380, 51, 31, -28], [330, 50, 29, -28], [220, 57, 37, -37], [100, 66, 47, -46]]);
     const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
     const coatW = p => {                                  // which joints a point of the coat follows
       const h = p[1] / U, x = p[0] / U, w = [];
       const up = sm(330, 410, h), mid = sm(262, 330, h) * (1 - up), low = 1 - up - mid;
-      const th = .62 * sm(285, 150, h), L = sm(-10, 10, x);
-      w.push(['Chest', up], ['Spine1', mid], ['Hips', low * (1 - th)], ['LeftLeg', low * th * L], ['RightLeg', low * th * (1 - L)]);
+      const th = .94 * sm(305, 225, h), sh = .5 * sm(165, 100, h), L = sm(-10, 10, x);
+      w.push(['Chest', up], ['Spine1', mid], ['Hips', low * (1 - th)], ['LeftLeg', low * th * L * (1 - sh)], ['RightLeg', low * th * (1 - L) * (1 - sh)], ['LeftShin', low * th * L * sh], ['RightShin', low * th * (1 - L) * sh]);
       return w.filter(x => x[1] > 1e-4);
     };
     fig.coatW = coatW;
@@ -51,7 +51,7 @@ export const C = {
     fig.piece({ name: 'placket', geo: coat.on([[4, -330, 1], [16, -330, 1], [26, -100.5, 1], [2, -100.5, 1]], 1), color: dark(COAT, .14), kind: 'paint', v: 1, weights: coatW });
     for (let i = 0; i < 3; i++) fig.piece({ name: 'button' + i, geo: coat.on(ell(-8, -310 + i * 44, 4.5, 4.5, 0, 8), 1.2), color: dark(COAT, .4), kind: 'card', weights: coatW });
     // ---- the scarf: a band round the neck and its end down the chest
-    const sc = [[468, 20, 19, -17], [460, 27, 26, -23], [448, 29, 29, -25], [438, 27, 30, -24], [432, 22, 27, -20]].map(([h, w, f, b]) => ringAt(h * U, w * U, f * U, b * U, 28, .9));
+    const sc = [[474, 20, 19, -24], [464, 27, 26, -31], [450, 29, 29, -33], [438, 27, 30, -31], [432, 22, 27, -25]].map(([h, w, f, b]) => ringAt(h * U, w * U, f * U, b * U, 28, .9));
     fig.piece({ name: 'scarf', joint: 'Chest', geo: loft(sc, { cap0: true, cap1: true }), color: SCARF, kind: 'paint', v: 0 });
     fig.piece({ name: 'scarfEnd', geo: coat.on([[7, -440, 1], [23, -441, 1], [27, -391, 1], [20, -394, 1], [16.5, -388.5, 1], [10, -393, 1]], 2.4), color: SCARF, kind: 'paint', v: 3, weights: coatW });
     // ---- the papers pressed to the chest
@@ -80,8 +80,8 @@ export const C = {
     fig.piece({ name: 'nose', group: 'head', geo: noseGeo(H, hu, sp), color: mix(SKIN, '#d98a6c', .32), kind: 'card' });
     // hair: a darker shell behind and a cap cut by scissors along the drawing's hairline (a parting peak over the brow)
     const line = through([[0, -77], [20, -73], [40, -62], [58, -40], [68, -8], [76, 16]]), zE = -6;
-    fig.piece({ name: 'hairBack', group: 'head', geo: G(clip(H.shell(1.03, 3, 56, 36), p => (p[2] < -2 ? 24 - p[1] : -1))), color: dark(HAIR, .1), kind: 'paint', v: 1 });
-    fig.piece({ name: 'hairCap', group: 'head', geo: G(clip(H.shell(1.06, 4, 72, 48), p => p[2] > zE ? line(Math.abs(p[0])) - p[1] : (16 + (zE - p[2]) * -.55) - p[1])), color: HAIR, kind: 'paint', v: 1 });
+    fig.piece({ name: 'hairBack', group: 'head', geo: G(clip(H.shell(1.03, 3, 56, 36), p => (p[2] < -2 ? 24 + 22 * Math.min(1, Math.max(0, (-20 - p[2]) / 40)) - p[1] : -1))), color: dark(HAIR, .1), kind: 'paint', v: 1 });
+    fig.piece({ name: 'hairCap', group: 'head', geo: G(clip(H.shell(1.06, 4, 72, 48), p => p[2] > zE ? line(Math.abs(p[0])) - p[1] : (16 - Math.max(0, -40 - p[2]) * .5) - p[1])), color: HAIR, kind: 'paint', v: 1 });
     fig.piece({ name: 'hairLight', group: 'head', geo: onHead(H, hu, crescent(8, -100, 60, -46, -10, 4), 1, { grow: 1.06, add: 4 }), color: '#9a8f96', kind: 'flat' });
     // the bun: a rolled strip — a ball, and the roll's turns facing the eye
     const bun = [0, -117, -38], br = 28;

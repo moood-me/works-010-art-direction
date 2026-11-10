@@ -61,7 +61,7 @@ def stack(rows):
     return out
 
 
-STILL = dict(alive=False, motion=None, expr='calm', talk=False, ground='none', headYaw=0, headTilt=0, hide=None, only=None,
+STILL = dict(straight=False, alive=False, motion=None, expr='calm', talk=False, ground='none', headYaw=0, headTilt=0, hide=None, only=None,
              look=dict(flat=False, grain=1, bg=C.SHEET))
 
 
@@ -75,23 +75,27 @@ def bust_cam(yaw=0, s=None, cy=440, H=960):
 
 
 def compare():
-    jobs = [dict(name='figure', size=[800, 1000], set=dict(STILL, cam=fig_cam(), **C.DRAWN_HEAD)),
+    jobs = [dict(name='figure', size=[800, 1000], set=dict(STILL, cam=fig_cam(C.FIG_YAW), **C.DRAWN_HEAD)),
             dict(name='figure-front', size=[800, 1000], set=dict(STILL, cam=fig_cam())),
             dict(name='figure-q', size=[800, 1000], set=dict(STILL, cam=fig_cam(-35))),
             dict(name='figure-side', size=[800, 1000], set=dict(STILL, cam=fig_cam(-90))),
             dict(name='figure-back', size=[800, 1000], set=dict(STILL, cam=fig_cam(155))),
-            dict(name='bust-front', size=[800, 960], set=dict(STILL, cam=bust_cam())),
-            dict(name='bust-q', size=[800, 960], set=dict(STILL, cam=bust_cam(C.Q_YAW))),
-            dict(name='bust-side', size=[800, 960], set=dict(STILL, cam=bust_cam(-90))),
-            dict(name='bust-back', size=[800, 960], set=dict(STILL, cam=bust_cam(140)))]
+            dict(name='bust-front', size=[800, 960], set=dict(STILL, cam=bust_cam(), **C.BUST_SET)),
+            dict(name='bust-q', size=[800, 960], set=dict(STILL, cam=bust_cam(C.Q_YAW), **C.BUST_SET)),
+            dict(name='bust-side', size=[800, 960], set=dict(STILL, cam=bust_cam(-90), **C.BUST_SET)),
+            dict(name='bust-back', size=[800, 960], set=dict(STILL, cam=bust_cam(140), **C.BUST_SET)),
+            dict(name='bust-other', size=[800, 960], set=dict(STILL, cam=bust_cam(90), **C.BUST_SET))]
     d = shots(jobs, 'compare')
     R = lambda n: Image.open(os.path.join(d, n + '.png')).convert('RGB')
     Dr = lambda n: Image.open(os.path.join(DRAW, n + '.png')).convert('RGB')
     crop = lambda im: im.crop((150, 60, 650, 960))
     a, b = Dr('figure'), R('figure')
-    jpg(row([crop(a), crop(b), crop(Image.blend(a, b, .5))], ['рисунок', '3D', 'одно на другом']), 'compare-figure.jpg')
+    if C.FIG_OVERLAY:
+        jpg(row([crop(a), crop(b), crop(Image.blend(a, b, .5))], ['рисунок', '3D', 'одно на другом']), 'compare-figure.jpg')
+    else:
+        jpg(row([crop(a), crop(b)], ['рисунок', '3D в той же позе']), 'compare-figure.jpg')
     rows = []
-    for n, ru in [('front', 'анфас'), ('q', 'три четверти')]:
+    for n, ru in [('front', 'анфас'), ('q', 'три четверти'), ('side', 'профиль')]:
         if not os.path.exists(os.path.join(DRAW, 'bust-%s.png' % n)):
             continue
         a, b = Dr('bust-' + n), R('bust-' + n)
@@ -99,7 +103,7 @@ def compare():
         rows.append(row([c(a), c(b), c(Image.blend(a, b, .5))], ['рисунок, ' + ru, '3D', 'одно на другом']))
     jpg(stack(rows), 'compare-head.jpg')
     c = lambda im: im.crop((90, 110, 710, 880)).resize((496, 616), Image.LANCZOS)
-    jpg(row([c(R('bust-front')), c(R('bust-q')), c(R('bust-side')), c(R('bust-back'))], ['анфас', 'три четверти', 'профиль', 'сзади сбоку']), 'head-around.jpg')
+    jpg(row([c(R('bust-front')), c(R('bust-q')), c(R('bust-side')), c(R('bust-back'))] + ([c(R('bust-other'))] if C.OTHER_SIDE else []), ['анфас', 'три четверти', C.SIDE_RU, 'сзади сбоку', 'профиль с другой стороны']), 'head-around.jpg')
     c = lambda im: im.crop((200, 60, 600, 960))
     jpg(row([c(R('figure-front')), c(R('figure-q')), c(R('figure-side')), c(R('figure-back'))], ['анфас', 'три четверти', 'профиль', 'сзади']), 'figure-around.jpg')
 
@@ -118,9 +122,9 @@ def steps():
 
 def expr():
     cam = bust_cam(0, C.EXPR_S, 300, 620)
-    jobs = [dict(name=e, size=[560, 620], set=dict(STILL, expr=e, cam=cam)) for e in C.EXPRS]
+    jobs = [dict(name=e, size=[560, 620], set=dict(STILL, expr=e, cam=cam, **C.BUST_SET)) for e in C.EXPRS]
     cam2 = bust_cam(C.Q_YAW, C.EXPR_S, 300, 620)
-    jobs += [dict(name=e + '-q', size=[560, 620], set=dict(STILL, expr=e, cam=cam2)) for e in C.EXPRS]
+    jobs += [dict(name=e + '-q', size=[560, 620], set=dict(STILL, expr=e, cam=cam2, **C.BUST_SET)) for e in C.EXPRS]
     d = shots(jobs, 'expr')
     c = lambda im: im.crop((60, 40, 500, 580)).resize((330, 405), Image.LANCZOS)
     r1 = row([c(Image.open(os.path.join(DRAW, 'expr-%s.png' % e))) for e in C.EXPRS], ['рисунок: ' + C.EXPR_RU[e] for e in C.EXPRS], size=20)
@@ -130,8 +134,8 @@ def expr():
 
 
 def hero():
-    jobs = [dict(name='hero', size=[900, 1200], warm=1.2, set=dict(STILL, alive=True, lifeSeed=3, ground='disc', cam=dict(pxu=1.62, fov=13, yaw=-.42, pitch=.035, target=[0, .86, 0]), **C.HERO)),
-            dict(name='portrait', size=[900, 1080], warm=1.2, set=dict(STILL, alive=True, lifeSeed=3, cam=dict(bust_cam(-22, 2.3, 500, 1080)), **C.HERO))]
+    jobs = [dict(name='hero', size=[900, 1200], warm=C.HERO_WARM, set=dict(STILL, alive=True, lifeSeed=3, ground='disc', cam=dict(pxu=1.62, fov=13, yaw=C.HERO_YAW * D * 1.1, pitch=.035, target=[0, C.MID, 0]), **C.HERO)),
+            dict(name='portrait', size=[900, 1080], warm=C.HERO_WARM, set=dict(STILL, alive=True, lifeSeed=3, cam=dict(bust_cam(C.HERO_YAW, 2.3, 500, 1080)), **C.HERO))]
     d = shots(jobs, 'hero')
     jpg(Image.open(os.path.join(d, 'hero.png')), 'hero.jpg', 90)
     jpg(Image.open(os.path.join(d, 'portrait.png')), 'portrait.jpg', 90)
@@ -160,16 +164,16 @@ SZ = [640, 800]
 def turn():
     n = 84
     frames = [dict(cam=dict(yaw=-2 * math.pi * (i + 1) / n)) for i in range(n)]
-    film('turn', dict(size=SZ, set=dict(STILL, alive=True, lifeSeed=5, ground='disc', cam=dict(pxu=1.12, fov=13, yaw=0, pitch=.05, target=None, h=.86)), frames=frames, dt=1 / 12))
+    film('turn', dict(size=SZ, set=dict(STILL, alive=True, lifeSeed=5, ground='disc', cam=dict(pxu=1.12, fov=13, yaw=0, pitch=.05, target=None, h=C.MID)), frames=frames, dt=1 / 12))
 
 
 def walk():
-    film('walk', dict(size=SZ, set=dict(STILL, alive=True, lifeSeed=9, t=0, cam=dict(pxu=1.12, fov=13, yaw=-.75, pitch=.06, target=None, h=.86, smooth=4), **C.WALK), frames=96, dt=1 / 12))
+    film('walk', dict(size=SZ, set=dict(STILL, alive=True, lifeSeed=9, t=0, cam=dict(pxu=1.12, fov=13, yaw=-.75, pitch=.06, target=None, h=C.MID, smooth=4), **C.WALK), frames=96, dt=1 / 12))
 
 
 def motion(name):
     m = C.MOTIONS[name]
-    film(name, dict(size=SZ, set=dict(STILL, alive=True, lifeSeed=4, t=0, loop=False, ground='disc', motion=name, cam=dict(pxu=1.12, fov=13, yaw=m.get('yaw', -.5), pitch=.05, target=None, h=.86, smooth=4)), frames=m['frames'], dt=1 / 12))
+    film(name, dict(size=SZ, set=dict(STILL, alive=True, lifeSeed=4, t=0, loop=False, ground=m.get('ground', 'disc'), motion=name, cam=dict(pxu=1.12, fov=13, yaw=m.get('yaw', -.5), pitch=.05, target=None, h=C.MID, smooth=4)), frames=m['frames'], dt=1 / 12))
 
 
 def life():

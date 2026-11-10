@@ -9,7 +9,7 @@ if (!new URLSearchParams(location.search).has('shots') && !new URLSearchParams(l
   async function place() {
     await A.set({ size: size(), floor: true, view: 'style', figures: [{ clip: S.clip, live: true, exprW: S.expr, talk: S.talk, yaw: 0 }] });
     const I = A.placed()[0];
-    S.dur = I.M ? I.M.n / I.M.fps : 6;
+    S.dur = I.M ? I.M.n / I.M.fps / (A.CLIPS[S.clip].speed || 1) : 6;
     A.cam.ty = CAM[S.clip][0]; if (!placed) A.cam.dist = CAM[S.clip][1];
     A.setCam({ follow: true, fov: 24, followY: A.CLIPS[S.clip].followY || 0 });
     S.t = 0; placed = true;

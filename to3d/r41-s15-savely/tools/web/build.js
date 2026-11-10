@@ -98,7 +98,7 @@ export class Forms {
       let v = 0;
       for (const t of T) for (let i = 0; i < 3; i++, v++) {
         const p = t.p[i], P = t.part, s = norm(acc.get((P.merge ?? P.id) + '|' + key(p)));
-        const n = P.smooth && (P.smooth === true || P.smooth(p)) ? s : t.n;
+        const n0 = P.smooth && (P.smooth === true || P.smooth(p)) ? s : t.n, n = P.nrm ? P.nrm(n0) : n0;
         pos.set([p[0] * S, p[1] * S, p[2] * S], v * 3); nor.set(n, v * 3); sn.set(s, v * 3); col.set(t.col, v * 3); rp.set(p, v * 3);
         aux.set([P.unlit ? 1 : 0, P.face ? P.face(p, t.n) : 0, P.rim, P.cast === false ? 0 : 1], v * 4);
         let w = typeof P.w === 'function' ? P.w(p) : P.w;
@@ -228,8 +228,11 @@ export function skull(F, K, { col, w = 'Head', ys = [-99, -95, -86, -72, -54, -3
   return part;
 }
 // the nose: its own piece of light with the side plane and the plane under the tip (those go black by themselves)
-export function nose(F, K, { col, w = 'Head', width = null, bridge = 3, set = 'body' } = {}) {
-  const n = K.D.nose, sp = K.D.sidePts, part = F.part({ col, w, set });
+export function nose(F, K, { col, w = 'Head', width = null, bridge = 3, set = 'body', lean = 0.43 } = {}) {
+  // the side planes are lit as if turned further from the front than they are: the style draws the side of a man's
+  // nose black as soon as the light is on its other side (a three-quarter view too), which the true plane would not give
+  const nrm = lean ? n => Math.abs(n[0]) > 0.5 ? [Math.sign(n[0]) * 0.9, n[1] * 0.3, -lean] : n : null;
+  const n = K.D.nose, sp = K.D.sidePts, part = F.part({ col, w, set, nrm });
   const yr = n.root[1] - 4, yt = sp.tip[1], yb = sp.nosebase[1], nw = width ?? (n.wing[0] - n.base[0]) * 0.75;
   const R = K.to(0, yr, K.frontZ(0, yr) + 1), T = K.to(0, yt, K.ZS - sp.tip[0]), Bm = K.to(0, yb, K.frontZ(0, yb) - 1);
   const yw = n.wing[1], WL = K.to(-nw, yw, K.frontZ(nw, yw) - 2), WR = K.to(nw, yw, K.frontZ(nw, yw) - 2);

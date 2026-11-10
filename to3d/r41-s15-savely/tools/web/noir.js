@@ -132,7 +132,7 @@ export function start(def) {
   const town = (() => {
     const c = document.createElement('canvas'); c.width = 2048; c.height = 1024; const g = c.getContext('2d');
     g.fillStyle = NIGHT; g.fillRect(0, 0, 2048, 1024);
-    g.fillStyle = def.back[0]; g.beginPath(); g.arc(1024, 760, 520, 0, 7); g.fill();
+    g.fillStyle = def.back[0]; g.beginPath(); g.arc(1024, 730, 250, 0, 7); g.fill();
     let s = 7; const r = () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
     for (let layer = 0; layer < 2; layer++) {
       let x = -40;
@@ -145,7 +145,7 @@ export function start(def) {
         x += w + (r() < 0.3 ? 30 + r() * 60 : 2);
       }
     }
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(3, 1); t.anisotropy = 4;
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.NoColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(6, 1); t.anisotropy = 4;
     const m = new THREE.Mesh(new THREE.CylinderGeometry(16, 16, 9, 64, 1, true), new THREE.MeshBasicMaterial({ map: t, side: THREE.BackSide }));
     m.position.y = 4.5 - 0.6; scene.add(m); return m;
   })();
@@ -295,7 +295,7 @@ export function start(def) {
     let headYaw = 0, headPitch = 0, aheadYaw = 0, aheadPitch = 0;
     for (const b of BONES) I.bones[b].position.set(...restPos(b));
     if (M) {
-      const n = M.n, fr = t * M.fps, loop = Math.floor(fr / n), f = fr - loop * n, kr = J.Hips[1] / M.hipY;
+      const n = M.n, fr = t * M.fps * (I.clip.speed || 1), loop = Math.floor(fr / n), f = fr - loop * n, kr = J.Hips[1] / M.hipY;
       const off = I.travel ? [(M.hips[(n - 1) * 3] - M.hips[0]) * kr * loop, (M.hips[(n - 1) * 3 + 2] - M.hips[2]) * kr * loop] : [0, 0];
       pose(I, M, f, I.travel, off);
       const fa = Math.min(f + 0.3 * M.fps, n - 1), y0 = M.hyaw[0], up = -(I.clip.upright || 0) * M.lean;

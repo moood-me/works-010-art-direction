@@ -364,7 +364,7 @@ function useFrame(d, f, cx, cy) {
 }
 // what the character's own drawing code (char.js) draws with
 const FACE = { faceMap, frameAt, useFrame, seenNear, project, K, get fp() { return fp; }, get fig() { return fig; }, I,
-  get scr() { return scr; }, get vn() { return vn; }, get ppu() { return PPU; }, jointAt, seen, pxPerMetre, sideOf };
+  get scr() { return scr; }, get vn() { return vn; }, get ppu() { return PPU; }, jointAt, grpAt, seen, pxPerMetre, sideOf };
 function jointAt(name) { const P = fig.pose.P, j = I[name], o = new Float32Array(3); project(P[j * 3], P[j * 3 + 1], P[j * 3 + 2], o); return o; }
 function pxPerMetre(z) { return isOrtho ? Hh / (ortho.top - ortho.bottom) : Hh / (2 * Math.tan(persp.fov * Math.PI / 360) * z); }
 
@@ -482,6 +482,7 @@ function draw() {
         if (vs.thin) { if (L > (CH.thinMin ?? 9) && (!CH.thinEvery || mn % CH.thinEvery === 0)) K.stroke(d, P, CH.thinW ?? 1.0, 'swell', { nib: 0.1, seed: mn, color: CH.thinColor, layer: CH.thinColor ? 'col' : 'key', op: CH.thinOp ?? 1 }); continue; }
         if (L < (CH.minLen?.[pn] ?? 5) * d.wk) continue;
         const [lw, nib] = CH.lineW?.[pn] ?? [3.2, 0.6];
+        if (CH.onContour?.(d, pn, P, FACE, mn)) continue;          // the character's own way with a part's contour (a beard's hairs)
         K.stroke(d, P, lw, 'even', { nib, seed: mn, ends: 14, closed: closed && P.length >= vs.length * 0.5 && Math.hypot(P[0][0] - P[P.length - 1][0], P[0][1] - P[P.length - 1][1]) < 4 });
       }
     }

@@ -341,6 +341,15 @@ export function mouth(d, p, ex, mx, my, fl = 0.5, fr = 0.5) {
     const shape = [[c - rx * 0.75, my + 2], [c, my - ry * 0.75 + 1], [c + rx * 0.8, my + 2], [c, my + ry * 1.5 + 2]];
     if (lip) d.fill(shape.map(([x, y]) => [x + (x - c) * 0.45, y + (y - my - 2 - ry * 0.3) * 0.5]), lip);
     d.fill(shape, '#5a2420'); d.contour(shape, lw * 0.8);
+  } else if (kind === 'snarl') {        // bared teeth: a white band cut by the teeth's lines
+    const L = xl - w * 0.16, R = xr + w * 0.2, dep = 7 * full, cxm = (L + R) / 2 + as * 0.1;
+    const shape = [[L, my + 1, 'c'], [cxm - (R - L) * 0.2, my - 3], [cxm + (R - L) * 0.2, my - 3], [R, my + 2, 'c'], [cxm + (R - L) * 0.25, my + dep], [cxm - (R - L) * 0.2, my + dep]];
+    d.fill(shape, WHITE);
+    const cid = d.clip(shape); d.open(cid, 'key');
+    d.line([[L, my + dep * 0.45], [R, my + dep * 0.5]], 1.2, 'even', { nib: 0 });
+    for (let i = 1; i < 6; i++) { const x = L + (R - L) * i / 6; d.line([[x, my - 3], [x, my + dep]], 0.9, 'even', { nib: 0 }); }
+    d.close('key');
+    d.contour(shape, lw * 0.9, { nib: 0.2 });
   } else if (kind === 'laugh' || kind === 'grin') {
     // an open mouth: dark red inside, a white row of teeth above, the tongue below. ex.jaw (0…1): how far it is open
     const big = kind === 'laugh' ? 0.8 : 1.25, L = xl - w * 0.18 * big, R = xr + w * 0.22 * big;

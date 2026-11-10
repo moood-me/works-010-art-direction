@@ -49,6 +49,7 @@ function moment() {
   }
   life.alive = S.alive; life.talk = S.talk;
   const L = { breath: () => S.alive ? life.breath() : 0, headYaw: S.headYaw + (S.alive ? life.headYaw : 0), headNod: S.headNod, headTilt: S.headTilt, nod: S.alive ? life.nod : 0 };
+  fig.motionId = S.motion;
   fig.frame({ clip, t, place, life: L, hold: S.hold });
   fig.setFace(life.face());
 }
@@ -63,7 +64,7 @@ function render(dt) {
   look.resize(...S.size);
   const view = camera(dt);
   for (const k in grounds) for (const m of grounds[k]) m.visible = S.ground === k;   // 'none': no ground
-  for (const p of look.pieces) if (p.name) p.mesh.visible = (!S.hide || !S.hide.some(h => p.name.startsWith(h))) && (!S.only || S.only.some(h => p.name.startsWith(h)));
+  for (const p of look.pieces) if (p.name) p.mesh.visible = !p.off && (!S.hide || !S.hide.some(h => p.name.startsWith(h))) && (!S.only || S.only.some(h => p.name.startsWith(h)));
   look.cam.position.set(...view.pos); look.cam.lookAt(...view.target);
   fig.face(view.pos, look.cam.quaternion.toArray());
   look.draw(view, S.look);
@@ -74,6 +75,7 @@ function set(o = {}) {
   if (o.look) { Object.assign(S.look, o.look); delete o.look; }
   if (o.lifeSeed != null) life = new Life(fig.spec, o.lifeSeed, C);
   Object.assign(S, o);
+  if ('straight' in o && !!o.straight !== !!fig.straight) { fig.straight = !!o.straight; fig.standPose(); }   // the stand without the character's slouch (to lay busts over the drawing's)
   if ('expr' in o) life.setExpr(S.expr, true);
   if ('motion' in o && o.motion !== prev) S.travel = [0, 0, 0];
   moment(); camera(null);
@@ -95,7 +97,7 @@ if (!SHOTS) {
   const ui = document.getElementById('ui'); ui.classList.add('on');
   const fit = () => { const w = innerWidth, h = innerHeight, k = Math.min(1, 900 / Math.max(w, h)); canvas.style.width = w + 'px'; canvas.style.height = h + 'px'; S.size = [Math.round(w * k), Math.round(h * k)]; };
   fit(); addEventListener('resize', fit);
-  set({ expr: 'calm', headYaw: 0 }); S.cam.yaw = .35; S.cam.dist = 11;
+  set({ expr: 'calm', headYaw: 0 }); S.cam.yaw = -.35; S.cam.dist = 12; S.cam.h = .72;
   let playing = true, last = performance.now(), step = -1;
   const btn = (el, label, on) => { const b = document.createElement('button'); b.textContent = label; b.onclick = on; el.appendChild(b); return b; };
   const mB = [], eB = [], press = (list, v) => list.forEach(([b, k]) => b.setAttribute('aria-pressed', String(k === v)));
@@ -116,7 +118,7 @@ if (!SHOTS) {
   canvas.addEventListener('pointerdown', e => { drag = [e.clientX, e.clientY]; canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener('pointermove', e => { if (!drag) return; S.cam.yaw -= (e.clientX - drag[0]) * .008; S.cam.pitch = Math.max(-.1, Math.min(.8, S.cam.pitch + (e.clientY - drag[1]) * .005)); drag = [e.clientX, e.clientY]; });
   canvas.addEventListener('pointerup', () => { drag = null; });
-  canvas.addEventListener('wheel', e => { e.preventDefault(); S.cam.dist = Math.max(2.5, Math.min(22, S.cam.dist * Math.exp(e.deltaY * .001))); S.cam.h = S.cam.dist < 6 ? 1.45 : C.view.h; }, { passive: false });
+  canvas.addEventListener('wheel', e => { e.preventDefault(); S.cam.dist = Math.max(2.5, Math.min(22, S.cam.dist * Math.exp(e.deltaY * .001))); S.cam.h = S.cam.dist < 6 ? 1.4 : .72; }, { passive: false });
   const tick = now => {
     let dt = Math.min(.1, (now - last) / 1000); last = now;
     if (S.twos) { acc += dt; const n = Math.floor(acc * 12); if (n === step) { requestAnimationFrame(tick); return; } dt = (n - step) / 12; if (step < 0) dt = 1 / 12; step = n; } else step = -1, acc = 0;

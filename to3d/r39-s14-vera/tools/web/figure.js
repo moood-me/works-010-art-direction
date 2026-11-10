@@ -156,9 +156,9 @@ export class Figure {
       let p = this.faceMeshes.get(f.key);
       if (!p) { p = { name: 'f:' + f.key, color: f.color, kind: f.kind, parent: this.groups.head.g, geo }; this.look.add(p); p.mesh.matrix.identity(); this.faceMeshes.set(f.key, p); }
       else { this.look.setGeo(p.mesh, geo); p.mesh.material.uniforms.color.value.set(f.color); }
-      p.mesh.visible = true; seen.add(f.key);
+      p.off = false; seen.add(f.key);
     }
-    for (const [k, p] of this.faceMeshes) if (!seen.has(k)) p.mesh.visible = false;
+    for (const [k, p] of this.faceMeshes) if (!seen.has(k)) p.off = true;
   }
 }
 
@@ -211,9 +211,10 @@ export class Life {
     const e = mixExpr(this.spec, this.W);
     if (this.alive) {
       if (e.open > .05) e.open = Math.max(.06, e.open * (1 - this.blink));
-      e.look = clamp(this.look - this.headYaw / 40, -1, 1); e.look_y = this.lookY;
+      // the expression's own look (a sideways glance at rest) with the glances over it
+      e.look = clamp((e.look || 0) * .75 + this.look * (e.look ? .45 : 1) - this.headYaw / 40, -1, 1); e.look_y = clamp((e.look_y || 0) + this.lookY, -1, 1);
     }
-    if (this.talk || this.say > .03) { if (['flat', 'smile', 'frown', 'smirk', 'talk'].includes(e.mouth) || this.say > .25) { e.mouth = 'talk'; e.say = this.say; } }
+    if (this.talk || this.say > .03) { if (['flat', 'smile', 'frown', 'smirk', 'pout', 'talk'].includes(e.mouth) || this.say > .25) { e.mouth = 'talk'; e.say = this.say; } }
     return e;
   }
 }

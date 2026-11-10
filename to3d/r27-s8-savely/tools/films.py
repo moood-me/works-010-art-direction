@@ -16,12 +16,12 @@ FILMS = {
     # motion, seconds or None (whole clip), life, camera: (distance, height of the target over the hips' floor
     # point, yaw of the camera from his front, lens), W, H
     'walk': dict(motion='walk', life=dict(talk=True, talkTo=2.2, seed=3, expr=[[0, {'grumpy': 1}], [2.6, {'calm': 1}]]),
-                 cam=(2.5, 0.64, -36, 50), size=(560, 640)),
-    'bow': dict(motion='bow', life=dict(seed=5, expr=[[0, {'stern': 1}], [1.6, {'joy': 1}]]), cam=(2.4, 0.64, -24, 50), size=(560, 640)),
+                 cam=(2.05, 0.64, -36, 50), size=(560, 640)),
+    'bow': dict(motion='bow', life=dict(seed=5, expr=[[0, {'stern': 1}], [1.6, {'joy': 1}]]), cam=(2.05, 0.62, -24, 50), size=(560, 640)),
     'face': dict(motion='idle', seconds=6.0, life=dict(talk=True, talkTo=2.2, seed=11,
                  expr=[[0, {'grumpy': 1}], [2.4, {'joy': 1}], [3.3, {'surprise': 1}], [4.2, {'sad': 1}], [5.1, {'anger': 1}]]),
                  head=dict(level='pitch', levelPitch=0.85), cam=(1.3, 'head', -20, 70), size=(520, 520)),
-    'turn': dict(motion='bow', still=0, seconds=4.5, life=dict(seed=2, expr={'calm': 1}), cam=(2.3, 0.62, 'spin', 50),
+    'turn': dict(motion='bow', still=0, seconds=4.5, life=dict(seed=2, expr={'calm': 1}), cam=(2.0, 0.62, 'spin', 50),
                  size=(520, 660)),
 }
 

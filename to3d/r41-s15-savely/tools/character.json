@@ -24,7 +24,7 @@
    "cam": {
     "yaw": 0,
     "pitch": 5,
-    "dist": 5.6,
+    "dist": 4.6,
     "ty": 0.84,
     "fov": 20,
     "follow": false
@@ -32,11 +32,11 @@
   },
   "walk": {
    "clip": "walk",
-   "sec": 4,
+   "sec": 5,
    "cam": {
-    "yaw": -42,
+    "yaw": 6,
     "pitch": 6,
-    "dist": 5.4,
+    "dist": 4.4,
     "ty": 0.84,
     "fov": 22,
     "follow": true
@@ -44,11 +44,11 @@
   },
   "stroll": {
    "clip": "stroll",
-   "sec": 4,
+   "sec": 5,
    "cam": {
-    "yaw": 50,
+    "yaw": -62,
     "pitch": 6,
-    "dist": 5.4,
+    "dist": 4.4,
     "ty": 0.84,
     "fov": 22,
     "follow": true
@@ -58,16 +58,16 @@
    "clip": "bow",
    "sec": 3,
    "cam": {
-    "yaw": -30,
+    "yaw": -22,
     "pitch": 5,
-    "dist": 5.4,
+    "dist": 4.6,
     "ty": 0.84,
     "fov": 22,
     "follow": false
    }
   },
   "face": {
-   "clip": "idle",
+   "clip": "talk",
    "sec": 9,
    "talk": true,
    "size": [
@@ -75,10 +75,10 @@
     640
    ],
    "cam": {
-    "yaw": -26,
-    "pitch": 2,
-    "dist": 2.3,
-    "ty": 1.36,
+    "yaw": -6,
+    "pitch": 0,
+    "dist": 2.2,
+    "ty": 1.33,
     "fov": 20,
     "follow": true
    },
@@ -110,5 +110,9 @@
     ]
    ]
   }
- }
+ },
+ "neck": [
+  2,
+  504
+ ]
 }

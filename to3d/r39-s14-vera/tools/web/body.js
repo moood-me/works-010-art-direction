@@ -72,21 +72,28 @@ export function faceHand(fig, pose, S, to) {
   fig.turn(pose, S + 'Hand', ax, ang * 180 / Math.PI);
 }
 
-// a shoe on the Foot joint: body.shoe's side outline swept across the foot's width. L, h, w in units.
-export function shoe(fig, S, { L = 40, h = 20, w = 17, color, sole = null, toeOut = 8 }) {
+// a shoe on the Foot joint: body.shoe's (or body.boot's) side outline swept across the foot's width. L, h, w in units;
+// sole: its colour (a thicker slab under the upper); lace: a colour — three small strips over the instep
+export function shoe(fig, S, { L = 40, h = 20, w = 17, color, sole = null, toeOut = 8, boot = false, lace = null }) {
   const f = fig.R(S + 'Foot'), s = S === 'Left' ? 1 : -1, a = s * toeOut * Math.PI / 180, heel = -L * .30;
-  const top = through([[0, .9], [.28, 1], [.62, .62], [.95, .5], [1, .14]]), wid = through([[0, .72], [.3, 1], [.7, 1], [1, .62]]);
+  const top = boot ? through([[0, 1], [.36, 1], [.47, .55], [.9, .44], [1, .16]]) : through([[0, .9], [.28, 1], [.62, .62], [.95, .5], [1, .14]]);
+  const wid = through([[0, .72], [.3, 1], [.7, 1], [1, .62]]);
   const at = (x, y, z) => { const X = x * Math.cos(a) + z * Math.sin(a), Z = -x * Math.sin(a) + z * Math.cos(a); return [f[0] + X * U, y * U, f[2] + Z * U]; };
-  const mk = (y0, hk, grow) => {
+  const mk = (y0, ht, grow) => {
     const rings = [];
-    for (let i = 0; i <= 12; i++) {
-      const t = i / 12, z = heel + L * t, hw = w / 2 * wid(t) * grow + (grow > 1 ? 1.5 : 0), ht = h * top(t) * hk;
-      rings.push(Array.from({ length: 14 }, (_, k) => { const u = 2 * Math.PI * k / 14, c = Math.cos(u), sn = Math.sin(u); return at(hw * Math.sign(c) * Math.abs(c) ** .7, y0 + (sn > 0 ? ht * sn ** .8 : 0), z + (grow > 1 ? (t - .5) * 3 : 0)); }));
+    for (let i = 0; i <= 14; i++) {
+      const t = i / 14, z = heel + L * t + (grow > 1 ? (t - .5) * 4 : 0), hw = w / 2 * wid(t) * grow, hh = ht ?? h * top(t);
+      rings.push(Array.from({ length: 14 }, (_, k) => { const u = 2 * Math.PI * k / 14, c = Math.cos(u), sn = Math.sin(u); return at(hw * Math.sign(c) * Math.abs(c) ** .7, y0 + (sn > 0 ? hh * sn ** (boot ? .5 : .8) : 0), z); }));
     }
     return loft(rings, { cap0: true, cap1: true });
   };
-  if (sole) fig.piece({ name: S + 'Sole', joint: S + 'Foot', geo: mk(0, 0, 1.06).pos.length ? (() => { const g = mk(0, .16, 1.06); return g; })() : null, color: sole, kind: 'card' });
-  fig.piece({ name: S + 'Shoe', joint: S + 'Foot', geo: mk(sole ? h * .12 : 0, 1, 1), color, kind: 'card' });
+  const sh = sole ? h * (boot ? .13 : .16) : 0;
+  if (sole) fig.piece({ name: S + 'Sole', joint: S + 'Foot', geo: mk(0, sh, 1.1), color: sole, kind: 'card' });
+  fig.piece({ name: S + 'Shoe', joint: S + 'Foot', geo: mk(sh * .9, null, 1), color, kind: 'card' });
+  if (lace) for (let i = 0; i < 3; i++) {
+    const t = .50 + i * .1, z = heel + L * t, y = sh * .9 + h * top(t) + 1.6, hw = w / 2 * wid(t) * .8;
+    fig.piece({ name: S + 'Lace' + i, joint: S + 'Foot', geo: slab([[-hw, -1.5, 1], [hw, -1.5, 1], [hw, 1.5, 1], [-hw, 1.5, 1]], (x, v, tt) => { const p = at(x, y - Math.abs(x) * .25 - (v - 1) * .3, z + v); return [p[0], p[1] + tt, p[2]]; }, { thick: .001 }), color: lace, kind: 'flat' });
+  }
 }
 
 // a trunk shell from sections [[height (units), half-width, front, back], …] (top first or bottom first — any order)
@@ -113,17 +120,18 @@ export function ground(look, { color, path = false, seed = 5 }) {
   const pt = (x, z, nx, nz) => { const j = (r() - .5) * .03 + (r() < .15 ? (r() - .5) * .05 : 0), k = .012 + r() * .016; out.push([x + nx * j, z + nz * j]); core.push([x + nx * (j + k), z + nz * (j + k)]); };
   if (!path) for (let i = 0; i < 160; i++) { const a = 2 * Math.PI * i / 160; pt(.78 * Math.cos(a), .1 + .62 * Math.sin(a), Math.cos(a), Math.sin(a)); }
   else {
-    for (let i = 0; i <= 300; i++) pt(.95, -1.3 + i * .05, 1, 0);
-    for (let i = 0; i <= 30; i++) pt(.95 - i * 1.9 / 30, 13.7, 0, 1);
-    for (let i = 300; i >= 0; i--) pt(-.95, -1.3 + i * .05, -1, 0);
-    for (let i = 30; i >= 0; i--) pt(-.95 + (30 - i) * -1.9 / 30 + 1.9, -1.3, 0, -1);
+    const W = 1.5, Z0 = -5, N = 420;
+    for (let i = 0; i <= N; i++) pt(W, Z0 + i * .05, 1, 0);
+    for (let i = 1; i < 40; i++) pt(W - i * 2 * W / 40, Z0 + N * .05, 0, 1);
+    for (let i = N; i >= 0; i--) pt(-W, Z0 + i * .05, -1, 0);
+    for (let i = 1; i < 40; i++) pt(-W + i * 2 * W / 40, Z0, 0, -1);
   }
   const lay = (poly, y) => patch(poly, (x, z) => [x, y, z], { dense: true, maxEdge: 9 });
   const pieces = [look.add({ geo: lay(core, -.002), color: '#f7f2e7', kind: 'ground' }), look.add({ geo: lay(out, 0), color, kind: 'ground', paint: false })];
   // scraps: small bits of paper lying about (they show the way walked)
-  const n = path ? 46 : 9;
+  const n = path ? 90 : 9;
   for (let i = 0; i < n; i++) {
-    const x = (r() - .5) * 1.5, z = path ? -1 + r() * 14 : -.45 + r() * 1.2, rr = .012 + r() * .022, a = r() * 360;
+    const x = (r() - .5) * (path ? 2.6 : 1.3), z = path ? -3 + r() * 18 : -.35 + r() * .95, rr = .012 + r() * .022, a = r() * 360;
     if (Math.hypot(x, z) < .28) continue;
     pieces.push(look.add({ geo: patch(ell(x, z, rr, rr * (.5 + r() * .5), a, 5 + Math.floor(r() * 3)).map(q => r() < .5 ? corner(q) : q), (u, v) => [u, .0015, v], { maxEdge: 9 }), color: mix(color, r() < .5 ? '#fff6e6' : '#2b1b2c', .12 + r() * .16), kind: 'flat' }));
   }

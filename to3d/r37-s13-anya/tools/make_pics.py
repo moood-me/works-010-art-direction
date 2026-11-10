@@ -2,7 +2,7 @@
   python3 make_pics.py [stills|films|<name>...]      (after build.py)
 Films are printed at 12 pictures a second (each held for two frames of 24). Every run of the browser goes through one
 of the shared locks (heavy runs take turns)."""
-import os, sys, json, subprocess, shutil, random
+import os, sys, json, subprocess, shutil, random, time
 from PIL import Image
 import drawing as D
 import who
@@ -25,7 +25,16 @@ def on(name, kind):
 def shots(w, h, sh, name):
     j = os.path.join(WORK, name + '.json')
     json.dump(dict(pack=PACK, w=w, h=h, shots=sh), open(j, 'w'))
-    subprocess.run(['flock', '/home/user/cache/heavy.%d.lock' % random.randrange(3), 'node', os.path.join(HERE, 'shots.mjs'), j, WORK], check=True)
+    heavy(['node', os.path.join(HERE, 'shots.mjs'), j, WORK])
+
+
+def heavy(cmd):
+    """Run through one of the three shared locks: the first that is free (asked in turn, without waiting on a busy one)."""
+    k = random.randrange(3)
+    while True:
+        r = subprocess.run(['flock', '-n', '-E', '75', '/home/user/cache/heavy.%d.lock' % k] + cmd)
+        if r.returncode != 75: r.check_returncode(); return
+        k = (k + 1) % 3; time.sleep(2)
 
 
 def im(n):

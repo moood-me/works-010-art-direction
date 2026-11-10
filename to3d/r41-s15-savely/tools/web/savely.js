@@ -22,7 +22,7 @@ for (const [s, k] of [['Left', 1], ['Right', -1]]) Object.assign(J, {
 });
 
 // the trunk by height: half width, half depth, how far forward its middle is, the half width of the shirt's strip
-const TRUNK = [[240, 50, 33, 4, 9], [296, 53, 38, 8, 9], [340, 54, 40, 10, 5], [400, 55, 39, 8, 4], [450, 56, 35, 3, 9], [484, 54, 30, 0, 17], [504, 34, 23, -2, 21], [514, 18, 16, -2, 9]];
+const TRUNK = [[240, 50, 33, 6, 9], [296, 53, 39, 11, 9], [340, 54, 41, 13, 5], [400, 55, 39, 9, 4], [450, 56, 35, 2, 9], [484, 54, 30, -3, 17], [504, 34, 23, -4, 21], [514, 18, 16, -3, 9]];
 const SOLE = s => [[-13, 0, -16], [13, 0, -16], [11, 0, 42], [-11, 0, 42]].map(p => [p[0] + s * 21, p[1], p[2]]);
 
 function forms(F) {
@@ -30,8 +30,8 @@ function forms(F) {
   skull(F, K, { col: C.skin });
   nose(F, K, { col: C.skin, set: 'soft' });
   ears(F, K, { col: C.skin, set: 'soft' });
-  curtain(F, K, [[88, -46, -26], [100, -56, -10], [112, -62, -6], [121, -65, 26], [130, -67, 12], [141, -68, 38], [153, -65, 18], [166, -61, 34], [180, -58, 22],
-    [194, -61, 34], [207, -65, 18], [219, -68, 38], [230, -67, 12], [239, -65, 26], [248, -62, -6], [260, -56, -10], [272, -46, -26]], { col: C.hair, thick: 14, yHold: 16 });
+  curtain(F, K, [[80, -44, -28], [91, -54, -14], [103, -60, -8], [113, -63, -4], [121, -65, 26], [130, -67, 12], [141, -68, 38], [153, -65, 18], [166, -61, 34], [180, -58, 22],
+    [194, -61, 34], [207, -65, 18], [219, -68, 38], [230, -67, 12], [239, -65, 26], [247, -63, -4], [257, -60, -8], [269, -54, -14], [280, -44, -28]], { col: C.hair, thick: 14, yHold: 16 });
   const neckW = chain(J, ['Neck1', 'Neck2', 'Head']);
   F.loft(F.part({ col: C.skin, w: neckW }), [box8(0, 498, -1, 19, 17, 0.5), box8(0, 516, 2, 19, 17, 0.5), box8(0, 536, 6, 20, 18, 0.5)]);
   // ——— the trunk: the shirt, and the waistcoat as its faces painted green — the strip in the middle stays shirt
@@ -39,7 +39,7 @@ function forms(F) {
   const ring = ([y, w, d, zc, g]) => { const a = Math.max(w * 0.6, g + 4), b = d * 0.55; return [[g, d], [a, d], [w, b], [w, -b], [a, -d], [-a, -d], [-w, -b], [-w, b], [-a, d], [-g, d]].map(([x, z]) => [x, y, zc + z]); };
   F.loft(F.part({ col: C.shirt, w: tw }), TRUNK.map(ring), { cols: (i, j) => (i === 0 || i === TRUNK.length - 2 || j === 9) ? C.shirt : C.vest });
   // the bow tie: a dark red rhombus under the chin
-  F.slab(F.part({ col: C.tie, w: 'Chest', rim: 0 }), [[-13, 486, 33], [0, 499, 31], [13, 486, 33], [0, 473, 37]], [0, 0, -4]);
+  F.slab(F.part({ col: C.tie, w: 'Chest', rim: 0 }), [[-13, 486, 31], [0, 499, 29], [13, 486, 31], [0, 473, 35]], [0, 0, -4]);
   // ——— arms in shirt sleeves, angular hands; the watch in his left
   for (const [s, k] of [['Left', 1], ['Right', -1]]) {
     const a = J[s + 'Arm'], e = J[s + 'ForeArm'], h = J[s + 'Hand'];
@@ -55,7 +55,7 @@ function forms(F) {
   }
   // the watch: a brass disc with a pale dial, in its own colours (a sign, as the drawing's accent)
   {
-    const h = J.LeftHand, c = [h[0] - 5, h[1] - 22, h[2] + 15], n = [0, 0.5, 0.87], u = [1, 0, 0], v = [0, 0.87, -0.5];
+    const h = J.LeftHand, c = [h[0] - 5, h[1] - 22, h[2] + 15], n = [0, -0.26, 0.966], u = [1, 0, 0], v = [0, 0.966, 0.26];
     const circ = (r, off) => Array.from({ length: 16 }, (_, i) => { const a = i / 16 * 2 * Math.PI; return [0, 1, 2].map(q => c[q] + n[q] * off + u[q] * r * Math.cos(a) + v[q] * r * Math.sin(a)); });
     const wp = F.part({ col: C.gold, w: 'LeftHand', unlit: 1, set: 'props', rim: 0 });
     F.loft(wp, [circ(15, -2), circ(15, 2)]);
@@ -142,18 +142,19 @@ start({
   soles: { LeftFoot: SOLE(1), RightFoot: SOLE(-1) },
   back: ['#2c3a36', '#b99a4e'], ground: '#262b38',
   // his carriage: the back bent, the neck forward, the head bowed over the watch
-  posture: [['Spine2', 9], ['Neck1', 17], ['Head', -13]],
+  posture: [['Spine2', 12], ['Neck1', 16], ['Head', -13]],
   armPoses: {
     // the drawing's pose: the watch held up before him in the left hand, the right hand behind the back
-    watch: { Left: { arm: [0.14, -0.97, -0.1], fore: [-0.42, 0.3, 0.86], roll: 0 }, Right: { arm: [-0.12, -0.97, -0.2], fore: [0.9, -0.15, -0.38] } },
+    watch: { Left: { arm: [0.14, -0.97, -0.1], fore: [-0.45, 0.62, 0.64], roll: 0 }, Right: { arm: [-0.12, -0.97, -0.2], fore: [0.9, -0.15, -0.38] } },
     back: { Left: { arm: [0.12, -0.97, -0.2], fore: [-0.9, -0.15, -0.38] }, Right: { arm: [-0.12, -0.97, -0.2], fore: [0.9, -0.22, -0.38] } },
   },
   EXPR_RU: { neutral: 'строгий', joy: 'радость', surprise: 'удивление', sad: 'грусть', anger: 'злость' },
   CLIPS: {
     stand: { ru: 'смотрит на часы', arms: 'watch', cam: [0.85, 4.6] },
-    walk: { ru: 'идёт, часы в руке', motion: 'walk', travel: true, arms: 'watch', cam: [0.85, 5.0] },
-    stroll: { ru: 'идёт, руки за спиной', motion: 'walk', travel: true, arms: 'back', cam: [0.85, 5.0] },
+    walk: { ru: 'идёт, часы в руке', motion: 'walk', travel: true, speed: 0.8, arms: 'watch', cam: [0.85, 5.0] },
+    stroll: { ru: 'идёт, руки за спиной', motion: 'walk', travel: true, speed: 0.8, arms: 'back', cam: [0.85, 5.0] },
     bow: { ru: 'кланяется', motion: 'bow', once: true, posture: [['Neck1', 8], ['Head', -4]], cam: [0.85, 5.0] },
+    talk: { ru: 'говорит', motion: 'idle', upright: 1, arms: 'watch', posture: [['Spine2', 8], ['Neck1', 8], ['Head', -8]], cam: [1.3, 2.4], hidden: true },
     idle: { ru: 'ждёт', motion: 'idle', upright: 0.8, arms: 'back', cam: [0.85, 4.6] },
     wave: { ru: 'машет', motion: 'wave', once: true, cam: [0.85, 5.0] },
     rest: { ru: 'прямо', posture: [], hidden: true, cam: [0.85, 4.6] },

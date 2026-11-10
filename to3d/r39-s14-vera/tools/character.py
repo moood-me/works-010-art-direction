@@ -22,3 +22,11 @@ STEP_RU = ['полосы и оболочки на скелете SOMA', 'вол�
 MOTIONS = dict(bow=dict(frames=36, yaw=-.7), idle=dict(frames=60))
 LIFE_EXPR = [(18, 'joy'), (40, 'calm'), (58, 'surprise'), (76, 'sad'), (94, 'angry'), (112, 'calm')]
 LIFE_TALK = [(24, True), (40, False), (112, True), (128, False)]
+FIG_YAW = 0
+FIG_OVERLAY = True
+HERO_YAW = -22
+MID = .86                         # the middle of the figure, metres: where the films' camera looks
+BUST_SET = {}
+OTHER_SIDE = False
+SIDE_RU = 'профиль'
+HERO_WARM = 1.2

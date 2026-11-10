@@ -19,7 +19,14 @@ FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 20)
 
 
 def heavy(cmd):
-    subprocess.run(['flock', f'/home/user/cache/heavy.{random.randrange(3)}.lock'] + cmd, check=True, cwd=HERE)
+    # the first of the three shared locks that is free (else wait and try again)
+    import time
+    while True:
+        for k in random.sample(range(3), 3):
+            r = subprocess.run(['flock', '-n', '-E', '75', f'/home/user/cache/heavy.{k}.lock'] + cmd, cwd=HERE)
+            if r.returncode != 75:
+                r.check_returncode(); return
+        time.sleep(3)
 
 
 def shots(name, jobs):
@@ -63,7 +70,7 @@ def refs():
     heavy(['node', 'svg2png.mjs'] + a)
 
 
-VIEWS = [('f', 0, 'анфас'), ('q', -45, 'три четверти'), ('s', -90, 'профиль')]
+VIEWS = [('f', 0, 'анфас'), ('q', -40, 'три четверти'), ('s', -90, 'профиль')]
 
 
 def compare():
@@ -96,6 +103,18 @@ def figure():
     save(row([Image.open(f'{out}/street.png'), Image.open(f'{out}/left.png'), Image.open(f'{out}/back.png')], ['к свету', 'от света', 'со спины'], h=760), 'sides.jpg')
 
 
+def portrait():
+    """The style's portrait (800×1000, figure units ×sc, the neck's point at (416, 660), a pale disc behind) and the 3D in its frame."""
+    sc = CFG.get('portraitScale', 3.2); nx, ny = CFG['neck']; px = S / sc
+    cy = (ny + 160 / sc) * S; cx = (nx - 16 / sc) * S
+    st = {'floor': False, 'view': 'style', 'bg': {'col': '#11121b', 'disc': [cx + 48 * px, cy + 80 * px, 330 * px]}, 'figures': [{'clip': 'stand', 'yaw': CFG.get('figYaw', -42), 'ex': 'neutral'}], 'cam': {'ortho': [cx, cy, 500 * px]}}
+    out = shots('portrait', [{'name': 'p', 'size': [800, 1000], 'set': st}])
+    d = Image.open(os.path.join(HERE, f'../../../styles/s15-noir/pics/portrait-{K}.png')).convert('RGB')
+    a = Image.open(f'{out}/p.png').convert('RGB')
+    save(row([d, a], ['рисунок', '3D'], h=900), 'portrait.jpg')
+    save(a, 'hero.jpg', 90)
+
+
 def steps():
     cam = {'ortho': [0, 1.02, 0.66]}
     fg = [{'clip': 'rest', 'yaw': -38}]
@@ -113,7 +132,7 @@ EXPRS = [('neutral', None), ('joy', 'радость'), ('surprise', 'удивл�
 
 def expr():
     c = bust_cam()
-    jobs = [{'name': e, 'size': [600, 700], 'set': {**PLAIN, 'figures': [{'clip': 'rest', 'yaw': -38, 'ex': e}], 'cam': c}} for e, _ in EXPRS]
+    jobs = [{'name': e, 'size': [600, 700], 'set': {**PLAIN, 'figures': [{'clip': 'rest', 'yaw': -30, 'ex': e}], 'cam': c}} for e, _ in EXPRS]
     jobs += [{'name': e + '-f', 'size': [600, 700], 'set': {**PLAIN, 'figures': [{'clip': 'rest', 'yaw': 0, 'ex': e}], 'cam': c}} for e, _ in EXPRS]
     out = shots('expr', jobs)
     labs = [CFG['restRu']] + [l for _, l in EXPRS[1:]]
@@ -149,7 +168,7 @@ def films(*names):
 
 
 def all():
-    refs(); compare(); figure(); steps(); expr(); films()
+    refs(); compare(); portrait(); figure(); steps(); expr(); films()
 
 
 if __name__ == '__main__':
