@@ -16,14 +16,14 @@ FILMS = {
     # motion, seconds or None (whole clip), life, camera: (distance, height of the target over the hips' floor
     # point, yaw of the camera from his front, lens), W, H
     'walk': dict(motion='walk', life=dict(talk=True, talkTo=2.4, seed=3, expr=[[0, {'beam': 1}], [2.6, {'laugh': 1}]]),
-                 cam=(2.45, 0.72, -36, 50), size=(560, 640)),
-    'wave': dict(motion='wave', life=dict(talk=True, seed=5, expr=[[0, {'beam': 1}], [1.5, {'laugh': 1}]]), cam=(2.4, 0.76, -22, 50), size=(560, 640)),
-    'dance': dict(motion='dance', life=dict(seed=9, expr=[[0, {'laugh': 1}], [2.2, {'beam': 1}]]), cam=(2.6, 0.72, -28, 50), size=(560, 640)),
-    'face': dict(motion='idle', seconds=6.0, life=dict(talk=True, talkTo=2.2, seed=11,
-                 expr=[[0, {'beam': 1}], [2.4, {'laugh': 1}], [3.4, {'surprise': 1}], [4.3, {'sad': 1}], [5.1, {'anger': 1}]]),
-                 head=dict(level='pitch', levelPitch=0.85), cam=(1.45, 'head', -20, 70), size=(520, 520)),
+                 cam=(2.45, 0.72, -36, 50), size=(480, 560)),
+    'wave': dict(motion='wave', life=dict(talk=True, seed=5, expr=[[0, {'beam': 1}], [1.5, {'laugh': 1}]]), cam=(2.4, 0.76, -22, 50), size=(480, 560)),
+    'dance': dict(motion='dance', life=dict(seed=9, expr=[[0, {'laugh': 1}], [2.2, {'beam': 1}]]), cam=(2.6, 0.72, -28, 50), size=(480, 560)),
+    'face': dict(motion='idle', seconds=5.5, life=dict(talk=True, talkTo=2.0, seed=11,
+                 expr=[[0, {'beam': 1}], [2.2, {'laugh': 1}], [3.1, {'surprise': 1}], [3.9, {'sad': 1}], [4.7, {'anger': 1}]]),
+                 head=dict(level='pitch', levelPitch=0.85), cam=(1.45, 'head', -20, 70), size=(460, 460)),
     'turn': dict(motion='bow', still=0, seconds=4.5, life=dict(seed=2, expr={'beam': 1}), cam=(2.35, 0.7, 'spin', 50),
-                 size=(520, 660)),
+                 size=(460, 580)),
 }
 
 

@@ -488,7 +488,9 @@ function draw() {
         const L = len(P);
         if (vs.thin) { if (L > (CH.thinMin ?? 9) && (!CH.thinEvery || mn % CH.thinEvery === 0)) K.stroke(d, P, CH.thinW ?? 1.0, 'swell', { nib: 0.1, seed: mn, color: CH.thinColor, layer: CH.thinColor ? 'col' : 'key', op: CH.thinOp ?? 1 }); continue; }
         if (L < (CH.minLen?.[pn] ?? 5) * d.wk) continue;
-        const [lw, nib] = CH.lineW?.[pn] ?? [3.2, 0.6];
+        // (the drawing's figure draws the body's lines in figure units and the head's in head units, 0.46–0.5 of
+        // them: beside the head's, the body's lines are heavier — CH.bodyLine)
+        const [lw0, nib] = CH.lineW?.[pn] ?? [3.2, 0.6], lw = lw0 * (CH.headPieces?.includes(pn) ? 1 : CH.bodyLine ?? 1);
         if (CH.onContour?.(d, pn, P, FACE, mn)) continue;          // the character's own way with a part's contour (a beard's hairs)
         K.stroke(d, P, lw, 'even', { nib, seed: mn, ends: 14, closed: closed && P.length >= vs.length * 0.5 && Math.hypot(P[0][0] - P[P.length - 1][0], P[0][1] - P[P.length - 1][1]) < 4 });
       }
@@ -500,7 +502,7 @@ function draw() {
         continue;
       }
       const o = CH.strokeStyle?.(st) || {};
-      for (const r0 of seenRuns(st.v, o.minFacing ?? 0.15)) if (len(r0) > (o.min ?? 14)) K.stroke(d, smoothRun(r0, 4, 6), o.w ?? st.w, o.prof ?? st.prof ?? 'taper', { nib: o.nib ?? 0.3, seed: st.v[0], color: o.color, op: o.op, layer: o.color ? 'col' : 'key' });
+      for (const r0 of seenRuns(st.v, o.minFacing ?? 0.15)) if (len(r0) > (o.min ?? 14)) K.stroke(d, smoothRun(r0, 4, 6), (o.w ?? st.w) * (o.head ? 1 : CH.bodyLine ?? 1), o.prof ?? st.prof ?? 'taper', { nib: o.nib ?? 0.3, seed: st.v[0], color: o.color, op: o.op, layer: o.color ? 'col' : 'key' });
     }
     // marks on the form (a button, a curl), drawn where their vertex is seen and faces us
     for (const mk of H.marks || []) {

@@ -138,7 +138,8 @@ B['band'] = np.where(legs[bi], np.where(np.array(['Toe' in n for n in dn[bi]]), 
 # ---------------------------------------------------------------- the head
 hv, hP, eL, eR = Hd.load(HBM)
 earm = Hd.ears(hv)
-hv2, = Hd.fit(hv, earm, ear=(u(76), np.array([0.16, 0.5, 0.5])))
+# the ears are under the hair: laid flat on the head's side (left as they are, their tips came through the hair)
+hv2, = Hd.fit(hv, earm, ear=(u(74), np.array([0.03, 0.5, 0.5])))
 ec = hv2[earm].mean(0)
 hv2[earm] += [0, y3(8) - ec[1], u(-19) - ec[2]]          # the ears: parts.ear — front x 80…93, y −16…30; profile x 16…40
 V0 = Hd.flatten(hv2, D.REG, front_min=0.02)
@@ -155,7 +156,6 @@ _prof = (1 - _t ** 2) ** 0.9
 V0[:, 2] = np.where(_m & ~np.isnan(_h), np.maximum(V0[:, 2], _plane(_yd) + np.nan_to_num(_h) * _prof), V0[:, 2])
 nh = len(V0)
 HT = M.triangulate(hP)
-HT = HT[~earm[HT].any(1)]          # the ears are under the hair: taken out (their tips came through it)
 xd, yd = V0[:, 0] / K, ydr(V0[:, 1])
 yde = yd - 18 * smooth(V0[:, 2] / 0.03)      # the chin and the jaw stay with the head
 SW = np.zeros((nh, NJ))

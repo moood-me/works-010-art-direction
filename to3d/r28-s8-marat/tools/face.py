@@ -32,7 +32,7 @@ VISEMES = {
 }
 BROW_UP = 0.03
 BROW_H = 0.02        # how far the thick black brows stand off the forehead
-LID_K = 0.6          # the sheet's lids turn this much: a lid over a glass ball covers more than a painted one
+LID_K = 1.3          # his eyes narrow when he laughs: the sheet's lids in full and a little more (the opening is cut larger than drawn)
 FACES = ['calm', 'beam', 'laugh', 'surprise', 'sad', 'anger']      # beam is his resting face; his joy is the laugh
 
 
@@ -240,7 +240,7 @@ def expr_numbers(ex):
     top = R * P['lid_top'] * op * (1 + ex.get('lid_up', 0.0))
     bot = R * P['lid_bot'] * op * (1 - ex.get('lid_lo', 0.0))
     g = ex.get('gaze', (0.0, 0.0))
-    return dict(up=LID_K * (ang(top0) - ang(top)), lo=LID_K * (ang(bot0) - ang(bot)), gaze=[g[0], -g[1]], pupil=ex.get('pupil', 0.38))
+    return dict(up=LID_K * (ang(top0) - ang(top)), lo=min(0.13, LID_K * (ang(bot0) - ang(bot))), gaze=[g[0], -g[1]], pupil=ex.get('pupil', 0.38))
 
 
 def main():

@@ -38,9 +38,10 @@ export const FLAT = { skin: SKIN, hair: HAIR, jacket: WHITE, apron: TERRA, trous
 export const lineW = { body: [2.2, 0.3], head: [2.0, 0.3], jacket: [4.0, 0.6], sleeveLeft: [3.6, 0.6], sleeveRight: [3.6, 0.6],
   trousersLeft: [3.4, 0.6], trousersRight: [3.4, 0.6], apron: [3.8, 0.6], bib: [3.8, 0.6], strap0: [1.6, 0.3], strap1: [1.6, 0.3],
   towel: [2.8, 0.6], hair: [2.0, 0.3], beard: [1.2, 0.2] };
-export const minLen = { head: 22, body: 8 };
+export const minLen = { head: 22, body: 8, towel: 16 };
 // the curls' round bumps over the hair itself: a short light arc each (marat.py: SHEEN)
 export const thinMin = 8, thinEvery = 1, thinW = 1.1, thinColor = SHEEN, thinOp = 0.7;
+export const bodyLine = 1.25, headPieces = ['head', 'hair', 'beard'];
 export const STAND = { out: 0.24, fwd: 0.04 };
 export const MOTIONS = [['', 'стоит'], ['idle', 'стоит, оглядывается'], ['walk', 'шаг'], ['wave', 'машет'], ['stomp', 'топает'], ['bow', 'поклон'], ['dance', 'танец']];
 export const VIEW = { far: { dist: 7.4, cy: 0.98 }, near: { dist: 2.4, up: 0.05 } };
@@ -104,7 +105,7 @@ export function drawFace(d, F) {
     { const s = -side * (far ? 13 * t + back * 0.7 : 4 * t + 18 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
     useFrame(d, f, sx, 0);
     K.eye(d, Pn, sx, 0, k, -sg, { ...ex, look: [ex.look[0] + side * t * 2, ex.look[1]] });
-    K.brow(d, Pn, sx + sg - (far ? side * 8 * t : 0), k * (far ? 0.85 : 1 - 0.25 * tn), -sg, ex);       // the far brow keeps on the face
+    K.brow(d, Pn, sx + sg - side * (far ? 8 * t : 10 * tn), k * (far ? 0.85 : 1 - 0.25 * tn), -sg, ex);       // the far brow keeps on the face
   }
   if (front > 0.12) {
     d.map = (x, y) => F.faceMap(x, y, true); d.T = [[1, 0, 0, 1, 0, 0]];
@@ -113,7 +114,7 @@ export function drawFace(d, F) {
   }
   // the mouth on the beard: its place on the head under the beard, moved toward the seen cheek as the face turns
   const fm0 = frameAt(d, 0, MY, 0.5, true);
-  if (fm0 && front > 0.05) {
+  if (fm0) {
     const t = 1 - Math.min(1, fm0.r), fm = frameAt(d, -side * 9 * t, MY, 0.55, true);
     if (fm) {
       const s = -side * (16 * t + 14 * Math.max(0, 0.5 - front) / 0.5); fm.c = [fm.c[0] + fm.ax[0] * s, fm.c[1] + fm.ax[1] * s];

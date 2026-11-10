@@ -76,3 +76,29 @@ The viewer: serve the repository's root (`python3 -m http.server`) and open `to3
 | three.js 0.160 (viewer) | MIT |
 
 No neural images; StdGEN not used.
+
+## Alive (as Р10, Р27)
+
+`tools/web/face.mjs`, `life.mjs`: replacement pieces mixed (lips, the dark, tongue, teeth, the moustache's curls go
+with the mouth's shapes), lids over the glass eyes (the sheet's lid numbers × 1.3: his eyes narrow when he laughs, and
+the opening is cut a little larger than drawn), blinks, the eyes' holds and jumps, the gaze leading the head, speech,
+expressions by a spring. His resting face is `beam`. Motions (engine/motions only): wave (his), walk, idle (the face
+close-up), bow frame 0 levelled for the stills; dance, stomp and the rest in the viewer.
+
+A fix that Р27 got too: in the stills the eyes are now really on the camera. Р10's `stills.py` turned the eyes to
+his left, while the camera of a view stands on his right (render.py) and the head's own part of the drawing's yaw
+turns it further away — so the eyes looked away from the lens; here the gaze comes back to the camera by both.
+
+## What is weak (honestly)
+
+- The mouth is a piece laid on the face, not a cavity: the big laugh reads from the front by its dark, teeth and
+  tongue, but from the side it has no depth.
+- The curls are the drawing's own honeycomb, and as real balls they read more regular and beady than the drawn ones
+  (which overlap and hide each other); the hair's top is a little helmet-like.
+- No ladle (Anny's open hand has no grip) and the fist-on-hip pose of the figure is not made: the figure is Kimodo's
+  wave, the raised arm as drawn. In the wave the head leans far toward the arm (the engine's arms-out-of-head
+  correction on a short arm and a big head).
+- Clothes are shells: the jacket is a stiff barrel, the apron below the waist is skinned to hips and thighs (it
+  stretches in a wide step, it doesn't swing), the towel is stuck to the chest; sleeves and trousers have no folds.
+- The skin is paler than the drawing's warm clay; the forearms are Anny's (thickened), the hands hers.
+- The viewer's materials are simpler than the renders; it has 91 000 vertices and is slower to start than Р10's.

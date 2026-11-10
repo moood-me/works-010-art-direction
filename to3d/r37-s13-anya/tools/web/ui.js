@@ -17,7 +17,8 @@ export function ui(A, stage) {
   #ui button[aria-pressed="true"] { background: #b8402f; border-color: #b8402f; color: #fff; }
   #ui input[type=range] { flex: 1; min-width: 80px; accent-color: #b8402f; }
   #ui .lab { color: #75706a; font-size: 12px; min-width: 72px; }
-  #ui .hint { color: #75706a; font-size: 12px; }`;
+  #ui .hint { color: #75706a; font-size: 12px; }
+  @media (min-width: 760px) { #stage { left: 350px !important; } }`;      /* the sheet beside the controls, not under them */
   document.head.appendChild(css);
   const box = document.createElement('div'); box.id = 'ui'; document.body.appendChild(box);
   box.innerHTML = `

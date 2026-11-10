@@ -29,7 +29,7 @@ try at how the style lives in 3D. Р38 (Марат, `to3d/r38-s13-marat`) is mad
 - **Hair**: a flat dark mass (one shell from the crown to the shoulder blades, open in front along the drawing's
   hairline, falling along the cheek and behind the shoulders); the hairline is `kit.py`'s `fringe` — separate hairs
   growing out of the shell's edge onto the forehead; a few light lines down the hair (`strands`' colour) are columns
-  of the shell. The ears are under the hair (taken out of the head).
+  of the shell. The ears are under the hair (laid flat on the head's side: left out, they were a hole seen in profile; left as they are, their tips came through the hair).
 - **The face is drawn, not modelled** (as in Р12): `parts.py`'s `eye`, `brow`, `nose`, `mouth` and the cheek's bokashi
   in the head's front units, laid on the 3D head through a grid (build.py). Each feature has its own frame on the
   turned head; the far eye is shorter and kept on the face; near the profile the near eye sits back from the contour

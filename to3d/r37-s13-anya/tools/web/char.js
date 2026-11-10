@@ -36,15 +36,16 @@ export const FLAT = { skin: '#f4e7d0', hair: HAIR, card: CARD, dress: DRESS, sho
 // the key block's weights (kit.py: lines on cloth are heavier and follow direction more than lines on skin): [w, nib]
 export const lineW = { body: [1.9, 0.3], head: [2.0, 0.3], chest: [2.0, 0.3], dress: [3.4, 0.6], cardigan: [3.3, 0.6],
   sleeveLeft: [3.1, 0.6], sleeveRight: [3.1, 0.6], hair: [1.6, 0.3] };
+export const bodyLine = 1.25, headPieces = ['head', 'hair', 'beard'];
 export const STAND = { out: 0.1, fwd: 0.03 };
 export const MOTIONS = [['', 'стоит'], ['idle', 'стоит, оглядывается'], ['walk', 'шаг'], ['bow', 'поклон'], ['wave', 'машет'], ['dance', 'танец']];
 export const VIEW = { far: { dist: 6.2, cy: 0.86 }, near: { dist: 1.9, up: 0.03 } };
 
 export function strokeStyle(st) {
-  if (st.kind === 'sheen') return { w: 0.9, prof: 'swell', color: SHEEN, op: 0.5, nib: 0.15, min: 24 };
+  if (st.kind === 'sheen') return { head: true, w: 0.9, prof: 'swell', color: SHEEN, op: 0.5, nib: 0.15, min: 24 };
   return { w: 3.0, prof: 'taper', nib: 0.3 };
 }
-export const minLen = { head: 22, body: 8 };
+export const minLen = { head: 22, body: 8, towel: 16 };
 // the hairline: separate hairs out of its edge onto the forehead (anya.py: d.fringe(…, 6, 0.9, HAIR, lean 0.9))
 export function fringe(d, P, st, F) {
   const l = F.jointAt('LeftEye'), r = F.jointAt('RightEye'), c = [(l[0] + r[0]) / 2, (l[1] + r[1]) / 2];
@@ -82,7 +83,7 @@ export function drawFace(d, F) {
     { const s = -side * (far ? 13 * t + back * 0.7 : 4 * t + 18 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
     useFrame(d, f, sx, 0);
     K.eye(d, Pn, sx, 0, k, -sg, { ...ex, look: [ex.look[0] + side * t * 2, ex.look[1]] });
-    K.brow(d, Pn, sx + sg - (far ? side * 8 * t : 0), k * (far ? 0.85 : 1 - 0.25 * tn), -sg, ex);       // the far brow keeps on the face
+    K.brow(d, Pn, sx + sg - side * (far ? 8 * t : 10 * tn), k * (far ? 0.85 : 1 - 0.25 * tn), -sg, ex);       // the far brow keeps on the face
   }
   // the nose: parts.nose's stroke — down with a hook at the tip, and the nostril — laid on the 3D nose, on its far
   // side, so it turns with the head; in profile the head's own contour carries the nose

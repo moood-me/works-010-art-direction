@@ -56,7 +56,10 @@ def run(sheet, samples=48):
     frames, views = [], []
     pw = W // len(panels)
     for k, (cx, cy, S, vy, hy, mot, fr, face, roll) in enumerate(panels):
-        gaze = [vy - hy, 0.0]                  # the eyes on the camera (the drawing's at_camera)
+        # the eyes on the camera (the drawing's at_camera). The camera of a view of yaw vy stands on his right
+        # (render.py: −sin), the head's own part of the drawing's yaw turns it further away, to his left — so the eyes
+        # come back by both (as far as eyes go)
+        gaze = [max(-32.0, min(32.0, -(vy + hy))), 0.0]
         fy = math.radians(vy)
         mj = dict(out=f'{OUT}/{sheet}{k}.bin', motion=mot, frames=[fr],
                   head=dict(yaw=hy, roll=-roll, rollAxis=[-math.sin(fy), 0, math.cos(fy)], level=True),

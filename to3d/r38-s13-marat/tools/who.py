@@ -12,7 +12,7 @@ FIG_EXPR = 'joy'
 FIG_PROPS = None
 # the figure as drawn: he laughs leaning back, the near arm up (the drawing's ladle is not made), the far one thrown open
 FIG_POSE = dict(lean=-0.1, headNod=-0.1, headTurn=0.1,
-                arms={'Right': {'upper': [-0.95, 0.05, -0.05], 'fore': [-0.08, 1, 0.1]}, 'Left': {'upper': [0.55, -0.3, 0.75], 'fore': [0.45, 0.1, 0.9]}})
+                arms={'Left': {'upper': [0.95, 0.05, -0.05], 'fore': [0.08, 1, 0.1]}, 'Right': {'upper': [-0.35, -0.3, 0.85], 'fore': [-0.3, 0.1, 0.95]}})
 BUST_POSE = dict(out=0.2)
 BUST_CX = (0.0, 0.0)
 

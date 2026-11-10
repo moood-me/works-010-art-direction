@@ -48,31 +48,31 @@
   ],
   "head": [
    12338,
-   19266
+   20570
   ],
   "chest": [
-   19266,
-   20306
+   20570,
+   21610
   ],
   "dress": [
-   20306,
-   37154
+   21610,
+   38458
   ],
   "cardigan": [
-   37154,
-   44084
+   38458,
+   45388
   ],
   "sleeveLeft": [
-   44084,
-   45620
+   45388,
+   46924
   ],
   "sleeveRight": [
-   45620,
-   47156
+   46924,
+   48460
   ],
   "hair": [
-   47156,
-   70526
+   48460,
+   71830
   ]
  },
  "pieceNames": [
@@ -909,7 +909,7 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    211578
+    215490
    ],
    "offset": 444088
   },
@@ -919,7 +919,7 @@
     37007,
     4
    ],
-   "offset": 1290400
+   "offset": 1306048
   },
   "skinWeights": {
    "dtype": "float32",
@@ -927,91 +927,91 @@
     37007,
     4
    ],
-   "offset": 1438432
+   "offset": 1454080
   },
   "joints": {
    "dtype": "float32",
    "shape": [
     231
    ],
-   "offset": 2030544
+   "offset": 2046192
   },
   "frames": {
    "dtype": "float32",
    "shape": [
     308
    ],
-   "offset": 2031472
+   "offset": 2047120
   },
   "band": {
    "dtype": "float32",
    "shape": [
     37007
    ],
-   "offset": 2032704
+   "offset": 2048352
   },
   "stripe": {
    "dtype": "float32",
    "shape": [
     37007
    ],
-   "offset": 2180736
+   "offset": 2196384
   },
   "grp": {
    "dtype": "uint8",
    "shape": [
     37007
    ],
-   "offset": 2328768
+   "offset": 2344416
   },
   "pid": {
    "dtype": "uint8",
    "shape": [
     37007
    ],
-   "offset": 2365776
+   "offset": 2381424
   },
   "edges": {
    "dtype": "uint32",
    "shape": [
-    212746
+    216562
    ],
-   "offset": 2402784
+   "offset": 2418432
   },
   "edgeTris": {
    "dtype": "uint32",
    "shape": [
-    212746
+    216562
    ],
-   "offset": 3253768
+   "offset": 3284680
   },
   "edgeDrop": {
    "dtype": "uint8",
    "shape": [
-    106373
+    108281
    ],
-   "offset": 4104752
+   "offset": 4150928
   },
   "inner": {
    "dtype": "uint8",
    "shape": [
     37007
    ],
-   "offset": 4211128
+   "offset": 4259216
   },
   "faceTri": {
    "dtype": "uint32",
    "shape": [
     4891
    ],
-   "offset": 4248136
+   "offset": 4296224
   },
   "faceBar": {
    "dtype": "float32",
    "shape": [
     14673
    ],
-   "offset": 4267704
+   "offset": 4315792
   }
  },
  "bin": "anya.bin"

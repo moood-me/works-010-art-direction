@@ -58,7 +58,7 @@ J1[I['Jaw']] = [0, y3(34), -0.03]          # where the jaw turns, under the ear
 for s, sg in (('Left', 1), ('Right', -1)):
     J1[I[s + 'Eye']] = [sg * u(33), y3(0), u(70)]
     J1[I[s + 'Shoulder']] = [sg * 0.03, y3(176), 0.03]
-    J1[I[s + 'Arm']] = [sg * 0.235, y3(196), 0.0]
+    J1[I[s + 'Arm']] = [sg * 0.212, y3(238), 0.0]
     for n, k in (('ForeArm', 1.0), ('Hand', 0.95)):
         j = I[s + n]; J1[j] = J1[PARENT[j]] + k * (J0[j] - J0[PARENT[j]])
     for j in under(I[s + 'Hand'])[1:]:
@@ -214,7 +214,7 @@ for s, sg in (('Left', 1), ('Right', -1)):
     arm = set(under(I[s + 'Shoulder'])); tr = np.array([j in arm for j in range(NJ)])
     SL.append(dict(V=V_, T=T_, W=WT.limb(V_, T_, tr, A_, 0.12), side=s))
     L_, S_, F_ = J1[I[s + 'Leg']], J1[I[s + 'Shin']], J1[I[s + 'Foot']]
-    path = S.catmull([L_ + [0, 0.02, 0], (L_ + S_) / 2, S_, (S_ + F_) / 2, F_ + [0, 0.035, 0.004]], 6)
+    path = S.catmull([L_ + [0, 0.02, 0], (L_ + S_) / 2, S_, (S_ + F_) / 2, F_ + [0, -0.035, 0.004]], 6)
     Ln = np.linspace(0, 1, len(path))
     V_, T_ = S.tube(path, np.interp(Ln, [0, 0.5, 1], [0.104, 0.082, 0.066]), 26)
     leg = set(under(I[s + 'Leg'])); tr = np.array([j in leg for j in range(NJ)])
@@ -233,8 +233,9 @@ BIBW = 100
 BIB0, WAIST, AHEM = 316.0, 552.0, 1208.0
 bib_y = np.r_[np.arange(BIB0, WAIST, 8.0), WAIST]
 brow = [apron_row(v) for v in bib_y]
-bgap = [np.pi - np.arcsin(min(1, (u(BIBW) / r[1]) ** (P_ / 2))) for r in brow]
-BV, BT = S.loft(brow, 20, False, bgap, back=True); BT = S.outward(BV, BT) if False else BT
+# (the bib widens from its top to the skirt's width at the waist, as the drawing's apron is one piece)
+bgap = [np.pi - (t0_ + (np.radians(114) - t0_) * ((v - BIB0) / (WAIST - BIB0)) ** 1.6) for v, r in zip(bib_y, brow) for t0_ in [np.arcsin(min(1, (u(BIBW) / r[1]) ** (P_ / 2)))]]
+BV, BT = S.loft(brow, 40, False, bgap, back=True); BT = S.outward(BV, BT) if False else BT
 sk_y = np.r_[np.arange(WAIST, AHEM, 8.0), AHEM]
 srow = [apron_row(v) for v in sk_y]
 AC = 64
@@ -314,9 +315,9 @@ IV = np.c_[np.cos(eln) * np.sin(azr), np.sin(eln), np.cos(eln) * np.cos(azr)]
 above = np.degrees(eln) - edge
 area = np.linalg.norm(np.cross(IV[IF[:, 1]] - IV[IF[:, 0]], IV[IF[:, 2]] - IV[IF[:, 0]]), axis=1)
 IF = IF[area > 1e-7]
-r0 = skull_r(IV) + u(4) + u(5) * smooth(above / 14)
+r0 = skull_r(IV) + u(5) + u(10) * smooth(above / 14)
 HV = CEN + IV * r0[:, None]
-rise, hseeds = bumps(HV, IV, 400, (u(12), u(16)), (u(9), u(13)))
+rise, hseeds = bumps(HV, IV, 400, (u(14), u(19)), (u(11), u(16)))
 HV = CEN + IV * (r0 + rise * (0.45 + 0.55 * smooth(above / 8)))[:, None]
 HT_ = IF if (M.vertex_normals(HV, IF) * (HV - CEN)).sum(1).mean() > 0 else IF[:, ::-1]
 Wh = np.zeros((len(HV), NJ)); Wh[:, I['Head']] = 1
@@ -326,11 +327,11 @@ print('hair', len(HV), 'vertices', len(hseeds), 'curls')
 # ---------------------------------------------------------------- the beard: a cup round the jaw, wider than the face
 # and deeper than the chin, open at the back; in front it leaves the cheeks and the mouth bare (its inner edge runs
 # from the sideburn down the cheek to the mouth's corner and under the mouth)
-by_ = np.r_[np.arange(-8, 118, 5.0), 118, 122, 124.5, 126]
-b_a = np.interp(by_, [-8, 30, 76, 104, 118, 126], [84, 93, 85, 60, 38, 3])
+by_ = np.r_[np.arange(-33, 118, 5.0), 118, 122, 124.5, 126]
+b_a = np.interp(by_, [-33, -8, 30, 76, 104, 118, 126], [80, 84, 93, 85, 60, 38, 3])
 b_f = np.interp(by_, [-8, 30, 44, 60, 76, 100, 116, 126], [60, 74, 86, 91, 93, 86, 56, 16])
 b_zc = np.interp(by_, [-8, 100, 126], [-6, -6, 14])
-b_in = np.interp(by_, [-8, 12, 36, 43, 47], [80, 70, 56, 30, 0])       # the bare front's half-width (BEARDS 'f', inner)
+b_in = np.interp(by_, [-33, -8, 12, 36, 43, 47], [79, 80, 70, 56, 30, 0])       # the bare front's half-width (BEARDS 'f', inner)
 TB = np.radians(104)
 n_half = 22
 BV_ = []; open_mid = []
@@ -339,7 +340,7 @@ for yv, a_, f_, zc_, xin in zip(by_, b_a, b_f, b_zc, b_in):
     # (BEARDS 's': from the mouth's corner up to the ear) — the further back of the two
     th_in = np.arcsin(min(1.0, (xin / a_)) ** (P_ / 2)) if xin > 0 else 0.0
     if xin > 0:
-        zin = np.interp(yv, [-8, 10, 30, 44, 47], [0, 8, 24, 48, 95]); cq = (zin - zc_) / (f_ - zc_)
+        zin = np.interp(yv, [-33, -8, 10, 30, 44, 47], [-14, -4, 8, 24, 48, 95]); cq = (zin - zc_) / (f_ - zc_)
         th_in = max(th_in, np.arccos(np.clip(np.sign(cq) * abs(cq) ** (P_ / 2), -0.3, 1)))
     ths = th_in + (TB - th_in) * np.linspace(0, 1, n_half)
     ths = np.r_[-ths[::-1], ths]

@@ -318,7 +318,7 @@ MATS = {
     'hairmass': lambda: mat_plain('hairmass', lin('#0c0808'), rough=0.7),
     'brow': lambda: mat_hair('brow', '#1e1614', '#0a0606', rough=0.55, coat=0.1),
     'jacket': lambda: mat_cloth('jacket', lin('#ece2d0'), weave=1500.0, rough=0.8, sheen=0.3, dark='#8a7c6a', amount=0.25, strength=0.25),
-    'apron': lambda: mat_cloth('apron', lin('#c4582c'), weave=1100.0, dark='#5a1c0c', amount=0.4, strength=0.35),
+    'apron': lambda: mat_cloth('apron', lin('#c4582c'), weave=1100.0, sheen=0.1, dark='#5a1c0c', amount=0.4, strength=0.35),
     'aprontie': lambda: mat_cloth('aprontie', lin('#a84a24'), weave=1100.0, dark='#4a180a', amount=0.4),
     'towel': mat_towel,
     'trousers': lambda: mat_cloth('trousers', lin('#56504e'), weave=1200.0, dark='#1c1818', amount=0.4),

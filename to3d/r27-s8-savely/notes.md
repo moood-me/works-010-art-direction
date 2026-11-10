@@ -63,7 +63,10 @@ The scale of the cast: in the style's picture of all six Тим's head is 200 px
 9. `drawn.py` — the style's page has no turnaround and no expression sheet of him (its notes: dropped, the flat
    moustache and tufts don't hold in profile). To compare all the same views, the two sheets are made by the style's
    own functions (`build.py turnaround()`, `expressions()`) into the cache; nothing in the style's folder is touched.
-10. `stills.py`, `films.py` (turn, walk, face, bow), `steps.py`, `pics.py`, `viewshot.mjs`, `peek.py` (quick clay
+10. `stills.py`: the eyes are now really on the camera. Р10's turned the eyes to his left, while the camera of a view
+    stands on his right (render.py) and the head's own part of the drawing's yaw turns it further away — so the eyes
+    looked away from the lens; here the gaze comes back to the camera by both.
+11. `stills.py`, `films.py` (turn, walk, face, bow), `steps.py`, `pics.py`, `viewshot.mjs`, `peek.py` (quick clay
     looks while building). Heavy runs go through `CACHE/heavy.sh` (whichever of the three shared locks is free).
 
 ## How to repeat
