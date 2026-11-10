@@ -55,6 +55,7 @@ export function fringe(d, P, st, F) {
 // the face in parts.head's front units, its numbers from the live face (F.fp)
 export function drawFace(d, F) {
   const e = F.fp, { frameAt, useFrame } = F, { side, front } = F.sideOf();
+  console.log('DBG', side, front, JSON.stringify([-33, 33].map(sx => { const f = frameAt(d, sx, 0, 0.72); return f && [f.c, f.ax, f.ay, f.r]; })));
   const ex = { open: e.squint ? 0 : e.eye, closed: e.blink || 0, lift: e.lift, tilt: e.tilt, look: [e.look[0] * 2.4, e.look[1] * 2.0],
     mouth: e.talk ? 'talk' : e.mouth, talkOpen: e.open || 0, talkRound: e.round || 0 };
   // the cheeks: a soft round patch of bokashi
