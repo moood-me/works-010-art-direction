@@ -44,7 +44,9 @@ def dense(P, n=8):
 
 
 # parts.head_pts(p, 'f') with long 1.08, cheek 0, jaw 0, chin −3
-_FF = [(0, -100), (40, -94), (70, -68), (82, -30), (82, 0), (80, 28), (72, 56.2), (56, 84.2), (27, 102.6)]
+# (the lower face a little fuller than the outline's points: the drawing's curve through them is rounder than a
+# polygon, and the 3D silhouette read narrower beside it)
+_FF = [(0, -100), (40, -94), (70, -68), (82, -30), (82, 0), (81, 28), (76, 56.2), (63, 84.2), (34, 102.6)]
 FACE_F = dense(poly(_FF + [(0, 108)] + [(-x, y) for x, y in _FF[:0:-1]]))
 # parts.head_pts(p, 's') (facing left) with the nose 'soft' 0.82: forehead, nose, lips, chin, the jaw to the ear, skull
 _FS = [(0, -100), (-40, -95), (-66, -76), (-78, -46), (-80, -18), (-75, -2), (-83.3, 14), (-93.6, 27), (-90.7, 34),

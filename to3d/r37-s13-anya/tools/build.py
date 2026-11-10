@@ -55,7 +55,7 @@ J1[I['Jaw']] = [0, y3(34), -0.02]
 for s, sg in (('Left', 1), ('Right', -1)):
     J1[I[s + 'Eye']] = [sg * u(33), y3(0), u(70)]
     J1[I[s + 'Shoulder']] = [sg * 0.015, y3(212), 0.03]
-    J1[I[s + 'Arm']] = [sg * 0.112, y3(240), -0.004]
+    J1[I[s + 'Arm']] = [sg * 0.11, y3(252), -0.004]
     for n, k in (('ForeArm', 0.9), ('Hand', 0.9)):
         j = I[s + n]; J1[j] = J1[PARENT[j]] + k * (J0[j] - J0[PARENT[j]])
     for j in under(I[s + 'Hand'])[1:]:
@@ -138,7 +138,7 @@ B['band'] = np.where(legs[bi], np.where(np.array(['Toe' in n for n in dn[bi]]), 
 # ---------------------------------------------------------------- the head
 hv, hP, eL, eR = Hd.load(HBM)
 earm = Hd.ears(hv)
-hv2, = Hd.fit(hv, earm, ear=(u(78), np.array([0.5, 0.6, 0.58])))
+hv2, = Hd.fit(hv, earm, ear=(u(79), np.array([0.34, 0.62, 0.6])))
 ec = hv2[earm].mean(0)
 hv2[earm] += [0, y3(8) - ec[1], u(-19) - ec[2]]          # the ears: parts.ear — front x 80…93, y −16…30; profile x 16…40
 V0 = Hd.flatten(hv2, D.REG, front_min=0.02)
@@ -233,14 +233,14 @@ CHEM = 582.0
 gapf = lambda yy: np.interp(yy, [150, 250, CHEM], [38, 45, 36])
 krows, kgap = [], []
 for tt in np.linspace(1, 0, 12)[:-1]:
-    yv = 150 + 72 * (1 - tt) ** 1.25
+    yv = 150 + 84 * (1 - tt) ** 1.05
     a_ = 120 * (1 - tt) ** 0.8 + 46 * (1 - (1 - tt) ** 0.8)
     zf = 62 * (1 - tt) + 36 * tt; zb = -72 * (1 - tt) - 50 * tt
     krows.append((float(y3(yv)), float(u(a_)), float(u((zf + zb) / 2)), float(u((zf - zb) / 2)), float(u((zf - zb) / 2))))
     kgap.append(np.arcsin(min(gapf(yv) / a_, np.sin(np.radians(78)))))
-for yy in np.r_[np.arange(222, CHEM, 8.0), CHEM]:
+for yy in np.r_[np.arange(234, CHEM, 8.0), CHEM]:
     da, dzc, ddf, ddb = dims_at(drows, y3(yy))
-    a_ = max(u(np.interp(yy, [222, 400, CHEM], [120, 104, 100])), da + 0.008)
+    a_ = max(u(np.interp(yy, [234, 400, CHEM], [120, 104, 100])), da + 0.008)
     zf = max(u(62), dzc + ddf + 0.008); zb = min(u(-72), dzc - ddb - 0.008)
     krows.append((float(y3(yy)), float(a_), float((zf + zb) / 2), float((zf - zb) / 2), float((zf - zb) / 2)))
     kgap.append(np.arcsin(min(gapf(yy) / (a_ / K), 0.97)))
@@ -347,6 +347,10 @@ Ah = M.adjacency(len(HV), [list(t_) for t_ in HT_])
 hyd = ydr(HV[:, 1])
 HV = M.smooth(HV, Ah, hyd > 60, iters=5, lam=0.5)
 HV = off_head(M.smooth(HV, Ah, np.ones(len(HV), bool), iters=3, lam=0.5), 0.004)
+_h = HV.reshape(ROWS, COLS, 3)
+for r in range(ROWS):          # above the hairline the shell is closed: its two edges are one seam
+    if HY0 + 0.4 + (HY1 - HY0 - 0.4) * (r / (ROWS - 1)) ** 1.06 <= -86: _h[r, 0] = _h[r, -1] = (_h[r, 0] + _h[r, -1]) / 2
+HV = _h.reshape(-1, 3)
 if (M.vertex_normals(HV, HT_) * (HV - [0, float(y3(0)), u(-10)])).sum(1).mean() < 0: HT_ = HT_[:, ::-1]
 Wh = np.zeros((len(HV), NJ))
 wh = 1 - 0.85 * smooth((hyd - 100) / 110)
@@ -401,7 +405,7 @@ drop |= inp('hair') & (F1 < 0) & (hrow <= hl_rows[-1])            # the hairline
 inner = np.ones(N, np.uint8)
 # on the face a silhouette of skin over skin is a line only along the jaw (over the neck) and on the ear; the nose
 # is drawn by the drawing's own stroke (char.js)
-mid_face = (V0[:, 2] > 0.0) & (yd > -96) & ((yd < 80) | ((yd < 99) & (np.abs(xd) < 44)))
+mid_face = (V0[:, 2] > 0.0) & (yd > -96) & ((yd < 66) | ((yd < 96) & (np.abs(xd) < 30)))
 inner[hd0:hd1] = np.where(mid_face & ~earm, 0, 1)
 b0 = ranges['body'][0]
 inner[b0:b0 + nb] = np.where(isfoot, 0, 1)                         # a slipper is one form: no lines of toes

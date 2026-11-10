@@ -343,9 +343,20 @@ function frameAt(d, cx, cy, min = 0.62, raw = false) {
   if (!xl || !xr || !yu || !yd) return null;
   const ay = [(yd[0] - yu[0]) / 4, (yd[1] - yu[1]) / 4], ly = Math.hypot(...ay);
   let ax = [(xr[0] - xl[0]) / 4, (xr[1] - xl[1]) / 4]; const lx = Math.hypot(...ax);
-  const r = lx / ly, k = Math.max(r, min) / (r || 1);
-  if (lx < 1e-6) ax = [-ay[1], ay[0]]; else ax = [ax[0] * k, ax[1] * k];
+  // the horizontal's direction is the head's own (robust near the profile, where the face's surface gives none)
+  const r = lx / ly, hx = headX(ay), m = ly * Math.max(r, min);
+  ax = [hx[0] * m, hx[1] * m];
   return { c, ax, ay, r };
+}
+// the picture direction of the head's own x axis (its left), across the given vertical: from the eyes while both are
+// seen apart; near the profile — away from where the face looks when its left side is toward us, else toward it
+function headX(ay) {
+  const L = jointAt('LeftEye'), R = jointAt('RightEye'), Hd = jointAt('Head'), l = Math.hypot(ay[0], ay[1]) || 1, p = [-ay[1] / l, ay[0] / l];
+  const e = (L[0] - R[0]) * p[0] + (L[1] - R[1]) * p[1], f = ((L[0] + R[0]) / 2 - Hd[0]) * p[0] + ((L[1] + R[1]) / 2 - Hd[1]) * p[1];
+  const span = 66 * PPU;
+  let sgn;
+  if (Math.abs(e) > 0.12 * span) sgn = Math.sign(e); else sgn = (L[2] < R[2] ? -1 : 1) * (Math.sign(f) || 1);
+  return [p[0] * sgn, p[1] * sgn];
 }
 function useFrame(d, f, cx, cy) {
   d.map = null;

@@ -5,7 +5,7 @@ CACHE = '/home/user/cache/to3d-r26-s7-kira'
 LABEL = 'Кира, Гибли'
 BODY = 'moood-woman'                       # the engine body whose hands, skeleton and weights are used
 CALM = None                                # her resting face is in her own module (kira.CALM)
-ARM_OUT = 0.03                             # the hanging arms a little further out than drawn (the drawing paints them over the body)
+ARM_OUT = 0.0                              # the hanging arms a little further out than drawn (the drawing paints them over the body)
 # the films of the Kimodo motions for the page: name → (motion, camera yaw, frames, expression track, talk from–to or None[, the camera's height])
 MOTION_FILMS = {
     'walk': ('walk', 0.8, 120, [[0, 'calm']], None),

@@ -1,9 +1,10 @@
-"""Савелий Петрович's sculpted hair, from the drawing's own hair: `cast.savely_hair` builds its locks as 3D paths in head units
-(H.surf_path / H.fall over the head's shell) with widths, and a cap over the skull above a hairline line(phi).
-Here each lock becomes a solid: a flattened tube along its path (wide across the head, thin off it), narrow at the root,
-tapering to a point, its top cut by lengthwise grooves (the drawing's `grooves`); the cap becomes a shell of the
-head's loft (scaled by the drawing's k) above the hairline, with a thickness and a tucked-in edge.
-Output: CACHE/hair.npz — V (head units, engine axes), T, uv (across −1…1, along 0…1; the cap: −9), lock id."""
+"""Марат's sculpted curls, from the drawing's own hair (`marat.marat_hair`): the drawing lays curls as a jittered
+honeycomb of spots over the head (hair.curl_spots: a point, a radius — the same seed, the same curls) and draws each as
+a small lit ball with a spiral cut. Here each spot becomes a real ball of clay (a little flattened onto the head, its
+spiral in the bump of the material), over an under-mass that closes the gaps: the cap over the skull above the
+drawing's hairline, and for the beard a bowl hanging from the jaw (the drawing's `beard_at`).
+The moustache's curls go with the mouth's shapes and are made in face.py.
+Output: CACHE/hair.npz — V (head units, engine axes), T, uv (round the curl, from its top 0 … 1; the under-mass: −9)."""
 import math
 import numpy as np
 import drawing
@@ -12,58 +13,6 @@ from common import CACHE, hu
 
 
 
-FRINGE_UP = 0.0
-FLAT = 0.55          # the tufts' thickness against their width (fluffy white tufts, not ribbons)
-
-
-def smooth_path(p, n=28):
-    p = np.asarray(p, float)
-    # resample by arc length, then a light smoothing (as the drawing's geom: resample + smooth)
-    s = np.r_[0, np.cumsum(np.linalg.norm(np.diff(p, axis=0), axis=1))]
-    t = np.linspace(0, s[-1], n)
-    q = np.array([np.interp(t, s, p[:, k]) for k in range(3)]).T
-    for _ in range(2):
-        q[1:-1] = (q[:-2] + 2 * q[1:-1] + q[2:]) / 4
-    return q
-
-
-def lock_mesh(L, centre, nu=28, nv=14, flat=0.42, grooves=2):
-    """one lock: rings of nv points along the path"""
-    c = smooth_path(hu(np.array(L.path3)), nu)
-    if c[0, 2] > 0.1 and c[-1, 2] > 0.25:
-        # the fringe: its falling ends held a little higher than drawn, so the brows show under it (in the drawing
-        # they are painted over the hair's shadow; in 3D the clumps stand off the forehead and come lower)
-        t = np.linspace(0, 1, len(c))
-        c[:, 1] += FRINGE_UP * t ** 2
-    tg = np.gradient(c, axis=0); tg /= np.linalg.norm(tg, axis=1, keepdims=True)
-    V, UV = [], []
-    for i in range(nu):
-        t = i / (nu - 1)
-        out = c[i] - centre; out -= (out @ tg[i]) * tg[i]; out /= np.linalg.norm(out)
-        side = np.cross(tg[i], out)
-        w = (L.w0 + (L.w1 - L.w0) * t ** L.taper) / 2
-        w *= min(1.0, L.root + (1 - L.root) * (t / 0.3) ** 0.7)
-        w *= (1 - t ** 6) ** 0.5 if L.w1 == 0 else 1.0           # a soft point at the tip
-        w = max(w, 0.002)
-        th = (w * flat + 0.004) * min(1.0, 0.25 + 0.75 * t / 0.25)          # thin at the root: it comes out of the skull
-        for j in range(nv):
-            a = 2 * math.pi * j / nv
-            x, y = math.cos(a), math.sin(a)
-            r = 1.0
-            if y > 0 and grooves:                                  # grooves along the top
-                r -= 0.16 * y * max(0.0, math.cos(a * (grooves + 1) * 2 / 2 * 2)) ** 3 * (1 - t ** 2)
-            V.append(c[i] + side * x * w * r + out * (y * th * r + th * 0.15))
-            UV.append((x, t))
-    T = []
-    for i in range(nu - 1):
-        for j in range(nv):
-            a, b = i * nv + j, i * nv + (j + 1) % nv
-            T += [(a, b, a + nv), (b, b + nv, a + nv)]
-    # close the root
-    base = len(V); V.append(c[0] - tg[0] * 0.004); UV.append((0, 0))
-    for j in range(nv):
-        T.append((base, (j + 1) % nv, j))
-    return np.array(V), np.array(T), np.array(UV)
 
 
 def cap_mesh(line, k, rows=40, cols=144, thick=0.03):
@@ -110,61 +59,104 @@ def orient(V, T, centre):
     return T if (n * c).sum() > 0 else T[:, ::-1]
 
 
+import marat as M
+import hair as H
+
+_BALL = None
+
+
+def ball(nr=6, nc=12):
+    """a unit ball, its pole along +z: rings from the pole"""
+    global _BALL
+    if _BALL is None:
+        V = [(0, 0, 1.0)]; uv = [(0.0, 0.0)]
+        for i in range(1, nr):
+            th = math.pi * i / nr
+            for j in range(nc):
+                q = 2 * math.pi * j / nc
+                V.append((math.sin(th) * math.cos(q), math.sin(th) * math.sin(q), math.cos(th))); uv.append((q, i / nr))
+        V.append((0, 0, -1.0)); uv.append((0.0, 1.0))
+        T = [(0, 1 + j, 1 + (j + 1) % nc) for j in range(nc)]
+        for i in range(nr - 2):
+            for j in range(nc):
+                a, b = 1 + i * nc + j, 1 + i * nc + (j + 1) % nc
+                T += [(a, a + nc, b), (b, a + nc, b + nc)]
+        last = len(V) - 1; s = 1 + (nr - 2) * nc
+        T += [(last, s + (j + 1) % nc, s + j) for j in range(nc)]
+        _BALL = (np.array(V), np.array(T), np.array(uv))
+    return _BALL
+
+
+def curls(spots, centre_of, flat=0.78):
+    """spots [(point (drawing axes), radius, facing, start angle, winding)] → balls, each flattened along its outward
+    direction (away from centre_of(point)) and sunk a little; uv: (angle + start, 0 at the top … 1), the winding's sign in
+    the angle"""
+    BV, BT, BUV = ball()
+    Vs, Ts, UVs = [], [], []; n = 0
+    for p, r, _, a0, wind in spots:
+        c = hu(np.array(p)); o = c - centre_of(c); o /= np.linalg.norm(o)
+        e1 = np.cross(o, [0, 1.0, 0.3]); e1 /= np.linalg.norm(e1); e2 = np.cross(o, e1)
+        R = np.stack([e1, e2, o], 1)
+        v = (BV * np.array([1, 1, flat]) * r) @ R.T + c - o * r * 0.15
+        Vs.append(v); Ts.append(BT + n); UVs.append(np.c_[wind * BUV[:, 0] + a0, BUV[:, 1]]); n += len(v)
+    return np.concatenate(Vs), np.concatenate(Ts), np.concatenate(UVs)
+
+
+def beard_at(phi, y):
+    """marat.marat_hair's beard: on the face down to the jaw, then a bowl of its own hanging from it"""
+    h = H0
+    if y <= M.JAW:
+        return h.surf(phi, y, 0.02 + 0.03 * max(0.0, (y - 0.1) / (M.JAW - 0.1)))
+    base = h.surf(phi, M.JAW, 0.05)
+    t = (y - M.JAW) / (M.BEARD_END - M.JAW)
+    s = math.sqrt(max(0.0, 1 - t ** 2.4))
+    cz = h.c(M.JAW)
+    return (base[0] * s, y, cz + (base[2] - cz) * (0.3 + 0.7 * s) + 0.04 * t)
+
+
+def beard_rad(y):
+    r = (H0.a(M.JAW) + H0.b(M.JAW)) / 2
+    return r if y <= M.JAW else r * math.sqrt(max(0.02, 1 - ((y - M.JAW) / (M.BEARD_END - M.JAW)) ** 2.4))
+
+
+def beard_mass(nphi=96, ny=60):
+    """the under-mass of the beard: the drawing's beard surface itself as a grid, kept below the beard's upper edge"""
+    ph = np.linspace(-1.95, 1.95, nphi); ys = np.linspace(-0.1, M.BEARD_END - 0.004, ny)
+    V = np.array([beard_at(p, y) for y in ys for p in ph])
+    f = np.array([M._beard_top(abs(p)) - y for y in ys for p in ph])
+    T = []
+    for i in range(ny - 1):
+        for j in range(nphi - 1):
+            a, b = i * nphi + j, i * nphi + j + 1
+            if max(f[a], f[b], f[a + nphi], f[b + nphi]) < 0.03: T += [(a, a + nphi, b), (b, a + nphi, b + nphi)]
+    T = np.array(T); used = np.unique(T); re = -np.ones(len(V), int); re[used] = np.arange(len(used))
+    return hu(V[used]), re[T]
+
+
 def build():
-    hd = cast_hair()
-    locks = hd['locks']
     centre = np.array([0.0, 0.05, -0.02])
-    Vs, Ts, UVs, ID = [], [], [], []
+    Vs, Ts, UVs, KIND = [], [], [], []
     n = 0
-    if hd.get('cap'):                 # Савелий is bald: no cap, only the tufts
-        line, yb, k = hd['cap']
-        CV, CT = cap_mesh(line, k)
-        CT = orient(CV, CT, centre)
-        Vs.append(CV); Ts.append(CT); UVs.append(np.full((len(CV), 2), -9.0)); ID.append(np.full(len(CV), -1)); n += len(CV)
-    for i, L in enumerate(locks):
-        v, t, uv = lock_mesh(L, centre, flat=FLAT, grooves=L.grooves + 1)
-        t = orient(v, t, v.mean(0) - 0.3 * (v.mean(0) - centre))
-        Vs.append(v); Ts.append(t + n); UVs.append(uv); ID.append(np.full(len(v), i)); n += len(v)
+
+    def add(v, t, uv, kind):
+        nonlocal n
+        Vs.append(v); Ts.append(t + n); UVs.append(uv); KIND.append(np.full(len(v), kind)); n += len(v)
+    CV, CT = cap_mesh(M._hairline, 1.02)
+    add(CV, orient(CV, CT, centre), np.full((len(CV), 2), -9.0), 0)
+    top = H.curl_spots(H0, lambda phi, y: y <= M._hairline(phi), 0.052, -0.5, 0.25, out=0.03, k=1.0, seed=4)
+    v, t, uv = curls(top, lambda c: centre)
+    add(v, t, uv, 1)
+    BV_, BT_ = beard_mass()
+    jawc = hu(np.array([0.0, M.JAW, H0.c(M.JAW)]))
+    add(BV_, orient(BV_, BT_, jawc), np.full((len(BV_), 2), -9.0), 2)
+    beard = H.curl_spots(H0, lambda phi, y: M._beard_top(abs(phi)) <= y <= M.BEARD_END - 0.035, 0.044, -0.04, M.BEARD_END,
+                         seed=9, place=beard_at, radius=beard_rad)
+    v, t, uv = curls(beard, lambda c: np.array([0.0, min(c[1], jawc[1] + 0.1), jawc[2] - 0.05]))
+    add(v, t, uv, 3)
     V = np.concatenate(Vs); T = np.concatenate(Ts)
-    np.savez(f'{CACHE}/hair.npz', V=V, T=T, uv=np.concatenate(UVs), lock=np.concatenate(ID))
-    print('hair', len(locks), 'locks', len(V), 'vertices')
+    np.savez(f'{CACHE}/hair.npz', V=V, T=T, uv=np.concatenate(UVs), kind=np.concatenate(KIND))
+    print('hair', len(top), 'curls on top,', len(beard), 'in the beard;', len(V), 'vertices')
     return V, T
-
-
-def cast_hair():
-    """Савелий's hair. The drawing (cast.savely_hair) gives a bald dome and tufts over the ears and round the back,
-    sticking out and curling up — 21 flat locks that its own page calls papery. In 3D the same hair is a wreath of
-    many leaf-shaped locks (narrow at the root, sunk into the skull; a point at the tip), in two layers, from temple to
-    temple round the back along the drawing's line: over the ears they leave the head and flick out and up, at the
-    back they lie down to the nape. Paths by the drawing's own builders (hair.surf_path, hair.fall)."""
-    import hair as H
-    rng = np.random.default_rng(5)
-    locks = []
-
-    def top(a):                       # the bald dome's edge by the angle from the face's middle (drawing's y, down +)
-        return np.interp(a, [1.0, 1.5, 2.2, math.pi], [-0.2, -0.17, -0.15, -0.17])
-
-    for layer in (0, 1):
-        n = 30 if layer == 0 else 26
-        for k in range(n):
-            a = 1.0 + (2 * math.pi - 2.0) * (k + 0.5 * layer + 0.5) / n          # 1.0 … 2π − 1.0 round the back
-            phi = a if a <= math.pi else a - 2 * math.pi
-            side = 1 if phi > 0 else -1
-            aa = abs(phi)
-            j = rng.uniform(-1, 1, 4)
-            y0 = top(aa) + 0.035 * layer + 0.012 * j[0]
-            over_ear = float(np.clip((2.1 - aa) / 0.5, 0, 1))                    # 1 over the ears, 0 at the back
-            down = 0.11 + 0.1 * (1 - over_ear) + 0.03 * j[1] + 0.03 * layer
-            p = H.surf_path(H0, [(phi, y0), (phi + side * 0.05 * over_ear, y0 + down * 0.6), (phi + side * 0.08 * over_ear, y0 + down)],
-                            out=(-0.012, 0.03 + 0.02 * over_ear - 0.012 * layer), k=1.0)
-            p += H.fall(p[-1], 0.035 + 0.05 * over_ear + 0.015 * j[2], n=4, side=side, out_x=(0.03 + 0.035 * over_ear) * (1 + 0.3 * j[3]),
-                        back_z=-0.03 * over_ear, flick=0.035 * over_ear)
-            if over_ear > 0.3:        # the ends curl up
-                q = np.array(p[-1]); r = 0.02 + 0.012 * over_ear
-                p += [(q[0] + side * r * 0.9, q[1] - r * 0.25, q[2] - 0.004), (q[0] + side * r * 1.25, q[1] - r * 1.0, q[2] - 0.008)]
-            L = H.Lock(p, 0.105 + 0.03 * (1 - over_ear) + 0.015 * j[1], 0.0, taper=1.0, root=0.3, strands=3, grooves=1)
-            locks.append(L)
-    return dict(col=P['hair_col'], locks=locks, cap=None)
 
 
 if __name__ == '__main__':

@@ -347,7 +347,17 @@ def surface_line(lo, ts, ys, width, src, push=0.1):
 
 
 # the top (a sweater, a hoodie): the torso loft eased; where its hem hangs over the thighs it goes round them
-top_lo = D.Loft(rings_max((torso, top_s['ease']), (legs_r, 0.5), ys=np.r_[np.arange(top_s['hem'], y_neck, 1.0), y_neck]), 2.4)
+_ys = np.r_[np.arange(top_s['hem'], y_neck, 1.0), y_neck]
+top_lo = D.Loft(rings_max((torso, top_s['ease']), (legs_r, 0.5), ys=_ys), 2.4)
+if hasattr(who, 'HOOD_EASE'):
+    # under a hood the top comes in to the neck above the shoulders (the drawing paints the hood's roll and the
+    # headphones over the chest; here they must lie outside it)
+    R_ = []
+    for y in _ys:
+        u = float(smooth((y - y_sh - 0.5) / (y_neck - y_sh - 0.5)))
+        a_, zf_, zb_, _, z0 = torso.at(y)
+        R_.append((y,) + tuple(np.array(top_lo.at(y)[:3]) * (1 - u) + np.array([a_ + 0.8, zf_ + z0 + 0.8, zb_ + z0 - 0.8]) * u))
+    top_lo = D.Loft(R_, 2.4)
 TV, TT, _ = S.shell(grid_loft(top_lo, lambda c, v: top_s['hem'] + (y_neck - top_s['hem']) * v, TS), True, 0.0025, axis_ref)
 TOP = piece(TV, TT, top_s['c'], trunk_weights(TV, TT))
 # the top closed onto the neck (under a turtleneck's collar or a hood)
@@ -499,7 +509,7 @@ for s, side in (('Left', 'l'), ('Right', 'r')):
         V_, T_ = blob.mesh(f, 0.7)
         SHOES.append(piece(V_, T_, shoe_s['c'], smooth_w(foot_w(V_), T_, len(V_), 6), side=s))
         sole_h = 0.24 * (an[1] + r * 0.6 + r * 0.85)
-        V_, T_ = blob.mesh(blob.below(blob.grow(f, 0.2), sole_h), 0.7)
+        V_, T_ = blob.mesh(blob.below(blob.grow(f, 0.2), sole_h), 0.45)
         EXTRA.append(('sole' + s, piece(V_, T_, shoe_s['sole'], smooth_w(foot_w(V_), T_, len(V_), 6), ow=np.full(len(V_), 0.7))))
         acid = D.rgb(who.ACID)
         for i, h_ in enumerate((2.5, 5.2, 7.9, 10.6)):

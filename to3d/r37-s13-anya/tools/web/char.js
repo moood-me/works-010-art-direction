@@ -31,7 +31,7 @@ export const blocks = G => [
 ];
 // the slipper: the foot below its low cut
 export const glsl = G => `
-  if (abs(gg - ${G.skin}.0) < 0.5 && vB >= 0.0 && vB < 0.046) gg = ${G.shoe}.0;`;
+  if (abs(gg - ${G.skin}.0) < 0.5 && vB >= 0.0 && vB < 0.06) gg = ${G.shoe}.0;`;
 export const FLAT = { skin: '#f4e7d0', hair: HAIR, card: CARD, dress: DRESS, shoe: SHOE };
 // the key block's weights (kit.py: lines on cloth are heavier and follow direction more than lines on skin): [w, nib]
 export const lineW = { body: [1.9, 0.3], head: [2.0, 0.3], chest: [2.0, 0.3], dress: [3.4, 0.6], cardigan: [3.3, 0.6],
@@ -65,13 +65,15 @@ export function drawFace(d, F) {
     const f = frameAt(d, bx - side * 12 * t, 36, 0.5) || f0;
     useFrame(d, f, bx, 36); d.blush(bx, 36, far ? 28 - 9 * t : 28, Pn.blush[0], bo);
   }
-  // the eyes and the brows: the far eye of a turned face is shorter and keeps inside the contour
+  // the eyes and the brows: the far eye of a turned face is shorter and keeps inside the contour; near the profile
+  // the near eye is short too and sits back from the contour (parts.layout 's')
   for (const sx of [-33, 33]) {
     const f0 = frameAt(d, sx, 0, 0.72); if (!f0) continue;
     const sg = Math.sign(sx), far = sg === side, t0 = 1 - Math.min(1, f0.r);
-    const f = frameAt(d, sx - side * 8 * t0, 0, 0.72) || f0, t = 1 - Math.min(1, f.r), k = far ? 1 - 0.32 * t : 1;
-    const tn = far ? 0 : Math.max(0, 0.5 - front) / 0.5;        // the near eye, as the face nears the profile
-    { const s = -side * (far ? 13 * t : 4 * t + 16 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
+    const f = frameAt(d, sx - side * 8 * t0, 0, 0.72) || f0, t = 1 - Math.min(1, f.r);
+    const tn = far ? 0 : Math.max(0, 0.55 - front) / 0.55, k = far ? 1 - 0.32 * t : 1 - 0.3 * tn;
+    if (far && front < 0.22) continue;
+    { const s = -side * (far ? 13 * t : 4 * t + 18 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
     useFrame(d, f, sx, 0);
     K.eye(d, Pn, sx, 0, k, -sg, { ...ex, look: [ex.look[0] + side * t * 2, ex.look[1]] });
     K.brow(d, Pn, sx + sg, k, -sg, ex);
@@ -83,15 +85,15 @@ export function drawFace(d, F) {
     K.noseFront(d, Pn, Math.min(1, (front - 0.12) / 0.15), front > 0.93 ? 1 : -side);
     d.map = null;
   }
-  // the mouth, moved toward the seen cheek as the face turns
+  // the mouth, moved toward the seen cheek as the face turns; its far half shortens, in profile to almost nothing
   const fm0 = frameAt(d, 0, MY, 0.5, true);
   if (fm0) {
-    const t = 1 - Math.min(1, fm0.r), fm = frameAt(d, -side * 9 * t, MY, 0.55);
+    const t = 1 - Math.min(1, fm0.r), fm = frameAt(d, -side * 9 * t, MY, 0.55, true);
     if (fm) {
       const s = -side * 10 * t; fm.c = [fm.c[0] + fm.ax[0] * s, fm.c[1] + fm.ax[1] * s];
       useFrame(d, fm, 0, MY);
-      const sh = 0.08 * t * side;                 // the far half of the mouth is the shorter one
-      K.mouth(d, Pn, ex, 0, MY, 0.5 + sh, 0.5 - sh);
+      const fs = 0.5 - 0.08 * t - 0.36 * Math.max(0, 0.5 - front) / 0.5, ns = 0.5 + 0.08 * t;
+      K.mouth(d, Pn, ex, 0, MY, side < 0 ? fs : ns, side < 0 ? ns : fs);
     }
   }
   d.T = [[1, 0, 0, 1, 0, 0]];

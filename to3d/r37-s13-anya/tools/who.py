@@ -10,7 +10,7 @@ FIG_EXPR = 'dream'
 FIG_PROPS = None
 # the figure as drawn: the head bent to a sprig held at the chest, the near arm across the chest, the far arm hanging
 FIG_POSE = dict(headNod=0.16, headTurn=0.12, headTilt=-0.1,
-                arms={'Left': {'upper': [0.25, -1, 0.1], 'fore': [-0.75, 0.55, 0.5]}})
+                arms={'Right': {'upper': [-0.2, -1, 0.12], 'fore': [0.7, 0.62, 0.5]}})
 BUST_POSE = dict(out=0.14)
 BUST_CX = (0.0, 0.0)           # the camera's shift in the three-quarter and the side bust (metres)
 
