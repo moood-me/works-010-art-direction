@@ -1,4 +1,4 @@
-"""The drawing's views of Савелий Петрович in 3D, side by side with the drawing and overlaid on it:
+"""The drawing's views of Марат in 3D, side by side with the drawing and overlaid on it:
 turn (front, three-quarter, profile — turn-tim), portrait (portrait-tim, the grin), figure (figure-tim, waving),
 expressions (expr-tim: joy, surprise, sad, anger). Each panel: the pose (a frame of a Kimodo motion of the engine,
 the head turned on top as the drawing turns it against the body), the face (an expression of the sheet, the eyes on
@@ -18,7 +18,7 @@ PC = {p['name']: (p['start'], p['count']) for p in M['pieces']}
 _, BA = pack.read(f'{CACHE}/engine/data/bodies/{BID}.json')
 REST = BA['positions'].astype(float)
 O = np.array(M['O'])
-HEADONLY = ['head', 'eyeL', 'eyeR', 'lipU', 'lipL', 'cav', 'teethU', 'teethL', 'brows', 'lashes', 'hair', 'moust', 'glasses', 'lenses']
+HEADONLY = ['head', 'eyeL', 'eyeR', 'lipU', 'lipL', 'cav', 'tongue', 'teethU', 'teethL', 'brows', 'lashes', 'moust', 'haircap', 'curls', 'beardmass', 'beard']
 
 
 def kabsch(A, B_):
@@ -35,20 +35,19 @@ def head_centre(F):
     return R @ O + t
 
 
-DRAWN = os.path.join(CACHE, 'drawn')          # the sheets the style's page doesn't have, made by its code (drawn.py)
 SHEETS = {
     # name: drawing picture, size, panels [(cx, cy, S, view yaw, head yaw on top, motion, frame, face, roll)]
-    'turn': (os.path.join(DRAWN, 'turn-savely.jpg'), (1500, 620), [(250 + 500 * i, 255, 255, 0.8 * y, 0.2 * y, 'bow', 0, {'calm': 1}, 0) for i, y in enumerate((0, 40, 88))]),
-    'portrait': ('portrait-savely.jpg', (700, 820), [(350, 335, 330, 0.55 * -24, 0.45 * -24, 'bow', 0, {'grumpy': 1}, 0)]),
-    'figure': ('figure-savely.jpg', (560, 960), [(280, 900 - 3.38 * 200, 200, 0.6 * -19.2, 0.4 * -19.2, 'bow', 0, {'grumpy': 1}, 0)]),
-    'expr': (os.path.join(DRAWN, 'expr-savely.jpg'), (1600, 540), [(200 + 400 * i, 280, 290, -18, 0, 'bow', 0, {e: 1}, r)
-                                                              for i, (e, r) in enumerate((('joy', -5), ('surprise', 0), ('sad', 6), ('anger', -3)))]),
+    'turn': ('turn-marat.jpg', (1500, 620), [(250 + 500 * i, 255, 255, 0.8 * y, 0.2 * y, 'bow', 0, {'beam': 1}, 0) for i, y in enumerate((0, 40, 88))]),
+    'portrait': ('portrait-marat.jpg', (700, 820), [(350, 335, 330, 0.55 * 16, 0.45 * 16, 'bow', 0, {'beam': 1}, -4)]),
+    'figure': ('figure-marat.jpg', (560, 960), [(318, 900 - 3.82 * 172, 172, 0.6 * 10, 0.4 * 10, 'wave', 40, {'laugh': 1}, -7)]),
+    'expr': ('expr-marat.jpg', (1600, 540), [(200 + 400 * i, 280, 290, 18, 0, 'bow', 0, {e: 1}, r)
+                                             for i, (e, r) in enumerate((('laugh', -5), ('surprise', 0), ('sad', 6), ('anger', -3)))]),
 }
 
 
 # the figure's pose on top of Kimodo's standing: his left forearm brought up in front of the belly (the drawing: he
 # holds his watch there)
-TURNS = {'figure': [dict(joint='LeftForeArm', axis=[1, 0, 0], deg=-62), dict(joint='LeftForeArm', axis=[0, 1, 0], deg=-45)]}
+TURNS = {}
 
 
 def run(sheet, samples=48):

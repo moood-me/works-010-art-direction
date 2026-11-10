@@ -62,3 +62,5 @@ NECK_B = ([-8, 30, 60, 120, 190], [-90, -62, -44, -40, -44])
 Y_DRAW = [190.0, 108.0, 0.0, -100.0]      # the base head's landmarks here: the neck's end, chin, eye line, crown
 REG = [(33, 0, 26, 20), (-33, 0, 26, 20), (0, 67, 26, 14)]      # where the face is drawn: eyes and mouth
 FACE_ONLY = (24, 106)     # head.py: between these heights the width is the face's in front of the ears
+PUSH_TOP = -64.0          # head.py: the face made one plain round plane from the forehead down
+FACE_R = 0.12

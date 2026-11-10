@@ -9,11 +9,10 @@ import fit_body
 from common import CACHE, FOLDER, pack, HH, BID
 
 FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 14)
-CLAY, SKIN, HAIR = (0.84, 0.8, 0.74), (0.86, 0.67, 0.56), (0.9, 0.88, 0.84)
-COL = dict(skin=SKIN, eye=(0.95, 0.95, 0.97), hair=HAIR, whisker=(0.93, 0.91, 0.87), lip=(0.7, 0.36, 0.35), mouth=(0.25, 0.1, 0.1),
-           teeth=(1, 1, 1), lash=(0.2, 0.14, 0.12), gold=(0.75, 0.6, 0.3), vest=(0.43, 0.3, 0.2), shirt=(0.89, 0.84, 0.74), collar=(0.94, 0.9, 0.8),
-           tie=(0.48, 0.16, 0.16), button=(0.23, 0.14, 0.1), chain=(0.85, 0.66, 0.25), trousers=(0.29, 0.29, 0.32), shoe=(0.23, 0.14, 0.1),
-           sole=(0.12, 0.1, 0.1), dark=(0.1, 0.08, 0.08))
+CLAY, SKIN, HAIR = (0.84, 0.8, 0.74), (0.86, 0.66, 0.52), (0.2, 0.16, 0.15)
+COL = dict(skin=(0.86, 0.66, 0.52), eye=(0.95, 0.95, 0.97), curl=(0.2, 0.16, 0.15), hairmass=(0.14, 0.11, 0.1), brow=(0.14, 0.1, 0.1), lip=(0.7, 0.36, 0.32), mouth=(0.25, 0.1, 0.1),
+           tongue=(0.66, 0.27, 0.3), lash=(0.12, 0.08, 0.07), jacket=(0.93, 0.89, 0.82), apron=(0.77, 0.35, 0.18), aprontie=(0.66, 0.3, 0.15), towel=(0.97, 0.95, 0.9),
+           trousers=(0.34, 0.31, 0.3), shoe=(0.23, 0.17, 0.13), sole=(0.12, 0.1, 0.1))
 
 
 def label(im, text):
@@ -58,17 +57,17 @@ def head_steps():
     C = COL
     mm = []
     for p in M['pieces']:
-        if p['name'] in ('skin', 'neck') or p['mat'] not in C or p['mat'] in ('vest', 'shirt', 'collar', 'tie', 'button', 'chain', 'trousers', 'shoe', 'sole', 'dark'): continue
+        if p['name'] in ('skin', 'neck') or p['mat'] not in C or p['mat'] in ('jacket', 'apron', 'aprontie', 'towel', 'trousers', 'shoe', 'sole'): continue
         s, n = p['start'], p['count']; m = (TT[:, 0] >= s) & (TT[:, 0] < s + n); mm.append((V[s:s + n], TT[m] - s, C[p['mat']]))
-    ims.append(label(look.raster(mm, 30, box, 380), '4. сменные рот, брови и усы; волосы, очки'))
+    ims.append(label(look.raster(mm, 30, box, 380), '4. сменные рот, брови и усы; кудри и борода'))
     row(ims, os.path.join(FOLDER, 'pics', 'steps-head.webp'))
 
 
 def body_steps():
     B = fit_body.B; box = (-0.75, 0.75, -0.02, 1.8)
-    ims = [label(look.raster([(B['positions'], B['triangles'], CLAY)], 25, box, 340), '1. основа: старик Anny')]
+    ims = [label(look.raster([(B['positions'], B['triangles'], CLAY)], 25, box, 340), '1. основа: мужчина Anny')]
     V, J = fit_body.fit()
-    box = (-0.55, 0.55, -0.02, 1.3)
+    box = (-0.65, 0.65, -0.02, 1.45)
     ims.append(label(look.raster([(V, B['triangles'], CLAY)], 25, box, 340), '2. пропорции рисунка'))
     M = json.load(open(f'{CACHE}/model.json'))
     _, a = pack.read(f'{CACHE}/engine/data/bodies/{BID}.json'); _, t = pack.read(f'{CACHE}/engine/data/topology/{BID}.json')

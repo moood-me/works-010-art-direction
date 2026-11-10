@@ -107,7 +107,7 @@ def brow(side, ex, n=12, R=5):
     """head.brow: the bushy white brows — a thick slab whose lower edge droops toward the outer end (brow_droop)"""
     phi = side * P['eye_phi']
     yb = P['eye_y'] - P['brow_gap'] - BROW_UP
-    w, th = P['brow_w'], P['brow_th']
+    w, th = P['brow_w'], P['brow_th'] * 1.25
     li, lo = ex.get('brow_in', 0.0), ex.get('brow_out', 0.0)
     ix, ox = (-w * 0.95, w * 1.1) if side > 0 else (w * 0.95, -w * 1.1)
     arch = P.get('brow_arch', 0.012); taper = P.get('brow_taper', 0.75); droop = P.get('brow_droop', 0.0)

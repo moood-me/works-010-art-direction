@@ -15,7 +15,7 @@ from common import CACHE, hu
 
 
 
-def cap_mesh(line, k, rows=40, cols=144, thick=0.03):
+def cap_mesh(line, k, rows=26, cols=96, thick=0.03):
     """the cap: the loft scaled by k, from the crown down to the hairline — each column of the grid ends exactly on
     the line, so the edge is the drawing's hairline — with an inner wall, so the edge reads as a lip of sculpted hair"""
     ph = np.linspace(-math.pi, math.pi, cols, endpoint=False)

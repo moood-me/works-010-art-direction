@@ -78,8 +78,11 @@ def fit(v, ears_mask, extra=(), ear=None):
     n0, n1 = D.NOSE_SPAN; zp = zf_t.copy(); mm = (bins > n0) & (bins < n1)
     zp[mm] = np.interp(bins[mm], [n0, n1], [np.interp(n0, bins, zf_t), np.interp(n1, bins, zf_t)])
     zf = np.interp(y, bins, zp)
-    wy = smooth01((y - 10) / 30) * (1 - smooth01((y - chin) / 14))
-    arc = zf - V[:, 0] ** 2 / (2 * 0.085 * D.K / 0.00106) - 0.004
+    # (PUSH_TOP: from which height down; FACE_R: the plane's radius — a print's face is flatter than a head, so that
+    # in three-quarter the far eye is still on the face)
+    top = getattr(D, 'PUSH_TOP', 10.0); fr = getattr(D, 'FACE_R', 0.085)
+    wy = smooth01((y - top) / 30) * (1 - smooth01((y - chin) / 14))
+    arc = zf - V[:, 0] ** 2 / (2 * fr * D.K / 0.00106) - 0.004
     push = np.clip(arc - V[:, 2], 0, None) * wy * (V[:, 2] > 0.0) * np.exp(-(V[:, 0] / (0.075 * D.K / 0.00106)) ** 4)
     V[:, 2] += 0.85 * push
     if ear is not None:

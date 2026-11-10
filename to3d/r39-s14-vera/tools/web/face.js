@@ -64,7 +64,7 @@ export function headShape(spec) {
       const a = -Math.PI / 2 + Math.PI * (i + (i === 0 ? .12 : i === m ? -.12 : 0)) / m, s = Math.sin(a), y = yOf(s);
       rings.push(ringAt(y * grow, wOf(s) * grow + add, H.zf(y) * grow + add, H.zb(y) * grow - add, n, P).map(p => [p[0], p[1] - (i === 0 ? add : 0), p[2]]));
     }
-    return loft(rings, { cap0: true, cap1: true, uv: (i, k, p) => [p[0] + (p[2] < 0 ? 300 : 0), p[1]] });
+    return loft(rings, { cap0: true, cap1: true });
   };
   return H;
 }
@@ -141,7 +141,7 @@ export function facePieces(sp, e) {
   const out = [], ey = sp.eye_y, g = sp.eye_gap, cr = sp.cheek_r;
   for (const side of [-1, 1]) {
     const x = side * g;
-    out.push({ key: 'cheek' + side, pts: ell(x + side * g * .42, ey + sp.ry * .36 - (e.low > .3 ? 4 : 0), cr, cr, 0, 10), color: mix(sp.skin, sp.cheek, sp.cheek_op), kind: 'flat', layer: 1 });
+    out.push({ key: 'cheek' + side, pts: ell(x + side * g * .42, ey + sp.ry * .36 - (e.low > .3 ? 4 : 0), cr, cr, 0, 10), color: mix(sp.skin, sp.cheek, sp.cheek_op * .7), kind: 'flat', layer: 1 });
     out.push(...eye(x, ey, sp.eye_w, sp.eye_h, sp, e, side));
     out.push(brow(x + side * 2, ey + sp.brow_y, sp, e, side));
   }

@@ -78,7 +78,7 @@ void main() {
   // the sheet's grain: fine tooth and fibres, fixed on the picture
   if (grain > 0.) {
     float fine = clamp(1.5 * fbm(px * .85 * 1.6) - .25, 0., 1.), fibre = clamp(1.2 * fbm(px * vec2(.9, .05) * 1.6 + 31.) - .1, 0., 1.);
-    c *= mix(1., .88 + .24 * fine, grain); c *= mix(1., .94 + .12 * fibre, grain);
+    c *= mix(1., .90 + .2 * fine, grain); c *= mix(1., .965 + .07 * fibre, grain);
   }
   o = vec4(c, 1.);
 }`;
@@ -145,7 +145,8 @@ export class Look {
     u.near.value = c.near; u.far.value = c.far;
     // how many pixels one unit of the drawing takes where the figure stands
     this.pxPerUnit = this.h / (2 * Math.tan(view.fov * Math.PI / 360)) / dist * U;
-    u.s.value = this.pxPerUnit; u.grain.value = o.grain ?? 1; u.shadowK.value = o.shadowK ?? 1; u.flatLook.value = o.flat ? 1 : 0;
+    // near, the paper is not thicker: shadows and rims grow slower than the picture
+    const s = this.pxPerUnit; u.s.value = s < 1.4 ? s : 1.4 + (s - 1.4) * .4; u.grain.value = o.grain ?? 1; u.shadowK.value = o.shadowK ?? 1; u.flatLook.value = o.flat ? 1 : 0;
     u.bg.value.set(o.bg || '#e3d3d6');
     this.r.setRenderTarget(null); this.r.render(this.qscene, this.qcam);
   }

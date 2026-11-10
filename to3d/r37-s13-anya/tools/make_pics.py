@@ -65,7 +65,7 @@ if on('compare', 'stills'):
     a, d = im('fig'), Image.open(os.path.join(STY, f'figure-{NAME}.jpg')).convert('RGB').resize((800, 1200))
     row([d, a], 'compare-figure.jpg', 0.75, gap=16)
     row([Image.blend(a, d, 0.5)], 'overlay-figure.jpg', 0.75)
-    shots(600, 800, [dict(name='b' + k, set=dict(STAND, sheet=NONAME, poseOpts=who.BUST_POSE, cam=dict(BUST, yaw=y, cx=cx))) for k, y, cx in (('f', 0, 0), ('q', 0.75, who.BUST_CX[0]), ('s', 1.5708, who.BUST_CX[1]))], 'bust')
+    shots(600, 800, [dict(name='b' + k, set=dict(STAND, sheet=NONAME, poseOpts=who.BUST_POSE, cam=dict(BUST, yaw=y, cx=cx))) for k, y, cx in (('f', 0, 0), ('q', who.Q_YAW, who.BUST_CX[0]), ('s', 1.5708, who.BUST_CX[1]))], 'bust')
     t = Image.open(os.path.join(STY, f'turn-{NAME}.jpg')).convert('RGB').resize((1800, 800))
     o = Image.new('RGB', (1800, 800)); [o.paste(x, (i * 600, 0)) for i, x in enumerate([im('bf'), im('bq'), im('bs')])]
     tall = Image.new('RGB', (1800, 1616), PAPER); tall.paste(t, (0, 0)); tall.paste(o, (0, 816))
@@ -73,7 +73,7 @@ if on('compare', 'stills'):
     Image.blend(o, t, 0.5).resize((1200, 533), Image.LANCZOS).save(os.path.join(PICS, 'overlay-turn.jpg'), quality=88)
 
 if on('portrait', 'stills'):
-    c = dict(mode='ortho', h=1100 / 2.0 * D.K, cy=(D.FLOOR - (550 - 480) / 2.0) * D.K, cx=-20 / 2.0 * D.K, pitch=0, follow=False, focus=None, yaw=0.75)
+    c = dict(mode='ortho', h=1100 / 2.0 * D.K, cy=(D.FLOOR - (550 - 480) / 2.0) * D.K, cx=-20 / 2.0 * D.K, pitch=0, follow=False, focus=None, yaw=who.Q_YAW)
     shots(800, 1100, [dict(name='portrait', set=dict(STAND, poseOpts=who.BUST_POSE, cam=c))], 'portrait')
     a, d = im('portrait'), Image.open(os.path.join(STY, f'portrait-{NAME}.jpg')).convert('RGB').resize((800, 1100))
     row([d, a], 'compare-portrait.jpg', 0.75, gap=16)
@@ -91,7 +91,7 @@ if on('steps', 'stills'):
 
 if on('expr', 'stills'):
     E = ['joy', 'surprise', 'sad', 'anger']
-    shots(490, 720, [dict(name='e-' + e, set=dict(STAND, sheet=NONAME, poseOpts=who.BUST_POSE, exprTrack=[[0, e]], cam=dict(EXB, yaw=0.75, cx=who.BUST_CX[0]))) for e in E], 'expr')
+    shots(490, 720, [dict(name='e-' + e, set=dict(STAND, sheet=NONAME, poseOpts=who.BUST_POSE, exprTrack=[[0, e]], cam=dict(EXB, yaw=who.Q_YAW, cx=who.BUST_CX[0]))) for e in E], 'expr')
     row([im('e-' + e) for e in E], 'expr-3d.jpg', 0.7)
     Image.open(os.path.join(STY, f'expr-{NAME}.jpg')).convert('RGB').resize((1372, 494), Image.LANCZOS).save(os.path.join(PICS, 'expr-drawing.jpg'), quality=88)
 

@@ -56,7 +56,7 @@ export class Figure {
   bill(b) {
     const discs = b.discs.map((d, i) => {
       const geo = patch(ell(0, 0, 1, 1, 0, d.n || 12), (x, y) => [x, y, 0], { maxEdge: 9 });
-      const p = { geo, color: d.color, kind: i === 0 && !b.flat ? 'card' : 'flat', paint: d.paint, v: d.v }; this.look.add(p); return { ...d, p };
+      const p = { name: b.name || 'brad', geo, color: d.color, kind: i === 0 && !b.flat ? 'card' : 'flat', paint: d.paint, v: d.v }; this.look.add(p); return { ...d, p };
     });
     this.bills.push({ ...b, j: this.sk.index[b.joint], discs });
   }
@@ -154,7 +154,7 @@ export class Figure {
     for (const f of list) {
       const geo = onHead(H, hu, f.pts, f.layer, f);
       let p = this.faceMeshes.get(f.key);
-      if (!p) { p = { color: f.color, kind: f.kind, parent: this.groups.head.g, geo }; this.look.add(p); p.mesh.matrix.identity(); this.faceMeshes.set(f.key, p); }
+      if (!p) { p = { name: 'f:' + f.key, color: f.color, kind: f.kind, parent: this.groups.head.g, geo }; this.look.add(p); p.mesh.matrix.identity(); this.faceMeshes.set(f.key, p); }
       else { this.look.setGeo(p.mesh, geo); p.mesh.material.uniforms.color.value.set(f.color); }
       p.mesh.visible = true; seen.add(f.key);
     }

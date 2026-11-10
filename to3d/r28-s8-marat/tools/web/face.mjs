@@ -1,4 +1,4 @@
-// Савелий Петрович's face, a stop-motion puppet's: replacement pieces (the mouth — lips, the dark inside, teeth, the
+// Марат's face, a stop-motion puppet's: replacement pieces (the mouth — lips, the dark inside, teeth, the
 // moustache over it: header.mouth lists them — and the brows)
 // whose shapes are mixed, lids that turn over the glass eyes about each eye's horizontal axis, and the eyes that
 // turn in their sockets. The shapes and weights come from tools/build.py (the face pack); the shapes themselves are

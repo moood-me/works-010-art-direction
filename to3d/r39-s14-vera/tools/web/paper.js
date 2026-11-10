@@ -140,16 +140,22 @@ export function patch(pts, surf, { holes = [], maxEdge = 7, dense = false, seg =
 
 // rings of points around (same count each) → a shell; caps close the ends
 export function loft(rings, { cap0 = false, cap1 = false, uv = null } = {}) {
-  const o = mesh0(), m = rings[0].length;
-  rings.forEach((r, i) => r.forEach((p, k) => { o.pos.push(p[0], p[1], p[2]); const t = uv ? uv(i, k, p) : [k / m * 60, -p[1] / U]; o.uv.push(t[0], t[1]); }));
+  // the paper's own coordinates: along the ring (units, a seam where the ring begins) and down the piece
+  const o = mesh0(), m = rings[0].length, M = m + 1;
+  let per = 0; for (const r of rings) { let s = 0; for (let k = 0; k < m; k++) s += Math.hypot(r[(k + 1) % m][0] - r[k][0], r[(k + 1) % m][1] - r[k][1], r[(k + 1) % m][2] - r[k][2]); per = Math.max(per, s); }
+  let down = 0;
+  rings.forEach((r, i) => {
+    if (i) down += Math.hypot(r[0][0] - rings[i - 1][0][0], r[0][1] - rings[i - 1][0][1], r[0][2] - rings[i - 1][0][2]);
+    for (let k = 0; k <= m; k++) { const p = r[k % m]; o.pos.push(p[0], p[1], p[2]); const t = uv ? uv(i, k, p) : [k / m * per / U, down / U]; o.uv.push(t[0], t[1]); }
+  });
   for (let i = 0; i + 1 < rings.length; i++) for (let k = 0; k < m; k++) {
-    const a = i * m + k, b = i * m + (k + 1) % m, c = a + m, d = b + m;
+    const a = i * M + k, b = a + 1, c = a + M, d = b + M;
     o.idx.push(a, b, c, b, d, c);
   }
   const cap = (i, flip) => {
     const r = rings[i], c = [0, 0, 0]; r.forEach(p => { c[0] += p[0] / m; c[1] += p[1] / m; c[2] += p[2] / m; });
-    const ci = o.pos.length / 3; o.pos.push(...c); o.uv.push(0, -c[1] / U);
-    for (let k = 0; k < m; k++) { const a = i * m + k, b = i * m + (k + 1) % m; flip ? o.idx.push(ci, b, a) : o.idx.push(ci, a, b); }
+    const ci = o.pos.length / 3; o.pos.push(...c); o.uv.push(o.uv[i * M * 2], o.uv[i * M * 2 + 1]);
+    for (let k = 0; k < m; k++) { const a = i * M + k, b = a + 1; flip ? o.idx.push(ci, b, a) : o.idx.push(ci, a, b); }
   };
   if (cap0) cap(0, true);
   if (cap1) cap(rings.length - 1, false);
@@ -169,8 +175,7 @@ export function tube(a, b, ra, rb = ra, { n = 14, flat = 1, ends = 4, side = nul
   for (let i = ends; i >= 1; i--) { const t = i / ends * Math.PI / 2; rings.push(ring(add(a, mul(ax, -ra * Math.sin(t) * .9)), ra * Math.cos(t))); }
   const m = 4; for (let i = 0; i <= m; i++) rings.push(ring(add(a, mul(ax, L * i / m)), ra + (rb - ra) * i / m));
   for (let i = 1; i <= ends; i++) { const t = i / ends * Math.PI / 2; rings.push(ring(add(b, mul(ax, rb * Math.sin(t) * .9)), rb * Math.cos(t))); }
-  let s = 0; const along = rings.map((r, i) => { if (i) s += V.len(sub(r[0], rings[i - 1][0])) + Math.abs(V.len(sub(r[0], add(a, mul(ax, 0)))) * 0); return s; });
-  return loft(rings, { cap0: true, cap1: true, uv: (i, k) => [k / n * 2 * Math.PI * ra / U, along[i] / U] });
+  return loft(rings, { cap0: true, cap1: true });
 }
 
 // a flat piece with a little thickness: an outline in a plane (o + x·X + y·Y), both faces and the edge

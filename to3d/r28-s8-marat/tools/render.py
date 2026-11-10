@@ -1,4 +1,4 @@
-"""Савелий Петрович rendered as a puppet on a small set — Blender 4.5, Cycles on the CPU.
+"""Марат rendered as a puppet on a small set — Blender 4.5, Cycles on the CPU.
 
 The look of С8 (styles/s8-stopmotion, «Правила стиля»): a small real object under real light. Every part has its
 own material: the face resin-and-clay skin with light under it (subsurface), glass eyes with a sharp window glint,
@@ -283,27 +283,52 @@ def mat_lens():
     return m
 
 
-SKIN_WARM, SKIN_TINT, SKIN_K = '#dc7462', '#dc8478', 0.42
+def mat_curl(name, base, dark):
+    """a curl of clay hair: a ball with a spiral cut into it (tuv: the angle round the curl, 0 at its top … 1)"""
+    m, nt, b = nodes(name)
+    uv = sep(nt, attr(nt, 'tuv').outputs['Vector'])
+    sp = math_(nt, 'SINE', math_(nt, 'ADD', uv.outputs['X'], math_(nt, 'MULTIPLY', uv.outputs['Y'], 15.0)))
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    nz = noise(nt, tc.outputs['Object'], 900.0, 3, 0.6)
+    bump(nt, b, math_(nt, 'ADD', sp, math_(nt, 'MULTIPLY', nz, 0.35)), 0.55, 0.0016)
+    col = mixc(nt, math_(nt, 'MULTIPLY', math_(nt, 'SUBTRACT', 1.0, math_(nt, 'MULTIPLY', math_(nt, 'ADD', sp, 1.0), 0.5)), 0.6), base, dark)
+    nt.links.new(col, b.inputs['Base Color'])
+    set_(b, rough=0.5, coat=0.2, coat_r=0.35, spec=0.5)
+    return m
+
+
+def mat_towel():
+    m, nt, b = nodes('towel')
+    pat = sep(nt, attr(nt, 'pat').outputs['Vector'])
+    y = pat.outputs['Y']
+    band = lambda a_, b_: math_(nt, 'MULTIPLY', math_(nt, 'GREATER_THAN', y, a_), math_(nt, 'LESS_THAN', y, b_))
+    f = math_(nt, 'ADD', band(1.3, 1.335), band(1.365, 1.385))
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    nz = noise(nt, tc.outputs['Object'], 700.0, 5, 0.7)
+    bump(nt, b, nz, 0.5, 0.0015)
+    nt.links.new(mixc(nt, f, lin('#f7f2e8'), lin('#c4582c')), b.inputs['Base Color'])
+    set_(b, rough=0.95, sheen=0.7, sheen_r=0.6, spec=0.2)
+    return m
+
+
+SKIN_WARM, SKIN_TINT, SKIN_K = '#d8805a', '#d87a60', 0.3
 MATS = {
     'skin': mat_skin, 'eye': mat_eye,
-    'hair': lambda: mat_hair('hair', '#e8e2d8', '#b4aca4', rough=0.6, coat=0.1),
-    'whisker': lambda: mat_hair('whisker', '#ece6dc', '#bcb4aa', rough=0.6, coat=0.1),
-    'gold': lambda: mat_metal('gold', lin('#c89a4a')),
-    'chain': lambda: mat_metal('chain', lin('#d8a840'), rough=0.3, beads=60),
-    'lens': mat_lens,
-    'vest': lambda: mat_cloth('vest', lin('#6e4c34'), weave=1400.0, dark='#2a1a10', amount=0.45),
-    'shirt': lambda: mat_cloth('shirt', lin('#e2d6bc'), weave=2200.0, rough=0.75, sheen=0.2, dark='#8a7a5a', amount=0.2, strength=0.15),
-    'collar': lambda: mat_cloth('collar', lin('#efe4cc'), weave=2200.0, rough=0.7, sheen=0.2, dark='#8a7a5a', amount=0.15, strength=0.15),
-    'tie': lambda: mat_cloth('tie', lin('#7a2a2a'), weave=1800.0, rough=0.45, sheen=0.5, dark='#2a0808', amount=0.3),
-    'trousers': lambda: mat_cloth('trousers', lin('#4a4a52'), weave=1200.0, dark='#18181c', amount=0.4),
-    'button': lambda: mat_plain('button', lin('#3a2418'), rough=0.3, coat=0.5),
-    'dark': lambda: mat_plain('dark', lin('#120c0a'), rough=0.9),
-    'shoe': lambda: mat_plain('shoe', lin('#3a2418'), rough=0.35, coat=0.4, bump_scale=300),
+    'curl': lambda: mat_curl('curl', lin('#2e2320'), lin('#070405')),
+    'hairmass': lambda: mat_plain('hairmass', lin('#0c0808'), rough=0.7),
+    'brow': lambda: mat_hair('brow', '#1e1614', '#0a0606', rough=0.55, coat=0.1),
+    'jacket': lambda: mat_cloth('jacket', lin('#ece2d0'), weave=1500.0, rough=0.8, sheen=0.3, dark='#8a7c6a', amount=0.25, strength=0.25),
+    'apron': lambda: mat_cloth('apron', lin('#c4582c'), weave=1100.0, dark='#5a1c0c', amount=0.4, strength=0.35),
+    'aprontie': lambda: mat_cloth('aprontie', lin('#a84a24'), weave=1100.0, dark='#4a180a', amount=0.4),
+    'towel': mat_towel,
+    'trousers': lambda: mat_cloth('trousers', lin('#56504e'), weave=1200.0, dark='#1c1818', amount=0.4),
+    'shoe': lambda: mat_plain('shoe', lin('#3a2a22'), rough=0.4, coat=0.35, bump_scale=300),
     'sole': lambda: mat_plain('sole', lin('#1c1410'), rough=0.7, bump_scale=200),
-    'lip': lambda: mat_plain('lip', lin('#b05a58'), rough=0.4, coat=0.15, sss=0.3),
+    'lip': lambda: mat_plain('lip', lin('#b25a50'), rough=0.4, coat=0.2, sss=0.3),
     'mouth': lambda: mat_plain('mouth', lin('#3a1418'), rough=0.6),
+    'tongue': lambda: mat_plain('tongue', lin('#a8444a'), rough=0.4, coat=0.2, sss=0.3),
     'teeth': lambda: mat_plain('teeth', lin('#f1e8dc'), rough=0.3, coat=0.3),
-    'lash': lambda: mat_plain('lash', lin('#3a2420'), rough=0.5),
+    'lash': lambda: mat_plain('lash', lin('#1c1210'), rough=0.5),
     'clay': lambda: mat_plain('clay', lin('#c9c2b6'), rough=0.6),
 }
 MCACHE = {}
@@ -343,7 +368,7 @@ for o in meta['pieces']:
     OBJ[n] = (ob, s0, cnt)
 
 # ------------------------------------------------------------------ the set
-st = dict(dict(floor='#2e2420', back='#2a1e18', glow='#e0a050', seed=5), **job.get('stage', {}))
+st = dict(dict(floor='#30241c', back='#2a1c16', glow='#e8a458', seed=14), **job.get('stage', {}))
 
 
 def plane(name, size, loc, rot, mat):

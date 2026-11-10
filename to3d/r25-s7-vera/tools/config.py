@@ -6,7 +6,7 @@ LABEL = 'Вера, Гибли'
 BODY = 'moood-woman'                       # the engine body whose hands, skeleton and weights are used
 CALM = dict(open=0.82, smile=-0.25, brow_in=0.25, look=(0.3, 0.0))     # her resting face (styles/s7-ghibli/tools/build.py CALM)
 ARM_OUT = 0.02                             # the hanging arms a little further out than drawn (the drawing paints them over the body)
-# the films of the Kimodo motions for the page: name → (motion, camera yaw, frames, expression track, talk from–to or None[, the camera's height])
+# the films of the Kimodo motions for the page: name → (motion, camera yaw, frames, expression track, talk from–to or None[, the camera's height[, its distance]])
 MOTION_FILMS = {
     'walk': ('walk', 0.8, 120, [[0, 'calm']], None),
     'bow': ('bow', 0.6, 90, [[0, 'calm'], [1.9, 'plain']], None),

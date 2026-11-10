@@ -55,7 +55,6 @@ export function fringe(d, P, st, F) {
 // the face in parts.head's front units, its numbers from the live face (F.fp)
 export function drawFace(d, F) {
   const e = F.fp, { frameAt, useFrame } = F, { side, front } = F.sideOf();
-  console.log('DBG', side, front, JSON.stringify([-33, 33].map(sx => { const f = frameAt(d, sx, 0, 0.72); return f && [f.c, f.ax, f.ay, f.r]; })));
   const ex = { open: e.squint ? 0 : e.eye, closed: e.blink || 0, lift: e.lift, tilt: e.tilt, look: [e.look[0] * 2.4, e.look[1] * 2.0],
     mouth: e.talk ? 'talk' : e.mouth, talkOpen: e.open || 0, talkRound: e.round || 0 };
   // the cheeks: a soft round patch of bokashi
@@ -69,12 +68,17 @@ export function drawFace(d, F) {
   // the eyes and the brows: the far eye of a turned face is shorter and keeps inside the contour; near the profile
   // the near eye is short too and sits back from the contour (parts.layout 's')
   for (const sx of [-33, 33]) {
-    const f0 = frameAt(d, sx, 0, 0.72); if (!f0) continue;
-    const sg = Math.sign(sx), far = sg === side, t0 = 1 - Math.min(1, f0.r);
-    const f = frameAt(d, sx - side * 8 * t0, 0, 0.72) || f0, t = 1 - Math.min(1, f.r);
+    const sg = Math.sign(sx), far = sg === side;
+    // (a far eye whose own place has turned out of sight is drawn at the nearest seen place of the face, as the
+    // drawing's three-quarter keeps it on the face)
+    let f0 = null, back = 0;
+    for (; back <= (far ? 24 : 0) && !f0; back += 6) f0 = frameAt(d, sx - side * back, 0, 0.72);
+    if (!f0) continue;
+    back -= 6; const t0 = 1 - Math.min(1, f0.r);
+    const f = frameAt(d, sx - side * Math.max(back, 8 * t0), 0, 0.72) || f0, t = 1 - Math.min(1, f.r);
     const tn = far ? 0 : Math.max(0, 0.55 - front) / 0.55, k = far ? 1 - 0.32 * t : 1 - 0.3 * tn;
     if (far && front < 0.22) continue;
-    { const s = -side * (far ? 13 * t : 4 * t + 18 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
+    { const s = -side * (far ? 13 * t + back * 0.7 : 4 * t + 18 * tn); f.c = [f.c[0] + f.ax[0] * s, f.c[1] + f.ax[1] * s]; }
     useFrame(d, f, sx, 0);
     K.eye(d, Pn, sx, 0, k, -sg, { ...ex, look: [ex.look[0] + side * t * 2, ex.look[1]] });
     K.brow(d, Pn, sx + sg, k, -sg, ex);

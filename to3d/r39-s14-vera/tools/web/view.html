@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D</title>
+<style>
+:root { --bg: #efe6dc; --ink: #3b2c33; --muted: #7d6c70; --line: rgba(59, 44, 51, .28); --on: #3b2c33; --onInk: #f6efe6; --panel: rgba(246, 239, 230, .88); }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+#cv { display: block; touch-action: none; cursor: grab; }
+#msg { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 18px; pointer-events: none; }
+#ui { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(780px, calc(100vw - 32px)); box-sizing: border-box;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: none; gap: 6px; backdrop-filter: blur(4px); }
+#ui.on { display: grid; }
+#ui.folded > :not(:first-child) { display: none; }
+#ui.folded { width: auto; left: auto; right: 12px; transform: none; padding: 6px; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.row .label { color: var(--muted); font-size: 12px; width: 74px; flex: none; }
+button { font: inherit; font-size: 13px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+button[aria-pressed="true"] { background: var(--on); color: var(--onInk); border-color: var(--on); }
+input[type=range] { flex: 1; min-width: 120px; accent-color: #7a3558; }
+#time { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; width: 52px; text-align: right; }
+@media (max-width: 520px) { .row .label { width: 100%; } }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+</head>
+<body>
+<canvas id="cv" width="800" height="800"></canvas>
+<div id="msg">клеится…</div>
+<div id="ui">
+  <div class="row" style="justify-content:flex-end;margin-bottom:-4px"><button id="fold">свернуть</button></div>
+  <div class="row"><span class="label">Движение</span><span id="clips" class="row"></span></div>
+  <div class="row"><span class="label">Лицо</span><span id="exprs" class="row"></span><button id="talk" aria-pressed="false">говорит</button></div>
+  <div class="row"><span class="label">Вид</span><button id="twos" aria-pressed="false">12 кадров в секунду</button><button id="flat" aria-pressed="true">бумага: тени и кромки</button></div>
+  <div class="row"><button id="play">пауза</button><input id="scrub" type="range" min="0" max="1" step="0.01" value="0"><span id="time"></span></div>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

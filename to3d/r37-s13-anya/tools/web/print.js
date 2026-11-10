@@ -372,10 +372,10 @@ function pxPerMetre(z) { return isOrtho ? Hh / (ortho.top - ortho.bottom) : Hh /
 // (1 in front, 0 in profile)
 function sideOf() {
   const c = faceMap(0, 20, true), l = faceMap(-30, 20, true), r = faceMap(30, 20, true), u = faceMap(0, -10, true);
-  if (!c || !l || !r || !u) return { side: -1, front: 0 };
+  if (!c || !l || !r || !u) return { side: jointAt('LeftEye')[2] > jointAt('RightEye')[2] ? 1 : -1, front: 0 };
   const dl = Math.hypot(l[0] - c[0], l[1] - c[1]), dr = Math.hypot(r[0] - c[0], r[1] - c[1]), dv = Math.hypot(u[0] - c[0], u[1] - c[1]) || 1;
   const fwd = (r[0] - l[0]) * (c[1] - u[1]) - (r[1] - l[1]) * (c[0] - u[0]);       // > 0 while the face is toward us
-  return { side: dl < dr ? -1 : 1, front: fwd > 0 ? Math.min(1, (dl + dr) / (2 * dv)) : 0 };
+  return { side: jointAt('LeftEye')[2] > jointAt('RightEye')[2] ? 1 : -1, front: fwd > 0 ? Math.min(1, (dl + dr) / (2 * dv)) : 0 };
 }
 
 // ---------------------------------------------------------------- colour blocks from the unseen picture

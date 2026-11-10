@@ -1,4 +1,4 @@
-// The viewer: Савелий Петрович moving by Kimodo's motions through the engine (engine/src as it is; its file reading pointed at
+// The viewer: Марат moving by Kimodo's motions through the engine (engine/src as it is; its file reading pointed at
 // this folder's data/), with the live face (face.mjs, life.mjs), lit as a puppet on a small set: a warm key with soft
 // shadows, a cool rim, physical materials for resin skin, sculpted hair, glass eyes, gold wire and woven cloth (the
 // cloth's weave and the hair's strands are drawn in the shader from the paint coordinates).
@@ -30,7 +30,7 @@ if (shots) document.body.classList.add('shots');
 const E = await createEngine({ root: ENGINE, read });
 // the engine's dual-quaternion skinning here (its default, centres of rotation, takes long to prepare 50 000
 // vertices in a browser); the films use the default
-const spec = resolve({ format: 'engine/character', version: 1, id: 'marat8', label: { ru: 'Савелий Петрович' }, body: 'marat8',
+const spec = resolve({ format: 'engine/character', version: 1, id: 'marat8', label: { ru: 'Марат' }, body: 'marat8',
   skinning: { method: 'dqs', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: { armsOutOfHead: { margin: 0.03 } } } });
 const fig = await E.figure(spec, { position: [0, 0, 0], heading: 0 });
 const body = fig.body, N = body.N, HI = body.skeleton.index.Head, HIPS = body.skeleton.index.Hips;
@@ -54,11 +54,11 @@ scene.environmentIntensity = 0.25;
 // the backdrop: the drawing's set — dark blue-grey, a warm pool of light, out-of-focus lamps (painted once)
 function backdrop() {
   const c = document.createElement('canvas'); c.width = 1024; c.height = 640; const g = c.getContext('2d');
-  const lg = g.createLinearGradient(0, 0, 0, 640); lg.addColorStop(0, '#1c1410'); lg.addColorStop(0.75, '#2a1e18'); lg.addColorStop(1, '#2a2220');
+  const lg = g.createLinearGradient(0, 0, 0, 640); lg.addColorStop(0, '#1c120e'); lg.addColorStop(0.75, '#2a1c16'); lg.addColorStop(1, '#2c221c');
   g.fillStyle = lg; g.fillRect(0, 0, 1024, 640);
-  const rg = g.createRadialGradient(330, 200, 10, 330, 200, 520); rg.addColorStop(0, 'rgba(224,160,80,0.5)'); rg.addColorStop(0.5, 'rgba(224,160,80,0.14)'); rg.addColorStop(1, 'rgba(224,160,80,0)');
+  const rg = g.createRadialGradient(330, 200, 10, 330, 200, 520); rg.addColorStop(0, 'rgba(232,164,88,0.5)'); rg.addColorStop(0.5, 'rgba(232,164,88,0.14)'); rg.addColorStop(1, 'rgba(232,164,88,0)');
   g.fillStyle = rg; g.fillRect(0, 0, 1024, 640);
-  let s = 5; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  let s = 14; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
   const cols = ['255,207,138', '255,176,112', '255,224,176', '154,184,255', '255,154,112'];
   g.filter = 'blur(6px)';
   for (let i = 0; i < 22; i++) {
@@ -71,12 +71,12 @@ function backdrop() {
 }
 scene.background = backdrop();
 const camera = new THREE.PerspectiveCamera(26, 1, 0.05, 50);
-camera.position.set(-0.9, 0.95, 2.6);
+camera.position.set(-1.0, 1.05, 3.0);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0.62, 0); controls.enableDamping = !shots; controls.minDistance = 0.4; controls.maxDistance = 6; controls.update();
+controls.target.set(0, 0.7, 0); controls.enableDamping = !shots; controls.minDistance = 0.4; controls.maxDistance = 6; controls.update();
 
 const key = new THREE.DirectionalLight('#ffe2c2', 3.2); key.position.set(-1.6, 2.2, 1.6); key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048); key.shadow.camera.left = -1; key.shadow.camera.right = 1; key.shadow.camera.top = 1.6;
+key.shadow.mapSize.set(2048, 2048); key.shadow.camera.left = -1; key.shadow.camera.right = 1; key.shadow.camera.top = 1.8;
 key.shadow.camera.bottom = -0.4; key.shadow.camera.near = 0.5; key.shadow.camera.far = 6; key.shadow.radius = 5; key.shadow.bias = -0.0004;
 key.shadow.normalBias = 0.01;
 const rim = new THREE.DirectionalLight('#a8c4ff', 1.3); rim.position.set(1.4, 1.4, -1.6);
@@ -119,20 +119,22 @@ function sculpted(mat, { height, colour }) {
 const P = (o) => new THREE.MeshPhysicalMaterial(o);
 const cloth = (color, weave, o = {}) => sculpted(P({ color, roughness: 0.88, sheen: 0.4, sheenRoughness: 0.5, sheenColor: '#ffffff', ...o }), {
   height: `0.0005 * sin((vPat.x + vPat.y) * ${weave}.0) * sin(vPat.z * ${weave}.0)` });
-const hairy = color => sculpted(P({ color, roughness: 0.6, clearcoat: 0.1, clearcoatRoughness: 0.4 }), {
+const hairy = color => sculpted(P({ color, roughness: 0.55, clearcoat: 0.1, clearcoatRoughness: 0.4 }), {
   height: '0.0012 * sin(vTuv.x * 28.3) + 0.0005 * sin(vTuv.x * 37.0)' });
 const MATS = {
-  skin: P({ map: tex('face.png'), bumpMap: tex('bump.png', false), bumpScale: 1.5, roughness: 0.48, clearcoat: 0.15, clearcoatRoughness: 0.4, sheen: 0.25, sheenColor: '#ff9a80', vertexColors: true }),
-  hair: hairy('#e8e2d8'), whisker: hairy('#ece6dc'),
+  skin: P({ map: tex('face.png'), bumpMap: tex('bump.png', false), bumpScale: 1.5, roughness: 0.48, clearcoat: 0.15, clearcoatRoughness: 0.4, sheen: 0.25, sheenColor: '#ff9a70', vertexColors: true }),
+  curl: sculpted(P({ color: '#2e2320', roughness: 0.5, clearcoat: 0.2, clearcoatRoughness: 0.35 }), {
+    height: '0.0016 * sin(vTuv.x + vTuv.y * 15.0)', colour: 'diffuseColor.rgb *= 0.55 + 0.45 * (0.5 + 0.5 * sin(vTuv.x + vTuv.y * 15.0));' }),
+  hairmass: P({ color: '#0c0808', roughness: 0.7 }), brow: hairy('#1e1614'),
   eye: P({ map: tex('iris.png'), roughness: 0.25, clearcoat: 1.0, clearcoatRoughness: 0.02 }),
-  gold: P({ color: '#c89a4a', metalness: 1.0, roughness: 0.3 }), chain: P({ color: '#d8a840', metalness: 1.0, roughness: 0.35 }),
-  lens: P({ color: '#eef4ff', roughness: 0.05, transparent: true, opacity: 0.16, clearcoat: 1.0, side: THREE.DoubleSide, depthWrite: false }),
-  vest: cloth('#6e4c34', 1400), shirt: cloth('#e2d6bc', 2200, { roughness: 0.75, sheen: 0.2 }), collar: cloth('#efe4cc', 2200, { roughness: 0.7, sheen: 0.2 }),
-  tie: cloth('#7a2a2a', 1800, { roughness: 0.45, sheen: 0.5 }), trousers: cloth('#4a4a52', 1200),
-  button: P({ color: '#3a2418', roughness: 0.3, clearcoat: 0.5 }), dark: P({ color: '#120c0a', roughness: 0.9 }),
-  shoe: P({ color: '#3a2418', roughness: 0.35, clearcoat: 0.4 }), sole: P({ color: '#1c1410', roughness: 0.7 }),
-  lip: P({ color: '#b05a58', roughness: 0.4, clearcoat: 0.15 }), mouth: P({ color: '#3a1418', roughness: 0.6 }),
-  teeth: P({ color: '#f1e8dc', roughness: 0.3, clearcoat: 0.3 }), lash: P({ color: '#3a2420', roughness: 0.5 }),
+  jacket: cloth('#ece2d0', 1500, { roughness: 0.8, sheen: 0.3 }), apron: cloth('#c4582c', 1100), aprontie: cloth('#a84a24', 1100),
+  towel: sculpted(P({ color: '#f7f2e8', roughness: 0.95, sheen: 0.7, sheenRoughness: 0.6 }), { height: '0.0',
+    colour: 'if ((vPat.y > 1.3 && vPat.y < 1.335) || (vPat.y > 1.365 && vPat.y < 1.385)) diffuseColor.rgb = vec3(0.55, 0.1, 0.025);' }),
+  trousers: cloth('#56504e', 1200),
+  shoe: P({ color: '#3a2a22', roughness: 0.4, clearcoat: 0.35 }), sole: P({ color: '#1c1410', roughness: 0.7 }),
+  lip: P({ color: '#b25a50', roughness: 0.4, clearcoat: 0.2 }), mouth: P({ color: '#3a1418', roughness: 0.6 }),
+  tongue: P({ color: '#a8444a', roughness: 0.4, clearcoat: 0.2 }),
+  teeth: P({ color: '#f1e8dc', roughness: 0.3, clearcoat: 0.3 }), lash: P({ color: '#1c1210', roughness: 0.5 }),
 };
 const matList = Object.values(MATS), matIndex = Object.fromEntries(Object.keys(MATS).map((k, i) => [k, i]));
 
@@ -159,15 +161,16 @@ addEventListener('resize', resize); resize();
 // ------------------------------------------------------------------ motion, face, controls
 const index = await E.motions();
 const sel = document.getElementById('motion');
-const SHOW = ['walk', 'bow', 'idle', 'wave', 'stomp', 'sit', 'sneak', 'dance', 'jump', 'run'];
+const SHOW = ['wave', 'walk', 'dance', 'stomp', 'bow', 'idle', 'sit', 'jump', 'run', 'sneak'];
 for (const id of SHOW) { const m = index.motions.find(x => x.id === id); if (!m) continue;
   const o = document.createElement('option'); o.value = id; o.textContent = m.label.ru; sel.appendChild(o); }
-const RU = { calm: 'спокоен', stern: 'строг', grumpy: 'ворчит', tired: 'устал', joy: 'радость', surprise: 'удивление', sad: 'грусть', anger: 'злость' };
+const RU = { calm: 'спокоен', beam: 'сияет', laugh: 'хохочет', surprise: 'удивление', sad: 'грусть', anger: 'злость' };
+const REST = 'beam';          // his resting face is a wide smile
 const exprBox = document.getElementById('expr');
-let target = 'calm';
-const ew = Object.fromEntries(FACES.map(k => [k, k === 'calm' ? 1 : 0])), ev = Object.fromEntries(FACES.map(k => [k, 0]));
+let target = REST;
+const ew = Object.fromEntries(FACES.map(k => [k, k === REST ? 1 : 0])), ev = Object.fromEntries(FACES.map(k => [k, 0]));
 for (const k of FACES) {
-  const b = document.createElement('button'); b.textContent = RU[k]; b.dataset.k = k; if (k === 'calm') b.classList.add('on');
+  const b = document.createElement('button'); b.textContent = RU[k]; b.dataset.k = k; if (k === REST) b.classList.add('on');
   b.onclick = () => { target = k; exprBox.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.k === k)); };
   exprBox.appendChild(b);
 }
@@ -184,7 +187,7 @@ talk.onchange = () => makeLife();
 playB.onclick = () => { playing = !playing; playB.textContent = playing ? '❚❚' : '▶'; playB.classList.toggle('on', playing); };
 time.oninput = () => { t = +time.value * (clip.frames - 1) / fps; };
 document.getElementById('close').onclick = e => { near = !near; e.target.classList.toggle('on', near); placeCamera(); };
-await choose('walk');
+await choose('wave');
 
 const follow = new THREE.Vector3();
 function placeCamera() {
@@ -192,7 +195,7 @@ function placeCamera() {
   const hy = fig.pose ? fig.pose.P[HI * 3 + 1] : 0.85;
   if (near) { const fx = fig.pose ? fig.pose.P[HI * 3] : hx, fz = fig.pose ? fig.pose.P[HI * 3 + 2] : hz;
     controls.target.set(fx, hy + 0.1, fz); camera.position.set(fx - 0.45, hy + 0.16, fz + 1.55); }
-  else { controls.target.set(hx, 0.62, hz); camera.position.set(hx - 0.9, 0.95, hz + 2.6); }
+  else { controls.target.set(hx, 0.7, hz); camera.position.set(hx - 1.0, 1.05, hz + 3.0); }
   controls.update();
 }
 let last = performance.now();

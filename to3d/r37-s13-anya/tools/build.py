@@ -138,7 +138,7 @@ B['band'] = np.where(legs[bi], np.where(np.array(['Toe' in n for n in dn[bi]]), 
 # ---------------------------------------------------------------- the head
 hv, hP, eL, eR = Hd.load(HBM)
 earm = Hd.ears(hv)
-hv2, = Hd.fit(hv, earm, ear=(u(79), np.array([0.34, 0.62, 0.6])))
+hv2, = Hd.fit(hv, earm, ear=(u(76), np.array([0.16, 0.5, 0.5])))
 ec = hv2[earm].mean(0)
 hv2[earm] += [0, y3(8) - ec[1], u(-19) - ec[2]]          # the ears: parts.ear — front x 80…93, y −16…30; profile x 16…40
 V0 = Hd.flatten(hv2, D.REG, front_min=0.02)
@@ -311,7 +311,7 @@ def hair_row(y):
     if np.isnan(ze): ze = zt_of(-44)
     df = (ze - zc) / max(np.cos(thw), 0.12) ** (2 / P_)
     if y > -26:       # behind the ear and down behind the shoulders
-        thw = np.interp(y, [-26, -10, 30, 110, 322], [thw, np.radians(100), np.radians(106), np.radians(107), np.radians(104)])
+        thw = np.interp(y, [-26, -10, 36, 96, 140, 322], [thw, np.radians(80), np.radians(84), np.radians(100), np.radians(106), np.radians(104)])
     return a_, zc, zc - zb, thw, df
 
 

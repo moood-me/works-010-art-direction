@@ -5,7 +5,8 @@ NAME = 'anya'
 REST = 'dream'
 FIG_PX = 1.4 * 0.46            # the figure sheet: px a head unit (anya.figure draws the head at 0.46)
 FIG_CX = 0.0
-FIG_YAW = 0.62
+FIG_YAW = 0.5
+Q_YAW = 0.55               # the drawing's three-quarter is a modest turn: at more the 3D face's far half is gone
 FIG_EXPR = 'dream'
 FIG_PROPS = None
 # the figure as drawn: the head bent to a sprig held at the chest, the near arm across the chest, the far arm hanging

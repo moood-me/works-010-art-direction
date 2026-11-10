@@ -1,4 +1,4 @@
-// Савелий Петрович moved by Kimodo's motions through the engine (engine/src as it is: createEngine → figure → clip; retargeting,
+// Марат moved by Kimodo's motions through the engine (engine/src as it is: createEngine → figure → clip; retargeting,
 // skinning by centres of rotation, the floor), with the live face (web/face.mjs, web/life.mjs) laid on after
 // skinning. The engine's file reading is pointed at our body: data/{bodies,topology}/marat8.* come from CACHE.
 // usage: node move.mjs JOB.json      JOB: {out: path.bin, motion: id | [ids] | null (rest), frames: [t…]
@@ -31,7 +31,7 @@ const { Face } = await import('./web/face.mjs');
 const { lifeTrack, headFacing } = await import('./web/life.mjs');
 
 const E = await createEngine({ root: pathToFileURL(ENGINE + '/'), read });
-const spec = resolve({ format: 'engine/character', version: 1, id: 'marat8', label: { ru: 'Савелий Петрович' }, body: 'marat8',
+const spec = resolve({ format: 'engine/character', version: 1, id: 'marat8', label: { ru: 'Марат' }, body: 'marat8',
   skinning: { method: 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: { armsOutOfHead: { margin: 0.03 } } } });
 const fig = await E.figure(spec, job.place || { position: [0, 0, 0], heading: 0 });
 const sk = fig.body.skeleton, HI = sk.index.Head;
