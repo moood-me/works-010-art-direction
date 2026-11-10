@@ -92,10 +92,11 @@ def hair_cap(skull, head, mask, thick, nphi=220, nth=110, th_max=2.75, edge=7.0)
     return V[used], re[T], hm[used], U[used], Vv[used]
 
 
-def lock_mesh(head, skull, spec, k=0, nseg=10, nround=8, flat=0.34, least=1.2, wscale=1.0):
+def lock_mesh(head, skull, spec, k=0, nseg=10, nround=8, flat=0.34, least=1.2, wscale=1.0, tip=None, lift=True):
     """One lock of the drawing's list ({pts: ('s', u, v, out) on the head or raw (x, y, z); w: widths}) as a flattened,
-    tapered tube: wide across the head, thin off it. Returns vertices, triangles, the across-coordinate (for the
-    painted strands) and the along-coordinate 0…1."""
+    tapered tube: wide across the head, thin off it. tip: from this part of its length on the lock narrows to a point
+    whatever its widths say (a clean pointed tip). lift: keep it over the skull (not for locks on the face).
+    Returns vertices, triangles, the across-coordinate (for the painted strands) and the along-coordinate 0…1."""
     pts, nrm = [], []
     for p in spec['pts']:
         if p[0] == 's':
@@ -107,8 +108,9 @@ def lock_mesh(head, skull, spec, k=0, nseg=10, nround=8, flat=0.34, least=1.2, w
             pts.append(np.array([x, y, z], float)); nrm.append(np.array([x / l, 0, z / l]))
     C, t = spline(pts, nseg)
     Nn, _ = spline(nrm, nseg)
-    C = skull.lift(C, least)
+    if lift: C = skull.lift(C, least)
     w = np.interp(t, np.linspace(0, 1, len(spec['w'])), spec['w']) * wscale
+    if tip is not None: w = w * np.sqrt(np.clip((1 - t) / (1 - tip), 0, 1))
     V, across, along = [], [], []
     for i in range(nseg):
         tg = C[min(i + 1, nseg - 1)] - C[max(i - 1, 0)]; tg /= np.linalg.norm(tg) + 1e-9

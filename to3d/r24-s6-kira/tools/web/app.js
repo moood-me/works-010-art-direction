@@ -100,7 +100,7 @@ if (!SHOTS) {
   fit(); addEventListener('resize', fit);
   const ST = CHAR.stand;
   set({ stat: 'rest', mood: ST.mood, snap: true, motion: null, lamp: ST.lamp.slice(), heading: ST.heading });
-  S.cam.yaw = ST.camYaw;
+  S.cam.yaw = ST.camYaw; S.cam.dist = ST.camDist ?? 5.4; S.cam.h = .8;
   let playing = true, last = performance.now();
   const motionsEl = document.getElementById('clips'), moodsEl = document.getElementById('moods');
   const btn = (el, label, on) => { const b = document.createElement('button'); b.textContent = label; b.onclick = on; el.appendChild(b); return b; };
@@ -118,7 +118,7 @@ if (!SHOTS) {
   motionBtns.push([btn(motionsEl, ST.label, () => choose(null)), null]);
   for (const m of MOTIONS) motionBtns.push([btn(motionsEl, m.label, () => choose(m.id)), m.id]);
   motionBtns[0][0].setAttribute('aria-pressed', 'true');
-  for (const [k, m] of Object.entries(data.poses.moods)) moodBtns.push([btn(moodsEl, m.label, () => setMoodUI(k)), k]);
+  for (const [k, m] of Object.entries(data.poses.moods)) if (m.menu) moodBtns.push([btn(moodsEl, m.label, () => setMoodUI(k)), k]);
   setMoodUI(ST.mood);
   const talkB = document.getElementById('talk'); talkB.onclick = () => { S.talk = !S.talk; life.talk = S.talk; talkB.setAttribute('aria-pressed', String(S.talk)); };
   const playB = document.getElementById('play'); playB.onclick = () => { playing = !playing; playB.textContent = playing ? 'пауза' : 'играть'; playB.setAttribute('aria-pressed', String(playing)); };

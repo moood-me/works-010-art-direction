@@ -224,7 +224,11 @@ W *= (1 - wj)[:, None]; W[:, I['Jaw']] += wj
 Hh['W'] = W
 Hh.update(paint(nH, D.COL['skin']))
 # the neck under the jaw is in the head's shadow (the drawing: the head's outline shifted down over the neck)
-neck = (hy < -0.98) | ((hy < -0.6) & (hz < -0.15))
+# — what lies outside the drawing's skull form (its rings) is neck
+_y = np.clip(hy, -0.98, 0.98); _zm = D.HEAD.zm(_y); _a = np.maximum(D.HEAD.a(_y), 1e-3)
+_d = np.where(hz > _zm, D.HEAD.zf(_y) - _zm, _zm - D.HEAD.zb(_y))
+_rr = (np.abs(hx / _a) ** D.HEAD.n + np.abs((hz - _zm) / _d) ** D.HEAD.n) ** (1 / D.HEAD.n)
+neck = ((hy < -0.98) | ((_rr > 1.12) & (hy < -0.3) & (fw < 0.3))) & ~earm
 Hh['col'][neck] = D.shade(D.COL['skin'])
 # the face's drawn layer: front projection in head-local units (web/face.js draws in the same box)
 FX0, FX1, FY0, FY1 = -1.0, 1.0, -1.3, 1.0
@@ -627,7 +631,7 @@ for k, v in SHEET.items(): EXPRS[k] = expr_js(getattr(who, 'EXPR', {}).get(k, v)
 # the 'stand' pose's arm directions (the drawing paints the arms over the body; here they hang just outside it)
 arm = D.POSE['arml']
 STAND = dict(upper=list(arm['upper']), fore=list(arm['fore']), hand=list(arm.get('hand', arm['fore'])), palm=list(arm.get('palm', (-1, 0, 0.2))),
-             out=config.ARM_OUT)
+             out=config.ARM_OUT, cy=B['hip_y'] * CM)
 
 # ---------------------------------------------------------------- one pack
 pieces = [('body', Bd), ('head', Hh), ('yoke', YOKE), ('pants', PANTS), ('top', TOP)] + ([('collar', COLLAR)] if COLLAR else []) + \

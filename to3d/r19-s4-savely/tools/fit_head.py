@@ -88,7 +88,7 @@ tip = mid[mid[:, 2].argmax()]
 NOSE_H = np.array([cx, -0.169, 0.731])
 t_h = place(NOSE_H[None])[0]
 zface = face_z(0, t_h[1]) - 6
-k_n = float(np.clip((tip[2] - zface) / (t_h[2] - zface), 0.8, 1.6))
+k_n = float(np.clip((tip[2] - zface) / (t_h[2] - zface), FIT.get('nose_min', 0.8), 1.6))
 wn = np.clip((0.034 - np.linalg.norm((V0 - NOSE_H) * [1.0, 0.5, 0.9], axis=1)) / 0.014, 0, 1) ** 1.5
 wn *= np.clip((V0[:, 2] - 0.709) / 0.006, 0, 1)
 V[:, 2] = V[:, 2] + wn * (k_n - 1) * np.maximum(V[:, 2] - zface, 0)
@@ -197,9 +197,9 @@ Vref = V.copy()
 MOUTH_H = np.array([cx, -0.155, 0.693])
 dm = np.linalg.norm((V0 - MOUTH_H) / [0.032, 0.03, 0.02], axis=1)
 dn2 = np.linalg.norm((V0 - NOSE_H) / [0.024, 0.03, 0.03], axis=1)
-soft_w = 1 - 0.85 * np.clip(1.6 - dm, 0, 1) - 0.8 * np.clip(1.5 - dn2, 0, 1)
+soft_w = 1 - 0.85 * np.clip(1.6 - dm, 0, 1) - FIT.get('nose_keep', 0.8) * np.clip(1.5 - dn2, 0, 1)
 soft_w = np.clip(soft_w, 0.12, 1) * (1 - 0.7 * blend)
-for it, alpha in enumerate([40, 30, 20, 15, 12, 10]):
+for it, alpha in enumerate(FIT.get('stiff', [40, 30, 20, 15, 12, 10])):
     n = vnormals(V)
     dist, j = tree.query(V, 1)
     ok = free & (np.einsum('ij,ij->i', n, TN[j]) > 0.3) & (dist < 30)
@@ -218,6 +218,13 @@ ring = (dist_eye > 0.019) & (dist_eye < 0.034)
 ring &= outer
 for _ in range(30):
     V[ring] = V[ring] + 0.5 * ((A @ V)[ring] / deg[ring, None] - V[ring])
+
+# a young face: the base's adult forms (brow ridge, cheekbones, the jaw's angle) smoothed away — everywhere but the
+# eyes, the lips, the nostrils and the ears (FIT['smooth']: how many steps)
+if FIT.get('smooth'):
+    wsm = free * (1 - blend) * np.clip(dm - 0.9, 0, 1) * np.clip(dn2 - 0.6, 0, 1)
+    for _ in range(FIT['smooth']):
+        V = V + 0.5 * wsm[:, None] * ((A @ V) / deg[:, None] - V)
 
 balls = {}
 for k, s in ((0, 'L'), (1, 'R')):

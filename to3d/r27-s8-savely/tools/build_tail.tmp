@@ -1,0 +1,94 @@
+# ======================================================================================== write
+def write():
+    th, _ = pack.read(os.path.join(ENGINE, 'data/topology/anny-moood.json'))
+    _, bod = pack.read(os.path.join(ENGINE, 'data/bodies/moood-child.json'))
+    Vs, Ts, SJ, SW, info = [], [], [], [], []
+    n = 0
+    for p in PIECES:
+        Vs.append(p['V']); Ts.append(p['T'] + n); SJ.append(p['sj']); SW.append(p['sw'] / p['sw'].sum(1, keepdims=True))
+        info.append(dict(name=p['name'], mat=p['mat'], start=n, count=len(p['V']), subdiv=p['subdiv']))
+        n += len(p['V'])
+    Vall = np.vstack(Vs).astype(np.float32); T = np.vstack(Ts)
+    sj = np.vstack(SJ); sw = np.vstack(SW)
+    parts = np.zeros((len(Vall), len(th['parts'])), np.uint8)
+    hw = sum(np.where(np.isin(sj[:, k], [IX['Head'], IX['HeadEnd'], IX['Jaw'], IX['LeftEye'], IX['RightEye']]), sw[:, k], 0) for k in range(4))
+    parts[:, th['parts'].index('head')] = np.round(hw * 255)
+    out = os.path.join(CACHE, 'engine/data')
+    os.makedirs(out + '/bodies', exist_ok=True); os.makedirs(out + '/topology', exist_ok=True)
+    pack.write(out + '/topology/savely8.json',
+               dict(format='engine/topology', version=1, id='savely8', about='Тим (С8): every piece in one mesh',
+                    source='to3d/r27-s8-savely', skeleton='soma77', vertices=len(Vall), triangles=len(T), parts=th['parts']),
+               dict(triangles=T.astype(np.uint32), skinJoints=sj.astype(np.uint8), skinWeights=sw.astype(np.float32), parts=parts))
+    pack.write(out + '/bodies/savely8.json',
+               dict(format='engine/body', version=1, id='savely8', label=dict(ru='Тим', en='Tim'),
+                    source='to3d/r27-s8-savely: Anny (moood-child) fitted to the С8 drawing, HBM stylised head',
+                    topology='savely8', skeleton='soma77'),
+               dict(positions=Vall, joints=J.astype(np.float32), frames=np.asarray(bod['frames'], np.float32)))
+    np.savez(f'{CACHE}/rest.npz', uv=np.vstack([p['uv'] for p in PIECES]).astype(np.float32),
+             pat=np.vstack([p['pat'] for p in PIECES]).astype(np.float32),
+             tint=np.concatenate([p['tint'] for p in PIECES]).astype(np.float32))
+    json.dump(dict(pieces=info, HH=HH, O=O.tolist(), tex=os.path.join(FOLDER, 'tools/web/tex')),
+              open(f'{CACHE}/model.json', 'w'), indent=1)
+    print('savely8', len(Vall), 'vertices', len(T), 'triangles;', ', '.join(f"{p['name']}:{p['count']}" for p in info))
+
+
+write()
+
+
+def write_face():
+    """the face rig for face.mjs: every replacement piece's shapes (world rest positions), the lids' weights over the
+    head's vertices and each eye's centre and axes, the lash and eyeballs' vertex ranges, the expressions' numbers"""
+    info = {p['name']: (sum(q['V'].shape[0] for q in PIECES[:i]), len(p['V'])) for i, p in enumerate(PIECES)}
+    fj = json.load(open(f'{CACHE}/face.json'))
+    arrays = {}
+    shapes = {}
+    for part in ('lipU', 'lipL', 'cav', 'teethU', 'teethL'):
+        keys = fj['faces'] + ['v' + v for v in fj['visemes']]
+        shapes[part] = keys
+        for k in keys: arrays[f'{part}.{k}'] = W(F[f'{part}_{k}']).astype(np.float32)
+    shapes['brows'] = fj['faces']
+    for k in fj['faces']: arrays[f'brows.{k}'] = W(F['brow_' + k]).astype(np.float32)
+    arrays['lash.w'] = F['lash_w'].astype(np.float32)
+    lids = {}
+    h0 = info['head'][0]
+    for k in ('L', 'R'):
+        wU, wL = F[f'lid{k}_wU'], F[f'lid{k}_wL']
+        idx = np.where((wU > 1e-3) | (wL > 1e-3))[0]
+        arrays[f'lid{k}.idx'] = (idx + h0).astype(np.uint32)
+        arrays[f'lid{k}.wU'] = wU[idx].astype(np.float32); arrays[f'lid{k}.wL'] = wL[idx].astype(np.float32)
+        c = W(F[f'lid{k}_c'])
+        lids[k] = dict(c=c.tolist(), n=F[f'lid{k}_n'].tolist(), up=F[f'lid{k}_up'].tolist(), ax=F[f'lid{k}_ax'].tolist())
+    from fit_head import R_EYE, LID_R
+    R = TP['eye_r']; op = TP['eye_open']
+    eU0 = math.asin(min(1, R * TP['lid_top'] * op / (R_EYE * LID_R)))
+    eL0 = -math.asin(min(1, R * TP['lid_bot'] * op / (R_EYE * LID_R)))
+    hdr = dict(format='savely8/face', version=1, pieces={k: list(v) for k, v in info.items()}, shapes=shapes, lids=lids,
+               eU0=eU0, eL0=eL0, expr=fj['expr'], faces=fj['faces'], visemes=fj['visemes'],
+               eyes={'L': W(drawing.eye_centre(1)).tolist(), 'R': W(drawing.eye_centre(-1)).tolist()})
+    pack.write(f'{CACHE}/engine/face.json', hdr, arrays)
+    print('face rig', len(arrays), 'arrays')
+
+
+write_face()
+
+
+def write_viewer_data():
+    """the viewer's copy, in the folder (data/): the body and its topology, the face rig, the paint coordinates and
+    which piece is which (look.json)"""
+    import shutil
+    D = os.path.join(FOLDER, 'data')
+    os.makedirs(D, exist_ok=True)
+    for sub, name, to in (('engine/data/bodies', 'savely8', 'bodies'), ('engine/data/topology', 'savely8', 'topology'), ('engine', 'face', '')):
+        os.makedirs(os.path.join(D, to), exist_ok=True)
+        for ext in ('json', 'bin'):
+            shutil.copy(os.path.join(CACHE, sub, f'{name}.{ext}'), os.path.join(D, to, f'{name}.{ext}'))
+    info = [dict(name=p['name'], mat=p['mat']) for p in PIECES]
+    pack.write(os.path.join(D, 'look.json'), dict(format='savely8/look', version=1, pieces=info,
+               counts=[len(p['V']) for p in PIECES], tris=[len(p['T']) for p in PIECES]),
+               dict(uv=np.vstack([p['uv'] for p in PIECES]).astype(np.float32),
+                    pat=np.vstack([p['pat'] for p in PIECES]).astype(np.float32),
+                    tint=np.concatenate([p['tint'] for p in PIECES]).astype(np.float32)))
+    print('viewer data in', D)
+
+
+write_viewer_data()

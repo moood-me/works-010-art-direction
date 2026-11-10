@@ -1,4 +1,5 @@
-// Тим's face, a stop-motion puppet's: replacement pieces (the mouth — lips, the dark inside, teeth — and the brows)
+// Савелий Петрович's face, a stop-motion puppet's: replacement pieces (the mouth — lips, the dark inside, teeth, the
+// moustache over it: header.mouth lists them — and the brows)
 // whose shapes are mixed, lids that turn over the glass eyes about each eye's horizontal axis, and the eyes that
 // turn in their sockets. The shapes and weights come from tools/build.py (the face pack); the shapes themselves are
 // the drawing's own mouth and brows (tools/face.py).
@@ -22,7 +23,7 @@ export class Face {
     this.faces = h.faces; this.visemes = h.visemes;
     this.moved = [];
     const add = (s, n) => { for (let i = s; i < s + n; i++) this.moved.push(i); };
-    for (const p of ['lipU', 'lipL', 'cav', 'teethU', 'teethL', 'brows', 'lashes', 'eyeL', 'eyeR']) add(...h.pieces[p]);
+    for (const p of [...h.mouth, 'brows', 'lashes', 'eyeL', 'eyeR']) add(...h.pieces[p]);
     for (const k of ['L', 'R']) for (const i of a[`lid${k}.idx`]) this.moved.push(i);
     this.moved = [...new Set(this.moved)];
   }
@@ -58,7 +59,7 @@ export class Face {
     let tot = cw; for (const [k, w] of Object.entries(st.v || {})) tot += w * sp;
     // weights relative to calm: the calm shape is the base, the rest are differences
     const rel = mw.filter(([k]) => k !== 'calm').map(([k, w]) => [k, w / Math.max(tot, 1e-6)]);
-    for (const p of ['lipU', 'lipL', 'cav', 'teethU', 'teethL']) mix(p, rel);
+    for (const p of h.mouth) mix(p, rel);
     const bw = Object.entries(st.e || {}).filter(([k]) => k !== 'calm');
     mix('brows', bw);
     if (st.brow) {                                       // a lift of the brows (speech: phrase starts)

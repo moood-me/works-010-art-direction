@@ -8,7 +8,7 @@
  "topology": "kira-arcane",
  "skeleton": "soma",
  "source": "to3d/r20-s4-kira/tools/build.py",
- "floor": 8.257824083557352e-05,
+ "floor": 0.0,
  "materials": [
   "skin",
   "hair",
@@ -47,23 +47,23 @@
   ],
   "hair": [
    25440,
-   48999
+   51693
   ],
   "shoes": [
-   48999,
-   50539
+   51693,
+   53377
   ],
   "hood": [
-   50539,
-   51419
+   53377,
+   54257
   ],
   "pads": [
-   51419,
-   52491
+   54257,
+   55329
   ],
   "cups": [
-   52491,
-   53163
+   55329,
+   56001
   ]
  },
  "K": 0.00097,
@@ -79,7 +79,7 @@
   "positions": {
    "dtype": "float32",
    "shape": [
-    53163,
+    56001,
     3
    ],
    "offset": 0
@@ -87,160 +87,160 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    96319,
+    102047,
     3
    ],
-   "offset": 637960
+   "offset": 672016
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    53163,
+    56001,
     4
    ],
-   "offset": 1793792
+   "offset": 1896584
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    53163,
+    56001,
     4
    ],
-   "offset": 2006448
+   "offset": 2120592
   },
   "joints": {
    "dtype": "float32",
    "shape": [
     231
    ],
-   "offset": 2857056
+   "offset": 3016608
   },
   "frames": {
    "dtype": "float32",
    "shape": [
     308
    ],
-   "offset": 2857984
+   "offset": 3017536
   },
   "col": {
    "dtype": "uint8",
    "shape": [
-    53163,
+    56001,
     3
    ],
-   "offset": 2859216
+   "offset": 3018768
   },
   "shd": {
    "dtype": "uint8",
    "shape": [
-    53163,
+    56001,
     3
    ],
-   "offset": 3018712
+   "offset": 3186776
   },
   "glw": {
    "dtype": "uint8",
    "shape": [
-    53163,
+    56001,
     3
    ],
-   "offset": 3178208
+   "offset": 3354784
   },
   "rim": {
    "dtype": "uint8",
    "shape": [
-    53163,
+    56001,
     3
    ],
-   "offset": 3337704
+   "offset": 3522792
   },
   "mat": {
    "dtype": "uint8",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 3497200
+   "offset": 3690800
   },
   "uv": {
    "dtype": "float32",
    "shape": [
-    53163,
+    56001,
     2
    ],
-   "offset": 3550368
+   "offset": 3746808
   },
   "tw": {
    "dtype": "uint8",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 3975672
+   "offset": 4194816
   },
   "pn": {
    "dtype": "float32",
    "shape": [
-    53163,
+    56001,
     3
    ],
-   "offset": 4028840
+   "offset": 4250824
   },
   "pw": {
    "dtype": "uint8",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 4666800
+   "offset": 4922840
   },
   "two": {
    "dtype": "uint8",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 4719968
+   "offset": 4978848
   },
   "hs": {
    "dtype": "float32",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 4773136
+   "offset": 5034856
   },
   "hg": {
    "dtype": "uint8",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 4985792
+   "offset": 5258864
   },
   "hm": {
    "dtype": "float32",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 5038960
+   "offset": 5314872
   },
   "ha": {
    "dtype": "float32",
    "shape": [
-    53163
+    56001
    ],
-   "offset": 5251616
+   "offset": 5538880
   },
   "rp": {
    "dtype": "float32",
    "shape": [
-    53163,
+    56001,
     3
    ],
-   "offset": 5464272
+   "offset": 5762888
   },
   "dr": {
    "dtype": "float32",
    "shape": [
-    53163,
+    56001,
     3
    ],
-   "offset": 6102232
+   "offset": 6434904
   }
  },
  "bin": "kira.bin"

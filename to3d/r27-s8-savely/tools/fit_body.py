@@ -1,33 +1,51 @@
-"""Anny's child body (moood-child, the engine's) fitted to Тим's puppet proportions (figure-tim of С8: 3.36 heads
-tall, the head 0.342 m; short thin legs, a barrel of a body, thin arms, small mitten hands).
+"""Anny's old man (moood-oldman, the engine's) fitted to Савелий Петрович's puppet proportions (figure-savely of С8:
+3.88 heads tall, the head 0.311 m: a long pear of a body, short legs, a short wide neck, small hands and feet).
 
-The deformer (after Р3): each joint gets an affine map — a scale along its bone and across it — and the joints are
-rebuilt down the chain with their parents' maps; every vertex moves by its skin weights' blend of its joints' maps
+The deformer (after Р3, as Р10): each joint gets an affine map — a scale along its bone and across it — and the joints
+are rebuilt down the chain with their parents' maps; every vertex moves by its skin weights' blend of its joints' maps
 (the weights that later move it in motion). Frames are kept (the retargeting reference).
 
-Targets (metres above the floor, from cast.TIM_FIG; 1 head unit = 0.342 m, floor 2.86 under the head's centre):
-hip joints 0.41, knees 0.23, ankles 0.05; shoulders 0.72, ±0.14; elbow 0.55; wrist 0.39; neck base 0.74; the head's
-pivot 0.84 (under the skull)."""
+Targets (head units below the head's centre → metres above the floor, from cast.SAVELY_FIG; floor 3.38):
+hip joints y 2.05 (±0.22), knees 2.7, ankles 3.27; shoulders y 0.8 (±0.52); upper arm 0.72, forearm 0.66 long;
+the head's pivot 0.4 under the head's centre. The scales below are worked out from these and the base's own joints."""
 import numpy as np
-from common import load_body, NAMES, IX, PARENT, children, CACHE
+from common import load_body, NAMES, IX, PARENT, children, CACHE, HH, FEET
 
-B = load_body('moood-child')
+BASE = 'moood-oldman'
+B = load_body(BASE)
 OLD = B['joints']
+yw = lambda yd: (FEET - yd) * HH                 # the drawing's height (head units down from the head's centre) → metres up
+
+HIP_Y, KNEE_Y, ANKLE_Y, HIP_X = yw(2.05), yw(2.7), yw(3.27), 0.22 * HH
+SH_Y, SH_X = yw(0.8), 0.52 * HH
+UPPER, FORE = 0.72 * HH, 0.66 * HH
+HEAD_PIVOT = yw(0.4)
+O = lambda n: OLD[IX[n]]
+ln = lambda a, b: np.linalg.norm(O(b) - O(a))
+# the trunk's scale s: the hips' joint sits (Hips − LeftLeg)·s over the hip joints, the shoulders (LeftArm − Hips)·s over it
+s_trunk = (SH_Y - HIP_Y) / ((O('Hips')[1] - O('LeftLeg')[1]) + (O('LeftArm')[1] - O('Hips')[1]))
+HIPS_Y = HIP_Y + (O('Hips')[1] - O('LeftLeg')[1]) * s_trunk
+s_thigh = (HIP_Y - KNEE_Y) / (O('LeftLeg')[1] - O('LeftShin')[1])
+s_shin = (KNEE_Y - ANKLE_Y) / (O('LeftShin')[1] - O('LeftFoot')[1])
+s_foot = ANKLE_Y / O('LeftFoot')[1]
+s_clav = (SH_X - O('LeftShoulder')[0]) / (O('LeftArm')[0] - O('LeftShoulder')[0])
+neck1 = HIPS_Y + (O('Neck1')[1] - O('Hips')[1]) * s_trunk
+s_neck = (HEAD_PIVOT - neck1) / (O('Head')[1] - O('Neck1')[1])
 
 # (along the bone, across it); trunk joints: (along, x, z)
 GROUPS = {
-    'trunk': (['Hips', 'Spine1', 'Spine2', 'Chest'], (0.80, 1.0, 0.95)),
-    'neck': (['Neck1', 'Neck2'], (0.95, 0.82, 0.82)),
+    'trunk': (['Hips', 'Spine1', 'Spine2', 'Chest'], (s_trunk, 1.0, 0.9)),
+    'neck': (['Neck1', 'Neck2'], (s_neck, 0.95, 0.95)),
     'head': (['Head', 'HeadEnd', 'Jaw', 'LeftEye', 'RightEye'], (1.0, 1.0, 1.0)),
-    'clav': (['LeftShoulder', 'RightShoulder'], (1.05, 0.85)),
-    'upper': (['LeftArm', 'RightArm'], (0.88, 0.62)),
-    'fore': (['LeftForeArm', 'RightForeArm'], (0.84, 0.62)),
-    'hand': (['LeftHand', 'RightHand'], (0.62, 0.78)),
-    'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (0.5, 0.95)),
-    'thumb': ([n for n in NAMES if 'Thumb' in n], (0.6, 0.95)),
-    'thigh': (['LeftLeg', 'RightLeg'], (0.63, 0.72)),
-    'shin': (['LeftShin', 'RightShin'], (0.61, 0.55)),
-    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (0.72, 0.8)),
+    'clav': (['LeftShoulder', 'RightShoulder'], (s_clav, 0.85)),
+    'upper': (['LeftArm', 'RightArm'], (UPPER / ln('LeftArm', 'LeftForeArm'), 0.7)),
+    'fore': (['LeftForeArm', 'RightForeArm'], (FORE / ln('LeftForeArm', 'LeftHand'), 0.72)),
+    'hand': (['LeftHand', 'RightHand'], (0.6, 0.76)),
+    'fingers': ([n for n in NAMES if 'Hand' in n and n not in ('LeftHand', 'RightHand') and 'Thumb' not in n], (0.55, 0.9)),
+    'thumb': ([n for n in NAMES if 'Thumb' in n], (0.62, 0.9)),
+    'thigh': (['LeftLeg', 'RightLeg'], (s_thigh, 0.6)),
+    'shin': (['LeftShin', 'RightShin'], (s_shin, 0.5)),
+    'foot': (['LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase', 'LeftToeEnd', 'RightToeEnd'], (s_foot, 0.6)),
 }
 
 
@@ -54,20 +72,17 @@ def maps():
     return S
 
 
-LEG_X = 0.058
-
-
-def fit(hips_y=0.47):
+def fit():
     S = maps()
     new = np.zeros_like(OLD)
     for j in range(len(NAMES)):
         p = PARENT[j]
-        if p < 0: new[j] = [OLD[j, 0], hips_y, OLD[j, 2]]
+        if p < 0: new[j] = [OLD[j, 0], HIPS_Y, OLD[j, 2]]
         else: new[j] = new[p] + S[p] @ (OLD[j] - OLD[p])
-    # the legs closer together (the drawing's stand: feet ±0.17 head apart), carried down each leg
+    # the legs where the drawing has them (hip joints ±0.22 head), carried down each leg; the shoulders likewise
     shift = np.zeros_like(OLD)
     for pre, s in (('Left', 1), ('Right', -1)):
-        dx = s * LEG_X - new[IX[pre + 'Leg'], 0]
+        dx = s * HIP_X - new[IX[pre + 'Leg'], 0]
         for n in NAMES:
             if n.startswith(pre) and any(k in n for k in ('Leg', 'Shin', 'Foot', 'Toe')):
                 shift[IX[n], 0] = dx
@@ -83,7 +98,8 @@ def fit(hips_y=0.47):
 
 if __name__ == '__main__':
     V, J = fit()
+    print('scales', {g: np.round(s, 2).tolist() for g, (_, s) in GROUPS.items()})
     for n in ['Hips', 'Chest', 'Neck1', 'Neck2', 'Head', 'LeftShoulder', 'LeftArm', 'LeftForeArm', 'LeftHand', 'LeftHandMiddleEnd',
               'LeftLeg', 'LeftShin', 'LeftFoot', 'LeftToeEnd']:
         print(n, J[IX[n]].round(3))
-    print('height', V[:, 1].max().round(3))
+    print('height', V[:, 1].max().round(3), 'targets hip', round(HIP_Y, 3), 'shoulder', round(SH_Y, 3), round(SH_X, 3), 'head pivot', round(HEAD_PIVOT, 3))

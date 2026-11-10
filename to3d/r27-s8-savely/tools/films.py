@@ -5,11 +5,11 @@ lives (life.mjs: blinks, the eyes' jumps and the gaze leading the head, speech, 
 usage: python3 films.py NAME [samples]    NAME: turn | walk | face | wave | jump"""
 import json, os, subprocess, sys, math
 import numpy as np
-from common import CACHE, HERE, FOLDER, pack
+from common import CACHE, HERE, FOLDER, pack, BID
 
 BLENDER = '/home/user/cache/blender/blender'
 FPS = 12
-_, BA = pack.read(f'{CACHE}/engine/data/bodies/savely8.json')
+_, BA = pack.read(f'{CACHE}/engine/data/bodies/{BID}.json')
 NV = len(BA['positions'])
 
 FILMS = {
@@ -65,7 +65,7 @@ def main(name, samples=16):
                                    focus=float(np.linalg.norm(pos - tgt)) - (0.12 if ty == 'head' else 0.0))))
     job = dict(out=out, samples=samples, frames=f'{out}/frames.bin', views=views, noise=0.05)
     json.dump(job, open(f'{out}/render.json', 'w'))
-    subprocess.run([BLENDER, '-b', '--python', os.path.join(HERE, 'render.py'), '--', f'{out}/render.json'],
+    subprocess.run([os.path.join(CACHE, 'heavy.sh'), BLENDER, '-b', '--python', os.path.join(HERE, 'render.py'), '--', f'{out}/render.json'],
                    check=True, stdout=subprocess.DEVNULL)
     mp4 = os.path.join(FOLDER, 'pics', name + '.mp4')
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', str(FPS), '-i', f'{out}/f%04d.png',

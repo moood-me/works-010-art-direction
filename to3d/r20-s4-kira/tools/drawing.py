@@ -24,7 +24,10 @@ FEET = cast.CAST[WHO]['feet']
 # the head fit: the eye region's size over the head's scale and its widening (a teenager in Arcane's manner: big almond
 # eyes, smaller than Аня's), how far the ball sits behind the face, the drawn neck's widening (a stick in 3D), the
 # base's wide mouth drawn in
-FIT = dict(eye_scale=1.2, eye_wide=1.1, eye_back=3.0, neck_x=1.45, neck_z=1.25, ear=0.9, mouth_narrow=0.74)
+FIT = dict(eye_scale=1.27, eye_wide=1.1, eye_back=3.0, neck_x=1.45, neck_z=1.25, ear=0.9, mouth_narrow=0.74,
+           # fifteen, not an adult: the fit follows the drawing's smooth head closer (lower stiffness), the nose is let
+           # go to the drawing's small one, the base's bony forms are smoothed
+           stiff=[40, 25, 15, 10, 6, 4, 3], nose_keep=0.3, nose_min=0.55, smooth=14)
 # the painted face layer (faces.py): dark brows painted, a heavy lash line, freckles over the nose
 FACE = dict(lid_shade=0.28, mouth_w=0.84, ulip=1.0, lip_hi=0.4, spots=0.45, nose_blush=0.16, brow_hairs=0)
 

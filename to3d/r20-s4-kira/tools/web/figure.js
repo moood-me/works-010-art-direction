@@ -78,7 +78,7 @@ const eyes = faceData.eyes;   // drawing units
 const U = {
   L: { value: new THREE.Vector3() }, Lr: { value: new THREE.Vector3() }, Vd: { value: new THREE.Vector3() },
   key: { value: new THREE.Color('#fff1dc') }, kLit: { value: 0.12 },
-  thr: { value: 0.12 }, edgeN: { value: 0.035 },
+  thr: { value: 0.12 }, edgeN: { value: CHAR.edgeN },
   face: { value: faceImg },
   R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) }, headJ: { value: sk.index.Head },
   smap: { value: smTarget.depthTexture }, smMat: { value: new THREE.Matrix4() }, smTexel: { value: 1 / SM }, smBlur: { value: 2.0 },

@@ -41,7 +41,7 @@ def face(size=1024):
             a, b = 0.07 * 1.15, 0.045 * 1.15
             d.ellipse([*px(x - a, y - b), *px(x + a, y + b)], fill=255)
     a = layer(blush, S * 0.03) * P['blush'] * 1.1
-    img = mix(img, rgb(P['blush_col']), a)
+    img = mix(img, rgb(P.get('blush_col', '#e0606a')), a)
     # the socket tone round the eyes (the drawing: a soft darker skin under and over the lids)
     def socket(d):
         for side in (-1, 1):
@@ -51,17 +51,36 @@ def face(size=1024):
     img = mix(img, mix(rgb(P['skin']), rgb('#7a4050'), 0.55), a)
     # the nose: a warm tip
     def nose(d):
-        y = P['nose_tip'] - 0.01
-        d.ellipse([*px(-0.05, y - 0.04), *px(0.05, y + 0.035)], fill=255)
-    a = layer(nose, S * 0.015) * 0.35
-    img = mix(img, rgb('#e07a6a'), a)
+        y = P['nose_tip'] - 0.01; w = P['nose_w'] * 1.25
+        d.ellipse([*px(-w, y - w * 1.1), *px(w, y + w * 0.8)], fill=255)
+    a = layer(nose, S * 0.02) * 0.3
+    img = mix(img, rgb(P.get('nose_tint', '#e07a6a')), a)
+    # the sculpted wrinkles (cast: wrinkles on the forehead, crow's feet) and the bags under the eyes: a darker line
+    # in the paint and a groove in the height picture (bump.png)
+    lines = []
+    for (phi, y, lp, sw) in P.get('wrinkles', []):
+        a_ = H0.a(y)
+        dense = [(lp[i][0] + (lp[i + 1][0] - lp[i][0]) * t, lp[i][1] + (lp[i + 1][1] - lp[i][1]) * t) for i in range(len(lp) - 1) for t in np.linspace(0, 1, 8)]
+        lines.append(([H0.surf(phi + lx / a_, y + ly)[:2] for lx, ly in dense], sw))
+    for side in (-1, 1):
+        for k in range(P.get('bags', 0)):
+            C, nup = drawing.eye_opening(side, n=24)
+            lo = C[nup:][::-1][1:-2]                         # the lower lid's line (engine axes)
+            lines.append(([(q[0] * (1 - 0.0 * k), -q[1] + P['eye_r'] * (0.62 + 0.4 * k)) for q in lo], 0.007))
+    def wr(d):
+        for pts_, sw in lines:
+            d.line([px(x, y) for x, y in pts_], fill=255, width=max(2, int(sw * S * 1.3)), joint='curve')
+    wl = layer(wr, S * 0.003)
+    img = mix(img, mix(rgb(P['skin']), rgb('#5a2a30'), 0.6), wl * 0.45)
+    bump_im = Image.fromarray((255 - 200 * layer(wr, S * 0.004)[..., 0]).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))
+    bump_im.save(os.path.join(OUT, 'bump.png'))
     # the chin and the jaw's underside a little warmer (light through resin)
     # freckles: the drawing's own scatter (head.freckles, seed 3) — on the face, not where the eyes are
     r = random.Random(3)
     im = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(im, 'RGBA')
     col = rgb('#9a5a3a')
-    for i in range(P['freckles']):
+    for i in range(P.get('freckles', 0)):
         side = -1 if i % 2 else 1
         phi = side * (0.08 + r.random() * 0.45)
         y = P['eye_y'] + 0.06 + r.random() * 0.07

@@ -27,10 +27,15 @@ sizes); he is 1.58 m, his head 225 mm.
 - **Hair as locks, not one shell** (Р7: "one shell with painted strands"). `parts.hair_cap` makes a shell over the
   fitted skull and carries the drawing's own hair mask as an attribute — the shader cuts it, so the edge is clean and
   can be ragged; `parts.lock_mesh` turns every lock of the drawing's list (`P.hair_locks`) into a flattened tapered
-  tube. Савелий's white tufts are the drawing's 70 plus as many again by the same recipe.
-- **Brows and moustache are thin shells of hair** on the face (`parts.face_shell`: the head's own triangles inside the
-  drawing's brow and moustache shapes, pushed off the skin) — they stand off the face in profile and move with the
-  skin in expressions (they are skin pieces for `face.js`).
+  tube with a pointed tip. Савелий's white hair is the shell (a smooth edge, 4.5–7 units thick) and 38 large tufts
+  set in rows down the sides and the back, one standing out above each ear. The first try used the drawing's own 70
+  small tufts plus as many again: as 3D pieces they read as a pile of sharp shards (the coordinator's remark), so
+  they were replaced by few, larger, clean ones.
+- **Brows and moustache are forms of hair on the face.** Each brow is a row of four pointed tufts along the drawn
+  brow's middle line, lying on the fitted brow ridge, the last drooping past the outer end (a first try — a shell cut
+  by the drawn brow's outline — read as torn scraps). The moustache is a thin shell (`parts.face_shell`: the head's
+  own triangles inside the drawing's shape, pushed off the skin). They stand off the face in profile and move with
+  the skin in expressions (they are skin pieces for `face.js`).
 - **Clothes cut by place in the shader, not by vertex**: the waistcoat over the shirt, its V, the tie, buttons, the
   watch chain, pocket welts, the trousers below its hem and their crease are decided per pixel from the rest position
   (crisp edges); the mesh only gives thickness (the waistcoat stands 8 mm off the shirt). The trousers are each
@@ -94,7 +99,8 @@ ffmpeg -framerate 20 -i $C/fm/turn/f%04d.png -c:v libx264 -pix_fmt yuv420p -crf 
   stretches with the back. The collar is a plain band with a painted notch and fold line, not a sewn collar.
 - An open mouth: no lower teeth or tongue, the painted lips stretch — so joy is a closed smile, and speech opens the
   jaw only a little. Under the moustache it passes; a laugh would not.
-- His brows are smaller and quieter than the drawn bushy ones; the face came out kinder than the stern drawing.
+- The face came out kinder than the stern drawing. The hair's shell ends in a straight edge in front of the ear and
+  at the nape (seen in profile); the tufts are clean but all alike.
 - Hands are Anny's (realistic), clasped behind the back by eye — fingers overlap rather than interlock.
 - Kimodo's `idle` stoops and drops the head (the motion's own).
 - The trousers' crease is a thin painted line and breaks into dashes at a distance.

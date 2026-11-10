@@ -1,5 +1,5 @@
-"""Тим's head: the Human Base Meshes stylised head (CC0) fitted to the drawing's own 3D head (the loft of
-styles/s8-stopmotion `cast.TIM`), so front, three-quarter and profile all come from one shape.
+"""Савелий Петрович's head: the Human Base Meshes stylised head (CC0) fitted to the drawing's own 3D head (the loft of
+styles/s8-stopmotion `cast.SAVELY`), so front, three-quarter and profile all come from one shape.
 
 Two levels, so the sculptor's features survive the fit:
 1. The eye-socket linings are cut away (faces inside the base's eyeballs): the lid margins become two clean loops.
@@ -25,7 +25,10 @@ from common import CACHE, vertex_normals
 P = drawing.P
 R_EYE = P['eye_r'] * 1.05          # the drawing draws the ball 5 % bigger than eye_r
 LID_R = 1.03            # the lid margin's distance from the eye's centre, in eyeball radii
-K_NOSE, K_LIPS, K_FACE, K_EAR = 0.7, 0.0, 0.3, 1.0
+K_NOSE, K_LIPS, K_FACE, K_EAR = 0.25, 0.0, 0.2, 1.0
+EAR_TURN, EAR_K = 30.0, 1.4     # degrees on top of the drawing's ear_out; the ear's height against the drawing's plate
+NOSE_LONG, NOSE_OUT = 1.0, 1.0
+NOSE_WING = 1.2                  # the wings' half width in nose_w (head.nose: the alae stand out past the tip's width)
 OPEN_K = 1.14
 LOWZ = None
 
@@ -173,7 +176,8 @@ def main():
     LOWZ = np.r_[underpatch | mouthpatch, np.zeros(len(V) - len(V0), bool)]
     V = relax_low(V, Q, adj)
 
-    V = fix_ears(V, ear, adj)
+    V = fix_ears(V, ear, adj, base.tris(Q), V0)
+    V = fix_nose(V, nose, adj, V0, base.tris(Q))
     V, lip = fix_eyes(V, Q, margins, adj)
     Q = np.r_[Q, lip['Q']]
     V = np.r_[V, lip['V']]
@@ -195,29 +199,61 @@ def relax_low(V, Q, adj, iters=60):
     return V
 
 
-def fix_ears(V, ear, adj):
+def fix_ears(V, ear, adj, T, V0):
     """carry each ear whole onto the drawing's: about its root, scaled to the drawing's height, turned so it stands
-    out by the drawing's angle; blended into the head over a few rings"""
+    out by the drawing's angle. The ear itself moves rigidly; a few rings of skin round it follow by a biharmonic
+    blend (a soft weight instead would drag a skirt of skin out with the lobe)."""
+    V = V.copy(); V_in = V.copy()
     for side in (1, -1):
         m = ear[side]
-        w = smooth_mask(m, adj, 4)
-        E = V[m]
+        E = V0[m]                                   # the sculptor's ear as it is in the base (the detail transfer bends it)
         ax = np.abs(E[:, 0])
         root = E[ax < ax.min() + 0.025].mean(0)
         outer = E[ax > np.percentile(ax, 70)].mean(0)
         u0 = outer - root; u0[1] = 0; u0 /= np.linalg.norm(u0)
         pts, droot, du = drawing.ear_plate(side)
         du = du.copy(); du[1] = 0; du /= np.linalg.norm(du)
-        ang = math.atan2(du[0], du[2]) - math.atan2(u0[0], u0[2]) + side * math.radians(12)
+        ang = math.atan2(du[0], du[2]) - math.atan2(u0[0], u0[2]) + side * math.radians(EAR_TURN)
         c, s = math.cos(ang), math.sin(ang)
         Rm = np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
-        sc = np.ptp(pts[:, 1]) / np.ptp(E[:, 1]) * 1.3
+        sc = np.ptp(pts[:, 1]) / np.ptp(E[:, 1]) * EAR_K
         ctr_d = pts.mean(0); ctr_b = E.mean(0)
-        moved = droot + sc * (Rm @ (V - root).T).T
-        # keep the ear's middle where the drawing's is (height), the root on the skull
+        moved = droot + sc * (Rm @ (V0 - root).T).T
         moved[:, 1] += (ctr_d[1] - (droot[1] + sc * (ctr_b[1] - root[1])))
-        V = V + w[:, None] * (moved - V)
+        # the part of the ear that stands off the skull moves whole; its foot and the skin round it blend
+        off = m & (np.abs(V0[:, 0]) > ax.min() + 0.03)
+        ring = set(np.where(m)[0].tolist()); zone = set(ring)
+        for _ in range(5):
+            ring = {k for v in ring for k in adj[v]} - zone; zone |= ring
+        free = np.array(sorted(zone - set(np.where(off)[0].tolist())))
+        fixed = np.array(sorted(set(range(len(V))) - set(free.tolist())))
+        D = np.zeros_like(V); D[off] = moved[off] - V_in[off]
+        D = igl.harmonic(V_in, T, fixed, D[fixed], 2)
+        V = V + D * (np.isin(np.arange(len(V)), np.r_[free, np.where(off)[0]]))[:, None]
         print('ear', side, 'turn', round(math.degrees(ang), 1), 'scale', round(sc, 2))
+    return V
+
+
+def fix_nose(V, nose, adj, V0, T):
+    """the sculptor's nose itself (the base's, as it is in V0: tip (0, −0.18, 0.6), wings ±0.1, standing 0.14 off the
+    face, 0.13 from root to tip) stretched to the drawing's nose (head.nose: root → tip heights, how far the tip stands
+    out, the width — for Савелий a long big bulb) and set with its tip on the drawing's tip; the skin round it follows
+    by a biharmonic blend."""
+    ns = drawing.nose_slices()                       # (y, z of the front, half width), root → tip
+    yt, zt = ns[-1, 0], ns[-1, 1]
+    core = nose & (V0[:, 2] > 0.475) & (np.abs(V0[:, 0]) < 0.115) & (V0[:, 1] < -0.06)
+    tip0 = np.array([0.0, -0.18, 0.6])
+    k = np.array([P['nose_w'] * NOSE_WING / 0.1, (ns[0, 0] - yt) / 0.13 * NOSE_LONG, P['nose_len'] / 0.14 * NOSE_OUT])
+    moved = np.array([0.0, yt, zt]) + (V0 - tip0) * k
+    ring = set(np.where(core)[0].tolist()); zone = set(ring)
+    for _ in range(7):
+        ring = {q for v in ring for q in adj[v]} - zone; zone |= ring
+    free = np.array(sorted(zone - set(np.where(core)[0].tolist())))
+    fixed = np.array(sorted(set(range(len(V))) - set(free.tolist())))
+    D = np.zeros_like(V); D[core] = moved[core] - V[core]
+    D = igl.harmonic(V, T, fixed, D[fixed], 2)
+    V = V + D
+    print('nose scale', k.round(2), 'tip', (0, round(yt, 3), round(zt, 3)))
     return V
 
 

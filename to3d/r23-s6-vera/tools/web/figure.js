@@ -389,10 +389,10 @@ function lightTown(P, w) {
   const quad = (x, y, z, ww, hh, c) => { const o = pos.length / 3; pos.push(x, y, z, x + ww, y, z, x + ww, y + hh, z, x, y + hh, z); for (let i = 0; i < 4; i++) colr.push(c.r, c.g, c.b); idx.push(o, o + 1, o + 2, o, o + 2, o + 3); };
   let x = -(w.span ?? 30) / 2;
   while (x < (w.span ?? 30) / 2) {
-    const bw = 2.2 + 3.4 * r(), bh = 3.5 + 9 * r() * r() + (r() < .25 ? 5 : 0);
+    const bw = 2 + 2.8 * r(), bh = 3 + 7 * r() * r() + (r() < .22 ? 4.5 : 0);
     quad(x, -1, 0, bw, bh + 1, blockCol);
     const lit = col(w.lit || '#f2c88e');
-    for (let k = 0; k < bh * 1.1; k++) { const c = blockCol.clone().lerp(lit, .45 + .45 * r()); quad(x + .3 + (bw - .9) * r(), .5 + (bh - 1.2) * r(), .02, .22, .22, c); }
+    for (let k = 0; k < bh * .9; k++) { const c = blockCol.clone().lerp(lit, .45 + .45 * r()); quad(x + .3 + (bw - .95) * r(), .6 + (bh - 1.4) * r(), .02, .3, .3, c); }
     x += bw + (r() < .35 ? 1.2 + 3 * r() : .25);
   }
   const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(colr, 3)); geo.setIndex(idx);

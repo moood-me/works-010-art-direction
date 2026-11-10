@@ -197,44 +197,63 @@ skull = PT.Skull(hv, outer & ~ear & ~mi_ & (hv[:, 1] < 95), HC)
 
 def hair_mask(U, V):                                # the drawing's (cast.savely): a band from the temples round the back
     au = np.abs(U)
-    rag = 3.0 * np.sin(U * 9 + 0.01 * V * 7) + 2.0 * np.sin(U * 23 + 1 + 0.2 * V)       # a ragged edge
-    side = (au - 1.2) * 60 + 0.4 * rag + 0.25 * (V + 10) * (V > -10)                      # the front edge slants back to the ear
+    side = (au - 1.2) * 60 + 0.25 * (V + 10) * (V > -10)                                 # the front edge slants back to the ear
     low = 26 + 40 * sm((au - 1.5) / 0.7)                                                 # sideburns end by the ear; the nape lower
-    return np.minimum(np.minimum(side, V + 56 + rag), low - V + rag)
+    return np.minimum(np.minimum(side, V + 56), low - V)
 
 
-cap_v, cap_t, cap_m, cap_U, cap_V = PT.hair_cap(skull, HEAD, hair_mask, lambda U, V: 3.5 + 2.5 * sm((np.abs(U) - 1.6) / 0.8), edge=5.0)
-hair_v = [cap_v]; hair_t = [cap_t]; hair_m = [cap_m]; hair_s = [cap_U * 4.0 + 0.01 * cap_V]; hair_a = [(cap_V + 60) / 130]
-nlock = 0
-# the drawing's tufts, and as many again by the same recipe (soft locks lifting off at their tips), so the mass reads
-# as locks from every side
+cap_v, cap_t, cap_m, cap_U, cap_V = PT.hair_cap(skull, HEAD, hair_mask, lambda U, V: 4.5 + 2.5 * sm((np.abs(U) - 1.6) / 0.8), edge=5.0)
+hair_v = [cap_v]; hair_t = [cap_t]; hair_m = [cap_m]; hair_s = [cap_U * 2.0 + 0.004 * cap_V]; hair_a = [(cap_V + 60) / 130]
+# tufts: a few large clean ones with pointed tips, in rows down the sides and the back (the drawing's own list is 70
+# small ones: as 3D pieces they read as a pile of shards), each rooted on the cap and lifting off at its tip; one
+# stands out above each ear, as the drawing's silhouette has
 import random, math
 rnd = random.Random(5)
-more = []
-for k in range(90):
-    sd = rnd.choice((1, -1)); u0 = sd * rnd.uniform(1.28, math.pi); v0 = rnd.uniform(-54, 46)
-    if (1.4 < abs(u0) < 1.95 and v0 > -12) or v0 > 14 + 40 * sm((abs(u0) - 1.5) / 0.7): continue
-    u1 = u0 + sd * rnd.uniform(0.04, 0.22); v1 = v0 + rnd.uniform(14, 26)
-    more.append(dict(pts=[('s', u0, v0, 3), ('s', (u0 + u1) / 2, (v0 + v1) / 2, 6.5), ('s', u1, v1, 8 + rnd.uniform(0, 8))], w=[7, 10, 0.5]))
-own = [L for L in P.hair_locks(HEAD) if hair_mask(np.array([L['pts'][0][1]]), np.array([L['pts'][0][2]]))[0] > 0]      # not the ones rooted off the mask (on the cheek)
-for k, spec in enumerate(own + more):
-    v, tt, ac, al = PT.lock_mesh(HEAD, skull, spec, k=k, least=1.5, wscale=1.6, flat=0.42)
+tufts = []
+for sd in (1, -1):
+    for row, v0 in enumerate((-50, -30, -10, 12)):
+        u = 1.3 + 0.16 * (row % 2)
+        while u < math.pi - 0.05:
+            ok_ = not (1.38 < u < 2.0 and v0 > -16) and v0 + 18 < 26 + 40 * sm((u - 1.5) / 0.7)
+            if ok_:
+                du_ = rnd.uniform(-0.03, 0.03); lift = rnd.uniform(0, 5)
+                tufts.append(dict(pts=[('s', sd * (u + du_), v0, 4), ('s', sd * (u + du_ + 0.05), v0 + 13, 8), ('s', sd * (u + du_ + 0.13), v0 + 29 + rnd.uniform(-3, 3), 10 + lift)], w=[13, 19, 13]))
+            u += 0.33
+    tufts.append(dict(pts=[('s', sd * 1.27, -38, 4), ('s', sd * 1.25, -50, 11), ('s', sd * 1.18, -60, 19)], w=[9, 10, 6]))
+nlock = 0
+for k, spec in enumerate(tufts):
+    v, tt, ac, al = PT.lock_mesh(HEAD, skull, spec, k=k, nseg=12, nround=10, least=2.0, flat=0.5, tip=0.35)
     hair_t.append(tt + sum(len(q) for q in hair_v)); hair_v.append(v); hair_m.append(np.ones(len(v))); hair_s.append(ac); hair_a.append(al); nlock += 1
 hair_v = np.vstack(hair_v); hair_t = np.vstack(hair_t); hair_m = np.concatenate(hair_m); hair_s = np.concatenate(hair_s); hair_a = np.concatenate(hair_a)
 HRV = W(hair_v)
 HRT = PT.orient(HRV, hair_t, W(HC))
-print('hair', len(hair_v), 'vertices,', nlock, 'locks')
+print('hair', len(hair_v), 'vertices,', nlock, 'tufts')
 
-# brows and moustache: thin shells of white hair on the face (they move with the skin: web/face.js)
+# brows: each a row of four clean pointed tufts along the drawn brow's middle line, lying on the fitted brow ridge and
+# lifting a little at the tips, the last drooping past the outer end (bushy); the moustache: a thin shell of white
+# hair on the face. Both move with the skin (web/face.js).
 okf = outer & (hv[:, 2] > 30)
 shells = []
-brow = [(x, y) for x, y in P.brow]
-bx0, bx1 = P.brow_inner_x, P.brow_outer_x
-# the drawn brow, a little heavier (bushy) and drooping over the eye at the outer end
-brow_poly = [(x + (2.5 if i in (4, 5) else 0), y - (3.5 if i in (1, 2, 3, 4) else 0) + (2.5 if i in (6, 7, 8) else 0)) for i, (x, y) in enumerate(brow)]
+_ft = __import__('scipy.spatial', fromlist=['cKDTree']).cKDTree(hv[okf][:, :2]); _fz = hv[okf][:, 2]
+
+
+def face_z(x, y):
+    _, j = _ft.query([x, y], 6)
+    return float(_fz[j].max())
+
+
+mid_line = [(8.0, -16.5), (20.0, -22.0), (35.0, -24.5), (49.0, -21.0), (60.0, -13.5), (66.0, -6.0)]
+ml, mt = PT.spline(np.array(mid_line), 60)
 for sd in (1, -1):
-    v, tt, m_, hs, ids = PT.face_shell(hv, HT, okf, [(sd * x, y) for x, y in brow_poly], lambda x, y: 3.4 + 1.2 * sm((np.abs(x) - 10) / 20), edge=1.6, flow=(1.0, 0.25), fine=0.06)
-    shells.append(('brow' + ('L' if sd > 0 else 'R'), v, tt, m_, hs))
+    bv_, bt_, bs_, ba_ = [], [], [], []
+    for i, (t0, t1, wd) in enumerate(((0.0, 0.42, 9.5), (0.2, 0.62, 10.5), (0.4, 0.84, 10.0), (0.6, 1.0, 8.0))):
+        seg = ml[(mt >= t0) & (mt <= t1)][::6]
+        pts = [(sd * x, y - 1.0, face_z(sd * x, y) + 1.2 + 2.6 * q / max(len(seg) - 1, 1)) for q, (x, y) in enumerate(seg)]
+        v, tt, ac, al = PT.lock_mesh(HEAD, skull, dict(pts=pts, w=[wd * 0.75, wd, wd * 0.8]), k=100 + i, nseg=12, nround=10, flat=0.42, tip=0.4, lift=False)
+        bt_.append(tt + sum(len(q) for q in bv_)); bv_.append(v); bs_.append(ac); ba_.append(al)
+    v = np.vstack(bv_); tt = np.vstack(bt_)
+    tt = PT.orient(W(v), tt, W(np.array([sd * 30.0, -20.0, 40.0])))
+    shells.append(('brow' + ('L' if sd > 0 else 'R'), v, tt, np.ones(len(v)), np.concatenate(bs_)))
 # the moustache: the drawing's shape put between the fitted nose's base and the fitted mouth's slit
 my0, my1 = min(y for x, y in P.moustache), max(y for x, y in P.moustache)
 ty0, ty1 = SUB_Y + 0.5, mouth['y'] + 2.5

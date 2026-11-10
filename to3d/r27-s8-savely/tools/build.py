@@ -1,15 +1,17 @@
-"""Тим assembled: Anny's fitted child body (body.py), the fitted base head (fit_head.py) with its glass eyes, the
-replacement face pieces (face.py), the sculpted hair (fit_hair.py), the drawing's thin neck, and the clothes — every
-piece skinned on SOMA's 77 joints — written as an engine body on its own topology (engine/README.md: Formats), plus
-what the renderer and the viewer need: which vertices are which piece and its material, the paint coordinates.
+"""Савелий Петрович assembled: Anny's fitted old man (fit_body.py), the fitted base head (fit_head.py) with its glass
+eyes, the replacement face pieces (face.py: mouth, brows, the moustache), the tufts (fit_hair.py), the half-moon
+glasses, the drawing's short wide neck, and the clothes — every piece skinned on SOMA's 77 joints — written as an engine
+body on its own topology (engine/README.md: Formats), plus what the renderer and the viewer need: which vertices are
+which piece and its material, the paint coordinates.
 
-Clothes, from the drawing's numbers (cast.TIM_FIG / TIM_BODY of styles/s8-stopmotion):
-- the sweater: Anny's trunk and arms, each vertex carried out to the drawing's barrel (the torso loft: its width,
-  front and back at every height) or round its arm bone to the sleeve's radius — so it keeps Anny's weights and bends
-  as she does; a ribbed band at the neckline and at the cuffs and hem;
-- the shorts: Anny's hips and thighs carried round the thigh bones to the drawing's wide legs (r 0.15 head);
-- the socks: the shins below the drawing's sock top, ribbed; the shoes: lofted round each foot (the drawing's
-  rounded red shoe with a pale sole).
+Clothes, from the drawing's numbers (cast.SAVELY_FIG / SAVELY_BODY of styles/s8-stopmotion):
+- the waistcoat: the drawing's own torso loft (a pear: its width, front and back at every height) as a clean grid, cut
+  open in the drawing's V; its weights taken from Anny's trunk carried out onto the same loft (trunk joints only: a
+  stiff waistcoat on a round body); a wall at its edges, so it has a thickness;
+- the shirt: its front inside the V (the same loft, a little in), a collar stand round the neck and two collar points,
+  the sleeves = Anny's arms carried round their bones to the sleeve's radius, with cuffs; the tie on the shirt front;
+- three buttons and the watch chain on the waistcoat; the trousers = Anny's legs carried round the leg bones to the
+  drawing's wide trouser legs; the shoes lofted round the feet.
 Writes CACHE/engine/data/{bodies,topology}/savely8.* and CACHE/model.json (pieces, materials) + CACHE/rest.npz."""
 import json, math, os
 import numpy as np, igl
@@ -18,10 +20,12 @@ import fit_body as body
 from drawing import P as TP
 import cast
 from head import interp
-from common import CACHE, HH, FEET, HEAD_Y, IX, NAMES, PARENT, vertex_normals, pack, ENGINE, FOLDER
+from head import Head
+from scipy.spatial import cKDTree
+from common import CACHE, HH, FEET, HEAD_Y, IX, NAMES, PARENT, vertex_normals, pack, ENGINE, FOLDER, BID
 
 NJ = len(NAMES)
-Z0 = 0.035                    # the head's centre (and the drawing's z = 0) in the engine's z
+Z0 = 0.03                    # the head's centre (and the drawing's z = 0) in the engine's z
 O = np.array([0.0, HEAD_Y, Z0])
 
 
@@ -149,6 +153,7 @@ BT = B['triangles']; BP = B['parts'] / 255.0; PN = list(B['partnames'])
 pw = lambda *names: sum(BP[:, PN.index(n)] for n in names)
 BD = dense(B['sj'], B['sw'])
 BN = vertex_normals(BV, BT)
+SKIN_UV = (0.5, 0.97)             # a plain patch of the skin's picture (the crown), for the neck and the hands
 
 J = BJ.copy()
 J[IX['HeadEnd']] = W([0, 0.5, 0])
@@ -164,14 +169,14 @@ sj, sw = one(len(HV), 'Head')
 piece('head', 'skin', W(HV), HT, sj, sw, uv=np.c_[HV[:, 0] + 0.5, HV[:, 1] + 0.5], tint=ear * 0.6, subdiv=1)
 
 
-def sphere(c, r, n=40):
+def sphere(c, r, n=40, squash=(1, 1, 1)):
     th = np.linspace(0, np.pi, n); ph = np.linspace(0, 2 * np.pi, 2 * n, endpoint=False)
     Pp = np.array([[np.sin(t) * np.cos(p), np.sin(t) * np.sin(p), np.cos(t)] for t in th for p in ph])
     m = 2 * n; T = []
     for i in range(n - 1):
         for j in range(m):
             a, b = i * m + j, i * m + (j + 1) % m; T += [(a, b, a + m), (b, b + m, a + m)]
-    return c + Pp * r, np.array(T), np.c_[Pp[:, 0] * 0.5 + 0.5, Pp[:, 1] * 0.5 + 0.5]
+    return c + Pp * r * np.array(squash), np.array(T), np.c_[Pp[:, 0] * 0.5 + 0.5, Pp[:, 1] * 0.5 + 0.5]
 
 
 for s, nm in ((1, 'eyeL'), (-1, 'eyeR')):
@@ -181,19 +186,89 @@ for s, nm in ((1, 'eyeL'), (-1, 'eyeR')):
 
 # the replacement pieces, at the calm face (face.mjs mixes their shapes)
 F = np.load(f'{CACHE}/face.npz')
+MOUTH = ['lipU', 'lipL', 'cav', 'teethU', 'teethL', 'moust']        # the pieces that go with the mouth's shapes
 for part, mat in (('lipU', 'lip'), ('lipL', 'lip'), ('cav', 'mouth'), ('teethU', 'teeth'), ('teethL', 'teeth')):
     V = F[f'{part}_calm']; sj, sw = one(len(V), 'Head')
     piece(part, mat, W(V), F[part + '_T'], sj, sw)
-V = F['brow_calm']; sj, sw = one(len(V), 'Head'); piece('brows', 'brow', W(V), F['brow_T'], sj, sw)
+V = F['moust_calm']; sj, sw = one(len(V), 'Head'); piece('moust', 'whisker', W(V), F['moust_T'], sj, sw, uv=F['moust_uv'], subdiv=1)
+V = F['brow_calm']; sj, sw = one(len(V), 'Head'); piece('brows', 'whisker', W(V), F['brow_T'], sj, sw, uv=F['brow_uv'], subdiv=1)
 V = F['lash_V']; sj, sw = one(len(V), 'Head'); piece('lashes', 'lash', W(V), F['lash_T'], sj, sw)
 
 HR = np.load(f'{CACHE}/hair.npz')
 sj, sw = one(len(HR['V']), 'Head')
 piece('hair', 'hair', W(HR['V']), HR['T'], sj, sw, uv=HR['uv'])
 
+
+# --- the half-moon glasses (cast.savely_over → props.glasses 'half'): gold wire rims in front of the eyes, lower than
+# the eyes (he looks over them), a bridge over the nose, temples back to the ears; thin lenses
+def glasses(rw=0.075, rh=0.05, out=0.1, lw=0.008, y_off=0.075):
+    H0 = drawing.H0
+    ye = TP['eye_y'] + y_off
+    wire = lw * 0.62
+    tubes, lens = [], []
+    ends = {}
+    for side in (-1, 1):
+        phi = side * TP['eye_phi']
+        c = np.array(H0.surf(phi, ye, out))
+        tg = np.array(H0.surf(phi + 0.01, ye, out)) - c; tg /= np.linalg.norm(tg)
+        dn = np.array([0, 1.0, 0])
+        tt = np.linspace(0, 2 * np.pi, 48, endpoint=False)
+        loc = np.c_[rw * np.cos(tt), rh * np.maximum(-0.15, np.sin(tt))]
+        # the flat top's corners rounded a little
+        ring = c + loc[:, :1] * tg + loc[:, 1:] * dn
+        ring = np.r_[ring, ring[:1]]
+        tubes.append(ring)
+        nrm = np.cross(tg, dn); nrm *= np.sign(nrm[2])
+        lens.append((c, loc, tg, dn, nrm))
+        ends[side] = (c + side * rw * tg * (1 if tg[0] > 0 else -1) - 0.15 * rh * dn * 0, c)
+    # bridge
+    br = np.array([H0.surf(-TP['eye_phi'] * 0.45, ye - 0.02, out * 0.8), H0.surf(0, ye - 0.035, out * 0.95),
+                   H0.surf(TP['eye_phi'] * 0.45, ye - 0.02, out * 0.8)])
+    tubes.append(resample(br, 14))
+    for side in (-1, 1):
+        phi = side * TP['eye_phi']
+        c = np.array(H0.surf(phi, ye, out)); tg = np.array(H0.surf(phi + 0.01, ye, out)) - c; tg /= np.linalg.norm(tg)
+        p_rim = c + side * rw * tg * np.sign(tg[0]) + np.array([0, -0.15 * rh, 0])
+        p0 = np.array(H0.surf(side * (TP['eye_phi'] + 0.5), ye - 0.03, out * 0.55))
+        p1 = np.array(H0.surf(side * TP['ear_phi'] * 0.97, TP['ear_y'] - 0.07, 0.022))
+        p2 = np.array(H0.surf(side * (TP['ear_phi'] + 0.22), TP['ear_y'] - 0.02, 0.012))
+        tubes.append(resample(np.array([p_rim, p0, p1, p2]), 22))
+    Vs, Ts, n = [], [], 0
+    for path in tubes:
+        v, t, _ = tube_along(hu(path), np.full(len(path), wire), n=10)
+        Vs.append(v); Ts.append(t + n); n += len(v)
+    GV, GT = np.concatenate(Vs), np.concatenate(Ts)
+    Ls, LTs, n = [], [], 0
+    for c, loc, tg, dn, nrm in lens:
+        rr = np.linspace(0, 1, 6)[1:]
+        v = [c] + [c + (loc[:, :1] * tg + loc[:, 1:] * dn) * r for r in rr]
+        v = np.vstack([np.atleast_2d(x) for x in v]); m = len(loc); t = []
+        for j in range(m): t.append((0, 1 + j, 1 + (j + 1) % m))
+        for k in range(len(rr) - 1):
+            for j in range(m):
+                a, b = 1 + k * m + j, 1 + k * m + (j + 1) % m; t += [(a, a + m, b), (b, a + m, b + m)]
+        Ls.append(hu(v)); LTs.append(np.array(t) + n); n += len(v)
+    return GV, GT, np.concatenate(Ls), np.concatenate(LTs)
+
+
+def resample(p, n):
+    """a smooth curve through the points (Catmull-Rom), n points"""
+    p = np.asarray(p, float); m = len(p) - 1; out = []
+    for u in np.linspace(0, m, n):
+        j = min(int(u), m - 1); t = u - j
+        p0, p1, p2, p3 = p[max(0, j - 1)], p[j], p[j + 1], p[min(m, j + 2)]
+        out.append(0.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
+    return np.array(out)
+
+
+from common import hu
+GV, GT, LV, LT = glasses()
+sj, sw = one(len(GV), 'Head'); piece('glasses', 'gold', W(GV), GT, sj, sw)
+sj, sw = one(len(LV), 'Head'); piece('lenses', 'lens', W(LV), LT, sj, sw)
+
 # ======================================================================================== the neck
-N = cast.TIM_BODY['neck']
-ys = np.linspace(0.25, 0.82, 24)
+N = drawing.BODY['neck']
+ys = np.linspace(0.25, 0.8, 24)
 ring = []
 for y in ys:
     a = interp(N['a'], y); fr = interp(N['front'], y); bk = interp(N['back'], y)
@@ -209,27 +284,38 @@ for i in range(len(ring) - 1):
     for j in range(nn):
         p, q = i * nn + j, i * nn + (j + 1) % nn
         NT += [(p, p + nn, q), (q, p + nn, q + nn)]
-y = NV[:, 1]
-yH, y2, y1 = J[IX['Head'], 1], J[IX['Neck2'], 1], J[IX['Neck1'], 1]
-D = np.zeros((len(NV), NJ))
-a = np.clip((y - y2) / (yH - y2), 0, 1); b = np.clip((y - y1) / (y2 - y1), 0, 1)
-D[:, IX['Head']] = a; D[:, IX['Neck2']] = (1 - a) * b; D[:, IX['Neck1']] = (1 - a) * (1 - b)
-sj, sw = top4(D)
-piece('neck', 'skin', NV, np.array(NT), sj, sw, uv=np.full((len(NV), 2), 0.5), tint=np.full(len(NV), 0.15))
+
+
+def neck_weights(X):
+    y = X[:, 1]
+    yH, y2, y1 = J[IX['Head'], 1], J[IX['Neck2'], 1], J[IX['Neck1'], 1]
+    D = np.zeros((len(X), NJ))
+    a = np.clip((y - y2) / (yH - y2), 0, 1); b = np.clip((y - y1) / (y2 - y1), 0, 1)
+    D[:, IX['Head']] = a; D[:, IX['Neck2']] = (1 - a) * b; D[:, IX['Neck1']] = (1 - a) * (1 - b)
+    return D
+
+
+sj, sw = top4(neck_weights(NV))
+piece('neck', 'skin', NV, np.array(NT), sj, sw, uv=np.tile(SKIN_UV, (len(NV), 1)), tint=np.full(len(NV), 0.15))
 
 # ======================================================================================== clothes
-FIG = cast.TIM_FIG
-TOR = FIG['torso']
+FIG = drawing.FIG
+TOR = Head(FIG['torso'], 1.0, 0.0, 0.0, 0.0, 0.0)          # the drawing's torso loft (head units, y down from the head)
+TY0, TY1 = FIG['torso_y']
+yw = lambda yd: (FEET - np.asarray(yd, float)) * HH          # head units down from the head's centre → metres up
 
 
-def torso_at(yw):
-    """the drawing's barrel at world height yw: half width, front and back z (world), centre z"""
-    yd = FEET - yw / HH
-    yd = np.clip(yd, 0.56, 1.9)
-    a = np.array([interp(TOR['a'], v) for v in np.atleast_1d(yd)]) * HH
-    fr = np.array([interp(TOR['front'], v) for v in np.atleast_1d(yd)]) * HH + Z0
-    bk = np.array([interp(TOR['back'], v) for v in np.atleast_1d(yd)]) * HH + Z0
-    return a, fr, bk
+def bar(phi, yd, out=0.0):
+    """a point of the torso loft (phi round it, 0 = the middle of the front; yd down from the head's centre), pushed
+    out along the loft's normal by `out` (head units) → world"""
+    p = np.array([TOR.surf(a, b, c) for a, b, c in np.broadcast(phi, yd, out)])
+    return Wd(p[:, 0], p[:, 1], p[:, 2])
+
+
+def front(X, yd, out=0.0):
+    """a point on the loft's front at the lateral offset X (head units) — the drawing's body.tx"""
+    a = np.array([max(TOR.a(v), 1e-3) for v in np.atleast_1d(yd)])
+    return bar(np.arcsin(np.clip(np.asarray(X) / a, -1, 1)), yd, out)
 
 
 def bone_t(X, a, b):
@@ -242,7 +328,6 @@ Y = BV[:, 1]
 armw = pw('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm')
 handw = pw('Lhand', 'Rhand')
 legw = pw('Lthigh', 'Rthigh', 'Lshin', 'Rshin', 'Lfoot', 'Rfoot')
-side = np.where(BV[:, 0] >= 0, 1, -1)
 
 
 def arm_coord(X):
@@ -258,64 +343,192 @@ def arm_coord(X):
     return out_t, out_p
 
 
-HEM = (FEET - 1.75) * HH                          # the sweater's hem (world y)
-NECK_F, NECK_B = (FEET - 0.63) * HH, (FEET - 0.57) * HH   # the neckline, front and back
+def leg_coord(X):
+    """along the leg: 0 at the hip joint, 1 at the knee, 2 at the ankle; and the point on the bone"""
+    out_t = np.zeros(len(X)); out_p = np.zeros_like(X)
+    for s, pre in ((1, 'Left'), (-1, 'Right')):
+        m = (X[:, 0] >= 0) if s > 0 else (X[:, 0] < 0)
+        t1, p1 = bone_t(X[m], pre + 'Leg', pre + 'Shin')
+        t2, p2 = bone_t(X[m], pre + 'Shin', pre + 'Foot')
+        lower = t1 > 1
+        out_t[m] = np.where(lower, 1 + np.clip(t2, -1, 3), t1)
+        out_p[m] = np.where(lower[:, None], p2, p1)
+    return out_t, out_p
+
+
 at, ap = arm_coord(BV)
+lt, lp = leg_coord(BV)
+
+# --- Anny's trunk carried out onto the loft: where the waistcoat's weights come from
+trunk = np.where((armw < 0.5) & (handw < 0.3) & (legw < 0.6) & (Y < yw(TY0 - 0.12)))[0]
+TRUNK_J = [IX[n] for n in ('Hips', 'Spine1', 'Spine2', 'Chest', 'Neck1', 'LeftShoulder', 'RightShoulder')]
+yd_t = np.clip(FEET - BV[trunk, 1] / HH, TY0, TY1)
+A_ = np.array([TOR.a(v) for v in yd_t]) * HH
+Bz = np.array([TOR.b(v) for v in yd_t]) * HH; Cz = np.array([TOR.c(v) for v in yd_t]) * HH + Z0
+ang_t = np.arctan2(BV[trunk, 0] / np.maximum(A_, 1e-4), (BV[trunk, 2] - Cz) / np.maximum(Bz, 1e-4))
+TRV = np.c_[A_ * np.sin(ang_t), BV[trunk, 1], Cz + Bz * np.cos(ang_t)]
+TRD = np.zeros((len(trunk), NJ)); TRD[:, TRUNK_J] = BD[trunk][:, TRUNK_J]
+# what the arms and legs held goes to the chest and the hips: the waistcoat is stiff
+TRD[:, IX['Chest']] += BD[trunk][:, [IX[n] for n in NAMES if 'Arm' in n or 'Hand' in n]].sum(1)
+TRD[:, IX['Hips']] += BD[trunk][:, [IX[n] for n in NAMES if any(k in n for k in ('Leg', 'Shin', 'Foot', 'Toe'))]].sum(1)
+TRD[:, IX['Neck1']] += BD[trunk][:, [IX['Neck2'], IX['Head']]].sum(1)
+TRD[TRD.sum(1) < 1e-6, IX['Chest']] = 1.0
+TRD /= TRD.sum(1, keepdims=True)
+_tree = cKDTree(TRV)
 
 
-def neckline(X):
-    """> 0 above the neckline (the neckline dips in front)"""
-    zf = (X[:, 2] - Z0) / (0.15)
-    t = np.clip((zf + 1) / 2, 0, 1)
-    return X[:, 1] - (NECK_B + (NECK_F - NECK_B) * t ** 1.5)
+def trunk_weights(X, k=8):
+    """weights for points near the loft: a smooth mean of the nearest trunk vertices' (carried onto the loft)"""
+    d, i = _tree.query(X, k=k)
+    w = 1 / (d + 0.004) ** 2; w /= w.sum(1, keepdims=True)
+    D = (TRD[i] * w[..., None]).sum(1)
+    return D / D.sum(1, keepdims=True)
 
 
-# --- the sweater: trunk + arms down to the wrist
-sleeve_end = 1.93
-f_sw = np.maximum.reduce([HEM - Y, neckline(BV), np.where(armw + handw > 0.3, at - sleeve_end, -1), legw - 0.5,
-                          handw - 0.6])
-v, t, a, on = cut(BV, BT, f_sw, np.c_[BD, at, armw, BV])
-D_sw = a[:, :NJ]; at_s = a[:, NJ]; aw_s = a[:, NJ + 1]; rest_s = a[:, NJ + 2:]
-sv = v.copy()
-# the drawing's shoulders are high and round (the barrel closes up to the neck at 0.56 head): the trunk's top is lifted
-SH0 = 0.66
-lift = (sv[:, 1] > SH0) & (aw_s < 0.5)
-kx = 1 + 0.45 * np.clip((np.abs(sv[:, 0]) - 0.035) / 0.05, 0, 1)        # the shoulders, not round the neck
-sv[lift, 1] = SH0 + (sv[lift, 1] - SH0) * kx[lift]
-# trunk part → the barrel (radially from the trunk's axis, at every height)
-A_, FR_, BK_ = torso_at(sv[:, 1])
-cz = (FR_ + BK_) / 2; hz = (FR_ - BK_) / 2
-ang = np.arctan2(sv[:, 0] / np.maximum(A_, 1e-4), (sv[:, 2] - cz) / np.maximum(hz, 1e-4))
-tor = np.c_[A_ * np.sin(ang), sv[:, 1], cz + hz * np.cos(ang)]
-# arm part → round its bone at the sleeve's radius (0.09 head at the shoulder, 0.08 at the wrist)
-_, bp = arm_coord(sv)
-d = sv - bp; dl = np.linalg.norm(d, axis=1, keepdims=True)
-rs = (0.095 - 0.012 * np.clip(at_s / 2, 0, 1)) * HH
-slv = bp + d / np.maximum(dl, 1e-6) * rs[:, None]
-wa = np.clip((aw_s - 0.25) / 0.5, 0, 1)
-# near the shoulder the sleeve rises out of the barrel
-wa = wa * np.clip(at_s / 0.35, 0, 1) ** 0.7 + (1 - np.clip(at_s / 0.35, 0, 1) ** 0.7) * wa * 0.0
-sv = tor * (1 - wa[:, None]) + slv * wa[:, None]
-sv = smooth(sv, t, it=6, lam=0.4, fixed=np.where(on)[0])
-# knit coordinates: across the ribs (metres round the barrel or the sleeve) and the stripes' coordinate
-u_t = ang * 0.15
-u_a = np.zeros(len(sv))
-for s, pre in ((1, 'Left'), (-1, 'Right')):
-    m = sv[:, 0] * s >= 0
-    ax_ = BJ[IX[pre + 'ForeArm']] - BJ[IX[pre + 'Arm']]; ax_ /= np.linalg.norm(ax_)
-    e1 = np.cross(ax_, [0, 0, 1.0]); e1 /= np.linalg.norm(e1); e2 = np.cross(ax_, e1)
-    dd = rest_s[m] - BJ[IX[pre + 'Arm']]
-    u_a[m] = np.arctan2(dd @ e2, dd @ e1) * 0.03
-uv_sw = np.c_[np.where(wa > 0.5, u_a, u_t), np.where(wa > 0.5, at_s * 0.17, sv[:, 1])]
-# the stripes' coordinate: metres down from the first cream band's top (the drawing's stripes(0.62, …, 0.09) on the
-# body, (0.8, …) on the arms)
-stripe = np.where(wa > 0.5, at_s * 0.18 - 0.027, (FEET - 0.62) * HH - sv[:, 1])
-sj, sw = top4(D_sw)
-piece('sweater', 'sweater', sv, t, sj, sw, uv=uv_sw, pat=np.c_[np.zeros(len(sv)), stripe, np.zeros(len(sv))], subdiv=1)
-SW_V, SW_T, SW_D, SW_ON = sv, t, D_sw, on
+def grid(nphi, yds, out=0.0, phi0=-math.pi, phi1=math.pi, closed=True):
+    """the loft as a grid: rows by heights yds, columns round it"""
+    ph = np.linspace(phi0, phi1, nphi, endpoint=not closed)
+    PH, YD = np.meshgrid(ph, yds)
+    V = bar(PH.ravel(), YD.ravel(), out)
+    T = []
+    for i in range(len(yds) - 1):
+        for j in range(nphi if closed else nphi - 1):
+            a, b = i * nphi + j, i * nphi + (j + 1) % nphi
+            T += [(a, a + nphi, b), (b, a + nphi, b + nphi)]
+    return V, np.array(T), PH.ravel(), YD.ravel()
 
-# ribbed bands at the sweater's open edges: the neckline, the hem, the cuffs (each edge loop, rolled outward)
-def band(loop, V, Dl, out_dir, width, thick, name, along):
+
+def poly_sd(X, Yd, poly):
+    """signed distance (head units; negative inside) from points (X, Yd) to a polygon"""
+    P_ = np.c_[X, Yd]; poly = np.asarray(poly, float); n = len(poly)
+    d = np.full(len(P_), 1e9); inside = np.zeros(len(P_), bool)
+    for k in range(n):
+        a, b = poly[k], poly[(k + 1) % n]
+        e = b - a; t = np.clip(((P_ - a) @ e) / (e @ e), 0, 1)
+        d = np.minimum(d, np.linalg.norm(P_ - (a + t[:, None] * e), axis=1))
+        cond = (a[1] > P_[:, 1]) != (b[1] > P_[:, 1])
+        xs = a[0] + (P_[:, 1] - a[1]) / (b[1] - a[1] + 1e-12) * (b[0] - a[0])
+        inside ^= cond & (P_[:, 0] < xs)
+    return np.where(inside, -d, d)
+
+
+def wall(V, T, D, loop, depth, uv=None):
+    """a wall along an open edge: the edge's vertices again, moved in along the surface's normals by depth (metres)"""
+    Nn = vertex_normals(V, T)
+    m = len(loop); n0 = len(V)
+    V2 = np.r_[V, V[loop] - Nn[loop] * depth]
+    ids = np.arange(n0, n0 + m)
+    T2 = np.r_[T, np.stack([loop, np.roll(loop, -1), ids], 1), np.stack([np.roll(loop, -1), np.roll(ids, -1), ids], 1)]
+    return V2, T2, np.r_[D, D[loop]], (None if uv is None else np.r_[uv, uv[loop]])
+
+
+VEE = [(-0.2, 0.6), (-0.13, 0.75), (-0.03, 1.15), (0.0, 1.2), (0.03, 1.15), (0.13, 0.75), (0.2, 0.6), (0.2, 0.45), (-0.2, 0.45)]
+yds = TY0 + (TY1 - TY0) * np.linspace(0, 1, 84) ** 1.25            # denser at the shoulders
+VEST_OUT, SHIRT_IN = 0.012, -0.012                              # the cloth's thickness against the loft (head units)
+gv, gt, gph, gyd = grid(160, yds, VEST_OUT)
+gX = np.array([TOR.a(v) for v in gyd]) * np.sin(gph)
+sdV = np.where(np.cos(gph) > 0, poly_sd(gX, gyd, VEE), 1.0)
+v, t, a, on = cut(gv, gt, -sdV, np.c_[gph, gyd])
+VD = trunk_weights(v)
+for L in boundary_loops(t):
+    v, t, VD, a = wall(v, t, VD, L, (VEST_OUT - SHIRT_IN) * HH * 0.9, a)
+sj, sw = top4(VD)
+piece('vest', 'vest', v, t, sj, sw, uv=np.c_[a[:, 0] * 0.2, yw(a[:, 1])])
+# the barrel's bottom closed a little above the hem (seen from below, the waistcoat is not hollow)
+cy = TY1 - 0.06
+ph = np.linspace(-math.pi, math.pi, 48, endpoint=False)
+rimv = bar(ph, np.full(48, cy), 0.0); cv = np.r_[rimv, rimv.mean(0)[None]]
+ct = np.array([(48, (j + 1) % 48, j) for j in range(48)])
+sj, sw = top4(trunk_weights(cv)); piece('vestbottom', 'dark', cv, ct, sj, sw)
+
+# the shirt front inside the V, and the collar stand round the neck
+sv, st, sph, syd = grid(160, yds[yds < 1.3], SHIRT_IN)
+sX = np.array([TOR.a(v_) for v_ in syd]) * np.sin(sph)
+sds = np.where(np.cos(sph) > 0, poly_sd(sX, syd, VEE), 1.0)
+v, t, a, on = cut(sv, st, sds - 0.03)
+sj, sw = top4(trunk_weights(v)); piece('shirtfront', 'shirt', v, t, sj, sw)
+rows = []
+for k, (y, grow) in enumerate(((0.44, 0.022), (0.47, 0.03), (0.52, 0.032), (0.58, 0.03), (0.63, 0.024))):
+    a_ = interp(N['a'], y) + grow; fr = interp(N['front'], y) + grow; bk = interp(N['back'], y) - grow
+    rows.append([Wd(a_ * math.sin(q), y, (fr + bk) / 2 + (fr - bk) / 2 * math.cos(q)) for q in np.linspace(-math.pi, math.pi, 40, endpoint=False)])
+cv = np.array(rows).reshape(-1, 3); ct = []
+for i in range(len(rows) - 1):
+    for j in range(40):
+        p, q = i * 40 + j, i * 40 + (j + 1) % 40
+        ct += [(p, p + 40, q), (q, p + 40, q + 40)]
+Dc = 0.5 * neck_weights(cv) + 0.5 * trunk_weights(cv)
+sj, sw = top4(Dc); piece('collarstand', 'shirt', cv, np.array(ct), sj, sw)
+
+
+def patch(corners, out, n=8, bulge=0.004):
+    """a small bilinear patch on the loft's front through four (X, yd) corners, standing `out` off it"""
+    c = np.asarray(corners, float); u = np.linspace(0, 1, n)
+    U, Vv = np.meshgrid(u, u)
+    Pq = ((1 - U)[..., None] * (1 - Vv)[..., None] * c[0] + U[..., None] * (1 - Vv)[..., None] * c[1]
+          + U[..., None] * Vv[..., None] * c[2] + (1 - U)[..., None] * Vv[..., None] * c[3]).reshape(-1, 2)
+    o = out + bulge * (np.sin(np.pi * U) * np.sin(np.pi * Vv)).ravel() ** 0.5
+    V = front(Pq[:, 0], Pq[:, 1], o)
+    T = []
+    for i in range(n - 1):
+        for j in range(n - 1):
+            a, b = i * n + j, i * n + j + 1; T += [(a, a + n, b), (b, a + n, b + n)]
+    T = np.array(T)
+    return V, orient_out(V, T)
+
+
+def orient_out(V, T):
+    """triangles turned to face away from the body's axis"""
+    nrm = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]]).sum(0)
+    c = V.mean(0) - np.array([0, V[:, 1].mean(), Z0])
+    return T if nrm @ c > 0 else T[:, ::-1]
+
+
+# the collar's points (cast.savely_details) and the tie (cast.savely_inside)
+for side in (-1, 1):
+    V, T = patch([(side * 0.035, 0.585), (side * 0.16, 0.6), (side * 0.095, 0.76), (side * 0.03, 0.7)], SHIRT_IN + 0.012, bulge=0.012)
+    sj, sw = top4(trunk_weights(V)); piece('collar' + 'RL'[side > 0], 'collar', V, T, sj, sw)
+tie_y = np.array([0.62, 0.66, 0.7, 0.74, 0.85, 0.95, 1.0, 1.04, 1.08])
+tie_w = np.array([0.03, 0.04, 0.038, 0.028, 0.036, 0.046, 0.05, 0.03, 0.002])
+tie_o = np.array([0.02, 0.03, 0.028, 0.016, 0.014, 0.014, 0.014, 0.012, 0.008])
+yy = np.linspace(0.62, 1.08, 30); nu = 9
+V = []
+for y in yy:
+    w_, o_ = np.interp(y, tie_y, tie_w), np.interp(y, tie_y, tie_o)
+    for u in np.linspace(-1, 1, nu):
+        V.append(front([u * w_], [y], SHIRT_IN + o_ * (0.35 + 0.65 * math.sqrt(max(0.0, 1 - u * u))))[0])
+V = np.array(V); T = []
+for i in range(len(yy) - 1):
+    for j in range(nu - 1):
+        a_, b_ = i * nu + j, i * nu + j + 1; T += [(a_, a_ + nu, b_), (b_, a_ + nu, b_ + nu)]
+T = orient_out(V, np.array(T))
+sj, sw = top4(trunk_weights(V)); piece('tie', 'tie', V, T, sj, sw)
+
+# buttons (three, down the front) and the watch chain (a sagging line of links from a button to the pocket)
+for k in range(3):
+    c = front([0.0], [1.22 + 0.13 * k], VEST_OUT + 0.006)[0]
+    V, T, _ = sphere(c, 0.019 * HH, n=10, squash=(1, 1, 0.5))
+    sj, sw = top4(trunk_weights(V)); piece(f'button{k}', 'button', V, T, sj, sw)
+tt = np.linspace(0, 1, 40)
+ch = front(-0.06 + 0.34 * tt, 1.3 + 0.12 * np.sin(np.pi * tt), VEST_OUT + 0.008)
+V, T, A = tube_along(ch, np.full(len(ch), 0.0045 * HH * (1 + 0.0 * tt)), n=8)
+sj, sw = top4(trunk_weights(V)); piece('chain', 'chain', V, T, sj, sw, uv=np.c_[A[:, 0], A[:, 1] / 39.0])
+
+# --- the shirt's sleeves: Anny's arms carried round their bones to the sleeve's radius (0.13 → 0.11 head)
+sleeve_end = 1.9
+f_sl = np.maximum.reduce([np.where(armw + handw > 0.25, at - sleeve_end, 1.0), 0.25 - (armw + handw), -0.12 - at, handw - 0.6])
+v, t, a, on = cut(BV, BT, f_sl, np.c_[BD, at])
+D_sl = a[:, :NJ]; at_s = a[:, NJ]
+_, bp = arm_coord(v)
+d = v - bp; dl = np.linalg.norm(d, axis=1, keepdims=True)
+rs = (0.13 - 0.01 * np.clip(at_s / 2, 0, 1)) * HH * (1 + 0.06 * np.exp(-((at_s - 1.0) / 0.25) ** 2))      # a little fuller at the elbow
+sv = bp + d / np.maximum(dl, 1e-6) * rs[:, None]
+sv = smooth(sv, t, it=5, lam=0.4, fixed=np.where(on & (at_s > 1.5))[0])
+sj, sw = top4(D_sl)
+piece('sleeves', 'shirt', sv, t, sj, sw, subdiv=1)
+SL_V, SL_T, SL_D = sv, t, D_sl
+
+
+def band(loop, V, Dl, out_dir, width, thick, name, along, mat):
     L = V[loop]; m = len(loop)
     rows = []
     nrm = out_dir(L)
@@ -330,111 +543,73 @@ def band(loop, V, Dl, out_dir, width, thick, name, along):
             Tb += [(p, q, p + m), (q, q + m, p + m)]
     Db = np.tile(Dl[loop], (5, 1))
     sjb, swb = top4(Db)
-    per = np.r_[0, np.cumsum(np.linalg.norm(np.diff(np.r_[L, L[:1]], axis=0), axis=1))][:m]
-    uvb = np.c_[np.tile(per, 5), np.repeat(np.arange(5) * width / 4, m)]
-    piece(name, 'cuff', BVb, np.array(Tb), sjb, swb, uv=uvb)
+    piece(name, mat, BVb, np.array(Tb), sjb, swb)
 
 
-loops = boundary_loops(SW_T)
-for L in loops:
-    c = SW_V[L].mean(0)
-    if c[1] > NECK_B - 0.08 and abs(c[0]) < 0.05:          # the neckline
-        cc = c.copy()
-        band(L, SW_V, SW_D, lambda X: np.c_[(X - cc)[:, 0], np.zeros(len(X)), (X - cc)[:, 2]] / np.maximum(np.linalg.norm((X - cc)[:, [0, 2]], axis=1, keepdims=True), 1e-6),
-             0.016, 0.006, 'neckband', lambda X: np.tile([0, -1.0, 0], (len(X), 1)))
-    elif c[1] < HEM + 0.03 and abs(c[0]) < 0.05:          # the hem
-        cc = c.copy()
-        band(L, SW_V, SW_D, lambda X: np.c_[(X - cc)[:, 0], np.zeros(len(X)), (X - cc)[:, 2]] / np.maximum(np.linalg.norm((X - cc)[:, [0, 2]], axis=1, keepdims=True), 1e-6),
-             0.022, 0.005, 'hem', lambda X: np.tile([0, 1.0, 0], (len(X), 1)))
-    else:                                                  # a cuff
-        cc = c.copy(); pre = 'Left' if c[0] > 0 else 'Right'
-        axh = BJ[IX[pre + 'Hand']] - BJ[IX[pre + 'ForeArm']]; axh /= np.linalg.norm(axh)
-        def od(X, cc=cc, axh=axh):
-            d = X - cc; d -= (d @ axh)[:, None] * axh; return d / np.maximum(np.linalg.norm(d, axis=1, keepdims=True), 1e-6)
-        band(L, SW_V, SW_D, od, 0.02, 0.004, 'cuff' + pre[0], lambda X, axh=axh: np.tile(-axh, (len(X), 1)))
+for L in boundary_loops(SL_T):
+    c = SL_V[L].mean(0); pre = 'Left' if c[0] > 0 else 'Right'
+    if np.linalg.norm(c - BJ[IX[pre + 'Hand']]) > 0.08: continue          # the shoulder's end stays open inside the waistcoat
+    axh = BJ[IX[pre + 'Hand']] - BJ[IX[pre + 'ForeArm']]; axh /= np.linalg.norm(axh)
+    def od(X, cc=c, axh=axh):
+        d = X - cc; d -= (d @ axh)[:, None] * axh; return d / np.maximum(np.linalg.norm(d, axis=1, keepdims=True), 1e-6)
+    band(L, SL_V, SL_D, od, 0.016, 0.0035, 'cuff' + pre[0], lambda X, axh=axh: np.tile(-axh, (len(X), 1)), 'collar')
 
-# --- the shorts: hips and thighs from inside the sweater down to the drawing's hem (y 2.0 head + r)
-SH_TOP, SH_HEM = HEM + 0.05, (FEET - 2.02) * HH
-f_sh = np.maximum.reduce([Y - SH_TOP, SH_HEM - Y, armw + handw - 0.3])
-v, t, a, on = cut(BV, BT, f_sh, np.c_[BD, legw, BV])
-D_sh = a[:, :NJ]; lw_ = a[:, NJ]
-sv = v.copy()
-for s, pre in ((1, 'Left'), (-1, 'Right')):
-    m = sv[:, 0] * s > 0
-    tt, bp = bone_t(sv[m], pre + 'Leg', pre + 'Shin')
-    d = sv[m] - bp; dl = np.linalg.norm(d, axis=1, keepdims=True)
-    r = (0.15 - 0.01 * np.clip(tt / 0.6, 0, 1)) * HH
-    leg = bp + d / np.maximum(dl, 1e-6) * r[:, None]
-    # the seat: above the crotch, out round the hips (the barrel's bottom a little smaller)
-    A_, FR_, BK_ = torso_at(sv[m, 1])
-    cz = (FR_ + BK_) / 2; hz = (FR_ - BK_) / 2 * 0.86
-    ang = np.arctan2(sv[m, 0] / (A_ * 0.9), (sv[m, 2] - cz) / hz)
-    hip = np.c_[A_ * 0.9 * np.sin(ang), sv[m, 1], cz + hz * np.cos(ang)]
-    wl = np.clip((lw_[m] - 0.2) / 0.6, 0, 1)
-    sv[m] = hip * (1 - wl[:, None]) + leg * wl[:, None]
-sv = smooth(sv, t, it=8, lam=0.4, fixed=np.where(on & (v[:, 1] < SH_HEM + 0.01))[0])
-sj, sw = top4(D_sh)
-piece('shorts', 'shorts', sv, t, sj, sw, subdiv=1)
+# --- the trousers: Anny's legs carried round the leg bones to the drawing's wide trouser legs (r 0.17 → 0.14 head)
+TR_TOP, TR_HEM = yw(1.95), yw(3.22)
+f_tr = np.maximum.reduce([Y - TR_TOP, TR_HEM - Y, 0.45 - legw])
+v, t, a, on = cut(BV, BT, f_tr, np.c_[BD, lt])
+D_tr = a[:, :NJ]; lt_s = a[:, NJ]
+_, bp = leg_coord(v)
+# the trouser leg hangs straight down from the hip (the bone leans out a little): its axis is the bone's point, x kept
+d = v - bp; d[:, 1] = 0; dl = np.linalg.norm(d, axis=1, keepdims=True)
+rt = (0.17 - 0.015 * np.clip(lt_s / 2, 0, 1)) * HH
+sv = np.c_[bp[:, 0], v[:, 1], bp[:, 2]] + d / np.maximum(dl, 1e-6) * rt[:, None]
+sv = smooth(sv, t, it=6, lam=0.4, fixed=np.where(on & (v[:, 1] < TR_HEM + 0.01))[0])
+sj, sw = top4(D_tr)
+piece('trousers', 'trousers', sv, t, sj, sw, subdiv=1)
 for L in boundary_loops(t):
     c = sv[L].mean(0)
-    if c[1] < SH_HEM + 0.02:
-        cc = c.copy()
-        band(L, sv, D_sh, lambda X: np.c_[(X - cc)[:, 0], np.zeros(len(X)), (X - cc)[:, 2]] / np.maximum(np.linalg.norm((X - cc)[:, [0, 2]], axis=1, keepdims=True), 1e-6),
-             0.012, 0.004, 'shorthem' + ('L' if c[0] > 0 else 'R'), lambda X: np.tile([0, 1.0, 0], (len(X), 1)))
-PIECES[-1]['mat'] = 'shorts'; PIECES[-2]['mat'] = 'shorts'
+    if c[1] < TR_HEM + 0.02:
+        band(L, sv, D_tr, lambda X, cc=c: np.c_[(X - cc)[:, 0], np.zeros(len(X)), (X - cc)[:, 2]] / np.maximum(np.linalg.norm((X - cc)[:, [0, 2]], axis=1, keepdims=True), 1e-6),
+             0.012, 0.003, 'trhem' + ('L' if c[0] > 0 else 'R'), lambda X: np.tile([0, 1.0, 0], (len(X), 1)), 'trousers')
 
-# --- skin: the hands; the legs between the shorts and the socks; the socks
-SOCK_TOP = (FEET - 2.5) * HH
-SHOE_TOP = 0.045
-f_skin = np.minimum(np.where(handw > 0.3, 1.93 - at + 0.02 * 0, 1.0) * 0 + np.where(handw + armw > 0.3, sleeve_end - 0.04 - at, 1.0),
-                    np.where(legw > 0.4, Y - (SH_HEM + 0.015), 1.0))
-f_skin = np.where(Y < SOCK_TOP, 1.0, f_skin)
+# --- skin: the hands from inside the cuffs
+f_skin = np.where(handw + armw > 0.3, sleeve_end - 0.06 - at, 1.0)
 v, t, a, on = cut(BV, BT, f_skin, np.c_[BD, handw])
 sj, sw = top4(a[:, :NJ])
-piece('skin', 'skin', v, t, sj, sw, uv=np.full((len(v), 2), 0.5), tint=np.clip(a[:, NJ], 0, 1) * 0.5)
-# socks: the shins from the sock top to the ankle, a little out from the skin
-f_so = np.maximum.reduce([Y - SOCK_TOP, SHOE_TOP - 0.01 - Y, 0.4 - legw])
-v, t, a, on = cut(BV, BT, f_so, np.c_[BD, BN])
-nrm = a[:, NJ:NJ + 3]; nrm /= np.linalg.norm(nrm, axis=1, keepdims=True)
-v = v + nrm * 0.0025
-uvs = np.zeros((len(v), 2))
-for s, pre in ((1, 'Left'), (-1, 'Right')):
-    m = v[:, 0] * s > 0
-    c = BJ[IX[pre + 'Shin']]
-    uvs[m, 0] = np.arctan2(v[m, 0] - c[0], v[m, 2] - c[2]) * 0.024
-uvs[:, 1] = v[:, 1]
-sj, sw = top4(a[:, :NJ])
-piece('socks', 'sock', v, t, sj, sw, uv=uvs)
+piece('skin', 'skin', v, t, sj, sw, uv=np.tile(SKIN_UV, (len(v), 1)), tint=np.clip(a[:, NJ], 0, 1) * 0.5, subdiv=1)
 
 
-# --- shoes: a rounded shoe lofted along each foot (the drawing's: length 0.34 head, height 0.11, a pale sole)
+# --- shoes: a rounded shoe lofted along each foot (the drawing's: length 0.36 head, height 0.11, half width 0.1)
+SHOE = dict(len=0.36, h=0.11, w=0.1)
+
+
 def shoe(pre):
     F_, T_ = BJ[IX[pre + 'Foot']], BJ[IX[pre + 'ToeEnd']]
     ax = np.array([T_[0] - F_[0], 0, T_[2] - F_[2]]); L = np.linalg.norm(ax); ax /= L
-    Ltot = 0.34 * HH * 1.05
-    heel = np.array([F_[0], 0, F_[2]]) - ax * 0.2 * Ltot
+    Ltot = SHOE['len'] * HH * 1.05
+    heel = np.array([F_[0], 0, F_[2]]) - ax * 0.22 * Ltot
     sd = np.cross([0, 1.0, 0], ax)
-    nu, nv = 30, 28; X = []; uvx = []
+    nu, nv = 30, 28; X = []
     for i in range(nu):
         t = i / (nu - 1)
         c = heel + ax * Ltot * t
-        w = (0.05 * HH / 0.1 * 0.1) * (0.82 + 0.25 * np.sin(np.pi * min(t / 0.8, 1) / 2))
-        w = 0.1 * HH * (0.8 + 0.25 * np.sin(np.pi * min(t / 0.8, 1) / 2))
-        hgt = 0.11 * HH * np.interp(t, [0, 0.25, 0.5, 0.8, 1], [1.05, 1.08, 0.86, 0.7, 0.55])
+        w = SHOE['w'] * HH * (0.8 + 0.25 * np.sin(np.pi * min(t / 0.8, 1) / 2))
+        hgt = SHOE['h'] * HH * np.interp(t, [0, 0.25, 0.5, 0.8, 1], [1.05, 1.08, 0.86, 0.7, 0.55])
         cap = np.clip(np.sin(np.pi * t) ** 0.3, 0.04, 1)
         for j in range(nv):
             q = 2 * np.pi * j / nv
             sx, sy = np.cos(q), np.sin(q)
             r = (abs(sx) ** 2.4 + abs(sy) ** 2.4) ** (-1 / 2.4)
             px, py = sx * r * w * cap, (sy * r * 0.5 + 0.5) * hgt * (0.3 + 0.7 * cap)
-            X.append(c + sd * px + np.array([0, max(py, 0.0), 0])); uvx.append((q, t))
+            X.append(c + sd * px + np.array([0, max(py, 0.0), 0]))
     X = np.array(X); Fc = []
     for i in range(nu - 1):
         for j in range(nv):
             a_, b_ = i * nv + j, i * nv + (j + 1) % nv
             Fc += [(a_, b_, a_ + nv), (b_, b_ + nv, a_ + nv)]
     for end, rev in ((0, True), (nu - 1, False)):
-        ci = len(X); X = np.r_[X, X[end * nv:(end + 1) * nv].mean(0)[None]]; uvx.append((0, end / (nu - 1)))
+        ci = len(X); X = np.r_[X, X[end * nv:(end + 1) * nv].mean(0)[None]]
         for j in range(nv):
             tri = (end * nv + j, end * nv + (j + 1) % nv, ci)
             Fc.append(tri[::-1] if rev else tri)
@@ -446,7 +621,7 @@ def shoe(pre):
 
 for pre in ('Left', 'Right'):
     X, Fc, Dd = shoe(pre)
-    sole = 0.012
+    sole = 0.009
     for nm, g in (('shoe', X[:, 1] - sole), ('sole', sole - X[:, 1])):
         v, t, a, _ = cut(X, Fc, -g, Dd)
         sj, sw = top4(a)
@@ -455,7 +630,7 @@ for pre in ('Left', 'Right'):
 # ======================================================================================== write
 def write():
     th, _ = pack.read(os.path.join(ENGINE, 'data/topology/anny-moood.json'))
-    _, bod = pack.read(os.path.join(ENGINE, 'data/bodies/moood-child.json'))
+    _, bod = pack.read(os.path.join(ENGINE, f'data/bodies/{body.BASE}.json'))
     Vs, Ts, SJ, SW, info = [], [], [], [], []
     n = 0
     for p in PIECES:
@@ -470,18 +645,18 @@ def write():
     out = os.path.join(CACHE, 'engine/data')
     os.makedirs(out + '/bodies', exist_ok=True); os.makedirs(out + '/topology', exist_ok=True)
     pack.write(out + '/topology/savely8.json',
-               dict(format='engine/topology', version=1, id='savely8', about='Тим (С8): every piece in one mesh',
+               dict(format='engine/topology', version=1, id='savely8', about='Савелий Петрович (С8): every piece in one mesh',
                     source='to3d/r27-s8-savely', skeleton='soma77', vertices=len(Vall), triangles=len(T), parts=th['parts']),
                dict(triangles=T.astype(np.uint32), skinJoints=sj.astype(np.uint8), skinWeights=sw.astype(np.float32), parts=parts))
     pack.write(out + '/bodies/savely8.json',
-               dict(format='engine/body', version=1, id='savely8', label=dict(ru='Тим', en='Tim'),
-                    source='to3d/r27-s8-savely: Anny (moood-child) fitted to the С8 drawing, HBM stylised head',
+               dict(format='engine/body', version=1, id='savely8', label=dict(ru='Савелий Петрович', en='Savely Petrovich'),
+                    source='to3d/r27-s8-savely: Anny (moood-oldman) fitted to the С8 drawing, HBM stylised head',
                     topology='savely8', skeleton='soma77'),
                dict(positions=Vall, joints=J.astype(np.float32), frames=np.asarray(bod['frames'], np.float32)))
     np.savez(f'{CACHE}/rest.npz', uv=np.vstack([p['uv'] for p in PIECES]).astype(np.float32),
              pat=np.vstack([p['pat'] for p in PIECES]).astype(np.float32),
              tint=np.concatenate([p['tint'] for p in PIECES]).astype(np.float32))
-    json.dump(dict(pieces=info, HH=HH, O=O.tolist(), tex=os.path.join(FOLDER, 'tools/web/tex')),
+    json.dump(dict(id=BID, pieces=info, HH=HH, O=O.tolist(), tex=os.path.join(FOLDER, 'tools/web/tex')),
               open(f'{CACHE}/model.json', 'w'), indent=1)
     print('savely8', len(Vall), 'vertices', len(T), 'triangles;', ', '.join(f"{p['name']}:{p['count']}" for p in info))
 
@@ -496,7 +671,7 @@ def write_face():
     fj = json.load(open(f'{CACHE}/face.json'))
     arrays = {}
     shapes = {}
-    for part in ('lipU', 'lipL', 'cav', 'teethU', 'teethL'):
+    for part in MOUTH:
         keys = fj['faces'] + ['v' + v for v in fj['visemes']]
         shapes[part] = keys
         for k in keys: arrays[f'{part}.{k}'] = W(F[f'{part}_{k}']).astype(np.float32)
@@ -517,7 +692,7 @@ def write_face():
     eU0 = math.asin(min(1, R * TP['lid_top'] * op / (R_EYE * LID_R)))
     eL0 = -math.asin(min(1, R * TP['lid_bot'] * op / (R_EYE * LID_R)))
     hdr = dict(format='savely8/face', version=1, pieces={k: list(v) for k, v in info.items()}, shapes=shapes, lids=lids,
-               eU0=eU0, eL0=eL0, expr=fj['expr'], faces=fj['faces'], visemes=fj['visemes'],
+               eU0=eU0, eL0=eL0, mouth=MOUTH, expr=fj['expr'], faces=fj['faces'], visemes=fj['visemes'],
                eyes={'L': W(drawing.eye_centre(1)).tolist(), 'R': W(drawing.eye_centre(-1)).tolist()})
     pack.write(f'{CACHE}/engine/face.json', hdr, arrays)
     print('face rig', len(arrays), 'arrays')

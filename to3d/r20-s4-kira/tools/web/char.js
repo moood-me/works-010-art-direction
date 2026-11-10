@@ -8,6 +8,7 @@ export const CHAR = {
   hair: { streak: 6.0, depth: 0.34, light: '#8c74a0', shine: 0.6 },
   eyeShade: [54.0, 30.0, 1.0],                    // cast shadows fade round the eyes: from, to (units from an eye's centre), by how much
   faceRim: 0.15,                                    // how much of the rim light the face's front takes (a coloured rim on lips and lids reads as dirt)
+  edgeN: 0.012,                                    // how far the shadow's edge is brushed (a young face: a clean edge)
   frameGlint: '#ffffff',
   blinkUp: 32,
   faceY: 1.4, midY: 0.84,
@@ -16,8 +17,8 @@ export const CHAR = {
   // cast2.py: CAST.kira.neutral (heavy lids, brows low and knit, a look from under them and aside, the mouth pressed,
   // one corner up) and her own sheet: joy is a crooked half-smile, never an open one
   expressions: {
-    calm: { up: 9, low: 3, brow: -1.0, knit: 0.45, inner: -0.7, smile: -0.2, smirk: 0.3, lookX: -7, lookY: -5 },
-    joy: { up: 6, low: 11, smile: 0.35, smirk: 0.9, brow: 0.5, inner: 0.2, lookX: -5, lookY: -3 },
+    calm: { up: 9, low: 3, brow: -1.0, knit: 0.45, inner: -0.7, smile: 0.3, smirk: 0.4, lookX: -7, lookY: -5 },
+    joy: { up: 6, low: 11, smile: 0.7, smirk: 1.0, brow: 0.5, inner: 0.2, lookX: -5, lookY: -3 },
     surprise: { up: -11, low: -3, jaw: 4.0, pucker: 0.3, brow: 4.6, inner: 1.0, iris: 0.9 },
     sad: { up: 13, smile: -0.8, brow: 0.3, inner: 3.4, knit: 0.3, lookX: 3, lookY: 9 },
     anger: { up: 5, low: 9, jaw: 1.2, smile: -0.8, wide: 0.4, brow: -3.0, inner: -2.4, knit: 1.2, lookY: -4 },
@@ -29,14 +30,17 @@ export const CHAR = {
       float ax = abs(dw.x), y = dw.y;
       if (abs(m - ${M('lime')}) < 0.5) { gloss = 0.8;                  // the cups: a ring pressed into the plastic
         return; }
-      if (abs(m - ${M('shoe')}) < 0.5) {                               // boots: a thick sole, acid laces up the front
-        float bx = ax - ${leg.ankle[0].toFixed(1)};
-        if (y > ${leg.feet.toFixed(1)} - 16.0) { base = vec3(0.16, 0.155, 0.18); if (y < ${leg.feet.toFixed(1)} - 14.5) base *= 1.6; }
-        else if (dw.z > ${(leg.ankle[2] + 22).toFixed(1)} && y > ${leg.feet.toFixed(1)} - 190.0 && y < ${leg.feet.toFixed(1)} - 62.0) {
-          float ph = fract((y - ${leg.feet.toFixed(1)}) / 26.0);
-          float zig = (abs(ph - 0.5) * 4.0 - 1.0) * 9.0;
-          if (abs(bx - zig) < 1.5 && abs(bx) < 10.5) { base = vec3(0.79, 0.93, 0.17); bshd = vec3(0.45, 0.56, 0.1); glw = vec3(0.9, 0.94, 0.4); }
+      if (abs(m - ${M('shoe')}) < 0.5) {                               // boots: the sole and its welt, a toe cap's seam, acid laces up the front
+        float bx = ax - ${leg.ankle[0].toFixed(1)}, bz = dw.z - ${leg.ankle[2].toFixed(1)}, h = ${leg.feet.toFixed(1)} - y;
+        if (h < 27.0) { base = vec3(0.2, 0.19, 0.22); bshd = vec3(0.09, 0.085, 0.11); if (h > 24.5) base *= 1.5; if (h < 14.0 && fract(bz * 0.11) < 0.3) base *= 0.6; }
+        else if (h < 80.0 && abs(bz - 112.0 + (h - 27.0) * 0.25) < 0.9) base *= 1.7;
+        else if (bz > 36.0 && h > 78.0 && h < 198.0) {
+          float ph = fract(h / 24.0);
+          float zig = (abs(ph - 0.5) * 4.0 - 1.0) * 8.5;
+          if (abs(bx - zig) < 1.4 && abs(bx) < 10.0) { base = vec3(0.79, 0.93, 0.17); bshd = vec3(0.45, 0.56, 0.1); glw = vec3(0.9, 0.94, 0.4); }
+          else if (abs(abs(bx) - 11.5) < 0.8) base *= 1.5;
         }
+        if (h > 200.0) base *= 0.6;
         return;
       }
       if (abs(m - ${M('suit')}) > 0.5) return;
@@ -87,7 +91,7 @@ export const CHAR = {
       // hands in the hoodie's pocket: each wrist put on the belly under the pouch, elbows out and a little back
       const hips = getV(pose.P, I.Hips);
       for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
-        reach(pose, s, [hips[0] + sg * (o.hx ?? 0.06), hips[1] + (o.hy ?? 0.04), hips[2] + (o.hz ?? 0.06)], o.pole ?? [sg * 1.0, -0.1, -0.8]);
+        reach(pose, s, [hips[0] + sg * (o.hx ?? 0.06), hips[1] + (o.hy ?? 0.1), hips[2] + (o.hz ?? 0.065)], o.pole ?? [sg * 1.0, -0.1, -0.8]);
         turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle(normalize(sub(getV(pose.P, I[s + 'Hand']), getV(pose.P, I[s + 'ForeArm']))), sg * (o.twist ?? 0.9)));
       }
     }
@@ -96,7 +100,7 @@ export const CHAR = {
       const ix = jp('HandIndex1'), pk = jp('HandPinky1');
       const ax = [pk[0] - ix[0], pk[1] - ix[1], pk[2] - ix[2]];
       for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (const k of [1, 2, 3])
-        turnUnder(pose, sk, I[s + 'Hand' + f + k], qAxisAngle(ax, sg * (o.curl ?? 0.5) * (k === 1 ? 0.6 : 1)));
+        turnUnder(pose, sk, I[s + 'Hand' + f + k], qAxisAngle(ax, sg * (o.curl ?? 1.0) * (k === 1 ? 0.6 : 1)));
     }
   },
 };

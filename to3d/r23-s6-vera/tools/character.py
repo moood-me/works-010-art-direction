@@ -53,11 +53,12 @@ FULL = dict(yaw=-58, k=3.55, x=.5, light=-1, pic='full-vera.jpg')
 # ------------------------------------------------------------------ pictures and films (make.py)
 # standing in her world: where she is turned, where the window is, where we look from
 HERO = dict(heading=-1.3, lamp=[-1.65, 0, -4.2], mood='folder',
-            cam=dict(yaw=0.1, pitch=-0.03, dist=4.9, h=.98, fov=33))
+            cam=dict(yaw=0.1, pitch=-0.03, dist=4.4, h=.95, fov=33))
 WALK = dict(motion='walk', mood='plain', heading=1.5708, position=[-3.0, 0, 0], lamp=[1.0, 0, -3.0],
             cam=dict(yaw=0.18, pitch=0.0, dist=3.9, h=.9, fov=34, smooth=2.5), frames=200)
 # standing and living: moods one after another (seconds, mood), a few words
 LIFE = dict(plan=[(0, 'folder'), (2.6, 'thinks'), (5.2, 'tired'), (7.8, 'strict'), (10.2, 'folder')], talk=(8.2, 10.0), seconds=12)
-FILMS = [('bow', 105, 'plain'), ('run', 110, 'plain', dict(heading=1.5708, position=[-2.2, 0, 0], lamp=[1.6, 0, -2.2]))]
+FILMS = [('bow', 105, 'plain'), ('run', 110, 'plain', dict(heading=1.5708, position=[-2.2, 0, 0], lamp=[1.6, 0, -2.6],
+                                                    cam=dict(yaw=.12, pitch=0, dist=4.6, h=.9, fov=34, smooth=14)))]
 WORLD_LABEL = 'окно, туман, тень, зерно'
 MOOD_K = 2.95

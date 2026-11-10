@@ -1,4 +1,4 @@
-// Small life on Тим's face over a clip's time (face.mjs states): blinks, the eyes' jumps and a gaze that leads the
+// Small life on Савелий Петрович's face over a clip's time (face.mjs states): blinks, the eyes' jumps and a gaze that leads the
 // head, speech, expressions going one into another. Made once for the whole clip at 120 Hz from a seeded random
 // stream, so a moment always looks the same (films, scrubbing). Timing from how faces move (after Р2/Р3/Р4):
 //  - blinks: log-normal intervals (median ~2.8 s, at least 0.8 s apart), 12 % doubled; closing ~75 ms, held ~25 ms,
@@ -12,7 +12,7 @@
 //  - expressions: targets at given times, followed by a slower spring.
 
 export const HZ = 120;
-export const FACES = ['calm', 'dream', 'joy', 'surprise', 'sad', 'anger', 'grin'];
+export const FACES = ['calm', 'stern', 'grumpy', 'tired', 'joy', 'surprise', 'sad', 'anger'];
 export const VIS = ['A', 'O', 'U', 'E', 'I', 'M', 'F'];
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; }; }

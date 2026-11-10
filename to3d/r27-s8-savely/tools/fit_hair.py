@@ -1,4 +1,4 @@
-"""Тим's sculpted hair, from the drawing's own hair: `cast.tim_hair` builds its locks as 3D paths in head units
+"""Савелий Петрович's sculpted hair, from the drawing's own hair: `cast.savely_hair` builds its locks as 3D paths in head units
 (H.surf_path / H.fall over the head's shell) with widths, and a cap over the skull above a hairline line(phi).
 Here each lock becomes a solid: a flattened tube along its path (wide across the head, thin off it), narrow at the root,
 tapering to a point, its top cut by lengthwise grooves (the drawing's `grooves`); the cap becomes a shell of the
@@ -12,7 +12,8 @@ from common import CACHE, hu
 
 
 
-FRINGE_UP = 0.07
+FRINGE_UP = 0.0
+FLAT = 0.55          # the tufts' thickness against their width (fluffy white tufts, not ribbons)
 
 
 def smooth_path(p, n=28):
@@ -41,10 +42,10 @@ def lock_mesh(L, centre, nu=28, nv=14, flat=0.42, grooves=2):
         out = c[i] - centre; out -= (out @ tg[i]) * tg[i]; out /= np.linalg.norm(out)
         side = np.cross(tg[i], out)
         w = (L.w0 + (L.w1 - L.w0) * t ** L.taper) / 2
-        w *= min(1.0, L.root + (1 - L.root) * t / 0.22)
+        w *= min(1.0, L.root + (1 - L.root) * (t / 0.3) ** 0.7)
         w *= (1 - t ** 6) ** 0.5 if L.w1 == 0 else 1.0           # a soft point at the tip
         w = max(w, 0.002)
-        th = w * flat + 0.004
+        th = (w * flat + 0.004) * min(1.0, 0.25 + 0.75 * t / 0.25)          # thin at the root: it comes out of the skull
         for j in range(nv):
             a = 2 * math.pi * j / nv
             x, y = math.cos(a), math.sin(a)
@@ -112,15 +113,16 @@ def orient(V, T, centre):
 def build():
     hd = cast_hair()
     locks = hd['locks']
-    line, yb, k = hd['cap']
     centre = np.array([0.0, 0.05, -0.02])
     Vs, Ts, UVs, ID = [], [], [], []
     n = 0
-    CV, CT = cap_mesh(line, k)
-    CT = orient(CV, CT, centre)
-    Vs.append(CV); Ts.append(CT); UVs.append(np.full((len(CV), 2), -9.0)); ID.append(np.full(len(CV), -1)); n += len(CV)
+    if hd.get('cap'):                 # Савелий is bald: no cap, only the tufts
+        line, yb, k = hd['cap']
+        CV, CT = cap_mesh(line, k)
+        CT = orient(CV, CT, centre)
+        Vs.append(CV); Ts.append(CT); UVs.append(np.full((len(CV), 2), -9.0)); ID.append(np.full(len(CV), -1)); n += len(CV)
     for i, L in enumerate(locks):
-        v, t, uv = lock_mesh(L, centre, grooves=L.grooves + 1)
+        v, t, uv = lock_mesh(L, centre, flat=FLAT, grooves=L.grooves + 1)
         t = orient(v, t, v.mean(0) - 0.3 * (v.mean(0) - centre))
         Vs.append(v); Ts.append(t + n); UVs.append(uv); ID.append(np.full(len(v), i)); n += len(v)
     V = np.concatenate(Vs); T = np.concatenate(Ts)
@@ -130,10 +132,39 @@ def build():
 
 
 def cast_hair():
-    class D:                        # the drawing's hair function wants a document only for defs; none are made here
-        def uid(self, *_): return 'x'
-        defs = []
-    return P['hair'](H0, D(), P, drawing.EXPR['calm'])
+    """Савелий's hair. The drawing (cast.savely_hair) gives a bald dome and tufts over the ears and round the back,
+    sticking out and curling up — 21 flat locks that its own page calls papery. In 3D the same hair is a wreath of
+    many leaf-shaped locks (narrow at the root, sunk into the skull; a point at the tip), in two layers, from temple to
+    temple round the back along the drawing's line: over the ears they leave the head and flick out and up, at the
+    back they lie down to the nape. Paths by the drawing's own builders (hair.surf_path, hair.fall)."""
+    import hair as H
+    rng = np.random.default_rng(5)
+    locks = []
+
+    def top(a):                       # the bald dome's edge by the angle from the face's middle (drawing's y, down +)
+        return np.interp(a, [1.0, 1.5, 2.2, math.pi], [-0.2, -0.17, -0.15, -0.17])
+
+    for layer in (0, 1):
+        n = 30 if layer == 0 else 26
+        for k in range(n):
+            a = 1.0 + (2 * math.pi - 2.0) * (k + 0.5 * layer + 0.5) / n          # 1.0 … 2π − 1.0 round the back
+            phi = a if a <= math.pi else a - 2 * math.pi
+            side = 1 if phi > 0 else -1
+            aa = abs(phi)
+            j = rng.uniform(-1, 1, 4)
+            y0 = top(aa) + 0.035 * layer + 0.012 * j[0]
+            over_ear = float(np.clip((2.1 - aa) / 0.5, 0, 1))                    # 1 over the ears, 0 at the back
+            down = 0.11 + 0.1 * (1 - over_ear) + 0.03 * j[1] + 0.03 * layer
+            p = H.surf_path(H0, [(phi, y0), (phi + side * 0.05 * over_ear, y0 + down * 0.6), (phi + side * 0.08 * over_ear, y0 + down)],
+                            out=(-0.012, 0.03 + 0.02 * over_ear - 0.012 * layer), k=1.0)
+            p += H.fall(p[-1], 0.035 + 0.05 * over_ear + 0.015 * j[2], n=4, side=side, out_x=(0.03 + 0.035 * over_ear) * (1 + 0.3 * j[3]),
+                        back_z=-0.03 * over_ear, flick=0.035 * over_ear)
+            if over_ear > 0.3:        # the ends curl up
+                q = np.array(p[-1]); r = 0.02 + 0.012 * over_ear
+                p += [(q[0] + side * r * 0.9, q[1] - r * 0.25, q[2] - 0.004), (q[0] + side * r * 1.25, q[1] - r * 1.0, q[2] - 0.008)]
+            L = H.Lock(p, 0.105 + 0.03 * (1 - over_ear) + 0.015 * j[1], 0.0, taper=1.0, root=0.3, strands=3, grooves=1)
+            locks.append(L)
+    return dict(col=P['hair_col'], locks=locks, cap=None)
 
 
 if __name__ == '__main__':

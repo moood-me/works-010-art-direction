@@ -380,9 +380,18 @@ def build_mesh():
             if kind == 'neck':
                 ws, part = [neck_w(q) for q in pp], 'neck'
             elif kind == 'pocket':
-                # the hands in the pocket: each end with its hand, the middle between them
-                w3 = [{SIDE['L'] + 'Hand': 1.0}, {SIDE['L'] + 'Hand': .5, SIDE['R'] + 'Hand': .5}, {SIDE['R'] + 'Hand': 1.0}]
-                ws, part = [w3[i]] * na + [w3[i + 1]] * (len(pp) - na), 'pocket'
+                # the hands in the pocket: the solid exists where the drawn pose puts the hands, so it is taken from
+                # the drawn pose and carried back to rest, each half with its own hand (rigid: right in the drawn pose)
+                Qd, _, Jd = pose_of(DRAWN)
+                Pd = soma_places(Jd, DRAWN)
+                _, fd, _ = solids_on(Jd, C.OPTS)
+                dp, dr = fd.tubes[list(C.TUBES).index(role)]
+                pp, na = spheres(dp, dr, i)
+                hand = SIDE['L' if i == 0 else 'R'] + 'Hand'
+                j = IDX[hand]
+                Rinv = qmat(qconj(Qd[j]))
+                pp = REST[j] + (pp - Pd[hand]) @ Rinv.T
+                ws, part = [{hand: 1.0}] * len(pp), 'pocket'
             elif kind == 'on':
                 joint, _, part = arg.partition(':')
                 ws, part = [{joint: 1.0}] * len(pp), part or 'on'

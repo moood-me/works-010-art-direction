@@ -2,9 +2,10 @@
 // expressions (a button — that one; the sliders mix them), talk on/off, the face close.
 const MOTIONS = [['', 'стоит'], ['idle', 'стоит, оглядывается'], ['walk', 'шаг'], ['wave', 'машет'], ['sit', 'садится'],
   ['bow', 'поклон'], ['stomp', 'топает'], ['dance', 'танец'], ['jump', 'прыжок'], ['run', 'бег'], ['sneak', 'крадётся']];
-const EXPR = [['calm', 'спокойно'], ['dream', 'мечтает'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'злость']];
+const LABEL = { calm: 'как обычно', plain: 'ровно', joy: 'радость', surprise: 'удивление', sad: 'грусть', anger: 'злость' };
 
 export function ui(A, canvas) {
+  const EXPR = A.EXPR_NAMES.map(n => [n, LABEL[n]]);
   const css = document.createElement('style');
   css.textContent = `
   #ui { position: fixed; left: 10px; top: 10px; z-index: 2; width: min(330px, calc(100vw - 20px)); max-height: calc(100vh - 20px); overflow-y: auto;
@@ -30,7 +31,7 @@ export function ui(A, canvas) {
   let playing = true, t = 0, last = performance.now(), frames = 0, fps = 30;
   const t0 = performance.now();
   const clock = () => (performance.now() - t0) / 1000;
-  const far = { mode: 'persp', dist: 4.8, fov: 22, cy: 0.84, follow: true, focus: null, yaw: 0.35, pitch: 0.06 };
+  const far = { mode: 'persp', dist: 4.8, fov: 22, cy: A.H.stand.cy, follow: true, focus: null, yaw: 0.35, pitch: 0.06 };
   const near = { mode: 'persp', dist: 2.3, fov: 22, follow: false, focus: 'Head', up: 0.04, pitch: 0.02 };
   A.set({ liveClock: true, cam: far, pose: 'stand', });
   async function motion(id) {

@@ -23,13 +23,13 @@
   "phones",
   "phonesOn"
  ],
- "vertices": 23458,
+ "vertices": 23449,
  "bin": "figure.bin",
  "arrays": {
   "positions": {
    "dtype": "float32",
    "shape": [
-    23458,
+    23449,
     3
    ],
    "offset": 0
@@ -37,33 +37,33 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    46360,
+    46342,
     3
    ],
-   "offset": 281496
+   "offset": 281388
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    23458,
+    23449,
     4
    ],
-   "offset": 837816
+   "offset": 837492
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    23458,
+    23449,
     4
    ],
-   "offset": 931648
+   "offset": 931288
   },
   "part": {
    "dtype": "uint8",
    "shape": [
-    23458
+    23449
    ],
-   "offset": 1306976
+   "offset": 1306472
   },
   "joints": {
    "dtype": "float32",
@@ -71,7 +71,7 @@
     77,
     3
    ],
-   "offset": 1330436
+   "offset": 1329924
   },
   "frames": {
    "dtype": "float32",
@@ -79,7 +79,7 @@
     77,
     4
    ],
-   "offset": 1331360
+   "offset": 1330848
   }
  }
 }

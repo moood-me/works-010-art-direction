@@ -1,4 +1,4 @@
-"""Тим's face pieces, as a stop-motion puppet's: the head is one sculpted cast, and the expressions are made by
+"""Савелий Петрович's face pieces, as a stop-motion puppet's: the head is one sculpted cast, and the expressions are made by
 replacement pieces laid on it — a mouth (lips, the dark of the mouth, teeth) and brows — and by lids that turn over
 the glass eyes. Each replacement piece has one mesh (fixed topology) and a library of shapes, one per expression of
 the drawing's sheet and one per mouth shape of speech; a face is a weighted mix of them (`tools/web/face.mjs`).
@@ -30,9 +30,11 @@ VISEMES = {
     'M': dict(mopen=0.0, wide=0.95),
     'F': dict(mopen=0.1, wide=1.0),
 }
-BROW_UP = 0.035
+BROW_UP = 0.03
+BROW_H = 0.024       # how far the bushy brows stand off the forehead
+MOUST = dict(col='#e4ded4', w=0.2, droop=0.08, thick=0.1)     # cast.savely_under_nose → props.moustache
 LID_K = 0.6          # the sheet's lids turn this much: a lid over a glass ball covers more than a painted one
-FACES = ['calm', 'dream', 'joy', 'surprise', 'sad', 'anger', 'grin']
+FACES = ['calm', 'stern', 'grumpy', 'tired', 'joy', 'surprise', 'sad', 'anger']
 
 
 def on_head(X):
@@ -103,22 +105,49 @@ def mouth(ex):
 
 
 def brow(side, ex, n=12, R=5):
+    """head.brow: the bushy white brows — a thick slab whose lower edge droops toward the outer end (brow_droop)"""
     phi = side * P['eye_phi']
-    # a little higher than drawn and standing proud: in 3D the lid over the glass ball bulges up to where the drawing
-    # paints the brows
     yb = P['eye_y'] - P['brow_gap'] - BROW_UP
-    w, th = P['brow_w'], P['brow_th'] * 1.35
+    w, th = P['brow_w'], P['brow_th']
     li, lo = ex.get('brow_in', 0.0), ex.get('brow_out', 0.0)
     ix, ox = (-w * 0.95, w * 1.1) if side > 0 else (w * 0.95, -w * 1.1)
-    arch = P.get('brow_arch', 0.012); taper = P.get('brow_taper', 0.75)
+    arch = P.get('brow_arch', 0.012); taper = P.get('brow_taper', 0.75); droop = P.get('brow_droop', 0.0)
     t = np.linspace(0, 1, n)
     x = ix + (ox - ix) * t
     y = -li * (1 - t) - lo * t - arch * np.sin(np.pi * np.minimum(1, t * 1.2)) + 0.004 * t
     thick = th * (1 - taper * t ** 1.3) * (0.8 + 0.2 * np.sin(np.pi * np.minimum(1, t * 2)))
     r = np.linspace(0, 1, R)[:, None]
-    yy = (y - thick * 0.6) + thick * r
-    h = 0.012 * np.sin(np.pi * (0.05 + 0.9 * r)) ** 0.6 * (1 - 0.4 * t)
+    top, bot = y - thick * 0.6, y + thick * 0.4 + droop * t ** 2
+    yy = top + (bot - top) * r
+    ends = np.sin(np.pi * (0.06 + 0.88 * t)) ** 0.35           # the slab's ends rounded off
+    h = BROW_H * np.sin(np.pi * (0.05 + 0.9 * r)) ** 0.6 * ends
     return laid(np.tile(x, (R, 1)), yy, phi, yb, h)
+
+
+MR, MN = 9, 33
+
+
+def moustache(ex):
+    """props.moustache: one mass of two drooping wings under the nose — the same curves (its upper and lower edge,
+    lifted at the ends by a smile), raised into a rounded body on the drawing's own head; it rides up a little with an
+    opening mouth. Returns the grid (MR rows from the upper edge to the lower, MN columns across) and its uv."""
+    w, droop, thick = MOUST['w'], MOUST['droop'], MOUST['thick']
+    y0 = (P['nose_tip'] + P['mouth_y']) / 2 + 0.005 - 0.012 * ex.get('mopen', 0.0)
+    smile = ex.get('smile', 0.0)
+    i = np.linspace(-1, 1, MN); t = np.abs(i)
+    x = w * i
+    lift = -smile * 0.03 * t
+    up = -thick * 0.55 * (1 - t ** 1.8) + droop * t ** 1.5 + lift - 0.004 * np.cos(np.pi * t * 3) * (1 - t)
+    lo = thick * 0.4 * (1 - t ** 1.2) + droop * t ** 1.3 + 0.008 + lift + 0.012 * (1 - t) * np.sin(np.pi * t * 4)
+    r = np.linspace(0, 1, MR)[:, None]
+    yy = up + (lo - up) * r
+    xx = x * (1 - 0.03 * r)
+    body = np.sin(np.pi * r) ** 0.7 * (1 - t ** 2.5) ** 0.5 * (0.72 + 0.28 * np.minimum(1, t / 0.12))   # a parting under the nose
+    out = 0.002 + 0.042 * body
+    a = np.array([H0.a(y0 + v) for v in yy.ravel()])
+    V = np.array([drawing.surf(xv / av, y0 + yv, ov) for xv, yv, av, ov in zip(xx.ravel(), yy.ravel(), a, out.ravel())])
+    uv = np.c_[np.tile(r, (1, MN)).ravel() * 0.9, np.tile(t, (MR, 1)).ravel()]
+    return V, uv
 
 
 def lids():
@@ -210,9 +239,12 @@ def main():
     for k, ex in allm.items():
         shapes[k] = mouth(ex)
     brows = {k: np.r_[brow(1, EXPR[k]), brow(-1, EXPR[k])] for k in FACES}
+    res_m = {k: moustache(ex) for k, ex in allm.items()}
     L = lids()
     lashes = [lash(L[k], s) for k, s in (('L', 1), ('R', -1))]
     res = {}
+    for k in allm: res['moust_' + k] = res_m[k][0]
+    res['moust_T'] = grid_tris(MR, MN); res['moust_uv'] = res_m['calm'][1]
     R6, n = 6, NX
     for part in ('lipU', 'lipL', 'cav', 'teethU', 'teethL'):
         flip = part in ('lipL',)
@@ -221,6 +253,8 @@ def main():
             res[f'{part}_{k}'] = shapes[k][part]
     bt = grid_tris(5, 12)
     res['brow_T'] = np.r_[bt, grid_tris(5, 12, True) + 60]
+    rr = np.repeat(np.linspace(0, 1, 5), 12); tt = np.tile(np.linspace(0, 1, 12), 5)
+    res['brow_uv'] = np.tile(np.c_[rr * 0.7, tt], (2, 1))
     for k in FACES: res['brow_' + k] = brows[k]
     off = 0; LV, LT, LW = [], [], []
     for V, T, w in lashes:

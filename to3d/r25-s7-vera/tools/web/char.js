@@ -140,34 +140,37 @@ function relaxHands(pose, k = 1) {
   const re = () => build(pose, body, getV(pose.P, I.Hips));
   for (const s of ['Left', 'Right']) {
     const J_ = n => I[`${s}Hand${n}`];
-    // which side the palm is: where the thumb lies off the plane of the knuckles
-    const dirM = normalize(sub(V3(pose, J_('Middle2')), V3(pose, J_('Middle1'))));
-    const across = normalize(sub(V3(pose, J_('Index1')), V3(pose, J_('Pinky1'))));
-    let palm = sub(V3(pose, J_('ThumbEnd')), V3(pose, J_('Middle1')));
+    // which side the palm is: where the thumb lies off the plane of the knuckles (joints 2; joints 1 are in the wrist)
+    const dirM = normalize(sub(V3(pose, J_('Middle3')), V3(pose, J_('Middle2'))));
+    const across = normalize(sub(V3(pose, J_('Index2')), V3(pose, J_('Pinky2'))));
+    let palm = sub(V3(pose, J_('ThumbEnd')), V3(pose, J_('Middle2')));
     palm = normalize(sub(sub(palm, dirM.map(v => v * dot3(palm, dirM))), across.map(v => v * dot3(palm, across))));
-    // together: each finger's base turned toward the middle finger's direction
+    // together: each finger turned at its knuckle toward the middle finger's direction
     for (const f of ['Index', 'Ring', 'Pinky']) {
-      const d = normalize(sub(V3(pose, J_(f + '2')), V3(pose, J_(f + '1'))));
-      const tg = normalize(d.map((v, i) => v * 0.1 + dirM[i] * 0.9));
-      turnUnder(pose, sk, J_(f + '1'), qBetween(d, tg)); re();
+      const d = normalize(sub(V3(pose, J_(f + '3')), V3(pose, J_(f + '2'))));
+      const tg = normalize(d.map((v, i) => v * 0.15 + dirM[i] * 0.85));
+      turnUnder(pose, sk, J_(f + '2'), qBetween(d, tg)); re();
     }
-    // bent toward the palm, a little more at the middle joints
-    for (const f of FINGERS) for (const [n, ang] of [[1, 0.35], [2, 0.45], [3, 0.3]]) {
-      const j = J_(f + n), c = I[`${s}Hand${f}${n + 1}`] ?? J_(f + 'End');
+    // bent toward the palm, a little more at the middle joints; the little finger's side a little more than the index's
+    FINGERS.forEach((f, fi) => { for (const [n, ang] of [[2, 0.35], [3, 0.45], [4, 0.3]]) {
+      const j = J_(f + n), c = n < 4 ? J_(f + (n + 1)) : J_(f + 'End');
       const d = normalize(sub(V3(pose, c), V3(pose, j)));
       const ax = normalize(cross3(d, palm));
-      turnUnder(pose, sk, j, qAxisAngle(ax, ang * k)); re();
-    }
+      turnUnder(pose, sk, j, qAxisAngle(ax, ang * k * (0.8 + 0.15 * fi))); re();
+    } });
+    // the thumb down along the hand, not sticking out
+    { const d = normalize(sub(V3(pose, J_('ThumbEnd')), V3(pose, J_('Thumb1')))), u = Math.min(1, 0.75 * k);
+      turnUnder(pose, sk, J_('Thumb1'), qBetween(d, normalize(d.map((v, i) => v * (1 - u) + dirM[i] * u)))); re(); }
     { const j = J_('Thumb2'), d = normalize(sub(V3(pose, J_('Thumb3')), V3(pose, j)));
       turnUnder(pose, sk, j, qAxisAngle(normalize(cross3(d, palm)), 0.25 * k)); re(); }
   }
 }
-// the palm turned as drawn (toward the thigh: palm (−1, 0, 0.2) for the left hand, mirrored)
+// the palm turned as drawn (toward the thigh: palm (−1, 0, 0.2) for the left hand, mirrored), about the hand's axis
 function palmIn(pose, s, sg) {
   const J_ = n => I[`${s}Hand${n}`], H_ = I[s + 'Hand'];
-  const ax = normalize(sub(V3(pose, J_('Middle1')), V3(pose, H_)));
-  const across = normalize(sub(V3(pose, J_('Index1')), V3(pose, J_('Pinky1'))));
-  let palm = sub(V3(pose, J_('ThumbEnd')), V3(pose, J_('Middle1')));
+  const ax = normalize(sub(V3(pose, J_('Middle2')), V3(pose, H_)));
+  const across = normalize(sub(V3(pose, J_('Index2')), V3(pose, J_('Pinky2'))));
+  let palm = sub(V3(pose, J_('ThumbEnd')), V3(pose, J_('Middle2')));
   palm = normalize(sub(sub(palm, ax.map(v => v * dot3(palm, ax))), across.map(v => v * dot3(palm, across))));
   let want = [ST.palm[0] * sg, ST.palm[1], ST.palm[2]]; want = normalize(sub(want, ax.map(v => v * dot3(want, ax))));
   const ang = Math.atan2(dot3(cross3(palm, want), ax), dot3(palm, want));
@@ -179,13 +182,13 @@ function standPose() {
     const m = v => [v[0] * sg, v[1], v[2]];
     aim(pose, I[s + 'Arm'], I[s + 'ForeArm'], m(STAND.upper));
     aim(pose, I[s + 'ForeArm'], I[s + 'Hand'], m(STAND.fore));
-    aim(pose, I[s + 'Hand'], I[s + 'HandMiddle1'], m(STAND.hand));
+    aim(pose, I[s + 'Hand'], I[s + 'HandMiddle2'], m(STAND.hand));
     palmIn(pose, s, sg);
   }
   return pose;
 }
 
-const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', relax: 0.3,
+const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', relax: 0.6, linePx: 1.9,
   cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.84, h: 1.8, dist: 6, target: null, follow: false } };
 let clip = null;
 function headTrack(c) {
@@ -203,7 +206,7 @@ function headTrack(c) {
 let pxPerM = 500;
 function frame() {
   const E_ = face.at(S.time, { headT: S.clip ? S.t / clip.fps : null });
-  const lw = Math.max(0.014, Math.min(0.045, 2.1 / (pxPerM * 0.12)));
+  const lw = Math.max(0.014, Math.min(0.045, S.linePx * 1.1 / (pxPerM * 0.12)));
   let pose;
   if (S.clip) { pose = fig.retarget.pose(clip.sample(S.t, fig.sample)); fig.retarget.placed(pose); }
   else if (S.pose === 'raw') pose = null;
@@ -245,7 +248,7 @@ window.A = {
       if (JSON.stringify(ids) !== JSON.stringify(S.clipIds)) { clip = ids ? await E.clip(ids) : null; S.clipIds = ids; face.setHead(clip ? headTrack(clip) : null); }
       S.clip = !!ids;
     }
-    for (const k of ['t', 'pose', 'relax']) if (o[k] !== undefined) S[k] = o[k];
+    for (const k of ['t', 'pose', 'relax', 'linePx']) if (o[k] !== undefined) S[k] = o[k];
     if (o.time !== undefined) S.time = o.time; else if (o.t !== undefined && clip && !S.liveClock) S.time = o.t / clip.fps;
     if (o.liveClock !== undefined) S.liveClock = o.liveClock;
     if (o.still !== undefined) face.still = o.still;
@@ -296,7 +299,7 @@ function placeCamera() {
   // the light as in the drawing: from the picture's upper left, a little in front (camera space)
   const e = camera.matrixWorld.elements, l = S.light || [-0.5, 0.55, 0.65];
   U.L.value.set(e[0] * l[0] + e[4] * l[1] + e[8] * l[2], e[1] * l[0] + e[5] * l[1] + e[9] * l[2], e[2] * l[0] + e[6] * l[1] + e[10] * l[2]).normalize();
-  U.width.value = S.lineW ?? Math.max(0.0012, 1.9 / pxPerM);
+  U.width.value = Math.max(0.0012, S.linePx / pxPerM);
 }
 await window.A.set({});
 window.A.render();

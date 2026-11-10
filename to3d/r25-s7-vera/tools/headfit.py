@@ -204,5 +204,13 @@ def build(path):
     L[inside, 0] /= rr[inside]; L[inside, 2] = zm[inside] + (L[inside, 2] - zm[inside]) / rr[inside]
     # the seam where the drawing's face meets the base's cheek and jaw, smoothed (no ridge on the outline)
     seam = (wgt > 0.01) & (wgt < 0.97) & ~earm & ~bnd
-    L = M.smooth(L, A, seam, iters=12, lam=0.5)
+    L = M.smooth(L, A, seam, iters=30, lam=0.5)
+    # the ears' inner folds flattened (the drawing's ear is one plain shape with one line inside): the outline then
+    # draws the ear's edge, not every fold of the base
+    L = M.smooth(L, A, earm, iters=5, lam=0.5)
+    # the neck's foot inside the drawn neck tube (it goes into a collar)
+    low = L[:, 1] < -1.1
+    nz, nr = neck_axis(L[:, 1]); rr = np.hypot(L[:, 0], L[:, 2] - nz)
+    k = np.minimum(1, nr * 0.97 / np.maximum(rr, 1e-6)); m = low & (k < 1)
+    L[m, 0] *= k[m]; L[m, 2] = nz[m] + (L[m, 2] - nz[m]) * k[m]
     return L, P, earm, wgt

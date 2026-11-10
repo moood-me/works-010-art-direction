@@ -5,15 +5,13 @@ export const CHAR = {
   // the drawing's palette (scenes_more.py PLUM)
   pal: { top: '#15111d', hor: '#49395c', fog: '#5f4d74', ground: '#19141f', rim: '#b8a9d8', warm: '#d2ee3c' },
   // one light: the far blocks of the town and its glow — the light she has turned her back on (her sheet)
-  world: { kind: 'town', span: 34, block: '#2a2238', lit: '#f2c88e', glow: '#8f7fb4', glowR: 19, glowK: .62, glowY: 6, lightY: 13, pool: 0,
-    rimGain: 14, hills: .7, shadow: { alpha: .3, fade: .5, floor: .3 } },
-  stand: { label: 'стоит спиной к городу', mood: 'slouch', lamp: [-26, 0, -30], heading: .95, camYaw: .05 },
+  world: { kind: 'town', span: 44, block: '#2a2238', lit: '#f2c88e', glow: '#8f7fb4', glowR: 24, glowK: .6, glowY: 7, lightY: 16, pool: 0,
+    rimGain: 19, hills: .7, shadow: { alpha: .3, fade: .5, floor: .3 } },
+  stand: { label: 'стоит спиной к городу', mood: 'slouch', lamp: [-9, 0, -60], heading: .95, camYaw: .05 },
   motions: [
     { id: 'walk', label: 'идёт', loop: true, mood: 'plain', heading: 1.5708 },
     { id: 'sneak', label: 'крадётся', loop: true, mood: 'loose', heading: 1.5708 },
     { id: 'dance', label: 'танцует', mood: 'music' },
-    { id: 'stomp', label: 'топает', mood: 'loose' },
-    { id: 'sit', label: 'садится', mood: 'loose' },
   ],
   phrases: ['Отстаньте.', 'Ну и что.', 'Мне всё равно.', 'Ладно… ладно.', 'Не трогайте меня.'],
   life: {

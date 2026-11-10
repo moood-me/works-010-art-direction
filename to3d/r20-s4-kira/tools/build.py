@@ -149,7 +149,7 @@ yd_h = hv[:, 1]
 Ah = M.adjacency(len(HV), HT)
 hs_ = M.smooth(HV, Ah, np.ones(len(HV)), iters=90, lam=0.5)       # a young face: bigger, calmer planes than Вера's 45
 pn = M.vertex_normals(hs_, HT)
-pw = 0.88 * (1 - sm((yd_h - 120) / 30)) * (1 - 0.5 * hf['ear'])
+pw = 0.96 * (1 - sm((yd_h - 120) / 30)) * (1 - 0.5 * hf['ear'])       # the shade follows the big planes almost fully: few clean shadow shapes
 # the painted layer: front projection (faces.py frame, drawing units)
 FX0, FX1, FY0, FY1 = -80.0, 80.0, -125.0, 130.0
 uv = np.c_[(hv[:, 0] - FX0) / (FX1 - FX0), 1 - (hv[:, 1] - FY0) / (FY1 - FY0)]
@@ -205,8 +205,17 @@ cap_v, cap_t, cap_m, cap_U, cap_V = PT.hair_cap(skull, HEAD, hair_mask, lambda U
 # the cap's strands run from the parting (on her right, U ≈ −0.35) down each side: the across-coordinate follows them
 hair_v = [cap_v]; hair_t = [cap_t]; hair_m = [cap_m]; hair_s = [cap_U * 3.0 + 0.006 * cap_V]; hair_a = [(cap_V + 122) / 190]
 nlock = 0
-for k, spec in enumerate(P.hair_locks(HEAD)):
-    v, tt, ac, al = PT.lock_mesh(HEAD, skull, spec, k=k, nseg=14, least=1.5, wscale=1.12, flat=0.3)
+def rooted(spec):
+    """a lock whose root lies below the hairline (on bare skin: in the drawing other locks cover it, in 3D it is a bar
+    stuck on the forehead) is grown up into the hair first"""
+    p0 = spec['pts'][0]
+    if p0[0] != 's' or hair_mask(np.array([p0[1]]), np.array([p0[2]]))[0] > 6: return spec
+    top = float(np.interp(abs(p0[1]), [q[0] for q in hl], [q[1] for q in hl])) - 14
+    return dict(spec, pts=[('s', p0[1], top, 5), ('s', p0[1], (top + p0[2]) / 2, p0[3] + 2)] + list(spec['pts']), w=[spec['w'][0] * 0.8, spec['w'][0]] + list(spec['w']))
+
+
+for k, spec in enumerate(map(rooted, P.hair_locks(HEAD))):
+    v, tt, ac, al = PT.lock_mesh(HEAD, skull, spec, k=k, nseg=16, nround=10, least=1.5, wscale=1.12, flat=0.34, tip=0.5)      # pointed tips: blunt ends read as bars stuck on the forehead
     hair_t.append(tt + sum(len(q) for q in hair_v)); hair_v.append(v); hair_m.append(np.ones(len(v))); hair_s.append(ac); hair_a.append(al); nlock += 1
 hair_v = np.vstack(hair_v); hair_t = np.vstack(hair_t); hair_m = np.concatenate(hair_m); hair_s = np.concatenate(hair_s); hair_a = np.concatenate(hair_a)
 HRV = W(hair_v)
@@ -259,6 +268,12 @@ g = 1 + (np.maximum(1 / np.maximum(f, 1e-3), 1) - 1) * kb
 bv[tr, 0] *= g; bv[tr, 2] = zc_ + (bv[tr, 2] - zc_) * g
 bv = M.smooth(bv, Ab, hood_w * trunk_w * sm((du[:, 1] - 190) / 40), iters=12, lam=0.5)
 bv = M.smooth(bv, Ab, hood_w * (1 - trunk_w) * (1 - wrist), iters=8, lam=0.5)
+# under the hem, between the legs: the trousers' front is flat (the body's own form there read as a lump hanging
+# under the hoodie)
+fr = cloth & (du[:, 1] > HEM + 5) & (du[:, 1] < HEM + 110) & (np.abs(du[:, 0]) < 75) & (arms < 0.3)
+zc2 = float(np.median(bv[fr, 2]))
+wf = fr * sm((HEM + 110 - du[:, 1]) / 40) * sm((75 - np.abs(du[:, 0])) / 25) * (bv[:, 2] > zc2)
+bv = M.smooth(bv, Ab, wf, iters=40, lam=0.5)
 # the neckband (Anny's lower neck in the hoodie's cloth): round the fitted head's neck, loose, its top edge level
 hn = hv[(hv[:, 1] > COLLAR_TOP - 5) & (hv[:, 1] < COLLAR_TOP + 7)]
 ncz = float((hn[:, 2].max() + hn[:, 2].min()) / 2)
@@ -282,11 +297,56 @@ BOOT_H = 0.2
 footcut = feet | ((legw > 0.5) & (bv[:, 1] < BOOT_H - 0.07))
 bT = bT[~footcut[bT].any(1)]
 two = ((wrist > 0) | ((du[:, 1] > HEM - 12) & (du[:, 1] < HEM + 6))).astype(np.uint8)
-SHOE_V, SHOE_T, SHOE_W = PT.shoes(J1, I, NJ, length=0.185, width=0.052, height=BOOT_H, back=0.062, pw=2.6)
-for s in ('Left', 'Right'):                          # the boot's shaft bends with the shin
-    m = np.arange(len(SHOE_V))[SHOE_W[:, I[s + 'Foot']] + SHOE_W[:, I[s + 'ToeBase']] > 0.5]
-    k_ = sm((SHOE_V[m, 1] - 0.08) / 0.07) * 0.75
-    SHOE_W[m] *= (1 - k_)[:, None]; SHOE_W[m, I[s + 'Shin']] += k_
+
+
+def boots():
+    """Heavy boots, a loft by height on each foot (world units): a thick sole with a heel and an arch under it, a welt,
+    a high rounded toe box, the instep rising into a shaft that narrows at the ankle and opens a little at the top."""
+    #        height  front   back   half-width  roundness
+    rows = [(0.000, 0.168, 0.066, 0.051, 2.6), (0.005, 0.174, 0.070, 0.054, 2.6), (0.026, 0.174, 0.070, 0.054, 2.6),
+            (0.027, 0.166, 0.064, 0.049, 2.3), (0.045, 0.166, 0.064, 0.049, 2.2), (0.060, 0.158, 0.063, 0.048, 2.1),
+            (0.072, 0.140, 0.062, 0.047, 2.0), (0.082, 0.112, 0.061, 0.046, 2.0), (0.092, 0.086, 0.060, 0.045, 2.0),
+            (0.105, 0.068, 0.058, 0.044, 2.0), (0.125, 0.058, 0.056, 0.043, 2.0), (0.150, 0.056, 0.057, 0.044, 2.0),
+            (0.180, 0.058, 0.059, 0.046, 2.0), (0.200, 0.060, 0.061, 0.048, 2.0), (0.203, 0.056, 0.057, 0.044, 2.0)]
+    cols = 56
+    SHV, SHT, SHW = [], [], []
+    for s_ in ('Left', 'Right'):
+        jf = J1[I[s_ + 'Foot']]; jt = J1[I[s_ + 'ToeBase']]
+        fwd = jt - jf; fwd[1] = 0; fwd /= np.linalg.norm(fwd)
+        side = np.cross([0, 1.0, 0], fwd)
+        base = np.array([jf[0], 0.0, jf[2]])
+        vs = []
+        a_ = np.linspace(0, 2 * np.pi, cols, endpoint=False); ca, sa = np.cos(a_), np.sin(a_)
+        for y, front, back, w, pw_ in rows:
+            L_ = np.where(ca > 0, front, back)
+            rr = (np.abs(ca) ** pw_ + np.abs(sa) ** pw_) ** (-1 / pw_)
+            along = ca * L_ * rr
+            yy = np.full(cols, y)
+            if y < 0.01:                              # the arch: between the heel and the ball the sole's underside is lifted
+                yy = yy + 0.014 * sm((along + 0.012) / 0.012) * sm((0.07 - along) / 0.02)
+            vs.append(base + np.outer(along, fwd) + np.outer(sa * w * rr, side) + np.c_[np.zeros(cols), yy, np.zeros(cols)])
+        vs = np.vstack(vs)
+        ts = []
+        for i_ in range(len(rows) - 1):
+            for k in range(cols):
+                a0, a1 = i_ * cols + k, i_ * cols + (k + 1) % cols; b0, b1 = a0 + cols, a1 + cols
+                ts += [[a0, a1, b0], [a1, b1, b0]]
+        c0 = len(vs); vs = np.r_[vs, [base + [0, 0.014, 0] + fwd * 0.03]]
+        ts += [[c0, (k + 1) % cols, k] for k in range(cols)]
+        c1 = len(vs); vs = np.r_[vs, [base + [0, rows[-1][0] - 0.004, 0]]]
+        ts += [[c1, (len(rows) - 1) * cols + k, (len(rows) - 1) * cols + (k + 1) % cols] for k in range(cols)]
+        off_ = sum(len(q) for q in SHV)
+        SHV.append(vs); SHT.append(np.array(ts) + off_)
+        w_ = np.zeros((len(vs), NJ)); w_[:, I[s_ + 'Foot']] = 1.0
+        toe = np.clip(((vs - jt) @ fwd) / 0.04, 0, 1) * 0.6 * (vs[:, 1] < 0.09)
+        w_[:, I[s_ + 'Foot']] -= toe; w_[:, I[s_ + 'ToeBase']] += toe
+        k_ = sm((vs[:, 1] - 0.09) / 0.07) * 0.8                    # the shaft goes with the shin
+        w_ *= (1 - k_)[:, None]; w_[:, I[s_ + 'Shin']] += k_
+        SHW.append(w_)
+    return np.vstack(SHV), np.vstack(SHT), np.vstack(SHW)
+
+
+SHOE_V, SHOE_T, SHOE_W = boots()
 
 # the hood, lying on the upper back: a soft lump behind the neck
 th_, ph_ = np.meshgrid(np.linspace(0.05, np.pi - 0.05, 22), np.linspace(-np.pi, np.pi, 40, endpoint=False), indexing='ij')

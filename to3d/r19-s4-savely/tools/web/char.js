@@ -8,6 +8,7 @@ export const CHAR = {
   hair: { streak: 5.0, depth: 0.22, light: '#ffffff', shine: 0.5 },
   eyeShade: [27.0, 15.0, 0.8],                    // cast shadows fade round the eyes: from, to (units from an eye's centre), by how much
   faceRim: 1.0,                                    // how much of the rim light the face's front takes (a coloured rim on lips and lids reads as dirt)
+  edgeN: 0.035,                                    // how far the shadow's edge is brushed
   frameGlint: '#fff0c0',
   blinkUp: 30,
   faceY: 1.44, midY: 0.86,

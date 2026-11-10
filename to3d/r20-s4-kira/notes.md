@@ -34,14 +34,23 @@ config, `parts.py` holds the shared builders (hair shell cut by the drawing's ma
   cloth is the neckband, loose round the fitted neck.
 - **Headphones round the neck**: two lime cups on dark pads on the collarbones (placed on the hoodie's own surface),
   a band behind the neck. With the laces and the drawstrings' tips they are the one acid accent.
-- **Narrow trousers** are the legs with 3 mm of cloth, charcoal by place below the hoodie's hem. **Heavy boots**: the
-  shared lofted shoe made tall (20 cm) and wide, its shaft weighted to the shin; the sole's edge and the zigzag laces
-  painted in the shader.
+- **Narrow trousers** are the legs with 3 mm of cloth, charcoal by place below the hoodie's hem; their front under
+  the hem, between the legs, is smoothed flat (the body's own form there read as a dark lump hanging under the
+  hoodie). **Heavy boots** are built in `build.py` (`boots()`): a loft by height — a thick sole with a heel and an
+  arch under it, a welt, a high rounded toe box, the instep rising into a shaft that narrows at the ankle and goes
+  with the shin; the sole's tread, the toe cap's seam and the zigzag laces are painted in the shader. (The first
+  try, the shared shoe made tall, was a wedge with a straight shaft.)
 - **Hair**: the shell over the skull above the drawing's hairline (a choppy lower edge), thick on the crown, and all
-  58 locks of the drawing as flattened tubes — the choppy layers with blunt ends, the pieces pushed off the right
-  side of the face, the long fringe from the parting down over her left eye. The lock's light is violet (`char.js`).
-- **Face**: eye region 1.2× the head's scale and 1.1× wider (Arcane's almond eyes, smaller than Аня's), the base's
-  wide mouth drawn in to 0.74. `fit_head.py` differs from Р19's in two places: the mouth's narrowing leaves the
+  58 locks of the drawing as flattened tubes with pointed tips — the choppy layers, the pieces pushed off the right
+  side of the face, the long fringe from the parting down over her left eye. A lock whose root lies below the
+  hairline (in the drawing other locks cover it; in 3D it was a dark bar stuck on the forehead) is grown up into the
+  hair first (`rooted`). The lock's light is violet (`char.js`).
+- **Face**: fifteen, not an adult. The first fit kept the base's adult forms — a heavy brow ridge and nose, a long
+  jaw, a grim mouth: she read as a hard grown-up, almost a man. Now the fit follows the drawing's smooth head closer
+  (stiffness down to 3), the nose is let go to the drawing's small one (`nose_keep`, `nose_min`), and what is left
+  of the bony forms is smoothed everywhere but the eyes, lips, nostrils and ears (`smooth`: 14 steps). Eye region
+  1.27× the head's scale and 1.1× wider (Arcane's almond eyes, smaller than Аня's), the base's wide mouth drawn in
+  to 0.74. The resting mouth's corners are lifted a little (the base's turn down), one more than the other. `fit_head.py` differs from Р19's in two places: the mouth's narrowing leaves the
   nose's base alone (her mouth sits close under a short nose — the nostrils were pinched), and the mouth's inside is
   kept behind the skin in front of it (it came out through the upper lip). No teeth band: behind her thin lips it
   showed through as a grey upper lip; she never opens her mouth in a smile anyway.
@@ -51,7 +60,8 @@ config, `parts.py` holds the shared builders (hair shell cut by the drawing's ma
   up, the other a little down) for it. Surprise, sadness, anger as the sheet.
 - **Light**: cast shadows are faded over the eyes and the upper cheeks (`eyeShade` in `char.js`: the fringe's
   shadow under an eye read as a bruise), and the face's front takes little of the lime rim (`faceRim`: a coloured
-  rim on lips and lids read as dirt). Shade planes of the face are smoothed twice as far as Вера's (a young face).
+  rim on lips and lids read as dirt). Shade planes of the face are smoothed twice as far as Вера's and followed
+  almost fully (0.96), and the shadow's edge is brushed three times less (`edgeN`): few clean shadow shapes.
 
 ## Steps (tools/, in order)
 
@@ -76,7 +86,12 @@ ffmpeg -framerate 20 -i $C/fm/turn/f%04d.png -c:v libx264 -pix_fmt yuv420p -crf 
 
 ## What is weak (seen by eye)
 
-See the page's verdict (`entry.json`) — written after looking at the finished pictures and films.
+- Hands in the pocket, not arms crossed as drawn; in Kimodo's motions they come out and Anny's realistic hands show.
+- The figure is of near-real proportions, wider than the drawing's stick; the hoodie is a shell, not cloth: no folds.
+- In the profile the shadow on the cheek and jaw is one band now, but its edge under the jaw is still uneven.
+- An open mouth has no teeth; small dark ticks of the painted mouth line show at the corners.
+- The eye regions are carried from the base as a whole: a faint ridge under the eyes is still in the form (the
+  shade does not show it).
 
 ## Licences
 

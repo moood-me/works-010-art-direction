@@ -1,0 +1,1265 @@
+{
+ "format": "savely8/face",
+ "version": 1,
+ "pieces": {
+  "head": [
+   0,
+   10303
+  ],
+  "eyeL": [
+   10303,
+   3200
+  ],
+  "eyeR": [
+   13503,
+   3200
+  ],
+  "lipU": [
+   16703,
+   150
+  ],
+  "lipL": [
+   16853,
+   150
+  ],
+  "cav": [
+   17003,
+   150
+  ],
+  "teethU": [
+   17153,
+   150
+  ],
+  "teethL": [
+   17303,
+   150
+  ],
+  "moust": [
+   17453,
+   297
+  ],
+  "brows": [
+   17750,
+   120
+  ],
+  "lashes": [
+   17870,
+   245
+  ],
+  "hair": [
+   18115,
+   22008
+  ],
+  "glasses": [
+   40123,
+   1560
+  ],
+  "lenses": [
+   41683,
+   482
+  ],
+  "neck": [
+   42165,
+   768
+  ],
+  "vest": [
+   42933,
+   13571
+  ],
+  "vestbottom": [
+   56504,
+   49
+  ],
+  "shirtfront": [
+   56553,
+   1121
+  ],
+  "collarstand": [
+   57674,
+   200
+  ],
+  "collarR": [
+   57874,
+   64
+  ],
+  "collarL": [
+   57938,
+   64
+  ],
+  "tie": [
+   58002,
+   270
+  ],
+  "button0": [
+   58272,
+   200
+  ],
+  "button1": [
+   58472,
+   200
+  ],
+  "button2": [
+   58672,
+   200
+  ],
+  "chain": [
+   58872,
+   320
+  ],
+  "sleeves": [
+   59192,
+   1224
+  ],
+  "cuffL": [
+   60416,
+   210
+  ],
+  "cuffR": [
+   60626,
+   210
+  ],
+  "trousers": [
+   60836,
+   1429
+  ],
+  "trhemL": [
+   62265,
+   230
+  ],
+  "trhemR": [
+   62495,
+   230
+  ],
+  "skin": [
+   62725,
+   3392
+  ],
+  "shoeL": [
+   66117,
+   642
+  ],
+  "soleL": [
+   66759,
+   538
+  ],
+  "shoeR": [
+   67297,
+   642
+  ],
+  "soleR": [
+   67939,
+   538
+  ]
+ },
+ "shapes": {
+  "lipU": [
+   "calm",
+   "stern",
+   "grumpy",
+   "tired",
+   "joy",
+   "surprise",
+   "sad",
+   "anger",
+   "vA",
+   "vO",
+   "vU",
+   "vE",
+   "vI",
+   "vM",
+   "vF"
+  ],
+  "lipL": [
+   "calm",
+   "stern",
+   "grumpy",
+   "tired",
+   "joy",
+   "surprise",
+   "sad",
+   "anger",
+   "vA",
+   "vO",
+   "vU",
+   "vE",
+   "vI",
+   "vM",
+   "vF"
+  ],
+  "cav": [
+   "calm",
+   "stern",
+   "grumpy",
+   "tired",
+   "joy",
+   "surprise",
+   "sad",
+   "anger",
+   "vA",
+   "vO",
+   "vU",
+   "vE",
+   "vI",
+   "vM",
+   "vF"
+  ],
+  "teethU": [
+   "calm",
+   "stern",
+   "grumpy",
+   "tired",
+   "joy",
+   "surprise",
+   "sad",
+   "anger",
+   "vA",
+   "vO",
+   "vU",
+   "vE",
+   "vI",
+   "vM",
+   "vF"
+  ],
+  "teethL": [
+   "calm",
+   "stern",
+   "grumpy",
+   "tired",
+   "joy",
+   "surprise",
+   "sad",
+   "anger",
+   "vA",
+   "vO",
+   "vU",
+   "vE",
+   "vI",
+   "vM",
+   "vF"
+  ],
+  "moust": [
+   "calm",
+   "stern",
+   "grumpy",
+   "tired",
+   "joy",
+   "surprise",
+   "sad",
+   "anger",
+   "vA",
+   "vO",
+   "vU",
+   "vE",
+   "vI",
+   "vM",
+   "vF"
+  ],
+  "brows": [
+   "calm",
+   "stern",
+   "grumpy",
+   "tired",
+   "joy",
+   "surprise",
+   "sad",
+   "anger"
+  ]
+ },
+ "lids": {
+  "L": {
+   "c": [
+    0.038914035840295874,
+    1.0394748,
+    0.1297502731100489
+   ],
+   "n": [
+    0.41669212354611534,
+    0.0,
+    0.9090476743134152
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "ax": [
+    0.9359458589202916,
+    0.07176036049615846,
+    -0.3447546951550027
+   ]
+  },
+  "R": {
+   "c": [
+    -0.038914035840295874,
+    1.0394748,
+    0.1297502731100489
+   ],
+   "n": [
+    -0.41669212354611534,
+    0.0,
+    0.9090476743134152
+   ],
+   "up": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "ax": [
+    0.9379111870068558,
+    -0.0742106365205003,
+    0.3388441923873171
+   ]
+  }
+ },
+ "eU0": 0.49989598923220846,
+ "eL0": -0.28338960231505933,
+ "mouth": [
+  "lipU",
+  "lipL",
+  "cav",
+  "teethU",
+  "teethL",
+  "moust"
+ ],
+ "expr": {
+  "calm": {
+   "up": 0.0,
+   "lo": 0.0,
+   "gaze": [
+    0.0,
+    -0.0
+   ],
+   "pupil": 0.38
+  },
+  "stern": {
+   "up": 0.07991422777452006,
+   "lo": 0.02605397477334264,
+   "gaze": [
+    0.0,
+    -0.0
+   ],
+   "pupil": 0.38
+  },
+  "grumpy": {
+   "up": 0.10072944979785935,
+   "lo": 0.034674917492408,
+   "gaze": [
+    0.0,
+    -0.1
+   ],
+   "pupil": 0.38
+  },
+  "tired": {
+   "up": 0.11768511313809561,
+   "lo": 0.03811524557998031,
+   "gaze": [
+    0.0,
+    -0.0
+   ],
+   "pupil": 0.38
+  },
+  "joy": {
+   "up": 0.06380891453367404,
+   "lo": 0.10278626275296242,
+   "gaze": [
+    0.0,
+    -0.0
+   ],
+   "pupil": 0.38
+  },
+  "surprise": {
+   "up": -0.33610274724824896,
+   "lo": -0.07129444001458327,
+   "gaze": [
+    0.0,
+    -0.0
+   ],
+   "pupil": 0.28
+  },
+  "sad": {
+   "up": 0.11361186859811967,
+   "lo": 0.04326752282137993,
+   "gaze": [
+    0.0,
+    -0.3
+   ],
+   "pupil": 0.38
+  },
+  "anger": {
+   "up": 0.1410574316308249,
+   "lo": 0.03811524557998031,
+   "gaze": [
+    0.0,
+    -0.0
+   ],
+   "pupil": 0.38
+  }
+ },
+ "faces": [
+  "calm",
+  "stern",
+  "grumpy",
+  "tired",
+  "joy",
+  "surprise",
+  "sad",
+  "anger"
+ ],
+ "visemes": [
+  "A",
+  "O",
+  "U",
+  "E",
+  "I",
+  "M",
+  "F"
+ ],
+ "eyes": {
+  "L": [
+   0.038914035840295874,
+   1.0394748,
+   0.1297502731100489
+  ],
+  "R": [
+   -0.038914035840295874,
+   1.0394748,
+   0.1297502731100489
+  ]
+ },
+ "bin": "face.bin",
+ "arrays": {
+  "lipU.calm": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 0
+  },
+  "lipU.stern": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 1800
+  },
+  "lipU.grumpy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 3600
+  },
+  "lipU.tired": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 5400
+  },
+  "lipU.joy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 7200
+  },
+  "lipU.surprise": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 9000
+  },
+  "lipU.sad": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 10800
+  },
+  "lipU.anger": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 12600
+  },
+  "lipU.vA": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 14400
+  },
+  "lipU.vO": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 16200
+  },
+  "lipU.vU": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 18000
+  },
+  "lipU.vE": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 19800
+  },
+  "lipU.vI": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 21600
+  },
+  "lipU.vM": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 23400
+  },
+  "lipU.vF": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 25200
+  },
+  "lipL.calm": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 27000
+  },
+  "lipL.stern": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 28800
+  },
+  "lipL.grumpy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 30600
+  },
+  "lipL.tired": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 32400
+  },
+  "lipL.joy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 34200
+  },
+  "lipL.surprise": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 36000
+  },
+  "lipL.sad": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 37800
+  },
+  "lipL.anger": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 39600
+  },
+  "lipL.vA": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 41400
+  },
+  "lipL.vO": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 43200
+  },
+  "lipL.vU": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 45000
+  },
+  "lipL.vE": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 46800
+  },
+  "lipL.vI": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 48600
+  },
+  "lipL.vM": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 50400
+  },
+  "lipL.vF": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 52200
+  },
+  "cav.calm": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 54000
+  },
+  "cav.stern": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 55800
+  },
+  "cav.grumpy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 57600
+  },
+  "cav.tired": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 59400
+  },
+  "cav.joy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 61200
+  },
+  "cav.surprise": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 63000
+  },
+  "cav.sad": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 64800
+  },
+  "cav.anger": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 66600
+  },
+  "cav.vA": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 68400
+  },
+  "cav.vO": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 70200
+  },
+  "cav.vU": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 72000
+  },
+  "cav.vE": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 73800
+  },
+  "cav.vI": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 75600
+  },
+  "cav.vM": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 77400
+  },
+  "cav.vF": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 79200
+  },
+  "teethU.calm": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 81000
+  },
+  "teethU.stern": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 82800
+  },
+  "teethU.grumpy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 84600
+  },
+  "teethU.tired": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 86400
+  },
+  "teethU.joy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 88200
+  },
+  "teethU.surprise": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 90000
+  },
+  "teethU.sad": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 91800
+  },
+  "teethU.anger": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 93600
+  },
+  "teethU.vA": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 95400
+  },
+  "teethU.vO": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 97200
+  },
+  "teethU.vU": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 99000
+  },
+  "teethU.vE": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 100800
+  },
+  "teethU.vI": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 102600
+  },
+  "teethU.vM": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 104400
+  },
+  "teethU.vF": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 106200
+  },
+  "teethL.calm": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 108000
+  },
+  "teethL.stern": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 109800
+  },
+  "teethL.grumpy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 111600
+  },
+  "teethL.tired": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 113400
+  },
+  "teethL.joy": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 115200
+  },
+  "teethL.surprise": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 117000
+  },
+  "teethL.sad": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 118800
+  },
+  "teethL.anger": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 120600
+  },
+  "teethL.vA": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 122400
+  },
+  "teethL.vO": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 124200
+  },
+  "teethL.vU": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 126000
+  },
+  "teethL.vE": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 127800
+  },
+  "teethL.vI": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 129600
+  },
+  "teethL.vM": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 131400
+  },
+  "teethL.vF": {
+   "dtype": "float32",
+   "shape": [
+    150,
+    3
+   ],
+   "offset": 133200
+  },
+  "moust.calm": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 135000
+  },
+  "moust.stern": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 138564
+  },
+  "moust.grumpy": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 142128
+  },
+  "moust.tired": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 145692
+  },
+  "moust.joy": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 149256
+  },
+  "moust.surprise": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 152820
+  },
+  "moust.sad": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 156384
+  },
+  "moust.anger": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 159948
+  },
+  "moust.vA": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 163512
+  },
+  "moust.vO": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 167076
+  },
+  "moust.vU": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 170640
+  },
+  "moust.vE": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 174204
+  },
+  "moust.vI": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 177768
+  },
+  "moust.vM": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 181332
+  },
+  "moust.vF": {
+   "dtype": "float32",
+   "shape": [
+    297,
+    3
+   ],
+   "offset": 184896
+  },
+  "brows.calm": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 188460
+  },
+  "brows.stern": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 189900
+  },
+  "brows.grumpy": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 191340
+  },
+  "brows.tired": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 192780
+  },
+  "brows.joy": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 194220
+  },
+  "brows.surprise": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 195660
+  },
+  "brows.sad": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 197100
+  },
+  "brows.anger": {
+   "dtype": "float32",
+   "shape": [
+    120,
+    3
+   ],
+   "offset": 198540
+  },
+  "lash.w": {
+   "dtype": "float32",
+   "shape": [
+    245
+   ],
+   "offset": 199980
+  },
+  "lidL.idx": {
+   "dtype": "uint32",
+   "shape": [
+    489
+   ],
+   "offset": 200960
+  },
+  "lidL.wU": {
+   "dtype": "float32",
+   "shape": [
+    489
+   ],
+   "offset": 202916
+  },
+  "lidL.wL": {
+   "dtype": "float32",
+   "shape": [
+    489
+   ],
+   "offset": 204872
+  },
+  "lidR.idx": {
+   "dtype": "uint32",
+   "shape": [
+    490
+   ],
+   "offset": 206828
+  },
+  "lidR.wU": {
+   "dtype": "float32",
+   "shape": [
+    490
+   ],
+   "offset": 208788
+  },
+  "lidR.wL": {
+   "dtype": "float32",
+   "shape": [
+    490
+   ],
+   "offset": 210748
+  }
+ }
+}

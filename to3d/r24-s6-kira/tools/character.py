@@ -62,9 +62,9 @@ EXPR = dict(order=['joy', 'surprise', 'sad', 'angry'], labels=['радость',
 WORLD_LABEL = 'дальний город, туман, тень, зерно'
 MOOD_K = 3.0
 # standing in her world: her back to the town's light, where we look from
-HERO = dict(heading=.95, lamp=[-26, 0, -30], mood='slouch',
+HERO = dict(heading=.95, lamp=[-9, 0, -60], mood='slouch',
             cam=dict(yaw=0.05, pitch=-0.03, dist=4.6, h=.9, fov=33))
-WALK = dict(motion='walk', mood='plain', heading=1.5708, position=[-3.0, 0, 0], lamp=[-26, 0, -30],
+WALK = dict(motion='walk', mood='plain', heading=1.5708, position=[-3.0, 0, 0], lamp=[-9, 0, -60],
             cam=dict(yaw=0.18, pitch=0.0, dist=3.9, h=.85, fov=34, smooth=2.5), frames=200)
 LIFE = dict(plan=[(0, 'slouch'), (2.6, 'surprise'), (4.6, 'angry'), (6.8, 'sad'), (9.6, 'joy'), (12.6, 'slouch')], talk=(4.9, 6.4), seconds=14.5)
-FILMS = [('sneak', 120, 'loose', dict(heading=1.5708, position=[-1.6, 0, 0])), ('dance', 120, 'music'), ('stomp', 100, 'loose'), ('sit', 119, 'loose')]
+FILMS = [('sneak', 120, 'loose', dict(heading=1.5708, position=[-1.6, 0, 0])), ('dance', 120, 'music')]

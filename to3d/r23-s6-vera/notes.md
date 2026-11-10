@@ -87,3 +87,14 @@ bow), `wave` (Kimodo waves with the right hand — hers holds the folder).
 | three.js 0.160 | jsDelivr | MIT |
 
 No neural images, no third-party meshes.
+
+## What is weak
+
+- The rim is thin and nearly goes out from the front when the window is not behind her.
+- Moods other than the drawn one are mine; «думает» and «довольна» differ little from the stand.
+- The lenses at three-quarters are two bright dots and from afar read as eyes (so they do in the drawing).
+- Kimodo's bow is to the waist — too deep for her; in the run the coat blows out like a wide skirt (it is skinned to
+  the thighs, not cloth). The folder is fixed to the chest; the hand is one drop.
+- No close-up portrait: the head of rings is right as a silhouette at figure size, not as a face (the style's own
+  portraits are drawn by hand).
+- The window always faces us (a flat light); in a turn around it leaves the frame.

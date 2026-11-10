@@ -1,4 +1,4 @@
-"""Тим rendered as a puppet on a small set — Blender 4.5, Cycles on the CPU.
+"""Савелий Петрович rendered as a puppet on a small set — Blender 4.5, Cycles on the CPU.
 
 The look of С8 (styles/s8-stopmotion, «Правила стиля»): a small real object under real light. Every part has its
 own material: the face resin-and-clay skin with light under it (subsurface), glass eyes with a sharp window glint,
@@ -23,8 +23,9 @@ CACHE = job.get('cache', '/home/user/cache/to3d-r27-s8-savely')
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../engine/tools'))
 import pack  # noqa: E402
 meta = json.load(open(os.path.join(CACHE, 'model.json')))
-_, BA = pack.read(os.path.join(CACHE, 'engine/data/bodies/savely8.json'))
-_, TA = pack.read(os.path.join(CACHE, 'engine/data/topology/savely8.json'))
+BID = meta['id']
+_, BA = pack.read(os.path.join(CACHE, f'engine/data/bodies/{BID}.json'))
+_, TA = pack.read(os.path.join(CACHE, f'engine/data/topology/{BID}.json'))
 RA = np.load(os.path.join(CACHE, 'rest.npz'))
 TEX = meta['tex']
 HH = meta['HH']
@@ -132,7 +133,8 @@ def image(nt, path, vec, extension='EXTEND', non_color=False):
 def set_(bsdf, **kw):
     names = {'base': 'Base Color', 'rough': 'Roughness', 'sss': 'Subsurface Weight', 'sss_r': 'Subsurface Radius',
              'sss_s': 'Subsurface Scale', 'coat': 'Coat Weight', 'coat_r': 'Coat Roughness', 'sheen': 'Sheen Weight',
-             'sheen_r': 'Sheen Roughness', 'sheen_t': 'Sheen Tint', 'spec': 'Specular IOR Level', 'ior': 'IOR'}
+             'sheen_r': 'Sheen Roughness', 'sheen_t': 'Sheen Tint', 'spec': 'Specular IOR Level', 'ior': 'IOR', 'metal': 'Metallic',
+             'alpha': 'Alpha', 'trans': 'Transmission Weight'}
     for k, v in kw.items(): bsdf.inputs[names[k]].default_value = v
 
 
@@ -142,21 +144,24 @@ def mat_skin():
     img = image(nt, os.path.join(TEX, 'face.png'), uv.outputs['Vector'])
     tint = attr(nt, 'tint')                     # ears and hands warmer (per vertex)
     # Filmic pales a light skin: a little of a warmer, pinker one under the paint (the drawing's skin reads warm)
-    warm = mixc(nt, 0.18, img.outputs['Color'], lin('#f0a888'))
-    col = mixc(nt, tint.outputs['Fac'], warm, lin('#e8a090'))
+    warm = mixc(nt, 0.18, img.outputs['Color'], lin(SKIN_WARM))
+    col = mixc(nt, tint.outputs['Fac'], warm, lin(SKIN_TINT))
     nt.links.new(col, b.inputs['Base Color'])
     set_(b, rough=0.42, sss=0.35, sss_r=(1.0, 0.45, 0.3), sss_s=0.012, coat=0.12, coat_r=0.35, spec=0.45)
     # resin cast: the faintest unevenness, fingerprints of the sculptor
     tc = nt.nodes.new('ShaderNodeTexCoord')
     h = math_(nt, 'MULTIPLY', noise(nt, tc.outputs['Object'], 140.0, 6, 0.55), 1.0)
-    bump(nt, b, h, 0.05, 0.001)
+    n1 = bump(nt, b, h, 0.05, 0.001)
+    if os.path.exists(os.path.join(TEX, 'bump.png')):          # the sculpted wrinkles
+        bi = image(nt, os.path.join(TEX, 'bump.png'), uv.outputs['Vector'], non_color=True)
+        bump(nt, b, bi.outputs['Color'], 0.6, 0.0012, normal=n1)
     return m
 
 
-def mat_hair():
-    m, nt, b = nodes('hair')
+def mat_hair(name='hair', base_c='#6a3e24', dark_c='#5a2c12', rough=0.5, coat=0.25):
+    m, nt, b = nodes(name)
     uv = sep(nt, attr(nt, 'tuv').outputs['Vector'])
-    base = lin('#6a3e24')
+    base = lin(base_c)
     # fine strands across each lock (the drawing's strand lines) and its grooves: stripes in the across coordinate
     across = uv.outputs['X']
     w = math_(nt, 'MULTIPLY', across, 9.0)
@@ -168,9 +173,9 @@ def mat_hair():
     h = math_(nt, 'ADD', h, math_(nt, 'MULTIPLY', nz, 0.4))
     bump(nt, b, h, 0.25, 0.0015)
     dark = math_(nt, 'MULTIPLY', math_(nt, 'SUBTRACT', 1.0, math_(nt, 'ABSOLUTE', s1)), 0.0)
-    col = mixc(nt, math_(nt, 'MULTIPLY', nz, 0.35), base, lin('#5a2c12'))
+    col = mixc(nt, math_(nt, 'MULTIPLY', nz, 0.35), base, lin(dark_c))
     nt.links.new(col, b.inputs['Base Color'])
-    set_(b, rough=0.5, coat=0.25, coat_r=0.3, spec=0.5, sheen=0.15, sheen_r=0.4)
+    set_(b, rough=rough, coat=coat, coat_r=0.3, spec=0.5, sheen=0.15, sheen_r=0.4)
     return m
 
 
@@ -236,27 +241,76 @@ def mat_plain(name, base, rough=0.5, coat=0.0, sheen=0.0, sss=0.0, bump_scale=0.
     return m
 
 
+def mat_cloth(name, base, weave=900.0, rough=0.85, sheen=0.4, dark='#000000', amount=0.3, strength=0.3):
+    """woven cloth: a fine weave (two crossed waves in object space) and a soft unevenness of the dye"""
+    m, nt, b = nodes(name)
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    xyz = sep(nt, tc.outputs['Object'])
+    wv = math_(nt, 'MULTIPLY', math_(nt, 'SINE', math_(nt, 'MULTIPLY', math_(nt, 'ADD', xyz.outputs['X'], xyz.outputs['Y']), weave)),
+               math_(nt, 'SINE', math_(nt, 'MULTIPLY', xyz.outputs['Z'], weave)))
+    nz = noise(nt, tc.outputs['Object'], 500.0, 6, 0.7)
+    nz2 = noise(nt, tc.outputs['Object'], 25.0, 2, 0.5)
+    bump(nt, b, math_(nt, 'ADD', math_(nt, 'MULTIPLY', wv, 0.5), nz), strength, 0.0012)
+    col = mixc(nt, math_(nt, 'MULTIPLY', nz2, amount), base, lin(dark))
+    nt.links.new(col, b.inputs['Base Color'])
+    set_(b, rough=rough, sheen=sheen, sheen_r=0.5, spec=0.25)
+    return m
+
+
+def mat_metal(name, base, rough=0.28, beads=0.0):
+    m, nt, b = nodes(name)
+    nt.links.new(nt.nodes.new('ShaderNodeRGB').outputs[0], b.inputs['Base Color'])
+    b.inputs['Base Color'].links[0].from_node.outputs[0].default_value = base
+    set_(b, rough=rough, metal=1.0)
+    if beads:                                        # links of a chain: beads along the tube (tuv.y 0…1 along it)
+        uv = sep(nt, attr(nt, 'tuv').outputs['Vector'])
+        bump(nt, b, math_(nt, 'ABSOLUTE', math_(nt, 'SINE', math_(nt, 'MULTIPLY', uv.outputs['Y'], beads * math.pi))), 1.0, 0.0012)
+    return m
+
+
+def mat_lens():
+    """a thin spectacle lens: almost clear, a faint cool tint and the lamps' glare"""
+    m = bpy.data.materials.new('lens'); m.use_nodes = True
+    nt = m.node_tree
+    for n in list(nt.nodes): nt.nodes.remove(n)
+    out = nt.nodes.new('ShaderNodeOutputMaterial')
+    tr = nt.nodes.new('ShaderNodeBsdfTransparent'); tr.inputs[0].default_value = (0.93, 0.96, 1.0, 1)
+    gl = nt.nodes.new('ShaderNodeBsdfGlossy'); gl.inputs['Roughness'].default_value = 0.03
+    fr = nt.nodes.new('ShaderNodeFresnel'); fr.inputs[0].default_value = 1.5
+    k = math_(nt, 'ADD', math_(nt, 'MULTIPLY', fr.outputs[0], 1.5), 0.05)
+    mx = nt.nodes.new('ShaderNodeMixShader'); nt.links.new(k, mx.inputs[0])
+    nt.links.new(tr.outputs[0], mx.inputs[1]); nt.links.new(gl.outputs[0], mx.inputs[2]); nt.links.new(mx.outputs[0], out.inputs[0])
+    return m
+
+
+SKIN_WARM, SKIN_TINT = '#e89878', '#dc8c80'
 MATS = {
-    'skin': mat_skin, 'hair': mat_hair, 'eye': mat_eye,
-    'sweater': lambda: mat_knit('sweater', lin('#2c4a72'), lin('#f0e6d2'), 0.09 * HH),
-    'cuff': lambda: mat_knit('cuff', lin('#24406a'), rib=0.005),
-    'sock': lambda: mat_knit('sock', lin('#e8e0d0'), rib=0.006),
-    'shorts': lambda: mat_felt('shorts', lin('#6a5a3a')),
-    'shoe': lambda: mat_plain('shoe', lin('#c83a2a'), rough=0.38, coat=0.35, bump_scale=300),
-    'sole': lambda: mat_plain('sole', lin('#efe6d6'), rough=0.7, bump_scale=200),
-    'lip': lambda: mat_plain('lip', lin('#c8706a'), rough=0.35, coat=0.2, sss=0.3),
+    'skin': mat_skin, 'eye': mat_eye,
+    'hair': lambda: mat_hair('hair', '#e8e2d8', '#b4aca4', rough=0.6, coat=0.1),
+    'whisker': lambda: mat_hair('whisker', '#ece6dc', '#bcb4aa', rough=0.6, coat=0.1),
+    'gold': lambda: mat_metal('gold', lin('#c89a4a')),
+    'chain': lambda: mat_metal('chain', lin('#d8a840'), rough=0.3, beads=60),
+    'lens': mat_lens,
+    'vest': lambda: mat_cloth('vest', lin('#6e4c34'), weave=1400.0, dark='#2a1a10', amount=0.45),
+    'shirt': lambda: mat_cloth('shirt', lin('#e2d6bc'), weave=2200.0, rough=0.75, sheen=0.2, dark='#8a7a5a', amount=0.2, strength=0.15),
+    'collar': lambda: mat_cloth('collar', lin('#efe4cc'), weave=2200.0, rough=0.7, sheen=0.2, dark='#8a7a5a', amount=0.15, strength=0.15),
+    'tie': lambda: mat_cloth('tie', lin('#7a2a2a'), weave=1800.0, rough=0.45, sheen=0.5, dark='#2a0808', amount=0.3),
+    'trousers': lambda: mat_cloth('trousers', lin('#4a4a52'), weave=1200.0, dark='#18181c', amount=0.4),
+    'button': lambda: mat_plain('button', lin('#3a2418'), rough=0.3, coat=0.5),
+    'dark': lambda: mat_plain('dark', lin('#120c0a'), rough=0.9),
+    'shoe': lambda: mat_plain('shoe', lin('#3a2418'), rough=0.35, coat=0.4, bump_scale=300),
+    'sole': lambda: mat_plain('sole', lin('#1c1410'), rough=0.7, bump_scale=200),
+    'lip': lambda: mat_plain('lip', lin('#b05a58'), rough=0.4, coat=0.15, sss=0.3),
     'mouth': lambda: mat_plain('mouth', lin('#3a1418'), rough=0.6),
     'teeth': lambda: mat_plain('teeth', lin('#f1e8dc'), rough=0.3, coat=0.3),
-    'tongue': lambda: mat_plain('tongue', lin('#a8444a'), rough=0.4, sss=0.3),
-    'brow': lambda: mat_plain('brow', lin('#5a3018'), rough=0.6, sheen=0.3, bump_scale=600),
-    'lash': lambda: mat_plain('lash', lin('#2a1810'), rough=0.5),
+    'lash': lambda: mat_plain('lash', lin('#3a2420'), rough=0.5),
     'clay': lambda: mat_plain('clay', lin('#c9c2b6'), rough=0.6),
 }
 MCACHE = {}
 
 
 def material(name):
-    if job.get('clay') and name not in ('eye',):
+    if job.get('clay') and name not in ('eye', 'lens'):
         name = 'clay'
     if name not in MCACHE: MCACHE[name] = MATS[name]()
     return MCACHE[name]
@@ -285,10 +339,11 @@ for o in meta['pieces']:
     ob.data.materials.append(material(o['mat']))
     if o.get('subdiv') and not job.get('nosubdiv'):
         sd = ob.modifiers.new('s', 'SUBSURF'); sd.levels = sd.render_levels = o['subdiv']
+    if n == 'lenses': ob.visible_shadow = False
     OBJ[n] = (ob, s0, cnt)
 
 # ------------------------------------------------------------------ the set
-st = dict(dict(floor='#2a2322', back='#1e2430', glow='#d89a60', seed=8), **job.get('stage', {}))
+st = dict(dict(floor='#2e2420', back='#2a1e18', glow='#e0a050', seed=5), **job.get('stage', {}))
 
 
 def plane(name, size, loc, rot, mat):

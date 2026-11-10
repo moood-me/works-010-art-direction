@@ -1,4 +1,4 @@
-"""The drawing's views of Тим in 3D, side by side with the drawing and overlaid on it:
+"""The drawing's views of Савелий Петрович in 3D, side by side with the drawing and overlaid on it:
 turn (front, three-quarter, profile — turn-tim), portrait (portrait-tim, the grin), figure (figure-tim, waving),
 expressions (expr-tim: joy, surprise, sad, anger). Each panel: the pose (a frame of a Kimodo motion of the engine,
 the head turned on top as the drawing turns it against the body), the face (an expression of the sheet, the eyes on
@@ -8,17 +8,17 @@ usage: python3 stills.py turn|portrait|figure|expr [samples]"""
 import json, os, subprocess, sys, math
 import numpy as np
 from PIL import Image, ImageFilter
-from common import CACHE, HERE, STYLE, FOLDER, HH, pack
+from common import CACHE, HERE, STYLE, FOLDER, HH, pack, BID
 
 BLENDER = '/home/user/cache/blender/blender'
 OUT = os.path.join(CACHE, 'stills')
 os.makedirs(OUT, exist_ok=True)
 M = json.load(open(f'{CACHE}/model.json'))
 PC = {p['name']: (p['start'], p['count']) for p in M['pieces']}
-_, BA = pack.read(f'{CACHE}/engine/data/bodies/savely8.json')
+_, BA = pack.read(f'{CACHE}/engine/data/bodies/{BID}.json')
 REST = BA['positions'].astype(float)
 O = np.array(M['O'])
-HEADONLY = ['head', 'eyeL', 'eyeR', 'lipU', 'lipL', 'cav', 'teethU', 'teethL', 'brows', 'lashes', 'hair']
+HEADONLY = ['head', 'eyeL', 'eyeR', 'lipU', 'lipL', 'cav', 'teethU', 'teethL', 'brows', 'lashes', 'hair', 'moust', 'glasses', 'lenses']
 
 
 def kabsch(A, B_):
@@ -35,13 +35,14 @@ def head_centre(F):
     return R @ O + t
 
 
+DRAWN = os.path.join(CACHE, 'drawn')          # the sheets the style's page doesn't have, made by its code (drawn.py)
 SHEETS = {
     # name: drawing picture, size, panels [(cx, cy, S, view yaw, head yaw on top, motion, frame, face, roll)]
-    'turn': ('turn-tim.jpg', (1500, 620), [(250 + 500 * i, 255, 255, 0.8 * y, 0.2 * y, 'bow', 0, {'calm': 1}, 0) for i, y in enumerate((0, 40, 88))]),
-    'portrait': ('portrait-tim.jpg', (700, 820), [(350, 335, 330, 0.55 * 28, 0.45 * 28, 'bow', 0, {'grin': 1}, 0)]),
-    'figure': ('figure-tim.jpg', (560, 960), [(280, 900 - 2.86 * 215, 215, 0.6 * 22.4, 0.4 * 22.4, 'wave', 38, {'grin': 1}, 0)]),
-    'expr': ('expr-tim.jpg', (1600, 540), [(200 + 400 * i, 280, 290, 18, 0, 'bow', 0, {e: 1}, r)
-                                           for i, (e, r) in enumerate((('joy', -5), ('surprise', 0), ('sad', 6), ('anger', -3)))]),
+    'turn': (os.path.join(DRAWN, 'turn-savely.jpg'), (1500, 620), [(250 + 500 * i, 255, 255, 0.8 * y, 0.2 * y, 'bow', 0, {'calm': 1}, 0) for i, y in enumerate((0, 40, 88))]),
+    'portrait': ('portrait-savely.jpg', (700, 820), [(350, 335, 330, 0.55 * -24, 0.45 * -24, 'bow', 0, {'grumpy': 1}, 0)]),
+    'figure': ('figure-savely.jpg', (560, 960), [(280, 900 - 3.38 * 200, 200, 0.6 * -19.2, 0.4 * -19.2, 'idle', 20, {'grumpy': 1}, 0)]),
+    'expr': (os.path.join(DRAWN, 'expr-savely.jpg'), (1600, 540), [(200 + 400 * i, 280, 290, -18, 0, 'bow', 0, {e: 1}, r)
+                                                              for i, (e, r) in enumerate((('joy', -5), ('surprise', 0), ('sad', 6), ('anger', -3)))]),
 }
 
 
@@ -66,13 +67,13 @@ def run(sheet, samples=48):
     job = dict(out=OUT, samples=samples, frames=f'{OUT}/{sheet}.bin', views=views,
                hide=[p for p in PC if p not in HEADONLY] if sheet == 'expr' else [])
     json.dump(job, open(f'{OUT}/render-{sheet}.json', 'w'))
-    subprocess.run([BLENDER, '-b', '--python', os.path.join(HERE, 'render.py'), '--', f'{OUT}/render-{sheet}.json'],
+    subprocess.run([os.path.join(CACHE, 'heavy.sh'), BLENDER, '-b', '--python', os.path.join(HERE, 'render.py'), '--', f'{OUT}/render-{sheet}.json'],
                    check=True, stdout=subprocess.DEVNULL)
     R = Image.new('RGB', (W, H))
     for k in range(len(panels)):
         R.paste(Image.open(f'{OUT}/{sheet}{k}.png').convert('RGB'), (k * pw, 0))
     R.save(f'{OUT}/{sheet}-3d.png')
-    D = Image.open(os.path.join(STYLE, 'pics', pic)).convert('RGB').resize((W, H))
+    D = Image.open(pic if os.path.isabs(pic) else os.path.join(STYLE, 'pics', pic)).convert('RGB').resize((W, H))
     return D, R
 
 

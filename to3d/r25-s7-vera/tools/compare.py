@@ -24,7 +24,7 @@ X_HALF, Y0, Y1, FLOOR, S = 230, 40, 980, 930, 5.2
 def shots(pack, out, expr='calm', extra=None):
     W, H = 2 * X_HALF * SC, (Y1 - Y0) * SC
     yc = (FLOOR - (Y0 + Y1) / 2) / S
-    sh = [dict(name=n, set=dict(dict(pose='stand', still=True, exprTrack=[[0, expr]], time=2.0, shadow=False,
+    sh = [dict(name=n, set=dict(dict(pose='stand', still=True, exprTrack=[[0, expr]], time=2.0, shadow=False, linePx=1.9 * SC,
                                      cam=cam(y, yc, (Y1 - Y0) / S)), **(extra or {}))) for n, y, _ in VIEWS]
     json.dump(dict(pack=pack, w=W, h=H, shots=sh), open(os.path.join(out, 'jobs.json'), 'w'))
     subprocess.run(['node', os.path.join(HERE, 'shots.mjs'), os.path.join(out, 'jobs.json'), out], check=True, env=ENV)
