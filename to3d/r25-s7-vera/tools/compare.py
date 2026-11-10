@@ -1,22 +1,14 @@
 """The drawing's turnaround beside the 3D in the same three views (front, three-quarter, profile), and over it.
 The 3D is rendered with the drawing's own camera: orthographic, yaw 0 / 35 / 90°, pitch 4°, 5.2 px per cm, the
 figure's origin where the drawing put it — so a render pixel and a drawing pixel are the same place.
-  python3 compare.py pack.json outdir [expr]   → side.png (drawing over 3D), over.png (3D, the drawing at half), a.png…"""
+  python3 compare.py pack-url outdir [expr]   → side.png (drawing over 3D), over.png (3D, the drawing at half), a.png…"""
 import sys, os, json, math, subprocess
 from PIL import Image
+import config
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-S7 = os.path.join(HERE, '..', '..', '..', 'styles', 's7-ghibli')
 ENV = dict(os.environ, NODE_PATH='/opt/node-tools/node_modules')
 SC = 2
-
-
-def render_svg(svg, png, scale):
-    js = f"""
-const {{ chromium }} = require('playwright');
-(async () => {{ const b = await chromium.launch(); const p = await b.newPage({{ viewport: {{ width: 1500, height: 1000 }}, deviceScaleFactor: {scale} }});
-await p.goto('file://{os.path.abspath(svg)}'); await p.screenshot({{ path: '{png}' }}); await b.close(); }})();"""
-    subprocess.run(['node', '-e', js], check=True, env=ENV)
 
 
 def cam(yaw_deg, yc_cm, h_cm, pitch=4.0):
@@ -42,9 +34,7 @@ if __name__ == '__main__':
     pk, out = sys.argv[1], sys.argv[2]
     expr = sys.argv[3] if len(sys.argv) > 3 else 'calm'
     os.makedirs(out, exist_ok=True)
-    ref = os.path.join(out, 'turn-anya.png')
-    if not os.path.exists(ref):
-        render_svg(os.path.join(S7, 'svg', 'turn-anya.svg'), ref, SC)
+    ref = os.path.join(config.CACHE, 'refs', 'turn.png')        # refs.py
     shots(pk, out, expr)
     T = Image.open(ref).convert('RGB')
     W, H = 2 * X_HALF * SC, (Y1 - Y0) * SC

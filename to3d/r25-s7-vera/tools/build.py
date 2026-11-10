@@ -389,16 +389,16 @@ COLLAR = None
 if top_s.get('turtle'):
     r = B['neck_r'] + 0.8
     chin = D.head_to_model([0, -1.0, float(D.HEAD.zf(-1.0))])[0] / CM
-    s_top = (chin - n0) @ nd - 0.6                    # the roll's top just under the chin
-    prof = np.array([(-2.5, r + 0.2), (0, r + 0.5), (s_top * 0.45, r + 0.35), (s_top - 1.6, r + 0.1), (s_top - 0.75, r - 0.05),
-                     (s_top - 0.2, r - 0.35), (s_top, r - 0.8), (s_top - 0.25, r - 1.2), (s_top - 0.9, r - 1.5)])
+    s_top = (chin - n0) @ nd + 0.2                    # up to the chin, as drawn: its front goes under the jaw
+    prof = np.array([(-2.5, r + 0.2), (0, r + 0.5), (s_top * 0.5, r + 0.3), (s_top - 0.8, r + 0.1), (s_top - 0.25, r - 0.05),
+                     (s_top, r - 0.45), (s_top - 0.3, r - 0.9), (s_top - 1.2, r - 1.2)])
     from geo import spline as _spline
     pr = _spline(prof, 40)
     CG = np.array([[n0 + nd * s_ + r_ * np.array([np.sin(tt), 0, np.cos(tt)]) for tt in TS[::2]] for s_, r_ in pr]) * CM
     CV = CG.reshape(-1, 3); CT = S.grid_tris(len(pr), CG.shape[1], True)
     if ((CV - axis_ref(CV)) * M.vertex_normals(CV, CT)).sum(1).mean() < 0: CT = CT[:, ::-1]
     sc = np.repeat(pr[:, 0], CG.shape[1])
-    Wc = np.zeros((len(CV), NJ)); u1 = smooth(sc / 2.5); u2 = smooth((sc - 2.0) / 3.5) * 0.5
+    Wc = np.zeros((len(CV), NJ)); u1 = smooth(sc / 2.5); u2 = smooth((sc - 2.0) / 3.5) * 0.6
     Wc[:, I['Chest']] = 1 - u1; Wc[:, I['Neck1']] = u1 * (1 - u2); Wc[:, I['Neck2']] = u1 * u2
     COLLAR = piece(CV, CT, top_s['c'], Wc, two=np.ones(len(CV)))
     sf = s_top * 0.45; rf = np.interp(sf, pr[:20, 0], pr[:20, 1])
@@ -446,7 +446,7 @@ def pelvis_push(y):
     """the trousers' ease; under the garments that hang over them, thinner than those."""
     p = e_b
     for g in (over_s, top_s):
-        if g: p += (min(p, g['ease'] - 0.4) - p) * float(smooth((y - g['hem']) / 1.5))
+        if g: p += (min(p, g['ease'] - 0.5) - p) * float(smooth((y - g['hem'] + 2.0) / 1.5))
     return p
 
 
@@ -454,7 +454,7 @@ fs = [blob.loft(torso, ty0, bot_s['waist'], pelvis_push)]
 knee_r = {}
 for side in ('l', 'r'):
     pts, rr = D.F.limb(['hp' + side, 'kn' + side, 'an' + side], B['leg_r'], n=24)
-    fs.append(blob.tube(pts, rr + e_b))
+    fs.append(blob.tube(pts, rr + np.array([pelvis_push(y) for y in pts[:, 1]])))
     kn, an = D.J['kn' + side], D.J['an' + side]
     knee_r[side] = float(np.interp(B['thigh'], np.linspace(0, B['thigh'] + B['shin'], len(B['leg_r'])), B['leg_r'])) + e_b
     if not bot_s.get('narrow'):        # wide below the knee, down over the shoe

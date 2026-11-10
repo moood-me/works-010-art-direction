@@ -185,7 +185,7 @@ function standPose() {
   return pose;
 }
 
-const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', relax: 1,
+const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', relax: 0.5,
   cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.84, h: 1.8, dist: 6, target: null, follow: false } };
 let clip = null;
 function headTrack(c) {
