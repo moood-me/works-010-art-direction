@@ -77,6 +77,39 @@ narrow what is here without asking him.
   start doing; one question at a time, with its pictures.
 - Keep everything Pavel sends (references) and what is discussed in the repository; history always (CLAUDE.md).
 
+## The catalogue (Pavel, 2026-11-09 and 10)
+
+What this repository is for from now on, said when the branches were put together.
+
+- Agents will go on writing games, and in them make characters that look good. Different agents in different games
+  have their own approaches, particular to the game and to what they mean by it: they are free to.
+- They don't reinvent: there is something ready to choose from — taken as it is, or improved.
+- Games already written don't change because later agents do something in other games.
+- What an agent did that turned out well becomes, more or less, available to the agents after.
+- What we have is a set of separate tools. No going mad over generalising them or making any of them fit any other:
+  in general that can't be solved and may not be needed; particular approaches are better for the agents to come. But
+  the practices that really came out well are there for them to use, change and grow.
+- On the shelves lie good practices and good ways of making something — not characters to clone between games.
+  Characters may lie there too, but are not taken one to one into another game: at least adapted in how they look.
+- What lies there can be run and rendered, and Pavel can look at all of it on the site himself, to talk about it with
+  agents: code names to talk by, clear navigation over everything, a catalogue, a list.
+- It can grow: agents know where to put their new variants.
+- Copied code is no harm. No refactoring into a library for now: a library at once brings the questions of backward
+  compatibility and of new versions breaking the old. In the weeks and months to come agents may return and carry the
+  really good approaches out into something reusable. What is already a shared module stays one. Common sense: where
+  pulling something out clearly makes sense, yes.
+- What is clearly unfinished is thrown out. An intermediate result that was good and later grew into something worse
+  is kept too.
+- Of work still going on (an agent had not finished): nothing is put there; what is finished — a character drawn in a
+  style, a character in 3D — is. Taken by character, not by commit.
+- The natural heads of main and the engine (very natural, not stylised — Anny's own) are needed beside the drawn heads
+  of the 3D characters: some games may need exactly them.
+- The engine branch: most of it is not needed — the generalising in it turned out unneeded, and the agent was asked
+  not to invent anything new there but did. What of it is good against main and what is not, Pavel can't say yet: he
+  and other agents decide later; so do they about quality in general.
+- moood, the engine in real games, moving any of this into moood: not thought about now — later.
+- Made head-on rather than by inventing: easy, simple, clear.
+
 ## Next, after the engine
 
 Smooth transitions between motions; smooth and combined facial expressions; mouth shapes for speech; a jaw that moves

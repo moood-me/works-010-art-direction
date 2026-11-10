@@ -1,8 +1,21 @@
-# Status — where the work stands (2026-11-09, branch `claude/gallant-knuth-5qo916`)
+# Status — where the work stands (2026-11-10, branch `catalog`)
 
-Written when Pavel paused the agents. Everything below is in this branch, which starts from `ccr-a7af59de-aubv8d`
-(itself not merged into main; main has gone 66 commits on since they parted and conflicts with it in `index.html`
-and `gallery/index.html`). Nothing here is merged anywhere. Update or remove this file when the work moves on.
+`catalog` is the catalogue put together from `claude/gallant-knuth-5qo916` and `engine`
+([history/2026-11-10-catalogue.md](history/2026-11-10-catalogue.md)). The drawn styles below are all in it. The third
+round of drawings to 3D is not: its agents were stopped half-way and go on in `claude/gallant-knuth-5qo916`, where
+this file's tables were written on 2026-11-09 (kept below as the list of what is still to come).
+
+## A finished character of the third round comes here so
+
+When its agent has finished it and the orchestrator has looked at it, in `catalog`:
+
+```
+git fetch origin claude/gallant-knuth-5qo916
+git checkout origin/claude/gallant-knuth-5qo916 -- to3d/<folder>
+```
+
+and a line `["Р<number>", "<folder>", "С<style> <name>"]` in `to3d/items.json`; a look at its page (`/to3d/#Р<number>`);
+a note in the history. Nothing else has to change: the folders lie where they lay there.
 
 ## Done: the drawn styles (`styles/`)
 
@@ -16,7 +29,7 @@ styles, round three" in [findings.md](findings.md); the brief: [briefs/styles-mo
   С13 (red elsewhere); no ladle for Марат in С1; samples that didn't download for the new styles (each `notes.md`
   lists them).
 
-## Paused: two more characters in 3D in each style (`to3d/`)
+## Paused, in `claude/gallant-knuth-5qo916`: two more characters in 3D in each style (`to3d/`)
 
 Asked by Pavel: in every style whose six are drawn — one of the three old characters not yet in 3D there and one of
 the new two; later he confirmed the same for the four new styles (two each). Brief: "Third round" at the end of

@@ -3,7 +3,7 @@
 A site beside the gallery: for each part of a character, what we have now against what a ready open tool gives.
 Open: serve the repository (`python3 -m http.server`) and go to `/tools-demo/`.
 
-Each page is a folder `tools-demo/<folder>/` (the list is `ITEMS` in `index.html`) with:
+Each page is a folder `tools-demo/<folder>/` (the list is `items.json`: a line `[code, folder]` a page) with:
 - `entry.json`:
   ```json
   { "name": "Деформации тела и лица", "status": "good|mid|bad", "statusText": "лучше нашего",

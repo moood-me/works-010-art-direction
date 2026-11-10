@@ -4,7 +4,7 @@ A site beside the gallery: a style taken from real works that are beautiful — 
 same cast of characters drawn by those rules in SVG. Open: serve the repository (`python3 -m http.server`), go to
 `/styles/`.
 
-Each style is a folder `styles/<folder>/` (the list is `ITEMS` in `index.html`) with:
+Each style is a folder `styles/<folder>/` (the list is `items.json`: a line `[code, folder]` a page) with:
 - `entry.json`:
   ```json
   { "name": "…", "status": "good|mid|bad", "statusText": "…", "cover": "pics/cast.png",
