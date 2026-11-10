@@ -625,7 +625,7 @@ SHEET = dict(
     surprise=dict(open=1.2, iris=0.78, brow_up=1.0, brow_arch=0.6, mouth='O', mouth_open=0.7, mouth_w=0.7),
     sad=dict(open=0.72, lid_out=0.35, brow_in=-1.0, brow_up=0.2, smile=-0.9, look=(0.0, -0.7), mouth_w=0.9),
     anger=dict(open=0.85, lid_in=0.45, brow_in=1.1, brow_up=-0.45, mouth='shout', mouth_open=0.85, teeth=True, smile=-0.5, mouth_w=1.35))
-EXPRS = dict(calm=expr_js(config.CALM), plain=expr_js({}))
+EXPRS = dict(calm=expr_js(config.CALM if config.CALM is not None else who.CALM), plain=expr_js({}))
 for k, v in SHEET.items(): EXPRS[k] = expr_js(getattr(who, 'EXPR', {}).get(k, v))
 
 # the 'stand' pose's arm directions (the drawing paints the arms over the body; here they hang just outside it)

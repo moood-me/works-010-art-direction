@@ -14,7 +14,7 @@
   "positions": {
    "dtype": "float32",
    "shape": [
-    68477,
+    69247,
     3
    ],
    "offset": 0
@@ -25,7 +25,7 @@
     77,
     3
    ],
-   "offset": 821724
+   "offset": 830964
   },
   "frames": {
    "dtype": "float32",
@@ -33,7 +33,7 @@
     77,
     4
    ],
-   "offset": 822648
+   "offset": 831888
   }
  }
 }

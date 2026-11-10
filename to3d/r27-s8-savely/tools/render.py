@@ -144,7 +144,7 @@ def mat_skin():
     img = image(nt, os.path.join(TEX, 'face.png'), uv.outputs['Vector'])
     tint = attr(nt, 'tint')                     # ears and hands warmer (per vertex)
     # Filmic pales a light skin: a little of a warmer, pinker one under the paint (the drawing's skin reads warm)
-    warm = mixc(nt, 0.18, img.outputs['Color'], lin(SKIN_WARM))
+    warm = mixc(nt, SKIN_K, img.outputs['Color'], lin(SKIN_WARM))
     col = mixc(nt, tint.outputs['Fac'], warm, lin(SKIN_TINT))
     nt.links.new(col, b.inputs['Base Color'])
     set_(b, rough=0.42, sss=0.35, sss_r=(1.0, 0.45, 0.3), sss_s=0.012, coat=0.12, coat_r=0.35, spec=0.45)
@@ -277,13 +277,13 @@ def mat_lens():
     tr = nt.nodes.new('ShaderNodeBsdfTransparent'); tr.inputs[0].default_value = (0.93, 0.96, 1.0, 1)
     gl = nt.nodes.new('ShaderNodeBsdfGlossy'); gl.inputs['Roughness'].default_value = 0.03
     fr = nt.nodes.new('ShaderNodeFresnel'); fr.inputs[0].default_value = 1.5
-    k = math_(nt, 'ADD', math_(nt, 'MULTIPLY', fr.outputs[0], 1.5), 0.05)
+    k = math_(nt, 'MINIMUM', math_(nt, 'ADD', math_(nt, 'MULTIPLY', fr.outputs[0], 0.8), 0.03), 0.22)
     mx = nt.nodes.new('ShaderNodeMixShader'); nt.links.new(k, mx.inputs[0])
     nt.links.new(tr.outputs[0], mx.inputs[1]); nt.links.new(gl.outputs[0], mx.inputs[2]); nt.links.new(mx.outputs[0], out.inputs[0])
     return m
 
 
-SKIN_WARM, SKIN_TINT = '#e89878', '#dc8c80'
+SKIN_WARM, SKIN_TINT, SKIN_K = '#e0806c', '#dc8478', 0.32
 MATS = {
     'skin': mat_skin, 'eye': mat_eye,
     'hair': lambda: mat_hair('hair', '#e8e2d8', '#b4aca4', rough=0.6, coat=0.1),

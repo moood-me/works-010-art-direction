@@ -97,8 +97,8 @@ ffmpeg -framerate 20 -i $C/fm/turn/f%04d.png -c:v libx264 -pix_fmt yuv420p -crf 
   own page calls its legs too long. Chosen as in Р7: the style's rules ask for real anatomy.
 - Clothes are skinned shells, not cloth: no folds from motion; in the deep bow (Kimodo's `bow`) the waistcoat
   stretches with the back. The collar is a plain band with a painted notch and fold line, not a sewn collar.
-- An open mouth: no lower teeth or tongue, the painted lips stretch — so joy is a closed smile, and speech opens the
-  jaw only a little. Under the moustache it passes; a laugh would not.
+- An open mouth: no lower teeth or tongue, the painted lips stretch — so joy is a closed smile. In speech the mouth
+  opens as a dark slit: in `wave.mp4` (he greets) it shows.
 - The face came out kinder than the stern drawing. The hair's shell ends in a straight edge in front of the ear and
   at the nape (seen in profile); the tufts are clean but all alike.
 - Hands are Anny's (realistic), clasped behind the back by eye — fingers overlap rather than interlock.

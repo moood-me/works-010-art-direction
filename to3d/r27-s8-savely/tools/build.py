@@ -485,7 +485,7 @@ def orient_out(V, T):
 
 # the collar's points (cast.savely_details) and the tie (cast.savely_inside)
 for side in (-1, 1):
-    V, T = patch([(side * 0.035, 0.585), (side * 0.16, 0.6), (side * 0.095, 0.76), (side * 0.03, 0.7)], SHIRT_IN + 0.012, bulge=0.012)
+    V, T = patch([(side * 0.035, 0.585), (side * 0.16, 0.6), (side * 0.095, 0.76), (side * 0.03, 0.7)], VEST_OUT + 0.003, bulge=0.012)
     sj, sw = top4(trunk_weights(V)); piece('collar' + 'RL'[side > 0], 'collar', V, T, sj, sw)
 tie_y = np.array([0.62, 0.66, 0.7, 0.74, 0.85, 0.95, 1.0, 1.04, 1.08])
 tie_w = np.array([0.03, 0.04, 0.038, 0.028, 0.036, 0.046, 0.05, 0.03, 0.002])
@@ -515,7 +515,7 @@ sj, sw = top4(trunk_weights(V)); piece('chain', 'chain', V, T, sj, sw, uv=np.c_[
 
 # --- the shirt's sleeves: Anny's arms carried round their bones to the sleeve's radius (0.13 → 0.11 head)
 sleeve_end = 1.9
-f_sl = np.maximum.reduce([np.where(armw + handw > 0.25, at - sleeve_end, 1.0), 0.25 - (armw + handw), -0.12 - at, handw - 0.6])
+f_sl = np.maximum.reduce([np.where(armw + handw > 0.25, at - sleeve_end, 1.0), 0.25 - (armw + handw), 0.0 - at, handw - 0.6])
 v, t, a, on = cut(BV, BT, f_sl, np.c_[BD, at])
 D_sl = a[:, :NJ]; at_s = a[:, NJ]
 _, bp = arm_coord(v)
@@ -526,6 +526,10 @@ sv = smooth(sv, t, it=5, lam=0.4, fixed=np.where(on & (at_s > 1.5))[0])
 sj, sw = top4(D_sl)
 piece('sleeves', 'shirt', sv, t, sj, sw, subdiv=1)
 SL_V, SL_T, SL_D = sv, t, D_sl
+# the shoulders: a ball at each shoulder joint, where the sleeve comes out of the waistcoat (a puppet's ball joint under cloth)
+for pre in ('Left', 'Right'):
+    V, T, _ = sphere(BJ[IX[pre + 'Arm']], 0.132 * HH, n=14)
+    sj, sw = one(len(V), pre + 'Arm'); piece('shoulder' + pre[0], 'shirt', V, T, sj, sw)
 
 
 def band(loop, V, Dl, out_dir, width, thick, name, along, mat):

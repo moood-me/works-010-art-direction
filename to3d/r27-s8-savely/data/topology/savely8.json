@@ -5,8 +5,8 @@
  "about": "Савелий Петрович (С8): every piece in one mesh",
  "source": "to3d/r27-s8-savely",
  "skeleton": "soma77",
- "vertices": 68477,
- "triangles": 131909,
+ "vertices": 69247,
+ "triangles": 133333,
  "parts": [
   "pelvis",
   "spine",
@@ -32,7 +32,7 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    131909,
+    133333,
     3
    ],
    "offset": 0
@@ -40,26 +40,26 @@
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    68477,
+    69247,
     4
    ],
-   "offset": 1582908
+   "offset": 1599996
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    68477,
+    69247,
     4
    ],
-   "offset": 1856816
+   "offset": 1876984
   },
   "parts": {
    "dtype": "uint8",
    "shape": [
-    68477,
+    69247,
     18
    ],
-   "offset": 2952448
+   "offset": 2984936
   }
  }
 }

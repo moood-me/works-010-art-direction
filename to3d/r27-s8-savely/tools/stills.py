@@ -40,10 +40,15 @@ SHEETS = {
     # name: drawing picture, size, panels [(cx, cy, S, view yaw, head yaw on top, motion, frame, face, roll)]
     'turn': (os.path.join(DRAWN, 'turn-savely.jpg'), (1500, 620), [(250 + 500 * i, 255, 255, 0.8 * y, 0.2 * y, 'bow', 0, {'calm': 1}, 0) for i, y in enumerate((0, 40, 88))]),
     'portrait': ('portrait-savely.jpg', (700, 820), [(350, 335, 330, 0.55 * -24, 0.45 * -24, 'bow', 0, {'grumpy': 1}, 0)]),
-    'figure': ('figure-savely.jpg', (560, 960), [(280, 900 - 3.38 * 200, 200, 0.6 * -19.2, 0.4 * -19.2, 'idle', 20, {'grumpy': 1}, 0)]),
+    'figure': ('figure-savely.jpg', (560, 960), [(280, 900 - 3.38 * 200, 200, 0.6 * -19.2, 0.4 * -19.2, 'bow', 0, {'grumpy': 1}, 0)]),
     'expr': (os.path.join(DRAWN, 'expr-savely.jpg'), (1600, 540), [(200 + 400 * i, 280, 290, -18, 0, 'bow', 0, {e: 1}, r)
                                                               for i, (e, r) in enumerate((('joy', -5), ('surprise', 0), ('sad', 6), ('anger', -3)))]),
 }
+
+
+# the figure's pose on top of Kimodo's standing: his left forearm brought up in front of the belly (the drawing: he
+# holds his watch there)
+TURNS = {'figure': [dict(joint='LeftArm', axis=[0, 0, 1], deg=-8), dict(joint='LeftForeArm', axis=[1, 0, 0], deg=-70), dict(joint='LeftForeArm', axis=[0, 1, 0], deg=-55)]}
 
 
 def run(sheet, samples=48):
@@ -56,6 +61,7 @@ def run(sheet, samples=48):
         mj = dict(out=f'{OUT}/{sheet}{k}.bin', motion=mot, frames=[fr],
                   head=dict(yaw=hy, roll=-roll, rollAxis=[-math.sin(fy), 0, math.cos(fy)], level=True),
                   face=dict(e=face, gaze=gaze))
+        if sheet in TURNS: mj['turns'] = TURNS[sheet]
         json.dump(mj, open(f'{OUT}/job-{sheet}{k}.json', 'w'))
         subprocess.run(['node', os.path.join(HERE, 'move.mjs'), f'{OUT}/job-{sheet}{k}.json'], check=True)
         F = np.fromfile(f'{OUT}/{sheet}{k}.bin', np.float32).reshape(-1, len(REST), 3)[0]

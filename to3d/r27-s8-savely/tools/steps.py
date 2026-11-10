@@ -6,10 +6,14 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import base, drawing, look
 import fit_body
-from common import CACHE, FOLDER, pack, HH
+from common import CACHE, FOLDER, pack, HH, BID
 
 FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 14)
-CLAY, SKIN, HAIR = (0.84, 0.8, 0.74), (0.93, 0.8, 0.7), (0.5, 0.3, 0.17)
+CLAY, SKIN, HAIR = (0.84, 0.8, 0.74), (0.86, 0.67, 0.56), (0.9, 0.88, 0.84)
+COL = dict(skin=SKIN, eye=(0.95, 0.95, 0.97), hair=HAIR, whisker=(0.93, 0.91, 0.87), lip=(0.7, 0.36, 0.35), mouth=(0.25, 0.1, 0.1),
+           teeth=(1, 1, 1), lash=(0.2, 0.14, 0.12), gold=(0.75, 0.6, 0.3), vest=(0.43, 0.3, 0.2), shirt=(0.89, 0.84, 0.74), collar=(0.94, 0.9, 0.8),
+           tie=(0.48, 0.16, 0.16), button=(0.23, 0.14, 0.1), chain=(0.85, 0.66, 0.25), trousers=(0.29, 0.29, 0.32), shoe=(0.23, 0.14, 0.1),
+           sole=(0.12, 0.1, 0.1), dark=(0.1, 0.08, 0.08))
 
 
 def label(im, text):
@@ -49,32 +53,30 @@ def head_steps():
     eyes = [(*sphere(drawing.eye_centre(s), drawing.EYE_R), (0.95, 0.95, 0.97)) for s in (-1, 1)]
     ims.append(label(look.raster([(d['V'], T, CLAY)] + eyes, 30, box, 380), '3. детали скульптора, стеклянные глаза'))
     M = json.load(open(f'{CACHE}/model.json'))
-    _, a = pack.read(f'{CACHE}/engine/data/bodies/savely8.json'); _, t = pack.read(f'{CACHE}/engine/data/topology/savely8.json')
+    _, a = pack.read(f'{CACHE}/engine/data/bodies/{BID}.json'); _, t = pack.read(f'{CACHE}/engine/data/topology/{BID}.json')
     V = (a['positions'].astype(float) - np.array(M['O'])) / HH; TT = t['triangles'].astype(int)
-    C = {'skin': SKIN, 'eye': (0.95, 0.95, 0.97), 'hair': HAIR, 'lip': (0.8, 0.45, 0.42), 'mouth': (0.3, 0.1, 0.1),
-         'teeth': (1, 1, 1), 'brow': (0.35, 0.2, 0.1), 'lash': (0.12, 0.06, 0.04)}
+    C = COL
     mm = []
     for p in M['pieces']:
-        if p['name'] in ('skin',) or p['mat'] not in C: continue
+        if p['name'] in ('skin', 'neck') or p['mat'] not in C or p['mat'] in ('vest', 'shirt', 'collar', 'tie', 'button', 'chain', 'trousers', 'shoe', 'sole', 'dark'): continue
         s, n = p['start'], p['count']; m = (TT[:, 0] >= s) & (TT[:, 0] < s + n); mm.append((V[s:s + n], TT[m] - s, C[p['mat']]))
-    ims.append(label(look.raster(mm, 30, box, 380), '4. сменные рот и брови, волосы'))
+    ims.append(label(look.raster(mm, 30, box, 380), '4. сменные рот, брови и усы; волосы, очки'))
     row(ims, os.path.join(FOLDER, 'pics', 'steps-head.webp'))
 
 
 def body_steps():
-    B = fit_body.B; box = (-0.5, 0.5, -0.02, 1.36)
-    ims = [label(look.raster([(B['positions'], B['triangles'], CLAY)], 25, box, 340), '1. основа: ребёнок Anny')]
+    B = fit_body.B; box = (-0.75, 0.75, -0.02, 1.8)
+    ims = [label(look.raster([(B['positions'], B['triangles'], CLAY)], 25, box, 340), '1. основа: старик Anny')]
     V, J = fit_body.fit()
+    box = (-0.55, 0.55, -0.02, 1.3)
     ims.append(label(look.raster([(V, B['triangles'], CLAY)], 25, box, 340), '2. пропорции рисунка'))
     M = json.load(open(f'{CACHE}/model.json'))
-    _, a = pack.read(f'{CACHE}/engine/data/bodies/savely8.json'); _, t = pack.read(f'{CACHE}/engine/data/topology/savely8.json')
+    _, a = pack.read(f'{CACHE}/engine/data/bodies/{BID}.json'); _, t = pack.read(f'{CACHE}/engine/data/topology/{BID}.json')
     P_ = a['positions'].astype(float); TT = t['triangles'].astype(int)
-    C = {'skin': SKIN, 'eye': (0.95, 0.95, 0.97), 'hair': HAIR, 'sweater': (0.25, 0.36, 0.55), 'cuff': (0.2, 0.3, 0.5),
-         'shorts': (0.45, 0.39, 0.26), 'sock': (0.92, 0.9, 0.85), 'shoe': (0.78, 0.24, 0.17), 'sole': (0.95, 0.93, 0.88),
-         'lip': (0.8, 0.45, 0.42), 'mouth': (0.3, 0.1, 0.1), 'teeth': (1, 1, 1), 'brow': (0.35, 0.2, 0.1), 'lash': (0.12, 0.06, 0.04)}
+    C = COL
     mm = []
     for p in M['pieces']:
-        s, n = p['start'], p['count']; m = (TT[:, 0] >= s) & (TT[:, 0] < s + n); mm.append((P_[s:s + n], TT[m] - s, C[p['mat']]))
+        s, n = p['start'], p['count']; m = (TT[:, 0] >= s) & (TT[:, 0] < s + n); mm.append((P_[s:s + n], TT[m] - s, C.get(p['mat'], CLAY)))
     ims.append(label(look.raster(mm, 25, box, 340), '3. голова, одежда из чисел рисунка'))
     row(ims, os.path.join(FOLDER, 'pics', 'steps-body.webp'))
 

@@ -1,7 +1,7 @@
-// The viewer: Тим moving by Kimodo's motions through the engine (engine/src as it is; its file reading pointed at
+// The viewer: Савелий Петрович moving by Kimodo's motions through the engine (engine/src as it is; its file reading pointed at
 // this folder's data/), with the live face (face.mjs, life.mjs), lit as a puppet on a small set: a warm key with soft
-// shadows, a cool rim, physical materials for resin skin, sculpted hair, glass eyes, knitting and felt (the knit's
-// stripes and ribs and the hair's strands are drawn in the shader from the paint coordinates, as in the renders).
+// shadows, a cool rim, physical materials for resin skin, sculpted hair, glass eyes, gold wire and woven cloth (the
+// cloth's weave and the hair's strands are drawn in the shader from the paint coordinates).
 // Drag to turn, wheel to come closer. ?shots=1 hides the controls (window.A for scripted pictures).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -30,7 +30,7 @@ if (shots) document.body.classList.add('shots');
 const E = await createEngine({ root: ENGINE, read });
 // the engine's dual-quaternion skinning here (its default, centres of rotation, takes long to prepare 50 000
 // vertices in a browser); the films use the default
-const spec = resolve({ format: 'engine/character', version: 1, id: 'savely8', label: { ru: 'Тим' }, body: 'savely8',
+const spec = resolve({ format: 'engine/character', version: 1, id: 'savely8', label: { ru: 'Савелий Петрович' }, body: 'savely8',
   skinning: { method: 'dqs', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: { armsOutOfHead: { margin: 0.03 } } } });
 const fig = await E.figure(spec, { position: [0, 0, 0], heading: 0 });
 const body = fig.body, N = body.N, HI = body.skeleton.index.Head, HIPS = body.skeleton.index.Hips;
@@ -54,11 +54,11 @@ scene.environmentIntensity = 0.25;
 // the backdrop: the drawing's set — dark blue-grey, a warm pool of light, out-of-focus lamps (painted once)
 function backdrop() {
   const c = document.createElement('canvas'); c.width = 1024; c.height = 640; const g = c.getContext('2d');
-  const lg = g.createLinearGradient(0, 0, 0, 640); lg.addColorStop(0, '#171b24'); lg.addColorStop(0.75, '#1e2430'); lg.addColorStop(1, '#262224');
+  const lg = g.createLinearGradient(0, 0, 0, 640); lg.addColorStop(0, '#1c1410'); lg.addColorStop(0.75, '#2a1e18'); lg.addColorStop(1, '#2a2220');
   g.fillStyle = lg; g.fillRect(0, 0, 1024, 640);
-  const rg = g.createRadialGradient(330, 200, 10, 330, 200, 520); rg.addColorStop(0, 'rgba(216,154,96,0.5)'); rg.addColorStop(0.5, 'rgba(216,154,96,0.14)'); rg.addColorStop(1, 'rgba(216,154,96,0)');
+  const rg = g.createRadialGradient(330, 200, 10, 330, 200, 520); rg.addColorStop(0, 'rgba(224,160,80,0.5)'); rg.addColorStop(0.5, 'rgba(224,160,80,0.14)'); rg.addColorStop(1, 'rgba(224,160,80,0)');
   g.fillStyle = rg; g.fillRect(0, 0, 1024, 640);
-  let s = 8; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  let s = 5; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
   const cols = ['255,207,138', '255,176,112', '255,224,176', '154,184,255', '255,154,112'];
   g.filter = 'blur(6px)';
   for (let i = 0; i < 22; i++) {
@@ -117,20 +117,22 @@ function sculpted(mat, { height, colour }) {
   return mat;
 }
 const P = (o) => new THREE.MeshPhysicalMaterial(o);
-const knit = (base, stripe, rib) => sculpted(P({ color: base, roughness: 0.9, sheen: 0.7, sheenRoughness: 0.5, sheenColor: '#ffffff' }), {
-  height: `0.0016 * abs(sin(vTuv.x / ${rib} * 3.14159)) + 0.0007 * abs(fract(vTuv.y / ${rib * 0.45} + abs(fract(vTuv.x / ${rib}) - 0.5) * 1.2) - 0.5)`,
-  colour: stripe ? `if (vPat.y > 0.0 && fract(vPat.y / ${2 * 0.09 * 0.342}) < 0.5) diffuseColor.rgb = vec3(${new THREE.Color(stripe).toArray().join(',')});
-                    diffuseColor.rgb *= 0.72 + 0.28 * abs(sin(vTuv.x / ${rib} * 3.14159));` : `diffuseColor.rgb *= 0.75 + 0.25 * abs(sin(vTuv.x / ${rib} * 3.14159));` });
+const cloth = (color, weave, o = {}) => sculpted(P({ color, roughness: 0.88, sheen: 0.4, sheenRoughness: 0.5, sheenColor: '#ffffff', ...o }), {
+  height: `0.0005 * sin((vPat.x + vPat.y) * ${weave}.0) * sin(vPat.z * ${weave}.0)` });
+const hairy = color => sculpted(P({ color, roughness: 0.6, clearcoat: 0.1, clearcoatRoughness: 0.4 }), {
+  height: '0.0012 * sin(vTuv.x * 28.3) + 0.0005 * sin(vTuv.x * 37.0)' });
 const MATS = {
-  skin: P({ map: tex('face.png'), roughness: 0.48, clearcoat: 0.15, clearcoatRoughness: 0.4, sheen: 0.25, sheenColor: '#ff9a80', vertexColors: true }),
-  hair: P({ color: '#6a3e24', roughness: 0.5, clearcoat: 0.3, clearcoatRoughness: 0.35 }),
+  skin: P({ map: tex('face.png'), bumpMap: tex('bump.png', false), bumpScale: 1.5, roughness: 0.48, clearcoat: 0.15, clearcoatRoughness: 0.4, sheen: 0.25, sheenColor: '#ff9a80', vertexColors: true }),
+  hair: hairy('#e8e2d8'), whisker: hairy('#ece6dc'),
   eye: P({ map: tex('iris.png'), roughness: 0.25, clearcoat: 1.0, clearcoatRoughness: 0.02 }),
-  sweater: knit('#2c4a72', '#f0e6d2', 0.013), cuff: knit('#24406a', null, 0.005), sock: knit('#e8e0d0', null, 0.006),
-  shorts: P({ color: '#6a5a3a', roughness: 1.0, sheen: 0.9, sheenRoughness: 0.6, sheenColor: '#b0a080' }),
-  shoe: P({ color: '#c83a2a', roughness: 0.38, clearcoat: 0.35 }), sole: P({ color: '#efe6d6', roughness: 0.7 }),
-  lip: P({ color: '#c8706a', roughness: 0.35, clearcoat: 0.2 }), mouth: P({ color: '#3a1418', roughness: 0.6 }),
-  teeth: P({ color: '#f1e8dc', roughness: 0.3, clearcoat: 0.3 }), brow: P({ color: '#5a3018', roughness: 0.6 }),
-  lash: P({ color: '#2a1810', roughness: 0.5 }),
+  gold: P({ color: '#c89a4a', metalness: 1.0, roughness: 0.3 }), chain: P({ color: '#d8a840', metalness: 1.0, roughness: 0.35 }),
+  lens: P({ color: '#eef4ff', roughness: 0.05, transparent: true, opacity: 0.16, clearcoat: 1.0, side: THREE.DoubleSide, depthWrite: false }),
+  vest: cloth('#6e4c34', 1400), shirt: cloth('#e2d6bc', 2200, { roughness: 0.75, sheen: 0.2 }), collar: cloth('#efe4cc', 2200, { roughness: 0.7, sheen: 0.2 }),
+  tie: cloth('#7a2a2a', 1800, { roughness: 0.45, sheen: 0.5 }), trousers: cloth('#4a4a52', 1200),
+  button: P({ color: '#3a2418', roughness: 0.3, clearcoat: 0.5 }), dark: P({ color: '#120c0a', roughness: 0.9 }),
+  shoe: P({ color: '#3a2418', roughness: 0.35, clearcoat: 0.4 }), sole: P({ color: '#1c1410', roughness: 0.7 }),
+  lip: P({ color: '#b05a58', roughness: 0.4, clearcoat: 0.15 }), mouth: P({ color: '#3a1418', roughness: 0.6 }),
+  teeth: P({ color: '#f1e8dc', roughness: 0.3, clearcoat: 0.3 }), lash: P({ color: '#3a2420', roughness: 0.5 }),
 };
 const matList = Object.values(MATS), matIndex = Object.fromEntries(Object.keys(MATS).map((k, i) => [k, i]));
 
@@ -139,7 +141,7 @@ const pos = new Float32Array(N * 3); pos.set(rest);
 geo.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
 geo.setAttribute('uv', new THREE.BufferAttribute(look.arrays.uv, 2));
 geo.setAttribute('pat', new THREE.BufferAttribute(look.arrays.pat, 3));
-const col = new Float32Array(N * 3), tintC = new THREE.Color('#f2b8a6');
+const col = new Float32Array(N * 3), tintC = new THREE.Color('#f0a898');
 for (let i = 0; i < N; i++) { const t = look.arrays.tint[i]; col[i * 3] = 1 + (tintC.r - 1) * t; col[i * 3 + 1] = 1 + (tintC.g - 1) * t; col[i * 3 + 2] = 1 + (tintC.b - 1) * t; }
 geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
 geo.setIndex(new THREE.BufferAttribute(body.triangles, 1));
@@ -157,10 +159,10 @@ addEventListener('resize', resize); resize();
 // ------------------------------------------------------------------ motion, face, controls
 const index = await E.motions();
 const sel = document.getElementById('motion');
-const SHOW = ['idle', 'walk', 'wave', 'jump', 'sit', 'bow', 'dance', 'run', 'sneak', 'stomp'];
+const SHOW = ['walk', 'bow', 'idle', 'wave', 'stomp', 'sit', 'sneak', 'dance', 'jump', 'run'];
 for (const id of SHOW) { const m = index.motions.find(x => x.id === id); if (!m) continue;
   const o = document.createElement('option'); o.value = id; o.textContent = m.label.ru; sel.appendChild(o); }
-const RU = { calm: 'спокоен', dream: 'мечтает', joy: 'радость', surprise: 'удивление', sad: 'грусть', anger: 'злость', grin: 'ухмылка' };
+const RU = { calm: 'спокоен', stern: 'строг', grumpy: 'ворчит', tired: 'устал', joy: 'радость', surprise: 'удивление', sad: 'грусть', anger: 'злость' };
 const exprBox = document.getElementById('expr');
 let target = 'calm';
 const ew = Object.fromEntries(FACES.map(k => [k, k === 'calm' ? 1 : 0])), ev = Object.fromEntries(FACES.map(k => [k, 0]));
@@ -182,7 +184,7 @@ talk.onchange = () => makeLife();
 playB.onclick = () => { playing = !playing; playB.textContent = playing ? '❚❚' : '▶'; playB.classList.toggle('on', playing); };
 time.oninput = () => { t = +time.value * (clip.frames - 1) / fps; };
 document.getElementById('close').onclick = e => { near = !near; e.target.classList.toggle('on', near); placeCamera(); };
-await choose('idle');
+await choose('walk');
 
 const follow = new THREE.Vector3();
 function placeCamera() {
