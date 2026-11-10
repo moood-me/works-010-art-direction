@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "hero",
+ "label": {
+  "ru": "Т8: герой",
+  "en": "T8: hero"
+ },
+ "body": "anny-C-hero@c0cd495bd6b84292",
+ "rest": [],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#d6a88a",
+  "roughness": 0.65
+ }
+}

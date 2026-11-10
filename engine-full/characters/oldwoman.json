@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "oldwoman",
+ "label": {
+  "ru": "Старушка",
+  "en": "Old woman"
+ },
+ "body": "moood-oldwoman@ba4150ce719fe12f",
+ "rest": [],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#e1b59c",
+  "roughness": 0.65
+ }
+}

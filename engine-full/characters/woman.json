@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "woman",
+ "label": {
+  "ru": "Женщина",
+  "en": "Woman"
+ },
+ "body": "moood-woman@271c46992b9495aa",
+ "rest": [],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#e9bb9c",
+  "roughness": 0.65
+ }
+}

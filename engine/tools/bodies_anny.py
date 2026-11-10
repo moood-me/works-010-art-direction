@@ -75,7 +75,8 @@ class Regression:
         self.torch, self.anny = torch, anny
         rig = _load_soma_rig()
         assert [str(x) for x in rig['bone_labels']][1:] == NAMES
-        self.rbf = rig['sparse_rbf_matrix'].to_dense().numpy().astype(np.float64)          # (78, 18056); row 0 Root (= Hips), unused: joints() takes rows 1…
+        self.rbf = rig['sparse_rbf_matrix'].to_dense().numpy().astype(np.float64)          # (78, 18056); row 0 Root = Hips
+        self.rbf[0] = self.rbf[1]
         self.mA = anny.Anny(phenotypes='all', local_changes='default', extrapolate_phenotypes=True).to(dtype=torch.float32)
         self.mS = anny.Anny(rig='soma', topology='soma', phenotypes='all', local_changes='default', extrapolate_phenotypes=True).to(dtype=torch.float32)
         self.ph = json.load(open(os.path.join(SPACE, 'woman_ph.json')))

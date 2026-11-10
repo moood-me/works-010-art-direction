@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "elf",
+ "label": {
+  "ru": "Т8: эльф",
+  "en": "T8: elf"
+ },
+ "body": "anny-C-elf@85ac3d063932c900",
+ "rest": [],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#e2c0a6",
+  "roughness": 0.65
+ }
+}

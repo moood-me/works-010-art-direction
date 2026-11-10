@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "boy",
+ "label": {
+  "ru": "Подросток",
+  "en": "Teenage boy"
+ },
+ "body": "moood-boy@4c7e09025ff44441",
+ "rest": [],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#ddb091",
+  "roughness": 0.65
+ }
+}

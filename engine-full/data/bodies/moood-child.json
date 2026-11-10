@@ -1,0 +1,63 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "moood-child",
+ "label": {
+  "ru": "Ребёнок",
+  "en": "Child"
+ },
+ "source": "moood engines/1/bodies/child.bin (experiments/data/child.js): Anny baked by moood",
+ "topology": "anny-moood",
+ "skeleton": "soma77",
+ "eyes": {
+  "centers": [
+   [
+    0.0272,
+    1.2058,
+    0.1321
+   ],
+   [
+    -0.0282,
+    1.2062,
+    0.1321
+   ]
+  ],
+  "size": 0.0039,
+  "about": "moood's drawn eyes: where they sit, their size"
+ },
+ "bin": "moood-child.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 165768
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 166692
+  },
+  "facePlain": {
+   "dtype": "float32",
+   "shape": [
+    2817,
+    3
+   ],
+   "offset": 167924
+  }
+ }
+}

@@ -1,0 +1,2460 @@
+{
+ "about": "Sheets of the bodies (stage 1) for docs/pictures/engine/bodies: node engine-full/tools/sheets.mjs engine-full/tools/sheets/bodies.json [names]",
+ "sheets": [
+  {
+   "name": "base-moood",
+   "out": "docs/pictures/engine/bodies/base-moood.png",
+   "title": "Основы: тела moood",
+   "cols": 7,
+   "w": 260,
+   "h": 430,
+   "items": [
+    {
+     "label": "Подросток",
+     "body": "moood-boy"
+    },
+    {
+     "label": "Ребёнок",
+     "body": "moood-child"
+    },
+    {
+     "label": "Девочка",
+     "body": "moood-girl"
+    },
+    {
+     "label": "Мужчина",
+     "body": "moood-man"
+    },
+    {
+     "label": "Старик",
+     "body": "moood-oldman"
+    },
+    {
+     "label": "Старушка",
+     "body": "moood-oldwoman"
+    },
+    {
+     "label": "Женщина",
+     "body": "moood-woman"
+    }
+   ]
+  },
+  {
+   "name": "base-t8",
+   "out": "docs/pictures/engine/bodies/base-t8.png",
+   "title": "Основы: тела Т8 (Anny своими настройками; голова другого возраста)",
+   "cols": 12,
+   "w": 220,
+   "h": 400,
+   "items": [
+    {
+     "label": "андрогин",
+     "body": "anny-C-andro"
+    },
+    {
+     "label": "фасолина",
+     "body": "anny-C-bean"
+    },
+    {
+     "label": "Бёртон",
+     "body": "anny-C-burton"
+    },
+    {
+     "label": "чиби",
+     "body": "anny-C-chibi"
+    },
+    {
+     "label": "эльф",
+     "body": "anny-C-elf"
+    },
+    {
+     "label": "герой",
+     "body": "anny-C-hero"
+    },
+    {
+     "label": "старая",
+     "body": "anny-C-old"
+    },
+    {
+     "label": "груша",
+     "body": "anny-C-pear"
+    },
+    {
+     "label": "принцесса",
+     "body": "anny-C-princess"
+    },
+    {
+     "label": "квадрат",
+     "body": "anny-C-square"
+    },
+    {
+     "label": "женщина moood (Anny)",
+     "body": "anny-W"
+    },
+    {
+     "label": "женщина + своя голова ×2.5",
+     "body": "anny-T-W-H2-25"
+    },
+    {
+     "label": "женщина + голова ребёнка",
+     "body": "anny-T-W-child12"
+    },
+    {
+     "label": "женщина + голова малыша",
+     "body": "anny-T-W-tod13"
+    },
+    {
+     "label": "Бёртон + голова малыша",
+     "body": "anny-T-burton-tod16"
+    },
+    {
+     "label": "чиби + голова младенца",
+     "body": "anny-T-chibi-baby17"
+    },
+    {
+     "label": "девочка + голова младенца",
+     "body": "anny-T-girl-baby12"
+    },
+    {
+     "label": "герой + голова ребёнка",
+     "body": "anny-T-hero-child09"
+    },
+    {
+     "label": "ребёнок + голова младенца",
+     "body": "anny-T-kid-baby14"
+    },
+    {
+     "label": "коренастый + голова младен",
+     "body": "anny-T-man-stocky-baby15"
+    },
+    {
+     "label": "мужчина + голова малыша",
+     "body": "anny-T-man-tod13"
+    },
+    {
+     "label": "старая + своя голова",
+     "body": "anny-T-old-H2"
+    },
+    {
+     "label": "принцесса + голова малыша",
+     "body": "anny-T-princ-tod125"
+    },
+    {
+     "label": "девушка + голова малыша",
+     "body": "anny-T-teen-tod14"
+    }
+   ]
+  },
+  {
+   "name": "base-anny-age",
+   "out": "docs/pictures/engine/bodies/base-anny-age.png",
+   "title": "Основы: новые тела из ползунков Anny — возраст (женщины, мужчины)",
+   "cols": 6,
+   "w": 260,
+   "h": 430,
+   "items": [
+    {
+     "label": "женщина, взрослый",
+     "body": "anny-f-adult"
+    },
+    {
+     "label": "ребёнок (девочка)",
+     "body": "anny-f-child"
+    },
+    {
+     "label": "женщина, средних лет",
+     "body": "anny-f-middle"
+    },
+    {
+     "label": "женщина, пожилой",
+     "body": "anny-f-old"
+    },
+    {
+     "label": "подросток (девочка)",
+     "body": "anny-f-teen"
+    },
+    {
+     "label": "малыш (девочка)",
+     "body": "anny-f-toddler"
+    },
+    {
+     "label": "мужчина, взрослый",
+     "body": "anny-m-adult"
+    },
+    {
+     "label": "ребёнок (мальчик)",
+     "body": "anny-m-child"
+    },
+    {
+     "label": "мужчина, средних лет",
+     "body": "anny-m-middle"
+    },
+    {
+     "label": "мужчина, пожилой",
+     "body": "anny-m-old"
+    },
+    {
+     "label": "подросток (мальчик)",
+     "body": "anny-m-teen"
+    },
+    {
+     "label": "малыш (мальчик)",
+     "body": "anny-m-toddler"
+    }
+   ]
+  },
+  {
+   "name": "base-anny-build",
+   "out": "docs/pictures/engine/bodies/base-anny-build.png",
+   "title": "Основы: новые тела из ползунков Anny — сложение и ползунки происхождения",
+   "cols": 8,
+   "w": 240,
+   "h": 430,
+   "items": [
+    {
+     "label": "женщина полная",
+     "body": "anny-f-heavy"
+    },
+    {
+     "label": "женщина мускулистая",
+     "body": "anny-f-muscular"
+    },
+    {
+     "label": "женщина невысокая",
+     "body": "anny-f-short"
+    },
+    {
+     "label": "женщина высокая",
+     "body": "anny-f-tall"
+    },
+    {
+     "label": "женщина худая",
+     "body": "anny-f-thin"
+    },
+    {
+     "label": "мужчина полный",
+     "body": "anny-m-heavy"
+    },
+    {
+     "label": "мужчина мускулистый",
+     "body": "anny-m-muscular"
+    },
+    {
+     "label": "мужчина невысокий",
+     "body": "anny-m-short"
+    },
+    {
+     "label": "мужчина высокий",
+     "body": "anny-m-tall"
+    },
+    {
+     "label": "мужчина худой",
+     "body": "anny-m-thin"
+    },
+    {
+     "label": "женщина, «африканский»",
+     "body": "anny-f-african"
+    },
+    {
+     "label": "женщина, «азиатский»",
+     "body": "anny-f-asian"
+    },
+    {
+     "label": "женщина, «европеоидный»",
+     "body": "anny-f-caucasian"
+    },
+    {
+     "label": "мужчина, «африканский»",
+     "body": "anny-m-african"
+    },
+    {
+     "label": "мужчина, «азиатский»",
+     "body": "anny-m-asian"
+    },
+    {
+     "label": "мужчина, «европеоидный»",
+     "body": "anny-m-caucasian"
+    }
+   ]
+  },
+  {
+   "name": "silhouettes",
+   "out": "docs/pictures/engine/bodies/silhouettes.png",
+   "title": "Силуэт одной фигурой (Т5 и каркас Т6 — один деформер): женщина, сила 1",
+   "cols": 8,
+   "w": 250,
+   "h": 430,
+   "items": [
+    {
+     "label": "как есть"
+    },
+    {
+     "label": "фасолина",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-bean",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "колонна",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-column",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "ромб",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-diamond",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "яйцо",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-egg",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "песочные часы",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-hourglass",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "перевёрнутая трапеция",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-inverted-trapezoid",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "масса на ножках",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-mass-on-legs",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "груша",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-pear",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "прямоугольник",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-rectangle",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "тростинка",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-reed",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "трапеция",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-trapezoid",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "треугольник",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-triangle",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "V",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-v",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "клин",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-wedge",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "silhouettes-strength",
+   "out": "docs/pictures/engine/bodies/silhouettes-strength.png",
+   "title": "Силуэт: сила и разные тела; сбоку",
+   "cols": 5,
+   "w": 280,
+   "h": 440,
+   "items": [
+    {
+     "label": "песочные часы · 0.5",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-hourglass",
+       "strength": 0.5,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "песочные часы · 1",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-hourglass",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "песочные часы · 1.4",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-hourglass",
+       "strength": 1.4,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "прямоугольник · 1 · ¾",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-rectangle",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "three"
+    },
+    {
+     "label": "фасолина · сбоку",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-bean",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "мужчина · V · 0.6",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-v",
+       "strength": 0.6,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "мужчина · V · 1",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-v",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "мужчина · яйцо",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-egg",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "ребёнок · груша",
+     "char": "child",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-pear",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "старик · колонна",
+     "char": "oldman",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-column",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "silhouettes-close",
+   "out": "docs/pictures/engine/bodies/silhouettes-close.png",
+   "title": "Где у Т5 был жёсткий угол и полка: бёдра и плечи крупно, сила 1",
+   "cols": 5,
+   "w": 360,
+   "h": 360,
+   "items": [
+    {
+     "label": "прямоугольник · бёдра",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-rectangle",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "focus": "Hips",
+     "size": 0.6
+    },
+    {
+     "label": "песочные часы · бёдра ¾",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-hourglass",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "three",
+     "focus": "Hips",
+     "size": 0.6
+    },
+    {
+     "label": "перевёрнутая трапеция · плечи",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-inverted-trapezoid",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "focus": "Chest",
+     "size": 0.6
+    },
+    {
+     "label": "V · плечи",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-v",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "focus": "Chest",
+     "size": 0.6
+    },
+    {
+     "label": "V · плечи ¾",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "silhouette-v",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "three",
+     "focus": "Chest",
+     "size": 0.6
+    }
+   ]
+  },
+  {
+   "name": "lines",
+   "out": "docs/pictures/engine/bodies/lines.png",
+   "title": "Линия действия, сжатие и растяжение, контрапост (Т5); женщина, мужчина, ребёнок",
+   "cols": 7,
+   "w": 250,
+   "h": 430,
+   "items": [
+    {
+     "label": "спереди C",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-front-c",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "спереди S",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-front-s",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "сбоку C вперёд",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-side-c-forward",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "сбоку C назад",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-side-c-back",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "сбоку S",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-side-s",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "сбоку обратная S",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-side-s-reverse",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "сжатие",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "squash",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "растяжение",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "stretch",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "контрапост",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "contrapposto",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "мужчина · C спереди",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-front-c",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "ребёнок · S сбоку",
+     "char": "child",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-side-s",
+       "strength": 1.2,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "мужчина · контрапост",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "contrapposto",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "limbs",
+   "out": "docs/pictures/engine/bodies/limbs.png",
+   "title": "Конечности (Т5): сужение, прямое против кривого, дуги — дуги есть как инструмент, гнуть людей Павел не хотел",
+   "cols": 7,
+   "w": 250,
+   "h": 430,
+   "items": [
+    {
+     "label": "как есть · сбоку",
+     "view": "side"
+    },
+    {
+     "label": "сужение к концам",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "limbs-taper",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "обратное сужение",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "limbs-taper-reverse",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "прямое/кривое · сбоку",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "limbs-straight-curved",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "мужчина · прямое/кривое",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "limbs-straight-curved",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "дугой",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "limbs-arcs",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "ноги дугой внутрь",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "limbs-legs-bowed-in",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "proportions",
+   "out": "docs/pictures/engine/bodies/proportions.png",
+   "title": "Пропорции (Т1): длина и ширина частей, суставы идут вместе с ними; женщина, сила 1",
+   "cols": 8,
+   "w": 250,
+   "h": 430,
+   "items": [
+    {
+     "label": "как есть"
+    },
+    {
+     "label": "большие кисти и стопы",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-big-hands-feet",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "большая голова",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-big-head",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "широкие плечи",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-broad-shoulders",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "длинные руки",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-long-arms",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "длинные ноги",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-long-legs",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "длинная шея",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-long-neck",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "длинное туловище",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-long-torso",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "узкие плечи",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-narrow-shoulders",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "короткие ноги",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-short-legs",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "короткая шея",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-short-neck",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "узкое туловище",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-slim-torso",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "маленькие кисти и стопы",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-small-hands-feet",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "маленькая голова",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-small-head",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "толстые руки и ноги",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-thick-limbs",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "тонкие руки и ноги",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "proportions-thin-limbs",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "surface",
+   "out": "docs/pictures/engine/bodies/surface.png",
+   "title": "Шарж против среднего тела (Т1), анатомия чётче/мягче (Т1), сглаживание в сантиметрах (Т9)",
+   "cols": 9,
+   "w": 240,
+   "h": 430,
+   "items": [
+    {
+     "label": "женщина как есть"
+    },
+    {
+     "label": "шарж",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "caricature",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "ближе к среднему",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "average",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "мужчина как есть",
+     "char": "man"
+    },
+    {
+     "label": "мужчина · анатомия чётче",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "anatomy-defined",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "мужчина · анатомия мягче",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "anatomy-soft",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "сглаживание 2 см",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-2cm",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "сглаживание 4 см",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "сглаживание 8 см",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-8cm",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "contours",
+   "out": "docs/pictures/engine/bodies/contours.png",
+   "title": "Контур (Т7) поверх сглаживания 4 см: сила — смесь своих радиусов сечения и нарисованных; 0.5 и 1",
+   "cols": 6,
+   "w": 250,
+   "h": 430,
+   "items": [
+    {
+     "label": "сглаживание 4 см"
+    },
+    {
+     "label": "Дисней · 0.5",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-disney",
+       "strength": 0.5,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "Дисней · 1",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-disney",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "Дисней · 1 · сбоку",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-disney",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "Pixar · 0.5",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-pixar",
+       "strength": 0.5,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "Pixar · 1",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-pixar",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "Pixar · 1 · сбоку",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-pixar",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "аниме · 0.5",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-anime",
+       "strength": 0.5,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "аниме · 1",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-anime",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "аниме · 1 · сбоку",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-anime",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "Дисней · own 0 (только рисунок)",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "contour",
+       "form": {
+        "leg": {
+         "outer": [
+          [
+           0,
+           1.22
+          ],
+          [
+           0.12,
+           1.05
+          ],
+          [
+           0.3,
+           0.82
+          ],
+          [
+           0.47,
+           0.6
+          ],
+          [
+           0.57,
+           0.66
+          ],
+          [
+           0.65,
+           0.72
+          ],
+          [
+           0.8,
+           0.52
+          ],
+          [
+           0.95,
+           0.38
+          ],
+          [
+           1,
+           0.38
+          ]
+         ],
+         "inner": [
+          [
+           0,
+           1.3
+          ],
+          [
+           0.08,
+           1.18
+          ],
+          [
+           0.3,
+           0.88
+          ],
+          [
+           0.47,
+           0.58
+          ],
+          [
+           0.56,
+           0.5
+          ],
+          [
+           0.72,
+           0.47
+          ],
+          [
+           0.86,
+           0.35
+          ],
+          [
+           0.95,
+           0.29
+          ],
+          [
+           1,
+           0.29
+          ]
+         ],
+         "front": [
+          [
+           0,
+           1
+          ],
+          [
+           0.2,
+           1
+          ],
+          [
+           0.42,
+           0.8
+          ],
+          [
+           0.5,
+           0.62
+          ],
+          [
+           0.6,
+           0.42
+          ],
+          [
+           0.95,
+           0.35
+          ],
+          [
+           1,
+           0.35
+          ]
+         ],
+         "back": [
+          [
+           0,
+           1.4
+          ],
+          [
+           0.12,
+           1.35
+          ],
+          [
+           0.3,
+           1.02
+          ],
+          [
+           0.47,
+           0.76
+          ],
+          [
+           0.56,
+           0.88
+          ],
+          [
+           0.65,
+           0.96
+          ],
+          [
+           0.82,
+           0.68
+          ],
+          [
+           0.95,
+           0.52
+          ],
+          [
+           1,
+           0.52
+          ]
+         ]
+        },
+        "arm": {
+         "outer": [
+          [
+           0,
+           1.15
+          ],
+          [
+           0.12,
+           1.1
+          ],
+          [
+           0.3,
+           0.92
+          ],
+          [
+           0.5,
+           0.74
+          ],
+          [
+           0.6,
+           0.82
+          ],
+          [
+           0.75,
+           0.68
+          ],
+          [
+           0.97,
+           0.48
+          ],
+          [
+           1,
+           0.48
+          ]
+         ],
+         "inner": [
+          [
+           0,
+           1
+          ],
+          [
+           0.25,
+           0.98
+          ],
+          [
+           0.5,
+           0.72
+          ],
+          [
+           0.66,
+           0.7
+          ],
+          [
+           0.97,
+           0.46
+          ],
+          [
+           1,
+           0.46
+          ]
+         ],
+         "front": [
+          [
+           0,
+           1.1
+          ],
+          [
+           0.3,
+           1.02
+          ],
+          [
+           0.5,
+           0.78
+          ],
+          [
+           0.62,
+           0.8
+          ],
+          [
+           0.97,
+           0.52
+          ],
+          [
+           1,
+           0.52
+          ]
+         ],
+         "back": [
+          [
+           0,
+           1.05
+          ],
+          [
+           0.3,
+           0.98
+          ],
+          [
+           0.5,
+           0.8
+          ],
+          [
+           0.62,
+           0.84
+          ],
+          [
+           0.97,
+           0.52
+          ],
+          [
+           1,
+           0.52
+          ]
+         ]
+        },
+        "torso": {
+         "side": [
+          [
+           -0.16,
+           0.98
+          ],
+          [
+           -0.02,
+           1
+          ],
+          [
+           0.15,
+           0.84
+          ],
+          [
+           0.36,
+           0.6
+          ],
+          [
+           0.55,
+           0.7
+          ],
+          [
+           0.72,
+           0.75
+          ],
+          [
+           0.89,
+           0.72
+          ]
+         ],
+         "front": [
+          [
+           -0.16,
+           0.55
+          ],
+          [
+           0.05,
+           0.6
+          ],
+          [
+           0.25,
+           0.55
+          ],
+          [
+           0.4,
+           0.5
+          ],
+          [
+           0.55,
+           0.54
+          ],
+          [
+           0.75,
+           0.5
+          ],
+          [
+           0.89,
+           0.4
+          ]
+         ],
+         "back": [
+          [
+           -0.16,
+           0.55
+          ],
+          [
+           0.05,
+           0.5
+          ],
+          [
+           0.25,
+           0.36
+          ],
+          [
+           0.38,
+           0.3
+          ],
+          [
+           0.55,
+           0.34
+          ],
+          [
+           0.75,
+           0.42
+          ],
+          [
+           0.89,
+           0.38
+          ]
+         ]
+        }
+       },
+       "own": 0,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "мужчина · Дисней · 1",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "contour-disney",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "masses",
+   "out": "docs/pictures/engine/bodies/masses.png",
+   "title": "Отдельные мягкие массы (Т7): грудь, ягодицы, плечо — шапка и скат от шеи; на сглаженной женщине",
+   "cols": 6,
+   "w": 300,
+   "h": 440,
+   "items": [
+    {
+     "label": "сглаживание 4 см · ¾",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "three"
+    },
+    {
+     "label": "грудь Pixar · ¾",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "masses-pixar-bust",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "three"
+    },
+    {
+     "label": "ягодицы Pixar · сбоку",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "masses-pixar-glutes",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "view": "side"
+    },
+    {
+     "label": "плечо · спереди",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "masses-shoulders",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "focus": "Chest",
+     "size": 0.6
+    },
+    {
+     "label": "без плеча · спереди",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "focus": "Chest",
+     "size": 0.6
+    },
+    {
+     "label": "мужчина · плечо",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "preset",
+       "id": "masses-shoulders",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ],
+     "focus": "Chest",
+     "size": 0.6
+    }
+   ]
+  },
+  {
+   "name": "pictogram",
+   "out": "docs/pictures/engine/bodies/pictogram.png",
+   "title": "Пиктограмма (Т4): сглаживание и знак; свои веса кожи — палочка на кость, шары в суставах",
+   "cols": 6,
+   "w": 280,
+   "h": 440,
+   "items": [
+    {
+     "label": "прямоугольник",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "pictogram-rectangle",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "перевёрнутая трапеция",
+     "char": "man",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "pictogram-inverted",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "трапеция",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "pictogram-trapezoid",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "овал",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "pictogram-oval",
+       "strength": 1,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "трапеция · 0.5",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "smooth-4cm",
+       "strength": 1,
+       "frames": "keep"
+      },
+      {
+       "kind": "sign",
+       "figure": "trapezoid",
+       "strength": 0.5,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "мужчина · шаг",
+     "char": "pictogram-man",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "мужчина · бег",
+     "char": "pictogram-man",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "мужчина · сидит",
+     "char": "pictogram-man",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "женщина · прыжок",
+     "char": "pictogram-woman",
+     "clip": "jump",
+     "t": 45,
+     "view": "front"
+    },
+    {
+     "label": "женщина · танец",
+     "char": "pictogram-woman",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "женщина · лежит",
+     "char": "pictogram-woman",
+     "clip": "lie",
+     "t": 170,
+     "view": "three",
+     "w": 420
+    }
+   ]
+  },
+  {
+   "name": "pose-layers",
+   "out": "docs/pictures/engine/bodies/pose-layers.png",
+   "title": "Слоем позы: линия действия и контрапост — повороты позвоночника и таза, стопы на месте; сжатие и сглаживание — их изменение покоя каждый кадр",
+   "cols": 6,
+   "w": 280,
+   "h": 420,
+   "items": [
+    {
+     "label": "шаг · как есть",
+     "clip": "walk",
+     "t": 30,
+     "view": "side"
+    },
+    {
+     "label": "шаг · линия C слоем",
+     "clip": "walk",
+     "t": 30,
+     "view": "side",
+     "pose": [
+      {
+       "kind": "line",
+       "view": "side",
+       "curve": "C",
+       "bend": 0.08
+      }
+     ]
+    },
+    {
+     "label": "то же · сдвинута и повёрнута",
+     "clip": "walk",
+     "t": 30,
+     "view": "side",
+     "pose": [
+      {
+       "kind": "line",
+       "view": "side",
+       "curve": "C",
+       "bend": 0.08
+      }
+     ],
+     "place": {
+      "position": [
+       2,
+       0,
+       1
+      ],
+      "heading": 1.9
+     }
+    },
+    {
+     "label": "шаг · контрапост слоем",
+     "clip": "walk",
+     "t": 30,
+     "view": "front",
+     "pose": [
+      {
+       "kind": "contrapposto",
+       "degrees": 12,
+       "space": "upright"
+      }
+     ]
+    },
+    {
+     "label": "бег · линия S спереди слоем",
+     "clip": "run",
+     "t": 20,
+     "view": "front",
+     "pose": [
+      {
+       "kind": "line",
+       "view": "front",
+       "curve": "S",
+       "bend": 0.06
+      }
+     ]
+    },
+    {
+     "label": "шаг · линия на покое, кадры держать",
+     "clip": "walk",
+     "t": 30,
+     "view": "side",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-side-c-forward",
+       "strength": 0.8,
+       "frames": "keep"
+      }
+     ]
+    },
+    {
+     "label": "шаг · на покое, кадры повернуть",
+     "clip": "walk",
+     "t": 30,
+     "view": "side",
+     "rest": [
+      {
+       "kind": "preset",
+       "id": "line-side-c-forward",
+       "strength": 0.8,
+       "frames": "turn"
+      }
+     ]
+    },
+    {
+     "label": "лежит · линия спереди слоем, по тазу",
+     "clip": "lie",
+     "t": 170,
+     "view": "three",
+     "pose": [
+      {
+       "kind": "line",
+       "view": "front",
+       "curve": "C",
+       "bend": 0.1
+      }
+     ],
+     "w": 420
+    },
+    {
+     "label": "лежит · линия спереди слоем, вертикально",
+     "clip": "lie",
+     "t": 170,
+     "view": "three",
+     "pose": [
+      {
+       "kind": "line",
+       "view": "front",
+       "curve": "C",
+       "bend": 0.1,
+       "space": "upright"
+      }
+     ],
+     "w": 420
+    },
+    {
+     "label": "ребёнок · прыжок · сжатие слоем",
+     "char": "child",
+     "clip": "jump",
+     "t": 40,
+     "pose": [
+      {
+       "kind": "squash",
+       "stretch": -0.3
+      }
+     ]
+    },
+    {
+     "label": "мужчина · сглаживание 8 см слоем",
+     "char": "man",
+     "clip": "walk",
+     "t": 30,
+     "view": "three",
+     "pose": [
+      {
+       "kind": "smooth",
+       "cm": 8
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "presets",
+   "out": "docs/pictures/engine/bodies/presets.png",
+   "title": "Готовые тела: основа + деформеры (спереди и сбоку)",
+   "cols": 9,
+   "w": 240,
+   "h": 440,
+   "items": [
+    {
+     "label": "Дисней: принцесса",
+     "char": "disney-princess"
+    },
+    {
+     "label": "Pixar: мама",
+     "char": "pixar-mother"
+    },
+    {
+     "label": "Аниме: девушка",
+     "char": "anime-girl"
+    },
+    {
+     "label": "Бёртон: тонкий",
+     "char": "burton-thin"
+    },
+    {
+     "label": "Груша: старушка",
+     "char": "pear-old-woman"
+    },
+    {
+     "label": "V: герой",
+     "char": "v-hero"
+    },
+    {
+     "label": "Яйцо: малыш",
+     "char": "egg-baby"
+    },
+    {
+     "label": "Пиктограмма: мужчина",
+     "char": "pictogram-man"
+    },
+    {
+     "label": "Пиктограмма: женщина",
+     "char": "pictogram-woman"
+    },
+    {
+     "label": "Дисней: принцесса · сбоку",
+     "char": "disney-princess",
+     "view": "side"
+    },
+    {
+     "label": "Pixar: мама · сбоку",
+     "char": "pixar-mother",
+     "view": "side"
+    },
+    {
+     "label": "Аниме: девушка · сбоку",
+     "char": "anime-girl",
+     "view": "side"
+    },
+    {
+     "label": "Бёртон: тонкий · сбоку",
+     "char": "burton-thin",
+     "view": "side"
+    },
+    {
+     "label": "Груша: старушка · сбоку",
+     "char": "pear-old-woman",
+     "view": "side"
+    },
+    {
+     "label": "V: герой · сбоку",
+     "char": "v-hero",
+     "view": "side"
+    },
+    {
+     "label": "Яйцо: малыш · сбоку",
+     "char": "egg-baby",
+     "view": "side"
+    },
+    {
+     "label": "Пиктограмма: мужчина · сбоку",
+     "char": "pictogram-man",
+     "view": "side"
+    },
+    {
+     "label": "Пиктограмма: женщина · сбоку",
+     "char": "pictogram-woman",
+     "view": "side"
+    }
+   ]
+  },
+  {
+   "name": "presets-motion",
+   "out": "docs/pictures/engine/bodies/presets-motion.png",
+   "title": "Готовые тела в движениях Kimodo: шаг, бег, сидит, лежит",
+   "cols": 8,
+   "w": 250,
+   "h": 300,
+   "items": [
+    {
+     "label": "Дисней: принцесса · шаг",
+     "char": "disney-princess",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Дисней: принцесса · бег",
+     "char": "disney-princess",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Дисней: принцесса · сидит",
+     "char": "disney-princess",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Дисней: принцесса · лежит",
+     "char": "disney-princess",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "Pixar: мама · шаг",
+     "char": "pixar-mother",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Pixar: мама · бег",
+     "char": "pixar-mother",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Pixar: мама · сидит",
+     "char": "pixar-mother",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Pixar: мама · лежит",
+     "char": "pixar-mother",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "Аниме: девушка · шаг",
+     "char": "anime-girl",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Аниме: девушка · бег",
+     "char": "anime-girl",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Аниме: девушка · сидит",
+     "char": "anime-girl",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Аниме: девушка · лежит",
+     "char": "anime-girl",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "Бёртон: тонкий · шаг",
+     "char": "burton-thin",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Бёртон: тонкий · бег",
+     "char": "burton-thin",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Бёртон: тонкий · сидит",
+     "char": "burton-thin",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Бёртон: тонкий · лежит",
+     "char": "burton-thin",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "Груша: старушка · шаг",
+     "char": "pear-old-woman",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Груша: старушка · бег",
+     "char": "pear-old-woman",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Груша: старушка · сидит",
+     "char": "pear-old-woman",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Груша: старушка · лежит",
+     "char": "pear-old-woman",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "V: герой · шаг",
+     "char": "v-hero",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "V: герой · бег",
+     "char": "v-hero",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "V: герой · сидит",
+     "char": "v-hero",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "V: герой · лежит",
+     "char": "v-hero",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "Яйцо: малыш · шаг",
+     "char": "egg-baby",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Яйцо: малыш · бег",
+     "char": "egg-baby",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Яйцо: малыш · сидит",
+     "char": "egg-baby",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Яйцо: малыш · лежит",
+     "char": "egg-baby",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: мужчина · шаг",
+     "char": "pictogram-man",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: мужчина · бег",
+     "char": "pictogram-man",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: мужчина · сидит",
+     "char": "pictogram-man",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: мужчина · лежит",
+     "char": "pictogram-man",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: женщина · шаг",
+     "char": "pictogram-woman",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: женщина · бег",
+     "char": "pictogram-woman",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: женщина · сидит",
+     "char": "pictogram-woman",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "Пиктограмма: женщина · лежит",
+     "char": "pictogram-woman",
+     "clip": "lie",
+     "t": 170,
+     "view": "three"
+    }
+   ]
+  }
+ ]
+}

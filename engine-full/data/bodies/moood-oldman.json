@@ -1,0 +1,63 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "moood-oldman",
+ "label": {
+  "ru": "Старик",
+  "en": "Old man"
+ },
+ "source": "moood engines/1/bodies/oldman.bin (experiments/data/oldman.js): Anny baked by moood",
+ "topology": "anny-moood",
+ "skeleton": "soma77",
+ "eyes": {
+  "centers": [
+   [
+    0.0298,
+    1.6215,
+    0.141
+   ],
+   [
+    -0.0309,
+    1.6218,
+    0.141
+   ]
+  ],
+  "size": 0.0042,
+  "about": "moood's drawn eyes: where they sit, their size"
+ },
+ "bin": "moood-oldman.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 165768
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 166692
+  },
+  "facePlain": {
+   "dtype": "float32",
+   "shape": [
+    2817,
+    3
+   ],
+   "offset": 167924
+  }
+ }
+}

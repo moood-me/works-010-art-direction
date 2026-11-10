@@ -1,0 +1,215 @@
+{
+ "format": "engine/motions",
+ "version": 2,
+ "motions": [
+  {
+   "id": "walk",
+   "label": {
+    "ru": "шаг",
+    "en": "walk"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "run",
+   "label": {
+    "ru": "бег",
+    "en": "run"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "sneak",
+   "label": {
+    "ru": "крадётся",
+    "en": "sneak"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "wave",
+   "label": {
+    "ru": "машет",
+    "en": "wave"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "jump",
+   "label": {
+    "ru": "прыжок",
+    "en": "jump"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "dance",
+   "label": {
+    "ru": "танец",
+    "en": "dance"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "bow",
+   "label": {
+    "ru": "поклон",
+    "en": "bow"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "stomp",
+   "label": {
+    "ru": "топает",
+    "en": "stomp"
+   },
+   "frames": 90,
+   "fps": 30
+  },
+  {
+   "id": "idle",
+   "label": {
+    "ru": "стоит",
+    "en": "idle"
+   },
+   "frames": 150,
+   "fps": 30
+  },
+  {
+   "id": "sit",
+   "label": {
+    "ru": "садится",
+    "en": "sit"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "lie",
+   "label": {
+    "ru": "ложится",
+    "en": "lie down"
+   },
+   "frames": 180,
+   "fps": 30
+  },
+  {
+   "id": "lying",
+   "label": {
+    "ru": "лежит",
+    "en": "lying"
+   },
+   "frames": 150,
+   "fps": 30
+  },
+  {
+   "id": "roll",
+   "label": {
+    "ru": "кувырок",
+    "en": "forward roll"
+   },
+   "frames": 120,
+   "fps": 30
+  },
+  {
+   "id": "roll-side",
+   "label": {
+    "ru": "катается",
+    "en": "rolls sideways"
+   },
+   "frames": 150,
+   "fps": 30
+  },
+  {
+   "id": "rollover",
+   "label": {
+    "ru": "перекатывается",
+    "en": "rolls over"
+   },
+   "frames": 150,
+   "fps": 30,
+   "after": "lie"
+  },
+  {
+   "id": "stop",
+   "label": {
+    "ru": "останавливается",
+    "en": "comes to a stop"
+   },
+   "frames": 75,
+   "fps": 30,
+   "after": "walk"
+  },
+  {
+   "id": "look-around",
+   "label": {
+    "ru": "оглядывается",
+    "en": "looks around"
+   },
+   "frames": 120,
+   "fps": 30,
+   "after": "stop"
+  },
+  {
+   "id": "turn-back",
+   "label": {
+    "ru": "поворачивает назад",
+    "en": "turns back"
+   },
+   "frames": 120,
+   "fps": 30,
+   "after": "look-around"
+  }
+ ],
+ "chains": [
+  {
+   "id": "lie-rollover",
+   "label": {
+    "ru": "ложится → перекатывается",
+    "en": "lies down → rolls over"
+   },
+   "motions": [
+    "lie@c24c5ad967fd5758",
+    "rollover@2c11a8445eeb3beb"
+   ],
+   "joins": [
+    {
+     "blend": "dead",
+     "frames": 12
+    }
+   ]
+  },
+  {
+   "id": "walk-stop-look-back",
+   "label": {
+    "ru": "идёт → останавливается → оглядывается → назад",
+    "en": "walks → stops → looks around → turns back"
+   },
+   "motions": [
+    "walk@19f9d850a0b23180",
+    "stop@bc91f274b5970c06",
+    "look-around@07f516ad42bf68ca",
+    "turn-back@963439fb42d8aa1f"
+   ],
+   "joins": [
+    {
+     "blend": "cut"
+    },
+    {
+     "blend": "cut"
+    },
+    {
+     "blend": "cut"
+    }
+   ]
+  }
+ ]
+}

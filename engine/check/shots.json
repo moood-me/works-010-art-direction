@@ -1,0 +1,4 @@
+[{"name": "rest-front", "clip": "", "view": "front", "w": 240, "h": 360, "method": null, "clav": null, "seam": null},
+ {"name": "walk30-side", "clip": "walk", "t": 30, "view": "side", "w": 240, "h": 360, "method": null, "clav": null, "seam": null},
+ {"name": "sit100-three", "clip": "sit", "t": 100, "view": "three", "w": 240, "h": 360, "method": null, "clav": null, "seam": null},
+ {"name": "chain200-side", "clip": "lie-rollover", "t": 200, "view": "side", "w": 240, "h": 360, "method": null, "clav": null, "seam": null}]

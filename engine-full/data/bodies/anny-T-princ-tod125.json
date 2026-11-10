@@ -1,0 +1,39 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "anny-T-princ-tod125",
+ "label": {
+  "ru": "принцесса + голова малыша",
+  "en": "T-princ-tod125"
+ },
+ "source": "experiments/anny-space/out/d-T-princ-tod125.bin: Anny's own settings (Т8) on moood's mesh; joints by Anny's SOMA regression carried onto this mesh (tools/bodies_anny.py)",
+ "topology": "anny-moood",
+ "skeleton": "soma77",
+ "bin": "anny-T-princ-tod125.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13814,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 165768
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 166692
+  }
+ }
+}

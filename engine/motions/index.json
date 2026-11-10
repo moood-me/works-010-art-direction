@@ -1,6 +1,6 @@
 {
  "format": "engine/motions",
- "version": 2,
+ "version": 1,
  "motions": [
   {
    "id": "walk",
@@ -137,36 +137,6 @@
    "frames": 150,
    "fps": 30,
    "after": "lie"
-  },
-  {
-   "id": "stop",
-   "label": {
-    "ru": "останавливается",
-    "en": "comes to a stop"
-   },
-   "frames": 75,
-   "fps": 30,
-   "after": "walk"
-  },
-  {
-   "id": "look-around",
-   "label": {
-    "ru": "оглядывается",
-    "en": "looks around"
-   },
-   "frames": 120,
-   "fps": 30,
-   "after": "stop"
-  },
-  {
-   "id": "turn-back",
-   "label": {
-    "ru": "поворачивает назад",
-    "en": "turns back"
-   },
-   "frames": 120,
-   "fps": 30,
-   "after": "look-around"
   }
  ],
  "chains": [
@@ -177,38 +147,8 @@
     "en": "lies down → rolls over"
    },
    "motions": [
-    "lie@c24c5ad967fd5758",
-    "rollover@2c11a8445eeb3beb"
-   ],
-   "joins": [
-    {
-     "blend": "dead",
-     "frames": 12
-    }
-   ]
-  },
-  {
-   "id": "walk-stop-look-back",
-   "label": {
-    "ru": "идёт → останавливается → оглядывается → назад",
-    "en": "walks → stops → looks around → turns back"
-   },
-   "motions": [
-    "walk@19f9d850a0b23180",
-    "stop@bc91f274b5970c06",
-    "look-around@07f516ad42bf68ca",
-    "turn-back@963439fb42d8aa1f"
-   ],
-   "joins": [
-    {
-     "blend": "cut"
-    },
-    {
-     "blend": "cut"
-    },
-    {
-     "blend": "cut"
-    }
+    "lie",
+    "rollover"
    ]
   }
  ]

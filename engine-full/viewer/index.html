@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Engine viewer</title>
+<style>
+  :root { --panel: rgba(250,247,242,.94); --ink: #26231f; --muted: #75706a; --line: #d5cec4; --accent: #b4532a; --bg: #cfc8bd; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #cv { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; cursor: grab; }
+  #cv:active { cursor: grabbing; }
+  #vpPanel { position: fixed; left: 12px; top: 12px; z-index: 2; background: var(--panel); border-radius: 10px; padding: 10px 12px; box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    display: grid; gap: 7px; width: min(400px, calc(100vw - 48px)); max-height: calc(100vh - 48px); overflow-y: auto; }
+  #vpPanel { grid-template-columns: minmax(0, 1fr); }
+  body.bodies #vpPanel { width: min(450px, calc(100vw - 48px)); }
+  body.heads #vpPanel, body.hair #vpPanel { width: min(450px, calc(100vw - 48px)); }
+  body.clothes #vpPanel { width: min(520px, calc(100vw - 48px)); }
+  #garments .row { flex-wrap: nowrap; gap: 4px; font-size: 12px; }
+  #garments .row > span:first-child { flex: 0 0 96px; min-width: 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; }
+  #garments select { flex: 1 1 0; min-width: 0; padding: 2px 4px; font-size: 12px; }
+  #garments input[type=range] { flex: 0 0 56px; min-width: 0; }
+  #garments .s { width: 28px; color: var(--muted); }
+  #garments button { padding: 2px 6px; font-size: 12px; }
+  #vpPanel #hairs { max-width: 100%; flex: 1; min-width: 0; }
+  #defs .row, #hforms .row { flex-wrap: nowrap; gap: 4px; font-size: 12px; }
+  #defs .row > span:first-child, #hforms .row > span:first-child { flex: 1; min-width: 0; line-height: 1.2; }
+  #defs .row input[type=range], #hforms .row input[type=range] { flex: 0 0 70px; min-width: 0; }
+  #defs .row .s, #hforms .row .s { width: 30px; color: var(--muted); }
+  #defs .row button, #hforms .row button, #feats button, #exprs button { padding: 2px 6px; font-size: 12px; }
+  #vpPanel #head, #vpPanel #light { max-width: 100%; flex: 1; min-width: 0; }
+  #vpPanel #base { max-width: 100%; }
+  #vpPanel .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  #vpPanel .lab { color: var(--muted); font-size: 12px; min-width: 64px; }
+  #vpPanel select, #vpPanel button { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 3px 8px; color: var(--ink); cursor: pointer; }
+  #vpPanel button:disabled { opacity: .4; cursor: default; }
+  #vpPanel button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #vpPanel .mv { display: flex; flex-wrap: wrap; gap: 4px; }
+  #vpPanel input[type=range] { flex: 1; min-width: 120px; }
+  #vpPanel .hint { color: var(--muted); font-size: 12px; }
+  #vpPanel .sep { border-top: 1px solid var(--line); margin: 2px 0; }
+  #vpPanel details { display: grid; gap: 7px; }
+  #vpPanel details[open] > summary { margin-bottom: 7px; }
+  #vpPanel summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  #vpPanel #figs button { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #msg { position: fixed; inset: 0; display: grid; place-items: center; font: italic 20px Georgia, serif; color: #4a4640; pointer-events: none; z-index: 3; }
+  #vpPanel .box { display: grid; gap: 7px; }
+  /* a narrow screen: the panel over the top, what the page is for (the heads') first */
+  @media (max-width: 520px) { #vpPanel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 45vh; } #headsBox, #hairBox, #clothesBox { order: -1; } }
+</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="msg">собирается…</div>
+<script type="module" src="viewer.js"></script>
+</body>
+</html>

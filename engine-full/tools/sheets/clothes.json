@@ -1,0 +1,915 @@
+{
+ "about": "Sheets of clothes (stage 4) for docs/pictures/engine/clothes: node engine-full/tools/sheets.mjs engine-full/tools/sheets/clothes.json [names]",
+ "sheets": [
+  {
+   "name": "bodies",
+   "out": "docs/pictures/engine/clothes/bodies.png",
+   "title": "Одежда движка на разных телах: спереди, ¾, сбоку (покой)",
+   "cols": 6,
+   "w": 260,
+   "h": 380,
+   "items": [
+    {
+     "label": "женщина, платье-колокол · спереди",
+     "char": "clothes-dress",
+     "view": "front"
+    },
+    {
+     "label": "женщина, платье-колокол · ¾",
+     "char": "clothes-dress",
+     "view": "three"
+    },
+    {
+     "label": "женщина, платье-колокол · сбоку",
+     "char": "clothes-dress",
+     "view": "side"
+    },
+    {
+     "label": "мужчина, футболка и джинсы · спереди",
+     "char": "clothes-jeans",
+     "view": "front"
+    },
+    {
+     "label": "мужчина, футболка и джинсы · ¾",
+     "char": "clothes-jeans",
+     "view": "three"
+    },
+    {
+     "label": "мужчина, футболка и джинсы · сбоку",
+     "char": "clothes-jeans",
+     "view": "side"
+    },
+    {
+     "label": "ребёнок, футболка и шорты · спереди",
+     "char": "clothes-child",
+     "view": "front"
+    },
+    {
+     "label": "ребёнок, футболка и шорты · ¾",
+     "char": "clothes-child",
+     "view": "three"
+    },
+    {
+     "label": "ребёнок, футболка и шорты · сбоку",
+     "char": "clothes-child",
+     "view": "side"
+    },
+    {
+     "label": "старушка, свитер и юбка · спереди",
+     "char": "clothes-granny",
+     "view": "front"
+    },
+    {
+     "label": "старушка, свитер и юбка · ¾",
+     "char": "clothes-granny",
+     "view": "three"
+    },
+    {
+     "label": "старушка, свитер и юбка · сбоку",
+     "char": "clothes-granny",
+     "view": "side"
+    },
+    {
+     "label": "девочка, куртка и брюки · спереди",
+     "char": "clothes-jacket",
+     "view": "front"
+    },
+    {
+     "label": "девочка, куртка и брюки · ¾",
+     "char": "clothes-jacket",
+     "view": "three"
+    },
+    {
+     "label": "девочка, куртка и брюки · сбоку",
+     "char": "clothes-jacket",
+     "view": "side"
+    },
+    {
+     "label": "полный мужчина · спереди",
+     "char": "clothes-heavy",
+     "view": "front"
+    },
+    {
+     "label": "полный мужчина · ¾",
+     "char": "clothes-heavy",
+     "view": "three"
+    },
+    {
+     "label": "полный мужчина · сбоку",
+     "char": "clothes-heavy",
+     "view": "side"
+    },
+    {
+     "label": "Дисней: принцесса · спереди",
+     "char": "clothes-disney",
+     "view": "front"
+    },
+    {
+     "label": "Дисней: принцесса · ¾",
+     "char": "clothes-disney",
+     "view": "three"
+    },
+    {
+     "label": "Дисней: принцесса · сбоку",
+     "char": "clothes-disney",
+     "view": "side"
+    },
+    {
+     "label": "V-герой · спереди",
+     "char": "clothes-hero",
+     "view": "front"
+    },
+    {
+     "label": "V-герой · ¾",
+     "char": "clothes-hero",
+     "view": "three"
+    },
+    {
+     "label": "V-герой · сбоку",
+     "char": "clothes-hero",
+     "view": "side"
+    }
+   ]
+  },
+  {
+   "name": "motion",
+   "out": "docs/pictures/engine/clothes/motion.png",
+   "title": "Одежда в движениях Kimodo",
+   "cols": 6,
+   "w": 300,
+   "h": 380,
+   "items": [
+    {
+     "label": "платье · шаг",
+     "char": "clothes-dress",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "джинсы · бег",
+     "char": "clothes-jeans",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "ребёнок · прыжок",
+     "char": "clothes-child",
+     "clip": "jump",
+     "t": 40,
+     "view": "three"
+    },
+    {
+     "label": "куртка · танец",
+     "char": "clothes-jacket",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "старушка · сесть",
+     "char": "clothes-granny",
+     "clip": "sit",
+     "t": 100,
+     "view": "three"
+    },
+    {
+     "label": "шарф и кардиган · лечь",
+     "char": "clothes-wind",
+     "clip": "lie",
+     "t": 170,
+     "view": "three",
+     "w": 420,
+     "h": 300
+    },
+    {
+     "label": "джинсы · кувырок",
+     "char": "clothes-jeans",
+     "clip": "roll",
+     "t": 40,
+     "view": "side",
+     "w": 420,
+     "h": 300
+    },
+    {
+     "label": "платье · поклон",
+     "char": "clothes-dress",
+     "clip": "bow",
+     "t": 50,
+     "view": "side"
+    },
+    {
+     "label": "поло · лечь и перекатиться",
+     "char": "clothes-hero",
+     "clip": "lie-rollover",
+     "t": 260,
+     "view": "three",
+     "w": 420,
+     "h": 300
+    },
+    {
+     "label": "оверсайз · повернуть назад",
+     "char": "clothes-heavy",
+     "clip": "walk-stop-look-back",
+     "t": 330,
+     "view": "three"
+    },
+    {
+     "label": "Дисней · шаг",
+     "char": "clothes-disney",
+     "clip": "walk",
+     "t": 40,
+     "view": "front"
+    },
+    {
+     "label": "юбка в складку · крадётся",
+     "char": "clothes-granny",
+     "clip": "sneak",
+     "t": 60,
+     "view": "three"
+    }
+   ]
+  },
+  {
+   "name": "fabrics",
+   "out": "docs/pictures/engine/clothes/fabrics.png",
+   "title": "Одно платье в восьми тканях: шаг; сильный ветер",
+   "cols": 8,
+   "w": 240,
+   "h": 360,
+   "items": [
+    {
+     "label": "шифон · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-chiffon",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "шёлк · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-silk",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "поплин · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "лён · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-linen",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "трикотаж · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-jersey",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "деним · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-denim",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "твид · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-tweed",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "шерстяная вязка · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-woolknit",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "шифон · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-chiffon",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    },
+    {
+     "label": "шёлк · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-silk",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    },
+    {
+     "label": "поплин · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    },
+    {
+     "label": "лён · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-linen",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    },
+    {
+     "label": "трикотаж · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-jersey",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    },
+    {
+     "label": "деним · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-denim",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    },
+    {
+     "label": "твид · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-tweed",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    },
+    {
+     "label": "шерстяная вязка · сильный ветер",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-woolknit",
+       "color": "#6b5a8c"
+      }
+     ],
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-strong"
+    }
+   ]
+  },
+  {
+   "name": "strengths",
+   "out": "docs/pictures/engine/clothes/strengths.png",
+   "title": "Силуэт О1 как форма, к которой тянется ткань: сила 0 (висит свободно) … 1 (держит, как жёсткий подъюбник); силуэты при силе 1",
+   "cols": 8,
+   "w": 240,
+   "h": 360,
+   "items": [
+    {
+     "label": "колокол, сила 0 · покой",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 0
+      }
+     ],
+     "view": "three"
+    },
+    {
+     "label": "колокол, сила 0.25 · покой",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 0.25
+      }
+     ],
+     "view": "three"
+    },
+    {
+     "label": "колокол, сила 0.5 · покой",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 0.5
+      }
+     ],
+     "view": "three"
+    },
+    {
+     "label": "колокол, сила 1 · покой",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 1
+      }
+     ],
+     "view": "three"
+    },
+    {
+     "label": "колокол, сила 0 · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 0
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "колокол, сила 0.25 · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 0.25
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "колокол, сила 0.5 · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 0.5
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "колокол, сила 1 · шаг",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 1
+      }
+     ],
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "футляр, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-sheath",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "А-силуэт, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-aline",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "колокол, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bell",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "тюльпан, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-tulip",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "ампир, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-empire",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "баллон, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-bubble",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "карандаш, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-pencil",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    },
+    {
+     "label": "пышная, сила 1",
+     "char": "woman",
+     "clothes": [
+      {
+       "kind": "garment",
+       "id": "dress",
+       "pattern": "mh-dress",
+       "fabric": "fabric-poplin",
+       "color": "#6b5a8c",
+       "shape": "shape-full-skirt",
+       "strength": 1
+      }
+     ],
+     "view": "front"
+    }
+   ]
+  },
+  {
+   "name": "hair",
+   "out": "docs/pictures/engine/clothes/hair.png",
+   "title": "Волосы и одежда на одной фигуре; капюшоны и ворот готовых голов — тканью",
+   "cols": 4,
+   "w": 320,
+   "h": 400,
+   "items": [
+    {
+     "label": "волосы на блузке · шаг, сзади",
+     "char": "clothes-hair",
+     "clip": "walk",
+     "t": 40,
+     "view": "back"
+    },
+    {
+     "label": "волосы на блузке · ветер",
+     "char": "clothes-hair",
+     "clip": "idle",
+     "t": 90,
+     "view": "three",
+     "wind": "wind-light"
+    },
+    {
+     "label": "капюшон тканью · оглядывается",
+     "char": "head-hood",
+     "clip": "look-around",
+     "t": 60,
+     "view": "three"
+    },
+    {
+     "label": "капюшон тканью · бег",
+     "char": "head-hood",
+     "clip": "run",
+     "t": 20,
+     "view": "three"
+    },
+    {
+     "label": "старик в капюшоне · шаг",
+     "char": "head-old",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "высокий ворот Г1 · шаг",
+     "char": "head-semi",
+     "clip": "walk",
+     "t": 30,
+     "view": "three"
+    },
+    {
+     "label": "рыжая Г3, волосы движутся · шаг",
+     "char": "hair-g3-red",
+     "clip": "walk",
+     "t": 40,
+     "view": "back"
+    },
+    {
+     "label": "Альва Г1, волосы движутся · танец",
+     "char": "hair-g1-alva",
+     "clip": "dance",
+     "t": 60,
+     "view": "three"
+    }
+   ]
+  },
+  {
+   "name": "heads",
+   "out": "docs/pictures/engine/clothes/heads.png",
+   "title": "Готовые головы Г1 и Г3 в своих нарядах — тканью (вещи MakeHuman)",
+   "cols": 6,
+   "w": 260,
+   "h": 380,
+   "items": [
+    {
+     "label": "anime",
+     "char": "head-anime",
+     "view": "three"
+    },
+    {
+     "label": "red",
+     "char": "head-red",
+     "view": "three"
+    },
+    {
+     "label": "boy7",
+     "char": "head-boy7",
+     "view": "three"
+    },
+    {
+     "label": "mask",
+     "char": "head-mask",
+     "view": "three"
+    },
+    {
+     "label": "hood",
+     "char": "head-hood",
+     "view": "three"
+    },
+    {
+     "label": "blond",
+     "char": "head-blond",
+     "view": "three"
+    },
+    {
+     "label": "tails",
+     "char": "head-tails",
+     "view": "three"
+    },
+    {
+     "label": "old",
+     "char": "head-old",
+     "view": "three"
+    },
+    {
+     "label": "semi",
+     "char": "head-semi",
+     "view": "three"
+    },
+    {
+     "label": "alva",
+     "char": "head-alva",
+     "view": "three"
+    },
+    {
+     "label": "jesper",
+     "char": "head-jesper",
+     "view": "three"
+    }
+   ]
+  }
+ ]
+}

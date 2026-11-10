@@ -1,0 +1,23 @@
+{
+ "format": "engine/character",
+ "version": 7,
+ "id": "child",
+ "label": {
+  "ru": "Ребёнок",
+  "en": "Child"
+ },
+ "body": "moood-child@5c187b05e70b6a54",
+ "rest": [],
+ "pose": [],
+ "skinning": {
+  "method": "cor",
+  "seam": null
+ },
+ "motion": {
+  "floor": "lowest"
+ },
+ "look": {
+  "skin": "#f0c5a5",
+  "roughness": 0.65
+ }
+}

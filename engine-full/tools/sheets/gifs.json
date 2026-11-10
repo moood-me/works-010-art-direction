@@ -1,0 +1,43 @@
+{
+ "about": "Animated pictures of the viewer: node engine-full/tools/gif.mjs engine-full/tools/sheets/gifs.json [names]",
+ "gifs": [
+  {
+   "name": "dress-walk",
+   "out": "docs/pictures/engine/clothes/dress-walk.gif",
+   "query": "?clothes&c=clothes-dress&m=walk",
+   "to": 110
+  },
+  {
+   "name": "wind-walk",
+   "out": "docs/pictures/engine/clothes/wind-walk.gif",
+   "query": "?clothes&c=clothes-wind&m=walk&w=wind-light",
+   "to": 110
+  },
+  {
+   "name": "jeans-roll",
+   "out": "docs/pictures/engine/clothes/jeans-roll.gif",
+   "query": "?clothes&c=clothes-jeans&m=roll",
+   "to": 120,
+   "w": 520,
+   "h": 420
+  },
+  {
+   "name": "granny-sit",
+   "out": "docs/pictures/engine/clothes/granny-sit.gif",
+   "query": "?clothes&c=clothes-granny&m=sit",
+   "to": 150
+  },
+  {
+   "name": "hair-walk",
+   "out": "docs/pictures/engine/clothes/hair-walk.gif",
+   "query": "?clothes&c=clothes-hair&m=walk",
+   "to": 110
+  },
+  {
+   "name": "hood-look",
+   "out": "docs/pictures/engine/clothes/hood-look.gif",
+   "query": "?clothes&c=head-hood&m=look-around",
+   "to": 120
+  }
+ ]
+}
