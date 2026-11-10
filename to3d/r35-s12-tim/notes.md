@@ -26,7 +26,7 @@ New here:
   are shells of the drawing's sizes (`shells.py`), skinned by the fitted body's nearest weights.
 - **Hair as form: spikes.** The drawing's hair is a wash with an outline of tufts. Here it is a dome over the skull
   (an icosphere cut along the drawing's hairline — across the forehead, level along the side, down behind the ear to
-  the nape; the edge toothed — tufts over the forehead) with ~45 cones of uneven height leaning back. Its silhouette
+  the nape; the edge toothed — tufts over the forehead) with 48 cones of uneven height leaning back. Its silhouette
   is then tufts from any side and stays put when he turns; the pen keeps the points (no smoothing of the chain, no
   lifting at corners — `sharp` in `char.js`). Silhouettes of spikes over the hair itself are thin strokes, every second.
 - **Stripes.** The jumper's stripes are a coordinate down the body and along the sleeves (`stripe`); the unseen
@@ -51,6 +51,8 @@ New here:
   front/back. Eyes and mouth laid flat (they are drawn); the base's nose laid flat and the drawing's upturned button
   put on (profile from `head_side`, width from `head_front`).
 - **Clothes** — shells from the drawing's sizes; **hair** — the dome with spikes.
+- `head.py`'s push of the cheeks forward follows the face's front without the nose (`NOSE_SPAN`; found on Марат, whose
+  big nose it swallowed).
 - Neural models were not used.
 
 ## Repeat

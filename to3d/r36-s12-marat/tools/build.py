@@ -333,7 +333,7 @@ by_ = np.r_[np.arange(-30, 128, 5.0), 128, 132, 135.5, 137]
 b_a = np.interp(by_, [-30, 40, 96, 128, 137], [91, 100, 88, 50, 3])
 b_f = np.interp(by_, [-30, 26, 44, 60, 76, 92, 110, 128, 137], [40, 52, 62, 72, 84, 102, 94, 58, 16])
 b_zc = np.interp(by_, [-30, 100, 137], [-6, -6, 14])
-b_in = np.interp(by_, [-30, -22, 26, 46, 60, 76, 86], [80, 78, 70, 55, 45, 30, 0])       # the bare front's half-width
+b_in = np.interp(by_, [-30, -10, 26, 46, 60, 76, 86], [88, 80, 70, 55, 45, 30, 0])       # the bare front's half-width
 TB = np.radians(104)
 n_half = 22
 BV_ = []; open_mid = []
@@ -414,6 +414,7 @@ inner = np.ones(N, np.uint8)
 face_area = (V0[:, 2] > -0.01) & (yd > -74) & (yd < 120)
 nose = (np.abs(xd) < 27) & (yd > -12) & (yd < 48)
 inner[hd0:hd1] = np.where(face_area & ~nose & ~earm, 0, 1)
+inner[ranges['body'][0]:ranges['body'][1]] = np.where(isfoot, 0, 1)        # a clog is one form: no lines of toes
 inner[slice(*ranges['hair'])] = 2
 inner[slice(*ranges['beard'])] = 2
 

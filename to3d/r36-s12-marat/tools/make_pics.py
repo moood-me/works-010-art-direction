@@ -82,7 +82,7 @@ if on('steps', 'stills'):
 
 if on('expr', 'stills'):
     E = [REST, 'joy', 'surprise', 'sad', 'anger']
-    ce = dict(mode='ortho', h=0.66, cy=1.615, pitch=0, yaw=0.68, follow=False)
+    ce = dict(mode='ortho', h=0.66, cy=1.615, pitch=0, yaw=0.5, follow=False)
     shots(380, 420, [dict(name='e-' + e, set=dict(STAND, exprTrack=[[0, e]], cam=ce)) for e in E], 'expr')
     row([im('e-' + e) for e in E], 'expr-3d.jpg', 0.8)
     Image.open(os.path.join(STY, f'expr-{NAME}.jpg')).convert('RGB').resize((1200, 375), Image.LANCZOS).save(os.path.join(PICS, 'expr-drawing.jpg'), quality=88)

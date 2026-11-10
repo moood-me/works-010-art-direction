@@ -93,19 +93,21 @@ export function drawFace(d, F) {
   }
   d.T = [[1, 0, 0, 1, 0, 0]]; d.map = faceMap;
   if (e.flush > 0) K.extra(d, { extra: 'flush' }, 0, 0, side < 0 ? -46 : 46, 22, -40, e.flush);
+  const fc0 = frameAt(d, 0, 10, 0, true), tc = fc0 ? 1 - Math.min(1, fc0.r) : 1;      // how far the face is turned from us
   // eyes that narrow with the smile, crow's feet, thick brows
   for (const [sx, sd] of [[-36, 75], [36, 76]]) {
     const f0 = frameAt(d, sx, -4, 0.7); if (!f0) continue;
     const ex = sx - side * 9 * (1 - Math.min(1, f0.r)), f = frameAt(d, ex, -4, 0.7) || f0;
     const far = Math.sign(sx) === side, t = 1 - Math.min(1, f.r), es = far ? 1 - 0.25 * t : 1 + 0.05 * t, sg = sx < 0 ? -1 : 1;
-    { const k = -side * (far ? 20 * t : 34 * Math.max(0, t - 0.35)); f.c = [f.c[0] + f.ax[0] * k, f.c[1] + f.ax[1] * k]; }      // turned: the features keep inside the contour
+    const tn = far ? 0 : Math.max(0, tc - 0.55) / 0.45;        // the near eye, as the face nears the profile
+    { const k = -side * (far ? 20 * t : 14 * tn); f.c = [f.c[0] + f.ax[0] * k, f.c[1] + f.ax[1] * k]; }      // turned: the features keep inside the contour
     useFrame(d, f, sx, -4);
     K.eye(d, sx, -4, 1.15 * e.eye * es, [e.look[0] + side * t * 1.1, e.look[1]], e.lid, { side: sg, squint: sq, seed: sd });
     if (open && !e.talk) {
       K.ink(d, [[sx + sg * 14, 13], [sx, 9], [sx - sg * 14, 13]], { w: 1.0, start: 0.3, end: 0.3, retrace: 0, seed: sd + 10 });       // the cheek pushes the lower lid up
       if (t < 0.3) { K.ink(d, [[sx + sg * 17, -8], [sx + sg * 27, -12]], { w: 0.8, retrace: 0, seed: sd + 12 }); K.ink(d, [[sx + sg * 18, -2], [sx + sg * 28, -2]], { w: 0.8, retrace: 0, seed: sd + 14 }); }
     }
-    thickBrow(d, sx, -30, 34 * es * (far ? 1 : 1 - 0.3 * Math.max(0, t - 0.35) / 0.65), e, sg, sd + 2);
+    thickBrow(d, sx + sg * 10 * tn, -30, 34 * es * (1 - 0.45 * tn), e, sg, sd + 2);
     if (e.extra === 'tear' && e.extraK > 0.5 && (sx < 0) !== (side < 0)) K.extra(d, { extra: 'tear' }, sx, -4, 0, 0, -40, 1);
   }
   // the broad nose from the front — the round tip and two wings — while the face looks at us; turned, the 3D's contour

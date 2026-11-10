@@ -35,7 +35,6 @@ def FILMS(follow, motion_film):
         'walk': lambda: motion_film('walk', 120, follow(-0.6, 0.08, 5.6, 0.92, 20), [{'t': 0, 'name': 'strict'}, {'t': 2.6, 'name': 'smile'}], [[0.6, 2.4]]),
         # a bow: Kimodo's «кланяется»
         'bow': lambda: motion_film('bow', 100, follow(-0.5, 0.06, 5.6, 0.92, 20), [{'t': 0, 'name': 'calm'}, {'t': 2.2, 'name': 'smile'}]),
-        'wave': lambda: motion_film('wave', 90, follow(-0.3, 0.06, 5.2, 0.98, 20), [{'t': 0, 'name': 'smile'}], [[1.0, 2.6]]),
     }
 
 

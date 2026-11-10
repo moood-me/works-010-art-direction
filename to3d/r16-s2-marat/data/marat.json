@@ -32,7 +32,7 @@
   "moustache": {
    "ranges": [
     [
-     18945,
+     19157,
      4180
     ]
    ],
@@ -45,14 +45,14 @@
   "beard": {
    "ranges": [
     [
-     34324,
-     9765
+     34536,
+     9216
     ]
    ],
    "pivot": [
-    0.0001330142426623695,
-    0.07498107128175291,
-    0.0389322610864469
+    -0.00015103676633913083,
+    0.06736443512601253,
+    0.03844884974373261
    ]
   }
  },
@@ -204,7 +204,7 @@
   "positions": {
    "dtype": "float32",
    "shape": [
-    51811,
+    51474,
     3
    ],
    "offset": 0
@@ -212,115 +212,115 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    100232,
+    99558,
     3
    ],
-   "offset": 621736
+   "offset": 617688
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    51811,
+    51474,
     4
    ],
-   "offset": 1824520
+   "offset": 1812384
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    51811,
+    51474,
     4
    ],
-   "offset": 2031768
+   "offset": 2018280
   },
   "joints": {
    "dtype": "float32",
    "shape": [
     231
    ],
-   "offset": 2860744
+   "offset": 2841864
   },
   "frames": {
    "dtype": "float32",
    "shape": [
     308
    ],
-   "offset": 2861672
+   "offset": 2842792
   },
   "col": {
    "dtype": "uint8",
    "shape": [
-    51811,
+    51474,
     3
    ],
-   "offset": 2862904
+   "offset": 2844024
   },
   "shd": {
    "dtype": "uint8",
    "shape": [
-    51811,
+    51474,
     3
    ],
-   "offset": 3018344
+   "offset": 2998448
   },
   "rim": {
    "dtype": "uint8",
    "shape": [
-    51811,
+    51474,
     3
    ],
-   "offset": 3173784
+   "offset": 3152872
   },
   "gloss": {
    "dtype": "uint8",
    "shape": [
-    51811
+    51474
    ],
-   "offset": 3329224
+   "offset": 3307296
   },
   "uv": {
    "dtype": "float32",
    "shape": [
-    51811,
+    51474,
     2
    ],
-   "offset": 3381040
+   "offset": 3358776
   },
   "tw": {
    "dtype": "uint8",
    "shape": [
-    51811
+    51474
    ],
-   "offset": 3795528
+   "offset": 3770568
   },
   "pn": {
    "dtype": "float32",
    "shape": [
-    51811,
+    51474,
     3
    ],
-   "offset": 3847344
+   "offset": 3822048
   },
   "pw": {
    "dtype": "uint8",
    "shape": [
-    51811
+    51474
    ],
-   "offset": 4469080
+   "offset": 4439736
   },
   "two": {
    "dtype": "uint8",
    "shape": [
-    51811
+    51474
    ],
-   "offset": 4520896
+   "offset": 4491216
   },
   "mat": {
    "dtype": "uint8",
    "shape": [
-    51811
+    51474
    ],
-   "offset": 4572712
+   "offset": 4542696
   }
  },
  "bin": "marat.bin"

@@ -82,3 +82,17 @@ expressions with the head turned 0.3 rad (17.2°); the three-quarter at 0.55 rad
 No neural images, no StdGEN, no Human Base Meshes (the drawing's head is two balls with painted features).
 
 ## What is weak / not done
+
+- The bob is a smooth helmet: no drawn locks, the rolled ends read less than in the drawing.
+- With the arms down the gloves are seen edge-on and look smaller than drawn (the drawing turns the hand to the viewer).
+- The drawing's profile is a cheat (the body drawn in pure side and narrower, the head at 72°): the 3D differs there.
+- Kimodo's `idle` stoops: the head goes down until the chin covers the collar (the close films follow the head).
+- Kimodo's wave brings the hand to a person's head; on her big head it stays by the face (`armsOutOfHead` keeps it
+  out): the wave film is shot from the side.
+- Half-way between the calm face and joy the eyes are half-shut for a moment (softened: the laughing eye shuts only
+  past 0.3 of joy).
+- Testing the hairline where the hair itself is (instead of on the outer bob) was tried and taken back: the hair then
+  lies on the skin over a band and the edge flickers. It is kept for Р34's beard, where the forms are further apart.
+- The dress is a form that bends with the body, not cloth. The drawing's pose with the daisy is not made (no such
+  motion in `engine/motions`).
+- Heavy runs go through the shared locks: `flock /home/user/cache/heavy.$((RANDOM % 3)).lock python3 make.py …`.

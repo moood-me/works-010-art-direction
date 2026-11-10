@@ -39,7 +39,7 @@ def eyes(expr, lid, look):
             o.append(marat.smile_eye(d, cx, 263, 16.5, 12, sx))
         else:
             lv = {'o': e['lid'], 'h': e['lid'] + (1 - e['lid']) * 0.55}.get(lid)
-            o.append(eye(d, cx, EYE_Y, 16, 13.5, lid=lv or 0.5, look=(LOOKS[look], e['look']), tilt=1, skin=SKIN, iris='#3a2218',
+            o.append(eye(d, cx, EYE_Y, 16, 13.5, lid=0.5 if lv is None else lv, look=(LOOKS[look], e['look']), tilt=1, skin=SKIN, iris='#3a2218',
                          wing=sx, crease=0.35, low_lid=e['low'], irr=0.86, shut=lid == 's'))
         if e.get('sad'): o.append(marat.thick_brow((m(14), 228 + b), (m(38), 226 + b), (m(68), 244 + b), 10))
         elif e.get('angry'): o.append(marat.thick_brow((m(12), 242 + b), (m(38), 226 + b), (m(68), 222 + b), 11))

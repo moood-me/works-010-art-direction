@@ -492,6 +492,6 @@ PAINT = dict(skin=mix(C['skin'], C['skin_sh'], 0.52), lip=C['lip'], mouth='#5a1f
 write(char.NAME, parts, J2, B['frames'], ao=ao, out_dirs=OUT,
       extra=dict(K=K, hs=HS, headY=HY, headZ=HZ, balls=BALLS.tolist(), mouthY=MY, lipZ=float(lipz), floor=FLOOR, paint=PAINT,
                  iris=dict(col=mix(C['iris_col'], '#8a8a86', 0.45), r=C['iris'] / char.EYE_R),
-                 legs=dict(r=[0.056, 0.044, 0.036], soft=0.012), hair=dict(light=C['hair'].light, dark=C['hair'].dark),
+                 legs=dict(r=[0.056, 0.044, 0.036], soft=0.012, seat=0.078), hair=dict(light=C['hair'].light, dark=C['hair'].dark),
                  skinShade=C['skin_sh'], lash=C['lash'], stance=STANCE, eye=dict(x=C['eye_x'], y=C['eye_y'], browH=C['brow_h'])))
 np.savez(f'{CACHE}/head_rest.npz', X=HEAD_REST)

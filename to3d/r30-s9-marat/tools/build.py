@@ -338,7 +338,7 @@ for _ in range(6): Rg[:, 1:-1] = (Rg[:, :-2] + 2 * Rg[:, 1:-1] + Rg[:, 2:]) / 4;
 iw = np.argmin(np.abs(ys - 0.80))
 for i in range(len(ys)):
     if ys[i] < 0.80: Rg[i] = Rg[iw] * (1 - (0.2 + 0.16 * (np.abs(phs) / SPAN) ** 2) * ((0.80 - ys[i]) / (0.80 - AHEM)) ** 1.3)       # it falls in a little towards the knees, more at its edges
-Rg += 0.014 + 0.02 * np.clip((ys - WAIST) / 0.1, 0, 1)[:, None]
+Rg += 0.014 + 0.036 * np.clip((ys - WAIST) / 0.2, 0, 1)[:, None]         # the bib stands a little off the chest
 AX = np.array([(Rg[i, k] * np.sin(ph), yy, ZC + Rg[i, k] * np.cos(ph)) for i, yy in enumerate(ys) for k, ph in enumerate(phs)])
 AT = grid(na, len(ys), wrap=False)[:, ::-1]
 aph = np.arctan2(AX[:, 0], AX[:, 2] - ZC)

@@ -22,7 +22,7 @@ FILMS = char.FILMS(follow, motion_film)
 
 
 def face_film():
-    cam = {'yaw': -0.3, 'rel': 'head', 'pitch': 0.03, 'dist': 1.6 * char.HS, 'joint': 'Head', 'offset': [0, 0.075 * char.HS + 0.04, 0.02], 'fov': 14}
+    cam = {'yaw': -0.3, 'rel': 'head', 'pitch': 0.03, 'dist': 2.0 * char.HS, 'joint': 'Head', 'offset': [0, 0.075 * char.HS + 0.045, 0.02], 'fov': 14}
     return 560, 560, 30, [{'name': f'f{i:04d}', 'set': {**char.STAND, 'faceTime': i / 30, 'cam': cam, 'expr': char.FACE_EXPR, 'talk': char.FACE_TALK}} for i in range(char.FACE_FRAMES)]
 
 

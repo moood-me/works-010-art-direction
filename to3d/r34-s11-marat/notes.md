@@ -70,3 +70,15 @@ the 3D is shot at 1.3 / 1.08 with the head turned 0.3 rad (17.2°); three-quarte
 No neural images, no StdGEN, no Human Base Meshes.
 
 ## What is weak / not done
+
+- The ears are smaller than drawn and nearly hide in the curls from the front.
+- With the arms down the gloves are seen edge-on and look smaller than drawn. A turn of the hand in the stand pose
+  (`HAND_TURN`, `?ht=` in the page's address) helps only a little.
+- Under the cheeks the beard's edge is a little toothed in places (the form is tested against the drawn edge where it
+  itself is — otherwise the beard came over the blush).
+- The towel is an even ribbon without the fringe; jacket, apron and towel are forms, not cloth.
+- Kimodo's `idle` and `stomp` bow his head and trunk a lot (the beard lies on the chest); in `dance` an arm passes
+  right by the beard.
+- The drawing's poses with the ladle (the laugh thrown back) are not made: no such motion in `engine/motions`; the
+  ladle is not modelled.
+- Heavy runs go through the shared locks: `flock /home/user/cache/heavy.$((RANDOM % 3)).lock python3 make.py …`.

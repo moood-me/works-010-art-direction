@@ -23,28 +23,24 @@ save(shot(v, T, (0, 0.7, np.pi / 2), 360, box), 's1-base')
 v2, P2 = B.base(Hd.HBM); T2 = M.triangulate(P2)
 save(shot(v2, T2, (0, 0.7, np.pi / 2), 360, box), 's2-closed')
 V, Pf, ear = Hd.fitted(); Tf = M.triangulate(Pf)
-hb = (-0.27, 0.27, -0.1, 0.5)
+hb = (-0.27, 0.27, -0.1, 0.44)
 save(shot(V, Tf, (0, 0.62, np.pi / 2), 360, hb), 's3-fitted')
-cols = dict(nose=(0.85, 0.52, 0.47), moustache=(0.92, 0.9, 0.86), browL=(0.92, 0.9, 0.86), browR=(0.92, 0.9, 0.86), earL=(0.89, 0.65, 0.54), earR=(0.89, 0.65, 0.54),
-            tuftL=(0.92, 0.9, 0.86), tuftR=(0.92, 0.9, 0.86), glasses=(0.4, 0.3, 0.2), glint=(1, 1, 1), lens=None,
-            loupe=(0.2, 0.2, 0.2), brass=(0.8, 0.6, 0.3), glass=(0.5, 0.7, 0.75), band=(0.2, 0.15, 0.15))
-parts = [(V, Tf, (0.89, 0.65, 0.54))]
-for k, (pv, pt) in {**Hd.forms(V, Tf), **Hd.things(V, Tf)}.items():
-    if cols[k]: parts.append((pv, pt, cols[k]))
+sk = (0.86, 0.61, 0.46)
+cols = dict(earL=sk, earR=sk, nose=(0.86, 0.55, 0.42), beard=(0.22, 0.19, 0.22), moustache=(0.17, 0.14, 0.17), hair=(0.22, 0.19, 0.22))
+parts = [(V, Tf, sk)] + [(pv, pt, cols[k]) for k, (pv, pt) in Hd.forms(V, Tf).items()]
 Vs, Ts = Bl.join([(a, b) for a, b, _ in parts]); C = np.concatenate([np.tile(c, (len(a), 1)) for a, _, c in parts])
 save(shot(Vs, Ts, (0, 0.62, np.pi / 2), 360, hb, C), 's4-forms')
-b = Body('moood-oldman')
-bb = (-0.62, 0.62, -0.05, 1.8)
+b = Body('moood-man')
+bb = (-0.75, 0.75, -0.05, 2.0)
 a = shot(b.P, b.T, (0, np.pi / 2), 300, bb)
-h, arr = pack.load(os.path.join(HERE, '..', 'data', 'savely.json'))
+h, arr = pack.load(os.path.join(HERE, '..', 'data', 'marat.json'))
 pos = arr['positions']; tri = arr['triangles'].reshape(-1, 3).astype(np.int64)
 c = shot(pos, tri, (0, np.pi / 2), 300, bb, arr['col'] / 255.0)
 save(np.hstack([a, c]), 's5-body')
 # the painted layers on the skin colour
 tiles = []
-for ex in ('calm', 'kind', 'surprise', 'sad', 'anger'):
-    bg = Image.new('RGBA', (880, 1200), (226, 166, 138, 255))
-    mouth = {'kind': 'smile', 'surprise': 'o'}.get(ex, 'none')
+for ex, mouth in (('calm', 'smile'), ('joy', 'laugh'), ('surprise', 'o'), ('sad', 'sad'), ('anger', 'angry')):
+    bg = Image.new('RGBA', (880, 1040), (220, 156, 118, 255))
     for n in (f'skin-{mouth}', f'eyes-{ex}-oc'): bg.alpha_composite(Image.open(os.path.join(HERE, '..', 'data', 'faces', n + '.png')))
-    tiles.append(np.asarray(bg.convert('RGB').resize((330, 450), Image.LANCZOS)))
+    tiles.append(np.asarray(bg.convert('RGB').resize((330, 390), Image.LANCZOS)))
 save(np.hstack(tiles), 's6-face-layer')

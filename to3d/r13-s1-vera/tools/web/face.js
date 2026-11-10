@@ -133,7 +133,7 @@ function rotY(p, c, deg) {
 export const EXPRESSIONS = {
   calm: { smile: -0.12, up: 19, low: 7, inner: -0.15, lookY: 1 },
   strict: { smile: -0.3, up: 13, low: 5, brow: -0.25, inner: -0.7, browR: 0.5, lookX: 6 },
-  joy: { smile: 1.25, jaw: 8, upper: 0.9, wide: 0.5, low: 9, up: 5, brow: 0.4 },
+  joy: { smile: 1.25, jaw: 7, upper: 0.55, wide: 0.5, low: 9, up: 5, brow: 0.4 },
   smile: { smile: 0.9, upper: 0.2, wide: 0.3, low: 7, up: 8, brow: 0.2 },
   surprise: { jaw: 13, pucker: 1.25, wide: -0.5, up: -6, low: -3, brow: 1.2, pupil: 0.8 },
   sad: { smile: -0.9, inner: 1.2, brow: -0.1, up: 14, lookY: 11, low: 2 },

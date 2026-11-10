@@ -1,10 +1,10 @@
 {
- "pack": "../../data/savely.json",
+ "pack": "../../data/marat.json",
  "w": 500,
  "h": 600,
  "shots": [
   {
-   "name": "head-q",
+   "name": "head-f",
    "set": {
     "live": false,
     "thr": 0.08,
@@ -16,31 +16,14 @@
     "lightSpace": "camera",
     "clip": null,
     "expr": "calm",
-    "look": "r",
+    "look": "c",
     "lid": null,
     "mouth": null,
     "talk": false,
     "poseOpts": {
-     "Left": {
-      "down": 0.72,
-      "fwd": -0.5,
-      "bend": 0.9,
-      "axis": [
-       0.5,
-       1,
-       0
-      ]
-     },
-     "Right": {
-      "down": 0.72,
-      "fwd": -0.5,
-      "bend": 0.9,
-      "axis": [
-       0.5,
-       -1,
-       0
-      ]
-     }
+     "down": 0.42,
+     "straighten": 0.35,
+     "curl": 0.7
     },
     "floorY": 2,
     "floor3d": false,
@@ -49,11 +32,11 @@
     "plain": 0,
     "cam": {
      "mode": "ortho",
-     "yaw": 0.62,
+     "yaw": 0,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.11,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0,
      "follow": false,
      "focus": null,
      "facing": false
@@ -61,24 +44,24 @@
     "shadowBox": {
      "c": [
       0,
-      1.38,
+      1.7,
       0.05
      ],
-     "r": 0.42
+     "r": 0.45
     }
    }
   },
   {
-   "name": "head-f",
+   "name": "head-q",
    "set": {
-    "look": "c",
+    "look": "r",
     "cam": {
      "mode": "ortho",
-     "yaw": 0,
+     "yaw": 0.62,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0.035,
      "follow": false,
      "focus": null,
      "facing": false
@@ -92,9 +75,9 @@
      "mode": "ortho",
      "yaw": 1.5708,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.07,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0.045,
      "follow": false,
      "focus": null,
      "facing": false
@@ -104,14 +87,13 @@
   {
    "name": "light-1",
    "set": {
-    "look": "r",
     "cam": {
      "mode": "ortho",
      "yaw": 0.62,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.11,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0.035,
      "follow": false,
      "focus": null,
      "facing": false
@@ -133,35 +115,17 @@
    }
   },
   {
-   "name": "e-calm",
+   "name": "e-joy",
    "set": {
-    "expr": "calm",
+    "expr": "joy",
     "look": "r",
     "cam": {
      "mode": "ortho",
-     "yaw": 0.5,
+     "yaw": 0.62,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.085,
-     "follow": false,
-     "focus": null,
-     "facing": false
-    }
-   }
-  },
-  {
-   "name": "e-kind",
-   "set": {
-    "expr": "kind",
-    "look": "r",
-    "cam": {
-     "mode": "ortho",
-     "yaw": 0.5,
-     "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.085,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0.035,
      "follow": false,
      "focus": null,
      "facing": false
@@ -175,11 +139,11 @@
     "look": "r",
     "cam": {
      "mode": "ortho",
-     "yaw": 0.5,
+     "yaw": 0.62,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.085,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0.035,
      "follow": false,
      "focus": null,
      "facing": false
@@ -193,11 +157,11 @@
     "look": "r",
     "cam": {
      "mode": "ortho",
-     "yaw": 0.5,
+     "yaw": 0.62,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.085,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0.035,
      "follow": false,
      "focus": null,
      "facing": false
@@ -211,11 +175,11 @@
     "look": "r",
     "cam": {
      "mode": "ortho",
-     "yaw": 0.5,
+     "yaw": 0.62,
      "pitch": 0,
-     "cy": 1.3495,
-     "h": 0.755,
-     "sx": 0.085,
+     "cy": 1.688,
+     "h": 0.6414,
+     "sx": 0.035,
      "follow": false,
      "focus": null,
      "facing": false
@@ -233,9 +197,9 @@
      "mode": "ortho",
      "yaw": 0.45,
      "pitch": 0,
-     "cy": 1.36,
-     "h": 0.6,
-     "sx": 0.03,
+     "cy": 1.68,
+     "h": 0.62,
+     "sx": 0.02,
      "follow": false,
      "focus": null,
      "facing": false
@@ -247,13 +211,14 @@
    "w": 500,
    "h": 900,
    "set": {
+    "expr": "joy",
     "cam": {
      "mode": "ortho",
-     "yaw": 0.62,
+     "yaw": 0.5,
      "pitch": 0,
-     "cy": 0.89,
-     "h": 2.022,
-     "sx": 0.02
+     "cy": 0.92,
+     "h": 2.091,
+     "sx": 0
     },
     "shadowBox": null,
     "floorY": 0.878
@@ -262,10 +227,10 @@
   {
    "name": "fig-f",
    "set": {
+    "expr": "calm",
     "look": "c",
     "cam": {
-     "yaw": 0,
-     "sx": 0
+     "yaw": 0
     }
    }
   },
@@ -294,8 +259,8 @@
     "live": true,
     "cam": {
      "yaw": 0,
-     "cy": 0.84,
-     "h": 1.86,
+     "cy": 0.97,
+     "h": 2.15,
      "sx": 0
     },
     "floorY": 0.9
@@ -305,8 +270,8 @@
     "to": 89,
     "step": 1,
     "yaw": [
-     0.62,
-     6.9032
+     0.5,
+     6.7832
     ],
     "fps": 30
    }
@@ -324,10 +289,10 @@
     "cam": {
      "mode": "persp",
      "fov": 24,
-     "dist": 4.6,
+     "dist": 5.6,
      "yaw": 0.95,
      "pitch": 0.06,
-     "cy": 0.8,
+     "cy": 0.98,
      "follow": true,
      "sx": 0
     }
@@ -344,7 +309,7 @@
    "h": 720,
    "set": {
     "clip": "wave",
-    "expr": "kind",
+    "expr": "joy",
     "cam": {
      "yaw": 0.35
     }
@@ -352,7 +317,21 @@
    "film": {
     "from": 0,
     "to": 89,
-    "step": 1
+    "step": 1,
+    "events": [
+     {
+      "at": 0,
+      "set": {
+       "expr": "calm"
+      }
+     },
+     {
+      "at": 25,
+      "set": {
+       "expr": "joy"
+      }
+     }
+    ]
    }
   },
   {
@@ -367,18 +346,18 @@
     "shadowBox": {
      "c": [
       0,
-      1.38,
+      1.7,
       0.05
      ],
-     "r": 0.42
+     "r": 0.45
     },
     "cam": {
      "mode": "ortho",
-     "yaw": 0.4,
+     "yaw": 0.35,
      "pitch": 0,
-     "cy": 1.35,
-     "h": 0.7,
-     "sx": 0.05,
+     "cy": 1.68,
+     "h": 0.66,
+     "sx": 0.02,
      "follow": false
     }
    },
@@ -388,21 +367,23 @@
     "step": 1,
     "events": [
      {
-      "at": 60,
-      "set": {
-       "expr": "kind"
-      }
-     },
-     {
-      "at": 110,
+      "at": 55,
       "set": {
        "expr": "surprise"
       }
      },
      {
-      "at": 145,
+      "at": 95,
       "set": {
-       "expr": "anger"
+       "expr": "joy",
+       "talk": false
+      }
+     },
+     {
+      "at": 150,
+      "set": {
+       "expr": "calm",
+       "talk": true
       }
      }
     ]

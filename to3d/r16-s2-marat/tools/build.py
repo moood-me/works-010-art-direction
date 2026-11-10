@@ -30,7 +30,7 @@ def mat(base, k=0.3, s=0.55, shade=SHADE, rim='#ffd8b0', gloss=0.0):
 MAT = {
     'skin':   mat(SKIN, 0.3, 0.58, rgb('#4a1838'), '#ffb48a', 0.3),
     'nose':   mat(mix(SKIN, rgb('#d2584a'), 0.2), 0.3, 0.5, rgb('#4a1838'), '#ffb48a', 0.8),
-    'hair':   mat('#1e181e', 0.12, 0.35, rgb('#0c080e'), '#b08a88', 0.1),
+    'hair':   mat('#1e181e', 0.12, 0.35, rgb('#0c080e'), '#b08a88', 0.2),
     'jacket': mat('#ece2d2', 0.25, 0.5, rgb('#2a1e40'), '#f0c8a0'),
     'collar': mat('#ece2d2', 0.25, 0.5, rgb('#2a1e40'), '#f0c8a0'),
     'cuff':   mat(mix(rgb('#ece2d2'), rgb('#8a7a80'), 0.18), 0.25, 0.5, rgb('#2a1e40'), '#f0c8a0'),

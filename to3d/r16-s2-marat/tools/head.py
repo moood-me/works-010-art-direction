@@ -58,7 +58,7 @@ def in_beard(x, y):
     """Is the front-view place (units, x from the middle) under the beard? Above it: the cheeks' line from the ear's
     front down to under the nose (the drawing's beard top)."""
     ax = abs(x)
-    top = np.interp(ax, [0, 14, 46, 60, 76, 84, 96], [344, 342, 334, 324, 308, 268, 254])
+    top = np.interp(ax, [0, 14, 46, 60, 76, 84, 96], [344, 342, 336, 328, 318, 296, 266])
     return y > top
 
 
@@ -78,9 +78,9 @@ def forms(V, T):
         out[name] = (U(v), t[:, ::-1])
     # the nose: broad, a round tip, wide wings
     zn = z(0, 322)
-    b, r = Bl.chain([(0, 254, z(0, 254) + 1), (0, 284, z(0, 284) + 8), (0, 308, zn + 17), (0, 322, zn + 22)], [10, 13, 19, 23], 20)
-    wings = np.array([(sx * 27, 328, zn + 8) for sx in (1, -1)])
-    v, t = Bl.solid((np.r_[b, wings], np.r_[r, [18, 18]]), k=5, cell=2.5)
+    b, r = Bl.chain([(0, 254, z(0, 254) + 1), (0, 284, z(0, 284) + 8), (0, 308, zn + 17), (0, 322, zn + 22)], [10, 13, 20, 25], 20)
+    wings = np.array([(sx * 30, 328, zn + 8) for sx in (1, -1)])
+    v, t = Bl.solid((np.r_[b, wings], np.r_[r, [20, 20]]), k=5, cell=2.5)
     out['nose'] = (U(v), t[:, ::-1])
     # the beard: balls on the head's surface under the beard's line, melted into one mass; fuller under the chin
     m = in_beard(xu, yd) & (yd < 452) & (zu > np.interp(yd, [260, 330, 420], [6, -18, -40]))

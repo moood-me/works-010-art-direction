@@ -62,6 +62,8 @@ python3 steps.py; python3 films.py turn walk face dance bow wave look
 python3 look.py          # a quick sheet: four sides and the head close → $C/look.jpg
 node viewer_check.mjs $C/viewer.png
 ```
+Heavy commands (Blender, anything that opens the browser: face_tex, look_head, compare, steps, films, look,
+viewer_check) go through a shared lock, one at a time: `flock /home/user/cache/heavy.$((RANDOM % 3)).lock <command>`.
 Python needs numpy, scipy, igl (libigl), PIL; node needs playwright (pre-installed) — three.js is served from the cache.
 `shots.mjs jobs.json outdir` drives `web/anya.html?shots=1` (served from /home/user).
 

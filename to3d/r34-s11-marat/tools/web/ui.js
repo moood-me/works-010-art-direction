@@ -10,7 +10,7 @@ if (!qs.has('shots')) {
   const frameCam = () => {
     const close = S.close;
     Object.assign(st.cam, { mode: 'persp', fov: 24, follow: true, followHead: close, followY: S.clip === 'sit' ? 0.9 : 1.2 }); A.camK = 1;
-    st.cam.dist = close ? 3.4 : (S.clip === 'dance' || S.clip === 'stomp' ? 7.6 : 6.8);
+    st.cam.dist = close ? 3.4 : (S.clip === 'dance' || S.clip === 'stomp' ? 10.4 : 9.5);
   };
   async function place() {
     await A.set({ size: size(), clip: S.clip, t: 0, expr: S.expr, talk: S.talk, still: false, settle: false });
@@ -51,12 +51,12 @@ if (!qs.has('shots')) {
   cv.addEventListener('pointermove', e => {
     if (!pts.has(e.pointerId)) return;
     pts.set(e.pointerId, [e.clientX, e.clientY]);
-    if (pts.size === 2) { const [a, b] = [...pts.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (drag.d) st.cam.dist = Math.min(9, Math.max(1.0, st.cam.dist * drag.d / d)); drag.d = d; return; }
+    if (pts.size === 2) { const [a, b] = [...pts.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (drag.d) st.cam.dist = Math.min(14, Math.max(1.0, st.cam.dist * drag.d / d)); drag.d = d; return; }
     st.cam.yaw -= (e.clientX - drag.x) * 0.4; st.cam.pitch = Math.min(60, Math.max(-10, st.cam.pitch + (e.clientY - drag.y) * 0.25)); drag.x = e.clientX; drag.y = e.clientY;
   });
   const up = e => { pts.delete(e.pointerId); if (!pts.size) { drag = null; cv.style.cursor = 'grab'; } };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-  cv.addEventListener('wheel', e => { e.preventDefault(); st.cam.dist = Math.min(9, Math.max(1.0, st.cam.dist * Math.exp(e.deltaY * 0.001))); }, { passive: false });
+  cv.addEventListener('wheel', e => { e.preventDefault(); st.cam.dist = Math.min(14, Math.max(1.0, st.cam.dist * Math.exp(e.deltaY * 0.001))); }, { passive: false });
   addEventListener('resize', () => st.size(...size()));
   // the loop: the motion runs with play (a clip loops; sitting stays down a while); the face lives on always
   let last = performance.now();
