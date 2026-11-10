@@ -283,7 +283,7 @@ def mat_lens():
     return m
 
 
-SKIN_WARM, SKIN_TINT, SKIN_K = '#e0806c', '#dc8478', 0.32
+SKIN_WARM, SKIN_TINT, SKIN_K = '#dc7462', '#dc8478', 0.42
 MATS = {
     'skin': mat_skin, 'eye': mat_eye,
     'hair': lambda: mat_hair('hair', '#e8e2d8', '#b4aca4', rough=0.6, coat=0.1),

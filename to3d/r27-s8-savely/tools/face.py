@@ -32,7 +32,7 @@ VISEMES = {
 }
 BROW_UP = 0.03
 BROW_H = 0.024       # how far the bushy brows stand off the forehead
-MOUST = dict(col='#e4ded4', w=0.2, droop=0.08, thick=0.1)     # cast.savely_under_nose → props.moustache
+MOUST = dict(col='#e4ded4', w=0.215, droop=0.08, thick=0.115)     # cast.savely_under_nose → props.moustache
 LID_K = 0.6          # the sheet's lids turn this much: a lid over a glass ball covers more than a painted one
 FACES = ['calm', 'stern', 'grumpy', 'tired', 'joy', 'surprise', 'sad', 'anger']
 
@@ -143,7 +143,7 @@ def moustache(ex):
     yy = up + (lo - up) * r
     xx = x * (1 - 0.03 * r)
     body = np.sin(np.pi * r) ** 0.7 * (1 - t ** 2.5) ** 0.5 * (0.72 + 0.28 * np.minimum(1, t / 0.12))   # a parting under the nose
-    out = 0.002 + 0.042 * body
+    out = 0.003 + 0.055 * body
     a = np.array([H0.a(y0 + v) for v in yy.ravel()])
     V = np.array([drawing.surf(xv / av, y0 + yv, ov) for xv, yv, av, ov in zip(xx.ravel(), yy.ravel(), a, out.ravel())])
     uv = np.c_[np.tile(r, (1, MN)).ravel() * 0.9, np.tile(t, (MR, 1)).ravel()]

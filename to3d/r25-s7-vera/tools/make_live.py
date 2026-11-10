@@ -11,7 +11,7 @@ PK = f'/works-010-art-direction/to3d/{config.FOLDER}/data/{config.WHO}.json'
 HY = float(D.J['head'][1]) / 100
 HEAD = dict(mode='ortho', h=0.42, yaw=-0.38, pitch=0.05, target=[0, HY - 0.03, 0])
 # the camera follows the pelvis, near, so the character is big in the frame
-FULL = lambda yaw, d=4.2: dict(mode='persp', dist=d, fov=24, yaw=yaw, pitch=0.08, cy=D.B['hip_y'] / 100 - 0.01, follow=True)
+FULL = lambda yaw, cy=None, d=4.2: dict(mode='persp', dist=d, fov=24, yaw=yaw, pitch=0.08, cy=cy or D.B['hip_y'] / 100 - 0.01, follow=True)
 NEAR = lambda yaw: dict(mode='persp', dist=1.45, fov=22, yaw=yaw, pitch=0.03, focus='Head', up=0.07, follow=False)
 
 FILMS = {
@@ -20,9 +20,9 @@ FILMS = {
                                  [11.6, {'calm': 0.5, 'surprise': 0.5}]]), time=(0, 13.2)),
     'idle-face': dict(w=480, h=540, fps=30, set=dict(clip='idle', cam=NEAR(-0.2), exprTrack=[[0, 'calm']], talk=False, linePx=2.2), frames=150),
 }
-for name, (clip, yaw, frames, track, talk) in config.MOTION_FILMS.items():
+for name, (clip, yaw, frames, track, talk, *cy) in config.MOTION_FILMS.items():
     FILMS[name] = dict(w=520, h=800, fps=30, frames=frames,
-                       set=dict(clip=clip, cam=FULL(yaw), exprTrack=track, talk=bool(talk), **(dict(talkFrom=talk[0], talkTo=talk[1]) if talk else {})))
+                       set=dict(clip=clip, cam=FULL(yaw, *cy), exprTrack=track, talk=bool(talk), **(dict(talkFrom=talk[0], talkTo=talk[1]) if talk else {})))
 
 
 def run(name, f):

@@ -18,7 +18,7 @@ FAR = dict(mode='persp', fov=22, dist=6.6, cy=0.86, follow=True, focus=None, pit
 FILMS = dict(
     turn=dict(w=480, h=720, set=dict(cam=dict(mode='ortho', h=1.95, cy=0.86, cx=0, yaw=0, pitch=0, follow=False, focus=None)), **{'from': 0, 'to': 35, 'step': 1}, yaw=[0, 6.2832 * 35 / 36]),
     walk=dict(w=480, h=720, set=dict(still=False, clip='walk', cam=dict(FAR, yaw=0.9)), **{'from': 0, 'to': 117.5}),
-    bow=dict(w=480, h=720, set=dict(still=False, clip='bow', cam=dict(FAR, yaw=0.5)), **{'from': 0, 'to': 100}),
+    bow=dict(w=480, h=720, set=dict(still=False, clip='bow', cam=dict(FAR, yaw=0.5)), **{'from': 0, 'to': 87.5}),
     talk=dict(w=480, h=600, set=dict(still=False, clip='idle', talk=True, talkFrom=0.4, talkTo=2.6,
                                       exprTrack=[[0, REST], [2.7, 'joy'], [3.6, 'surprise'], [4.3, REST]],
                                       cam=dict(mode='persp', fov=22, dist=2.0, follow=False, focus='Head', up=0.03, yaw=0.55, pitch=0.02)), **{'from': 0, 'to': 147.5}),
