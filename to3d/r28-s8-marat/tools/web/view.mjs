@@ -118,7 +118,7 @@ function sculpted(mat, { height, colour }) {
 }
 const P = (o) => new THREE.MeshPhysicalMaterial(o);
 const cloth = (color, weave, o = {}) => sculpted(P({ color, roughness: 0.88, sheen: 0.4, sheenRoughness: 0.5, sheenColor: '#ffffff', ...o }), {
-  height: `0.0005 * sin((vPat.x + vPat.y) * ${weave}.0) * sin(vPat.z * ${weave}.0)` });
+  height: '0.0' });      // the weave of the renders is finer than a screen pixel here: left out (it turned to moiré)
 const hairy = color => sculpted(P({ color, roughness: 0.55, clearcoat: 0.1, clearcoatRoughness: 0.4 }), {
   height: '0.0012 * sin(vTuv.x * 28.3) + 0.0005 * sin(vTuv.x * 37.0)' });
 const MATS = {
@@ -126,7 +126,7 @@ const MATS = {
   curl: sculpted(P({ color: '#2e2320', roughness: 0.5, clearcoat: 0.2, clearcoatRoughness: 0.35 }), {
     height: '0.0016 * sin(vTuv.x + vTuv.y * 15.0)', colour: 'diffuseColor.rgb *= 0.55 + 0.45 * (0.5 + 0.5 * sin(vTuv.x + vTuv.y * 15.0));' }),
   hairmass: P({ color: '#0c0808', roughness: 0.7 }), brow: hairy('#1e1614'),
-  eye: P({ map: tex('iris.png'), roughness: 0.25, clearcoat: 1.0, clearcoatRoughness: 0.02 }),
+  eye: P({ map: tex('iris.png'), roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.05, envMapIntensity: 0.3 }),
   jacket: cloth('#ece2d0', 1500, { roughness: 0.8, sheen: 0.3 }), apron: cloth('#c4582c', 1100), aprontie: cloth('#a84a24', 1100),
   towel: sculpted(P({ color: '#f7f2e8', roughness: 0.95, sheen: 0.7, sheenRoughness: 0.6 }), { height: '0.0',
     colour: 'if ((vPat.y > 1.3 && vPat.y < 1.335) || (vPat.y > 1.365 && vPat.y < 1.385)) diffuseColor.rgb = vec3(0.55, 0.1, 0.025);' }),
@@ -223,4 +223,5 @@ function frame(now) {
 requestAnimationFrame(frame);
 window.A = { async set(o) { if (o.motion) await choose(o.motion); if (o.t != null) t = o.t; if (o.expr) { target = o.expr; for (const k of FACES) { ew[k] = k === o.expr ? 1 : 0; ev[k] = 0; } }
   if (o.talk != null) { talk.checked = o.talk; makeLife(); } if (o.near != null) { near = o.near; } playing = false; step(0); placeCamera(); controls.update(); renderer.render(scene, camera); } };
+window.A.mesh = mesh;
 window.__ready = true;

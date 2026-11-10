@@ -118,7 +118,7 @@ function sculpted(mat, { height, colour }) {
 }
 const P = (o) => new THREE.MeshPhysicalMaterial(o);
 const cloth = (color, weave, o = {}) => sculpted(P({ color, roughness: 0.88, sheen: 0.4, sheenRoughness: 0.5, sheenColor: '#ffffff', ...o }), {
-  height: `0.0005 * sin((vPat.x + vPat.y) * ${weave}.0) * sin(vPat.z * ${weave}.0)` });
+  height: '0.0' });      // the weave of the renders is finer than a screen pixel here: left out (it turned to moiré)
 const hairy = color => sculpted(P({ color, roughness: 0.6, clearcoat: 0.1, clearcoatRoughness: 0.4 }), {
   height: '0.0012 * sin(vTuv.x * 28.3) + 0.0005 * sin(vTuv.x * 37.0)' });
 const MATS = {

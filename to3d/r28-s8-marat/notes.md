@@ -102,3 +102,7 @@ turns it further away — so the eyes looked away from the lens; here the gaze c
   stretches in a wide step, it doesn't swing), the towel is stuck to the chest; sleeves and trousers have no folds.
 - The skin is paler than the drawing's warm clay; the forearms are Anny's (thickened), the hands hers.
 - The viewer's materials are simpler than the renders; it has 91 000 vertices and is slower to start than Р10's.
+
+Viewer notes: the cloth's weave is left out there (finer than a screen pixel, it turned to moiré — in Р27's viewer
+too), and the glass eye's clear coat is weaker (0.5, little of the room's reflection): at full strength the reflection
+washed his dark irises out to white.

@@ -115,3 +115,5 @@ No neural images; StdGEN not used.
 - Kimodo's `idle` stoops him hard (a known weakness), so stills use `bow` frame 0; the mouth is a piece laid on the
   face, not a cavity; the far lens of the glasses sometimes catches a dark reflection.
 - The viewer's materials are simpler than the renders (no light under the skin, no bokeh).
+
+Viewer note: the cloth's weave of the renders is left out in the viewer (finer than a screen pixel, it turned to moiré).

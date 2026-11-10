@@ -19,6 +19,7 @@ const errs = []; page.on('pageerror', e => errs.push(e.message)); page.on('conso
 await page.goto(srv.url + 'to3d/r27-s8-savely/tools/web/view.html' + (JSON.parse(list).length ? '?shots=1' : ''));
 try { await page.waitForFunction(() => window.__ready, null, { timeout: 600000 }); }
 catch (e) { console.error(errs.join('\n')); throw e; }
+await page.waitForTimeout(2500);          // the paints (textures) load after the page is ready
 for (const s of JSON.parse(list)) {
   await page.evaluate(async o => { await window.A.set(o); }, s.set);
   await page.waitForTimeout(300);
