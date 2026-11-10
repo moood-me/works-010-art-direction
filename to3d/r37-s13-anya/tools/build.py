@@ -133,14 +133,14 @@ B['V'][:, 1] = np.where(isfoot, np.maximum(B['V'][:, 1], 0.0), B['V'][:, 1])
 BW = np.zeros((nb, NJ))
 for q in range(4): np.add.at(BW, (np.arange(nb), SJ0[bi][:, q]), SW0[bi][:, q])
 B['W'] = BW
-B['band'] = np.where(legs[bi], B['V'][:, 1], -1.0)        # the legs' rest height: the renderer cuts the slipper by it
+B['band'] = np.where(legs[bi], np.where(np.array(['Toe' in n for n in dn[bi]]), 0.0, B['V'][:, 1]), -1.0)        # the legs' rest height: the renderer cuts the slipper by it
 
 # ---------------------------------------------------------------- the head
 hv, hP, eL, eR = Hd.load(HBM)
 earm = Hd.ears(hv)
-hv2, = Hd.fit(hv, earm, ear=(u(79), np.array([0.36, 0.6, 0.6])))
+hv2, = Hd.fit(hv, earm, ear=(u(78), np.array([0.5, 0.6, 0.58])))
 ec = hv2[earm].mean(0)
-hv2[earm] += [0, y3(8) - ec[1], u(-24) - ec[2]]          # the ears: parts.ear — front x 80…93, y −16…30; profile x 16…40
+hv2[earm] += [0, y3(8) - ec[1], u(-19) - ec[2]]          # the ears: parts.ear — front x 80…93, y −16…30; profile x 16…40
 V0 = Hd.flatten(hv2, D.REG, front_min=0.02)
 # the nose: the base's laid flat, and the drawing's small soft one put on: its profile head_pts('s'), narrow
 V0 = Hd.flatten(V0, [(0, 16, 17, 24)], front_min=0.02)
@@ -288,14 +288,14 @@ from scipy.interpolate import PchipInterpolator as _PI
 a_of = _PI([-118, -94, -50, -6, 60, 180, 322], [30, 76, 97, 99, 108, 118, 127])
 zb_of = _PI([-118, -100, -56, -6, 70, 170, 322], [-10, -74, -106, -112, -106, -112, -128])
 zc_of = lambda y: np.interp(y, [-118, -90, 10, 60, 322], [8, -8, -10, -22, -30])
-zt_of = lambda y: np.interp(y, [-118, -108, -78, -44], [20, 44, 76, 82])            # the front over the forehead (profile)
-w_of = lambda y: np.interp(y, [-86, -78, -66, -52, -38, -22, -8], [0, 30, 50, 62, 70, 75, 77])       # the hairline's half-width
+zt_of = lambda y: np.interp(y, [-118, -108, -78, -44], [18, 40, 71, 78])            # the front over the forehead (profile)
+w_of = lambda y: np.interp(y, [-86, -84, -78, -66, -52, -38, -22, -8], [0, 16, 32, 50, 62, 70, 75, 77])       # the hairline's half-width
 hy_ = ydr(V0[:, 1]); hx_ = V0[:, 0] / K
 
 
 def face_z(y, w):
     m = skullm & (abs(hy_ - y) < 7) & (abs(abs(hx_) - w) < 9)
-    return V0[m, 2].max() / K + 7 if m.sum() else np.nan
+    return V0[m, 2].max() / K + 4 if m.sum() else np.nan
 
 
 def hair_row(y):
@@ -311,7 +311,7 @@ def hair_row(y):
     if np.isnan(ze): ze = zt_of(-44)
     df = (ze - zc) / max(np.cos(thw), 0.12) ** (2 / P_)
     if y > -26:       # behind the ear and down behind the shoulders
-        thw = np.interp(y, [-26, -10, 30, 110, 322], [thw, np.radians(92), np.radians(101), np.radians(106), np.radians(104)])
+        thw = np.interp(y, [-26, -10, 30, 110, 322], [thw, np.radians(100), np.radians(106), np.radians(107), np.radians(104)])
     return a_, zc, zc - zb, thw, df
 
 

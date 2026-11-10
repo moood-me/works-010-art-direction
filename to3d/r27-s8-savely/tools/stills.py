@@ -48,7 +48,7 @@ SHEETS = {
 
 # the figure's pose on top of Kimodo's standing: his left forearm brought up in front of the belly (the drawing: he
 # holds his watch there)
-TURNS = {'figure': [dict(joint='LeftArm', axis=[0, 0, 1], deg=-8), dict(joint='LeftForeArm', axis=[1, 0, 0], deg=-70), dict(joint='LeftForeArm', axis=[0, 1, 0], deg=-55)]}
+TURNS = {'figure': [dict(joint='LeftForeArm', axis=[1, 0, 0], deg=-62), dict(joint='LeftForeArm', axis=[0, 1, 0], deg=-45)]}
 
 
 def run(sheet, samples=48):

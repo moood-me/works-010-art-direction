@@ -31,7 +31,7 @@ export const blocks = G => [
 ];
 // the slipper: the foot below its low cut
 export const glsl = G => `
-  if (abs(gg - ${G.skin}.0) < 0.5 && vB >= 0.0 && vB < 0.04) gg = ${G.shoe}.0;`;
+  if (abs(gg - ${G.skin}.0) < 0.5 && vB >= 0.0 && vB < 0.046) gg = ${G.shoe}.0;`;
 export const FLAT = { skin: '#f4e7d0', hair: HAIR, card: CARD, dress: DRESS, shoe: SHOE };
 // the key block's weights (kit.py: lines on cloth are heavier and follow direction more than lines on skin): [w, nib]
 export const lineW = { body: [1.9, 0.3], head: [2.0, 0.3], chest: [2.0, 0.3], dress: [3.4, 0.6], cardigan: [3.3, 0.6],
@@ -43,7 +43,7 @@ export function strokeStyle(st) {
   if (st.kind === 'sheen') return { w: 0.9, prof: 'swell', color: SHEEN, op: 0.5, nib: 0.15, min: 24 };
   return { w: 3.0, prof: 'taper', nib: 0.3 };
 }
-export const minLen = { head: 16, body: 8 };
+export const minLen = { head: 22, body: 8 };
 // the hairline: separate hairs out of its edge onto the forehead (anya.py: d.fringe(…, 6, 0.9, HAIR, lean 0.9))
 export function fringe(d, P, st, F) {
   const l = F.jointAt('LeftEye'), r = F.jointAt('RightEye'), c = [(l[0] + r[0]) / 2, (l[1] + r[1]) / 2];
