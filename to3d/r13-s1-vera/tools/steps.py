@@ -1,11 +1,12 @@
 """Pictures of the steps (quick software renders, clay): what each base gave and how it was fitted.
   step-head.webp: the Human Base Meshes head as it comes · shaped to the drawn ball · the eyes made the drawing's ·
                   the nose, mouth and ears moved; the drawing's head outline in red
-  step-body.webp: Anny's child as it comes · fitted to the drawing's proportions"""
+  step-body.webp: Anny's body as it comes · fitted to the drawing's proportions"""
 import os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from common import CACHE, HERE, K
+import char
 from look import views
 from sphere import sphere
 from drawing import head_mesh
@@ -43,9 +44,10 @@ def body():
     from fitbody import B, fit
     V0 = B['positions']; T = B['triangles']; V1, _ = fit()
     ims = []
-    for V, t in ((V0, 'Anny, ребёнок 1,31 м'), (V1, 'подогнан к рисунку')):
-        a, _ = raster(V, T, yaw=0, size=330, box=(-0.7, 0.7, -0.05, 1.35))
-        b, _ = raster(V, T, yaw=1.5708, size=330, box=(-0.7, 0.7, -0.05, 1.35))
+    top = max(V0[:, 1].max(), V1[:, 1].max()) + 0.05
+    for V, t in ((V0, char.BODY_LABEL), (V1, 'подогнано к рисунку')):
+        a, _ = raster(V, T, yaw=0, size=330, box=(-0.7, 0.7, -0.05, top))
+        b, _ = raster(V, T, yaw=1.5708, size=330, box=(-0.7, 0.7, -0.05, top))
         ims.append(lab(Image.fromarray(np.concatenate([a, b], 1)), t))
     out = Image.new('RGB', (ims[0].width * 2, ims[0].height), 'white')
     for i, im in enumerate(ims): out.paste(im, (i * im.width, 0))

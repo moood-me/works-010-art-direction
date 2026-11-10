@@ -1,4 +1,4 @@
-// The viewer: Савелий Петрович moving by Kimodo's motions through the engine (engine/src, as it is: only its file
+// The viewer: Вера moving by Kimodo's motions through the engine (engine/src, as it is: only its file
 // reading is pointed at this folder's body pack), with the live face (face.mjs, life.mjs), drawn as clear line:
 // flat colour, and one even dark line where a form stands in front of another or one piece meets another.
 // The line is found on the screen from each pixel's piece and depth (as the С10 drawing's own renderer does),
@@ -10,21 +10,22 @@ import { lifeTrack, headFacing } from './life.mjs';
 
 const ENGINE = new URL('../../../../engine/', import.meta.url);
 const DATA = new URL('data/', import.meta.url);
+const ID = 'vera', RU_NAME = 'Вера';
 const { createEngine } = await import(new URL('src/engine.js', ENGINE).href);
 const { resolve } = await import(new URL('src/character.js', ENGINE).href);
 const { qRot } = await import(new URL('src/math.js', ENGINE).href);
 const { newSample } = await import(new URL('src/motion.js', ENGINE).href);
 
 const read = async url => {
-  const u = new URL(url), m = u.pathname.match(/\/data\/(bodies|topology)\/savely\.(json|bin)$/);
-  const r = await fetch(m ? new URL(`${m[1]}/savely.${m[2]}`, DATA) : u);
+  const u = new URL(url), m = u.pathname.match(new RegExp(`/data/(bodies|topology)/${ID}\\.(json|bin)$`));
+  const r = await fetch(m ? new URL(`${m[1]}/${ID}.${m[2]}`, DATA) : u);
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
   return r.arrayBuffer();
 };
 const E = await createEngine({ root: ENGINE, read });
 // 'dqs': the engine's dual-quaternion skinning — its default ('cor') needs ~15 s to prepare this many vertices
-const spec = resolve({ format: 'engine/character', version: 1, id: 'savely', label: { ru: 'Савелий Петрович' },
-  body: 'savely', skinning: { method: 'dqs', clavicleShare: 0, seam: null } });
+const spec = resolve({ format: 'engine/character', version: 1, id: ID, label: { ru: RU_NAME },
+  body: ID, skinning: { method: 'dqs', clavicleShare: 0, seam: null } });
 const fig = await E.figure(spec, { position: [0, 0, 0], heading: 0 });
 const body = fig.body, N = body.N;
 const faceData = await (await fetch(new URL('face.json', DATA))).json();
@@ -40,7 +41,7 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setPixelRatio(Math.min(2, devicePixelRatio));
 stage.appendChild(renderer.domElement);
 document.getElementById('msg').remove();
-const PAPER = new THREE.Color('#ead9b4'), FLOORC = new THREE.Color('#cbbd9d'), INK = new THREE.Color('#1b1714');
+const PAPER = new THREE.Color(look.panel), FLOORC = new THREE.Color(look.panel).lerp(new THREE.Color('#7a6a58'), 0.25), INK = new THREE.Color('#1b1714');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(22, 1, 0.1, 100);
 camera.position.set(-2.1, 1.4, 5.0);
@@ -126,10 +127,10 @@ addEventListener('resize', resize); resize();
 // ------------------------------------------------------------------ motion, face, controls
 const index = await E.motions();
 const sel = document.getElementById('motion');
-const SHOW = ['walk', 'idle', 'sit', 'wave', 'bow', 'stomp', 'sneak', 'run', 'dance', 'jump'];
+const SHOW = ['walk', 'wave', 'bow', 'idle', 'sit', 'stomp', 'sneak', 'run', 'dance', 'jump'];
 for (const id of SHOW) { const m = index.motions.find(x => x.id === id); if (!m) continue;
   const o = document.createElement('option'); o.value = id; o.textContent = m.label.ru; sel.appendChild(o); }
-const RU = { calm: 'спокоен', joy: 'радость', surprise: 'удивление', sad: 'грусть', anger: 'злость' };
+const RU = { calm: 'спокойна', joy: 'радость', surprise: 'удивление', sad: 'грусть', anger: 'злость' };
 const exprBox = document.getElementById('expr'), exprW = { calm: 1, joy: 0, surprise: 0, sad: 0, anger: 0 };
 for (const k of Object.keys(EXPRESSIONS)) {
   const l = document.createElement('label'); l.innerHTML = `${RU[k]} <input type="range" min="0" max="1" step="0.05" value="${exprW[k]}">`;

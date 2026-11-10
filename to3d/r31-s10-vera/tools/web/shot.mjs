@@ -9,7 +9,7 @@ const b = await browser();
 const page = await b.newPage({ viewport: { width: 640, height: 560 } });
 page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') console.log('console:', m.text()); });
 page.on('pageerror', e => console.log('pageerror:', e.message));
-await page.goto(srv.url + 'to3d/r2-s10-savely/tools/web/view.html');
+await page.goto(srv.url + 'to3d/r31-s10-vera/tools/web/view.html');
 await page.waitForSelector('#msg', { state: 'detached', timeout: 120000 });
 await page.selectOption('#motion', motion);
 await page.click('#play');

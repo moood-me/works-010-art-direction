@@ -34,3 +34,4 @@ MOUTH_SX = 0.62          # the base's mouth drawn in to the drawing's narrow mou
 MOUTH_FROM = 'calm'      # the expression whose mouth line is the moving mouth's rest (assemble.py)
 NOSE_SNAP = 0.85         # how far the nose's vertices are set onto the drawing's steep-sided nose (fit_head.py)
 FACE_REST = {'up': 7}    # the live face's rest: her lids a little lowered (the drawing's lid 0.7)
+HEAD_PIECES = ('hair', 'knot')    # the drawing's own pieces on the head (steps.py)

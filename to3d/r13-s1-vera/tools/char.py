@@ -3,6 +3,7 @@ Everything that differs from the other characters of the style (Р6 Тим, Р14
 NAME = 'vera'
 CACHE = '/home/user/cache/to3d-r13-s1-vera'
 BODY = 'moood-woman'          # the engine body the figure starts from
+BODY_LABEL = 'Anny, женщина 1,59 м'
 FLOOR = 590.0                 # the floor in the drawing's person units (y down)
 HS = 1.12                     # the drawn head's scale (person units per head unit)
 EYE_R = 11.5                  # the eyeball (head units)

@@ -2,9 +2,9 @@
 // and an expression (it eases in), play / pause, scrub, talk on / off. The camera follows.
 const A = window.A;
 const $ = id => document.getElementById(id);
-const MOTIONS = [['idle', 'стоит'], ['walk', 'идёт'], ['wave', 'машет'], ['sit', 'садится'], ['jump', 'прыгает'], ['bow', 'кланяется'], ['dance', 'танцует'], ['run', 'бежит'], ['sneak', 'крадётся'], ['stomp', 'топает']];
+const MOTIONS = [['walk', 'идёт'], ['bow', 'кланяется'], ['stomp', 'топает'], ['wave', 'машет'], ['sit', 'садится'], ['jump', 'прыгает'], ['dance', 'танцует'], ['run', 'бежит'], ['sneak', 'крадётся'], ['idle', 'стоит (сутулясь)']];
 const EXPR = [['calm', 'спокойна'], ['strict', 'строга'], ['smile', 'улыбка'], ['joy', 'радость'], ['surprise', 'удивление'], ['sad', 'грусть'], ['anger', 'гнев']];
-const st = { motion: 'idle', t: 0, clock: 0, play: true, talk: false, yaw: -0.35, pitch: 0.08, dist: 3.6, expr: [{ t: 0, name: 'calm' }], talkSpans: [], drag: null, close: false };
+const st = { motion: 'walk', t: 0, clock: 0, play: true, talk: false, yaw: -0.35, pitch: 0.08, dist: 5.2, expr: [{ t: 0, name: 'calm' }], talkSpans: [], drag: null, close: false };
 
 const sel = $('motion');
 for (const [k, n] of MOTIONS) sel.add(new Option(n, k));
@@ -44,7 +44,7 @@ async function loop(now) {
   lastKey = key;
   if (st.play) { st.clock += dt; if (ci) { st.t += dt * ci.fps; if (st.t > ci.frames - 1) st.t = 0; } }
   const cam = st.close ? { yaw: st.yaw, pitch: st.pitch * 0.4, dist: st.dist * 0.42, joint: 'Head', offset: [0, 0.07, 0], fov: 20 }
-    : { yaw: st.yaw, pitch: st.pitch, dist: st.dist, follow: [0, 0.6, 0], fov: 22 };
+    : { yaw: st.yaw, pitch: st.pitch, dist: st.dist, follow: [0, 0.9, 0], fov: 22 };
   await A.set({ w, h, motion: [st.motion], t: st.t, faceTime: st.clock, expr: st.expr, talk: st.talkSpans, cam, floor: true, lightCam: false });
   A.render();
   if (ci) { scrub.value = st.t / (ci.frames - 1); $('time').textContent = (st.t / ci.fps).toFixed(1) + ' с'; }

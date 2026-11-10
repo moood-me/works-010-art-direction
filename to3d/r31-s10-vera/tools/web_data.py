@@ -4,13 +4,15 @@ usage: python3 web_data.py CACHE"""
 import sys, os, json, shutil
 import numpy as np
 
-C = sys.argv[1]
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import who
+C = sys.argv[1]
 OUT = os.path.join(HERE, 'web/data')
 for sub in ('bodies', 'topology'):
     os.makedirs(os.path.join(OUT, sub), exist_ok=True)
     for ext in ('json', 'bin'):
-        shutil.copy(os.path.join(C, f'engine/data/{sub}/savely.{ext}'), os.path.join(OUT, f'{sub}/savely.{ext}'))
+        shutil.copy(os.path.join(C, f'engine/data/{sub}/{who.ID}.{ext}'), os.path.join(OUT, f'{sub}/{who.ID}.{ext}'))
 shutil.copy(os.path.join(C, 'engine/face.json'), os.path.join(OUT, 'face.json'))
 meta = json.load(open(os.path.join(C, 'scene.json')))
 sc = np.load(os.path.join(C, 'scene.npz'))
@@ -45,6 +47,6 @@ for o in meta['objects']:
             ids[a + vs] = 1000 + k
     if o.get('line') is False:
         line[a:b] = 0
-json.dump(dict(palette=palette, colour=idx.tolist(), id=ids.tolist(), line=line.tolist()), open(os.path.join(OUT, 'look.json'), 'w'),
+json.dump(dict(panel=who.PANEL, palette=palette, colour=idx.tolist(), id=ids.tolist(), line=line.tolist()), open(os.path.join(OUT, 'look.json'), 'w'),
           separators=(',', ':'))
 print('palette', palette, 'N', N)
