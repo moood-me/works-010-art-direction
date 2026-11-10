@@ -1,5 +1,5 @@
-"""Савелий Петрович's head: the Human Base Meshes stylised head (CC0) fitted to the drawing's own 3D head (the loft of
-styles/s8-stopmotion `cast.SAVELY`), so front, three-quarter and profile all come from one shape.
+"""Марат's head: the Human Base Meshes stylised head (CC0) fitted to the drawing's own 3D head (the loft of
+styles/s8-stopmotion `marat.MARAT`), so front, three-quarter and profile all come from one shape.
 
 Two levels, so the sculptor's features survive the fit:
 1. The eye-socket linings are cut away (faces inside the base's eyeballs): the lid margins become two clean loops.
@@ -237,7 +237,7 @@ def fix_ears(V, ear, adj, T, V0):
 def fix_nose(V, nose, adj, V0, T):
     """the sculptor's nose itself (the base's, as it is in V0: tip (0, −0.18, 0.6), wings ±0.1, standing 0.14 off the
     face, 0.13 from root to tip) stretched to the drawing's nose (head.nose: root → tip heights, how far the tip stands
-    out, the width — for Савелий a long big bulb) and set with its tip on the drawing's tip; the skin round it follows
+    out, the width — for Марат a broad one) and set with its tip on the drawing's tip; the skin round it follows
     by a biharmonic blend."""
     ns = drawing.nose_slices()                       # (y, z of the front, half width), root → tip
     yt, zt = ns[-1, 0], ns[-1, 1]

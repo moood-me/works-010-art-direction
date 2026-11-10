@@ -84,7 +84,7 @@ root with `python3 -m http.server` and open `to3d/r25-s7-vera/tools/web/view.htm
 
 Files: `config.py` (who), `drawing.py` (the style's code as numbers), `refs.py`, `headfit.py`, `hair3d.py`, `shapes.py`,
 `blob.py`, `build.py`, `bases.py`, `compare.py`, `make_pics.py`, `make_live.py`, `look.py`, `mesh.py`, `pack.py`,
-`web/` (viewer: `char.js`, `face.js`, `ui.js`, `view.html`). Pack format `r1/character` as Р1's, plus `ob` (outline
+`check_view.mjs` (opens the viewer as a person does), `web/` (viewer: `char.js`, `face.js`, `ui.js`, `view.html`). Pack format `r1/character` as Р1's, plus `ob` (outline
 moved back), `face.shadow`, `face.params`, `face.expr`, `stand`, `headFwd`.
 
 ## Licences of the bases

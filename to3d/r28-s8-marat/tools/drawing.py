@@ -1,18 +1,19 @@
-"""Савелий Петрович's drawing (styles/s8-stopmotion) as 3D data. The drawing's head is itself a 3D object — a loft of elliptic
-slices (`head.Head`, `cast.SAVELY`) with features laid on it by (phi, y) — so its own numbers are the fitting target:
+"""Марат's drawing (styles/s8-stopmotion) as 3D data. The drawing's head is itself a 3D object — a loft of elliptic
+slices (`head.Head`, `marat.MARAT`) with features laid on it by (phi, y) — so its own numbers are the fitting target:
 no front/profile guessing. Everything here is in head units on the engine's axes (x his left, y up, z forward; head
 centre at 0; head height 1)."""
 import math
 import numpy as np
 import common  # noqa: F401  (puts the style's tools on the path)
 import cast
+import marat
 from head import Head
 from common import hu
 
-P = cast.SAVELY
-BODY = cast.SAVELY_BODY
-FIG = cast.SAVELY_FIG
-EXPR = cast.EXPR
+P = marat.MARAT
+BODY = marat.MARAT_BODY
+FIG = marat.MARAT_FIG
+EXPR = {**cast.EXPR, **marat.EXPR}
 H0 = Head(P['shape'], 1.0, 0.0, 0.0, 0.0, 0.0)     # yaw 0, 1 px per unit: scr() == the head-unit point
 
 
@@ -35,7 +36,7 @@ def loft_mesh(nphi=160, ny=160, k=1.0, out=0.0, y0=-0.5, y1=0.5):
 
 
 def neck_mesh(nphi=64, ny=40):
-    """the drawing's neck (SAVELY_BODY['neck'], from under the jaw down into the sweater)"""
+    """the drawing's neck (MARAT_BODY['neck'], from under the jaw down into the sweater)"""
     from head import interp
     N = BODY['neck']
     ys = np.linspace(0.2, 0.75, ny)

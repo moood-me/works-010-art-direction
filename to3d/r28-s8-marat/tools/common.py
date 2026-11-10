@@ -1,4 +1,4 @@
-"""Shared paths, constants and small helpers for Савелий Петрович (С8, stop-motion) in 3D."""
+"""Shared paths, constants and small helpers for Марат (С8, stop-motion) in 3D."""
 import os, sys, json
 import numpy as np
 
@@ -14,14 +14,14 @@ sys.path.insert(0, os.path.join(STYLE, 'tools'))
 import pack  # noqa: E402  (the engine's pack writer/reader)
 
 # The drawing's head height (crown to chin) in metres. The cast keeps one scale: in the style's picture of all six
-# (build.py six()) Тим's head is 200 px and Савелий's 182, and Тим's head in 3D (Р10) is 0.342 m — so 0.311 m here.
-# The figure is 3.88 heads tall (crown −0.5 … feet 3.38 under the head's centre, figure-savely): 1.21 m — a puppet's
-# proportions, a little taller than Тим, as in the drawing of the cast.
-HH = 0.342 * 182 / 200
-FEET = 3.38          # the floor, in head units below the head's centre (styles/s8-stopmotion/tools/build.py FIG)
+# (build.py six()) Тим's head is 200 px and Марат's 185, and Тим's head in 3D (Р10) is 0.342 m — so 0.316 m here.
+# The figure is 4.32 heads tall (crown −0.5 … feet 3.82 under the head's centre, figure-marat): 1.37 m — the tallest
+# and by far the widest puppet of the cast.
+HH = 0.342 * 185 / 200
+FEET = 3.82          # the floor, in head units below the head's centre (styles/s8-stopmotion/tools/build.py FIG)
 HEAD_Y = FEET * HH   # the head's centre above the floor at rest (metres)
-BID = 'marat8'      # the engine body's id
-NAME = 'savely'
+BID = 'marat8'       # the engine body's id
+NAME = 'marat'
 
 SK = json.load(open(os.path.join(ENGINE, 'data/skeleton.json')))
 NAMES = [j['name'] for j in SK['joints']]
