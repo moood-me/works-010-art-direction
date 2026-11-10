@@ -129,7 +129,7 @@ LIVE = {
     # looking round, hands behind his back: the eyes go first, the head follows, a blink with the big turns
     'look': lambda: live_film('look', 'look', 150, {'yaw': 12, 'pitch': 4, 'dist': 1.35, 'ty': 0.44, 'fov': 24}, size=(560, 560)),
     # the face close: speaking, then the sheet's expressions one after another, then a mix and speaking again
-    'face': lambda: live_film('face', 'look', 270, fps=20, cam={'yaw': 10, 'pitch': 2, 'dist': 1.05, 'ty': 0.5, 'fov': 22}, size=(560, 560), fig={'clip': 'idle'},
+    'face': lambda: live_film('face', 'look', 270, fps=20, cam={'yaw': 10, 'pitch': 2, 'dist': 1.2, 'ty': 0.5, 'fov': 22}, size=(560, 560), fig={'clip': 'idle'},
                               events={0.3: {'talk': True}, 4.2: {'talk': False}, 4.4: {'expr': 'joy'}, 5.5: {'expr': 'surprise'},
                                       6.6: {'expr': 'sad'}, 7.7: {'expr': 'anger'}, 8.7: {'expr': {'joy': 0.5, 'neutral': 0.5}, 'talk': True}}),
 }
