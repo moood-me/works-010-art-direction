@@ -81,7 +81,11 @@ function beardR(d) {
 }
 function hairFull(d) { const t = beardR(d), k = 10; return 0.5 * (CAP + t + Math.sqrt((CAP - t) ** 2 + k * k)) - 0.5 * k * 0.5; }
 function hairK(d, r) { return Math.max(ss2(0, 7, loopDist(d[0] * r, -d[1] * r)), 1 - ss2(0, 12, d[2] * r)); }
-function hairR(d) { const r = hairFull(d); return lerp(HR - 2.5, r, hairK(d, r)); }
+function hairR(d) {   // (the edge is tested where the form itself is, so from the front it stands on the drawn edge)
+  const full = hairFull(d); let r = full;
+  for (let i = 0; i < 10; i++) r = 0.5 * (r + lerp(HR - 2.5, full, hairK(d, Math.max(HR, r))));
+  return r;
+}
 const hairZ = frontOf(hairR), skinZ = (x, y) => Math.sqrt(Math.max(0, HR * HR - x * x - y * y));
 function ballGeometry(surf, w, h) {
   const g = new THREE.SphereGeometry(1, w, h), p = g.attributes.position, rp = new Float32Array(p.count * 3);
@@ -262,7 +266,7 @@ export class Marat {
     new Part(this.head, paintMat(C.hair, { shade: 0.14 }), hl).set(curlsGeometry());
     // ears: flat cushions out of the curls, with an inner line
     const earAt = (sd, u, v, h) => { const b = 0.6, n = new V3(sd * Math.sin(b), 0, Math.cos(b)), o = new V3(sd * Math.cos(b), 0, -Math.sin(b)); return new V3(sd * 73, -(4 + v), 0).addScaledVector(o, u).addScaledVector(n, h); };
-    new Part(this.head, paintMat(C.skin, { shade: 0.12 }), hl).set(merge([-1, 1].map(sd => pillow(outline([[0, -17], [15, -14], [18, 4], [9, 16], [-2, 13]].map(([u, v]) => [u * sd, v]), 6), (u, v, h) => earAt(sd, u * sd, v, h).toArray(), { thick: 4, sink: 4, rings: 5, flip: sd > 0 }))));
+    new Part(this.head, paintMat(C.skin, { shade: 0.12 }), hl).set(merge([-1, 1].map(sd => pillow(outline([[0, -17], [15, -14], [18, 4], [9, 16], [-2, 13]].map(([u, v]) => [u * sd, v]), 6), (u, v, h) => earAt(sd, u * sd, v, h).toArray(), { thick: 4, sink: 4, rings: 5, flip: sd < 0 }))));
     new Part(this.head, paintMat(C.ink, { shade: 0 }), 0).set(merge([-1, 1].map(sd => sweep(through([[4, -7], [11, -4], [9, 6]].map(([u, v]) => earAt(sd, u, v, 3.2 - Math.abs(u - 8) * 0.12)), 6), circle(() => 1), { radial: 6 }))));
     // the broad nose over the moustache
     new Part(this.head, paintMat(C.nose, { shine: 0.045, shade: 0.12 }), 2.3).set(ball([0, -22, 69], [17.5, 12.5, 14], 28));

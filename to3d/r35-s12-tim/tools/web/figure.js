@@ -489,7 +489,8 @@ function draw() {
         if (fc > 0.15 && seen(x, y, z, 0.004, 0)) cur.push([x, y]); else { if (cur.length > 1) runs.push(cur); cur = []; }
       }
       if (cur.length > 1) runs.push(cur);
-      for (const r of runs) if (len(r) > 12 * d.lw) K.ink(d, r, { w: st.w, start: 0.3, end: 0.05, jit: st.jit ?? 0.9, seed: st.v[0], retrace: 0, raw: true });
+      const sm = r => { let P = resample(r, 4); for (let it = 0; it < 6; it++) P = P.map((p, i) => i === 0 || i === P.length - 1 ? p : [(P[i - 1][0] + 2 * p[0] + P[i + 1][0]) / 4, (P[i - 1][1] + 2 * p[1] + P[i + 1][1]) / 4]); return P.filter((_, i) => i % 3 === 0 || i === P.length - 1); };
+      for (const r0 of runs) if (len(r0) > 12 * d.lw) { const r = sm(r0); K.ink(d, r, { w: st.w, start: 0.3, end: 0.05, jit: st.jit ?? 0.9, seed: st.v[0], retrace: 0, raw: true }); }
     }
     // marks on the form (a button, a curl), drawn where their vertex is seen and faces us
     for (const mk of H.marks || []) {

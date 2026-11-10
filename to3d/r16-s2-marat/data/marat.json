@@ -1,0 +1,327 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "marat-klaus",
+ "label": {
+  "ru": "Марат (Клаус)"
+ },
+ "topology": "marat-klaus",
+ "skeleton": "soma",
+ "source": "to3d/r16-s2-marat/tools/build.py",
+ "faces": "faces",
+ "floor": 1.4736627600260094e-16,
+ "materials": [
+  "skin",
+  "nose",
+  "hair",
+  "jacket",
+  "collar",
+  "cuff",
+  "apron",
+  "towel",
+  "shoe"
+ ],
+ "deco": "\nvoid deco(vec3 rp, vec2 uv, float m, inout vec3 base, inout vec3 bshd) {\n  if (abs(m - 3.0) < 0.5) {\n    if (rp.y < 1.082 && abs(rp.x) < 0.4) { base = vec3(0.459, 0.379, 0.330); bshd = vec3(0.196, 0.165, 0.259); return; }     // trousers under the apron\n    if (rp.z > -0.003 && rp.y > 1.102 && rp.y < 1.426) {\n      // the double-breasted front: two folds and two rows of three buttons\n      float fx = 0.085 + 0.03 * (rp.y - 1.102);\n      if (abs(abs(rp.x) - fx - 0.045) < 0.0022) { base *= 0.8; bshd *= 0.86; }\n      for (int k = 0; k < 3; k++) { float by = 1.366 - 0.115 * float(k);\n        if (length(vec2(abs(rp.x) - fx, rp.y - by)) < 0.013) { base = vec3(0.843, 0.750, 0.636); bshd = vec3(0.478, 0.431, 0.470); } }\n    }\n  }\n  if (abs(m - 6.0) < 0.5) {\n    if (uv.y < 0.075) { base *= 0.68; bshd *= 0.78; }                                 // the waistband\n    float a = abs(fract(uv.x + 0.5) - 0.5);                                          // 0 at the front's middle\n    if (abs(a - 0.07) < 0.0018 && uv.y > 0.1) { base *= 0.8; bshd *= 0.86; }            // two long folds\n  }\n  if (abs(m - 7.0) < 0.5) {\n    if (uv.y < 0.5 && (abs(uv.y - 0.07) < 0.012 || abs(uv.y - 0.12) < 0.012)) { base = vec3(0.97, 0.87, 0.74); bshd = vec3(0.62, 0.5, 0.52); }\n  }\n}",
+ "K": 0.001069,
+ "headOrigin": [
+  0.0,
+  1.556,
+  0.00948557464292376
+ ],
+ "movers": {
+  "moustache": {
+   "ranges": [
+    [
+     18945,
+     4180
+    ]
+   ],
+   "pivot": [
+    0.00015162560025169867,
+    0.10248808003002252,
+    0.1133765684227161
+   ]
+  },
+  "beard": {
+   "ranges": [
+    [
+     34324,
+     9765
+    ]
+   ],
+   "pivot": [
+    0.0001330142426623695,
+    0.07498107128175291,
+    0.0389322610864469
+   ]
+  }
+ },
+ "expr": {
+  "calm": {
+   "lid": 0.26,
+   "low": 0.3,
+   "brows": [
+    0,
+    0
+   ],
+   "mouth": "smile",
+   "look": 0.0,
+   "mou": -5,
+   "jaw": 0
+  },
+  "joy": {
+   "shut": true,
+   "brows": [
+    -6,
+    -6
+   ],
+   "mouth": "laugh",
+   "look": 0,
+   "mou": -8,
+   "jaw": 12
+  },
+  "surprise": {
+   "lid": 0.0,
+   "low": 0.0,
+   "brows": [
+    -18,
+    -16
+   ],
+   "mouth": "o",
+   "look": 0.0,
+   "mou": 2,
+   "jaw": 8
+  },
+  "sad": {
+   "lid": 0.5,
+   "low": 0.1,
+   "brows": [
+    4,
+    4
+   ],
+   "mouth": "sad",
+   "look": 0.4,
+   "sad": true,
+   "mou": 6,
+   "jaw": 0
+  },
+  "anger": {
+   "lid": 0.36,
+   "low": 0.2,
+   "brows": [
+    10,
+    9
+   ],
+   "mouth": "angry",
+   "look": 0.05,
+   "angry": true,
+   "mou": 0,
+   "jaw": 0
+  }
+ },
+ "back": {
+  "top": "#2e2430",
+  "bottom": "#4a302c",
+  "glow": "#f09a48"
+ },
+ "seed": 16,
+ "ui": {
+  "motions": [
+   [
+    "",
+    "стоит"
+   ],
+   [
+    "walk",
+    "шаг"
+   ],
+   [
+    "wave",
+    "машет"
+   ],
+   [
+    "stomp",
+    "топает"
+   ],
+   [
+    "dance",
+    "танец"
+   ],
+   [
+    "bow",
+    "поклон"
+   ],
+   [
+    "jump",
+    "прыжок"
+   ],
+   [
+    "sit",
+    "садится"
+   ]
+  ],
+  "expr": [
+   [
+    "calm",
+    "улыбается"
+   ],
+   [
+    "joy",
+    "хохочет"
+   ],
+   [
+    "surprise",
+    "удивлён"
+   ],
+   [
+    "sad",
+    "грустит"
+   ],
+   [
+    "anger",
+    "сердит"
+   ]
+  ],
+  "dist": 6.2,
+  "cy": 1.0,
+  "near": 2.9,
+  "up": 0.12,
+  "pose": {
+   "down": 0.42,
+   "straighten": 0.35,
+   "curl": 0.7
+  },
+  "look3d": {
+   "thr": 0.08,
+   "light": [
+    -0.48,
+    0.48,
+    0.74
+   ]
+  }
+ },
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    51811,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    100232,
+    3
+   ],
+   "offset": 621736
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    51811,
+    4
+   ],
+   "offset": 1824520
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    51811,
+    4
+   ],
+   "offset": 2031768
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    231
+   ],
+   "offset": 2860744
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    308
+   ],
+   "offset": 2861672
+  },
+  "col": {
+   "dtype": "uint8",
+   "shape": [
+    51811,
+    3
+   ],
+   "offset": 2862904
+  },
+  "shd": {
+   "dtype": "uint8",
+   "shape": [
+    51811,
+    3
+   ],
+   "offset": 3018344
+  },
+  "rim": {
+   "dtype": "uint8",
+   "shape": [
+    51811,
+    3
+   ],
+   "offset": 3173784
+  },
+  "gloss": {
+   "dtype": "uint8",
+   "shape": [
+    51811
+   ],
+   "offset": 3329224
+  },
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    51811,
+    2
+   ],
+   "offset": 3381040
+  },
+  "tw": {
+   "dtype": "uint8",
+   "shape": [
+    51811
+   ],
+   "offset": 3795528
+  },
+  "pn": {
+   "dtype": "float32",
+   "shape": [
+    51811,
+    3
+   ],
+   "offset": 3847344
+  },
+  "pw": {
+   "dtype": "uint8",
+   "shape": [
+    51811
+   ],
+   "offset": 4469080
+  },
+  "two": {
+   "dtype": "uint8",
+   "shape": [
+    51811
+   ],
+   "offset": 4520896
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    51811
+   ],
+   "offset": 4572712
+  }
+ },
+ "bin": "marat.bin"
+}

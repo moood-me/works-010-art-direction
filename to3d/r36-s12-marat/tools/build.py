@@ -58,7 +58,7 @@ J1[I['Jaw']] = [0, y3(34), -0.03]          # where the jaw turns, under the ear
 for s, sg in (('Left', 1), ('Right', -1)):
     J1[I[s + 'Eye']] = [sg * u(36), y3(-4), u(74)]
     J1[I[s + 'Shoulder']] = [sg * 0.03, y3(158), 0.03]
-    J1[I[s + 'Arm']] = [sg * 0.245, y3(170), 0.0]
+    J1[I[s + 'Arm']] = [sg * 0.272, y3(172), 0.0]
     for n, k in (('ForeArm', 1.12), ('Hand', 0.98)):
         j = I[s + n]; J1[j] = J1[PARENT[j]] + k * (J0[j] - J0[PARENT[j]])
     for j in under(I[s + 'Hand'])[1:]:
@@ -78,7 +78,7 @@ def rot_between(a_, b_):
     return np.eye(3) + vx + vx @ vx * ((1 - c) / s ** 2)
 
 
-RADIAL = {'Leg': 1.25, 'Shin': 1.3, 'Arm': 1.5, 'ForeArm': 1.32}
+RADIAL = {'Leg': 1.25, 'Shin': 1.3, 'Arm': 1.5, 'ForeArm': 1.6}
 
 
 def joint_affine(j):
@@ -122,9 +122,9 @@ B = dict(V=PF[bi], T=remap[TRI0[tk]])
 nb = len(bi)
 isfoot = feet[bi]
 Ab = M.adjacency(nb, [list(t_) for t_ in B['T']])
-B['V'] = M.smooth(B['V'], Ab, isfoot, iters=50, lam=0.5)       # a clog: the foot as one rounded form
+B['V'] = M.smooth(B['V'], Ab, isfoot, iters=220, lam=0.5)       # a clog: the foot as one rounded form
 nrm = M.vertex_normals(B['V'], B['T'])
-B['V'][isfoot] += nrm[isfoot] * 0.016
+B['V'][isfoot] += nrm[isfoot] * 0.03
 lo = B['V'][isfoot, 1].min(); B['V'][isfoot, 1] = np.maximum(B['V'][isfoot, 1] - lo, 0.0) * 1.0
 BW = np.zeros((nb, NJ))
 for q in range(4): np.add.at(BW, (np.arange(nb), SJ0[bi][:, q]), SW0[bi][:, q])
@@ -194,8 +194,8 @@ def rows_of(spec, step=6.0):
 
 # (drawing height, half-width, front, back): a stand-up collar round the thick neck, heavy round shoulders, the chest
 # and the belly one barrel leading in front, widest below the waist, the hem under the apron
-JSPEC = [(114, 78, 60, -74), (122, 96, 68, -84), (132, 128, 78, -92), (146, 156, 88, -100), (170, 172, 104, -106),
-         (230, 178, 136, -114), (320, 188, 168, -120), (420, 200, 192, -126), (514, 208, 202, -130), (600, 198, 184, -128),
+JSPEC = [(114, 78, 60, -74), (122, 96, 68, -84), (132, 136, 78, -92), (146, 170, 88, -100), (170, 186, 104, -106),
+         (230, 188, 136, -114), (320, 194, 168, -120), (420, 200, 192, -126), (514, 208, 202, -130), (600, 198, 184, -128),
          (670, 172, 150, -120)]
 jrows = rows_of(JSPEC, 8.0)
 JC = 80
@@ -214,7 +214,7 @@ for s, sg in (('Left', 1), ('Right', -1)):
     arm = set(under(I[s + 'Shoulder'])); tr = np.array([j in arm for j in range(NJ)])
     SL.append(dict(V=V_, T=T_, W=WT.limb(V_, T_, tr, A_, 0.12), side=s))
     V_, T_ = S.mitten(W_, J1[I[s + 'HandMiddleEnd']], J1[I[s + 'HandIndex1']] - J1[I[s + 'HandPinky1']], sg,
-                      Lh=0.17, wide=0.052, thick=0.032, thumb=0.02, rows=22, cols=20)
+                      Lh=0.18, wide=0.062, thick=0.04, thumb=0.024, rows=22, cols=20)
     Wm = np.zeros((len(V_), NJ)); Wm[:, I[s + 'Hand']] = 1
     HANDS.append(dict(V=V_, T=T_, W=Wm, side=s))
     L_, S_, F_ = J1[I[s + 'Leg']], J1[I[s + 'Shin']], J1[I[s + 'Foot']]
@@ -294,7 +294,7 @@ def bumps(Pts, Nrm, n, rad, hgt, keep_from=None):
     order = rng.permutation(len(Pts))
     for i in order:
         if keep_from is not None and not keep_from[i]: continue
-        if all(np.linalg.norm(Pts[i] - Pts[j]) > rad[0] * 1.25 for j in seeds): seeds.append(i)
+        if all(np.linalg.norm(Pts[i] - Pts[j]) > rad[0] * 1.85 for j in seeds): seeds.append(i)
         if len(seeds) >= n: break
     seeds = np.array(seeds); r_ = rng.uniform(rad[0], rad[1], len(seeds)); h_ = rng.uniform(hgt[0], hgt[1], len(seeds))
     dist = np.linalg.norm(Pts[:, None, :] - Pts[seeds][None, :, :], axis=2) / r_[None, :]
@@ -317,9 +317,9 @@ IV = np.c_[np.cos(eln) * np.sin(azr), np.sin(eln), np.cos(eln) * np.cos(azr)]
 above = np.degrees(eln) - edge
 area = np.linalg.norm(np.cross(IV[IF[:, 1]] - IV[IF[:, 0]], IV[IF[:, 2]] - IV[IF[:, 0]]), axis=1)
 IF = IF[area > 1e-7]
-r0 = skull_r(IV) + u(6) + u(7) * smooth(above / 14)
+r0 = skull_r(IV) + u(4) + u(5) * smooth(above / 14)
 HV = CEN + IV * r0[:, None]
-rise, hseeds = bumps(HV, IV, 400, (u(17), u(24)), (u(8), u(14)))
+rise, hseeds = bumps(HV, IV, 400, (u(13), u(18)), (u(10), u(15)))
 HV = CEN + IV * (r0 + rise * (0.45 + 0.55 * smooth(above / 8)))[:, None]
 HT_ = IF if (M.vertex_normals(HV, IF) * (HV - CEN)).sum(1).mean() > 0 else IF[:, ::-1]
 Wh = np.zeros((len(HV), NJ)); Wh[:, I['Head']] = 1
@@ -331,7 +331,7 @@ print('hair', len(HV), 'vertices', len(hseeds), 'curls')
 # from the sideburn down the cheek to the mouth's corner and under the mouth)
 by_ = np.r_[np.arange(-30, 128, 5.0), 128, 132, 135.5, 137]
 b_a = np.interp(by_, [-30, 40, 96, 128, 137], [91, 100, 88, 50, 3])
-b_f = np.interp(by_, [-30, 26, 44, 60, 84, 110, 128, 137], [40, 58, 86, 100, 105, 92, 58, 16])
+b_f = np.interp(by_, [-30, 26, 44, 60, 76, 92, 110, 128, 137], [40, 52, 62, 72, 84, 102, 94, 58, 16])
 b_zc = np.interp(by_, [-30, 100, 137], [-6, -6, 14])
 b_in = np.interp(by_, [-30, -22, 26, 46, 60, 76, 86], [80, 78, 70, 55, 45, 30, 0])       # the bare front's half-width
 TB = np.radians(104)
@@ -357,7 +357,7 @@ Abd = M.adjacency(len(BV_), [list(t_) for t_ in BT_])
 BV_ = M.smooth(BV_, Abd, np.ones(len(BV_), bool), iters=3, lam=0.4)
 bn = M.vertex_normals(BV_, BT_)
 if (bn * (BV_ - [0, float(y3(60)), 0])).sum(1).mean() < 0: BT_ = BT_[:, ::-1]; bn = -bn
-brise, bseeds = bumps(BV_, bn, 200, (u(17), u(24)), (u(8), u(13)))
+brise, bseeds = bumps(BV_, bn, 200, (u(13), u(18)), (u(10), u(15)))
 BV_ = BV_ + bn * brise[:, None]
 Wb = np.zeros((len(BV_), NJ)); wjb = smooth((ydr(BV_[:, 1]) - 62) / 26) * smooth((BV_[:, 2] - u(-30)) / u(50))
 Wb[:, I['Head']] = 1 - wjb; Wb[:, I['Jaw']] = wjb

@@ -71,7 +71,10 @@ def fit(v, ears_mask, extra=(), ear=None):
         out.append(np.c_[x, (D.FLOOR - y) * D.K, z])
     # the lower face fuller and flatter in front (the drawing's face is one round plane; the base has a muzzle)
     V = out[0]; y = yd; chin = D.Y_DRAW[1]
-    zf = np.interp(y, bins, zf_t)
+    # (the face's front without the nose: across the nose's heights, a straight line from above it to below it)
+    n0, n1 = D.NOSE_SPAN; zp = zf_t.copy(); mm = (bins > n0) & (bins < n1)
+    zp[mm] = np.interp(bins[mm], [n0, n1], [np.interp(n0, bins, zf_t), np.interp(n1, bins, zf_t)])
+    zf = np.interp(y, bins, zp)
     wy = smooth01((y - 10) / 30) * (1 - smooth01((y - chin) / 14))
     arc = zf - V[:, 0] ** 2 / (2 * 0.085 * D.K / 0.00106) - 0.004
     push = np.clip(arc - V[:, 2], 0, None) * wy * (V[:, 2] > 0.0) * np.exp(-(V[:, 0] / (0.075 * D.K / 0.00106)) ** 4)

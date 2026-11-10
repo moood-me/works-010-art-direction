@@ -103,8 +103,10 @@ function hairR(d) {
   // the bob stays behind the cheeks: toward the front its bulge goes back to the cap
   const az = Math.atan2(d[2], Math.abs(d[0])) * 180 / Math.PI;
   r = lerp(r, Math.min(r, 81), ss2(8, 38, az) * ss2(86, 100, phi));
-  const k = Math.max(ss2(0, 10, loopDist(d[0] * r, -d[1] * r)), 1 - ss2(0, 12, d[2] * r));
-  return lerp(headR(d) - 2.5, r, k);
+  // (the hairline is tested where the hair itself is, so from the front it stands on the drawn line)
+  const skin = headR(d); let q = r;
+  for (let i = 0; i < 10; i++) { const t = Math.max(skin, q); q = 0.5 * q + 0.5 * lerp(skin - 2.5, r, Math.max(ss2(0, 10, loopDist(d[0] * t, -d[1] * t)), 1 - ss2(0, 12, d[2] * t))); }
+  return q;
 }
 const hairZ = frontOf(hairR);
 function hairGeometry() {

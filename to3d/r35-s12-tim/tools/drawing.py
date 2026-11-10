@@ -57,3 +57,4 @@ NECK_F = ([60, 88, 120, 150], [30, 26, 28, 34])
 NECK_B = ([40, 70, 120, 150], [-74, -40, -18, -26])
 Y_DRAW = [150.0, 88.0, 0.0, -124.0]       # the base head's landmarks here: the neck's end, chin, eye line, crown
 REG = [(32, -2, 22, 22), (-32, -2, 22, 22), (0, 46, 30, 10)]      # where the face is drawn: eyes and mouth
+NOSE_SPAN = (-16, 26)       # the nose's heights in the profile
