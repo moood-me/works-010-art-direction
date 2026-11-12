@@ -31,7 +31,7 @@ shots = [dict(name='turn-' + n, set=dict(ST, cam=dict(mode='ortho', h=h, yaw=y, 
 FPX = 1.16 / (D.FS * D.K)
 fh = 1000 / FPX; fcy = (930 - 500) / FPX; fdx = -10 / FPX
 shots.append(dict(name='figure', w=700, h=1000, set=dict(pose='stand', poseOpts={'out': 0.05}, still=True, exprTrack=[[0, 'calm']], time=2.0, bg='#11121b', floor=True,
-             back=dict(kind='window', w=330 / FPX * 1.19, h=830 / FPX * 1.19, y=fcy + (500 - 455) / FPX * 1.19 - 0.09, x=15 / FPX),
+             back=dict(kind='window', w=330 / FPX, h=830 / FPX, y=fcy + (500 - 455) / FPX - 0.06, x=15 / FPX),
              cam=dict(mode='persp', fov=14, dist=fh / 2 / np.tan(np.radians(7)), yaw=0.6, pitch=0.035, target=[fdx * np.cos(0.6), fcy + 0.035 * 0, -fdx * np.sin(0.6)], follow=False))))
 json.dump(dict(pack=pk, w=PW, h=Y1 - Y0, shots=shots), open(os.path.join(out, 'jobs.json'), 'w'))
 subprocess.run(['node', os.path.join(HERE, 'shots.mjs'), os.path.join(out, 'jobs.json'), out], check=True, env=ENV)

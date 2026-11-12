@@ -390,13 +390,16 @@ window.A = {
       fu.fwd.value.set(-dir[0] / n, -dir[2] / n); fu.rgt.value.set(e[0], e[2]); fu.fp.value.set(c.follow || c.focus ? tg[0] : 0, c.follow || c.focus ? tg[2] : 0);
       if (!S.poolFixed) fu.c0.value.copy(fu.fp.value); }      // the window and its light stay behind the figure the camera follows
     if (S.back) {
-      const b = S.back, bx = c.follow || c.focus ? tg[0] : 0, bz = c.follow || c.focus ? tg[2] : 0, by = c.focus ? tg[1] : b.y;
+      // its sizes are given at the figure's distance: 3 m behind, a perspective camera sees it that much smaller
+      const b = S.back, k = c.mode === 'ortho' ? 1 : (c.dist + 3) / c.dist;
+      const bx = c.follow || c.focus ? tg[0] : 0, bz = c.follow || c.focus ? tg[2] : 0, by = c.focus ? tg[1] : tg[1] + (b.y - tg[1]) * k;
       const right = [e[0], e[1], e[2]];
-      backdrop.position.set(bx - dir[0] * 3 + right[0] * b.x, by - dir[1] * 3 + right[1] * b.x, bz - dir[2] * 3 + right[2] * b.x);
+      backdrop.position.set(bx - dir[0] * 3 + right[0] * b.x * k, by - dir[1] * 3 + right[1] * b.x * k, bz - dir[2] * 3 + right[2] * b.x * k);
       backdrop.quaternion.copy(camera.quaternion);
       bdMat.color.set(b.col); bdRect.visible = bar1.visible = bar2.visible = b.kind === 'window'; bdDisc.visible = b.kind === 'disc';
       bdRect.scale.set(b.w, b.h, 1); bdDisc.scale.set(b.w, b.w, 1);
       bar1.scale.set(0.02, b.h, 1); bar1.position.set(0.02, 0, 0.001); bar2.scale.set(b.w, 0.02, 1); bar2.position.set(0, b.h * 0.08, 0.001);
+      backdrop.scale.setScalar(k);
     }
     renderer.render(scene, camera);
   },

@@ -31,7 +31,7 @@ export function ui(A, canvas) {
   const t0 = performance.now();
   const clock = () => (performance.now() - t0) / 1000;
   const far = { mode: 'persp', dist: 6.4, fov: 22, cy: 0.86, follow: true, focus: null, yaw: 0.5, pitch: 0.06 };
-  const backFar = { kind: 'window', w: 1.5, h: 2.5, y: 1.2, x: 0.1 }, backNear = { kind: 'disc', w: 0.62, x: 0.02 };
+  const backFar = { kind: 'window', w: 0.9, h: 1.9, y: 1.0, x: 0.08 }, backNear = { kind: 'disc', w: 0.56, x: 0.02 };
   const near = { mode: 'persp', dist: 2.3, fov: 22, follow: false, focus: 'Head', up: 0.04, pitch: 0.02 };
   A.set({ liveClock: true, cam: far, back: backFar, pose: 'stand', poseOpts: { out: 0.08 } });
   async function motion(id) {

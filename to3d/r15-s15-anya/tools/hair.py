@@ -66,7 +66,7 @@ def build(ctx):
     def shape(y):
         k = 1.0
         if y < RING_Y:      # the crown: a dome over the ring
-            k = np.sqrt(max(1 - ((RING_Y - y) / (RING_Y - TOP + 0.4)) ** 2, 0.0004)); y = RING_Y
+            k = np.sqrt(max(1 - ((RING_Y - y) / (RING_Y - TOP + 0.4)) ** 2, 1e-8)); y = RING_Y
         g = lambda arr: np.interp(y, ys, arr)
         zc = g(zc_t); closed = y < apex
         zft = zc + k * (g(zf_top) - zc)
@@ -82,7 +82,7 @@ def build(ctx):
 
     def point(y, c):
         a, zc, zb, wr, wl, zr, zl = shape(y)
-        a = max(a, 1.0)
+        a = max(a, 1e-3)
         right = c < cols // 2
         k = c if right else cols - 1 - c           # 0 at the edge … NF+NB−1 at the back's middle
         sg, w, z_e = (1, wr, zr) if right else (-1, wl, zl)

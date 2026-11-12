@@ -9,7 +9,7 @@
   { "name": "Рисунок: С15 «Нуар: чёрное пятно» (styles/s15-noir) — Аня: фигура, поворот, портрет, выражения", "link": "../styles/" },
   { "name": "Начато с Р1 (to3d/r1-s3-anya, та же Аня в графичном стиле): сборка тела и одежды, часы живого лица, просмотрщик", "link": "r1-s3-anya/notes.md" },
   { "name": "Тело и скелет: Anny (moood-woman, SOMA) из engine/data", "link": "../engine/viewer/index.html" },
-  { "name": "Голова: Blender Human Base Meshes, стилизованная голова (CC0)", "link": "https://www.blender.org/download/demo-files/#assets" },
+  { "name": "Голова: Blender Human Base Meshes, стилизованная голова (CC0)", "link": "https://www.blender.org/download/demo-files/" },
   { "name": "Движения: Kimodo из engine/motions (шаг, машет, оглядывается, крадётся, садится)", "link": "../engine/viewer/index.html" },
   { "name": "Посмотреть в 3D самому: крутить мышью, движения, выражения и их смесь, речь", "link": "r15-s15-anya/tools/web/view.html" }
  ],

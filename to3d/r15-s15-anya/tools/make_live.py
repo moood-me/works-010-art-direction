@@ -8,7 +8,7 @@ PICS = os.path.join(HERE, '..', 'pics')
 ENV = dict(os.environ, NODE_PATH='/opt/node-tools/node_modules')
 PK = '/works-010-art-direction/to3d/r15-s15-anya/data/anya.json'
 STAND = dict(pose='stand', poseOpts={'out': 0.08})
-WIN = dict(kind='window', w=1.5, h=2.4, y=1.15, x=0.1)
+WIN = dict(kind='window', w=0.9, h=1.9, y=1.0, x=0.08)
 DISC = dict(kind='disc', w=0.56, x=0.02)
 HEAD = dict(mode='ortho', h=0.56, yaw=0.5, pitch=0.0, focus='Head', up=0.0, follow=False)
 FULL = lambda yaw: dict(mode='persp', dist=6.0, fov=22, yaw=yaw, pitch=0.06, cy=0.86, follow=True, focus=None)
