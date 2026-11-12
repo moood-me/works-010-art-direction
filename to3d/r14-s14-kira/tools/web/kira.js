@@ -213,7 +213,7 @@ const A = window.A = {
     camera.position.set(t[0] + Math.sin(yaw) * Math.cos(pitch) * dist, t[1] + Math.sin(pitch) * dist, t[2] + Math.cos(yaw) * Math.cos(pitch) * dist);
     camera.lookAt(t[0], t[1], t[2]); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
     // the light comes from the picture's top left, wherever the picture is taken from (the drawing's rule)
-    const ly = yaw + (c.lightYaw ?? -0.42), le = c.lightUp ?? 0.8;
+    const ly = yaw + (c.lightYaw ?? -0.45), le = c.lightUp ?? 0.5;
     uniforms.L.value.set(Math.sin(ly) * Math.cos(le), Math.sin(le), Math.cos(ly) * Math.cos(le));
   },
   render() {

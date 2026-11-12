@@ -260,7 +260,7 @@ back = sheet(f_all, (4.0 + 5.0 * np.clip((yv_ + 105) / 60, 0, 1)) * K, 'hair_d')
 # the side lock on her left temple: lies on the skin
 side = sheet(np.maximum.reduce([f_sd, -(z_ + 6), -HV[:, 0] / K]), (6.0 + 5.5 * np.clip((yv_ + 105) / 60, 0, 1)) * K, 'hair')
 # the fringe: glued at the crown, standing off the forehead more and more toward its points
-lift = (6.0 + 7.5 * np.clip((yv_ + 105) / 70, 0, 1)) * K
+lift = (6.5 + 5.5 * np.clip((yv_ + 105) / 70, 0, 1)) * K
 wf_ = np.clip((72 - th_) / 26, 0, 1)
 f_fringe = np.where(HV[:, 0] < 0, wf_ * f_fr + (1 - wf_) * f_all, f_fr + (1 - wf_) * 30)
 fringe = sheet(np.maximum.reduce([f_fringe, -(z_ + 48)]), lift, 'hair')
