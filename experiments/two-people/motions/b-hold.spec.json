@@ -1,0 +1,7 @@
+{"source": "b-touch", "frame": 149, "side": "Right", "kind": "right-hand",
+ "note": "after b-touch (5 frames): its frame f is scene frame 187 + f. Targets: A's shoulder point (scenes.js) at scene frames 200, 215, 247 (node tools/targets.mjs woman a-stand,a-look RightShoulder -0.1394,1.3335,-0.020 160,200,215,247 0,-4.0,0,1.015), less startsAt (-0.031, 3.354); the pelvis where b-touch left it; the hand turned about the vertical with her shoulder, 1.4 times its turn (0.69 rad at the touch, b-touch frame 118), so the fingers keep off her jaw as she looks round",
+ "items": [
+  {"frame": 13, "target": [-0.045, 1.3029, 0.476], "hip": [-0.016, -0.021], "heading": "own", "handYaw": -0.20},
+  {"frame": 28, "target": [-0.012, 1.3058, 0.4632], "hip": [-0.016, -0.021], "heading": "own", "handYaw": -0.53},
+  {"frame": 60, "target": [-0.0061, 1.3093, 0.4683], "hip": [-0.016, -0.021], "heading": "own", "handYaw": -0.47}
+ ]}

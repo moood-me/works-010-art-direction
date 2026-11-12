@@ -1,0 +1,6 @@
+{"source": "b-probe", "frame": 120, "side": "Right", "kind": "right-hand",
+ "note": "targets: A's shoulder point (scenes.js) at scene frames 160 and 191 (B starts at scene frame 42), in B's Kimodo space (B placed at x 0, z -4.0, heading 0; k 1.015) — node tools/targets.mjs woman a-stand,a-look RightShoulder -0.1245,1.3139,-0.0056 160,191 0,-4.0,0,1.015",
+ "items": [
+  {"frame": 118, "target": [-0.124, 1.278, 3.9104], "hip": [-0.03, 3.31]},
+  {"frame": 149, "target": [-0.0944, 1.2778, 3.8666], "hip": [-0.03, 3.31]}
+ ]}

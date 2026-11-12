@@ -1,0 +1,115 @@
+[
+ {
+  "id": "a-stand",
+  "label": {
+   "ru": "А стоит",
+   "en": "A stands"
+  },
+  "key": "f043df21efb45de928e8e50163adec25b6bdf1918d60f0304c38a3126d9c9de6",
+  "ask": {
+   "prompts": [
+    "A person stands still in a relaxed upright posture, shifting their weight slightly."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1
+  }
+ },
+ {
+  "id": "b-probe",
+  "label": {
+   "ru": "Б: проба похлопывания",
+   "en": "B: tap probe"
+  },
+  "key": "9b3d65d9a2c5033f21999f2839c0fa9f18b0c1c9ba56d9794f7f72cf2de0b3ef",
+  "ask": {
+   "prompts": [
+    "A person walks forward and stops, then lifts their right hand in the forward direction and calmly taps the other person's shoulder."
+   ],
+   "seconds": [
+    6
+   ],
+   "seed": 1
+  },
+  "note": "no constraints: to see where Kimodo puts the hand and how far it stops; its touch frame is the pose the real B motion is constrained with"
+ },
+ {
+  "id": "a-look",
+  "label": {
+   "ru": "А оглядывается",
+   "en": "A looks back"
+  },
+  "key": "984146345371ea6568a3ea3af6938328488b1b40fbc5bc1ff3795b1e54968c11",
+  "ask": {
+   "prompts": [
+    "A person standing turns to their right and looks back, diagonally to the right side."
+   ],
+   "seconds": [
+    3.5
+   ],
+   "seed": 2
+  },
+  "after": {
+   "motion": "a-stand",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.0275,
+   "z": -0.0156
+  },
+  "note": "seed 1 of this prompt turned later (at 1.8 s); \"A person standing looks back over their right shoulder.\" (seeds 1, 2) barely turned the head"
+ },
+ {
+  "id": "b-touch",
+  "label": {
+   "ru": "Б подходит и кладёт руку на плечо",
+   "en": "B comes up and puts a hand on the shoulder"
+  },
+  "key": "61f70e7a7266c762fbe2cf47fdbd1876f825e065d767178f9a4afd2d8a19deea",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing lifts their right hand and puts it on the shoulder of someone standing in front of them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/b-touch.constraint.json, made by tools/order_hand.py from motions/b-touch.spec.json"
+   ]
+  },
+  "note": "seed 2 (f89c89b2…) much the same. Tries before: the pose sent as turns from rest (the hand came 45 cm high: Kimodo reads turns between its own joint frames, tools/pose.py native); one prompt for walk and touch (the arm held out the whole walk and went through A); a root2d stop at frame 92 (Kimodo walked on 60 cm past it and was pulled back: start further away instead)"
+ },
+ {
+  "id": "b-hold",
+  "label": {
+   "ru": "Б держит руку на плече",
+   "en": "B keeps the hand on the shoulder"
+  },
+  "key": "a08b3d8ac082fa1600267f8012a80cc8f85dc3e1e7d05fe91ca6b6d2c45a5684",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the shoulder of someone in front of them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/b-hold.constraint.json, from motions/b-hold.spec.json: A's shoulder as she turns, the hand turned with it"
+   ]
+  },
+  "after": {
+   "motion": "b-touch",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.031,
+   "z": 3.354
+  },
+  "note": "startsAt computed as the studio does (b-touch's pelvis at its frame 145 less this one's at its frame 0; on a-look this matched the studio's own within 0.5 mm). A first take (03712e97…) had the hand only moved, not turned: as she looked round her jaw came onto his fingers (4 cm in)"
+ }
+]

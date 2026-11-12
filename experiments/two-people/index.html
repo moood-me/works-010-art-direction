@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Двое</title>
+<style>
+  :root { --panel: rgba(250,247,242,.94); --ink: #26231f; --muted: #75706a; --line: #d5cec4; --accent: #b4532a; --bg: #cfc8bd; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #cv { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; cursor: grab; }
+  #cv:active { cursor: grabbing; }
+  #panel { position: fixed; left: 12px; top: 12px; z-index: 2; background: var(--panel); border-radius: 10px; padding: 10px 12px; box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    display: grid; gap: 7px; width: min(380px, calc(100vw - 48px)); max-height: calc(100vh - 48px); overflow-y: auto; }
+  #panel .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  #panel button { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 3px 8px; color: var(--ink); cursor: pointer; }
+  #panel button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #panel input[type=range] { flex: 1; min-width: 120px; }
+  #panel .hint, #panel .about { color: var(--muted); font-size: 12px; }
+  #panel .about { color: var(--ink); }
+  #panel h1 { font-size: 15px; margin: 0; }
+  #msg { position: fixed; inset: 0; display: grid; place-items: center; font: italic 20px Georgia, serif; color: #4a4640; pointer-events: none; z-index: 3; }
+  @media (max-width: 520px) { #panel { left: 8px; top: 8px; width: calc(100vw - 32px); max-height: 42vh; } }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="msg">собирается…</div>
+<div id="panel">
+  <h1>Двое: касание через ограничения Kimodo</h1>
+  <div class="row" id="scenes"></div>
+  <div class="about" id="about"></div>
+  <div class="row"><button id="play" aria-label="Пауза">❚❚</button><input id="time" type="range" min="0" max="0" step="0.01" value="0" aria-label="Время"><span id="flab"></span></div>
+  <div class="row"><button id="slow">медленно</button><button id="corr" aria-pressed="true">поправка рук</button><button id="mark">точка касания</button></div>
+  <div class="row"><button data-view="0">спереди</button><button data-view="1">сбоку</button><button data-view="2">сзади</button><button data-view="3">сверху</button><button id="close">ближе к касанию</button></div>
+  <div class="hint" id="status"></div>
+  <div class="hint">мышь: вращать · колесо: ближе · Shift или правая кнопка: сдвинуть · пробел: пауза</div>
+</div>
+<script type="module" src="page.js"></script>
+</body>
+</html>

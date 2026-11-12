@@ -1,0 +1,42 @@
+{
+ "format": "two-people/motions",
+ "motions": [
+  {
+   "id": "a-stand",
+   "label": {
+    "ru": "А стоит",
+    "en": "A stands"
+   }
+  },
+  {
+   "id": "b-probe",
+   "label": {
+    "ru": "Б: проба похлопывания",
+    "en": "B: tap probe"
+   }
+  },
+  {
+   "id": "a-look",
+   "label": {
+    "ru": "А оглядывается",
+    "en": "A looks back"
+   },
+   "after": "a-stand"
+  },
+  {
+   "id": "b-touch",
+   "label": {
+    "ru": "Б подходит и кладёт руку на плечо",
+    "en": "B comes up and puts a hand on the shoulder"
+   }
+  },
+  {
+   "id": "b-hold",
+   "label": {
+    "ru": "Б держит руку на плече",
+    "en": "B keeps the hand on the shoulder"
+   },
+   "after": "b-touch"
+  }
+ ]
+}
