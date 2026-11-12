@@ -11,7 +11,7 @@ import { createEngine } from '../../engine/src/engine.js';
 import { loadMotion, clipOf } from '../../engine/src/motion.js';
 import { makeStage, figureMesh } from '../../engine/src/view3d.js';
 import { readJSON } from '../../engine/src/pack.js';
-import { qRot, qMul, qConj, qAxisAngle, qAngle, getQ, sub, add, len, normalize, cross, dot, clamp } from '../../engine/src/math.js';
+import { qRot, qMul, qConj, qAxisAngle, qAngle, qBetween, qSlerp, getQ, sub, add, len, normalize, cross, dot, clamp } from '../../engine/src/math.js';
 import { ContactFigure } from './contact-figure.js';
 
 const here = new URL('./', import.meta.url);
@@ -48,6 +48,13 @@ function boxesOf(p) {
     }
   } else if (p.kind === 'cup') {           // its frame at the middle of its bottom
     B.push({ c: [0, p.h / 2, 0], s: [p.r * 1.7, p.h, p.r * 1.7], part: 'cup', cyl: [p.r, p.h] });
+  } else if (p.kind === 'chair') {         // its frame on the floor under the seat's middle, facing the table (+z)
+    const w = 0.42, sy = 0.45, bz = p.barZ, top = p.barY + 0.02;
+    B.push({ c: [0, sy - 0.02, 0], s: [w, 0.04, w], part: 'seat' });
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) B.push({ c: [sx * (w / 2 - 0.02), (sy - 0.04) / 2, sz * (w / 2 - 0.02)], s: [0.035, sy - 0.04, 0.035], part: 'chair' });
+    for (const sx of [-1, 1]) B.push({ c: [sx * (w / 2 - 0.02), (sy + top) / 2, bz], s: [0.035, top - sy, 0.035], part: 'chair' });
+    B.push({ c: [0, p.barY, bz], s: [w, 0.045, 0.035], part: 'bar' });
+    B.push({ c: [0, p.barY - 0.16, bz], s: [w - 0.04, 0.12, 0.02], part: 'chair' });
   } else if (p.kind === 'box') {
     B.push({ c: [0, p.size[1] / 2, 0], s: p.size, part: 'box' });
   }
@@ -133,7 +140,20 @@ function heldAt(h, p, fig, t) {
     const a = angleAbout(p.rest.at, fig.palm(fig.pose, h.hands[0])) - h.a0;
     return { at: p.rest.at, q: Y(clamp(a, 0, p.maxOpen || 2)) };
   }
-  return compose(handFrame(fig, fig.pose, h.hands), h.rel);
+  if (h.kind === 'slide') {
+    // a chair pulled over the floor: it moves as the middle between the palms does, over the floor only, and only
+    // back (away from the table) from where it stood
+    const d = sub(handFrame(fig, fig.pose, h.hands).at, add(p.rest.at, qRot(p.rest.q, [0, 0, p.barZ])));
+    return { at: add(p.rest.at, [d[0], 0, Math.min(0, d[2])]), q: p.rest.q };
+  }
+  const tr = compose(handFrame(fig, fig.pose, h.hands), h.rel);
+  if (!p.upright) return tr;
+  // a cup is kept upright in the hand (the wrist does that) — turned about its own middle, so it stays in the fist —
+  // except while it is at the lips: there it tilts with the hand, as much as the lips contact is weighed in
+  const lips = fig.contacts.find(c => c.def.lips && c.def.lips.prop === p.id), w = lips ? clamp(lips.weight(t), 0, 1) : 0;
+  const mid = add(tr.at, qRot(tr.q, [0, p.h / 2, 0]));
+  const q = qSlerp(qMul(qBetween(qRot(tr.q, [0, 1, 0]), [0, 1, 0]), tr.q), tr.q, w);
+  return { at: sub(mid, qRot(q, [0, p.h / 2, 0])), q };
 }
 
 // ———— the scene ————
@@ -155,13 +175,17 @@ async function setScene(id) {
     k.target = targetOf(c, A.fig, byId);
     return k;
   });
+  // the fingers closed round what is held (contact-figure.js: curl), from a little before it is taken till a little
+  // after it is let go
+  A.fig.grips = (scene.holds || []).filter(h => h.grip).flatMap(h => h.hands.map(side => ({
+    side, curl: h.grip, weight: t => smooth((t - (h.grip.from ?? h.from) + h.grip.ramp) / h.grip.ramp) * (1 - smooth((t - (h.grip.to ?? h.to)) / h.grip.ramp)) })));
   for (const c of scene.contacts) {
     const m = new THREE.Mesh(new THREE.SphereGeometry(0.016, 16, 12), new THREE.MeshBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true, opacity: 0.85 }));
     m.renderOrder = 10; marks.add(m);
   }
   for (const o of objects) stage.scene.add(o);
   cur = { scene, A, props, byId, marks, objects, memo: {} };
-  cur.frames = A.clip.frames;
+  cur.frames = Math.min(A.clip.frames, scene.until || Infinity);   // a scene may end before its motion does
   $('#time').max = cur.frames - 1;
   $('#about').textContent = scene.about;
   if (S.t > cur.frames - 1) S.t = 0;
@@ -201,6 +225,19 @@ function targetOf(c, fig, byId) {
       return [hinge[0] - r * Math.cos(a), y, hinge[2] + r * Math.sin(a)];
     };
   }
+  if (c.bar) {
+    // a chair's back, both hands on its top: the bar where the chair stands — and, while it is held, moved back as far
+    // as the middle between Kimodo's palms has gone back from it (never forward into the table), sideways with it
+    const g = c.bar, p = byId[g.prop], sgn = c.side === 'Left' ? 1 : -1;
+    const barAt = tr => add(tr.at, qRot(tr.q, [sgn * g.half, g.y, p.barZ]));
+    return (t, pose) => {
+      if (t < g.from) return barAt(p.rest);
+      if (t > g.to) return barAt(cur.memo[`${p.id}|${S.correct}`] || p.rest);
+      const L = fig.palm(pose, 'Left'), R = fig.palm(pose, 'Right'), m = [(L[0] + R[0]) / 2, 0, (L[2] + R[2]) / 2];
+      const rest = add(p.rest.at, qRot(p.rest.q, [0, 0, p.barZ])), d = sub(m, rest);
+      return barAt({ at: add(p.rest.at, [d[0], 0, Math.min(0, d[2])]), q: p.rest.q });
+    };
+  }
   if (c.grip) {
     // rest → held: weighed while the hands are on it, still on the floor (f0–f1: Kimodo holds them there, so the two
     // agree); held → put: over `ramp` frames up to the
@@ -227,7 +264,7 @@ function holdState(h) {
     A.fig.correct = S.correct; A.fig.frame(A.clip, h.from);
     // a door: its angle is the handle's (the palm on it) less where the handle is when the door is shut (h.a0, the
     // scene's); anything else keeps its place relative to the hand(s) as they were when it was taken
-    if (h.kind !== 'hinge') h.rel = compose(inverse(handFrame(A.fig, A.fig.pose, h.hands)), p.rest);
+    if (h.kind !== 'hinge' && h.kind !== 'slide') h.rel = compose(inverse(handFrame(A.fig, A.fig.pose, h.hands)), p.rest);
     memo['grab' + key] = { rel: h.rel };
     A.fig.frame(A.clip, h.to);
     memo[key] = heldAt(h, p, A.fig, h.to);
@@ -297,7 +334,7 @@ function measure(t) {
 }
 
 const cm = x => x == null ? '—' : (x * 100).toFixed(1) + ' см';
-const PART = { top: 'столешница', leg: 'ножка', wall: 'стена', leaf: 'дверь', handle: 'ручка', cup: 'чашка', box: 'коробка' };
+const PART = { seat: 'сиденье', bar: 'спинка стула', chair: 'стул', top: 'столешница', leg: 'ножка', wall: 'стена', leaf: 'дверь', handle: 'ручка', cup: 'чашка', box: 'коробка' };
 function draw() {
   const t = S.t; poseAt(t);
   const { A, marks, props } = cur;
@@ -323,7 +360,7 @@ function draw() {
 // ———— the panel ————
 const panel = document.createElement('div'); panel.id = 'panel';
 panel.innerHTML = `
-  <h1>Вещи в руках: дверь, чашка, коробка</h1>
+  <h1>Вещи в руках: дверь, чашка, коробка, стул</h1>
   <div class="row" id="scenes"></div>
   <div class="about" id="about"></div>
   <div class="row"><button id="play" aria-label="Пауза">❚❚</button><input id="time" type="range" min="0" max="0" step="0.01" value="0" aria-label="Время"><span id="flab"></span></div>

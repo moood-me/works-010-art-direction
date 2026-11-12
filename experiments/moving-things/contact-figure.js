@@ -33,6 +33,7 @@ export class ContactFigure {
     this.pose = null;
     this.contacts = [];
     this.correct = true;
+    this.grips = [];          // [{side, curl: {fingers: [knuckle, middle, tip], thumb: [base, middle, tip]}, weight: t => 0…1}]
     this.reach = [];
   }
   get place() { return this.retarget.place; }
@@ -62,10 +63,30 @@ export class ContactFigure {
     // the hands (a box held between both palms, a door's handle on its arc) must not see one hand already corrected
     for (const c of this.contacts) c.now = c.target(t, pose, this);
     this.reach = this.contacts.map(c => this.reachOne(pose, c, t));
+    if (this.correct) for (const g of this.grips) { const w = clamp(g.weight(t), 0, 1); if (w > 0) this.curl(pose, g.side, g.curl, w); }
     this.skinner.skin(pose, this.positions);
     normalsOf(this.positions, body.triangles, this.normals);
     this.pose = pose;
     return this;
+  }
+
+  // the fingers closed round a held thing — Kimodo gives none (its fingers stay in one relaxed curl), our body has
+  // them: each finger's three joints after the palm turned towards the palm's side by the angles given (radians, w of
+  // them), the thumb's three likewise; each about the axis across the finger as it lies now. A simple curl per thing,
+  // weighed in as the hand arrives and out as it lets go — no solver, nothing measured against the thing.
+  curl(pose, side, curl, w) {
+    const sk = this.body.skeleton, i = sk.index, hip = getV(pose.P, i.Hips), P = () => pose.P;
+    const at = n => getV(P(), i[side + n]);
+    const normal = () => { const h = at('Hand'), a = sub(at('HandIndex1'), h), b = sub(at('HandPinky1'), h); const n = normalize(cross(a, b)); return side === 'Right' ? n : scale(n, -1); };
+    const chain = (names, angles) => names.forEach((n, k) => {
+      if (k === names.length - 1 || !angles[k]) return;
+      const dir = sub(at(names[k + 1]), at(n)), ax = cross(dir, normal());
+      if (len(ax) < 1e-9) return;
+      turnUnder(pose, sk, i[side + n], qAxisAngle(normalize(ax), angles[k] * w));
+      build(pose, this.body, hip);
+    });
+    for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) chain([`Hand${f}2`, `Hand${f}3`, `Hand${f}4`, `Hand${f}End`], curl.fingers);
+    chain(['HandThumb1', 'HandThumb2', 'HandThumb3', 'HandThumbEnd'], curl.thumb);
   }
 
   // the middle of the palm: between the wrist and the knuckles of the index and the little finger

@@ -47,7 +47,9 @@ def door():
                      'сам. Дверь поворачивается на петлях за ладонью, пока рука на ручке; отпущенная — ещё немного доходит сама, замедляясь.',
             'person': {'character': 'woman', 'motions': ['table-walk', DOOR], 'place': {'position': [0, 0, 0], 'heading': 0}},
             'props': [wall, leaf], 'contacts': contacts,
-            'holds': [{'prop': 'door', 'kind': 'hinge', 'hands': ['Right'], 'from': grab, 'to': let_go, 'a0': pm['a0']}],
+            'holds': [{'prop': 'door', 'kind': 'hinge', 'hands': ['Right'], 'from': grab, 'to': let_go, 'a0': pm['a0'],
+                       # the fingers hooked over the lever and down behind it
+                       'grip': {'fingers': [1.2, 1.2, 0.8], 'thumb': [0.2, 0.3, 0.2], 'ramp': 8}}],
             'look': [0, 0.95, 2.0], 'camera': {'yaw': 0.7, 'pitch': 0.15, 'dist': 4.8},
             'views': {'front': {'yaw': -0.5, 'pitch': 0.15, 'dist': 4.2, 'target': [0.1, 0.9, D - 0.1]},
                       'side': {'yaw': 2.3, 'pitch': 0.22, 'dist': 4.2, 'target': [0.1, 0.9, D - 0.3]},
@@ -72,10 +74,12 @@ def cup():
                      'чашка — второе, сделанное продолжать первое.',
             'person': {'character': 'woman', 'motions': ['table-walk', CUP], 'place': {'position': [0, 0, 0], 'heading': 0}},
             'props': [{'id': 'table', 'kind': 'table', 'at': [0, 0, tb['edge'] + tb['depth'] / 2], 'heading': 0, 'size': [tb['width'], tb['depth']], 'height': tb['top']},
-                      {'id': 'cup', 'kind': 'cup', 'at': c['at'], 'r': c['r'], 'h': c['h'], 'standsOn': tb['top'], 'color': '#e8e2d6',
+                      {'id': 'cup', 'kind': 'cup', 'at': c['at'], 'r': c['r'], 'h': c['h'], 'standsOn': tb['top'], 'color': '#e8e2d6', 'upright': True,
                        'handleAt': [0, c['h'] * 0.55, c['r'] + 0.012], 'handleTurn': 1.5708}],
             'contacts': contacts,
-            'holds': [{'prop': 'cup', 'hands': ['Right'], 'from': k1, 'to': k2 + (k3 - k2) // 2}],
+            'holds': [{'prop': 'cup', 'hands': ['Right'], 'from': k1, 'to': k2 + (k3 - k2) // 2,
+                       # the fingers round the mug, the thumb across it — closed from when the hand is at it to when it is put down
+                       'grip': {'fingers': [0.9, 1.0, 0.7], 'thumb': [0.4, 0.5, 0.3], 'ramp': 8, 'from': k0, 'to': k3}}],
             'look': [0, 0.95, 1.8], 'camera': {'yaw': 0.9, 'pitch': 0.15, 'dist': 3.6},
             'views': {'front': {'yaw': 0.4, 'pitch': 0.12, 'dist': 3.0, 'target': [0, 1.0, 2.0]},
                       'side': {'yaw': -1.1, 'pitch': 0.15, 'dist': 3.0, 'target': [0, 0.95, 1.9]},
@@ -84,8 +88,37 @@ def cup():
                       'mouth': {'yaw': 0.4, 'pitch': 0.05, 'dist': 1.0, 'target': [-0.03, 1.35, 1.98]}}}
 
 
+def chair():
+    p = plan(CHAIR); w = p['world']; ch = w['chair']
+    walk_n = 120
+    at = lambda f: walk_n + f - p['after']['frames']
+    f = [at(x) for x in p['frames']]                      # on the bar at f0–f1, pulled out at f2–f3
+    take, let_go = (f[0] + f[1]) // 2, (f[2] + f[3]) // 2
+    bar_z_local = -0.19
+    chair_at = [0.0, 0.0, ch['bar_z'] - bar_z_local]
+    contacts = [{'side': s_, 'name': n, 'bar': {'prop': 'chair', 'half': ch['half'], 'y': ch['bar_y'] + 0.025, 'from': take, 'to': let_go},
+                 'frames': [f[0], f[3]], 'ramp': 12} for s_, n in (('Left', 'левая ладонь на спинке'), ('Right', 'правая ладонь на спинке'))]
+    edge = ch['bar_z'] + 0.07                              # the table's near edge, just past the chair's back
+    return {'id': 'chair', 'label': 'стул',
+            'about': 'Женщина подходит к стулу, задвинутому под стол, берётся обеими руками за верх спинки и, отступая, '
+                     'выдвигает стул на 40 см. Kimodo дали места ладоней на спинке — у задвинутого и у выдвинутого '
+                     'стула — и где при этом таз; шаг назад он сделал сам. Стул едет по полу за ладонями.',
+            'person': {'character': 'woman', 'motions': ['table-walk', CHAIR], 'place': {'position': [0, 0, 0], 'heading': 0}},
+            'props': [{'id': 'table', 'kind': 'table', 'at': [0, 0, edge + 0.35], 'heading': 0, 'size': [1.2, 0.7], 'height': 0.74},
+                      {'id': 'chair', 'kind': 'chair', 'at': chair_at, 'barY': ch['bar_y'], 'barZ': bar_z_local, 'color': '#9a7452'}],
+            'contacts': contacts,
+            'holds': [{'prop': 'chair', 'kind': 'slide', 'hands': ['Left', 'Right'], 'from': take, 'to': let_go,
+                       'grip': {'fingers': [1.0, 1.1, 0.7], 'thumb': [0.3, 0.4, 0.2], 'ramp': 8}}],
+            'look': [0, 0.8, 1.8], 'camera': {'yaw': 0.9, 'pitch': 0.2, 'dist': 3.6},
+            'views': {'front': {'yaw': 0.5, 'pitch': 0.2, 'dist': 3.4, 'target': [0, 0.8, 2.0]},
+                      'side': {'yaw': -1.3, 'pitch': 0.18, 'dist': 3.6, 'target': [0, 0.8, 1.9]},
+                      'whole': {'yaw': 2.4, 'pitch': 0.3, 'dist': 5.0, 'target': [0, 0.6, 1.6]},
+                      'close': {'yaw': -1.0, 'pitch': 0.45, 'dist': 1.1, 'target': [0, 0.88, ch['bar_z'] - 0.15]}}}
+
+
 CUP = 'cup-3'
-BOX = 'box-2'
+CHAIR = 'chair-1'
+BOX = 'box-3'
 
 def box():
     p = plan(BOX); w = p['world']; b = w['box']; tb = w['table']
@@ -94,15 +127,20 @@ def box():
     contacts = [{'side': s, 'name': n, 'grip': {'prop': 'box', 'half': b['half'], 'y': b['grip_y'], 'f0': f[0], 'f1': f[1], 'f2': f[2], 'ramp': 15, 'put': b['put']},
                  'frames': [f[0], f[3]], 'ramp': 12} for s, n in (('Left', 'левая ладонь на коробке'), ('Right', 'правая ладонь на коробке'))]
     return {'id': 'box', 'label': 'коробка',
-            'about': 'Мужчина берёт с пола коробку обеими руками, несёт три метра и ставит на стол. Kimodo дали места '
+            'about': 'Мужчина берёт с пола коробку обеими руками, несёт три метра и, наклонившись, ставит на стол. Kimodo дали места '
                      'ладоней на боках коробки — где она лежит и куда её ставят — и где при этом таз; присед, подъём, '
                      'ходьбу с коробкой он сделал сам. Пока коробка в руках, она держится между ладонями, а ладони '
                      'держатся на её боках (ширина коробки — между ними).',
             'person': {'character': 'man', 'motions': [BOX], 'place': {'position': [0, 0, 0], 'heading': 0}},
+            # box-3: having let the box go, Kimodo goes on down into a crouch under the table's edge (frames 270–299):
+            # the scene ends before that
+            'until': 268 if BOX == 'box-3' else None,
             'props': [{'id': 'table', 'kind': 'table', 'at': [0, 0, tb['edge'] + tb['depth'] / 2], 'heading': 0, 'size': [tb['width'], tb['depth']], 'height': tb['top']},
                       {'id': 'box', 'kind': 'box', 'at': b['at'], 'size': b['size'], 'standsOn': 0.0, 'putOn': tb['top'], 'color': '#b88d5a'}],
             'contacts': contacts,
-            'holds': [{'prop': 'box', 'hands': ['Left', 'Right'], 'from': take, 'to': let_go}],
+            'holds': [{'prop': 'box', 'hands': ['Left', 'Right'], 'from': take, 'to': let_go,
+                       # the fingertips a little round the box's bottom edges
+                       'grip': {'fingers': [0.15, 0.25, 0.2], 'thumb': [0.15, 0.15, 0.1], 'ramp': 8}}],
             'look': [0, 0.8, 1.6], 'camera': {'yaw': 1.0, 'pitch': 0.15, 'dist': 5.0},
             'views': {'front': {'yaw': -0.9, 'pitch': 0.18, 'dist': 5.5, 'target': [0, 0.7, 1.7]},
                       'side': {'yaw': 2.2, 'pitch': 0.18, 'dist': 5.5, 'target': [0, 0.7, 1.7]},
@@ -114,7 +152,7 @@ def box():
 if __name__ == '__main__':
     import sys
     scenes = []
-    for f in (door, cup, box):
+    for f in (door, cup, box, chair):
         try: scenes.append(f())
         except (FileNotFoundError, KeyError) as e: print('skip', f.__name__, e)
     json.dump({'scenes': scenes}, open(os.path.join(ITEM, 'scenes.json'), 'w'), ensure_ascii=False, indent=1)

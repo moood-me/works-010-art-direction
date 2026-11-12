@@ -217,7 +217,13 @@ def box_1():
     return box(back=0.0)
 
 
-def box(back=0.12):
+def box_2():
+    """the second take: the free take's own put-down pose, a step back (deep knees: from the side he seems to sit
+    down on air beside the table)"""
+    return box(back=0.12, put_frame=255)
+
+
+def box(back=0.12, put_frame=150):
     """A man squats, takes a box from the floor in both hands (its sides between his palms), carries it 3 m and puts it
     on a table. The free take (box-free) did all of this by itself; here its own poses are moved to the places of the
     scene and its palms put on the box's sides — where the box lies and where it is put — and its pelvis there."""
@@ -229,13 +235,15 @@ def box(back=0.12):
     top, edge, tdepth, twidth = 0.80, 3.25, 0.6, 1.0
     put_at = np.array([0.0, top, edge + 0.22])
     plans = {}
-    for name, at, f, pf in (('take', box_at, 45, [45, 55]), ('put', put_at, 255, [245, 258])):
+    # putting it down: a standing pose of the free take's own (carrying, frame 150: legs nearly straight), bent forward
+    # at the waist till the palms reach the table — so he stands and bends, not sits down on air
+    for name, at, f, pf in (('take', box_at, 45, [45, 55]), ('put', put_at, put_frame, [245, 258])):
         palms = {'L': at + [half, grip_y, 0], 'R': at + [-half, grip_y, 0]}
         turns = {s_: hand_turn_from(src, f, s_) for s_ in 'LR'}
         pel = src['p'][f][0] * k                             # Kimodo's own pelvis there, in our metres
-        if name == 'put': pel[2] -= back                     # a step farther from the table (see box_1)
+        if name == 'put': pel[2] = src['p'][255][0][2] * k - back                     # a step farther from the table (see box_1)
         P0 = placed(src, f, np.array([0.0, pel[2]]) / k, 0.0)
-        for a in np.radians(np.arange(0, 40, 2)):          # bent forward at the waist as little as lets the palms reach
+        for a in np.radians(np.arange(0, 70, 2)):          # bent forward at the waist as little as lets the palms reach
             P = Pose(P0.as_ps()); lean_forward(P, a)
             miss = [P.reach(s_, palms[s_] / k, turns[s_]) for s_ in 'LR']
             if max(miss) < 0.003: break
@@ -247,6 +255,29 @@ def box(back=0.12):
             'world': {'box': {'at': r4(box_at), 'size': [w, h, d], 'put': r4(put_at), 'grip_y': grip_y, 'half': half},
                       'table': {'top': top, 'edge': edge, 'depth': tdepth, 'width': twidth},
                       'palms': {n: {s_: r4(v) for s_, v in plans[n][2].items()} for n in plans}}}
+
+
+def chair():
+    """A woman walks up behind a chair pushed in under a table (К1's table-walk: she stops 0.35 m before the top of its
+    back), takes the top of its back in both hands, steps back and pulls the chair out 0.4 m, lets go. The chair slides
+    with her hands over the floor (its height and turn kept)."""
+    k = K_WOMAN
+    walk_end = np.array([-0.0237, 2.0937]); o = np.array([walk_end[0], 0, walk_end[1]])
+    pelvis = np.array([walk_end[0] * k, walk_end[1] * k])
+    bar_y, bar_z, half = 0.86, float(pelvis[1]) + 0.35, 0.16      # the top of the chair's back; the palms 32 cm apart
+    pull = 0.40
+    palms = lambda dz: {'L': np.array([half, bar_y + 0.025, bar_z - dz]), 'R': np.array([-half, bar_y + 0.025, bar_z - dz])}
+    src = RAW('table-free'); turns = {s_: hand_turn_from(src, 115, s_) for s_ in 'LR'}     # hands lying on something, palms down
+    poses = {}
+    for frames, dz in (([20, 30], 0.0), ([70, 80], pull)):
+        Q, bent, miss = standing_reach(RAW('table-free2'), 150, [float(pelvis[0]), float(pelvis[1]) - dz], palms(dz), turns, k, o)
+        print(f'chair: pulled {dz} m, bent {bent:.0f}°, palms off by {np.round(miss, 4)}')
+        for f in frames: poses[f] = Q.as_ps()
+    fr = sorted(poses)
+    c = K.constraint('end-effector', fr, [poses[f] for f in fr], ['LeftHand', 'RightHand'])
+    return {'constraints': [c], 'seconds': [4], 'frames': fr, 'after': {'motion': 'table-walk', 'frames': 5, 'origin': r4(o)},
+            'world': {'chair': {'bar_y': bar_y, 'bar_z': bar_z, 'half': half, 'pull': pull}, 'palms': {s_: r4(v) for s_, v in palms(0).items()},
+                      'pelvis': r4(pelvis)}}
 
 
 if __name__ == '__main__':

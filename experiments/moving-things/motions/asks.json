@@ -196,6 +196,38 @@
   ],
   "seed": 0,
   "constraints": "plans/box-2.json",
-  "note": "as box-1, the pelvis 12 cm farther from the table when putting the box (the pose bent 12 degrees so the palms reach)"
+  "note": "as box-1, 12 cm farther from the table: no longer into the table, but putting the box down he bends the knees deeply (the free take's own put-down pose, pelvis 0.86): from the side it reads as sitting down on air beside the table"
+ },
+ "box-3": {
+  "key": "2c7730539d9be4158be737904068919681f9a40b3e1d28fb1463f7c7c9bb6929",
+  "prompts": [
+   "A person bends down and picks up a medium box from the floor with both hands.",
+   "A person carrying a box with both hands walks forward.",
+   "A standing person bends forward and places the box on a table in front of them with both hands."
+  ],
+  "seconds": [
+   3,
+   4,
+   3
+  ],
+  "seed": 0,
+  "constraints": "plans/box-3.json",
+  "note": "the put-down pose from the free take's carrying frame 150 (legs nearly straight, pelvis 0.98), bent forward 12 degrees at the waist to reach; the third prompt says 'standing \u2026 bends forward'. Stands and bends forward to put the box down (pelvis 0.98-0.99) - used. Having let go, it crouches down under the table's edge (frames 270-299): the scene ends at 268. The first ask failed busy, asked again"
+ },
+ "chair-1": {
+  "key": "6f57cc1c83c5482e3df0599f098130862e343de861fa5cd03c39380411fabc5a",
+  "prompts": [
+   "A standing person grabs the backrest of a chair in front of them with both hands and pulls the chair out from the table, stepping back."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": "plans/chair-1.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "walks up, takes the chair's back, steps back 0.45 m pulling it, lets go (Kimodo within ~3-5 cm of the bar both times). The first ask failed busy, asked again"
  }
 }
