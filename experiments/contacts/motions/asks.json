@@ -127,7 +127,8 @@
    7
   ],
   "seed": 0,
-  "constraints": null
+  "constraints": null,
+  "note": "B in the shoulder scene (the first ask failed with \"busy\"; the same ask again made it)"
  },
  "table-lean-try1": {
   "key": "3f3ab1d99b80d81139c0c3798feddc90eb2780a264ffb8bf039913ce339614d0",
@@ -156,5 +157,52 @@
   "seed": 0,
   "constraints": "plans/armchair.json",
   "note": "pelvis 11 cm over the seat, 2 cm behind the centre: sat 8 cm into the seat and 6-8 cm into the backrest; not used"
+ },
+ "shoulder": {
+  "key": "d2d94179aa1692a2998dc5a374849afc50eaac8fa5e530ec92bb0bc1fade4859",
+  "prompts": [
+   "A person walks forward, stops in front of someone and places their right hand on that person's shoulder."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder.json"
+ },
+ "shoulder-try1": {
+  "key": "5e393094e438629e1437ea63c5a08e66323012cc78722281f5b26171468fc4ff",
+  "prompts": [
+   "A person walks forward, stops in front of someone and places their right hand on that person's shoulder."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder.json",
+  "note": "standing 60 cm short of the point: the arm came out straight and level like a bar, and our man could not reach the last 2-4 cm; not used"
+ },
+ "shoulder-try2": {
+  "key": "a5e2755ef945939d615523f5e667d4c178a17079366d8fe6801c591d2ee378c1",
+  "prompts": [
+   "A person walks forward, stops in front of someone and places their right hand on that person's shoulder."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder.json",
+  "note": "standing 45 cm short; the point a third of the way from the shoulder joint to the collarbone root: the hand lay by the neck; not used"
+ },
+ "table-1": {
+  "key": "47c932be9448eb4af51a60b20628c5c9bbe4a0b0fd799b04231e4b3da8d437dc",
+  "prompts": [
+   "A person walks forward to a table and leans on it with both hands."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "the pose written against the SOMA skin A-pose instead of Kimodo T-pose (wrong)",
+  "note": "absurd: arms out, a crouch; Kimodo put the hands exactly where that wrong pose had them (1.2 m high). Led to finding the convention; not used"
  }
 }

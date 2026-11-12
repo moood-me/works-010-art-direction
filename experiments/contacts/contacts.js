@@ -18,6 +18,10 @@ const msg = document.getElementById('msg'), canvas = document.getElementById('cv
 const E = await createEngine();
 const SC = await readJSON(new URL('scenes.json', here));
 const stage = makeStage(THREE, canvas, { pixelRatio: Math.min(devicePixelRatio || 1, 2) });
+// the engine's stage casts shadows over 4.4 m around one figure; here two people and things stand farther apart, and
+// the edge of that square showed on the floor in wide views: the same light over a wider square
+Object.assign(stage.key.shadow.camera, { left: -5, right: 5, top: 5, bottom: -3, far: 20 }); stage.key.shadow.camera.updateProjectionMatrix();
+stage.key.shadow.mapSize.set(4096, 4096);
 const fit = () => { const p = document.getElementById('panel'), w = p && innerWidth > 760 ? p.offsetWidth + 12 : 0; stage.size(innerWidth, innerHeight, w / 2); };
 addEventListener('resize', fit); fit();
 
@@ -100,22 +104,34 @@ async function setScene(id) {
   for (const p of props) objects.push(propMesh(p));
   // the places the palms are asked to come to (small rings), and where they are
   const marks = new THREE.Group(); objects.push(marks);
-  A.fig.contacts = scene.contacts.map(c => ({
-    side: c.side, def: c, weight: weightOf(c), surface: c.surface, over: c.over, verts: A.hands[c.side],
-    target: c.at ? () => c.at : (t) => {
-      // on the other person: a point fixed to one of their joints (its offset turning with the joint)
-      const P = B.fig.pose, j = B.fig.body.skeleton.index[c.on.joint];
-      const o = qRot(getQ(P.Q, j), c.on.offset); const x = getV(P.P, j);
-      return [x[0] + o[0], x[1] + o[1], x[2] + o[2]];
-    },
-  }));
+  A.fig.contacts = scene.contacts.map(c => {
+    const k = { side: c.side, def: c, weight: weightOf(c), surface: c.surface, over: c.over, verts: A.hands[c.side] };
+    // on the other person: a point of their skin, as they are now; the palm's middle over it by the hand's thickness
+    k.target = c.at ? () => c.at : () => { const p = B.fig.positions, v = c.on.vertex; return [p[v * 3], p[v * 3 + 1] + (k.under || 0), p[v * 3 + 2]]; };
+    // and kept out of the other's skin, on the way and while it lies there (Kimodo, making one person, knows nothing of
+    // the other; and a hand turned as Kimodo turned it can dip its fingers into a sloping shoulder)
+    if (c.on) k.outside = (pos, shift, move) => {
+      const bp = B.fig.positions, bn = B.fig.normals, near = B.near || [];
+      let deep = 0, dir = null;
+      for (const i of k.verts) {
+        const x = pos[i * 3] + move[0], y = pos[i * 3 + 1] + shift + move[1], z = pos[i * 3 + 2] + move[2];
+        let bd = Infinity, bi = -1;
+        for (const v of near) { const dx = x - bp[v * 3], dy = y - bp[v * 3 + 1], dz = z - bp[v * 3 + 2], d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; bi = v; } }
+        if (bi < 0) continue;
+        const s = (x - bp[bi * 3]) * bn[bi * 3] + (y - bp[bi * 3 + 1]) * bn[bi * 3 + 1] + (z - bp[bi * 3 + 2]) * bn[bi * 3 + 2];
+        if (-s > deep) { deep = -s; dir = [bn[bi * 3], bn[bi * 3 + 1], bn[bi * 3 + 2]]; }
+      }
+      return deep > 0.002 ? dir.map(v => v * (deep + 0.002)) : null;
+    };
+    return k;
+  });
   for (const c of scene.contacts) {
     const m = new THREE.Mesh(new THREE.SphereGeometry(0.018, 16, 12), new THREE.MeshBasicMaterial({ color: '#e0592a', depthTest: false, transparent: true, opacity: 0.85 }));
     m.renderOrder = 10; marks.add(m);
   }
   for (const o of objects) stage.scene.add(o);
   cur = { scene, A, B, props, marks, objects };
-  const frames = Math.max(A.clip.frames, B ? B.clip.frames : 0);
+  const frames = A.clip.frames;
   cur.frames = frames;
   $('#time').max = frames - 1;
   $('#about').textContent = scene.about;
@@ -138,7 +154,7 @@ function measure(t) {
   const { A, B, props, scene } = cur, pos = A.fig.positions, out = { t, contacts: [], into: [] };
   A.fig.contacts.forEach((c, k) => {
     const r = A.fig.reach[k], target = c.target(t), hv = A.hands[c.side];
-    const o = { side: c.side, name: c.def.name, w: +r.w.toFixed(2), palmBefore: r.before, palmAfter: r.after };
+    const o = { side: c.side, name: c.def.name, w: +r.w.toFixed(2), palmBefore: r.before, palmAfter: r.after, surface: c.def.surface };
     if (c.def.at && c.def.surface != null) {      // the hand's lowest skin over the surface it lies on
       let lo = Infinity; for (const i of hv) lo = Math.min(lo, pos[i * 3 + 1]);
       o.gap = lo - c.def.surface;
@@ -157,6 +173,21 @@ function measure(t) {
     }
     out.contacts.push(o);
   });
+  // the two bodies into each other: A's skin under B's (by B's nearest vertex and its normal), the deepest point
+  if (B) {
+    const bp = B.fig.positions, bn = B.fig.normals, NB = B.fig.body.N, lo = [9, 9, 9], hi = [-9, -9, -9];
+    for (let i = 0; i < NB; i++) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], bp[i * 3 + k]); hi[k] = Math.max(hi[k], bp[i * 3 + k]); }
+    let deep = 0, by = null;
+    for (let i = 0; i < A.fig.body.N; i++) {
+      const x = pos[i * 3], y = pos[i * 3 + 1], z = pos[i * 3 + 2];
+      if (x < lo[0] || x > hi[0] || y < lo[1] || y > hi[1] || z < lo[2] || z > hi[2]) continue;
+      let bd = Infinity, bi = -1;
+      for (let v = 0; v < NB; v += 2) { const dx = x - bp[v * 3], dy = y - bp[v * 3 + 1], dz = z - bp[v * 3 + 2], d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; bi = v; } }
+      const s = (x - bp[bi * 3]) * bn[bi * 3] + (y - bp[bi * 3 + 1]) * bn[bi * 3 + 1] + (z - bp[bi * 3 + 2]) * bn[bi * 3 + 2];
+      if (s < 0 && -s > deep) { deep = -s; by = A.partOf[i] + ' → ' + B.partOf[bi]; }
+    }
+    if (deep > 0) out.into.push({ thing: 'other', part: 'body', vertices: 1, deepest: deep, by });
+  }
   // the body into the things: the deepest vertex in each part (the hands on a table top are allowed none either)
   for (const p of props) for (const b of p.boxes) {
     let deep = 0, n = 0, who = -1;
@@ -179,13 +210,13 @@ function draw() {
   for (const c of m.contacts) {
     const nm = c.name || (c.side === 'Left' ? 'левая' : 'правая');
     lines.push(`${nm}: ладонь от места ${c.w > 0.01 ? cm(c.palmAfter) : '—'}${c.w > 0.01 && S.correct ? ` (Kimodo: ${cm(c.palmBefore)})` : ''}` +
-      (c.gap != null && c.w > 0.5 ? `, кожа ${c.inside ? 'внутри на ' + cm(c.inside) : 'до поверхности ' + cm(c.gap)}` : ''));
+      (c.gap != null && c.w > 0.5 ? `, кожа ${c.inside ? 'внутри на ' + cm(c.inside) : (c.surface == null ? 'до кожи другого ' : 'до поверхности ') + cm(c.gap)}` : ''));
   }
   const deep = m.into.filter(x => !(x.part === 'seat' || x.part === 'back') || x.deepest > 0.03);
-  lines.push(deep.length ? 'входит в предметы: ' + deep.map(x => `${PART[x.part] || x.part} ${cm(x.deepest)}`).join(', ') : 'в предметы не входит');
+  lines.push(deep.length ? 'входит: ' + deep.map(x => `${PART[x.part] || x.part} ${cm(x.deepest)}`).join(', ') : (cur.B ? 'ни во что и ни в кого не входит' : 'в предметы не входит'));
   $('#meter').textContent = lines.join('\n');
 }
-const PART = { top: 'столешница', leg: 'ножка', seat: 'сиденье', back: 'спинка', arm: 'подлокотник', base: 'низ кресла' };
+const PART = { body: 'другой человек', top: 'столешница', leg: 'ножка', seat: 'сиденье', back: 'спинка', arm: 'подлокотник', base: 'низ кресла' };
 
 // ———— the panel ————
 const panel = document.createElement('div'); panel.id = 'panel';
@@ -240,7 +271,7 @@ function nearOther() {
   B.fig.frame(B.clip, 0);
   const c = A.fig.contacts.find(c => c.def.on); if (!c) return;
   const x = c.target(0);
-  for (let i = 0; i < B.fig.body.N; i++) if (Math.hypot(bp[i * 3] - x[0], bp[i * 3 + 1] - x[1], bp[i * 3 + 2] - x[2]) < 0.25) B.near.push(i);
+  for (let i = 0; i < B.fig.body.N; i++) if (Math.hypot(bp[i * 3] - x[0], bp[i * 3 + 1] - x[1], bp[i * 3 + 2] - x[2]) < 0.35) B.near.push(i);
 }
 const setSceneAndNear = async id => { await setScene(id); nearOther(); draw(); };
 panel.querySelectorAll('#scenes button').forEach(b => b.onclick = () => { S.t = 0; setSceneAndNear(b.dataset.id); });

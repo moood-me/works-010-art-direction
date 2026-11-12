@@ -12,7 +12,8 @@
 //   const fig = new ContactFigure(body, spec, place);
 //   fig.contacts = [{ side: 'Left', target: t => [x, y, z] | null, weight: t => 0…1, surface?: y, verts?: [hand's vertices] }];
 //   with `surface` the palm's height is not the target's: the hand's lowest skin is put on the surface instead;
-//   with `over` too ([[x0, z0], [x1, z1]] — the surface's extent), the hand is kept from going under it at any time.
+//   with `over` too ([[x0, z0], [x1, z1]] — the surface's extent), the hand is kept from going under it at any time;
+//   with `outside` (positions, shift → a move or null), the hand is moved out of another body when it goes into it.
 //   fig.frame(clip, t)  → fig.positions, fig.pose (P, Q), fig.reach (what each contact did: miss before, after)
 import { makeRetarget, build, turnUnder } from '../../engine/src/retarget.js';
 import { Skinner, normalsOf, clavicleShare } from '../../engine/src/skin.js';
@@ -47,10 +48,11 @@ export class ContactFigure {
       shift = pose.floor - lo;
       for (let j = 0; j < sk.J; j++) pose.P[j * 3 + 1] += shift;
     }
-    // a hand lying on a surface: how far under the palm's middle its skin reaches now (the hand keeps its turn through
-    // the correction, so this holds after it): the palm's middle goes that much over the surface
+    this.shift = shift;
+    // a hand lying on something: how far under the palm's middle its skin reaches now (the hand keeps its turn through
+    // the correction, so this holds after it): the palm's middle goes that much over the surface (or the skin) touched
     for (const c of this.contacts) {
-      if (c.surface == null || !c.verts) { c.under = 0; continue; }
+      if (!c.verts) { c.under = 0; continue; }
       let lo = Infinity; for (const i of c.verts) lo = Math.min(lo, this.positions[i * 3 + 1] + shift);
       c.under = this.palm(pose, c.side)[1] - lo;
     }
@@ -81,6 +83,14 @@ export class ContactFigure {
     if (c.over && c.surface != null) {
       const [[x0, z0], [x1, z1]] = c.over, m = 0.04;
       if (goal[0] > x0 - m && goal[0] < x1 + m && goal[2] > z0 - m && goal[2] < z1 + m && goal[1] < c.surface + c.under) { goal[1] = c.surface + c.under; lifted = true; }
+    }
+    // and never into another body (c.outside: how far, and which way, the hand's skin has to go to be out of it)
+    // — tested where the hand will be: the hand keeps its turn, so its skin moves as its palm does (twice: the first
+    // move can bring another part of the hand into the skin)
+    if (c.outside) for (let k = 0; k < 2; k++) {
+      const d = c.outside(this.positions, this.shift, sub(goal, palm0));
+      if (!d) break;
+      goal = add(goal, d); lifted = true;
     }
     if (!this.correct || (!lifted && (!target || w <= 0))) return { side: c.side, w, before, after: before };
     const sk = this.body.skeleton, i = sk.index, S = i[c.side + 'Arm'], E = i[c.side + 'ForeArm'], H = i[c.side + 'Hand'];

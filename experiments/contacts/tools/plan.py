@@ -107,6 +107,33 @@ def table_lean():
     return out
 
 
+def shoulder(stand=0.45):
+    """A (the man) walks up to B (the woman, standing in her own Kimodo motion, facing him) and puts his right hand
+    on her left shoulder. B's shoulder is a point of her skin (tools/other.mjs: where it is every frame, as the page
+    plays her); A's palm is asked onto it — over it by the palm's own thickness — at the touch and at the end."""
+    k = K_MAN
+    other = json.load(open(os.path.join(ITEM, 'plans', 'shoulder-other.json')))
+    palm_lift = 0.025
+    frames = [119, 179]          # the hand on the shoulder from 4 s, still there at the end (6 s)
+    targets = [np.array(other['at'][f]) + [0, palm_lift, 0] for f in frames]
+    src = RAW('shoulder-free')               # Kimodo stretching the right arm forward, palm down, by itself
+    turn = hand_turn_from(src, 30, 'R')
+    poses = []
+    for tw in targets:
+        tk = tw / k
+        # standing `stand` (Kimodo's metres) short of the point, facing it, 12 cm to its left (his right hand reaches
+        # it). The first take stood 60 cm short: the arm came out straight and level, like a bar, and our man's arm
+        # (2 cm shorter than SOMA's scaled) could not reach the last 2–4 cm
+        P = placed(src, 30, [tk[0] + 0.12, tk[2] - stand], 0.0)
+        miss = P.reach('R', tk, turn)
+        poses.append(P.as_ps())
+        print('shoulder: palm off by', round(miss, 4), 'pelvis', np.round(P.p[0], 3), 'target', np.round(tk, 3))
+    c = K.constraint('end-effector', frames, poses, ['RightHand'])
+    return {'constraints': [c], 'seconds': [6], 'frames': frames,
+            'world': {'other': {k2: other[k2] for k2 in ('who', 'motion', 'place', 'vertex')}, 'palm_lift': palm_lift,
+                      'targets': [r4(t) for t in targets]},
+            'kimodo': {'targets': [r4(t / k) for t in targets], 'pelvis': [r4(p['p'][0]) for p in poses]}}
+
 if __name__ == '__main__':
     name = sys.argv[1].replace("-", "_")
     out = globals()[name]()
