@@ -138,7 +138,7 @@ def fit(v, ears_mask, extra=()):
     for s_ in (1, -1):
         m = e & (np.sign(out[0][:, 0]) == s_)
         root = np.array([s_ * 80 * D.K, c[1], c[2]])
-        out[0][m] = root + (out[0][m] - root) * [0.75, 0.95, 0.9]
+        out[0][m] = root + (out[0][m] - root) * [0.5, 0.8, 0.72]
     return out
 
 

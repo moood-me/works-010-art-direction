@@ -1,8 +1,16 @@
-// Аня in 3D, flat graphic style: the character pack (tools/build.py) on the engine's skeleton, skinning and Kimodo
-// retargeting; drawn with flat colour, one stepped shade, a coloured outline (inverted hull) and the face drawn live
-// on a canvas from the drawing's own parts (face.js), projected from the front.
+// Аня, нуар (С15) in 3D: the character pack (tools/build.py) on the engine's skeleton, skinning and Kimodo retargeting.
+// The look is the drawing's: flat colour or black, nothing between. One hard key light from the picture's left.
+//   · the head and the hair: the black shapes are designed, not shaded — the drawing's own edges of the side shadow
+//     (head.py's `side_f`, the hair's zigzag in cast.py) are polylines in the head's frame; the light test is made on
+//     a form whose side plane begins at that edge, so the terminator stands on the drawn line while the light moves,
+//     and crosses the face only when the light goes far round; the jaw's cast shadow on the neck is the drawn shape;
+//   · the body: the terminator of smooth shells (straight edges down the limbs) and real cast shadows (a shadow map,
+//     hard): the head on the shoulders, the arm on the jacket, the skirt on the legs, the figure on the floor;
+//   · no outline on the lit side; where black meets black or the night, a thin cool rim (an inverted hull drawn only
+//     where the form is turned from the light);
+//   · the face's eyes, brows, lips: drawn live on a canvas from the drawing's own parts (face.js), front projection.
 //   view.html — by hand (ui.js); view.html?pack=<url> — driven by tools/shots.mjs
-//   window.A.set({clip, t, time, pose, expr, exprMix, exprAt, talk, talkFrom, cam, …}) then A.render()
+//   window.A.set({clip, t, time, pose, expr, exprTrack, talk, talkFrom, cam, …}) then A.render()
 import * as THREE from 'three';
 import { createEngine } from '../../../../engine/src/engine.js';
 import { makeBody } from '../../../../engine/src/body.js';
@@ -38,13 +46,13 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDraw
 renderer.setPixelRatio(1);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(q.get('bg') || '#f1e6d6');
+const NIGHT = '#11121b';
+scene.background = new THREE.Color(q.get('bg') || NIGHT);
 
 const g = new THREE.BufferGeometry();
 g.setAttribute('position', new THREE.BufferAttribute(fig.positions, 3));
 g.setAttribute('normal', new THREE.BufferAttribute(fig.normals, 3));
 g.setAttribute('col', new THREE.BufferAttribute(a.col, 3, true));
-g.setAttribute('shd', new THREE.BufferAttribute(a.shd, 3, true));
 g.setAttribute('lin', new THREE.BufferAttribute(a.lin, 3, true));
 g.setAttribute('ow', new THREE.BufferAttribute(a.ow, 1, true));
 g.setAttribute('uv', new THREE.BufferAttribute(a.uv, 2));
@@ -54,6 +62,8 @@ g.setAttribute('pw', new THREE.BufferAttribute(a.pw, 1, true));
 g.setAttribute('pj', new THREE.BufferAttribute(a.pj, 1));
 g.setAttribute('two', new THREE.BufferAttribute(a.two, 1));
 g.setAttribute('band', new THREE.BufferAttribute(a.band, 1));
+g.setAttribute('hp', new THREE.BufferAttribute(a.hp ?? new Float32Array(a.positions.length), 3));
+g.setAttribute('kind', new THREE.BufferAttribute(a.kind ?? new Uint8Array(a.positions.length / 3), 1));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 
 // the face's drawn layer: a canvas drawn every frame (face.js)
@@ -64,56 +74,136 @@ const faceTex = new THREE.CanvasTexture(faceCanvas);
 faceTex.colorSpace = THREE.NoColorSpace; faceTex.anisotropy = 8;
 faceTex.premultiplyAlpha = true;      // filtered premultiplied: no dark fringe where the painting ends
 const face = new LiveFace(Number(q.get('seed') ?? 7));
+
+// the key's shadow map: the figure seen from the light (hard cast shadows on the body and the floor)
+const SM = 2048;
+const shadowRT = new THREE.WebGLRenderTarget(SM, SM, { depthTexture: new THREE.DepthTexture(SM, SM, THREE.UnsignedIntType) });
+shadowRT.depthTexture.minFilter = shadowRT.depthTexture.magFilter = THREE.NearestFilter;
+const shadowCam = new THREE.OrthographicCamera(-1.5, 1.5, 1.5, -1.5, 0.5, 14);
+const depthMat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+
+const BLACK = new THREE.Color('#07070b'), RIM = new THREE.Color('#3b4566');
 const U = {
-  L: { value: new THREE.Vector3(0.55, 0.62, 0.56).normalize() },
-  thr: { value: Number(q.get('thr') ?? -0.18) },
-  face: { value: faceTex },
-  width: { value: Number(q.get('line') ?? 0.0028) },
-  paint: { value: 1 }, clay: { value: 0 },
+  L: { value: new THREE.Vector3(-0.6, 0.5, 0.6).normalize() },       // to the light, world
+  Lh: { value: new THREE.Vector3(-0.6, 0.5, 0.6).normalize() },      // to the light, in the head's own frame
+  thr: { value: Number(q.get('thr') ?? 0.06) },
+  face: { value: faceTex }, smap: { value: shadowRT.depthTexture }, SMx: { value: new THREE.Matrix4() }, casts: { value: 1 },
+  width: { value: Number(q.get('line') ?? 0.0042) },
+  paint: { value: 1 }, clay: { value: 0 }, black: { value: BLACK }, rim: { value: RIM }, shoe: { value: new THREE.Color('#7d3528') },
   R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) },
 };
+U.black.value.convertLinearToSRGB(); U.rim.value.convertLinearToSRGB(); U.shoe.value.convertLinearToSRGB();     // colours go out as written
+// the drawn edges, head units: x of the edge at heights y (head.py head_f's side shadow for ANYA; the hair's shadow
+// zigzag of cast.py anya_hair, front and back forms, one line from the crown to the ends)
+const poly = (name, pts) => `float ${name}(float y) { ${pts.slice(0, -1).map(([y0, x0], i) => { const [y1, x1] = pts[i + 1];
+  return `if (y < ${y1.toFixed(1)}) return ${x0.toFixed(1)} + (clamp(y, ${y0.toFixed(1)}, ${y1.toFixed(1)}) - ${y0.toFixed(1)}) * ${((x1 - x0) / (y1 - y0)).toFixed(4)};`; }).join(' ')} return ${pts[pts.length - 1][1].toFixed(1)}; }`;
+const EDGES = poly('faceEdge', [[-80, 47.6], [-14, 43.6], [34, 37.6], [56, 23.6], [84, 21], [98, 12.5]]) + '\n' +
+  poly('hairEdge', [[-112, 40], [-82, 50], [-66, 42], [-58, 62], [-30, 56], [8, 80], [40, 40], [120, 30], [130, 50], [180, 60]]);
+const LIGHT = `
+    uniform vec3 L; uniform vec3 Lh; uniform float thr;
+    ${EDGES}
+    // the form the light is tested on, in the head's frame: flat towards the front inside the drawn edge, the side
+    // plane beyond it (the picture's right when the light is on the left, and the other way round)
+    vec3 designed(vec3 hp, vec3 pn, float xs) {
+      float sg = Lh.x < 0.0 ? 1.0 : -1.0, u = sg * hp.x / xs;
+      float nx = 0.2 * u + 1.6 * smoothstep(0.93, 1.07, u) - 0.5 * smoothstep(0.93, 1.07, -u);
+      vec3 n = normalize(vec3(sg * nx, pn.y, pn.z));
+      return normalize(mix(pn, n, smoothstep(-22.0, 6.0, hp.z)));
+    }
+    float seg(vec2 p, vec2 a, vec2 b, out float t) { vec2 ab = b - a; t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0); return length(p - a - ab * t); }
+    // 1 in the light, 0 in the black
+    float lightAt(float kind, vec3 hp, vec3 pn, vec3 vn) {
+      float d;
+      if (kind > 1.5) {
+        d = dot(designed(hp, pn, hairEdge(hp.y)), Lh);
+        // the hair's own black shapes of the drawing: the wedge at the parting, the fringe's underside along its edge
+        if (hp.z > 0.0) {
+          float t; float dp = seg(hp.xy, vec2(15.0, -108.0), vec2(25.0, -75.0), t);
+          float df = min(seg(hp.xy, vec2(-10.0, -66.0), vec2(-45.0, -44.0), t), min(seg(hp.xy, vec2(-45.0, -44.0), vec2(-63.0, -13.0), t), seg(hp.xy, vec2(-63.0, -13.0), vec2(-74.0, 4.0), t)));
+          float dp2 = seg(hp.xy, vec2(15.0, -108.0), vec2(25.0, -75.0), t);
+          if (dp2 < 1.0 + 4.5 * (1.0 - abs(t - 0.45) / 0.55) || df < 5.0) d = -1.0;
+        }
+      }
+      else if (kind > 0.5) {
+        float ax = abs(hp.x), jaw = 98.0 - max(ax - 12.5, 0.0) * 0.98;
+        if (hp.y > jaw + 3.0 && hp.z > -30.0) {           // the neck: the jaw's cast shadow, as drawn
+          float sg = Lh.x < 0.0 ? 1.0 : -1.0, x = sg * hp.x;
+          float yl = x < -8.7 ? 107.0 + (x + 33.8) * 0.6 : 122.0 + (x + 8.7) * 0.73;
+          d = (x < 5.5 && hp.y > yl && Lh.z > -0.1) ? dot(vn, L) : -1.0;
+        } else d = dot(designed(hp, pn, faceEdge(hp.y)), Lh);
+      } else d = dot(vn, L);
+      float w = fwidth(d) * 0.7 + 1e-4;
+      return smoothstep(thr - w, thr + w, d);
+    }`;
 const toon = new THREE.ShaderMaterial({
   uniforms: U,
   vertexShader: `
-    attribute vec3 col; attribute vec3 shd; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two; attribute float band; varying float vBand;
-    uniform mat3 R[${sk.J}];
-    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw;
-    void main() { vBand = band; vPw = pw; vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
+    attribute vec3 col; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two; attribute float band;
+    attribute vec3 hp; attribute float kind;
+    uniform mat3 R[${sk.J}]; uniform mat4 SMx;
+    varying vec3 vN; varying vec3 vCol; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vBand; varying vec3 vHp; varying vec3 vPn; varying float vKind; varying vec4 vS;
+    void main() { vBand = band; vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vUv = uv; vTex = tex; vTwo = two; vHp = hp; vPn = pn; vKind = kind;
+      vS = SMx * vec4(position + normal * 0.012, 1.0);
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: `
-    uniform vec3 L; uniform float thr; uniform sampler2D face; uniform float paint; uniform float clay;
-    varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw; varying float vBand;
+    uniform sampler2D face; uniform sampler2D smap; uniform float paint; uniform float clay; uniform float casts; uniform vec3 black; uniform vec3 shoe;
+    varying vec3 vN; varying vec3 vCol; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vBand; varying vec3 vHp; varying vec3 vPn; varying float vKind; varying vec4 vS;
+    ${LIGHT}
+    float shadowed() {
+      vec3 s = vS.xyz / vS.w; float k = 0.0, t = 0.5 / ${SM}.0;
+      for (int i = 0; i < 4; i++) { vec2 o = vec2(i == 0 || i == 3 ? -t : t, i < 2 ? -t : t); k += texture2D(smap, s.xy + o).r < s.z - 0.0015 ? 1.0 : 0.0; }
+      return step(1.5, k);
+    }
     void main() {
-      if (!gl_FrontFacing) { if (vTwo < 0.5) discard; gl_FragColor = vec4(vShd * 0.92, 1.0); return; }
-      float d = dot(normalize(vN), L);
-      float th = thr - 0.22 * vPw; float lit = smoothstep(th - 0.015, th + 0.015, d);
-      vec3 base = vCol, sh = vShd;
-      // the legs: the shoe and the sock cut at the drawing's heights (shoe top 0.06 m, sock top 0.134 m)
-      if (vBand > -0.5) { if (vBand < 0.06) { base = vec3(0.42, 0.227, 0.165); sh = vec3(0.333, 0.188, 0.122); }
-        else if (vBand < 0.134) { base = vec3(0.965, 0.933, 0.886); sh = vec3(0.886, 0.839, 0.769); } }
-      vec3 c = mix(sh, base, lit);
-      if (clay > 0.5) c = vec3(0.86, 0.84, 0.8) * (0.55 + 0.45 * max(d, 0.0)) + 0.08;
-      if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv); c = c * (1.0 - t.a) + t.rgb; }
+      if (!gl_FrontFacing) { if (vTwo < 0.5) discard; gl_FragColor = vec4(black, 1.0); return; }
+      float lit = lightAt(vKind, vHp, normalize(vPn), normalize(vN));
+      if (vKind < 0.5 && casts > 0.5) lit *= 1.0 - shadowed();
+      vec3 base = vCol;
+      if (vBand > -0.5 && vBand < 0.052) base = shoe;           // the shoe, cut at its height
+      vec3 c = mix(black, base, lit);
+      if (clay > 0.5) c = vec3(0.86, 0.84, 0.8) * (0.55 + 0.45 * max(dot(normalize(vN), L), 0.0)) + 0.08;
+      if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv);
+        // in the black the whites of the eyes stay (the drawing's eyes in shadow), the lips go dark
+        float keep = mix(mix(0.3, 1.0, smoothstep(0.55, 0.8, t.g / max(t.a, 0.01))), 1.0, lit);
+        c = c * (1.0 - t.a) + t.rgb * keep; }
       gl_FragColor = vec4(c, 1.0);
     }`,
   side: THREE.DoubleSide,
 });
+// the rim: the hull shows only where the form is turned from the light — the lit side has no outline
 const hull = new THREE.ShaderMaterial({
   uniforms: U, side: THREE.BackSide,
   vertexShader: `
-    attribute vec3 lin; attribute float ow; uniform float width; varying vec3 vC; varying float vOw;
-    void main() { vC = lin; vOw = ow; gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * width * ow, 1.0);
+    attribute float ow; attribute vec3 pn; attribute float pw; attribute float pj; attribute vec3 hp; attribute float kind;
+    uniform float width; uniform mat3 R[${sk.J}]; varying float vOw; varying vec3 vN; varying vec3 vHp; varying vec3 vPn; varying float vKind;
+    void main() { vOw = ow; vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vHp = hp; vPn = pn; vKind = kind;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * width * ow, 1.0);
       gl_Position.z += 0.0004 * gl_Position.w; }`,
-  fragmentShader: `varying vec3 vC; varying float vOw; void main() { if (vOw < 0.35) discard; gl_FragColor = vec4(vC, 1.0); }`,
+  fragmentShader: `uniform vec3 rim; uniform float clay; varying float vOw; varying vec3 vN; varying vec3 vHp; varying vec3 vPn; varying float vKind;
+    ${LIGHT}
+    void main() { if (vOw < 0.35 || clay > 0.5) discard; if (dot(normalize(vN), L) > thr + 0.12) discard; gl_FragColor = vec4(rim, 1.0); }`,
 });
 const mesh = new THREE.Mesh(g, toon), line = new THREE.Mesh(g, hull);
 mesh.frustumCulled = line.frustumCulled = false;
 scene.add(mesh, line);
-// a soft round shadow on the floor, as in the drawing
-const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.26, 48), new THREE.MeshBasicMaterial({ color: '#000', transparent: true, opacity: 0.1, depthWrite: false }));
-shadow.rotation.x = -Math.PI / 2; shadow.scale.set(1, 0.6, 1); shadow.position.y = 0.0005; scene.add(shadow);
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshBasicMaterial({ color: q.get('floor') || '#e6d6bf' }));
-floor.rotation.x = -Math.PI / 2; floor.visible = q.has('floor'); scene.add(floor);
+// the floor: night, a pool of light on it, the figure's black shadow in the pool (the same shadow map)
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderMaterial({
+  uniforms: { smap: U.smap, SMx: U.SMx, dark: { value: new THREE.Color('#1a1c28').convertLinearToSRGB() }, pool: { value: new THREE.Color('#2a2738').convertLinearToSRGB() }, black: U.black, c0: { value: new THREE.Vector2(0, 0) }, r: { value: 2.4 } },
+  vertexShader: `uniform mat4 SMx; varying vec4 vS; varying vec3 vW; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vS = SMx * w; gl_Position = projectionMatrix * viewMatrix * w; }`,
+  fragmentShader: `uniform sampler2D smap; uniform vec3 dark; uniform vec3 pool; uniform vec3 black; uniform vec2 c0; uniform float r; varying vec4 vS; varying vec3 vW;
+    void main() { vec3 s = vS.xyz / vS.w; float sh = (s.x > 0.0 && s.x < 1.0 && s.y > 0.0 && s.y < 1.0 && texture2D(smap, s.xy).r < s.z - 0.002) ? 1.0 : 0.0;
+      float d = length((vW.xz - c0) * vec2(1.0, 1.0)); float w = fwidth(d); float in_ = 1.0 - smoothstep(r - w, r + w, d);
+      gl_FragColor = vec4(mix(dark, mix(pool, black, sh * 0.85), in_), 1.0); }`,
+}));
+floor.rotation.x = -Math.PI / 2; scene.add(floor);
+// the backdrop: a lighter flat shape behind the figure, always behind it for the camera — the black side of the
+// silhouette reads against it (the drawing's window, or the sheet's disc)
+const backdrop = new THREE.Group(); scene.add(backdrop);
+const bdMat = new THREE.MeshBasicMaterial({ color: '#3b3350', depthWrite: false }), barMat = new THREE.MeshBasicMaterial({ color: NIGHT, depthWrite: false });
+const bdRect = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), bdMat), bdDisc = new THREE.Mesh(new THREE.CircleGeometry(0.5, 96), bdMat);
+const bar1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), barMat), bar2 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), barMat);
+backdrop.add(bdRect, bdDisc, bar1, bar2); backdrop.renderOrder = -1;
+for (const m of [bdRect, bdDisc, bar1, bar2]) { m.renderOrder = -1; m.frustumCulled = false; }
 
 const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 100);
 const persp = new THREE.PerspectiveCamera(24, 1, 0.05, 200);
@@ -137,7 +227,8 @@ function standPose(o = {}) {
 }
 
 const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', morph: {}, push: true,
-  cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.81, h: 1.75, dist: 6, target: null, follow: false } };
+  cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.83, h: 1.8, dist: 6, target: null, follow: false },
+  light: [-0.62, 0.5, 0.6], back: { kind: 'window', w: 0.78, h: 1.96, y: 1.05, x: 0.04, col: '#3b3350' } };
 let clip = null;
 function applyMorphs() {
   const P = body.positions; P.set(rest);
@@ -157,15 +248,15 @@ function headTrack(c) {
 }
 // the skirt kept off the legs: each skirt point inside a leg's capsule (thigh, shin) is put on its surface
 const dressR = H.pieces?.dress ?? [0, 0], skirt = [];      // a pack without a dress has no skirt to keep off the legs
-for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.62) skirt.push(i);
+for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.9) skirt.push(i);
 const CAPS = [['LeftLeg', 'LeftShin', 0.06], ['LeftShin', 'LeftFoot', 0.048], ['RightLeg', 'RightShin', 0.06], ['RightShin', 'RightFoot', 0.048]]
   .map(([a, b, r]) => [I[a], I[b], r]);
 const RING = 72;                    // the dress is a loft of rings of 72 points (build.py)
 const skirtSet = new Int32Array(rest.length / 3).fill(-1); skirt.forEach((i, k) => { skirtSet[i] = k; });
 const skirtNb = skirt.map(i => { const k = i - dressR[0], r = Math.floor(k / RING), c = k % RING;
   return [r * RING + (c + 1) % RING, r * RING + (c + RING - 1) % RING, (r - 1) * RING + c, (r + 1) * RING + c].map(m => m + dressR[0]).filter(m => m >= 0 && skirtSet[m] >= 0).map(m => skirtSet[m]); });
-// the push fades in from the skirt's top (rest 0.62 m) to 0.48 m, so no step where it begins
-const fade = Float64Array.from(skirt, i => { const u = Math.max(0, Math.min(1, (0.62 - rest[i * 3 + 1]) / 0.14)); return u * u * (3 - 2 * u); });
+// the push fades in from the hips (rest 0.9 m) to 0.74 m, so no step where it begins
+const fade = Float64Array.from(skirt, i => { const u = Math.max(0, Math.min(1, (0.9 - rest[i * 3 + 1]) / 0.16)); return u * u * (3 - 2 * u); });
 const dsp = new Float64Array(skirt.length * 3), dsp2 = new Float64Array(skirt.length * 3);
 function pushSkirt(P, pose) {
   const caps = CAPS.map(([a, b, r], k) => { const A = getV(pose.P, a), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => (v + B[c]) / 2), B, r + 0.008]; });
@@ -212,7 +303,9 @@ function frame() {
   const Q = fig.pose.Q;
   for (let j = 0; j < J; j++) { const [x, y, z, w] = [Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]];
     U.R.value[j].set(1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)); }
-  const P = fig.pose.P; shadow.position.x = P[I.Hips * 3]; shadow.position.z = P[I.Hips * 3 + 2];
+  // the light in the head's own frame (the designed shapes live there)
+  const qh = getQ(Q, I.Head), l = U.L.value;
+  U.Lh.value.fromArray(qRot([-qh[0], -qh[1], -qh[2], qh[3]], [l.x, l.y, l.z]));
 }
 function facing() { // where the pelvis faces now (yaw about y; 0 — +z)
   const qh = getQ(fig.pose.Q, I.Hips);
@@ -233,7 +326,7 @@ window.A = {
     if (o.time !== undefined) S.time = o.time; else if (o.t !== undefined && clip && !S.liveClock) S.time = o.t / clip.fps;
     if (o.liveClock !== undefined) S.liveClock = o.liveClock;
     if (o.still !== undefined) face.still = o.still;
-    if (o.exprTrack) { face.exprKeys = [{ t: -10, w: { dream: 1 } }]; for (const [t, w] of o.exprTrack) face.setExpr(t, typeof w === 'string' ? { [w]: 1 } : w); }
+    if (o.exprTrack) { face.exprKeys = [{ t: -10, w: { calm: 1 } }]; for (const [t, w] of o.exprTrack) face.setExpr(t, typeof w === 'string' ? { [w]: 1 } : w); }
     if (o.expr) face.setExpr(S.time, typeof o.expr === 'string' ? { [o.expr]: 1 } : o.expr);
     if (o.talk !== undefined) { face.talk(o.talk ? (o.talkFrom ?? S.time) : null); face.talkTo = o.talkTo ?? null; }
     if (o.cam) Object.assign(S.cam, o.cam);
@@ -241,8 +334,10 @@ window.A = {
     if (o.thr !== undefined) U.thr.value = o.thr;
     if (o.width !== undefined) U.width.value = o.width;
     if (o.bg) scene.background = new THREE.Color(o.bg);
-    if (o.floor !== undefined) { floor.visible = !!o.floor; if (o.floor) floor.material.color.set(o.floor); }
-    if (o.shadow !== undefined) shadow.visible = o.shadow;
+    if (o.floor !== undefined) floor.visible = !!o.floor;
+    if (o.back !== undefined) S.back = o.back && { ...S.back, ...o.back };
+    if (o.cast !== undefined) U.casts.value = o.cast ? 1 : 0;
+    if (o.pool) { floor.material.uniforms.c0.value.set(o.pool[0], o.pool[1]); if (o.pool[2]) floor.material.uniforms.r.value = o.pool[2]; }
     if (o.show !== undefined) {           // only these pieces (names from the pack's header), or all
       const all = a.triangles; let idx = all;
       if (o.show) { const parts = []; for (const n of o.show) { const [s0, s1] = H.trianglePieces[n]; parts.push(all.subarray(s0 * 3, s1 * 3)); }
@@ -270,10 +365,29 @@ window.A = {
       persp.position.set(tg[0] + dir[0] * c.dist, tg[1] + dir[1] * c.dist, tg[2] + dir[2] * c.dist);
     }
     camera.lookAt(tg[0], tg[1], tg[2]);
-    // the light as in the drawing: from above, in front, from the picture's right
+    // the key as in the drawing: from the picture's left, above, in front — it turns with the camera
     camera.updateMatrixWorld();
-    const e = camera.matrixWorld.elements, l = S.light || [0.55, 0.62, 0.56];
+    const e = camera.matrixWorld.elements, l = S.light;
     U.L.value.set(e[0] * l[0] + e[4] * l[1] + e[8] * l[2], e[1] * l[0] + e[5] * l[1] + e[9] * l[2], e[2] * l[0] + e[6] * l[1] + e[10] * l[2]).normalize();
+    if (fig.pose) { const qh = getQ(fig.pose.Q, I.Head), L = U.L.value; U.Lh.value.fromArray(qRot([-qh[0], -qh[1], -qh[2], qh[3]], [L.x, L.y, L.z])); }
+    // the shadow map: the figure from the light
+    const hp = fig.pose ? [fig.pose.P[I.Hips * 3], 0.85, fig.pose.P[I.Hips * 3 + 2]] : [0, 0.85, 0], L = U.L.value;
+    shadowCam.position.set(hp[0] + L.x * 6, hp[1] + L.y * 6, hp[2] + L.z * 6); shadowCam.lookAt(hp[0], hp[1], hp[2]); shadowCam.updateMatrixWorld();
+    U.SMx.value.set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1).multiply(shadowCam.projectionMatrix).multiply(shadowCam.matrixWorldInverse);
+    line.visible = false; const fv = floor.visible, bv = backdrop.visible; floor.visible = false; backdrop.visible = false;
+    scene.overrideMaterial = depthMat; renderer.setRenderTarget(shadowRT); renderer.clear(); renderer.render(scene, shadowCam);
+    scene.overrideMaterial = null; renderer.setRenderTarget(null); line.visible = true; floor.visible = fv;
+    // the backdrop behind the figure, facing the camera
+    backdrop.visible = !!S.back;
+    if (S.back) {
+      const b = S.back, bx = c.follow || c.focus ? tg[0] : 0, bz = c.follow || c.focus ? tg[2] : 0, by = c.focus ? tg[1] : b.y;
+      const right = [e[0], e[1], e[2]];
+      backdrop.position.set(bx - dir[0] * 3 + right[0] * b.x, by - dir[1] * 3 + right[1] * b.x, bz - dir[2] * 3 + right[2] * b.x);
+      backdrop.quaternion.copy(camera.quaternion);
+      bdMat.color.set(b.col); bdRect.visible = bar1.visible = bar2.visible = b.kind === 'window'; bdDisc.visible = b.kind === 'disc';
+      bdRect.scale.set(b.w, b.h, 1); bdDisc.scale.set(b.w, b.w, 1);
+      bar1.scale.set(0.02, b.h, 1); bar1.position.set(0.02, 0, 0.001); bar2.scale.set(b.w, 0.02, 1); bar2.position.set(0, b.h * 0.08, 0.001);
+    }
     renderer.render(scene, camera);
   },
 };

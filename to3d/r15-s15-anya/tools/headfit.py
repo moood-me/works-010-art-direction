@@ -61,24 +61,38 @@ def compact(v, P):
 
 
 def blank(v, P, vis, eyes, r):
-    """Eye sockets and mouth closed: the faces there that no ray from outside reaches (their linings, hbm_export.py)
-    taken out, the holes filled."""
+    """Eye sockets and the mouth closed: the faces there that no ray from outside reaches (their linings) taken out,
+    the holes filled. The neck's opening stays open."""
     fc = np.array([v[p].mean(0) for p in P])
     near = np.zeros(len(P), bool)
     for c in eyes: near |= np.linalg.norm(fc - c, axis=1) < r * 1.5
     near |= (abs(fc[:, 0]) < 0.06) & (fc[:, 1] > 0.55) & (fc[:, 1] < 0.70) & (fc[:, 2] > -0.0) & (fc[:, 2] < 0.14)
+    # every lining no ray from outside reaches (sockets, mouth bag, nostrils), above the neck
     drop = set(np.where((vis == 0) & near)[0])
     P = [p for i, p in enumerate(P) if i not in drop]
     v, P, _ = compact(v, P)
-    loops = M.boundary_loops(P)
-    filled = []
-    for L in loops:
-        c = v[L].mean(0)
-        if c[1] < 0.54: continue          # the neck's opening stays open
-        # loops go round the hole; orientation: we want the fill to face outward (+z mostly)
-        v, P, new = fill(v, P, L)
-        filled += new + list(L)
-    return v, P, loops, filled
+    for L in M.boundary_loops(P):
+        if v[L].mean(0)[1] < 0.54: continue
+        v, P, _ = fill(v, P, L)
+    # small holes left where the linings met the surface (the mouth's corners, the nostrils): each closed by a fan
+    # from its middle, over its boundary edges as they run
+    cnt = M.edges_of(P); half = []
+    for p in P:
+        for a, b in zip(p, p[1:] + p[:1]):
+            if cnt[(min(a, b), max(a, b))] == 1: half.append((a, b))
+    par = {}
+    def root(x):
+        while par.get(x, x) != x: x = par[x]
+        return x
+    for a, b in half: par[root(a)] = root(b)
+    groups = {}
+    for a, b in half: groups.setdefault(root(a), []).append((a, b))
+    v = list(v)
+    for g in groups.values():
+        if np.mean([v[a][1] for a, _ in g]) < 0.54: continue
+        c = len(v); v.append(np.mean([v[a] for a, _ in g], 0))
+        for a, b in g: P.append([b, a, c])
+    return np.array(v), P
 
 
 # ---------------------------------------------------------------- fitting to the drawing
@@ -159,22 +173,122 @@ def ears(v):
     return (abs(v[:, 0]) > 0.085) & (v[:, 2] > -0.05) & (v[:, 2] < 0.075) & (v[:, 1] > 0.64) & (v[:, 1] < 0.80)
 
 
-def flatten(V, regions, front_min=0.0):
-    """Where the drawing paints (eyes, the mouth's line), the base's sockets and lips are laid onto one smooth
-    surface: inside each ellipse (drawing units: cx, cy, rx, ry) every vertex in front of front_min goes to the surface
-    fitted (a quadratic) to the face around it; between the ellipse and 1.6× it, a blend."""
-    V = V.copy()
-    xd, yd = V[:, 0] / D.K, D.FLOOR - V[:, 1] / D.K
-    for cx, cy, rx, ry in regions:
-        e = np.sqrt(((xd - cx) / rx) ** 2 + ((yd - cy) / ry) ** 2)
-        front = V[:, 2] > front_min
-        ring = (e > 1.15) & (e < 1.9) & front
-        # only the outermost layer of the ring (the face, not anything behind it)
-        A = np.c_[np.ones(ring.sum()), xd[ring], yd[ring], xd[ring] ** 2, xd[ring] * yd[ring], yd[ring] ** 2]
-        c, *_ = np.linalg.lstsq(A, V[ring, 2], rcond=None)
-        z = np.c_[np.ones(len(V)), xd, yd, xd ** 2, xd * yd, yd ** 2] @ c
-        t = np.clip((1.6 - e) / 0.6, 0, 1)
-        t = t * t * (3 - 2 * t)
-        m = front & (e < 1.6)
-        V[m, 2] = V[m, 2] * (1 - t[m]) + z[m] * t[m]
-    return V
+# ---------------------------------------------------------------- the noir face: planes, as the drawing designs them
+# The drawing gives the face as a few planes: the front plane ends at the drawn edge of the side shadow (head.py
+# `side_f`: from the temple by the cheekbone to the chin), the side plane goes back from it to the outline; down the
+# middle the profile's line (nose, lips, chin). `surf` is that surface: the base head's face is laid onto it, so the
+# form itself breaks where the black shape begins, and sockets, lids and lips of the base (drawn in this style) go.
+EDGE = np.array([(-100, 44), (-80, 47.6), (-14, 43.6), (34, 37.6), (56, 23.6), (84, 21), (98, 12.5)])     # head units (y, x)
+_so = D._so
+
+
+def _zy(k):
+    z, y = D.side(*_so[k][:2]); return y, z
+
+
+def profile_lines(yu):
+    """the profile's front line at heights yu (units): the whole (zmid), without the nose and the lips (zface), and
+    the lips' relief."""
+    ys = np.arange(D.SKULL, D.CHIN + 1, 1.0)
+    zmid = D.profile(D.SIDE['face'], ys)[:, 1]
+    ok = ~np.isnan(zmid); zmid = np.interp(ys, ys[ok], zmid[ok])
+    (yb, zb_), (yn, zn), (yf, zf_) = _zy('brow'), _zy('nosebase'), _zy('chinfold')
+    base = zmid.copy()
+    m = (ys > yb) & (ys < yn); base[m] = np.interp(ys[m], [yb, yn], [zb_, zn])
+    m = (ys >= yn) & (ys < yf); base[m] = np.interp(ys[m], [yn, yf], [zn, zf_])
+    g = lambda arr: np.interp(yu, ys, arr)
+    lips = np.where((yu > yn) & (yu < yf), g(zmid) - g(base), 0.0)
+    nose = np.where((yu > yb) & (yu <= yn), g(zmid) - g(base), 0.0)
+    return g(base), nose, lips
+
+
+def surf(xu, yu):
+    """the face's surface: z (units) at front coordinates (units)."""
+    yh = yu / D.HS + D.EYE
+    zface, nose, lips = profile_lines(yu)
+    xs = np.interp(yh, EDGE[:, 0], EDGE[:, 1]) * D.HS
+    f = D.profile(D.FRONT['face'], np.unique(np.round(yu)))
+    a = np.interp(yu, np.unique(np.round(yu)), np.nan_to_num(f[:, 1], nan=40.0))
+    a = np.maximum(a, xs + 6)
+    ax = np.abs(xu)
+    t = np.clip((ax - xs) / (a - xs), 0, 1)
+    z_out = np.interp(yh, [-100, 0, 60, 98], [10, 0, 14, 40]) * D.HS            # the side plane's far end, at the outline
+    z_edge = zface - 13 * (ax.clip(max=xs) / xs) ** 2                              # the front plane: nearly flat
+    z = np.where(ax <= xs, z_edge, z_edge - (z_edge - z_out) * t ** 0.85)
+    nw = np.interp(yh, [-6, 10, 30, 40, 46], [5, 6, 9, 10.5, 9]) * D.HS            # the nose: a narrow wedge
+    z = z + nose * np.clip(1 - ax / nw, 0, 1) ** 1.1
+    z = z + lips * (1 - smooth01((ax - 10 * D.HS) / (12 * D.HS)))
+    return z
+
+
+def build(path):
+    """→ the fitted head (metres, y up, facing +z), polygons, ear mask, face weight (1 where the face is the
+    drawing's surface).
+    The base gives the skull, the jaw's underside, the neck, the ears. Its face — sockets, lids, nose, lips, the mouth's
+    bag: all drawn in this style — is cut out along one loop inside the face's outline, and the opening is closed by a
+    clean patch (rings from the loop to the middle) laid on the drawing's surface (`surf`)."""
+    v, P, eyes, r, vis = load(path)
+    earm = ears(v)
+    V = fit(v, earm)[0]
+    ys_ = np.arange(D.SKULL, D.CHIN + 2, 2.0)
+    f = np.nan_to_num(D.profile(D.FRONT['face'], ys_)[:, 1], nan=30.0)
+    def where(V):
+        xu, yu = V[:, 0] / D.K, D.FLOOR - V[:, 1] / D.K
+        return xu, yu, yu / D.HS + D.EYE, np.abs(xu) / np.maximum(np.interp(yu, ys_, f), 1)
+    xu, yu, yh, rr = where(V)
+    vn = M.vertex_normals(V, M.triangulate(P))
+    under = (vn[:, 1] < -0.4) & (yh > 60) & (vn[:, 2] < 0.5)          # the jaw's underside stays the base's
+    inner = (V[:, 2] > 0.0) & (rr < 0.8) & (yh > -66) & (yh < 99.0) & ~earm & ~under
+    while True:       # the cut's edge is one simple loop: a point where two cut parts touch is cut out too
+        Q = [p for p in P if not inner[p].any()]
+        cnt = M.edges_of(Q); out = {}
+        for p in Q:
+            for a_, b_ in zip(p, p[1:] + p[:1]):
+                if cnt[(min(a_, b_), max(a_, b_))] == 1: out[a_] = out.get(a_, 0) + 1
+        bad = [k for k, n_ in out.items() if n_ > 1 and V[k, 2] > 0.0]
+        if not bad: break
+        inner[bad] = True
+    P = Q
+    # what hung on the face from inside (the mouth's bag, the sockets' linings) is now loose: only the head stays
+    par = list(range(len(V)))
+    def root(x):
+        while par[x] != x: par[x] = par[par[x]]; x = par[x]
+        return x
+    for p in P:
+        for q in p[1:]: par[root(q)] = root(p[0])
+    comp = {}
+    for i, p in enumerate(P): comp.setdefault(root(p[0]), []).append(i)
+    big = max(comp.values(), key=len); P = [P[i] for i in big]
+    V, P, m = compact(V, P); earm = earm[m >= 0]
+    n0 = len(V); p0 = len(P)
+    loops = [L for L in M.boundary_loops(P) if V[L].mean(0)[2] > 0.03 and V[L].mean(0)[1] > (D.FLOOR - D.CHIN) * D.K]
+    L = max(loops, key=len)
+    V, P, new = fill(V, P, L, rings=20)
+    nrm = np.cross(V[P[p0][1]] - V[P[p0][0]], V[P[p0][2]] - V[P[p0][0]])
+    if nrm[2] < 0: P = P[:p0] + [p[::-1] for p in P[p0:]]
+    n1 = len(V)
+    hc = np.array([0, (D.FLOOR - 0) * D.K, 0.0])
+    for L2 in M.boundary_loops(P):         # what else the cut left open (under the chin): closed plainly
+        if V[L2].mean(0)[1] < (D.FLOOR - 200) * D.K: continue          # the neck's opening stays
+        p1 = len(P)
+        V, P, _ = fill(V, P, L2, rings=2)
+        q = P[p1]; nn = np.cross(V[q[1]] - V[q[0]], V[q[2]] - V[q[0]])
+        if nn @ (V[L2].mean(0) - hc) < 0: P = P[:p1] + [p[::-1] for p in P[p1:]]
+    earm = np.r_[earm, np.zeros(len(V) - n0, bool)]
+    xu, yu, yh, rr = where(V)
+    isnew = np.zeros(len(V), bool); isnew[new] = True
+    extra = np.zeros(len(V), bool); extra[n1:] = True
+    # the patch on the surface; the base round the loop comes to it over a band (so no ridge where they meet)
+    wgt = np.where(isnew, 1.0, (1 - smooth01((rr - 0.8) / 0.16)) * smooth01((101.5 - yh) / 3) * smooth01((yh + 82) / 16) * (V[:, 2] > 0.0) * ~earm)
+    A = M.adjacency(len(V), P)
+    def lay(V):
+        s_ = surf(V[:, 0] / D.K, D.FLOOR - V[:, 1] / D.K) * D.K
+        V[:, 2] = V[:, 2] * (1 - wgt) + s_ * wgt
+        return V
+    V = lay(V)
+    for _ in range(30):      # the patch's points spread evenly over the surface
+        V = M.smooth(V, A, isnew, iters=1, lam=0.5)
+        V = lay(V)
+    seam = ((wgt > 0.01) & ~isnew & ~earm) | extra
+    V = M.smooth(V, A, seam, iters=4, lam=0.5)
+    return V, P, earm, wgt

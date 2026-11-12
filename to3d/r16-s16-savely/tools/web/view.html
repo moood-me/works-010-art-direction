@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Савелий Петрович, пиксель-арт — в 3D</title>
+<style>
+html, body { margin: 0; height: 100%; overflow: hidden; background: #231c38; color: #eef0ec; font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+#stage { position: fixed; inset: 0; display: grid; place-items: center; }
+#cv { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; cursor: grab; }
+#msg { position: fixed; inset: 0; display: grid; place-items: center; color: #a3acd0; font-size: 18px; pointer-events: none; }
+#ui { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(760px, calc(100vw - 32px)); box-sizing: border-box;
+  background: rgba(35, 28, 56, 0.92); border: 1px solid #5a4a72; border-radius: 10px; padding: 8px 10px; display: none; gap: 6px; }
+#ui.on { display: grid; }
+#ui.folded > :not(:first-child) { display: none; }
+#ui.folded { width: auto; left: auto; right: 12px; transform: none; padding: 6px; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.row .label { color: #a3acd0; font-size: 12px; width: 74px; flex: none; }
+button { font: inherit; font-size: 13px; color: #eef0ec; background: transparent; border: 1px solid #5a4a72; border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+button[aria-pressed="true"] { background: #f6d465; color: #231c38; border-color: #f6d465; }
+input[type=range] { flex: 1; min-width: 120px; accent-color: #f6d465; }
+#time { font-variant-numeric: tabular-nums; color: #a3acd0; font-size: 12px; width: 70px; text-align: right; }
+@media (max-width: 520px) { .row .label { width: 100%; } }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+</head>
+<body>
+<div id="stage"><canvas id="cv" width="464" height="560"></canvas></div>
+<div id="msg">собирается…</div>
+<div id="ui">
+  <div class="row" style="justify-content:flex-end;margin-bottom:-4px"><button id="fold">свернуть</button></div>
+  <div class="row"><span class="label">Вид</span><span id="views" class="row"></span></div>
+  <div class="row"><span class="label">Движение</span><span id="clips" class="row"></span></div>
+  <div class="row"><span class="label">Лицо</span><span id="exprs" class="row"></span><button id="talk" aria-pressed="false">говорит</button></div>
+  <div class="row"><button id="play" aria-pressed="true">пауза</button><input id="scrub" type="range" min="0" max="1" step="0.001" value="0"><span id="time">0.0 с</span></div>
+</div>
+<script>if (new URLSearchParams(location.search).has("shots")) document.getElementById("msg").remove();</script>
+<script type="module" src="savely.js"></script>
+<script type="module" src="ui.js"></script>
+</body>
+</html>

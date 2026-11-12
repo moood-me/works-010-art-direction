@@ -2,7 +2,7 @@
 head (only scaled to the drawing's head height), in the same flat style, no fitting.  python3 bases.py outdir"""
 import os, sys
 import numpy as np
-import pack, mesh as M, head as Hd, drawing as D
+import pack, mesh as M, headfit as Hd, drawing as D
 
 out = sys.argv[1]; os.makedirs(out, exist_ok=True)
 sk = pack.skeleton(); I = {j['name']: i for i, j in enumerate(sk['joints'])}
@@ -21,7 +21,7 @@ def save(name, V, T, SJ, SW, joints):
 
 
 save('anny', a['positions'].reshape(-1, 3), t['triangles'].reshape(-1, 3), t['skinJoints'].reshape(-1, 4), t['skinWeights'].reshape(-1, 4), a['joints'].reshape(-1, 3))
-v, P, eyes, r, vis = Hd.load('/home/user/cache/to3d-r1-s3-anya/hbm_head.npz')
+v, P, eyes, r, vis = Hd.load('/home/user/cache/to3d-r15-s15-anya/hbm_head.npz')
 s = (D.FLOOR - 112 - (D.FLOOR + 126)) * 0 + (238 * D.K) / (0.888 - 0.575)
 V = (v - [0, 0.7287, 0.03]) * s + [0, (D.FLOOR) * D.K, 0]
 V[:, 1] = (v[:, 1] - 0.7287) * s + D.FLOOR * D.K       # eye line at drawing y=0

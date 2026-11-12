@@ -1,12 +1,12 @@
-"""The live face and motions: films for the page (to3d/r1-s3-anya/pics). python3 make_live.py [name …]"""
+"""The live face and motions: films for the page (to3d/r15-s15-anya/pics). python3 make_live.py [name …]"""
 import os, sys, json, subprocess, shutil
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-WORK = '/home/user/cache/to3d-r1-s3-anya/live'; os.makedirs(WORK, exist_ok=True)
+WORK = '/home/user/cache/to3d-r15-s15-anya/live'; os.makedirs(WORK, exist_ok=True)
 PICS = os.path.join(HERE, '..', 'pics')
 ENV = dict(os.environ, NODE_PATH='/opt/node-tools/node_modules')
-PK = '/works-010-art-direction/to3d/r1-s3-anya/data/anya.json'
+PK = '/works-010-art-direction/to3d/r15-s15-anya/data/anya.json'
 STAND = dict(pose='stand', poseOpts={'out': 0.08})
 HEAD = dict(mode='ortho', h=0.44, cy=1.40, yaw=-0.45, pitch=0.0, target=[0, 1.40, 0])
 FULL = lambda yaw: dict(mode='persp', dist=6.2, fov=22, yaw=yaw, pitch=0.06, cy=0.82, follow=True)

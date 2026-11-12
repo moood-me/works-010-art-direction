@@ -12,7 +12,8 @@ import kit, parts, marat  # noqa: E402
 
 HEIGHT = 1.95                 # metres, the top of the hair
 KF = HEIGHT / 784.0           # a figure unit (the hair's top is at 784 fu: the head's centre 724, 0.5 × 117 above)
-K = KF / 2                    # a head unit
+HEADK = 1.2                  # the head a little bigger than the figure draws it (nearer the bust sheets)
+K = KF / 2 * HEADK            # a head unit
 EYE = 724 * KF                # the eye line's height
 FLOOR = EYE / K               # the floor in head units (y down from the eye line)
 

@@ -3,16 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Аня, перо и акварель — 3D</title>
-<style>html, body { margin: 0; height: 100%; overflow: hidden; background: #fdfaf3; }
-#stage { position: absolute; inset: 0; } #stage svg { display: block; }
-#cv { position: absolute; left: 0; top: 0; width: 100vw; height: 100vh; visibility: hidden; pointer-events: none; }
-body.flat #cv { visibility: visible; z-index: 3; background: #fdfaf3; }</style>
+<title>Марат, укиё-э — 3D</title>
+<style>html, body { margin: 0; height: 100%; overflow: hidden; background: #eee3cb; }
+#bg, #stage { position: absolute; inset: 0; } #bg svg, #stage svg { display: block; }
+#tex { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+#cv { position: absolute; left: 0; top: 0; width: 100vw; height: 100vh; pointer-events: none; transform: translate(0.8px, 0.6px); }</style>
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
 </head>
 <body>
+<div id="bg"></div>
 <canvas id="cv"></canvas>
 <div id="stage"></div>
-<script type="module" src="anya.js"></script>
+<div id="tex"></div>
+<script type="module" src="marat.js"></script>
 </body>
 </html>

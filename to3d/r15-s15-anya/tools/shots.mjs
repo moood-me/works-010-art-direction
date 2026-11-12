@@ -14,7 +14,7 @@ const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftsha
 const page = await b.newPage({ viewport: { width: jobs.w || 800, height: jobs.h || 800 } });
 await page.route('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', r => r.fulfill({ path: '/home/user/cache/n3-cloth/node_modules/three/build/three.module.js', contentType: 'text/javascript' }));
 const errs = []; page.on('pageerror', e => errs.push(e.message)); page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); else console.log('page:', m.text()); });
-await page.goto(srv.url + 'works-010-art-direction/to3d/r1-s3-anya/tools/web/view.html?pack=' + encodeURIComponent(jobs.pack) + (jobs.query || ''));
+await page.goto(srv.url + 'works-010-art-direction/to3d/r15-s15-anya/tools/web/view.html?pack=' + encodeURIComponent(jobs.pack) + (jobs.query || ''));
 try { await page.waitForFunction(() => window.__ready, null, { timeout: 300000 }); }
 catch (e) { console.error(errs.join('\n')); throw e; }
 for (const s of jobs.shots) {

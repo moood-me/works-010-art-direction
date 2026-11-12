@@ -1,0 +1,119 @@
+{
+ "format": "kira/model",
+ "version": 1,
+ "id": "kira",
+ "skeleton": "soma77",
+ "mats": [
+  "skin",
+  "skin_d",
+  "ear",
+  "nose",
+  "hair",
+  "hair_d",
+  "hood",
+  "hood_d",
+  "pocket",
+  "band",
+  "string",
+  "trou",
+  "boot",
+  "sole",
+  "lime",
+  "lime_d",
+  "cup",
+  "clay",
+  "white"
+ ],
+ "parts": [
+  "head"
+ ],
+ "bin": "kira.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    29590,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    51651,
+    3
+   ],
+   "offset": 355080
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    29590,
+    4
+   ],
+   "offset": 974892
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    29590,
+    4
+   ],
+   "offset": 1093252
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1566692
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1567616
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    29590
+   ],
+   "offset": 1568848
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    29590,
+    3
+   ],
+   "offset": 1598440
+  },
+  "fuv": {
+   "dtype": "float32",
+   "shape": [
+    29590,
+    3
+   ],
+   "offset": 1953520
+  },
+  "edge": {
+   "dtype": "uint8",
+   "shape": [
+    29590
+   ],
+   "offset": 2308600
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    29590,
+    1
+   ],
+   "offset": 2338192
+  }
+ }
+}

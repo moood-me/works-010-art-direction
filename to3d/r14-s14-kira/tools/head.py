@@ -57,7 +57,7 @@ def landmarks(V):
                 ss = sl[sel & (sgn * sl[:, 0] > 0)]
                 if len(ss) == 0 or a is None: continue
                 p = ss[(sgn * ss[:, 0]).argmax()]
-                add(p, sgn * a * k, y, p[2] / K * 0.80)
+                add(p, sgn * a * k, y, p[2] / K * 1.05)
     # round cross-sections: at each height points all round the head go onto the ellipse the two outlines give
     # (front: half-width a; side: front and back extents about the ear) — keeps the jaw full and the skull round
     for yb in np.linspace(CHIN_B + 0.03, CROWN_B - 0.03, 16):
@@ -77,7 +77,7 @@ def landmarks(V):
             r = 1 / np.sqrt((np.sin(phi) / a) ** 2 + (np.cos(phi) / c) ** 2)
             add(p, r * np.sin(phi), y, r * np.cos(phi))
     # the crown
-    top = V[V[:, 1].argmax()]; add(top, 0, -98, top[2] / K * 0.80)
+    top = V[V[:, 1].argmax()]; add(top, 0, -98, top[2] / K * 1.05)
     # the neck: the base's neck rings → the drawing's neck (front ±22, side from −20 to 24 about the ear's −8)
     for yb, yd in ((0.575, 118), (0.56, 131), (0.545, 144)):
         sl = V[np.abs(V[:, 1] - yb) < 0.004]
@@ -86,7 +86,7 @@ def landmarks(V):
         for phi in np.radians(np.arange(-180, 180, 45)):
             p = sl[np.abs(((ang - phi + np.pi) % (2 * np.pi)) - np.pi).argmin()]
             # the drawing's neck: 44 wide, from −18 to 24 in the side view (about the ear's −8)
-            a, cf, cb, c0 = 19, 19, 19, -8 + ZOFF
+            a, cf, cb, c0 = 15, 15, 15, -16 + ZOFF
             add(p, a * np.sin(phi), yd, c0 + (cf if np.cos(phi) > 0 else cb) * np.cos(phi))
     return np.array(src), np.array(dst)
 

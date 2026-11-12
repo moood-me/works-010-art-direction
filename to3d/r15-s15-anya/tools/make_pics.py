@@ -1,4 +1,4 @@
-"""All the page's pictures and films (to3d/r1-s3-anya/pics), from the packs in the cache.
+"""All the page's pictures and films (to3d/r15-s15-anya/pics), from the packs in the cache.
 python3 make_pics.py  (after build.py, bases.py, faces.py + render_svg.mjs, compare.py)"""
 import os, json, subprocess, shutil
 import numpy as np
@@ -6,11 +6,11 @@ from PIL import Image
 import drawing as D, overlay as O, anya
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = '/home/user/cache/to3d-r1-s3-anya'
+CACHE = '/home/user/cache/to3d-r15-s15-anya'
 WORK = os.path.join(CACHE, 'pics'); os.makedirs(WORK, exist_ok=True)
 PICS = os.path.join(HERE, '..', 'pics'); os.makedirs(PICS, exist_ok=True)
 ENV = dict(os.environ, NODE_PATH='/opt/node-tools/node_modules')
-PK = '/cache/to3d-r1-s3-anya/out/'
+PK = '/cache/to3d-r15-s15-anya/out/'
 
 
 def shots(pack, w, h, shots, name):

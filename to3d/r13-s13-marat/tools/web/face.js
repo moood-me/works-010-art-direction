@@ -1,10 +1,10 @@
-// Аня's face over time, for the pen (anya.js drawFace): the С12 sheet's expressions (parts.py EXPR) mixed and changing
-// smoothly, blinks, saccades, the gaze leading head turns, speech. The timing is Р1's (to3d/r1-s3-anya/tools/web/face.js,
-// from how faces move: log-normal blink intervals and fixations, saccade durations by amplitude, critically damped
-// changes); what it drives here is the drawing's own numbers: brows' lift and tilt, the lid, the pupil's look, the eye's
-// size, the mouth's kind, the head's tilt with the feeling, the small marks (a tear, start-lines, a flush).
-import { EXPR } from './pen.js';
-export const EXPR_NAMES = ['dream', 'joy', 'surprise', 'sad', 'anger'];
+// Марат's face over time, for the print (marat.js drawFace): the С13 sheet's expressions (print.js EXPR = parts.py's
+// and marat.py's numbers) mixed and changing smoothly, blinks, saccades, the gaze leading head turns, speech, and his
+// laugh — bursts of "ha-ha-ha" that shake the mouth, the head and the chest. The timing is Р1's
+// (to3d/r1-s3-anya/tools/web/face.js: log-normal blink intervals and fixations, saccade durations by amplitude,
+// critically damped changes), all from seeded random streams: the same moment always looks the same.
+import { EXPR } from './print.js';
+export const EXPR_NAMES = ['grin', 'calm', 'surprise', 'sad', 'anger'];
 
 function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const gauss = R => Math.sqrt(-2 * Math.log(R() + 1e-12)) * Math.cos(2 * Math.PI * R());
@@ -33,7 +33,9 @@ export class LiveFace {
       const amp = Math.hypot(q[0] - p[0], q[1] - p[1]) * 12;
       this.fix.push({ t, from: p, to: q, dur: (22 + 2.7 * amp) / 1000 }); p = q; t += Math.max(0.18, lognorm(R, 0.55, 0.5));
     }
-    this.exprKeys = [{ t: -10, w: { dream: 1 } }];
+    this.exprKeys = [{ t: -10, w: { grin: 1 } }];
+    // the laugh: bursts of 3–7 "ha", about five a second, with pauses
+    this.ha = []; for (let t = 0.2 + R() * 0.6; t < 600;) { const n = 3 + Math.floor(R() * 5), per = 0.19 + R() * 0.04; for (let i = 0; i < n; i++) this.ha.push([t + i * per, per, 1 - 0.5 * i / n]); t += n * per + 0.5 + R() * 1.6; }
     this.talkFrom = null; this.speech = null; this.lead = null; this.still = false;
   }
   setExpr(t, w) { this.exprKeys = this.exprKeys.filter(k => k.t < t); this.exprKeys.push({ t, w }); }
@@ -93,37 +95,41 @@ export class LiveFace {
     }
     this.lead = { dt, lx, ly, turnBlinks };
   }
+  laugh(t) {
+    let lo = 0, hi = this.ha.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (this.ha[m][0] <= t) lo = m; else hi = m - 1; }
+    const [t0, per, amp] = this.ha[lo], u = (t - t0) / per;
+    if (u < 0 || u > 1) return 0;
+    return amp * (u < 0.3 ? (u / 0.3) ** 0.7 : (1 - (u - 0.3) / 0.7) ** 1.6);
+  }
   at(t, opts = {}) {
     const w = this.exprWeights(t), wb = this.exprWeights(t, 16);
     const mix = (get, ww = w) => { let s = 0, z = 0; for (const n of EXPR_NAMES) { s += ww[n] * get(EXPR[n]); z += ww[n]; } return s / (z || 1); };
-    let dom = EXPR_NAMES[0]; for (const n of EXPR_NAMES) if (w[n] > w[dom]) dom = n;
-    const E = EXPR[dom];
-    const p = {
-      lift: mix(e => e.lift, wb), tilt: mix(e => e.tilt, wb), lid: mix(e => e.lid), eye: mix(e => e.eye),
-      ms: mix(e => e.ms ?? 1), tiltHead: mix(e => e.tilt_head ?? 0), squint: mix(e => e.squint ? 1 : 0) > 0.5,
-      mouth: E.mouth, extra: E.extra, extraK: w[dom] / (EXPR_NAMES.reduce((s, n) => s + w[n], 0) || 1), flush: 0,
-    };
-    if (E.extra === 'flush') p.extra = null;
-    p.flush = w.anger / (EXPR_NAMES.reduce((s, n) => s + w[n], 0) || 1);
+    const p = { lift: mix(e => e.lift, wb), tilt: mix(e => e.tilt, wb), open: mix(e => e.open), arc: mix(e => e.arc), blush: mix(e => e.blush),
+      dep: mix(e => e.dep), big: mix(e => e.big), curve: mix(e => e.curve), snarl: mix(e => e.snarl), round: mix(e => e.round), lean: mix(e => e.lean) };
     const base = [mix(e => e.look[0]), mix(e => e.look[1])];
     let lo = 0, hi = this.fix.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (this.fix[m].t <= t) lo = m; else hi = m - 1; }
     const f = this.fix[lo], u = Math.min(1, Math.max(0, (t - f.t) / f.dur)), ee = 1 - Math.pow(1 - u, 2.5);
-    let look = [base[0] + lerp(f.from[0], f.to[0], ee), base[1] + lerp(f.from[1], f.to[1], ee)];
+    let look = [base[0] + 2.2 * lerp(f.from[0], f.to[0], ee), base[1] + 1.2 * lerp(f.from[1], f.to[1], ee)];
     let blink = 0;
     for (const b of this.blinks) { if (b > t) break; blink = Math.max(blink, blinkCurve(t - b)); }
     const ht = opts.headT ?? t;
     if (this.lead && ht != null && ht >= 0) {
       const i = Math.min(this.lead.lx.length - 1, Math.floor(ht / this.lead.dt));
-      look = [look[0] + this.lead.lx[i], look[1] + this.lead.ly[i]];
+      look = [look[0] + 2.5 * this.lead.lx[i], look[1] + 1.5 * this.lead.ly[i]];
       for (const b of this.lead.turnBlinks) { if (b > ht) break; blink = Math.max(blink, blinkCurve(ht - b)); }
     }
-    look = [Math.max(-1.8, Math.min(1.8, look[0])), Math.max(-1.4, Math.min(1.8, look[1]))];
+    look = [Math.max(-5, Math.min(5, look[0])), Math.max(-2.5, Math.min(3, look[1]))];
     if (this.still) { look = base; blink = 0; }
     p.look = look;
-    p.lid = Math.min(1, p.lid + (1 - p.lid) * blink * (p.squint ? 0 : 1));
+    p.open *= 1 - blink;
+    // the laugh: as much as the face is laughing
+    const lw = Math.max(0, (p.arc - 0.3) / 0.7), ha = this.still ? 0 : this.laugh(t) * lw;
+    p.ha = ha; p.dep += 3.5 * ha - 1.5 * lw * (this.still ? 0 : 1) * (1 - ha);
     if (this.speech && t >= this.talkFrom && t < (this.talkTo ?? Infinity)) {
       const S = this.speech, i = Math.floor((t - this.talkFrom) / S.dt) % S.n, o = S.out;
-      p.talk = true; p.open = Math.max(0, o[i * 3]); p.dw = o[i * 3 + 1]; p.round = Math.max(0, Math.min(1, o[i * 3 + 2]));
+      const op = Math.max(0, o[i * 3]), dw = o[i * 3 + 1], rd = Math.max(0, Math.min(1, o[i * 3 + 2]));
+      p.talk = true; p.ha = 0;
+      p.dep = p.dep * 0.3 + 17 * op; p.big = p.big * (0.78 + 0.02 * dw) * (1 - 0.35 * rd); p.round *= 0.3; if (p.dep < 2.2) p.curve = Math.max(p.curve, 0.3);
     }
     return p;
   }
