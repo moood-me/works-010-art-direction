@@ -66,6 +66,30 @@
     "en": "the child hugs round the neck"
    },
    "after": "c-wait"
+  },
+  {
+   "id": "m-walk",
+   "label": {
+    "ru": "М несёт",
+    "en": "M carries"
+   },
+   "after": "m-lift"
+  },
+  {
+   "id": "m-down",
+   "label": {
+    "ru": "М ставит ребёнка",
+    "en": "M puts the child down"
+   },
+   "after": "m-walk"
+  },
+  {
+   "id": "c-rest",
+   "label": {
+    "ru": "ребёнок держится, потом отпускает",
+    "en": "the child holds on, then lets go"
+   },
+   "after": "c-held"
   }
  ]
 }

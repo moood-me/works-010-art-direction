@@ -200,5 +200,123 @@
    "z": -0.018
   },
   "note": "startsAt computed as the studio does"
+ },
+ {
+  "id": "m-walk",
+  "label": {
+   "ru": "М несёт",
+   "en": "M carries"
+  },
+  "key": "de265d63b7b8e5989ec1266b30f3b824b860cd2fa880e75affac06bcf24bd6f8",
+  "ask": {
+   "prompts": [
+    "A person walks forward carrying a large object at chest level in both arms.",
+    "A person walking with a large object in both arms comes to a stop."
+   ],
+   "seconds": [
+    3,
+    1.5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "m-lift",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.037,
+   "z": 3.411
+  },
+  "note": "startsAt computed as the studio does. A first take, \"A person walks forward slowly, carrying … and comes to a stop.\" (8823f1af…), went only half a metre"
+ },
+ {
+  "id": "m-down",
+  "label": {
+   "ru": "М ставит ребёнка",
+   "en": "M puts the child down"
+  },
+  "key": "4892e3fef0eb033e46b272c4645924d39942d586506f974216c1c582f8d4076c",
+  "ask": {
+   "prompts": [
+    "A person standing bends down and puts a large object down in front of them at waist level with both hands, then stands up."
+   ],
+   "seconds": [
+    3
+   ],
+   "seed": 1,
+   "constraints": [
+    {
+     "type": "right-hand",
+     "frame_indices": [
+      45
+     ],
+     "from": {
+      "key": "de957e0c0272a38a9bbc05413e93f4e4e30f5beaa7b283d4433f95ced6fb9312",
+      "frames": [
+       126
+      ]
+     },
+     "turn": 0,
+     "move": [
+      -0.01,
+      -3.33
+     ]
+    },
+    {
+     "type": "left-hand",
+     "frame_indices": [
+      45
+     ],
+     "from": {
+      "key": "de957e0c0272a38a9bbc05413e93f4e4e30f5beaa7b283d4433f95ced6fb9312",
+      "frames": [
+       126
+      ]
+     },
+     "turn": 0,
+     "move": [
+      -0.01,
+      -3.33
+     ]
+    }
+   ]
+  },
+  "after": {
+   "motion": "m-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.176,
+   "z": 2.088
+  },
+  "note": "the hands as they took the child (m-lift frame 126: the pose taken by the studio from that motion, moved so its pelvis stands 15 cm ahead of where the walk stopped): set down at the height it was taken up, its feet come to the floor. startsAt computed as the studio does"
+ },
+ {
+  "id": "c-rest",
+  "label": {
+   "ru": "ребёнок держится, потом отпускает",
+   "en": "the child holds on, then lets go"
+  },
+  "key": "553597730625e16b6ac791c81bfa9a42b29bb8ee0c321ed621fb567a31b24428",
+  "ask": {
+   "prompts": [
+    "A childlike person keeps hugging someone in front of them, arms around their neck.",
+    "A childlike person lets go of someone in front of them and stands still with arms down."
+   ],
+   "seconds": [
+    2.8,
+    3
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "c-held",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.007,
+   "z": -0.029
+  },
+  "note": "startsAt computed as the studio does"
  }
 ]

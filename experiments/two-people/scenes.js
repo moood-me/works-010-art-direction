@@ -15,18 +15,18 @@ export const SCENES = [
   },
   {
     id: 'carry', label: 'поднимает и несёт',
-    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки и поднимает. Ребёнок прикреплён к рукам мужчины; его поза — своё движение Kimodo.',
-    frames: 206,
+    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает, несёт и ставит. Пока его несут, ребёнок прикреплён к рукам мужчины; его поза — своё движение Kimodo (обнимает за шею, потом отпускает).',
+    frames: 420,
     people: [
-      { id: 'C', character: 'child', chain: ['c-wait', 'c-held'], start: 0, place: { position: [0, 0, 0], heading: Math.PI } },
-      { id: 'M', character: 'man', chain: ['m-lift'], start: 26, place: { position: [0, 0, -4.0], heading: 0 } },
+      { id: 'C', character: 'child', chain: ['c-wait', 'c-held', 'c-rest'], start: 0, place: { position: [0, 0, 0], heading: Math.PI } },
+      { id: 'M', character: 'man', chain: ['m-lift', 'm-walk', 'm-down'], start: 26, place: { position: [0, 0, -4.0], heading: 0 } },
     ],
     // M's palms on the child's sides under the arms (points of the child's trunk at rest, 2.5 cm out)
     contacts: [
-      { who: 'M', side: 'Right', on: 'C', joint: 'Chest', point: [0.1429, 0.8795, 0.025], from: 152, to: 205, ramp: 10 },
-      { who: 'M', side: 'Left', on: 'C', joint: 'Chest', point: [-0.1428, 0.8795, 0.025], from: 152, to: 205, ramp: 10 },
+      { who: 'M', side: 'Right', on: 'C', joint: 'Chest', point: [0.1429, 0.8795, 0.025], from: 152, to: 376, ramp: 10 },
+      { who: 'M', side: 'Left', on: 'C', joint: 'Chest', point: [-0.1428, 0.8795, 0.025], from: 152, to: 376, ramp: 10 },
     ],
-    carry: { who: 'C', by: 'M', from: 152 },
+    carry: { who: 'C', by: 'M', from: 152, to: 376 },
     camera: { yaw: -1.2, pitch: 0.12, dist: 5, target: [0, 0.9, -0.8] },
   },
 ];

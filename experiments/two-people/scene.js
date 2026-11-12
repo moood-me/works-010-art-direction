@@ -84,10 +84,11 @@ export async function loadScene(E, base, def, read) {
       prev?.(pose, t);
       const T = t + P.start;
       const w = Math.min(clamp((T - c.from + c.ramp) / c.ramp, 0, 1), clamp((c.to + c.ramp - T) / c.ramp, 0, 1));
+      if (w <= 0 || !O.fig.pose) return;
       const target = jointAt(O.fig.pose, O.body, j, c.point);
       const now = jointAt(pose, P.body, P.body.skeleton.index[c.side + 'Hand'], palm.point);
       if (T >= c.from && T <= c.to) S.misses[c.who + ' ' + c.side] = len(sub(now, target));
-      if (!S.corrections || w <= 0) return;
+      if (!S.corrections) return;
       // the hand turned about the vertical by a share of how far the other's joint turned since the touch began (a
       // hand resting on a shoulder that turns under it goes partly round with it, partly slides)
       if (c.turnWith) {
@@ -126,10 +127,12 @@ export function attach(S, carry) {
   const F0 = rawAt(carry.from), Fend = carry.to != null ? rawAt(carry.to) : null;
   S.carryFrame = T => (T < carry.from ? null : carry.to != null && T > carry.to ? Fend : rawAt(T));
   const prev = W.fig.adjust;
+  // moved first, then the carried one's own contacts (its hands on the carrier): the carrier's pose they reach for is
+  // the one rawAt just made (Kimodo's, its trunk untouched by the corrections of its arms)
   W.fig.adjust = (pose, t) => {
+    const F = S.carryFrame(t + W.start);
+    if (F) moveRigid(pose, W.body.skeleton.J, qMul(F.q, qConj(F0.q)), F0.o, sub(F.o, F0.o));
     prev?.(pose, t);
-    const F = S.carryFrame(t + W.start); if (!F) return;
-    moveRigid(pose, W.body.skeleton.J, qMul(F.q, qConj(F0.q)), F0.o, sub(F.o, F0.o));
   };
 }
 // a rotation from its axes (columns x, y, z)

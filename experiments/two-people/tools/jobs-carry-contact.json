@@ -1,0 +1,3 @@
+[{"out": "pics/carry-contact.png", "scene": "carry", "kind": "sheet", "frames": [152, 175, 230, 300, 376], "size": [320, 320],
+  "views": [{"yaw": -1.3, "pitch": 0.2, "dist": 1.6, "target": "contact", "label": "справа от него"},
+            {"yaw": 1.3, "pitch": 0.2, "dist": 1.6, "target": "contact", "label": "слева от него"}]}]

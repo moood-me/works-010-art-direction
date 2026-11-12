@@ -1,0 +1,10 @@
+[{"out": "pics/carry-sheet.png", "scene": "carry", "kind": "sheet", "frames": [120, 152, 175, 220, 300, 350, 376, 410], "size": [280, 380],
+  "views": [{"yaw": -1.5, "pitch": 0.08, "dist": 4.4, "target": "mid", "y": 0.95, "label": "сбоку"},
+            {"yaw": -0.55, "pitch": 0.15, "dist": 4.0, "target": "mid", "y": 0.95, "label": "спереди-сбоку"}]},
+ {"out": "pics/carry-contact.png", "scene": "carry", "kind": "sheet", "frames": [152, 175, 230, 300, 376], "size": [320, 320],
+  "views": [{"yaw": -0.9, "pitch": 0.25, "dist": 1.5, "target": "contact", "label": "руки на боках"},
+            {"yaw": 2.6, "pitch": 0.25, "dist": 1.5, "target": "contact", "label": "с другой стороны"}]},
+ {"out": "pics/carry-side.mp4", "scene": "carry", "kind": "film", "frames": {"from": 60, "to": 419, "step": 3}, "size": [640, 400],
+  "views": [{"yaw": -1.5, "pitch": 0.1, "dist": 5.6, "target": [0, 0.9, 0.7]}]},
+ {"out": "pics/carry-front.mp4", "scene": "carry", "kind": "film", "frames": {"from": 60, "to": 419, "step": 3}, "size": [640, 400],
+  "views": [{"yaw": -0.45, "pitch": 0.15, "dist": 5.4, "target": [0, 0.9, 0.7]}]}]
