@@ -156,3 +156,10 @@ started automatically either — only when Pavel asks (2026-11-04).
 
 Breathing and idle life; fingers and grips (Kimodo has none); feet on the ground; turning to a target; cartoon timing;
 scenes. (Contacts of the hands with the world — see above, after the engine.)
+
+## Contacts and two people, tried (Pavel, 2026-11-12)
+
+- The two tasks put off above ("After the engine is finished") are tried now, by Opus agents, in new branches from
+  `main`.
+- If something is not liked, or could be made better simply, or it is worth the agents trying more — ask them.
+- Other scenarios are worth making too: other kinds of objects, other kinds of motions.

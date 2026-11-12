@@ -3,7 +3,8 @@
 # For each scene: its numbers with and without the correction (measures/<scene>.json, -raw.json, and a summary
 # measures/<scene>.txt), a sheet of moments from two sides (pics/<scene>-sheet.png), two short films from two sides
 # (pics/<scene>-<view>.mp4, 15 frames a second), and the touch close up — Kimodo's own and with the correction
-# (pics/<scene>-close.png). Headless Chromium through tools/shots.cjs; frames in a temporary folder.
+# (pics/<scene>-close.png). (pics/armchair-knees.png, the knees from the front in both armchair takes, was put together
+# by hand with tools/sheet.py from four page pictures: first take frame 170; second 134, 170, 209; camera yaw π.) Headless Chromium through tools/shots.cjs; frames in a temporary folder.
 import json, os, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ITEM = os.path.dirname(HERE)
@@ -13,7 +14,9 @@ PICS = os.path.join(ITEM, 'pics')
 SCENES = {
     'table': {'frames': 235, 'views': ['side', 'whole'], 'close': 225, 'sheet': [0, 40, 80, 120, 160, 184, 204, 234]},
     'shoulder': {'frames': 180, 'views': ['side', 'whole'], 'close': 160, 'sheet': [0, 30, 60, 90, 104, 120, 150, 178]},
+    'shoulder2': {'frames': 180, 'views': ['front', 'whole'], 'labels': {'front': 'поперёк'}, 'close': 160, 'sheet': [0, 30, 60, 90, 110, 130, 150, 178]},
     'armchair': {'frames': 210, 'views': ['side', 'whole'], 'close': 190, 'sheet': [0, 30, 54, 74, 94, 120, 160, 208]},
+    'armchair2': {'frames': 210, 'views': ['side', 'front'], 'close': 190, 'sheet': [0, 30, 54, 74, 94, 120, 160, 208]},
 }
 LABEL = {'side': 'сбоку', 'whole': 'весь путь', 'front': 'спереди'}
 
@@ -38,7 +41,8 @@ def scene(name):
     for v in s['views']:
         subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', '15', '-i', f'{tmp}/{v}-%03d.png', '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
                         '-crf', '30', '-preset', 'slow', '-movflags', '+faststart', os.path.join(PICS, f'{name}-{v}.mp4')], check=True)
-    items = [f'{LABEL[v]}, кадр {t}|{tmp}/{v}-{t // 2:03d}.png' for v in s['views'] for t in s['sheet']]
+    label = {**LABEL, **s.get('labels', {})}
+    items = [f'{label[v]}, кадр {t}|{tmp}/{v}-{t // 2:03d}.png' for v in s['views'] for t in s['sheet']]
     subprocess.run(['python3', os.path.join(HERE, 'sheet.py'), os.path.join(PICS, f'{name}-sheet.png'), str(len(s['sheet'])), *items], check=True)
     subprocess.run(['python3', os.path.join(HERE, 'sheet.py'), os.path.join(PICS, f'{name}-close.png'), '2',
                     f'Kimodo как есть, кадр {s["close"]}|{tmp}/close0.png', f'с поправкой|{tmp}/close1.png'], check=True)

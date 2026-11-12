@@ -1,0 +1,45 @@
+— с поправкой
+{
+ "Right": {
+  "frames": "125–179",
+  "kimodo_palm_cm": "mean 6.4, max 7.9",
+  "corrected_palm_cm": "mean 1.9, max 2.1",
+  "skin_gap_cm": "min 0.1, mean 0.2, max 0.3",
+  "hand_inside_other_cm": "max 0.9"
+ },
+ "into_things": {
+  "other/body": {
+   "frames": 15,
+   "deepest_cm": 1.6,
+   "at": 102,
+   "by": {
+    "Rhand → pelvis": 0.2,
+    "Rhand → LforeArm": 0.2,
+    "Rhand → LupperArm": 1.6,
+    "Rhand → Lclavicle": 0
+   }
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "Right": {
+  "frames": "125–179",
+  "kimodo_palm_cm": "mean 6.4, max 7.9",
+  "corrected_palm_cm": "mean 6.4, max 7.9",
+  "skin_gap_cm": "min 1.1, mean 2.2, max 3.3"
+ },
+ "into_things": {
+  "other/body": {
+   "frames": 24,
+   "deepest_cm": 3.7,
+   "at": 111,
+   "by": {
+    "Rhand → pelvis": 0.4,
+    "Rhand → LforeArm": 2.7,
+    "Rhand → LupperArm": 3.1,
+    "Rhand → Lclavicle": 3.7
+   }
+  }
+ }
+}

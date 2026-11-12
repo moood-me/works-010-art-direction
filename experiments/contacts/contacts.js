@@ -271,7 +271,7 @@ function nearOther() {
   B.fig.frame(B.clip, 0);
   const c = A.fig.contacts.find(c => c.def.on); if (!c) return;
   const x = c.target(0);
-  for (let i = 0; i < B.fig.body.N; i++) if (Math.hypot(bp[i * 3] - x[0], bp[i * 3 + 1] - x[1], bp[i * 3 + 2] - x[2]) < 0.35) B.near.push(i);
+  for (let i = 0; i < B.fig.body.N; i++) if (Math.hypot(bp[i * 3] - x[0], bp[i * 3 + 1] - x[1], bp[i * 3 + 2] - x[2]) < 0.6) B.near.push(i);
 }
 const setSceneAndNear = async id => { await setScene(id); nearOther(); draw(); };
 panel.querySelectorAll('#scenes button').forEach(b => b.onclick = () => { S.t = 0; setSceneAndNear(b.dataset.id); });
