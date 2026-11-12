@@ -1,6 +1,7 @@
-"""The head (Р1's head.py, for С15): Blender's Human Base Meshes stylised head (CC0), made blank where the drawing
-paints (eye sockets and the mouth bag closed and smoothed — the eyes, brows and lips of this style are black and
-coloured shapes drawn over), then fitted to the noir Аня by her front and profile outlines (drawing.py)."""
+"""The head (from Р1's head.py, for С15): Blender's Human Base Meshes stylised head (CC0) fitted to the noir Аня by
+her front and profile outlines (drawing.py); its face is cut out and closed by a clean patch laid on the planes the
+drawing designs (`surf`) — the eyes, brows, nose's plane and lips of this style are black and coloured shapes drawn
+over (web/face.js)."""
 import numpy as np
 import mesh as M
 
@@ -17,25 +18,6 @@ def load(path):
     eyes = [conv(d['L_v']).mean(0), conv(d['R_v']).mean(0)]
     r = (conv(d['L_v']).max(0) - conv(d['L_v']).min(0)).max() / 2
     return v, P, eyes, r, vis
-
-
-def face_normals(v, P):
-    n = np.array([np.cross(v[p[1]] - v[p[0]], v[p[2]] - v[p[0]]) for p in P])
-    return n / (np.linalg.norm(n, axis=1, keepdims=True) + 1e-12)
-
-
-def flood(P, seed_faces, ok):
-    """Faces reachable from the seeds over shared edges, through faces where ok is true."""
-    ef = {}
-    for i, p in enumerate(P):
-        for a, b in zip(p, p[1:] + p[:1]): ef.setdefault((min(a, b), max(a, b)), []).append(i)
-    seen = set(seed_faces); st = list(seed_faces)
-    while st:
-        i = st.pop(); p = P[i]
-        for a, b in zip(p, p[1:] + p[:1]):
-            for j in ef[(min(a, b), max(a, b))]:
-                if j not in seen and ok[j]: seen.add(j); st.append(j)
-    return seen
 
 
 def fill(v, P, loop, rings=4):
@@ -58,41 +40,6 @@ def fill(v, P, loop, rings=4):
 def compact(v, P):
     used = sorted(set(i for p in P for i in p)); m = -np.ones(len(v), int); m[used] = np.arange(len(used))
     return v[used], [[int(m[i]) for i in p] for p in P], m
-
-
-def blank(v, P, vis, eyes, r):
-    """Eye sockets and the mouth closed: the faces there that no ray from outside reaches (their linings) taken out,
-    the holes filled. The neck's opening stays open."""
-    fc = np.array([v[p].mean(0) for p in P])
-    near = np.zeros(len(P), bool)
-    for c in eyes: near |= np.linalg.norm(fc - c, axis=1) < r * 1.5
-    near |= (abs(fc[:, 0]) < 0.06) & (fc[:, 1] > 0.55) & (fc[:, 1] < 0.70) & (fc[:, 2] > -0.0) & (fc[:, 2] < 0.14)
-    # every lining no ray from outside reaches (sockets, mouth bag, nostrils), above the neck
-    drop = set(np.where((vis == 0) & near)[0])
-    P = [p for i, p in enumerate(P) if i not in drop]
-    v, P, _ = compact(v, P)
-    for L in M.boundary_loops(P):
-        if v[L].mean(0)[1] < 0.54: continue
-        v, P, _ = fill(v, P, L)
-    # small holes left where the linings met the surface (the mouth's corners, the nostrils): each closed by a fan
-    # from its middle, over its boundary edges as they run
-    cnt = M.edges_of(P); half = []
-    for p in P:
-        for a, b in zip(p, p[1:] + p[:1]):
-            if cnt[(min(a, b), max(a, b))] == 1: half.append((a, b))
-    par = {}
-    def root(x):
-        while par.get(x, x) != x: x = par[x]
-        return x
-    for a, b in half: par[root(a)] = root(b)
-    groups = {}
-    for a, b in half: groups.setdefault(root(a), []).append((a, b))
-    v = list(v)
-    for g in groups.values():
-        if np.mean([v[a][1] for a, _ in g]) < 0.54: continue
-        c = len(v); v.append(np.mean([v[a] for a, _ in g], 0))
-        for a, b in g: P.append([b, a, c])
-    return np.array(v), P
 
 
 # ---------------------------------------------------------------- fitting to the drawing

@@ -61,7 +61,6 @@ g.setAttribute('pn', new THREE.BufferAttribute(a.pn, 3));
 g.setAttribute('pw', new THREE.BufferAttribute(a.pw, 1, true));
 g.setAttribute('pj', new THREE.BufferAttribute(a.pj, 1));
 g.setAttribute('two', new THREE.BufferAttribute(a.two, 1));
-g.setAttribute('band', new THREE.BufferAttribute(a.band, 1));
 g.setAttribute('hp', new THREE.BufferAttribute(a.hp ?? new Float32Array(a.positions.length), 3));
 g.setAttribute('kind', new THREE.BufferAttribute(a.kind ?? new Uint8Array(a.positions.length / 3), 1));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
@@ -89,10 +88,10 @@ const U = {
   thr: { value: Number(q.get('thr') ?? 0.1) },
   face: { value: faceTex }, smap: { value: shadowRT.depthTexture }, SMx: { value: new THREE.Matrix4() }, casts: { value: 1 },
   width: { value: Number(q.get('line') ?? 0.0042) },
-  paint: { value: 1 }, clay: { value: 0 }, black: { value: BLACK }, rim: { value: RIM }, shoe: { value: new THREE.Color('#7d3528') },
+  paint: { value: 1 }, clay: { value: 0 }, black: { value: BLACK }, rim: { value: RIM },
   R: { value: Array.from({ length: sk.J }, () => new THREE.Matrix3()) },
 };
-U.black.value.convertLinearToSRGB(); U.rim.value.convertLinearToSRGB(); U.shoe.value.convertLinearToSRGB();     // colours go out as written
+U.black.value.convertLinearToSRGB(); U.rim.value.convertLinearToSRGB();     // colours go out as written
 // the drawn edges, head units: x of the edge at heights y (head.py head_f's side shadow for ANYA; the hair's shadow
 // zigzag of cast.py anya_hair, front and back forms, one line from the crown to the ends; below the jaw the hair
 // behind the neck is black from the middle on — the drawing's second shape there)
@@ -142,16 +141,16 @@ const LIGHT = `
 const toon = new THREE.ShaderMaterial({
   uniforms: U,
   vertexShader: `
-    attribute vec3 col; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two; attribute float band;
+    attribute vec3 col; attribute float tex; attribute vec3 pn; attribute float pw; attribute float pj; attribute float two;
     attribute vec3 hp; attribute float kind;
     uniform mat3 R[${sk.J}]; uniform mat4 SMx;
-    varying vec3 vN; varying vec3 vCol; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vBand; varying vec3 vHp; varying vec3 vPn; varying float vKind; varying vec4 vS;
-    void main() { vBand = band; vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vUv = uv; vTex = tex; vTwo = two; vHp = hp; vPn = pn; vKind = kind;
+    varying vec3 vN; varying vec3 vCol; varying vec2 vUv; varying float vTex; varying float vTwo; varying vec3 vHp; varying vec3 vPn; varying float vKind; varying vec4 vS;
+    void main() { vN = normalize(mix(normal, R[int(pj + 0.5)] * pn, pw)); vCol = col; vUv = uv; vTex = tex; vTwo = two; vHp = hp; vPn = pn; vKind = kind;
       vS = SMx * vec4(position + normal * 0.012, 1.0);
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: `
-    uniform sampler2D face; uniform sampler2D smap; uniform float paint; uniform float clay; uniform float casts; uniform vec3 black; uniform vec3 shoe;
-    varying vec3 vN; varying vec3 vCol; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vBand; varying vec3 vHp; varying vec3 vPn; varying float vKind; varying vec4 vS;
+    uniform sampler2D face; uniform sampler2D smap; uniform float paint; uniform float clay; uniform float casts; uniform vec3 black;
+    varying vec3 vN; varying vec3 vCol; varying vec2 vUv; varying float vTex; varying float vTwo; varying vec3 vHp; varying vec3 vPn; varying float vKind; varying vec4 vS;
     ${LIGHT}
     float shadowed() {
       vec3 s = vS.xyz / vS.w; float k = 0.0, t = 0.5 / ${SM}.0;
@@ -163,7 +162,6 @@ const toon = new THREE.ShaderMaterial({
       float lit = lightAt(vKind, vHp, normalize(vPn), normalize(vN));
       if (vKind < 0.5 && casts > 0.5) lit *= 1.0 - shadowed();
       vec3 base = vCol;
-      if (vBand > -0.5 && vBand < 0.052) base = shoe;           // the shoe, cut at its height
       vec3 c = mix(black, base, lit);
       if (clay > 0.5) c = vec3(0.86, 0.84, 0.8) * (0.55 + 0.45 * max(dot(normalize(vN), L), 0.0)) + 0.08;
       if (vTex > 0.5 && paint > 0.5) { vec4 t = texture2D(face, vUv);
@@ -258,7 +256,7 @@ function headTrack(c) {
 // the skirt kept off the legs: each skirt point inside a leg's capsule (thigh, shin) is put on its surface
 const dressR = H.pieces?.dress ?? [0, 0], skirt = [];      // a pack without a dress has no skirt to keep off the legs
 for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.9) skirt.push(i);
-const CAPS = [['LeftLeg', 'LeftShin', 0.06], ['LeftShin', 'LeftFoot', 0.048], ['RightLeg', 'RightShin', 0.06], ['RightShin', 'RightFoot', 0.048]]
+const CAPS = [['LeftLeg', 'LeftShin', 0.058], ['LeftShin', 'LeftFoot', 0.05], ['RightLeg', 'RightShin', 0.058], ['RightShin', 'RightFoot', 0.05]]
   .map(([a, b, r]) => [I[a], I[b], r]);
 const RING = 72;                    // the dress is a loft of rings of 72 points (build.py)
 const skirtSet = new Int32Array(rest.length / 3).fill(-1); skirt.forEach((i, k) => { skirtSet[i] = k; });
@@ -268,7 +266,7 @@ const skirtNb = skirt.map(i => { const k = i - dressR[0], r = Math.floor(k / RIN
 const fade = Float64Array.from(skirt, i => { const u = Math.max(0, Math.min(1, (0.9 - rest[i * 3 + 1]) / 0.16)); return u * u * (3 - 2 * u); });
 const dsp = new Float64Array(skirt.length * 3), dsp2 = new Float64Array(skirt.length * 3);
 function pushSkirt(P, pose) {
-  const caps = CAPS.map(([a, b, r], k) => { const A = getV(pose.P, a), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => (v + B[c]) / 2), B, r + 0.008]; });
+  const caps = CAPS.map(([a, b, r], k) => { const A = getV(pose.P, a), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => v + (B[c] - v) * 0.2), B, r + 0.012]; });
   // how far each point must go out of the legs …
   skirt.forEach((i, k) => {
     let x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
@@ -281,7 +279,7 @@ function pushSkirt(P, pose) {
     dsp[k * 3] = x - P[i * 3]; dsp[k * 3 + 1] = y - P[i * 3 + 1]; dsp[k * 3 + 2] = z - P[i * 3 + 2];
   });
   // … spread over the cloth around them (no steps where single points were pushed), keeping the largest push
-  for (let it = 0; it < 6; it++) {
+  for (let it = 0; it < 14; it++) {
     skirtNb.forEach((nb, k) => { for (let c = 0; c < 3; c++) { let s = dsp[k * 3 + c]; for (const m of nb) s += dsp[m * 3 + c]; dsp2[k * 3 + c] = s / (nb.length + 1); } });
     for (let k = 0; k < skirt.length; k++) for (let c = 0; c < 3; c++) { const a = dsp[k * 3 + c], b = dsp2[k * 3 + c]; dsp[k * 3 + c] = Math.abs(b) > Math.abs(a) ? b : (a + b) / 2 + (a - b) / 2 * 0.5; }
   }
@@ -346,7 +344,7 @@ window.A = {
     if (o.floor !== undefined) floor.visible = !!o.floor;
     if (o.back !== undefined) S.back = o.back && { ...S.back, ...o.back };
     if (o.cast !== undefined) U.casts.value = o.cast ? 1 : 0;
-    if (o.pool) floor.material.uniforms.c0.value.set(o.pool[0], o.pool[1]);
+    if (o.pool) { floor.material.uniforms.c0.value.set(o.pool[0], o.pool[1]); S.poolFixed = true; }
     if (o.show !== undefined) {           // only these pieces (names from the pack's header), or all
       const all = a.triangles; let idx = all;
       if (o.show) { const parts = []; for (const n of o.show) { const [s0, s1] = H.trianglePieces[n]; parts.push(all.subarray(s0 * 3, s1 * 3)); }
@@ -389,7 +387,8 @@ window.A = {
     // the backdrop behind the figure, facing the camera
     backdrop.visible = !!S.back;
     { const fu = floor.material.uniforms, n = Math.hypot(dir[0], dir[2]) || 1;
-      fu.fwd.value.set(-dir[0] / n, -dir[2] / n); fu.rgt.value.set(e[0], e[2]); fu.fp.value.set(c.follow || c.focus ? tg[0] : 0, c.follow || c.focus ? tg[2] : 0); }
+      fu.fwd.value.set(-dir[0] / n, -dir[2] / n); fu.rgt.value.set(e[0], e[2]); fu.fp.value.set(c.follow || c.focus ? tg[0] : 0, c.follow || c.focus ? tg[2] : 0);
+      if (!S.poolFixed) fu.c0.value.copy(fu.fp.value); }      // the window and its light stay behind the figure the camera follows
     if (S.back) {
       const b = S.back, bx = c.follow || c.focus ? tg[0] : 0, bz = c.follow || c.focus ? tg[2] : 0, by = c.focus ? tg[1] : b.y;
       const right = [e[0], e[1], e[2]];

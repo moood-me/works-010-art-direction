@@ -66,7 +66,7 @@ for s, sg in (('Left', 1), ('Right', -1)):
         j = I[s + n]; J1[j] = J1[PARENT[j]] + k * (J0[j] - J0[PARENT[j]])
     for j in under(I[s + 'Hand'])[1:]:
         J1[j] = J1[PARENT[j]] + 0.84 * (J0[j] - J0[PARENT[j]])
-    for n, x in (('Leg', 0.088), ('Shin', 0.07), ('Foot', 0.078)):
+    for n, x in (('Leg', 0.072), ('Shin', 0.064), ('Foot', 0.068)):
         J1[I[s + n], 0] = sg * x
     for n in ('ToeBase', 'ToeEnd'):        # a shorter foot: a small shoe as drawn
         j = I[s + n]; J1[j] = J1[PARENT[j]] + 0.82 * (J0[j] - J0[PARENT[j]])
@@ -79,7 +79,7 @@ def joint_affine(j):
     if n.endswith('Shin') or n.endswith('ForeArm') or n.endswith('Leg'):
         c = [k for k in range(NJ) if PARENT[k] == j][0]
         d = J0[c] - J0[j]; d /= np.linalg.norm(d)
-        r = 0.74 if n.endswith('Shin') else 0.8 if n.endswith('Leg') else 0.85
+        r = 0.74 if n.endswith('Shin') else 0.72 if n.endswith('Leg') else 0.85
         A = r * np.eye(3) + (1 - r) * np.outer(d, d)
     elif 'Foot' in n or 'Toe' in n: A = np.diag([0.9, 0.9, 0.8])
     elif 'Hand' in n: A = 0.84 * np.eye(3)
@@ -106,7 +106,7 @@ fore = np.array([n.endswith('ForeArm') for n in dn])
 legs = np.array([('Shin' in n or 'Foot' in n or 'Toe' in n or n.endswith('Leg')) for n in dn])
 near_wrist = np.zeros(len(P0), bool)
 for s in ('Left', 'Right'): near_wrist |= np.linalg.norm(P0 - J0[I[s + 'Hand']], axis=1) < 0.06
-keep = (fore & near_wrist) | (legs & (P0[:, 1] < 0.55) & (P0[:, 1] > 0.062))      # bare legs from under the skirt      # Anny's hands are replaced by drawn mittens
+keep = (fore & near_wrist) | (legs & (P0[:, 1] < 0.70) & (P0[:, 1] > 0.062))      # bare legs from under the skirt      # Anny's hands are replaced by drawn mittens
 tk = keep[TRI0].all(1)
 bi = np.where(keep)[0]; remap = -np.ones(len(P0), int); remap[bi] = np.arange(len(bi))
 B = dict(V=PF[bi], T=remap[TRI0[tk]], SJ=SJ0[bi], SW=SW0[bi])
@@ -388,7 +388,7 @@ for name, p in pieces:
     ows.append(p.get('ow', np.ones(n))); bands.append(p.get('band', -np.ones(n))); uvs.append(p.get('uv', np.zeros((n, 2))))
     texs.append(p.get('tex', np.zeros(n))); pns.append(p.get('pn', np.zeros((n, 3)))); pws.append(p.get('pw', np.zeros(n)))
     kinds.append(p.get('kind', np.zeros(n)))
-    two.append(np.full(n, 1 if name in ('cardigan', 'hair', 'dress', 'collar') or name.startswith('sleeve') or name.startswith('sock') else 0))
+    two.append(np.full(n, 1 if name in ('cardigan', 'hair', 'dress') or name.startswith('sleeve') else 0))
     ranges[name] = [base, base + n]; tranges[name] = [tbase, tbase + len(p['T'])]; base += n; tbase += len(p['T'])
 V = np.vstack(Vs); W = np.vstack(Ws); N = len(V)
 # every vertex's place in the head's own frame, head units (x to the character's left, y down from the eye line + 12,
