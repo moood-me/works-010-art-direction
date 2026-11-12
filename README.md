@@ -31,6 +31,7 @@ code, a hyphen and a letter (`Т5-б`). The letters are Russian.
 | О | clothes: a designed form, real cloth | `experiments/…` | `gallery/paths.js` |
 | Д | the late engine: bodies, heads, hair and clothes in one viewer | `engine-full/` | `gallery/paths.js` |
 | Н | other people's open tools beside ours | `tools-demo/<folder>/` | `tools-demo/items.json` |
+| К | contacts and two people: Kimodo's motions that come to a place | `experiments/…` | `gallery/paths.js` |
 | И | where it began, and the earliest tries | `docs/pictures/hope`, `experiments/…` | `gallery/paths.js` |
 
 An item's page says which folder its code is in. That folder has what is needed to run it and, in its `notes.md` or
