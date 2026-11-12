@@ -25,7 +25,10 @@ R0 = S['R']              # rest frames (matrices)
 
 
 def raw(mid):
-    d = json.load(open(os.path.join(ROOT, 'motions', 'raw', mid + '.json')))
+    """a motion's studio data: from motions/raw/<id>.json while it is being kept, else from motions/<id>.json"""
+    src = os.path.join(ROOT, 'motions', 'raw', mid + '.json')
+    if os.path.exists(src): d = json.load(open(src))
+    else: m = json.load(open(os.path.join(ROOT, 'motions', mid + '.json'))); d = {**m['data'], 'n': m['frames']}
     n = d['n']
     q = np.frombuffer(base64.b64decode(d['q']), '<i2').reshape(n, 77, 4) / 32767.0
     p = np.frombuffer(base64.b64decode(d['p']), '<i2').reshape(n, 77, 3) / 1000.0

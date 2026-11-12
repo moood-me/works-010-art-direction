@@ -5,7 +5,8 @@
 # orders.json: [{id, label: {ru, en}, key, ask: what was asked (prompts, seconds, seed, constraints — as sent, or
 # described when long), after?: {motion: <id here>, frames}, startsAt?: {x, z}}] — the studio's `motion(key)` gives
 # startsAt for one made with `after`.
-# raw/<id>.json: the studio's `motion(key, data: "body")` → {n, fps, names, q, p}, unchanged.
+# raw/<id>.json: the studio's `motion(key, data: "body")` → {n, fps, names, q, p}, unchanged (tools/keep.py puts it
+# there; once converted it is kept only inside motions/<id>.json, whose `data` is the same, and raw/ is emptied).
 import base64, json, os, sys, numpy as np
 from scipy.spatial.transform import Rotation as Rot
 
@@ -45,11 +46,11 @@ if __name__ == '__main__':
     only = set(sys.argv[1:])
     for o in orders:
         src = os.path.join(ROOT, 'motions', 'raw', o['id'] + '.json')
-        if not os.path.exists(src):
+        dst = os.path.join(ROOT, 'motions', o['id'] + '.json')
+        if not os.path.exists(src) and not os.path.exists(dst):
             print('no data yet:', o['id']); continue
         index.append({'id': o['id'], 'label': o['label'], **({'after': o['after']['motion']} if o.get('after') else {})})
-        dst = os.path.join(ROOT, 'motions', o['id'] + '.json')
-        if only and o['id'] not in only and os.path.exists(dst): continue
+        if (only and o['id'] not in only and os.path.exists(dst)) or not os.path.exists(src): continue
         d = json.load(open(src))
         assert d['names'] == soma.NAMES
         q, p = arrays(d)
