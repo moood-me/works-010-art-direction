@@ -572,7 +572,7 @@ def hand(d, x, y, ang=0, s=1.4, pose='rest', skin=SKIN, flip=False, sleeve=None)
 
 # ---------------------------------------------------------------- hair locks (Mucha's whiplash, Bilibin's strands)
 
-def ribbon(d, pts, w0, w1, color, inner=2, curl=0.0, n=10, line=True, inner_col=None, taper0=1.0):
+def ribbon(d, pts, w0, w1, color, inner=2, curl=0.0, n=7, line=True, inner_col=None, taper0=1.0):
     """A lock of hair as a ribbon: centre curve pts, width w0 at the root to w1 at the tip; `inner` thin strand
     lines run inside along it; `curl` (radius) rolls the tip into a small loop, as Mucha's locks end."""
     from kit import offset

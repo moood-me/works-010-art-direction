@@ -57,7 +57,7 @@ def _cr_run(p, n, closed=False):
     return out
 
 
-def curve(pts, closed=False, n=8):
+def curve(pts, closed=False, n=6):
     """Sample a smooth curve through pts; points tagged 'c' stay corners."""
     xy = [(p[0], p[1]) for p in pts]
     corners = [i for i, p in enumerate(pts) if len(p) > 2 and p[2] == 'c']
@@ -188,7 +188,7 @@ class Doc:
         self.out.append(s)
 
     # --- colour and line
-    def fill(self, pts, color, n=8, pattern=None, op=1.0, pat_op=1.0):
+    def fill(self, pts, color, n=6, pattern=None, op=1.0, pat_op=1.0):
         sm = curve(pts, True, n)
         d = path_d(sm)
         self.out.append('<path d="%s" fill="%s"%s/>' % (d, color, '' if op == 1 else ' opacity="%s"' % _f2(op)))
@@ -197,7 +197,7 @@ class Doc:
                                                                  ' opacity="%s"' % _f2(pat_op)))
         return sm
 
-    def ink(self, pts, w=None, closed=False, color=INK, n=8, op=1.0, cap='round'):
+    def ink(self, pts, w=None, closed=False, color=INK, n=6, op=1.0, cap='round'):
         """The even ink line."""
         sm = curve(pts, closed, n)
         w = (w if w is not None else self.LINE) * self.lw
@@ -206,17 +206,17 @@ class Doc:
                                                      '' if op == 1 else ' opacity="%s"' % _f2(op)))
         return sm
 
-    def thin(self, pts, closed=False, color=INK, n=8, k=1.0, op=1.0):
+    def thin(self, pts, closed=False, color=INK, n=6, k=1.0, op=1.0):
         return self.ink(pts, self.THIN * k, closed, color, n, op)
 
-    def shape(self, pts, color, w=None, pattern=None, pat_op=1.0, n=8, line=INK):
+    def shape(self, pts, color, w=None, pattern=None, pat_op=1.0, n=6, line=INK):
         """A flat colour and its contour."""
         sm = self.fill(pts, color, n, pattern, pat_op=pat_op)
         if w != 0:
             self.ink(pts, w, True, line, n)
         return sm
 
-    def lock(self, pts, w=4.0, color=INK, prof='taper', n=8):
+    def lock(self, pts, w=4.0, color=INK, prof='taper', n=6):
         """A stroke with a pointed end: a lock of hair, a lash, a fold dying away."""
         sm = curve(pts, False, n)
         self.out.append('<path d="%s" fill="%s"/>' % (taper_poly(sm, w * self.lw, prof), color))
@@ -230,13 +230,13 @@ class Doc:
         self.out.append('<circle cx="%s" cy="%s" r="%s" fill="%s" stroke="%s" stroke-width="%s"%s/>' % (
             _f(x), _f(y), _f(r), fill, stroke, _f2(w), '' if op == 1 else ' opacity="%s"' % _f2(op)))
 
-    def clip(self, pts, n=8):
+    def clip(self, pts, n=6):
         cid = self._id('c')
         self.defs.append('<clipPath id="%s"><path d="%s"/></clipPath>' % (cid, path_d(curve(pts, True, n))))
         return cid
 
     @contextmanager
-    def clipped(self, pts, n=8):
+    def clipped(self, pts, n=6):
         cid = self.clip(pts, n)
         self.out.append('<g clip-path="url(#%s)">' % cid)
         try:
@@ -245,7 +245,7 @@ class Doc:
             self.out.append('</g>')
 
     # --- ornament bands: the embroidered hem, the border of a towel, a placket
-    def band(self, pts, width, color, kind='rhomb', ink=RED, ground=None, edge=True, n=8, step=None, flip=False):
+    def band(self, pts, width, color, kind='rhomb', ink=RED, ground=None, edge=True, n=6, step=None, flip=False):
         """An ornament band of `width` along the open curve pts (centre line): a flat ground, a motif repeated
         along the band, and its two edges in ink. Kinds: rhomb, cross, teeth, wave, dots, flower, stripe."""
         sm = curve(pts, False, n)
@@ -385,25 +385,27 @@ class Doc:
         return self._pat(('hb', color, size, w, rot), s, s * 0.7, body, rot)
 
     # --- the page
-    def frame(self, x, y, w, h, kind='rhomb', ink=RED, ground=CREAM, width=26, outer=INK, arch=0):
-        """The decorated frame of a book page: a black rule, an ornament band, a black rule. `arch` > 0 makes
-        the top of the inner field an arch (the window of a terem, a Mucha panel)."""
+    def frame(self, x, y, w, h, kind='rhomb', ink=RED, ground=CREAM, width=26, outer=INK, inner_kind='teeth',
+              inner_ink=GREEN):
+        """The decorated border of a book page (Bilibin): a black rule, a wide ornament band, a black rule, a narrow
+        second band, a black rule; corner squares with a rosette."""
         m = width
-        # the band runs around the rectangle as four straight runs
-        cx = x + w / 2
-        runs = [[(x + m / 2, y + m / 2), (x + w - m / 2, y + m / 2)],
-                [(x + w - m / 2, y + m / 2), (x + w - m / 2, y + h - m / 2)],
-                [(x + w - m / 2, y + h - m / 2), (x + m / 2, y + h - m / 2)],
-                [(x + m / 2, y + h - m / 2), (x + m / 2, y + m / 2)]]
-        s = []
-        for r in runs:
-            self.band(r, m, None, kind, ink, ground, edge=False, n=2, step=m * 1.15)
+        m2 = max(8, width * 0.42)
         lw = self.LINE * 1.15
-        s.append('<rect x="%s" y="%s" width="%s" height="%s" fill="none" stroke="%s" stroke-width="%s"/>' % (
-            _f(x), _f(y), _f(w), _f(h), outer, _f2(lw)))
-        s.append('<rect x="%s" y="%s" width="%s" height="%s" fill="none" stroke="%s" stroke-width="%s"/>' % (
-            _f(x + m), _f(y + m), _f(w - 2 * m), _f(h - 2 * m), outer, _f2(lw * 0.8)))
-        # corner squares with a rosette
+
+        def runs(o, ww):
+            return [[(x + o + ww / 2, y + o + ww / 2), (x + w - o - ww / 2, y + o + ww / 2)],
+                    [(x + w - o - ww / 2, y + o + ww / 2), (x + w - o - ww / 2, y + h - o - ww / 2)],
+                    [(x + w - o - ww / 2, y + h - o - ww / 2), (x + o + ww / 2, y + h - o - ww / 2)],
+                    [(x + o + ww / 2, y + h - o - ww / 2), (x + o + ww / 2, y + o + ww / 2)]]
+        for r in runs(0, m):
+            self.band(r, m, None, kind, ink, ground, edge=False, n=2, step=m * 1.15)
+        for r in runs(m, m2):
+            self.band(r, m2, None, inner_kind, inner_ink, '#e9dfc2', edge=False, n=2, step=m2 * 1.2)
+        s = []
+        for o, ww in ((0, lw), (m, lw * 0.8), (m + m2, lw * 0.9)):
+            s.append('<rect x="%s" y="%s" width="%s" height="%s" fill="none" stroke="%s" stroke-width="%s"/>' % (
+                _f(x + o), _f(y + o), _f(w - 2 * o), _f(h - 2 * o), outer, _f2(ww)))
         for qx, qy in ((x, y), (x + w - m, y), (x, y + h - m), (x + w - m, y + h - m)):
             s.append('<rect x="%s" y="%s" width="%s" height="%s" fill="%s" stroke="%s" stroke-width="%s"/>' % (
                 _f(qx), _f(qy), _f(m), _f(m), ink, outer, _f2(lw * 0.8)))
@@ -510,6 +512,54 @@ def tuft(d, x, y, h, color=GREEN, flower=None):
         d.dot(fx, fy, h * 0.06, GOLD)
 
 
+def fir(d, x, y, h, color='#4f5f34', dark='#36421f'):
+    """A fir as Bilibin draws it: a straight trunk and tiers of drooping branches, each tier a curved fan with
+    a dark underside line."""
+    tiers = 6
+    d.raw('<path d="M%s %sL%s %s" stroke="%s" stroke-width="%s"/>' % (_f(x), _f(y), _f(x), _f(y - h), '#4a3526',
+                                                                     _f2(h * 0.035)))
+    for i in range(tiers):
+        t = i / (tiers - 1)
+        ty = y - h * (0.12 + 0.82 * t)
+        tw = h * (0.34 - 0.27 * t)
+        th = h * 0.2
+        pts = [(x, ty - th, 'c'), (x + tw * 0.5, ty - th * 0.3), (x + tw, ty + th * 0.15), (x + tw * 0.5, ty - th * 0.02),
+               (x, ty + th * 0.1), (x - tw * 0.5, ty - th * 0.02), (x - tw, ty + th * 0.15), (x - tw * 0.5, ty - th * 0.3)]
+        d.shape(pts, color, d.THIN, n=5)
+        d.thin([(x - tw * 0.8, ty + th * 0.05), (x - tw * 0.4, ty - th * 0.08), (x, ty + th * 0.02),
+                (x + tw * 0.4, ty - th * 0.08), (x + tw * 0.8, ty + th * 0.05)], k=0.6, color=dark)
+
+
+def birch(d, x, y, h, w=22, lean=0):
+    """A birch trunk: white with black dashes across, a few thin branches."""
+    import random as _r
+    rnd = _r.Random(int(x * 7 + h))
+    top = (x + lean, y - h)
+    d.shape([(x - w / 2, y, 'c'), (x + w / 2, y, 'c'), (top[0] + w * 0.3, top[1], 'c'), (top[0] - w * 0.3, top[1], 'c')],
+            '#f4efe2', n=2)
+    for i in range(int(h / 34)):
+        t = (i + 0.5) / (h / 34)
+        cx = x + lean * t
+        ww = w * (1 - 0.4 * t)
+        yy = y - h * t + rnd.uniform(-8, 8)
+        side = rnd.choice((-1, 1))
+        d.raw('<path d="M%s %sL%s %s" stroke="%s" stroke-width="%s" stroke-linecap="round"/>' % (
+            _f(cx + side * ww / 2), _f(yy), _f(cx + side * ww * rnd.uniform(-0.1, 0.3)), _f(yy + rnd.uniform(-2, 2)),
+            INK, _f2(rnd.uniform(3, 6))))
+
+
+def meadow(d, x, y, w, h, seed=1):
+    """The near edge of the field as a flower frieze: tufts and flowers in a loose row."""
+    import random as _r
+    rnd = _r.Random(seed)
+    n = int(w / 42)
+    cols = ('#a8392b', '#5d7a8c', '#e8d27a', '#c99a3c', '#f4efe2')
+    for i in range(n):
+        xx = x + (i + 0.5) * w / n + rnd.uniform(-10, 10)
+        yy = y + h - rnd.uniform(4, h * 0.7)
+        tuft(d, xx, yy, rnd.uniform(32, 52), flower=cols[i % len(cols)] if rnd.random() < 0.6 else None)
+
+
 def landscape(d, x, y, w, h, sky='#e4dcc0', far='#a9ae8a', near='#8d9662', ground='#b7a873', horizon=0.62, seed=3,
               clouds=True, trees=True):
     """A flat fairy-tale landscape (Bilibin): a pale sky with ornamental clouds, a band of distant forest as
@@ -519,10 +569,16 @@ def landscape(d, x, y, w, h, sky='#e4dcc0', far='#a9ae8a', near='#8d9662', groun
     hy = y + h * horizon
     d.raw('<rect x="%s" y="%s" width="%s" height="%s" fill="%s"/>' % (_f(x), _f(y), _f(w), _f(h), sky))
     if clouds:
-        for i in range(3):
-            cw = w * rnd.uniform(0.12, 0.2)
-            cloud(d, x + w * (0.08 + 0.32 * i) + rnd.uniform(0, w * 0.1), y + h * rnd.uniform(0.12, 0.3), cw)
-    # distant forest: firs as stacked triangles
+        for i in range(3 if w < h * 1.2 else 5):
+            cw = min(w * rnd.uniform(0.12, 0.2), h * rnd.uniform(0.16, 0.22))
+            k = 3 if w < h * 1.2 else 5
+            cloud(d, x + w * (0.06 + 0.9 * i / k) + rnd.uniform(0, w * 0.06), y + h * rnd.uniform(0.1, 0.26), cw)
+    # distant forest: a row of small firs
+    if trees == 'firs':
+        for i in range(int(w / 34) + 2):
+            fh = h * rnd.uniform(0.1, 0.16)
+            fir(d, x + i * 34 + rnd.uniform(-6, 6), hy + 6, fh, '#7d8a5a', '#55613a')
+        trees = False
     if trees:
         fx = x - 10
         pts = [(x, hy)]

@@ -24,7 +24,7 @@ def sheets():
     for key, mod, yaws in (('anya', anya, (0, 35, 90)), ('vera', vera, (0, 35, 90)), ('kira', kira, (0, 35, 90))):
         out['turn-' + key] = (lambda mod=mod, yaws=yaws: pages.row(
             [(mod, dict(yaw=y)) for y in yaws], ['анфас', 'три четверти', 'профиль'], scale=0.95), 0.8)
-    for key, mod in (('tim', tim), ('marat', marat), ('kira', kira)):
+    for key, mod in (('tim', tim), ('marat', marat)):
         out['expr-' + key] = (lambda mod=mod: pages.row(
             [(mod, dict(e=mod.e_(n))) for n in E], E_RU, scale=0.95), 0.75)
     out['cast'] = (lambda: pages.group([savely, anya, tim, vera], w=2000, h=1200, scale=0.66,

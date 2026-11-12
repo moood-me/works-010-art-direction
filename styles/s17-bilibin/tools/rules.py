@@ -13,13 +13,13 @@ def line_sheet():
     import pages
     d = _sheet(1200, 520)
     # one even weight for every contour; a thinner one inside; strands of hair tapering
-    pages.label(d, 200, 70, 'контур — один вес', 26)
+    pages.label(d, 205, 80, 'контур — один вес', 22)
     d.shape([(80, 380), (120, 160), (220, 120), (320, 180), (330, 380)], '#c99a3c')
-    pages.label(d, 600, 70, 'внутри — тоньше', 26)
+    pages.label(d, 600, 80, 'внутри — тоньше', 22)
     d.shape([(480, 380), (500, 150), (700, 150), (720, 380)], '#f6f0e2')
     for x in (540, 600, 660):
         d.thin([(x, 170), (x + 6, 270), (x - 4, 370)])
-    pages.label(d, 1000, 70, 'локон — лента с завитком', 26)
+    pages.label(d, 980, 80, 'локон с завитком', 22)
     parts.ribbon(d, [(880, 120), (930, 200), (900, 300), (960, 400)], 40, 12, '#8a4a2a', inner=3, curl=-16,
                  taper0=0.3)
     parts.ribbon(d, [(980, 120), (1040, 220), (1030, 330), (1090, 410)], 32, 10, '#8a4a2a', inner=2, curl=14,
@@ -53,13 +53,18 @@ def ornament_sheet():
 
 def face_sheet():
     import pages, anya, savely, tim, marat
-    d = _sheet(1400, 560)
+    d = _sheet(1400, 600)
     for i, (mod, lab) in enumerate(((anya, 'девушка'), (tim, 'мальчик'), (savely, 'старик'), (marat, 'здоровяк'))):
-        with d.g(190 + i * 340, 250, 1.15):
-            parts.head(d, mod.p, 0, mod.e_('calm'), under=getattr(mod, 'beard', None),
+        cx = 190 + i * 340
+        with d.clipped([(cx - 165, 40, 'c'), (cx + 165, 40, 'c'), (cx + 165, 490, 'c'), (cx - 165, 490, 'c')], n=2), \
+                d.g(cx, 250, 1.15):
+            front = {anya: anya.hair_front, tim: tim.hair, savely: savely.fringe, marat: marat.hair}[mod]
+            if mod is anya:
+                anya.hair_back(d, parts.View(mod.p, 0))
+            parts.head(d, mod.p, 0, mod.e_('calm'), under=getattr(mod, 'beard', None), front=front,
                        extra=getattr(mod, 'extra', None) if mod is savely else getattr(mod, 'moustache', None))
-        pages.label(d, 190 + i * 340, 520, lab, 26)
-    d.frame(0, 0, 1400, 560, width=22)
+        pages.label(d, 190 + i * 340, 545, lab, 26)
+    d.frame(0, 0, 1400, 600, width=22)
     return d
 
 
@@ -69,7 +74,7 @@ def hands_sheet():
     names = {'rest': 'висит', 'open': 'раскрыта', 'fist': 'кулак', 'point': 'указывает'}
     for i, pose in enumerate(('rest', 'open', 'fist', 'point')):
         parts.hand(d, 150 + i * 260, 90, 0, 2.0, pose)
-        pages.label(d, 150 + i * 260, 390, names[pose], 26)
+        pages.label(d, 150 + i * 260, 360, names[pose], 24)
     d.frame(0, 0, 1100, 420, width=22)
     return d
 

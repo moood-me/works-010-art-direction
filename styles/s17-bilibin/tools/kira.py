@@ -16,10 +16,10 @@ TROUS = '#34333a'
 LIME = '#c6d93a'
 HALO = dict(ring='#33202f', field='#ddd6c4', ink='#c6d93a')
 
-p = P(crown=-110, chin=90, cheek=58, temple=59, jaw=45, jaw_y=56, chin_w=14, skull=66, forehead=62, brow_z=66,
+p = P(crown=-110, chin=88, cheek=59, temple=59, jaw=46, jaw_y=50, chin_w=16, skull=66, forehead=62, brow_z=66,
       nose_y=44, nose_z=82, nose_w=9, lip_z=66, chin_z=60, mouth_y=64, mouth_w=15, lip='full', lip_col='#b5716c',
-      eye_x=27, eye_w=17, eye_h=7.5, iris=5.6, iris_col='#3b3040', lashes=2, brow_y=-15, brow='straight',
-      brow_w=1.05, brow_col=HAIR, ear_y=(-6, 36), skin='#efd8c2', neck=25)
+      eye_x=27, eye_w=18, eye_h=8, iris=5.9, iris_col='#3b3040', lashes=2, brow_y=-15, brow='straight',
+      brow_w=0.95, brow_col=HAIR, ear_y=(-6, 36), skin='#efd8c2', neck=27, blush=0.3)
 
 # resting face: the brow low, the look from under it sideways, the mouth pressed and pulled to one side
 CALM = dict(brow=-3, tilt=-2, open=0.78, smile=-0.05, wide=0.9, smirk=0.7, look=(-4, -1))
@@ -57,7 +57,7 @@ def hair(d, v):
         r = v.surf(x0, y0, 10)
         t = v.surf(x1, y1, 10)
         m = v.surf((x0 + x1) / 2 + 6, (y0 + y1) / 2 - 10, 14)
-        ribbon(d, [r, m, t], w, 3, HAIR, inner=1, taper0=0.8, inner_col='#5a4a5a')
+        ribbon(d, [r, m, t], w, 3, HAIR, inner=2, taper0=0.8, inner_col='#8a7a90')
 
 
 def headphones(d, t, front=True):
@@ -76,7 +76,7 @@ def bust(d, yaw=-30, e=None):
     e = e or e_('calm')
     v = parts.View(p, abs(yaw))
     with d.g(0, 0, 1, 0, yaw < 0):
-        t = Torso(abs(yaw) * 0.5, W=118, neck=25, top=118, slope=26, depth=0.6, bottom=440, drop=10)
+        t = Torso(abs(yaw) * 0.5, W=118, neck=27, top=108, slope=26, depth=0.6, bottom=440, drop=10)
         parts.neck(d, v)
         out = t.outline()
         d.shape(out, HOODIE)

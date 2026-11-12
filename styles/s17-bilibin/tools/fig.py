@@ -20,18 +20,20 @@ def arm(d, sh, el, wr, color, w0=58, w1=40, pattern=None, cuff=None, skin=None, 
         a = ang(el, wr) if hand_ang is None else hand_ang
         hand(d, hx + hand_dx, hy - 6, a, hand_s, pose, skin, flip)
     # a round shoulder cap (the deltoid) under the tubes, so the arm grows out of the body, not out of a cut
+    sh0 = sh
+    sh = (sh[0] + (el[0] - sh[0]) * 0.1, sh[1] + (el[1] - sh[1]) * 0.1)
     d.raw('<circle cx="%s" cy="%s" r="%s" fill="%s" stroke="%s" stroke-width="%s"/>' % (
-        _f(sh[0]), _f(sh[1]), _f(w0 * 0.56), color, INK, _f2(d.LINE * d.lw)))
+        _f(sh[0]), _f(sh[1]), _f(w0 * 0.5), color, INK, _f2(d.LINE * d.lw)))
     if pattern:
-        d.raw('<circle cx="%s" cy="%s" r="%s" fill="url(#%s)"/>' % (_f(sh[0]), _f(sh[1]), _f(w0 * 0.56 - 1.5), pattern))
+        d.raw('<circle cx="%s" cy="%s" r="%s" fill="url(#%s)"/>' % (_f(sh[0]), _f(sh[1]), _f(w0 * 0.5 - 1.5), pattern))
     # two tubes and a round elbow: a sharp bend stays clean
     wm = (w0 + w1) / 2
     limb(d, [sh, ((sh[0] + el[0]) / 2, (sh[1] + el[1]) / 2), el], w0, wm, color, pattern)
     # cover the tube's square top inside the cap
-    d.raw('<circle cx="%s" cy="%s" r="%s" fill="%s"/>' % (_f(sh[0]), _f(sh[1]), _f(w0 * 0.56 - d.LINE * d.lw / 2), color))
+    d.raw('<circle cx="%s" cy="%s" r="%s" fill="%s"/>' % (_f(sh[0]), _f(sh[1]), _f(w0 * 0.5 - d.LINE * d.lw / 2), color))
     if pattern:
         d.raw('<circle cx="%s" cy="%s" r="%s" fill="url(#%s)"/>' % (_f(sh[0]), _f(sh[1]),
-                                                                    _f(w0 * 0.56 - d.LINE * d.lw / 2), pattern))
+                                                                    _f(w0 * 0.5 - d.LINE * d.lw / 2), pattern))
     limb(d, [el, ((el[0] + wr[0]) / 2, (el[1] + wr[1]) / 2), wr], wm, w1, fore or color, None if fore else pattern)
     # hide the seam: a disc of the sleeve's colour over the joint, its outer arc in ink
     d.raw('<circle cx="%s" cy="%s" r="%s" fill="%s"/>' % (_f(el[0]), _f(el[1]), _f(wm / 2 - 1.5), color))

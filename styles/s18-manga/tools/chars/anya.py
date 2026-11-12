@@ -26,67 +26,97 @@ HAIR = Hair(mode='tone', part=-28, n=170, width=0.075, thick=0.055, top_thick=0.
 EXTRAS = [cheek_blush(0.8)]
 
 
-# ---------------------------------------------------------------- the figure (three-quarter, facing right)
-from body import *
+# ---------------------------------------------------------------- the figure
+from body3d import *
 
 HEIGHT = 7.1
 
 
-def FIGURE(F, e=None, head=True):
-    """Standing with her weight on the near leg, the hip out, a book held to her chest, the other hand loose;
-    the head tilted, looking up and away."""
+def skeleton():
+    H = HEIGHT
+    j = stand(H, sw=0.58, hw=0.32, female=True)
+    # weight on the right leg (the one nearer us in the three-quarter view), the hip out to that side
+    j['pelvis'] = (-0.08, j['pelvis'][1] - 0.03, 0)
+    j['crotch'] = (-0.08, j['crotch'][1] - 0.03, 0)
+    j['hip_r'] = (-0.40, j['hip_r'][1] - 0.06, 0.0); j['hip_l'] = (0.24, j['hip_l'][1] + 0.02, 0.0)
+    j['kn_r'] = (-0.30, j['kn_r'][1], 0.04); j['kn_l'] = (0.12, j['kn_l'][1] + 0.05, 0.22)
+    j['an_r'] = (-0.24, j['an_r'][1], -0.06); j['an_l'] = (0.24, j['an_l'][1], 0.12)
+    j['heel_r'] = (-0.24, 0, -0.18); j['toe_r'] = (-0.36, 0, 0.82)
+    j['heel_l'] = (0.24, 0, 0.0); j['toe_l'] = (0.52, 0, 0.95)
+    j['waist'] = (-0.03, j['waist'][1], -0.02)
+    j['chest'] = (0.02, j['chest'][1], 0.0)
+    j['neck'] = (0.03, j['neck'][1], -0.04)
+    # shoulders tilt against the hips
+    j['sh_r'] = (-0.57, j['sh_r'][1] + 0.05, -0.04); j['sh_l'] = (0.60, j['sh_l'][1] - 0.03, -0.04)
+    # right arm hanging loose, left arm holding a book to the chest
+    j['el_r'] = (-0.70, j['el_r'][1] + 0.05, -0.1); j['wr_r'] = (-0.66, j['wr_r'][1] + 0.05, 0.1)
+    j['el_l'] = (0.66, -4.5, 0.18); j['wr_l'] = (0.05, -4.9, 0.62)
+    B = Body(j, scale_sections(FEMALE, 0.95), spine_of(j, H), twist=[(0, -6), (1, 6)])
+    return B
+
+
+def FIGURE(v, e=None, lw=2.0):
+    """Standing at ease with her weight on one leg, a book held to her chest, the other hand loose; the head tilted,
+    looking up and away. A knitted cardigan over a blouse, an A-line skirt below the knee, flat shoes."""
     me = __import__('chars.anya', fromlist=['x'])
+    B = skeleton(); j = B.j; H = HEIGHT
     o = []
-    pit = (0.06, -6.08)
-    hv = dict(yaw=28, pitch=-5, roll=-8, e=e)
-    if head:
-        o.append(head_on(F, me, pit, hair='back', **hv))
-    knit = lambda pts, sd: hatchf(F, pts, angle=88, gap=0.045, w=0.28, seed=sd)
-    # far arm: the upper arm, behind the body
-    sl, _ = limb(F, [(0.50, -5.86), (0.60, -5.2), (0.56, -4.72)], [0.15, 0.13, 0.12], fill=f'url(#{tone_id(0.12)})')
-    o.append(sl)
-    # legs below the skirt
-    lg, _ = limb(F, [(0.26, -2.4), (0.38, -1.35), (0.47, -0.3)], [0.13, 0.115, 0.06])
-    o.append(lg)
-    o.append(shoe(F, (0.36, -0.06), (0.74, -0.02), h=0.12))
-    lg, _ = limb(F, [(-0.22, -2.4), (-0.21, -1.3), (-0.17, -0.28)], [0.135, 0.12, 0.062])
-    o.append(lg)
-    o.append(line(F, [(-0.28, -1.9), (-0.2, -1.85)], 0.4))
-    o.append(shoe(F, (-0.32, 0.0), (0.08, 0.035), h=0.13))
-    # skirt: A-line to below the knee, a soft tone, folds from the waist
-    skirt = [(-0.44, -4.45), (-0.1, -4.38), (0.24, -4.4), (0.44, -4.5), (0.56, -3.6), (0.72, -2.8), (0.84, -2.2),
-             (0.5, -2.1), (0.15, -2.16), (-0.2, -2.08), (-0.55, -2.15), (-0.86, -2.2), (-0.78, -3.0), (-0.62, -3.8)]
-    o.append(shaded(F, skirt, base=0.2, dark=0.45, off=(0.09, 0.02)))
-    o.append(folds(F, [[(-0.25, -4.0), (-0.38, -3.0), (-0.52, -2.18)], [(0.12, -4.1), (0.12, -3.0), (0.18, -2.15)],
-                       [(0.36, -3.7), (0.5, -2.8), (0.5, -2.12)], [(-0.05, -3.4), (-0.12, -2.6), (-0.15, -2.1)]], 0.8))
-    # blouse in the opening of the cardigan
-    blouse = [(-0.16, -6.08), (0.24, -6.08), (0.26, -4.42), (-0.24, -4.40)]
-    o.append(shape(F, blouse, line=0.5))
-    o.append(line(F, [(-0.13, -6.05), (0.03, -5.82), (0.22, -6.05)], 0.6))
-    # cardigan, fitted, to the hip
-    card_l = [(-0.16, -6.1), (-0.46, -6.0), (-0.62, -5.84), (-0.6, -5.1), (-0.46, -4.5), (-0.58, -3.95), (-0.18, -3.86),
-              (-0.1, -4.45), (-0.05, -5.1), (-0.08, -5.75)]
-    card_r = [(0.24, -6.1), (0.44, -6.02), (0.56, -5.86), (0.52, -5.1), (0.44, -4.55), (0.52, -3.98), (0.26, -3.9),
-              (0.20, -4.45), (0.17, -5.1), (0.2, -5.75)]
-    o.append(shaded(F, card_r, base=0.12, dark=0.4, off=(0.06, 0.03), extra=knit(card_r, 4)))
-    o.append(shaded(F, card_l, base=0.12, dark=0.4, off=(0.06, 0.03), extra=knit(card_l, 5)))
-    for y in (-5.5, -5.0, -4.5):
-        o.append(f'<circle cx="{f1(F.p(-0.09, y)[0])}" cy="{f1(F.p(-0.09, y)[1])}" r="{f1(F.lw * 1.3)}" fill="{PAPER}" stroke="{INK}" stroke-width="{F.lw * 0.5:.1f}"/>')
-    o.append(folds(F, [[(-0.52, -4.75), (-0.36, -4.55), (-0.2, -4.5)], [(0.44, -4.75), (0.3, -4.58)]], 0.7))
-    # near arm hanging, the sleeve gathered at the wrist, the hand loose
-    sl, _ = limb(F, [(-0.56, -5.86), (-0.70, -5.1), (-0.74, -4.52), (-0.66, -3.68)], [0.17, 0.145, 0.13, 0.115],
-                 fill=f'url(#{tone_id(0.12)})', ends=(False, True))
-    o.append(sl)
-    o.append(folds(F, [[(-0.82, -4.62), (-0.68, -4.45)], [(-0.8, -4.85), (-0.66, -4.72)], [(-0.74, -3.9), (-0.6, -3.82)]], 0.6))
-    o.append(hand(F, (-0.66, -3.66), 98, 0.56, 'relaxed', side=1, twist=95))
-    # the book held to the chest by the far hand
-    book = [(-0.2, -5.42), (0.36, -5.5), (0.44, -4.68), (-0.12, -4.6)]
-    o.append(shaded(F, book, base=0.45, dark=0.75, off=(0.03, 0.02), smooth=False))
-    o.append(line(F, [(-0.17, -5.33), (0.35, -5.41)], 0.35, smooth=False))
-    o.append(line(F, [(-0.12, -4.6), (-0.1, -4.53), (0.44, -4.6)], 0.5, smooth=False))
-    fa, _ = limb(F, [(0.56, -4.75), (0.38, -4.78), (0.16, -5.0)], [0.12, 0.115, 0.1], fill=f'url(#{tone_id(0.12)})', ends=(False, True))
-    o.append(fa)
-    o.append(hand(F, (0.15, -5.0), 215, 0.5, 'loose', side=1, twist=10))
-    if head:
-        o.append(head_on(F, me, pit, hair='front', **hv))
+    hv = dict(yaw_rel=6, pitch=-5, roll=-8, e=e, lw=lw)
+    pit = add3(j['neck'], (0, 0.02, 0.06))
+    o.append(head3d(v, me, pit, part='back', **hv))
+    near = 'r' if v.yaw >= 0 else 'l'
+    far = 'l' if near == 'r' else 'r'
+    knit = 0.12
+    def arm_svg(side):
+        pts, rad = arm_chain(j, side, (0.15, 0.13, 0.105, 0.115, 0.07))
+        sp, sr = arm_chain(j, side, (0.15, 0.13, 0.105, 0.115, 0.07), grow=0.04, until=0.93)
+        P, C, N, rr = chain_outline(v, sp, sr)
+        g = group([P], lw, base=knit, dark=0.4, s=v.s)
+        g += fold_lines(C, N, rr, len(C) // 2, lw * 0.7, side=1, seed=3)
+        g += stroke(ring_around(v, sp[-2], sp[-1], 0.85, sr[-1] * 0.95), lw * 0.6)
+        g += hand_at(v, pts[-1], pts[-2], 0.56, 'relaxed' if side == 'r' else 'loose', twist=95 if side == 'r' else 20, lw=lw)
+        return g
+    def leg_svg(side):
+        pts, rad = leg_chain(j, side, (0.27, 0.2, 0.12, 0.14, 0.065))
+        P, C, N, rr = chain_outline(v, pts, rad)
+        g = group([P], lw, base=0, dark=0.15, s=v.s)
+        hull, sole = shoe3d(v, j['heel_' + side], j['toe_' + side], width=0.15, height=0.24, toe_h=0.09)
+        g += group([hull], lw, base=0.0, dark=0.3, s=v.s) + stroke(sole, lw * 0.5)
+        return g
+    o.append(leg_svg(far)); o.append(leg_svg(near))
+    o.append(head3d(v, me, pit, **hv))
+    # skirt: from the waist, a cone flaring to below the knee
+    f_w = frac(H, -0.615 * H, j)
+    f_hem = frac(H, -2.0, j)
+    flare = lambda f: max(0.0, (f_w - f)) * 0.42
+    P, hem, _ = torso_outline(B, v, f_hem, f_w, grow=0.03, flare=flare)
+    sk = group([P], lw, base=0.2, dark=0.45, s=v.s, off=0.07)
+    rnd = random.Random(4)
+    for a in (-60, -25, 5, 35, 65):
+        p0 = surf(B, f_w - 0.05, a, 0.03); p1 = surf(B, f_hem + 0.02, a + rnd.uniform(-8, 8), 0.03 + flare(f_hem))
+        if v.facing((math.sin(math.radians(a)), 0, math.cos(math.radians(a)))) > 0.1:
+            sk += seams(v, [p0, lerp3(p0, p1, 0.5), p1], lw, 0.55)
+    o.append(sk)
+    # blouse and cardigan: one torso shell; the cardigan's open front shows the blouse
+    f_c = frac(H, -3.85, j)
+    P, hem, _ = torso_outline(B, v, f_c, 1.0, grow=0.05)
+    card = group([P], lw, base=knit, dark=0.42, s=v.s, extra=hatch(None, (0, 0, 1, 1)) if False else '')
+    # the opening: between two front edges, the blouse
+    edge_r = [surf(B, f, -6 - max(0, f - 0.6) * 60, 0.05) for f in [0.99, 0.85, 0.7, 0.55, f_c + 0.02]]
+    edge_l = [surf(B, f, 6 + max(0, f - 0.6) * 60, 0.05) for f in [0.99, 0.85, 0.7, 0.55, f_c + 0.02]]
+    opening = [v(p) for p in edge_r] + [v(p) for p in edge_l[::-1]]
+    card += fillpath(opening, PAPER) + stroke([v(p) for p in edge_r], lw * 0.9) + stroke([v(p) for p in edge_l], lw * 0.9)
+    card += seams(v, [surf(B, 0.97, -30, 0.06), surf(B, 0.99, 0, 0.0), surf(B, 0.97, 30, 0.06)], lw, 0.7)
+    for f in (0.78, 0.6, 0.45):
+        card += button(v, surf(B, f, -10, 0.06), lw)
+    # knit texture: rows of short verticals
+    xs = [p[0] for p in P]; ys = [p[1] for p in P]
+    card = card.replace('</g>', '', 0)
+    o.append(card + clip(P, hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=90, gap=lw * 2.3, w=lw * 0.3, length=(0.03, 0.06), seed=6), smooth=False))
+    # the book on the chest, then the far arm over it
+    bk = [surf(B, 0.8, -25, 0.12), surf(B, 0.82, 35, 0.12), surf(B, 0.5, 38, 0.14), surf(B, 0.48, -22, 0.14)]
+    o.append(group([[v(p) for p in bk]], lw, base=0.45, dark=0.75, s=v.s, off=0.03))
+    o.append(arm_svg('r'))
+    o.append(arm_svg('l'))
+    o.append(head3d(v, me, pit, part='front', **hv))
     return ''.join(o)

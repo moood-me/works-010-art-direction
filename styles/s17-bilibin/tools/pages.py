@@ -25,12 +25,15 @@ def figure(mod, seed=2, w=700, h=1200, scale=None, land=None):
     s = scale or (h * 0.80) / 1460.0
     feet = h - fw - 60
     lc = dict(land or {})
+    lc.setdefault('trees', 'firs')
     kit.landscape(d, fw, fw, w - 2 * fw, h - 2 * fw, horizon=0.55, seed=seed, **lc)
+    # the page's side trees: a birch on one side, a fir on the other
+    kit.birch(d, fw + 50, h - fw - 120, h * 0.9, 26, 6)
+    kit.fir(d, w - fw - 70, h - fw - 100, h * 0.62)
     top = feet - (H - 112 + 112) * s
     with d.g(w / 2, top + 112 * s, s):
         mod.figure(d)
-    for i, x in enumerate((fw + 40, w - fw - 60, fw + 120, w - fw - 150)):
-        kit.tuft(d, x, feet + 30 - (i % 2) * 14, 46, flower=('#a8392b', '#5d7a8c', '#e8d27a', '#a8392b')[i])
+    kit.meadow(d, fw, feet - 10, w - 2 * fw, h - fw - feet + 10, seed)
     d.frame(0, 0, w, h, kind=getattr(mod, 'BORDER', 'rhomb'), ink=getattr(mod, 'BORDER_INK', RED), width=fw)
     return d
 
@@ -82,7 +85,11 @@ def group(mods, w=2400, h=1250, seed=5, scale=0.62, xs=None, title=None):
     """The cast standing together on a fairy-tale field inside the border."""
     d = Doc(w, h, seed)
     fw = 34
-    kit.landscape(d, fw, fw, w - 2 * fw, h - 2 * fw, horizon=0.5, seed=seed)
+    kit.landscape(d, fw, fw, w - 2 * fw, h - 2 * fw, horizon=0.5, seed=seed, trees='firs')
+    for bx in (fw + 60, w - fw - 80):
+        kit.birch(d, bx, h - fw - 140, h * 0.92, 30, 8 if bx < w / 2 else -8)
+    kit.fir(d, fw + 150, h - fw - 120, h * 0.5)
+    kit.fir(d, w - fw - 170, h - fw - 120, h * 0.56)
     feet = h - fw - 90
     n = len(mods)
     xs = xs or [fw + 160 + (w - 2 * fw - 320) * i / (n - 1) for i in range(n)]
@@ -91,11 +98,6 @@ def group(mods, w=2400, h=1250, seed=5, scale=0.62, xs=None, title=None):
         top = feet - H * scale
         with d.g(x, top + 112 * scale, scale):
             mod.figure(d)
-    import random
-    rnd = random.Random(seed)
-    for i in range(14):
-        x = fw + 40 + (w - 2 * fw - 80) * i / 13 + rnd.uniform(-20, 20)
-        kit.tuft(d, x, h - fw - 18 - rnd.uniform(0, 30), 44,
-                 flower=('#a8392b', '#5d7a8c', '#e8d27a')[i % 3] if i % 2 == 0 else None)
+    kit.meadow(d, fw, feet - 10, w - 2 * fw, h - fw - feet + 10, seed)
     d.frame(0, 0, w, h, kind='rhomb', ink=RED, width=fw)
     return d
