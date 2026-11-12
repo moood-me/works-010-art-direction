@@ -111,5 +111,94 @@
    "z": 3.354
   },
   "note": "startsAt computed as the studio does (b-touch's pelvis at its frame 145 less this one's at its frame 0; on a-look this matched the studio's own within 0.5 mm). A first take (03712e97…) had the hand only moved, not turned: as she looked round her jaw came onto his fingers (4 cm in)"
+ },
+ {
+  "id": "c-wait",
+  "label": {
+   "ru": "ребёнок ждёт, поднимает руки",
+   "en": "the child waits, raises the arms"
+  },
+  "key": "656c60afff0ac61acda14f04f20375da977350f53143aef6c692d2aa63e86770",
+  "ask": {
+   "prompts": [
+    "A childlike person stands still, waiting.",
+    "A childlike person raises both arms up above their head and holds them there."
+   ],
+   "seconds": [
+    3,
+    3
+   ],
+   "seed": 1
+  },
+  "note": "a first take, \"… raises both arms up toward someone in front of them, asking to be picked up.\" (4151a384…), did not raise them at all"
+ },
+ {
+  "id": "m-probe",
+  "label": {
+   "ru": "М: проба подъёма",
+   "en": "M: lift probe"
+  },
+  "key": "1aefe443a7a7de475ac2cb99c42251931e057d7765db129e29d0612c3e9646d9",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing picks up a large object in front of them at waist level with both hands and lifts it up to chest level."
+   ],
+   "seconds": [
+    3,
+    3
+   ],
+   "seed": 1
+  },
+  "note": "no constraints: how Kimodo bends and takes a large thing at waist height; its grip frame is the pose the real lift is constrained with. Words from the data (medium_big_light_two_hands_…). A first try, \"… picks up a big box from a table …\" (ef7e8ceb…), barely reached"
+ },
+ {
+  "id": "m-lift",
+  "label": {
+   "ru": "М подходит, наклоняется, поднимает",
+   "en": "M comes up, bends, lifts"
+  },
+  "key": "de957e0c0272a38a9bbc05413e93f4e4e30f5beaa7b283d4433f95ced6fb9312",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing picks up a large object in front of them at waist level with both hands and lifts it up to chest level."
+   ],
+   "seconds": [
+    3,
+    3
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand and left-hand: frames 126 and 168 — motions/m-lift.constraint.json, from motions/m-lift.spec.json: the palms on the child's sides under the arms, then 30 cm higher and drawn to his chest"
+   ]
+  },
+  "note": "two takes before: the frame-126 constraint alone (38aa7561…) lifted the child to arm's length in front, as a box; then each hand's constraint sent with only its own arm (18d7fbb1…) — Kimodo merges the hand constraints of one frame into one pose, the other arm came out in the T-pose and the right hand missed by 60 cm"
+ },
+ {
+  "id": "c-held",
+  "label": {
+   "ru": "ребёнок обнимает за шею",
+   "en": "the child hugs round the neck"
+  },
+  "key": "277311b3e6ab671fb3c44a17ea24b109ed36bdade02ef1471ee36e88aeee3489",
+  "ask": {
+   "prompts": [
+    "A childlike person hugs someone in front of them, arms around their neck."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "c-wait",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.013,
+   "z": -0.018
+  },
+  "note": "startsAt computed as the studio does"
  }
 ]

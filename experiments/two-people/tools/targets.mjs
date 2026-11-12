@@ -1,12 +1,12 @@
 // where a point on one person is, frame by frame, in the scene — and the same point in another person's Kimodo space
-// (what their motion is ordered with).  node tools/targets.mjs <character> <chain ids,comma> <joint> <x,y,z at rest> <frames,comma> [B: x0,z0,heading,k]
+// (what their motion is ordered with); PLACE=x,z,heading places the first.  node tools/targets.mjs <character> <chain ids,comma> <joint> <x,y,z at rest> <frames,comma> [B: x0,z0,heading,k]
 import { createEngine } from '../../../engine/src/engine.js';
 import { read } from '../../../engine/check/node-read.mjs';
 import { loadScene, jointAt } from '../scene.js';
 const [character, chain, joint, pt, frames, other] = process.argv.slice(2);
 const E = await createEngine({ read });
 const base = new URL('../', import.meta.url);
-const S = await loadScene(E, base, { frames: 1000, people: [{ id: 'A', character, chain: chain.split(','), start: 0, place: { position: [0, 0, 0], heading: 0 } }] }, read);
+const S = await loadScene(E, base, { frames: 1000, people: [{ id: 'A', character, chain: chain.split(','), start: 0, place: (([x, z, h]) => ({ position: [x, 0, z], heading: h }))((process.env.PLACE || '0,0,0').split(',').map(Number)) }] }, read);
 const A = S.by.A, p = pt.split(',').map(Number), j = A.body.skeleton.index[joint];
 const sF = E.skeleton.floor;
 const out = []; let q0 = null;

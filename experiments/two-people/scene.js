@@ -13,7 +13,7 @@
 import { loadMotion, clipOf } from '../../engine/src/motion.js';
 import { resolve } from '../../engine/src/character.js';
 import { build, turnUnder } from '../../engine/src/retarget.js';
-import { qMul, qConj, qRot, qAxisAngle, qBetween, getQ, setQ, getV, sub, add, scale, len, normalize, cross, dot, clamp } from '../../engine/src/math.js';
+import { qMul, qConj, qNorm, qRot, qAxisAngle, qBetween, getQ, setQ, getV, sub, add, scale, len, normalize, cross, dot, clamp } from '../../engine/src/math.js';
 import { Figure } from './figure.js';
 
 const motions = new Map();
@@ -86,7 +86,7 @@ export async function loadScene(E, base, def, read) {
       const w = Math.min(clamp((T - c.from + c.ramp) / c.ramp, 0, 1), clamp((c.to + c.ramp - T) / c.ramp, 0, 1));
       const target = jointAt(O.fig.pose, O.body, j, c.point);
       const now = jointAt(pose, P.body, P.body.skeleton.index[c.side + 'Hand'], palm.point);
-      if (T >= c.from && T <= c.to) S.misses[c.who] = len(sub(now, target));
+      if (T >= c.from && T <= c.to) S.misses[c.who + ' ' + c.side] = len(sub(now, target));
       if (!S.corrections || w <= 0) return;
       // the hand turned about the vertical by a share of how far the other's joint turned since the touch began (a
       // hand resting on a shoulder that turns under it goes partly round with it, partly slides)
@@ -108,17 +108,39 @@ export async function loadScene(E, base, def, read) {
   return S;
 }
 
-// the carried person: their pose is Kimodo's (a motion of their own), their place in the world is the carrier's arms.
-// carry: {who, by, joint: the carried one's joint that lies on the arms, anchor: how it lies there…} — filled in with
-// the carrying scene.
+// the carried person: their pose is Kimodo's (a motion of their own), their place in the world the carrier's hands.
+// carry: {who, by, from, to?} — from scene frame `from` (the hands have come to them) the carried one's whole pose is
+// moved rigidly as the carrier's hands moved since then: the hands' frame (between the palms; turned as the line
+// across them turns about the vertical, kept upright) now against the same at `from`; after `to` (put down) it stays where it was then. The hands'
+// frame is taken from the carrier's pose as Kimodo made it (before the corrections), so the corrections that bring
+// the palms onto the carried one's sides can follow the carried one without a loop.
 export function attach(S, carry) {
   const W = S.by[carry.who], C = S.by[carry.by];
-  W.fig.floorShift = false;
+  const hands = pose => {
+    const b = C.body, sk = b.skeleton, l = jointAt(pose, b, sk.index.LeftHand, palmRest(b, 'Left').point), r = jointAt(pose, b, sk.index.RightHand, palmRest(b, 'Right').point);
+    // upright: one held under the arms hangs plumb whatever the carrier's back does
+    const x = normalize([l[0] - r[0], 0, l[2] - r[2]]), y = [0, 1, 0], z = cross(x, y);
+    return { o: scale(add(l, r), 0.5), q: quatOfAxes(x, y, z) };
+  };
+  const rawAt = T => hands(C.fig.posed(C.clip, clamp(T - C.start, 0, C.clip.frames - 1)));
+  const F0 = rawAt(carry.from), Fend = carry.to != null ? rawAt(carry.to) : null;
+  S.carryFrame = T => (T < carry.from ? null : carry.to != null && T > carry.to ? Fend : rawAt(T));
   const prev = W.fig.adjust;
   W.fig.adjust = (pose, t) => {
     prev?.(pose, t);
-    carry.place(pose, W, C, t + W.start, S);
+    const F = S.carryFrame(t + W.start); if (!F) return;
+    moveRigid(pose, W.body.skeleton.J, qMul(F.q, qConj(F0.q)), F0.o, sub(F.o, F0.o));
   };
+}
+// a rotation from its axes (columns x, y, z)
+export function quatOfAxes(x, y, z) {
+  const m00 = x[0], m11 = y[1], m22 = z[2], tr = m00 + m11 + m22;
+  let q;
+  if (tr > 0) { const s = Math.sqrt(tr + 1) * 2; q = [(y[2] - z[1]) / s, (z[0] - x[2]) / s, (x[1] - y[0]) / s, s / 4]; }
+  else if (m00 > m11 && m00 > m22) { const s = Math.sqrt(1 + m00 - m11 - m22) * 2; q = [s / 4, (y[0] + x[1]) / s, (z[0] + x[2]) / s, (y[2] - z[1]) / s]; }
+  else if (m11 > m22) { const s = Math.sqrt(1 + m11 - m00 - m22) * 2; q = [(y[0] + x[1]) / s, s / 4, (z[1] + y[2]) / s, (z[0] - x[2]) / s]; }
+  else { const s = Math.sqrt(1 + m22 - m00 - m11) * 2; q = [(z[0] + x[2]) / s, (z[1] + y[2]) / s, s / 4, (x[1] - y[0]) / s]; }
+  return qNorm(q);
 }
 // a joint's heading: where its forward (+z at rest) axis points over the floor
 const angle = a => Math.atan2(Math.sin(a), Math.cos(a));
@@ -132,6 +154,5 @@ export function moveRigid(pose, J, r, o, d) {
     const v = add(add(qRot(r, sub(getV(pose.P, j), o)), o), d);
     pose.P[j * 3] = v[0]; pose.P[j * 3 + 1] = v[1]; pose.P[j * 3 + 2] = v[2];
   }
-  pose.floor = -Infinity;
 }
 export { qMul, qConj, qRot, qBetween, getQ, getV, sub, add, scale, len, normalize, cross, dot, clamp };

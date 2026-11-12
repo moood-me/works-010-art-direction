@@ -37,6 +37,35 @@
     "en": "B keeps the hand on the shoulder"
    },
    "after": "b-touch"
+  },
+  {
+   "id": "c-wait",
+   "label": {
+    "ru": "ребёнок ждёт, поднимает руки",
+    "en": "the child waits, raises the arms"
+   }
+  },
+  {
+   "id": "m-probe",
+   "label": {
+    "ru": "М: проба подъёма",
+    "en": "M: lift probe"
+   }
+  },
+  {
+   "id": "m-lift",
+   "label": {
+    "ru": "М подходит, наклоняется, поднимает",
+    "en": "M comes up, bends, lifts"
+   }
+  },
+  {
+   "id": "c-held",
+   "label": {
+    "ru": "ребёнок обнимает за шею",
+    "en": "the child hugs round the neck"
+   },
+   "after": "c-wait"
   }
  ]
 }

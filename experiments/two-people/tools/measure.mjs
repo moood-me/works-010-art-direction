@@ -49,7 +49,7 @@ for (let T = 0; T < S.frames; T += step) {
       if (T < c.from || T > c.to) continue;
       const target = jointAt(O.fig.pose, O.body, O.body.skeleton.index[c.joint], c.point);
       const palm = jointAt(P.fig.pose, P.body, P.body.skeleton.index[c.side + 'Hand'], palmRest(P.body, c.side).point);
-      row[(corr ? 'with' : 'kimodo') + ':' + c.who] = +(Math.hypot(...palm.map((v, i) => v - target[i])) * 100).toFixed(2);
+      row[(corr ? 'with' : 'kimodo') + ':' + c.who + c.side] = +(Math.hypot(...palm.map((v, i) => v - target[i])) * 100).toFixed(2);
     }
     if (corr) {
       const [a, b] = S.people;
@@ -62,7 +62,7 @@ for (let T = 0; T < S.frames; T += step) {
 writeFileSync(new URL(`../pics/${id}-measure.json`, import.meta.url), JSON.stringify(rows));
 const pick = k => rows.filter(r => r[k] != null).map(r => r[k]);
 for (const c of def.contacts || []) {
-  const k = pick('kimodo:' + c.who), w = pick('with:' + c.who);
+  const k = pick('kimodo:' + c.who + c.side), w = pick('with:' + c.who + c.side);
   const stat = a => a.length ? `mean ${(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1)} cm, max ${Math.max(...a).toFixed(1)} cm` : '—';
   console.log(`${c.who}'s ${c.side.toLowerCase()} palm on ${c.on}'s ${c.joint}, frames ${c.from}–${c.to}: Kimodo alone ${stat(k)}; with the correction ${stat(w)}`);
 }
