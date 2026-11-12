@@ -60,7 +60,7 @@ function draw() {
   stage.light(mid);
   if (P.close && def.contacts?.length) { const c = def.contacts[0], O = S.by[c.on]; const t = jointAt(O.fig.pose, O.body, O.body.skeleton.index[c.joint], c.point); cam.target = t; }
   else if (def.follow) cam.target = [mid[0], 0.85, mid[2]];
-  const miss = Object.entries(S.misses).map(([w, d]) => `рука ${w} от точки без поправки: ${(d * 100).toFixed(1)} см`).join(' · ');
+  const miss = Object.keys(S.misses).length ? 'Kimodo без поправки промахивается: ' + Object.entries(S.misses).map(([w, d]) => `${w} — ${(d * 100).toFixed(1)} см`).join('; ') : '';
   $('#time').value = P.t; $('#flab').textContent = `${Math.floor(P.t)}/${S.frames - 1}`;
   $('#status').textContent = miss;
 }

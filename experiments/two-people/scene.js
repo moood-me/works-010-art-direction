@@ -87,7 +87,7 @@ export async function loadScene(E, base, def, read) {
       if (w <= 0 || !O.fig.pose) return;
       const target = jointAt(O.fig.pose, O.body, j, c.point);
       const now = jointAt(pose, P.body, P.body.skeleton.index[c.side + 'Hand'], palm.point);
-      if (T >= c.from && T <= c.to) S.misses[c.who + ' ' + c.side] = len(sub(now, target));
+      if (T >= c.from && T <= c.to) S.misses[`${P.name || c.who}, ${c.side === 'Right' ? 'правая' : 'левая'} рука`] = len(sub(now, target));
       if (!S.corrections) return;
       // the hand turned about the vertical by a share of how far the other's joint turned since the touch began (a
       // hand resting on a shoulder that turns under it goes partly round with it, partly slides)
