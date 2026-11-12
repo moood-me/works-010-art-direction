@@ -1,0 +1,311 @@
+{
+ "wall-free": {
+  "key": "8cf407a07df6d4120ecc6e198caacb10a6dad74a254ee608f2a12451560878ec",
+  "prompts": [
+   "A person standing upright leans backward onto a wall."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": null
+ },
+ "stairs-free": {
+  "key": "84f0a954ffb9612582aa8a76b3ab224f08e36d3ec101ec4292810288d6f7f199",
+  "prompts": [
+   "A person standing upright and facing forward begins to climb up the stairs at a normal pace."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": null
+ },
+ "bed-free": {
+  "key": "5497f8428ffc4c6b415a11fa4db1c3e7e1bfef1c56f2893bd0f1415ac6614119",
+  "prompts": [
+   "A person walks forward, sits on a sunbed, and lies down on their back."
+  ],
+  "seconds": [
+   9
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: walked forward, sat down and lay back reclined (head 22 cm over the pelvis, hands under the head, feet on the floor: a sun lounger); not a flat lying"
+ },
+ "desk-free": {
+  "key": "f72d7105540e37d2c4133979b64a82cce0fce9d46efcedfad785cf22dd98fc71",
+  "prompts": [
+   "A person walks forward to a table, sits down on a chair and rests both forearms on the table."
+  ],
+  "seconds": [
+   8
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: walked 0.6 m, sat and laid both forearms on a table by itself (its frame 160 is the desk constraint pose)"
+ },
+ "wall-lean-try1": {
+  "key": "130b58a808d7ec7df1a8345bee8b68f9e3c86f7c95f3573b20da46bb37a70fd0",
+  "prompts": [
+   "A person walks forward to a wall, turns around and leans back against the wall."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/wall.json (frames 165, 209)",
+  "note": "held at 165 and 209 only: leaned 5 cm into the wall at frames 90-140 and slid out of it by 160; not used"
+ },
+ "wall-lean": {
+  "key": "5a1e6497af855fe822ac2b874c705a76a81ace53b6d503edf4766fe8f71edb03",
+  "prompts": [
+   "A person walks forward to a wall, turns around and leans back against the wall."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/wall.json"
+ },
+ "stairs-try1": {
+  "key": "29cd38bd7414365d58ec69375101c5082cceddb316e64c044caec1a5c2880b6f",
+  "prompts": [
+   "A person climbs up the stairs at a normal pace, holding the handrail with their right hand."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "(not kept: the first stairs plan — feet by the ankle 7 cm behind the step front, hand at 5 frames, rail 0.86 m, no landing)",
+  "note": "the toes went 14 cm into the next riser; the hand left the rail by up to 20 cm between the five frames; the last two steps 5-17 cm too high"
+ },
+ "wall-off-try1": {
+  "key": "da70990787b446d9edf4fbf0baf3ccf39965334dd624c20f9b055639bce52e6f",
+  "prompts": [
+   "A person leaning back on a wall pushes off it to stand straight and walks forward at a relaxed pace."
+  ],
+  "seconds": [
+   5
+  ],
+  "seed": 0,
+  "constraints": null,
+  "after": {
+   "motion": "wall-lean",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.0046,
+   "z": 2.6679
+  },
+  "note": "stayed leaning 3 s more and walked off only at its frame 100; not used"
+ },
+ "wall-off": {
+  "key": "c0c8f26367ec418690a30957400c6f2eef7734990abc6f63cb8f860f5fe6f721",
+  "prompts": [
+   "A person leaning back on a wall pushes off it to stand straight and walks forward at a relaxed pace."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": [
+   {
+    "type": "root2d",
+    "frame_indices": [
+     40,
+     119
+    ],
+    "smooth_root_2d": [
+     [
+      0.0,
+      -0.25
+     ],
+     [
+      0.0,
+      -1.6
+     ]
+    ]
+   }
+  ],
+  "after": {
+   "motion": "wall-lean",
+   "frames": 5
+  }
+ },
+ "stairs-try2": {
+  "key": "75faab9c88d2602e432e9df9fb45412079c9e850ba9a48850f16453c4dabc700",
+  "prompts": [
+   "A person climbs up the stairs at a normal pace, holding the handrail with their right hand."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "(not kept: the second stairs plan — toes 1.5 cm short of the riser in Kimodo space, no landing stand)",
+  "note": "feet on their steps in Kimodo space, the hand within 3-6 cm of the rail; on our body toes 3-4 cm into the risers; at the end kept lifting feet as if there were more steps"
+ },
+ "stairs": {
+  "key": "1ecda858107adffece582da16aaa9d3fb65d2e3289b37ea6d52d89b9849a1265",
+  "prompts": [
+   "A person climbs up the stairs at a normal pace, holding the handrail with their right hand, and stops at the top."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/stairs.json"
+ },
+ "bed-sit": {
+  "key": "783803fe9fbdc247d8d408f61b4af7908ed0ad963aeb0901b0c19eb92ef4b50f",
+  "prompts": [
+   "A person walks forward to a bed, turns around and sits down on the edge of the bed."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/bed_sit.json"
+ },
+ "lie-free": {
+  "key": "4b619ae5296578da99c0f17bed4670bbfd919a2db3dbc71d7d38c0d8f3d2cf04",
+  "prompts": [
+   "A person standing upright lowers and lies on their back on the ground, arms and legs extended, before standing up straight again."
+  ],
+  "seconds": [
+   10
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: a flat lying pose on the floor (the bed-free 'lying' is reclined on a sun lounger with the feet on the floor)"
+ },
+ "desk": {
+  "key": "cefb7f4b93bb48bff14b87fc02cbc336547438220d2ad7617328594e194b0c6d",
+  "prompts": [
+   "A person standing next to a chair at a table steps in front of the chair, sits down on it and rests both forearms on the table."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/desk.json"
+ },
+ "bed-lie": {
+  "key": "7a7d113dd138823148e9cb97b94ea7109715e7a7643ddd4c0e37b891cbd1368f",
+  "prompts": [
+   "A person sitting on the edge of a bed lies down on their back on the bed."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/bed_lie.json",
+  "after": {
+   "motion": "bed-sit",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.019,
+   "z": 2.615
+  },
+  "note": "its constraint was written for an origin guessed as bed-sit's hip joints' middle at frame 175, (-0.008, 2.564): the real startsAt is 5 cm further on, so the lying pose lands 5 cm (z) and 2.7 cm (x) off the plan"
+ },
+ "desk-up": {
+  "key": "044956d87f3aff44532faabe26cfabeb8392d35bfe19e833a5e52ee11614f6a3",
+  "prompts": [
+   "A person sitting on a chair at a table stands up and steps out to the side of the chair."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": [
+   {
+    "type": "root2d",
+    "frame_indices": [
+     100,
+     119
+    ],
+    "smooth_root_2d": [
+     [
+      0.564,
+      -0.172
+     ],
+     [
+      0.564,
+      -0.172
+     ]
+    ]
+   }
+  ],
+  "after": {
+   "motion": "desk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.5261,
+   "z": 0.3442
+  }
+ },
+ "bed-up": {
+  "key": "b2f0a53cd7cec23f3a23518acb0d69dc03da000f063a27110d30f3f376bfa84e",
+  "prompts": [
+   "A person lying on their back on a bed sits up, swings their legs down off the bed and stands up."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": [
+   {
+    "type": "root2d",
+    "frame_indices": [
+     160,
+     179
+    ],
+    "smooth_root_2d": [
+     [
+      0.149,
+      -1.094
+     ],
+     [
+      0.149,
+      -1.094
+     ]
+    ]
+   }
+  ],
+  "after": {
+   "motion": "bed-lie",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0755,
+   "z": 0.3696
+  }
+ },
+ "table-free": {
+  "key": "f68cdde5b81ee49787830cff791b992e0da8510cfbb216196a06ab6ab457e315",
+  "prompts": [
+   "A person walks forward to a table, stops and leans on the table with both hands."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "ordered for К1 (experiments/contacts), its raw data copied here: no constraints: Kimodo sat down at the table instead (kept: its hands lying on the table give the hand turn for the constraints)"
+ },
+ "chair-free": {
+  "key": "eb9378f593cf25fa15d15f34ee91987d613cd654fef25005ee1fd2a6cfa6311e",
+  "prompts": [
+   "A person walks forward to an armchair, turns around and sits down in it, placing both hands on the armrests."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "ordered for К1 (experiments/contacts), its raw data copied here: no constraints: walks, turns, sits; hands beside on the seat, then on the lap (its seated frame 175 is the body of the armchair constraint pose)"
+ }
+}

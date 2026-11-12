@@ -1,0 +1,86 @@
+— с поправкой
+{
+ "ягодицы и бёдра до матраса": {
+  "frames": "150–179",
+  "gap_cm": "min -8.6, mean -8.1, max -7.8"
+ },
+ "спина до матраса": {
+  "frames": "305–354",
+  "gap_cm": "min 0.7, mean 1.1, max 1.4"
+ },
+ "голова до матраса": {
+  "frames": "305–354",
+  "gap_cm": "min 1.2, mean 1.7, max 2.3"
+ },
+ "into_things": {
+  "bed/mattress": {
+   "frames": 357,
+   "deepest_cm": 9.0,
+   "at": 183,
+   "by": {
+    "pelvis": 9.0,
+    "Lthigh": 9.0,
+    "Rthigh": 8.9,
+    "Lfoot": 9.0,
+    "spine": 7.3,
+    "RupperArm": 8.8,
+    "RforeArm": 7.7,
+    "Lhand": 9.0,
+    "Rshin": 9.0,
+    "Rfoot": 9.0
+   }
+  },
+  "bed/frame": {
+   "frames": 15,
+   "deepest_cm": 6.6,
+   "at": 464,
+   "by": {
+    "Lfoot": 0.6,
+    "Rfoot": 6.6
+   }
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "ягодицы и бёдра до матраса": {
+  "frames": "150–179",
+  "gap_cm": "min -8.6, mean -8.1, max -7.8"
+ },
+ "спина до матраса": {
+  "frames": "305–354",
+  "gap_cm": "min 0.7, mean 1.1, max 1.4"
+ },
+ "голова до матраса": {
+  "frames": "305–354",
+  "gap_cm": "min 1.2, mean 1.7, max 2.3"
+ },
+ "into_things": {
+  "bed/mattress": {
+   "frames": 357,
+   "deepest_cm": 9.0,
+   "at": 183,
+   "by": {
+    "pelvis": 9.0,
+    "Lthigh": 9.0,
+    "Rthigh": 8.9,
+    "Lfoot": 9.0,
+    "spine": 7.3,
+    "RupperArm": 8.8,
+    "RforeArm": 7.7,
+    "Lhand": 9.0,
+    "Rshin": 9.0,
+    "Rfoot": 9.0
+   }
+  },
+  "bed/frame": {
+   "frames": 15,
+   "deepest_cm": 6.6,
+   "at": 464,
+   "by": {
+    "Lfoot": 0.6,
+    "Rfoot": 6.6
+   }
+  }
+ }
+}
