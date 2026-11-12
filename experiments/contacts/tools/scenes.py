@@ -12,7 +12,8 @@ SIDE = {'L': 'Left', 'R': 'Right'}
 
 # The correction is weighed in over the 15 frames after Kimodo's own palms come within 7 cm of their places (read off
 # the page's numbers without the correction: table frame 177, armchair 109, shoulder below): it only finishes what
-# Kimodo did, and never pulls a hand that is still on its way.
+# Kimodo did, and never pulls a hand that is still on its way. 7 cm is what these takes gave, not a rule: where
+# Kimodo's palm stays farther on another body, take the frame its distance stops falling (notes.md, step 7).
 
 
 # for the second tries: the frame after Kimodo's own palm comes within 7 cm, plus 15 (filled in from their numbers)

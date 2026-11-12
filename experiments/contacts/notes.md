@@ -16,15 +16,23 @@ the way. The numbers are below and in `measures/*.txt`.
 
 1. **The scene in our world.** Metres, y up; the person (an engine character) starts at the origin facing +z. The
    thing and the place the hand goes to are written there: the table top 0.74 m high, its near edge 2.2 m ahead, the
-   palms 14 cm in from the edge, 38 cm apart (`tools/plan.py: table`).
+   palms 14 cm in from the edge, 38 cm apart, the pelvis 27 cm before the edge (`tools/plan.py: table`). **These are
+   the woman's numbers**: `table()` takes each as a parameter, and its docstring says what each one means and how to
+   choose it for another body (where the pelvis stands: the body's front plus 10–15 cm; the spread: by the shoulders;
+   the palm's lift: by k).
 2. **Into Kimodo's space.** The engine carries Kimodo's path scaled by k = our hip height / SOMA's
    (`engine/src/retarget.js`); so a place x in our world is x / k for Kimodo (the woman: k = 0.896, the man 1.015).
+   k is **one number for the whole body**: it is right for the pelvis and the path, and right for the hands only as
+   far as the body's arms are SOMA's scaled by the same k — see "Where the way stops working" below.
 3. **A hand constraint is a whole pose.** Kimodo's `left-hand`/`right-hand`/`end-effector` constraint
    (`kimodo/constraints.py`, `EndEffectorConstraintSet`) is `{local_joints_rot [T, 77, 3] axis-angle, root_positions
    [T, 3]}`: Kimodo runs its forward kinematics on that pose and then holds, at those frames, the hand's joints
    (wrist and all finger joints) where the pose has them, the wrist's turn — **and the pelvis's place, height and
    heading**. So "the hands here" always comes with "the body there", and that is a good thing: it is where we say
-   how the person stands (or sits) while touching.
+   how the person stands (or sits) while touching. The pelvis is held only within `root_margin` (make_motion's
+   setting, 0.04 m by default): it came 2–5 cm off its place in the takes here (the "pelvis 3 cm" below). The
+   hands came 2–4.5 cm off in Kimodo's own space (`end-effector` with both hands' names); К2 reports 0.0–0.1 cm with
+   `right-hand` — why they differ was not checked.
 4. **The pose: Kimodo's own, moved.** We take a frame of a motion Kimodo made by itself (standing; sitting) and put
    its pelvis where the person should be (`tools/pose.py: placed`), then turn its arms by plain two-bone IK so each
    palm lands on its place, with the hand turned as Kimodo turns a hand lying on something — taken from a frame where
@@ -38,12 +46,23 @@ the way. The numbers are below and in `measures/*.txt`.
    constraint walked stooped all the way): `table-walk` (a walk with a `root2d` constraint stopping it 2.05 m on),
    then `table-lean` made with `after: {key: walk, frames: 5}`. A motion made with `after` has its own origin: the
    studio's `startsAt`, **not** exactly the walk's pelvis at frame n−5 (5 cm apart here). It depends only on the
-   earlier motion and `frames`, so we read it off a first take and wrote the lean's constraint in it again.
+   earlier motion and `frames`, so we read it off a first take and wrote the lean's constraint in it again. Cheaper,
+   found by the agent who repeated this on other bodies: order a 0.5 s probe `after` the earlier motion first — its
+   `startsAt` is the follow-up's exactly — then write the constraint in it.
+   **The walk is in Kimodo's space**, so on our body it ends at Kimodo's stop × k: 2.05 m × 0.896 for the woman.
+   The table was placed for her; on another body the same walk ends elsewhere, so either the table moves with the
+   body (to where that body arrives) or each body gets its own walk, its `root2d` stop written as (its place) / k.
 7. **On our body.** The motion is carried onto the body by the engine as it is; then `contact-figure.js` (the
    engine's `Figure`, copied, one step added) finishes each touch:
-   - the palm's middle (between the wrist and the knuckles of the index and little fingers) is brought onto its place
+   - the palm's middle — here always the mean of three joints, the wrist (`Hand`) and the first knuckles of the index
+     and little fingers (`HandIndex1`, `HandPinky1`): `tools/kimodo.py: palm`, `contact-figure.js: palm` — is brought
+     onto its place
      by turning the upper arm and forearm (the elbow bending in the plane Kimodo bent it in), the hand keeping the turn
-     Kimodo gave it; weighed in over the 15 frames after Kimodo's own palm comes within 7 cm of its place, then held;
+     Kimodo gave it; weighed in over 15 frames, then held. When it starts is set per scene in `tools/scenes.py`
+     (`frames`, `FROM`), read off the numbers without the correction: here, the frame Kimodo's own palm came within
+     7 cm of its place, plus 15. The 7 cm is what these takes gave, not a rule: on a body where Kimodo's palm never
+     comes that near (the heavy man of the repetition: 7.6–8 cm all through the hold) take the frame where its
+     distance stops falling — the hand has arrived as far as Kimodo will bring it — or the first held frame;
    - on a surface (a table top, an armrest) the height is not the palm's middle but the hand's lowest skin, put on the
      surface (how far the skin reaches under the palm's middle is read off the skinned hand each frame);
    - a hand over a surface is kept from going under it, and a hand near the other person is moved out of their skin,
@@ -51,6 +70,8 @@ the way. The numbers are below and in `measures/*.txt`.
      hand turned as Kimodo turned it can dip its fingers into a sloping shoulder: there the palm stays 1.7 cm from the
      point, lying on the skin around it).
    Off with "с поправкой" on the page, or `?raw` in the address.
+   К2 defines its palm point otherwise (between the wrist and the middle finger's knuckle, 1.5 cm out on the palm
+   side): numbers of the two items are not directly comparable.
 8. **Measured** on the page every frame (`tools/shots.cjs` with `measure`, summed up by `tools/report.py`): the palm's
    distance to its place, Kimodo's and corrected; the hand's lowest skin against the surface or the other's skin; the
    deepest point of the body inside each part of a thing (boxes) and inside the other person (by the nearest vertex
@@ -88,6 +109,28 @@ sits down (frame 97, a few frames). Seated, the thighs go 3.5–4 cm into the fr
 0–1 cm): as into a soft cushion; on a hard box seat it is a pass-through — said honestly. Nothing goes into the
 backrest (the first take, before the pelvis was placed from the body's measures, went 6–8 cm into it).
 
+## Where the way stops working
+
+Found by the agent who repeated the table on other bodies with only this folder (experiments/other-bodies): the
+heavy man and the child worked; a 2.31 m long-legged body did not.
+
+- k is one number for a body. A body whose arms are short for its legs gets, from Kimodo's pose right to 3–4 cm in
+  its own space, hands 15–22 cm over the table, and the arm correction, the arm already straight, cannot close it.
+  Check before ordering: the body's arm length / k against SOMA's 0.558 m (shoulder to wrist). The woman 0.472 / 0.896
+  = 0.527 (3 cm short), the man 0.548 / 1.015 = 0.540 (2 cm): the correction covers that. The long-legged body:
+  0.44 — 12 cm short per arm, too far. Such a body needs its places planned for its own arm (the pelvis nearer or
+  lower in the pose sent, so Kimodo reaches less) — neither tool here does that.
+- The numbers of `table()` are the woman's (above); the walk is in Kimodo's space (step 6).
+- The bend search of the input pose now stops with an error if the palms don't reach by 88° (it gave up silently
+  at 58° and used the pose anyway).
+
+## The studio
+
+- A failed order looks like one still being made: `motion(key, data: "body")` answers "not made (yet)" for both;
+  only `motion(key)` without data says `failed` (here: `busy`, when several orders were sent at once) — and it
+  returns the whole ask, constraints included, which is long. Asking the same again makes it again (a new making
+  id). Sending orders one at a time failed less.
+
 ## What Kimodo does badly, and what was done instead
 
 - **Without constraints it doesn't do these at all.** "Walks to a table and leans on it with both hands" — it sat down
@@ -113,7 +156,7 @@ backrest (the first take, before the pelvis was placed from the body's measures,
 
 Arms only (the upper arm and the forearm turned, the hand's own turn kept): the palm moved 4.6 cm on average at the
 table (max 5.8), 4.7 cm (to 1.7 cm off the point, lying on the skin around it) at the shoulder, 4.1 cm at the armchair. The body, the path, the legs, the
-spine, the head are Kimodo's. Weighed in over 15 frames once Kimodo's own palm is within 7 cm, so it finishes what
+spine, the head are Kimodo's. Weighed in over 15 frames once Kimodo's own palm has arrived (step 7), so it finishes what
 Kimodo did and never pulls a hand still on its way. The keep-out steps (a surface, another's skin) move the hand by
 1–2 cm for a few frames on the way.
 

@@ -32,23 +32,38 @@ def lean_forward(P, angle):
     P.turn(K.IDX['Spine1'], Rot.from_rotvec(ax * angle))
 
 
-def table():
-    k = K_WOMAN
-    # the scene (our world): a table 0.74 m high, its near edge 2.2 m ahead; the palms 14 cm in from the edge
+def table(k=K_WOMAN, stand_back=0.27, spread=0.19, palm_in=0.14, palm_lift=0.022, max_bend=88):
+    """The table: the places for one body. Every number is the woman's (moood-woman); for another body each is
+    chosen again, as follows (in our world's metres):
+      k           the body's hip height / SOMA's (engine/src/retarget.js): its places are divided by it for Kimodo.
+                  One number for the whole body: see notes.md "Where the way stops working".
+      stand_back  how far the pelvis stands before the table's edge while leaning. Chosen by eye for the woman: her
+                  front clear of the edge, her arms reaching the palms with Kimodo's standing pose unbent (bend 0°).
+                  For another body: its front (how far its belly or chest is ahead of its pelvis) plus 10–15 cm.
+      spread      each palm's distance from the middle: a little wider than the shoulder joints (hers 0.145 each
+                  side; 0.19 taken). For another body, scale by its shoulder width.
+      palm_in     how far in from the edge the palms' middles lie.
+      palm_lift   how high the palm's middle is over the skin under it — only for Kimodo's target height; the page
+                  measures the real one each frame (contact-figure.js `under`), so it need not be exact; scale by k.
+      max_bend    the input pose is bent forward at the waist (2° steps) until both palms reach; if they don't by
+                  this angle, the plan stops with an error (it used to give up silently at 58°)."""
+    # the scene (our world): a table 0.74 m high, its near edge 2.2 m ahead
     top, edge, depth, width = 0.74, 2.2, 0.7, 1.2
-    palm_lift = 0.022            # the palm's middle (between wrist and knuckles) over the skin under it, our body
-    palms = {'L': [0.19, top + palm_lift, edge + 0.14], 'R': [-0.19, top + palm_lift, edge + 0.14]}
-    pelvis_world = [0.0, edge - 0.27]
+    palms = {'L': [spread, top + palm_lift, edge + palm_in], 'R': [-spread, top + palm_lift, edge + palm_in]}
+    pelvis_world = [0.0, edge - stand_back]
     # in Kimodo's space
     pk = {s: np.array(v) / k for s, v in palms.items()}
     src = RAW('table-free')                  # Kimodo's hands lying on a table (it sat at it): their turn
     turns = {s: hand_turn_from(src, 115, s) for s in 'LR'}
     stand = RAW('table-free2')               # Kimodo standing (it walked up and stood)
     P = placed(stand, 150, np.array(pelvis_world) / k, 0.0, dy=-0.02)
-    for a in np.radians(np.arange(0, 60, 2)):
+    for a in np.radians(np.arange(0, max_bend + 1, 2)):
         Q = Pose(P.as_ps()); lean_forward(Q, a)
         miss = [Q.reach(s, pk[s], turns[s]) for s in 'LR']
         if max(miss) < 0.003: break
+    else:
+        raise SystemExit(f'table: the palms do not reach even with the pose bent {max_bend}°: off by {np.round(miss, 3)} m '
+                         '(Kimodo metres). Stand the pelvis nearer (stand_back) or lower, or the table is out of this body\'s reach.')
     print('table: input pose bent', round(float(np.degrees(a))), 'deg; palms off by', np.round(miss, 4))
     frames = [149, 179]          # a second before the end the hands are there, and at the last frame still there
     c = K.constraint('end-effector', frames, [Q.as_ps()] * len(frames), ['LeftHand', 'RightHand'])
