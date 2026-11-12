@@ -431,9 +431,9 @@ neck_at = lambda yw: (lambda k: (rx * (1 + flare * k ** 2.5) * KH, rz * (1 + fla
 CV = []
 for i in range(crow):
     t_ = i / (crow - 1)
-    y = NECK_Y - 0.02 + t_ * 0.05
+    y = NECK_Y - 0.03 + t_ * 0.046
     ax_, az_, zz = neck_at(y)
-    g_ = 1.1 + 0.75 * (1 - t_) ** 1.6
+    g_ = 1.12 + 0.6 * (1 - t_) ** 1.6
     angs = np.linspace(0, 2 * np.pi, ccol, endpoint=False)
     dip = 0.010 * np.exp(-((np.minimum(angs, 2 * np.pi - angs)) / 0.35) ** 2) * t_      # a small V in front
     CV.append(np.c_[(ax_ * g_ + 0.003) * np.sin(angs), y - dip, zz + (az_ * g_ + 0.003) * np.cos(angs)])
@@ -496,7 +496,7 @@ BV = Wh(bun_v)
 add('bun', BV, orient(BV, bun_t, Wh(bc)), G['hair'], Wt=rigid_head(len(BV)))
 add('shoes', SHOE_V, SHOE_T, G['shoe'], Wt=SHOE_W)
 add('skirt', SV, orient(SV, ST, np.array([0, 0.7, 0.03])), G['coat'], Wt=skW)
-add('collar', CV, orient(CV, CT, np.array([0, NECK_Y, ZOFF - 0.02])), G['blouse'], Wt=colW)
+add('collar', CV, orient(CV, CT, np.array([0, NECK_Y, ZOFF - 0.02])), G['coat'], Wt=colW)
 add('folder', FV, FT, G['folder'], Wt=foW)
 mk = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], float)
 add('marks', Wh(mk), np.zeros((0, 3), int), 0, Wt=rigid_head(4))

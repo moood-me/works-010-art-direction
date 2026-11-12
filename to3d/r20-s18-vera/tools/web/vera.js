@@ -140,12 +140,12 @@ function standPose(o = {}) {
     // the drawing's figure: the right hand holds a folder against the hip, the left hand is at the glasses
     aim(pose, I.RightArm, I.RightForeArm, [-0.12, -1, -0.12]);
     aim(pose, I.RightForeArm, I.RightHand, [-0.02, -1, 0.3]);
-    const hd = headFrame(pose), T = hd.at([0.26, 0.05, 0.36]);
-    const Sh = getV(pose.P, I.LeftArm), L1 = Math.hypot(...sub(getV(pose.P, I.LeftForeArm), Sh)), L2 = Math.hypot(...sub(getV(pose.P, I.LeftHand), getV(pose.P, I.LeftForeArm))) + 0.11;
+    const hd = headFrame(pose), T = hd.at([0.345, 0.05, 0.27]);
+    const Sh = getV(pose.P, I.LeftArm), L1 = Math.hypot(...sub(getV(pose.P, I.LeftForeArm), Sh)), L2 = Math.hypot(...sub(getV(pose.P, I.LeftHand), getV(pose.P, I.LeftForeArm))) + 0.09;
     let best = null;
     for (let a1 = -0.2; a1 <= 1.3; a1 += 0.05) for (let a2 = 0.0; a2 <= 1.5; a2 += 0.05) {
       const d = [Math.sin(a1) * Math.cos(a2), -Math.cos(a1) * Math.cos(a2), Math.sin(a2)], El = [Sh[0] + d[0] * L1, Sh[1] + d[1] * L1, Sh[2] + d[2] * L1];
-      const err = Math.abs(Math.hypot(...sub(T, El)) - L2) + 0.05 * Math.abs(a1 - 0.3) + 0.03 * Math.abs(a2 - 0.8);
+      const err = Math.abs(Math.hypot(...sub(T, El)) - L2) + 0.05 * Math.abs(a1 - 0.3) + 0.03 * Math.abs(a2 - 0.6);
       if (!best || err < best[0]) best = [err, d, El];
     }
     aim(pose, I.LeftArm, I.LeftForeArm, best[1]);
@@ -480,7 +480,7 @@ function draw() {
     head.draw(ctx, v, lw);
     // the loose strand at the temple
     const lk = H.lock, lp = []; for (let k = 0; k <= 12; k++) { const t = k / 12 * (lk.pts.length - 1), i = Math.min(lk.pts.length - 2, Math.floor(t)), f = t - i; lp.push([0, 1, 2].map(c => lk.pts[i][c] + (lk.pts[i + 1][c] - lk.pts[i][c]) * f)); }
-    head.line(ctx, v, lp, [lw * 1.4, lw * 1.2, lw * 0.5], { taper: [0.05, 0.5] });
+    { const wk = Math.max(lw * 1.4, 0.016 * s); head.line(ctx, v, lp, [wk, wk * 0.85, wk * 0.35], { taper: [0.05, 0.5] }); }
   }
   prof.all = performance.now() - T0; A.prof = prof;
 }

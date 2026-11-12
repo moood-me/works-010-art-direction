@@ -235,7 +235,7 @@ def bell(v, v0):
     R0 = np.where(R0 > 0, R0, R0[R0 > 0].mean()); R0 = (np.roll(R0, 1) + 2 * R0 + np.roll(R0, -1)) / 4
     rk = np.interp(ang, np.r_[bins[0] - np.pi / 48, (bins[:-1] + bins[1:]) / 2, bins[-1] + np.pi / 48], np.r_[R0[-1], R0, R0[0]])
     wa = np.clip((np.abs(np.degrees(ang)) - 52) / 24, 0, 1); wy = np.clip(yv / 24, 0, 1)
-    rn = np.maximum(r, rk * (1 - 0.05 * wy)) * wa * (yv > 0) + r * (1 - wa * (yv > 0))
+    rn = np.maximum(r, rk * (1 - 0.14 * wy)) * wa * (yv > 0) + r * (1 - wa * (yv > 0))
     k = rn / np.maximum(r, 1e-9)
     return np.c_[v[:, 0] * k, v[:, 1], zc + (v[:, 2] - zc) * k]
 
@@ -308,7 +308,20 @@ def arm_target(X):
     return out
 aw_s = np.clip((armw - 0.25) / 0.5, 0, 1)
 Vh = (1 - aw_s[:, None]) * trunk_target(V) + aw_s[:, None] * arm_target(V)
-hv, ht, ha, on = cut(Vh, T, f_hood, D)
+def unrolled(X):
+    out = X.copy()
+    for s_, sd in ((1, 'Left'), (-1, 'Right')):
+        m = (X[:, 0] * s_) > 0
+        S_, E_, H_ = J[IX[sd + 'Arm']], J[IX[sd + 'ForeArm']], J[IX[sd + 'Hand']]; lu = np.linalg.norm(E_ - S_)
+        Fu, du, tu = bone_r(X[m], sd + 'Arm', sd + 'ForeArm'); Ff, df, tfo = bone_r(X[m], sd + 'ForeArm', sd + 'Hand')
+        lower = tu >= 1
+        along = np.where(lower, lu + ((X[m] - E_) @ (H_ - E_)) / np.linalg.norm(H_ - E_), ((X[m] - S_) @ (E_ - S_)) / lu)
+        perp = np.where(lower[:, None], X[m] - Ff, X[m] - Fu)
+        out[m] = S_ + perp + np.outer(along, [0, -1.0, 0])
+    return out
+PATh = (1 - aw_s[:, None]) * Vh + aw_s[:, None] * unrolled(Vh)
+hv, ht, ha, on = cut(Vh, T, f_hood, np.c_[D, PATh])
+hpat = ha[:, NJ:]; ha = ha[:, :NJ]
 hv = smooth(hv, ht, it=12, lam=0.5, fixed=np.where(on)[0])
 hD = ha
 
@@ -321,6 +334,8 @@ def extend(v, t, Dw, ring_of, n, Dnew=None):
         for k in range(n):
             idx = np.arange(len(v), len(v) + m)
             v = np.r_[v, R[k]]; Dw = np.r_[Dw, Dw[L] if Dnew is None else Dnew(Dw[L], R[k], (k + 1) / n)]
+            global hpat
+            hpat = np.r_[hpat, hpat[L] + (R[k] - v[L]) * [1, 0, 1] - [[0, np.linalg.norm(R[k] - v[L], axis=1).mean(), 0]]]
             a, b = prev, np.roll(prev, -1); c, d = idx, np.roll(idx, -1)
             t = np.r_[t, np.stack([b, a, c], 1), np.stack([b, c, d], 1)]; prev = idx
     return v, t, Dw
@@ -346,21 +361,21 @@ def cuff_rings(L, v):
     if c[1] > 1.05 or abs(c[0]) < 0.2: return None
     sd = 'Left' if c[0] > 0 else 'Right'
     A, Bb = J[IX[sd + 'ForeArm']], J[IX[sd + 'Hand']]; d = (Bb - A) / np.linalg.norm(Bb - A)
-    return [v[L] + d * (0.052 * k / 4) + (c + d * 0 - v[L]) * 0.02 * k for k in range(1, 5)]
+    return [v[L] + d * (0.078 * k / 4) + (c + d * 0 - v[L]) * 0.02 * k for k in range(1, 5)]
 def cuff_w(Dl, X, u):
     Dn = Dl * (1 - 0.45 * u); sd = np.where(X[:, 0] > 0, IX['LeftHand'], IX['RightHand'])
     Dn[np.arange(len(X)), sd] += 0.45 * u
     return Dn
 hv, ht, hD = extend(hv, ht, hD, cuff_rings, 4, cuff_w)
 sj, sw = top4(hD)
-hood_body = part(hv, ht, sj, sw, 'hood')
+hood_body = part(hv, ht, sj, sw, 'hood', pat=hpat)
 hood_tree = cKDTree(hv)
 def hood_weights(X, k=4):
     d, i = hood_tree.query(X, k=k); w = 1 / (d + 1e-4) ** 2; w /= w.sum(1, keepdims=True)
     return top4((hD[i] * w[..., None]).sum(1))
 hoodie = []
 hb = split(hood_body, BAND - hood_body['V'][:, 1], 'band')       # the darker band along the hem
-hoodie += [thick(q, 0.0035) for q in hb]
+hoodie += [thick(q, 0.006) for q in hb]
 
 def on_front(xs, ys, off):
     """points of the hoodie's front under (x, y), lifted off it"""

@@ -48,3 +48,17 @@ def dense(sj, sw):
 def top4(D):
     j = np.argsort(-D, 1)[:, :4]; w = np.take_along_axis(D, j, 1)
     return j, w / np.maximum(w.sum(1, keepdims=True), 1e-9)
+
+
+def heavy(cmd, **kw):
+    """run a heavy command (a browser rendering frames, Blender) under one of the three shared locks
+    /home/user/cache/heavy.N.lock — whichever is free first — so that at most three such runs go at once"""
+    import fcntl, time, subprocess
+    while True:
+        for n in range(3):
+            f = open(f'/home/user/cache/heavy.{n}.lock', 'w')
+            try: fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError: f.close(); continue
+            try: return subprocess.run(cmd, **kw)
+            finally: fcntl.flock(f, fcntl.LOCK_UN); f.close()
+        time.sleep(1.0)

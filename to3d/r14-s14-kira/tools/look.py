@@ -2,7 +2,7 @@
 views: f (front), q (three-quarter), s (her right side), b (back), l (her left three-quarter); head: hf hq hs hb hl"""
 import sys, json, subprocess, os
 from PIL import Image
-from common import CACHE, HERE
+from common import CACHE, HERE, heavy
 
 YAW = dict(f=0, q=-0.62, s=-1.5708, b=3.1416, l=0.75, r=-2.4)
 
@@ -12,11 +12,11 @@ def look(name, set_=None, views='fqs', size=(520, 900), head=False, model=None, 
     for v in views:
         cam = {'yaw': YAW[v], 'joint': 'Head', 'offset': [0, 0.03, 0], 'height': height or 0.52} if head else {'yaw': YAW[v], 'follow': [0, 0.78, 0], 'height': height or 1.7}
         shots.append({'name': f'{name}-{v}', 'set': {'cam': cam}})
-    job = {'w': size[0], 'h': size[1], 'set': dict(ground='shadow', still=True, **(set_ or {})), 'shots': shots}
+    job = {'w': size[0], 'h': size[1], 'set': {'ground': 'shadow', 'still': True, **(set_ or {})}, 'shots': shots}
     if model: job['set']['model'] = model
     os.makedirs(f'{CACHE}/look', exist_ok=True)
     json.dump(job, open(f'{CACHE}/look/{name}.json', 'w'))
-    r = subprocess.run(['flock', f'/home/user/cache/heavy.{os.getpid() % 3}.lock', 'node', f'{HERE}/shots.mjs', f'{CACHE}/look/{name}.json', f'{CACHE}/look'], capture_output=True, text=True)
+    r = heavy(['node', f'{HERE}/shots.mjs', f'{CACHE}/look/{name}.json', f'{CACHE}/look'], capture_output=True, text=True)
     if r.returncode: print(r.stdout[-2000:], r.stderr[-3000:]); sys.exit(1)
     out = Image.new('RGB', (size[0] * len(views), size[1]), bg)
     for i, v in enumerate(views):

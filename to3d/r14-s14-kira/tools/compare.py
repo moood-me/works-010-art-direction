@@ -6,7 +6,7 @@ drawing's own sheet (its mat and floor strip), her shadow on it."""
 import sys, json, subprocess, os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from common import CACHE, HERE, STYLE
+from common import CACHE, HERE, STYLE, heavy
 from drawing import K, U
 
 PICS = os.path.join(os.path.dirname(HERE), 'pics')
@@ -18,7 +18,7 @@ FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf', 20
 
 def shoot(name, job):
     json.dump(job, open(f'{CACHE}/cmp-{name}.json', 'w'))
-    subprocess.run(['flock', '/home/user/cache/heavy.2.lock', 'node', f'{HERE}/shots.mjs', f'{CACHE}/cmp-{name}.json', f'{CACHE}/cmp'], check=True)
+    heavy(['node', f'{HERE}/shots.mjs', f'{CACHE}/cmp-{name}.json', f'{CACHE}/cmp'], check=True)
 
 
 def bust_cam(yaw, s, cy, h):
@@ -68,7 +68,7 @@ def expr():
 
 def figure(motion='bow', t=0, yaw=-0.62, heading=0.0):
     W, H = 800, 1000; ppm = 1.346 / U
-    cam = {'yaw': yaw, 'follow': [0.02, (H / 2 - (H - 880)) / ppm, 0], 'height': H / ppm}
+    cam = {'yaw': yaw, 'pitch': 0.10, 'follow': [0.02, (H / 2 - (H - 880)) / ppm, 0], 'height': H / ppm}
     shoot('figure', {'w': W, 'h': H, 'set': {'still': True, 'ground': 'shadow'}, 'shots': [{'name': 'figure', 'set': {'motion': [motion], 't': t, 'cam': cam}}]})
     bd = Image.open(f'{CACHE}/bd-figure.png').convert('RGBA'); r = Image.open(f'{CACHE}/cmp/figure.png').convert('RGBA')
     f3 = bd.copy(); f3.alpha_composite(r)
