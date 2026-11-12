@@ -105,7 +105,7 @@ def stairs():
     # world.) On the top landing, the whole foot on it; and at the last frame both feet there, standing: Kimodo's own
     # standing pose (stairs-free, frame 2) put on the landing (the second take, given nothing there, went on lifting its
     # feet as if there were more steps).
-    toes_short = 0.05
+    toes_short = 0.05     # (a fourth take with 0.08, stairs4, was not better: the deepest are the swinging toes)
     stances = [('L', 30, 1), ('R', 45, 2), ('L', 61, 3), ('R', 76, 4), ('L', 92, 5), ('R', 105, 6), ('L', 122, 7),
                ('R', 140, 8), ('L', 155, 9), ('R', 170, 10)]      # foot, frame (mid-stance in stairs-free), step
     moves, cons = [], {'L': [], 'R': []}
@@ -152,7 +152,7 @@ def stairs():
 BED = dict(edge=2.2, depth=0.95, length=2.0, centre_x=0.0, top=0.48, frame_h=0.3, pillow=0.0)
 
 
-def bed_sit():
+def bed_sit(lift=False):
     """The woman walks up to a bed that stands across her way (its near long side 2.2 m ahead, the mattress top 48 cm
     high), turns round and sits on its edge. Kimodo is given, at two frames, a seated pose of its own (chair-free:
     it sat down by itself) turned to face away from the bed, its buttocks' skin on the mattress top, the pelvis 14 cm
@@ -162,6 +162,10 @@ def bed_sit():
     sit = RAW('chair-free')
     P = placed(sit, 175, [b['centre_x'] / k, (b['edge'] + 0.14) / k], np.pi)
     P = placed_against(P, np.array([0, 1.0, 0]), b['top'] / k, ['pelvis', 'thigh'])
+    # (bed2_sit) the first bed's take (bed-sit), asked exactly this, sat 5.4 cm lower and 4.5 cm nearer (Kimodo's metres) — and our
+    # woman's buttocks reach 3.5 cm lower than SOMA's scaled: on our body 8–9 cm into the mattress. So the pose is
+    # asked that much higher and further in: 5.4 + 3.5 / k cm up, 4.5 cm in.
+    if lift: P.p = P.p + np.array([0, 0.054 + 0.035 / k, 0.045])
     frames = [150, 179]
     c = slim(K.constraint('end-effector', frames, [P.as_ps()] * 2, ['LeftFoot', 'RightFoot']), ['LeftFoot', 'RightFoot'])
     print('bed_sit: pelvis', np.round(P.p[0], 3))
@@ -178,19 +182,19 @@ def after_origin(name, frames=5):
     return np.array([h[0], 0.0, h[2]])
 
 
-def bed_lie():
+def bed_lie(src_name='lie-free', f=150, origin=None, sit='bed-sit', dx=-0.08):
     """Going on from bed-sit: she lies down on her back along the bed, the head towards its head end (+x). Kimodo is
     given, at two frames, the whole pose of its own lying (lie-free: it lay down flat on the floor by itself, arms
     over the head and legs apart; bed-free's "lying" was a sun lounger's recline with the feet on the floor) turned so
     the body lies along the bed, its back's skin on the mattress top (SOMA's skin, Kimodo's space)."""
     k = K_WOMAN; b = BED
-    src = RAW('lie-free'); f = 150
+    src = RAW(src_name)
     ps = K.pose(src, f)
     d = ps['p'][K.IDX['Head']] - ps['p'][0]; ang = np.arctan2(d[0], d[2])           # head's way over the floor
     r = Rot.from_rotvec([0, np.pi / 2 - ang, 0])                                       # turned to point along +x
     P = Pose(dict(G=r * ps['G'], p=r.apply(ps['p'] - ps['p'][0] * [1, 0, 1])))
     # the pelvis over the bed's middle line, 25 cm to the foot end from the bed's middle
-    P.p = P.p + np.array([(b['centre_x'] - 0.08) / k, 0, (b['edge'] + b['depth'] / 2) / k])
+    P.p = P.p + np.array([(b['centre_x'] + dx) / k, 0, (b['edge'] + b['depth'] / 2) / k])   # the body's middle on the bed's
     P = placed_against(P, np.array([0, 1.0, 0]), b['top'] / k, ['pelvis', 'spine'])
     v = SS.skin(Rot.concatenate(P.G), P.p)
     head = v[SS.of(['head'])]; heels = v[SS.of(['foot', 'toe'])]
@@ -198,11 +202,11 @@ def bed_lie():
     print('bed_lie: pelvis', np.round(P.p[0], 3), 'head lowest over mattress (ours)', round(float(pillow_h), 3),
           'head x', np.round(head[:, 0].min() * k, 3), np.round(head[:, 0].max() * k, 3), 'heels over mattress',
           round(float((heels[:, 1].min() - b['top'] / k) * k), 3), 'body x', np.round(v[:, 0].min() * k, 2), np.round(v[:, 0].max() * k, 2))
-    o = after_origin('bed-sit')
+    o = after_origin(sit) if origin is None else origin
     ps2 = P.as_ps(); ps2['p'] = ps2['p'] - o
     frames = [130, 179]
     c = K.constraint('fullbody', frames, [ps2] * 2)
-    return {'constraints': [c], 'seconds': [6], 'frames': frames, 'after': {'motion': 'bed-sit', 'frames': 5, 'origin': r4(o)},
+    return {'constraints': [c], 'seconds': [6], 'frames': frames, 'after': {'motion': sit, 'frames': 5, 'origin': r4(o)},
             'world': {'pillow': {'h': round(float(pillow_h), 3), 'from_x': round(float(head[:, 0].min() * k), 3)}},
             'kimodo': {'pelvis': r4(P.p[0])}}
 
@@ -230,9 +234,21 @@ def desk():
     return {'constraints': [c], 'seconds': [6], 'frames': frames,
             'world': {**d, 'top_measured': round(top, 3), 'edge': round(edge, 3)}, 'kimodo': {'pelvis': r4(P.p[0])}}
 
+def bed2_sit():
+    """the second bed: the same, the pelvis asked higher and further in (see bed_sit)"""
+    return bed_sit(lift=True)
+
+
+def bed2_lie(origin):
+    """the second bed's lying: as bed_lie, but the pose is lie-back-free's (asked for: on the back, the arms by the
+    sides — bed_lie's lie-free lay as a starfish), its origin the exact startsAt read off a 0.5 s probe made `after`
+    bed2-sit (the hip-joints guess was 5 cm off for a seated person)"""
+    return bed_lie(src_name='lie-back-free', f=120, origin=np.array(origin), sit='bed2-sit', dx=0.14)
+
+
 if __name__ == '__main__':
     name = sys.argv[1].replace("-", "_")
-    out = globals()[name]()
+    out = globals()[name](*[json.loads(a) for a in sys.argv[2:]])
     os.makedirs(os.path.join(ITEM, 'plans'), exist_ok=True)
     json.dump(out, open(os.path.join(ITEM, 'plans', name + '.json'), 'w'))
     print('constraints', len(json.dumps(out['constraints'])), 'chars')

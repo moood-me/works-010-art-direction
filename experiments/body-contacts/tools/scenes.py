@@ -67,7 +67,7 @@ def stairs():
                       'close': {'yaw': -1.9, 'pitch': 0.3, 'dist': 1.3, 'target': [-0.42, 1.72, 1.4]}}}
 
 
-def bed():
+def bed(id='bed', label='кровать, первый заход', motions=None, about=None):
     p = plan('bed_sit'); b = p['world']['bed']; L, D = b['length'], b['depth']
     boxes = [{'c': [0, b['frame_h'] / 2, 0], 's': [L, b['frame_h'], D], 'part': 'frame', 'mat': 'wood'},
              {'c': [0, (b['frame_h'] + b['top']) / 2, 0], 's': [L, b['top'] - b['frame_h'], D], 'part': 'mattress', 'mat': 'sheet'},
@@ -75,9 +75,9 @@ def bed():
     if b.get('pillow'):
         pw = b['pillow']
         boxes.append({'c': [L / 2 - pw['len'] / 2, b['top'] + pw['h'] / 2, 0], 's': [pw['len'], pw['h'], D * 0.8], 'part': 'pillow', 'mat': 'sheet'})
-    return {'id': 'bed', 'label': 'лечь на кровать',
-            'about': BED_ABOUT,
-            'person': {'character': 'woman', 'motions': SCENES['bed'], 'place': {'position': [0, 0, 0], 'heading': 0}},
+    return {'id': id, 'label': label,
+            'about': about or BED_ABOUT,
+            'person': {'character': 'woman', 'motions': motions or SCENES['bed'], 'place': {'position': [0, 0, 0], 'heading': 0}},
             'props': [{'kind': 'bed', 'at': [b['centre_x'], 0, b['edge'] + D / 2], 'heading': 0, 'boxes': boxes}],
             'contacts': [],
             'touches': [{'name': 'ягодицы и бёдра до матраса', 'parts': ['pelvis', 'Lthigh', 'Rthigh'], 'prop': 0, 'boxes': ['mattress'], 'held': [150, 179]},
@@ -125,6 +125,19 @@ def desk():
                       'side': {'yaw': -1.5708, 'pitch': 0.12, 'dist': 3.4, 'target': [-0.4, 0.7, 0.5]},
                       'whole': {'yaw': -2.3, 'pitch': 0.35, 'dist': 4.2, 'target': [-0.3, 0.6, 0.5]},
                       'close': {'yaw': -2.0, 'pitch': 0.55, 'dist': 1.5, 'target': [-0.45, 0.72, 0.6]}}}
+
+
+def bed2():
+    s = bed('bed2', 'лечь на кровать', SCENES['bed2'], BED2_ABOUT)
+    s['touches'][1]['held'] = s['touches'][2]['held'] = [305, 354]
+    return s
+
+
+BED2_ABOUT = ('Женщина подходит к кровати, садится на край, ложится на спину вдоль кровати, руки вдоль тела, потом '
+              'садится, спускает ноги и встаёт. Три движения, каждое продолжает предыдущее. Kimodo дали: для посадки — '
+              'его собственную сидячую позу на матрасе (место таза и ступней, таз попрошен выше — Kimodo садится '
+              'ниже, чем просят); для лёжа — его же позу «лёг на спину, руки вдоль тела» целиком, повёрнутую вдоль '
+              'кровати; для подъёма — только где встать.')
 
 
 if __name__ == '__main__':

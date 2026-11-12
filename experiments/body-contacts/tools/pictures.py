@@ -14,6 +14,7 @@ STEP = 3
 SCENES = {
     'wall': {'frames': 325, 'views': ['side', 'whole'], 'close': 150, 'sheet': [0, 39, 72, 99, 150, 216, 246, 300]},
     'stairs': {'corrects': True, 'frames': 180, 'views': ['side', 'front'], 'close': 99, 'sheet': [0, 24, 48, 72, 96, 120, 144, 177]},
+    'bed2': {'frames': 530, 'views': ['whole', 'side'], 'close': 330, 'sheet': [0, 120, 177, 201, 225, 330, 441, 501]},
     'bed': {'frames': 530, 'views': ['whole', 'side'], 'close': 300, 'sheet': [0, 90, 177, 201, 240, 300, 441, 501]},
     'desk': {'frames': 295, 'views': ['whole', 'side'], 'close': 150, 'sheet': [0, 24, 39, 60, 150, 249, 270, 294]},
 }

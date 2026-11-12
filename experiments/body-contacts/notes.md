@@ -80,7 +80,18 @@ fingers). Feet, over the frames each stands (sole within 5 cm of its step): Kimo
 partly). The toes go into the next riser in many frames by 1–3 cm, at the first step 7 cm (frame 19). Without the
 correction the hand's skin is 2.5 cm in to 8 cm off the rail.
 
-**Лечь на кровать (bed).** A bed across the way (mattress top 48 cm, its near side 2.2 m ahead). Three motions:
+**Лечь на кровать — second pass (bed2, shown first on the page).** The same bed and the same three steps, `bed2-sit`, `bed2-lie`,
+`bed2-up`. Sitting: the pelvis asked 9.3 cm higher and 4.5 cm further in (Kimodo's metres) than in the first pass;
+Kimodo again sat ~6 cm under what was asked, which now lands right: the buttocks and thighs 0.4 cm over to 1.0 cm
+into the mattress (150–179; the first pass 7.8–8.6 cm in). Lying: the whole pose of `lie-back-free` (on the back, the
+arms along the body), its origin read off a probe (exact): at the held frames (305–354) the back 1.9 cm in to 3.8 cm
+over (mean 0.2 in), the head 0.7 in to 3.9 over; between them, after lying down (frames 210–300), the pelvis 4–8 cm
+in. Getting up (its origin read off a second probe): into the mattress up to 9 cm (the pelvis, rolling up, frame
+440), a shin and a foot 6–7.6 cm into the bed's frame for a few frames (around 445–461) as she swings the legs off —
+as in the first pass. To the eye (`pics/bed2-sheet.png`, `bed2-close.png`): she lies straight on her back, arms
+along the body — reads as a person lying on a bed; on the way down one leg goes up for a moment. No correction.
+
+**Лечь на кровать — first pass (bed, kept beside).** A bed across the way (mattress top 48 cm, its near side 2.2 m ahead). Three motions:
 `bed-sit` (walk up, turn, sit on the edge: pelvis and feet given at 150, 179), `bed-lie` (`after`; lying pose given at
 its 130, 179), `bed-up` (`after`; only "stand there" at the end). Sitting (150–179): the buttocks and thighs 7.8–8.6 cm
 into the mattress (Kimodo sat 5 cm lower than asked). Lying (clip 305–354): the back 0.7–1.4 cm over the mattress,
@@ -120,20 +131,28 @@ legs, a hand 1.7 cm into the table top for a moment (frame 57). No correction.
 
 ## What is weak
 
-- **Soft things.** Where the body sits or lies, on our body it goes into the seat and the mattress: the bed's edge
-  8–9 cm, the chair 2.5 cm, the mattress while getting up up to 7–9 cm (the pelvis, an upper arm). On a mattress
+- **Soft things.** Where the body sits or lies, on our body it goes into the seat and the mattress: the chair
+  2.5 cm; the bed's edge 8–9 cm in the first pass, 0.7–2.5 cm in the second (the pelvis asked higher); lying in the
+  second pass 2–5 cm at the held frames and up to 8 cm between them; getting up up to 8–9 cm (the pelvis, a thigh)
+  in both, and a shin or foot 6–8 cm into the bed's frame for a few frames as she swings her legs off. On a mattress
   that reads as sinking into it; a hard bench would show it as passing through. The things are boxes; nothing
   deforms.
-- **The bed's lying pose is a starfish** (arms over the head, legs apart): the only flat lying Kimodo made by itself.
-  A person lying down on a bed lies straighter; another free take ("lies on their back with the hands on the
-  stomach"?) would give a better pose — not tried.
+- **The first bed's lying pose is a starfish** (arms over the head, legs apart: `lie-free`). The second pass asked
+  for two more free lyings: "on the back, the arms by the sides" (`lie-back-free`: straight, arms along the body —
+  used) and "on the side, the knees bent" (`lie-side-free`: curled up, the head on the floor — not used). On the
+  way down Kimodo still lifts one leg high for a moment (frame ~225).
 - **Fingers go into the rail** by about 2.4 cm: Kimodo's fingers are curled, and with the palm on the rail's top they
   curl round it — there is no grip (as in К1, no fingers). From afar it reads as holding the rail; close up the
   fingertips are inside the wood.
-- **Toes over the risers**: with the correction the soles stand on the steps, but toes still reach 1–3 cm into the
-  next riser in a few frames (and 7 cm at frame 20, the first step); the correction lifts or lowers, it does not
-  move the foot along.
-- **The `after` origin** is known exactly only after the motion is made; the hip-joints guess is 0.6–5 cm off.
+- **Toes in the steps**: with the correction the soles stand on the steps; what still goes into the steps (1–3 cm in
+  many frames, 7 cm at frame 21) is mostly the *swinging* foot's toes catching a step's nose on the way up, not a
+  standing foot. A fourth take with the standing feet 3 cm further back (`stairs4`, toes 8 cm short of the riser) was
+  not better (max 7.2 cm, frames over 2 cm 38 against 34) and is not used. Kimodo's swing does not know our steps'
+  noses; holding the swing would need constraints between the stances (not tried).
+- **The `after` origin** is known exactly only after the motion is made; the hip-joints guess is 0.6–5 cm off
+  (the first bed's lying landed 5 cm from the plan). The second pass orders first a 0.5 s probe `after` the earlier
+  motion (`bed2-probe`, `bed2-probe2` in `motions/asks.json`) and reads its `startsAt`: exact, one cheap order (the
+  way found by the agent who repeated К1 on other bodies).
 - **The desk:** at the start she steps between the chair and the table; her pelvis brushes the chair's back (1.9 cm)
   and her feet touch the chair's legs (1–1.7 cm) for a few frames.
 - **The wall** is held by the whole body: from frame 95 to the push-off she stands as Kimodo's own lean, only
@@ -145,9 +164,37 @@ legs, a hand 1.7 cm into the table top for a moment (frame 57). No correction.
 
 ## Not done
 
-- **Stepping over / onto a box, sitting on the floor against a wall** (item 5): not tried — the four scenes took the
-  time; the way would be the stairs' (feet on the box/kerb) and the wall's plus `lie-free`'s floor sitting.
+- **Stepping over / onto a box, sitting on the floor against a wall** (item 5): not tried in either pass — the
+  four scenes and the second pass took the time; the way would be the stairs' (feet on the box/kerb) and the wall's plus `lie-free`'s floor sitting.
 - Films are every third frame (10 a second): software WebGL draws a frame in ~2 s.
+
+## Which numbers are the woman's, and how to get them for another body
+
+Everything here was planned for moood-woman (k = 0.896, `K_WOMAN` in `tools/plan.py`). For another body:
+
+- **k** — its hip height over SOMA's (`engine/src/retarget.js`); every place in our world is divided by it. It
+  assumes SOMA's proportions: a body whose arms (or legs) are short for its hips gets its hands (feet) farther off
+  than the few centimetres the correction can take (the other-bodies agent saw 22 cm on a 2.31 m body). The hand on
+  the rail is the most exposed here.
+- **Where a pose is put against a thing** is read off **SOMA's skin** (`somaskin.py`, `placed_against`), so it
+  carries to any body only up to the difference between SOMA's skin scaled and that body's skin: for the woman
+  her back reaches 0.5 cm further (the wall: the plane put 0.6 cm off — `face − 0.006`), her buttocks 3.5 cm lower
+  (the bed's edge: `0.035 / k` in `bed_sit`), her feet are longer (the stairs: `toes_short = 0.05`). These three
+  numbers are hers: measure them on the page for another body (the "touches" and "feet" lines; `?raw`) in a first
+  take, write them in, order again.
+- **What Kimodo does not hold exactly** is not the body's but Kimodo's: it sits ~5.4 cm lower and 4.5 cm short of an
+  asked seated pelvis on a bed's edge (in its metres; `bed_sit(lift=True)` adds that). Likely the same for any body,
+  not checked.
+- **The things' sizes that follow the pose** (the table's edge and height from the seated forearms, `desk()`) are
+  the woman's pose's: for another body either re-read them from the pose placed for that body, or keep the table and
+  let the correction take the rest (no hand correction is wired for the table here: the forearms lay 0–1.4 cm over
+  it).
+- **Frames** (the stances of `stairs-free`, the held frames, when the hand on the rail is weighed in, `HAND_ON`) are
+  Kimodo's timing, not the body's: they carry as they are, but `HAND_ON` was read off this take's numbers.
+- **Where the way stops working:** a part of the body other than the hands, feet and pelvis can only be placed by a
+  whole-body pose (no "back" constraint); a pose Kimodo has not made by itself on nothing cannot be put anywhere
+  (the sunbed "lying" was a recline); a contact between the held frames is Kimodo's (the swinging foot through a
+  step's nose; the body sinking into the mattress between two held lying frames); fingers do not grip.
 
 ## Files
 
@@ -156,7 +203,7 @@ legs, a hand 1.7 cm into the table top for a moment (frame 57). No correction.
 - `tools/plan.py` (scenes → constraints; `plans/*.json` — what was sent), `tools/somaskin.py` (SOMA's skin in Kimodo's
   space), `tools/kimodo.py`, `tools/pose.py` (from К1), `tools/keep_raw.py`, `tools/store.py`, `tools/shots.cjs`,
   `tools/report.py`, `tools/sheet.py`, `tools/pictures.py` (all of `pics/` and `measures/` again).
-- `motions/asks.json` — every motion ordered (17 here, and К1's two free takes used): key, prompt, seconds,
+- `motions/asks.json` — every motion ordered (17 in the first pass, 8 in the second, and К1's two free takes used): key, prompt, seconds,
   constraints (or the plan), `after`, `startsAt`, what came of it. `motions/<id>.json` — the motions played.
   `motions/raw/` — the free takes' data the poses came from (the others can be fetched again by key).
 
@@ -167,3 +214,8 @@ stairs, sunbed, table) and searches of Kimodo's descriptions; the wall (two take
 the stairs (three takes; the foot correction written after the second); the bed (sit; the sunbed recline was not a
 lying, so a free lying on the floor was ordered; lie; get up); the table (sit; get up). 17 orders, 4 "busy" asked
 again.
+
+Second pass (the coordinator, from Pavel, after looking: the bed is weak to the eye; the bed's edge sinks; toes in
+the risers; the fifth scenes if there is strength): two free lyings (back, side); the bed's sitting asked 9.3 cm higher
+and 4.5 cm further in; a probe for the exact origin; the lying on the back; a probe; getting up — the second bed
+(`bed2`), the first kept beside; a stairs take with the feet 3 cm further back (not better, not used). 8 orders.

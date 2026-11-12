@@ -307,5 +307,148 @@
   "seed": 0,
   "constraints": null,
   "note": "ordered for К1 (experiments/contacts), its raw data copied here: no constraints: walks, turns, sits; hands beside on the seat, then on the lap (its seated frame 175 is the body of the armchair constraint pose)"
+ },
+ "lie-back-free": {
+  "key": "16aafa4a561c3876d23a2363dcb4f3a2f7e9b6ff87942dc68871d757ece6b47e",
+  "prompts": [
+   "A person lies down on their back on the floor with the arms resting by their sides and stays lying still."
+  ],
+  "seconds": [
+   8
+  ],
+  "seed": 0,
+  "constraints": null
+ },
+ "lie-side-free": {
+  "key": "4bbd33e8d89aec6021994a5188e4d09581e9a1f8946ea38588908872383ed297",
+  "prompts": [
+   "A person lies down on their side on the floor with the knees bent and stays lying still."
+  ],
+  "seconds": [
+   8
+  ],
+  "seed": 0,
+  "constraints": null
+ },
+ "bed2-sit": {
+  "key": "1081ee7be1f1c18d6877fcc0fd259e0be3b56d40be3c6a8bb154c5ea54bbce31",
+  "prompts": [
+   "A person walks forward to a bed, turns around and sits down on the edge of the bed."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/bed2_sit.json",
+  "note": "the second bed: the seated pelvis asked 9.3 cm higher and 4.5 cm further in than bed-sit (which sat 5.4 cm low and 4.5 cm short)"
+ },
+ "bed2-probe": {
+  "key": "939057d384b819ea63fefeeebaf1f5bc82c20de4e5687941ff6d578870d5d8c4",
+  "prompts": [
+   "A person sits on the edge of a bed."
+  ],
+  "seconds": [
+   0.5
+  ],
+  "seed": 0,
+  "constraints": null,
+  "after": {
+   "motion": "bed2-sit",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.0228,
+   "z": 2.6824
+  },
+  "note": "a probe: made only to read where a motion after bed2-sit starts (startsAt depends only on the earlier motion and frames); not played"
+ },
+ "bed2-lie": {
+  "key": "273cce703737d7588c0228a0b52eb5a4d2c747a6c5529521da8fe910a0e6ce43",
+  "prompts": [
+   "A person sitting on the edge of a bed lies down on their back on the bed, the arms by their sides."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/bed2_lie.json",
+  "after": {
+   "motion": "bed2-sit",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.0228,
+   "z": 2.6824
+  }
+ },
+ "stairs4": {
+  "key": "c2f1dabda2cdb442d325782fca2183e004af109dcd51002468dc41e1637534fc",
+  "prompts": [
+   "A person climbs up the stairs at a normal pace, holding the handrail with their right hand, and stops at the top."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/stairs4.json",
+  "note": "the fourth stairs take: the toes 8 cm short of the riser in our world (the third: 5 cm). Not better: the deepest are the swinging foot's toes catching a step's nose on the way up (max 7.2 cm at frame 53; the third take 7.0 cm at 21; frames over 2 cm: 38 against 34), not where a foot stands. Not used."
+ },
+ "bed2-probe2": {
+  "key": "39841a1865e34daf814f210d09e4c284237e0bd7626157f30ab9c8d9eb2589b7",
+  "prompts": [
+   "A person lies on their back on a bed."
+  ],
+  "seconds": [
+   0.5
+  ],
+  "seed": 0,
+  "constraints": null,
+  "after": {
+   "motion": "bed2-lie",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.1222,
+   "z": 0.2573
+  },
+  "note": "a probe: only to read where a motion after bed2-lie starts; not played"
+ },
+ "bed2-up": {
+  "key": "447714bd0a4d3e0acb403c1f5d19f26d2daa8b587b1570ba0227a71f81473cb8",
+  "prompts": [
+   "A person lying on their back on a bed sits up, swings their legs down off the bed and stands up."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": [
+   {
+    "type": "root2d",
+    "frame_indices": [
+     160,
+     179
+    ],
+    "smooth_root_2d": [
+     [
+      -0.145,
+      -0.987
+     ],
+     [
+      -0.145,
+      -0.987
+     ]
+    ]
+   }
+  ],
+  "after": {
+   "motion": "bed2-lie",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.1222,
+   "z": 0.2573
+  },
+  "note": "stand at (0, 1.75) of the scene: 1.75/k less bed2-lie's startsAt less the probe's"
  }
 }
