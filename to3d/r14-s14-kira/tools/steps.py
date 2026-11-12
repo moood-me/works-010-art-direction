@@ -21,6 +21,17 @@ def row(name, items, W, H):
     return out
 
 
+def close():
+    """how the paper looks near: the head's sheets, the pocket and strings, the back"""
+    st = {'motion': ['bow'], 't': 0}
+    items = [({**st, 'cam': {'yaw': -0.55, 'joint': 'Head', 'offset': [0, 0.02, 0], 'height': 0.5}}, 'листы волос, чёлка бросает тень'),
+             ({**st, 'cam': {'yaw': 0.75, 'joint': 'Head', 'offset': [0, 0.02, 0], 'height': 0.5}}, 'с её левой стороны: прядь и ухо'),
+             ({**st, 'cam': {'yaw': -0.35, 'joint': 'Chest', 'offset': [0, -0.05, 0], 'height': 0.62}}, 'наушники, шнурки, карман'),
+             ({**st, 'cam': {'yaw': 2.6, 'joint': 'Chest', 'offset': [0, 0.12, 0], 'height': 0.8}}, 'сзади: капюшон, зубцы волос')]
+    save(row('cl', items, 560, 560), 'paper-close', 1700)
+
+
+
 if __name__ == '__main__':
     body = lambda y=0.78, h=1.75: {'yaw': -0.5, 'follow': [0, y, 0], 'height': h}
     head = {'yaw': -0.5, 'joint': 'Head', 'offset': [0, 0.04, 0], 'height': 0.52}
@@ -37,3 +48,4 @@ if __name__ == '__main__':
         ({'model': M + 'step-head.json', 'clay': False, 'cam': head}, 'лицо: куски рисунка'),
         ({'model': M + 'step-hair.json', 'clay': False, 'cam': head}, 'волосы — три листа'),
     ], 440, 480), 'steps-head', 1600)
+    close()

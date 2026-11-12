@@ -107,3 +107,23 @@ In this session `hbm_head.npz` was copied from Р3's cache (the same export).
 | The drawing and its code; Р3's build code reused (`meshcut.py`, `hbm.py`, `head.py`, the face timeline) | this repository |
 
 Neural models were not used.
+
+## Honest state
+
+- Recognisable and alive; front and three-quarter lie close on the drawing; the sheet's expressions are the same pieces.
+- What of the paper is kept: one colour a piece, brush streaks inside painted paper, the light cut edge, layers with
+  shadows between them, the light from the top left. What is not: the forms are round and smooth (papier-mâché rather
+  than a folded sheet; only the nose is folded), no torn edge, no tissue; the "few flat faces" lighting of the clothes
+  is barely seen because the paper's shade is weak on dark colours.
+- The profile shows less face than the drawn profile (the front view's fringe wins, see above).
+- Under the chin the neck piece has blotchy shade and a crease along the face's edge (the two pieces don't share
+  normals there, on purpose; the patch's fan under the mouth still shows a little).
+- The hoodie is a skinned shell: it doesn't crumple; faint ripples from smoothing run over it; in a wide step the hem
+  follows the thighs like a skirt. Hair is rigid.
+- Hands: Anny's hands pressed flat; under the long cuffs only the fingers show. The drawing's hand in the pocket is
+  not made (no such motion in `engine/motions`).
+- On a bowed head the fringe shades more of the face than the drawing's short shadow; on the skin the shadow is made
+  lighter (0.20 against 0.36) so the face stays readable.
+- The floor's shadow is cut where the shadow map ends (it fades there).
+- Not tried: real folds (a low-polygon folded build of the head and clothes, as Tearaway does), cloth, the engine's
+  centres-of-rotation skinning in the viewer (dual quaternions are used: fast to prepare).
