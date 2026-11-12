@@ -1,0 +1,65 @@
+{
+ "format": "engine/topology",
+ "version": 1,
+ "id": "vera",
+ "about": "Вера: every piece in one mesh",
+ "source": "to3d/r31-s10-vera",
+ "skeleton": "soma77",
+ "vertices": 56119,
+ "triangles": 107240,
+ "parts": [
+  "pelvis",
+  "spine",
+  "neck",
+  "head",
+  "Lclavicle",
+  "Rclavicle",
+  "LupperArm",
+  "RupperArm",
+  "LforeArm",
+  "RforeArm",
+  "Lhand",
+  "Rhand",
+  "Lthigh",
+  "Rthigh",
+  "Lshin",
+  "Rshin",
+  "Lfoot",
+  "Rfoot"
+ ],
+ "bin": "vera.bin",
+ "arrays": {
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    107240,
+    3
+   ],
+   "offset": 0
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    56119,
+    4
+   ],
+   "offset": 1286880
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    56119,
+    4
+   ],
+   "offset": 1511356
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    56119,
+    18
+   ],
+   "offset": 2409260
+  }
+ }
+}

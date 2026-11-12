@@ -1,0 +1,264 @@
+{
+ "format": "marat8/look",
+ "version": 1,
+ "pieces": [
+  {
+   "name": "head",
+   "mat": "skin"
+  },
+  {
+   "name": "eyeL",
+   "mat": "eye"
+  },
+  {
+   "name": "eyeR",
+   "mat": "eye"
+  },
+  {
+   "name": "lipU",
+   "mat": "lip"
+  },
+  {
+   "name": "lipL",
+   "mat": "lip"
+  },
+  {
+   "name": "cav",
+   "mat": "mouth"
+  },
+  {
+   "name": "tongue",
+   "mat": "tongue"
+  },
+  {
+   "name": "teethU",
+   "mat": "teeth"
+  },
+  {
+   "name": "teethL",
+   "mat": "teeth"
+  },
+  {
+   "name": "moust",
+   "mat": "curl"
+  },
+  {
+   "name": "brows",
+   "mat": "brow"
+  },
+  {
+   "name": "lashes",
+   "mat": "lash"
+  },
+  {
+   "name": "haircap",
+   "mat": "hairmass"
+  },
+  {
+   "name": "curls",
+   "mat": "curl"
+  },
+  {
+   "name": "beardmass",
+   "mat": "hairmass"
+  },
+  {
+   "name": "beard",
+   "mat": "curl"
+  },
+  {
+   "name": "neck",
+   "mat": "skin"
+  },
+  {
+   "name": "jacket",
+   "mat": "jacket"
+  },
+  {
+   "name": "bib",
+   "mat": "apron"
+  },
+  {
+   "name": "strapR",
+   "mat": "apron"
+  },
+  {
+   "name": "strapL",
+   "mat": "apron"
+  },
+  {
+   "name": "bibhem",
+   "mat": "apron"
+  },
+  {
+   "name": "aprontie",
+   "mat": "aprontie"
+  },
+  {
+   "name": "apron",
+   "mat": "apron"
+  },
+  {
+   "name": "towel",
+   "mat": "towel"
+  },
+  {
+   "name": "sleeves",
+   "mat": "jacket"
+  },
+  {
+   "name": "shoulderL",
+   "mat": "jacket"
+  },
+  {
+   "name": "shoulderR",
+   "mat": "jacket"
+  },
+  {
+   "name": "rollL",
+   "mat": "jacket"
+  },
+  {
+   "name": "rollR",
+   "mat": "jacket"
+  },
+  {
+   "name": "trousers",
+   "mat": "trousers"
+  },
+  {
+   "name": "trhemL",
+   "mat": "trousers"
+  },
+  {
+   "name": "trhemR",
+   "mat": "trousers"
+  },
+  {
+   "name": "skin",
+   "mat": "skin"
+  },
+  {
+   "name": "shoeL",
+   "mat": "shoe"
+  },
+  {
+   "name": "soleL",
+   "mat": "sole"
+  },
+  {
+   "name": "shoeR",
+   "mat": "shoe"
+  },
+  {
+   "name": "soleR",
+   "mat": "sole"
+  }
+ ],
+ "counts": [
+  10303,
+  1352,
+  1352,
+  150,
+  150,
+  150,
+  150,
+  150,
+  150,
+  1178,
+  120,
+  263,
+  4994,
+  21018,
+  3318,
+  11966,
+  768,
+  12961,
+  4559,
+  100,
+  100,
+  192,
+  776,
+  3841,
+  315,
+  802,
+  392,
+  392,
+  230,
+  230,
+  1548,
+  300,
+  300,
+  3862,
+  638,
+  542,
+  638,
+  542
+ ],
+ "tris": [
+  20450,
+  2600,
+  2600,
+  240,
+  240,
+  240,
+  240,
+  240,
+  240,
+  2280,
+  176,
+  344,
+  9984,
+  40680,
+  6260,
+  23160,
+  1472,
+  25776,
+  8562,
+  162,
+  162,
+  368,
+  1536,
+  7584,
+  544,
+  1398,
+  728,
+  728,
+  368,
+  368,
+  2889,
+  480,
+  480,
+  7636,
+  1105,
+  913,
+  1105,
+  913
+ ],
+ "bin": "look.bin",
+ "arrays": {
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    90792,
+    2
+   ],
+   "offset": 0
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    90792,
+    3
+   ],
+   "offset": 726336
+  },
+  "tint": {
+   "dtype": "float32",
+   "shape": [
+    90792
+   ],
+   "offset": 1815840
+  }
+ }
+}

@@ -96,6 +96,51 @@ one's style and name, e.g. «Р1 (С3 Аня)»; folders keep the Р numbers). O
   realistic Anny hands; skirts and coats as shells; a big head makes Kimodo's wave cover the face.
 - Viewers load slowly in software WebGL (centres-of-rotation skinning on ~70k vertices takes about a minute).
 
+## Drawings to 3D, round three (two more characters in each of sixteen styles)
+
+Thirty-two characters (`to3d/` Р13–Р44). By the orchestrator's eye: strongest where the 3D is built from the
+drawing's own forms and drawn by its own code; weakest where a realistic base carries a stylised look.
+- **A second and third character in a style cost much less than the first, and come out better.** Every agent
+  started from the style's first character and turned its code into "shared part + one file per character"; several
+  fixed the first one's named weaknesses on the way (fingers lying as drawn in С7, a mouth with a tongue in С1, a
+  drawn mouth in place of modelled lips in С10, a viewer that opens in a second instead of ninety in С7).
+- **Build from the drawing's own numbers where the style allows.** Best matches: indie (Р21, Р22 — hard to tell from
+  the drawing), rubber hose (Р33, Р34), symbolic (Р23, Р24), ligne claire (Р31, Р32), stop-motion (Р27, Р28 — the
+  3D is better than the drawing). No Anny body and no base head at all in С6, С14, С15, С16: inside the shape there
+  is nothing in those styles, only its edge from every side.
+- **A realistic base under a stylised look is the weak way.** Arcane (Р19, Р20) and Pixar's Кира (Р14): the base's
+  brow, nose and jaw give a hard adult face; shadow edges on a real head break into blotches; real proportions are
+  wider than the drawn figure; real hands on thin drawn arms. Sending С4 back fixed defects (a lump of body showing
+  under the hoodie, wedge boots, shard-like hair) but not the face.
+- **How each new style lives in 3D** (first tries, all four worked):
+  - woodblock print (Р37, Р38): the 3D is never shown; every frame is printed again by the drawing's code — flat
+    colour, the pattern laid flat and not following the body, a brush line found on the 3D, the sheet's paper, frame
+    and seal standing still;
+  - cut paper (Р39, Р40): a paper puppet in space — every thing a piece of one colour on the skeleton, the paper
+    (edge, short and long shadow on what is farther, light rim, grain) made in one pass over the picture, light
+    fixed to the picture, 12 frames a second;
+  - noir (Р41, Р42): a few flat faces by the drawing's numbers; a face turned to the light is flat colour, turned
+    away or covered is solid black, so the black stays clean straight-edged shapes and moves as the figure turns;
+  - pixel art (Р43, Р44): each body part typed as character maps from the front and the side, a voxel per pixel,
+    seen through the sprite's grid; parts move by whole pixels and turn in steps, so pixels don't crawl; the front
+    view is the drawing pixel for pixel (89–96 %), the portrait stays a drawing.
+- **Where the drawing lies, again.** Front, three-quarter and profile of a drawing are often not one head or one
+  figure (a fringe that is a different piece in front and in profile, shoulders wider on one sheet than another,
+  feet drawn sideways under a body seen from the front). Agents followed the front or the figure sheet and said so.
+  Where a style had no turnaround or expression sheet for the character (Вера in С1, С7, С10; Тим in С3; Савелий in
+  С8), the agent drew them with the style's code into its own folder; the style's page was not touched.
+- **Poses of the drawings are mostly lost.** The ladle, the fist on the hip, the bunch of flowers, crossed arms:
+  there is no such motion in `engine/motions`, so the 3D stands plainly. Where an agent set the drawing's pose by
+  hand as a rest pose (Кира's slouch built into the body in С3, С5, С7; Марат's laugh in С12, С13) it holds through
+  every Kimodo motion and is what makes the character.
+- **Kimodo on unusual bodies:** `idle` stoops and drops the head on almost everyone and was left out or replaced by
+  the first frame of another motion; `bow` is too deep; `wave` ends at the cheek on short arms and suits a big man
+  (Марат) best; a stoop built into the body adds to `sneak` and bends too low; sitting pushes legs through skirts
+  and aprons.
+- **Still weak everywhere:** clothes and hair are shells, not cloth; hands; open mouths on modelled faces; profiles.
+- A slip to know: the earlier viewers of С5 (Р4) stretch the figure when the control panel is open — fixed in Р21
+  and Р22, Р4 itself not touched.
+
 ## Other people's tools (`tools-demo/`)
 
 - **Better than ours:** Blender Studio's character heads (Rain, Snow…, CC-BY) — eyeballs under thick lids, lips with

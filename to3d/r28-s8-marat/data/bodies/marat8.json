@@ -1,0 +1,39 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "marat8",
+ "label": {
+  "ru": "Марат",
+  "en": "Marat"
+ },
+ "source": "to3d/r28-s8-marat: Anny (moood-man) fitted to the С8 drawing, HBM stylised head",
+ "topology": "marat8",
+ "skeleton": "soma77",
+ "bin": "marat8.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    90792,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1089504
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1090428
+  }
+ }
+}
