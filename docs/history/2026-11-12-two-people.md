@@ -19,10 +19,17 @@ child was held out and barely lifted, its hands stuck in his chest. The second p
 elbow, the hand slides to the shoulder's edge as she turns; the child is at his chest with its hands constrained
 onto his shoulders. The first versions are kept beside (the page and `pics/`).
 
+**A third pass** (Pavel, the same day: ask the agents for more where something could be better). The two nearer
+scenes that had been skipped were made: a handshake (the man made first with no constraints, the woman's palm
+constrained onto his at three frames) and leading by the hand (her palm on his every 10 frames, her pelvis 62 cm
+beside him; at 45 cm and every 15 frames his arm went into her shoulder and her hand lagged). In the carry the man
+now steps back 63 cm after the set-down; two tries to give the child's legs through the pose made it worse and were
+left (`pics/carry4-legs-try.png`).
+
 **What is weak.** His look at her is a neck correction on top (Kimodo kept the head back though asked); the child's
 legs hang straight into his shins (up to 6 cm); at the set-down their hands go into each other for a second; Kimodo
-has nothing for carrying an adult, so a child is carried. A handshake, an adult hug and leading by the hand were not
-made. The orchestrator looked at stills, not at the films.
+has nothing for carrying an adult, so a child is carried. An adult hug was not made. In the handshake the flat hands overlap rather than grip; led by the hand, she walks
+leaning forward as if pulled; nobody looks at the other in these two. The orchestrator looked at stills, not at the films.
 
 **In the catalogue.** К2 in section К of `gallery/paths.js`, its page in `PAGE`. The branch contains `contacts` (К1),
 merged in so that both stand in one section.
