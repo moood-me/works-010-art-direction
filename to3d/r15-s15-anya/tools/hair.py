@@ -133,6 +133,7 @@ def build(ctx):
     yd = D.FLOOR - V[:, 1] / K
     V = M.smooth(V, A, np.ones(len(V), bool), iters=2, lam=0.5)
     Vg = V.reshape(rows, cols, 3)          # above the parting's end the two edges are one line
+    Vg[0] = Vg[0].mean(0)                  # the crown's top is one point
     for r in range(rows):
         if TOP - 0.4 + (END - TOP + 0.4) * r / (rows - 1) < apex + 2: Vg[r, 0] = Vg[r, -1] = (Vg[r, 0] + Vg[r, -1]) / 2
     V = M.smooth(V, A, (yd > -80) & (yd < 20), iters=8, lam=0.5)      # where the edge leaves the face for behind the ear
