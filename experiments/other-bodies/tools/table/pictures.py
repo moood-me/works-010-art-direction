@@ -1,8 +1,9 @@
 # All pictures, films and numbers of the page, made again from the repository:
-#   python3 tools/pictures.py [scene …]
+#   python3 tools/table/pictures.py [scene …]   (К1's, copied; every 3rd frame, films at 10 frames a second; a scene
+#   with films: False gets the sheet and the close-up only)
 # For each scene: its numbers with and without the correction (measures/<scene>.json, -raw.json, and a summary
 # measures/<scene>.txt), a sheet of moments from two sides (pics/<scene>-sheet.png), two short films from two sides
-# (pics/<scene>-<view>.mp4, 15 frames a second), and the touch close up — Kimodo's own and with the correction
+# (pics/<scene>-<view>.mp4), and the touch close up — Kimodo's own and with the correction
 # (pics/<scene>-close.png). Headless Chromium through tools/shots.cjs; frames in a temporary folder.
 import json, os, subprocess, sys, tempfile
 
@@ -12,7 +13,7 @@ PICS = os.path.join(ITEM, 'pics')
 # the films take every second frame)
 SCENES = {k: {'frames': 235, 'views': ['side', 'whole'], 'close': 225, 'sheet': [0, 60, 120, 159, 183, 204, 222, 234]}
           for k in ('lean-child', 'lean-oldman', 'bar-oldman', 'lean-elf', 'lean-child-s1', 'lean-child-s2')}
-for k in ('lean-child-s1', 'lean-child-s2'): SCENES[k]['films'] = False   # the seeds: a sheet and the numbers, no films
+for k in ('lean-oldman', 'bar-oldman', 'lean-elf', 'lean-child-s1', 'lean-child-s2'): SCENES[k]['films'] = False   # a sheet, the close-up and the numbers; films only for lean-child (software rendering is slow)
 LABEL = {'side': 'сбоку', 'whole': 'весь путь', 'front': 'спереди'}
 
 
@@ -28,7 +29,7 @@ def scene(name):
         if s.get('films', True):
             jobs.append({'scene': name, 'view': v, 'frames': [0, s['frames'] - 1, 3], 'out': f'{tmp}/{v}-%03d.png', 'w': 480, 'h': 400})
         else:   # only the sheet's moments, named as the film's frames would be
-            jobs += [{'scene': name, 'view': v, 't': t, 'out': f'{tmp}/{v}-{t // 3:03d}.png', 'w': 480, 'h': 400} for t in s['sheet']]
+            jobs += [{'scene': name, 'view': v, 't': t, 'out': f'{tmp}/{v}-{t // 3:03d}.png', 'w': 480, 'h': 400} for t in sorted(set(s['sheet']) | {s['close']})]
     jobs += [{'scene': name, 'view': 'close', 't': s['close'], 'out': f'{tmp}/close1.png', 'w': 600, 'h': 450},
              {'scene': name, 'view': 'close', 'raw': True, 't': s['close'], 'out': f'{tmp}/close0.png', 'w': 600, 'h': 450}]
     run(jobs)

@@ -39,7 +39,7 @@ def table(plan_id, label, about_thing='столу', thing='стол', from_frame
                  'frames': [f0, 1e9], 'ramp': 15} for s in 'LR']
     who = p['who']; e = tb['edge']; top = tb['top']
     return {'id': sid or plan_id, 'label': label,
-            'about': f'{WHO[who].capitalize()} подходит к {about_thing} высотой {str(top).replace(".", ",")} м и опирается на него руками — '
+            'about': f'{WHO[who].capitalize()} подходит к {about_thing} высотой {str(top).replace(".", ",")} м и опирается на {"него" if thing == "стол" else "неё"} руками — '
                      f'как в К1, тем же способом: походка К1 (то же движение Kimodo), наклон заказан заново для этого тела. '
                      f'Kimodo дали место ладоней на {"столешнице" if thing == "стол" else "стойке"} за секунду до конца и в последний кадр и где стоит таз; '
                      f'места пересчитаны под рост этого тела.',
