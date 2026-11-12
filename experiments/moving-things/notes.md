@@ -109,7 +109,9 @@ correction; the box lands 0.1 cm into the table, tilted 0.7°. Bending over the 
 collarbone touches the box by up to 1.9 cm. Worse than `box-2` at the hands: as he puts it down (frames ~240–260) the
 right hand's fingers go up to 6 cm into the box's side — the put-down pose's hand turn is the carrying one (from the
 free take's frame 150), and its fingers point into the box; the curl on the box was made small (0.15/0.25/0.2) for
-that, which did not change much (7.1 → 6.3 cm). Seen from the side it does not show; close up it would.
+that, which did not change much (7.1 → 6.3 cm). Seen from the side it does not show; close up (`pics/box-close.png`) the hands at the box read badly: at the take
+the palm is at the box's lower front corner with the fingers bent like a claw, at the put-down the left hand is at
+its front corner rather than on its side. The box is the scene where the hands were improved least.
 
 ## What Kimodo does with these, and what cost tries (13 motions ordered, 16 asks — three failed "busy" and were asked again; every one in `motions/asks.json`)
 
