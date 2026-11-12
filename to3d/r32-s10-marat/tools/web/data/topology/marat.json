@@ -1,0 +1,65 @@
+{
+ "format": "engine/topology",
+ "version": 1,
+ "id": "marat",
+ "about": "Марат: every piece in one mesh",
+ "source": "to3d/r32-s10-marat",
+ "skeleton": "soma77",
+ "vertices": 59728,
+ "triangles": 113944,
+ "parts": [
+  "pelvis",
+  "spine",
+  "neck",
+  "head",
+  "Lclavicle",
+  "Rclavicle",
+  "LupperArm",
+  "RupperArm",
+  "LforeArm",
+  "RforeArm",
+  "Lhand",
+  "Rhand",
+  "Lthigh",
+  "Rthigh",
+  "Lshin",
+  "Rshin",
+  "Lfoot",
+  "Rfoot"
+ ],
+ "bin": "marat.bin",
+ "arrays": {
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    113944,
+    3
+   ],
+   "offset": 0
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    59728,
+    4
+   ],
+   "offset": 1367328
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    59728,
+    4
+   ],
+   "offset": 1606240
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    59728,
+    18
+   ],
+   "offset": 2561888
+  }
+ }
+}

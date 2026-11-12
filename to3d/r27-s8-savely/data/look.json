@@ -1,0 +1,270 @@
+{
+ "format": "savely8/look",
+ "version": 1,
+ "pieces": [
+  {
+   "name": "head",
+   "mat": "skin"
+  },
+  {
+   "name": "eyeL",
+   "mat": "eye"
+  },
+  {
+   "name": "eyeR",
+   "mat": "eye"
+  },
+  {
+   "name": "lipU",
+   "mat": "lip"
+  },
+  {
+   "name": "lipL",
+   "mat": "lip"
+  },
+  {
+   "name": "cav",
+   "mat": "mouth"
+  },
+  {
+   "name": "teethU",
+   "mat": "teeth"
+  },
+  {
+   "name": "teethL",
+   "mat": "teeth"
+  },
+  {
+   "name": "moust",
+   "mat": "whisker"
+  },
+  {
+   "name": "brows",
+   "mat": "whisker"
+  },
+  {
+   "name": "lashes",
+   "mat": "lash"
+  },
+  {
+   "name": "hair",
+   "mat": "hair"
+  },
+  {
+   "name": "glasses",
+   "mat": "gold"
+  },
+  {
+   "name": "lenses",
+   "mat": "lens"
+  },
+  {
+   "name": "neck",
+   "mat": "skin"
+  },
+  {
+   "name": "vest",
+   "mat": "vest"
+  },
+  {
+   "name": "vestbottom",
+   "mat": "dark"
+  },
+  {
+   "name": "shirtfront",
+   "mat": "shirt"
+  },
+  {
+   "name": "collarstand",
+   "mat": "shirt"
+  },
+  {
+   "name": "collarR",
+   "mat": "collar"
+  },
+  {
+   "name": "collarL",
+   "mat": "collar"
+  },
+  {
+   "name": "tie",
+   "mat": "tie"
+  },
+  {
+   "name": "button0",
+   "mat": "button"
+  },
+  {
+   "name": "button1",
+   "mat": "button"
+  },
+  {
+   "name": "button2",
+   "mat": "button"
+  },
+  {
+   "name": "chain",
+   "mat": "chain"
+  },
+  {
+   "name": "sleeves",
+   "mat": "shirt"
+  },
+  {
+   "name": "shoulderL",
+   "mat": "shirt"
+  },
+  {
+   "name": "shoulderR",
+   "mat": "shirt"
+  },
+  {
+   "name": "cuffL",
+   "mat": "collar"
+  },
+  {
+   "name": "cuffR",
+   "mat": "collar"
+  },
+  {
+   "name": "trousers",
+   "mat": "trousers"
+  },
+  {
+   "name": "trhemL",
+   "mat": "trousers"
+  },
+  {
+   "name": "trhemR",
+   "mat": "trousers"
+  },
+  {
+   "name": "skin",
+   "mat": "skin"
+  },
+  {
+   "name": "shoeL",
+   "mat": "shoe"
+  },
+  {
+   "name": "soleL",
+   "mat": "sole"
+  },
+  {
+   "name": "shoeR",
+   "mat": "shoe"
+  },
+  {
+   "name": "soleR",
+   "mat": "sole"
+  }
+ ],
+ "counts": [
+  10303,
+  3200,
+  3200,
+  150,
+  150,
+  150,
+  150,
+  150,
+  297,
+  120,
+  245,
+  22008,
+  1560,
+  482,
+  768,
+  13571,
+  49,
+  1121,
+  200,
+  64,
+  64,
+  270,
+  200,
+  200,
+  200,
+  320,
+  1210,
+  392,
+  392,
+  210,
+  210,
+  1429,
+  230,
+  230,
+  3392,
+  642,
+  538,
+  642,
+  538
+ ],
+ "tris": [
+  20450,
+  6240,
+  6240,
+  240,
+  240,
+  240,
+  240,
+  240,
+  512,
+  176,
+  320,
+  43120,
+  3020,
+  864,
+  1472,
+  26619,
+  48,
+  1871,
+  320,
+  98,
+  98,
+  464,
+  360,
+  360,
+  360,
+  624,
+  2222,
+  728,
+  728,
+  336,
+  336,
+  2679,
+  368,
+  368,
+  6696,
+  1113,
+  905,
+  1113,
+  905
+ ],
+ "bin": "look.bin",
+ "arrays": {
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    69247,
+    2
+   ],
+   "offset": 0
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    69247,
+    3
+   ],
+   "offset": 553976
+  },
+  "tint": {
+   "dtype": "float32",
+   "shape": [
+    69247
+   ],
+   "offset": 1384940
+  }
+ }
+}

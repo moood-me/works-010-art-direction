@@ -1,0 +1,260 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "savely-arcane",
+ "label": {
+  "ru": "Савелий Петрович (Arcane)"
+ },
+ "topology": "savely-arcane",
+ "skeleton": "soma",
+ "source": "to3d/r19-s4-savely/tools/build.py",
+ "floor": -0.009103195741772652,
+ "materials": [
+  "skin",
+  "hair",
+  "suit",
+  "shoe",
+  "sclera",
+  "iris",
+  "frame",
+  "mouth",
+  "lens",
+  "teeth"
+ ],
+ "ranges": {
+  "body": [
+   0,
+   10716
+  ],
+  "head": [
+   10716,
+   23666
+  ],
+  "scleraL": [
+   23666,
+   24212
+  ],
+  "irisL": [
+   24212,
+   24612
+  ],
+  "scleraR": [
+   24612,
+   25158
+  ],
+  "irisR": [
+   25158,
+   25558
+  ],
+  "hair": [
+   25558,
+   38376
+  ],
+  "browL": [
+   38376,
+   38864
+  ],
+  "browR": [
+   38864,
+   39352
+  ],
+  "moustache": [
+   39352,
+   39789
+  ],
+  "teeth": [
+   39789,
+   39894
+  ],
+  "shoes": [
+   39894,
+   41434
+  ],
+  "glasses": [
+   41434,
+   42610
+  ],
+  "lens": [
+   42610,
+   42740
+  ]
+ },
+ "K": 0.00097,
+ "FEET": 1500.0,
+ "ZOFF": 0.06862963155241483,
+ "face": {
+  "x0": -80.0,
+  "x1": 80.0,
+  "y0": -125.0,
+  "y1": 130.0
+ },
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    75506,
+    3
+   ],
+   "offset": 512880
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    42740,
+    4
+   ],
+   "offset": 1418952
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    42740,
+    4
+   ],
+   "offset": 1589912
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    231
+   ],
+   "offset": 2273752
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    308
+   ],
+   "offset": 2274680
+  },
+  "col": {
+   "dtype": "uint8",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 2275912
+  },
+  "shd": {
+   "dtype": "uint8",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 2404136
+  },
+  "glw": {
+   "dtype": "uint8",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 2532360
+  },
+  "rim": {
+   "dtype": "uint8",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 2660584
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    42740
+   ],
+   "offset": 2788808
+  },
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    42740,
+    2
+   ],
+   "offset": 2831552
+  },
+  "tw": {
+   "dtype": "uint8",
+   "shape": [
+    42740
+   ],
+   "offset": 3173472
+  },
+  "pn": {
+   "dtype": "float32",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 3216216
+  },
+  "pw": {
+   "dtype": "uint8",
+   "shape": [
+    42740
+   ],
+   "offset": 3729096
+  },
+  "two": {
+   "dtype": "uint8",
+   "shape": [
+    42740
+   ],
+   "offset": 3771840
+  },
+  "hs": {
+   "dtype": "float32",
+   "shape": [
+    42740
+   ],
+   "offset": 3814584
+  },
+  "hg": {
+   "dtype": "uint8",
+   "shape": [
+    42740
+   ],
+   "offset": 3985544
+  },
+  "hm": {
+   "dtype": "float32",
+   "shape": [
+    42740
+   ],
+   "offset": 4028288
+  },
+  "ha": {
+   "dtype": "float32",
+   "shape": [
+    42740
+   ],
+   "offset": 4199248
+  },
+  "rp": {
+   "dtype": "float32",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 4370208
+  },
+  "dr": {
+   "dtype": "float32",
+   "shape": [
+    42740,
+    3
+   ],
+   "offset": 4883088
+  }
+ },
+ "bin": "savely.bin"
+}

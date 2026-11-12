@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Марат, кукла в 3D</title>
+<style>
+  :root { --bg: #18120e; --panel: #241c16; --ink: #e9e2d4; --mute: #9a9184; --acc: #e0a050; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font: 14px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #wrap { position: fixed; inset: 0; display: flex; flex-direction: column; }
+  #stage { flex: 1; position: relative; min-height: 0; }
+  #stage canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+  #msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--mute); }
+  #bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 8px 12px; background: var(--panel); }
+  #bar label { display: inline-flex; align-items: center; gap: 6px; }
+  #bar select, #bar button { font: inherit; padding: 3px 9px; border: 1px solid #5a5248; border-radius: 4px;
+    background: #2a2d36; color: var(--ink); cursor: pointer; }
+  #bar button.on { background: var(--acc); color: #1a1410; border-color: var(--acc); }
+  #time { flex: 1 1 180px; accent-color: var(--acc); }
+  #expr { display: flex; flex-wrap: wrap; gap: 4px; }
+  body.shots #bar { display: none; }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage"><div id="msg">загрузка…</div></div>
+  <div id="bar">
+    <button id="play" class="on" title="пауза / дальше">❚❚</button>
+    <input id="time" type="range" min="0" max="1" step="0.001" value="0" aria-label="время">
+    <label>движение <select id="motion"></select></label>
+    <div id="expr"></div>
+    <label><input id="talk" type="checkbox"> говорит</label>
+    <button id="close">лицо</button>
+  </div>
+</div>
+<script type="module" src="view.mjs"></script>
+</body>
+</html>

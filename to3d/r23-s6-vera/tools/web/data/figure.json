@@ -1,0 +1,81 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "vera-s6",
+ "label": {
+  "ru": "Вера (С6)"
+ },
+ "source": "styles/s6-symbolic cast.vera solids on SOMA (to3d/r23-s6-vera/tools/build.py)",
+ "skeleton": "soma77",
+ "topology": "vera-s6",
+ "parts": [
+  "leg",
+  "foot",
+  "neck",
+  "arm",
+  "hand",
+  "hair",
+  "coat",
+  "head",
+  "folder"
+ ],
+ "vertices": 13354,
+ "bin": "figure.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    13354,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    26308,
+    3
+   ],
+   "offset": 160248
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    13354,
+    4
+   ],
+   "offset": 475944
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    13354,
+    4
+   ],
+   "offset": 529360
+  },
+  "part": {
+   "dtype": "uint8",
+   "shape": [
+    13354
+   ],
+   "offset": 743024
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 756380
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 757304
+  }
+ }
+}

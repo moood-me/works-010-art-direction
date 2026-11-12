@@ -1,0 +1,247 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "kira-arcane",
+ "label": {
+  "ru": "Кира (Arcane)"
+ },
+ "topology": "kira-arcane",
+ "skeleton": "soma",
+ "source": "to3d/r20-s4-kira/tools/build.py",
+ "floor": 0.0,
+ "materials": [
+  "skin",
+  "hair",
+  "suit",
+  "shoe",
+  "sclera",
+  "iris",
+  "mouth",
+  "lime",
+  "pad"
+ ],
+ "ranges": {
+  "body": [
+   0,
+   10598
+  ],
+  "head": [
+   10598,
+   23548
+  ],
+  "scleraL": [
+   23548,
+   24094
+  ],
+  "irisL": [
+   24094,
+   24494
+  ],
+  "scleraR": [
+   24494,
+   25040
+  ],
+  "irisR": [
+   25040,
+   25440
+  ],
+  "hair": [
+   25440,
+   51693
+  ],
+  "shoes": [
+   51693,
+   53377
+  ],
+  "hood": [
+   53377,
+   54257
+  ],
+  "pads": [
+   54257,
+   55329
+  ],
+  "cups": [
+   55329,
+   56001
+  ]
+ },
+ "K": 0.00097,
+ "FEET": 1470.0,
+ "ZOFF": 0.07654707336403346,
+ "face": {
+  "x0": -80.0,
+  "x1": 80.0,
+  "y0": -125.0,
+  "y1": 130.0
+ },
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    102047,
+    3
+   ],
+   "offset": 672016
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    56001,
+    4
+   ],
+   "offset": 1896584
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    56001,
+    4
+   ],
+   "offset": 2120592
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    231
+   ],
+   "offset": 3016608
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    308
+   ],
+   "offset": 3017536
+  },
+  "col": {
+   "dtype": "uint8",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 3018768
+  },
+  "shd": {
+   "dtype": "uint8",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 3186776
+  },
+  "glw": {
+   "dtype": "uint8",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 3354784
+  },
+  "rim": {
+   "dtype": "uint8",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 3522792
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    56001
+   ],
+   "offset": 3690800
+  },
+  "uv": {
+   "dtype": "float32",
+   "shape": [
+    56001,
+    2
+   ],
+   "offset": 3746808
+  },
+  "tw": {
+   "dtype": "uint8",
+   "shape": [
+    56001
+   ],
+   "offset": 4194816
+  },
+  "pn": {
+   "dtype": "float32",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 4250824
+  },
+  "pw": {
+   "dtype": "uint8",
+   "shape": [
+    56001
+   ],
+   "offset": 4922840
+  },
+  "two": {
+   "dtype": "uint8",
+   "shape": [
+    56001
+   ],
+   "offset": 4978848
+  },
+  "hs": {
+   "dtype": "float32",
+   "shape": [
+    56001
+   ],
+   "offset": 5034856
+  },
+  "hg": {
+   "dtype": "uint8",
+   "shape": [
+    56001
+   ],
+   "offset": 5258864
+  },
+  "hm": {
+   "dtype": "float32",
+   "shape": [
+    56001
+   ],
+   "offset": 5314872
+  },
+  "ha": {
+   "dtype": "float32",
+   "shape": [
+    56001
+   ],
+   "offset": 5538880
+  },
+  "rp": {
+   "dtype": "float32",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 5762888
+  },
+  "dr": {
+   "dtype": "float32",
+   "shape": [
+    56001,
+    3
+   ],
+   "offset": 6434904
+  }
+ },
+ "bin": "kira.bin"
+}

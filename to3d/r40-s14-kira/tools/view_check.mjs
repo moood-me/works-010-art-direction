@@ -1,0 +1,24 @@
+// The viewer opened as a person would: node view_check.mjs out.png — presses a motion, an expression and «говорит», saves a picture
+import { createRequire } from 'node:module';
+import { serve } from '../../../engine/check/serve.mjs';
+import { fileURLToPath } from 'node:url';
+import { basename, dirname } from 'node:path';
+const FOLDER = basename(dirname(dirname(fileURLToPath(import.meta.url))));
+const require = createRequire('/opt/node-tools/node_modules/');
+const { chromium } = require('playwright');
+const srv = await serve(), b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await b.newPage({ viewport: { width: 1000, height: 760 } });
+await page.route('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', r => r.fulfill({ path: `/home/user/cache/to3d-${FOLDER}/node_modules/three/build/three.module.js`, contentType: 'text/javascript' }));
+const errs = []; page.on('pageerror', e => errs.push(e.message)); page.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
+await page.goto(srv.url + `to3d/${FOLDER}/tools/web/view.html`);
+await page.waitForFunction(() => window.__ready, null, { timeout: 60000 });
+await page.waitForTimeout(1500);
+await page.screenshot({ path: process.argv[2].replace('.png', '-0.png') });
+const n0 = await page.evaluate(() => { window.__n = 0; const f = () => { window.__n++; requestAnimationFrame(f); }; f(); return 0; });
+await page.click('#clips button:nth-child(2)'); await page.click('#exprs button:nth-child(2)'); await page.click('#talk'); await page.click('#twos');
+await page.mouse.move(500, 300); await page.mouse.down(); await page.mouse.move(380, 290, { steps: 4 }); await page.mouse.up();
+await page.waitForTimeout(3000);
+console.log('frames in 3 s:', await page.evaluate(() => window.__n));
+await page.screenshot({ path: process.argv[2] });
+await b.close(); srv.close();
+console.log(errs.length ? 'errors:\n' + errs.join('\n') : 'no errors');
