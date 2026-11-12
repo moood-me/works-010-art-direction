@@ -27,13 +27,12 @@ if __name__ == '__main__':
     save(row('sb', [
         ({'model': M + 'step-anny.json', 'clay': True, 'face': False, 'cam': body()}, 'тело Anny (девочка)'),
         ({'model': M + 'step-fit.json', 'clay': True, 'face': False, 'cam': body()}, 'по рисунку: тонкая, длиннорукая'),
-        ({'model': M + 'step-hoodie.json', 'clay': False, 'cam': body()}, 'голова, волосы, худи'),
-        ({'model': M + 'step-legs.json', 'clay': False, 'cam': body()}, 'наушники, штаны, ботинки, ладони'),
+        ({'model': M + 'step-legs.json', 'clay': False, 'cam': body()}, 'голова и куски бумаги поверх тела'),
         ({'model': '../../data/kira.json', 'clay': False, 'motion': ['bow'], 't': 0, 'cam': body()}, 'сутулость и поза Kimodo'),
     ], 440, 760), 'steps-body', 1600)
     save(row('sh', [
-        ({'model': M + 'step-head0.json', 'clay': True, 'face': False, 'cam': head}, 'голова из Human Base Meshes, лицо заглажено'),
-        ({'model': M + 'step-head1.json', 'clay': True, 'face': False, 'cam': head}, 'подогнана к рисунку (анфас и профиль)'),
+        ({'model': M + 'step-head0.json', 'clay': True, 'face': False, 'cam': head}, 'голова-основа, лицо заглажено'),
+        ({'model': M + 'step-head1.json', 'clay': True, 'face': False, 'cam': head}, 'подогнана к рисунку'),
         ({'model': M + 'step-head.json', 'clay': True, 'face': False, 'cam': head}, 'уши и нос — куски бумаги'),
         ({'model': M + 'step-head.json', 'clay': False, 'cam': head}, 'лицо: куски рисунка'),
         ({'model': M + 'step-hair.json', 'clay': False, 'cam': head}, 'волосы — три листа'),
