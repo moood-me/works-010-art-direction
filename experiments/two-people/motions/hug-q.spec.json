@@ -1,0 +1,7 @@
+{"source": "hug-p2", "frame": 150, "sides": ["Left", "Right"],
+ "note": "the hug's second person (the woman, placed at x -0.05, z 3.0 facing -z; k 0.896): her left hand on his upper back on his right (a point of his skin at rest 1.5 cm out: tools/trunkpoint.mjs moood-man Chest 0.05 -0.6,0,-1), her right hand low on his back on his left (Chest -0.2 0.6,0,-1, riding his Spine1), at his hold frames 125, 150, 175; her pelvis 32 cm in front of his (chests touching). node tools/targets.mjs man hug-p2 … 125,150,175 -0.05,3.0,3.14159265,0.896 with PLACE=0,-3.9,0. The pose: his own hug (hug-p2) at its frame 150, its arms turned to reach",
+ "items": [
+  {"frame": 125, "targets": {"Left": [0.0669, 1.461, 3.8274], "Right": [-0.0974, 1.21, 3.9322]}, "hip": [0.004, 3.41]},
+  {"frame": 150, "targets": {"Left": [0.067, 1.4596, 3.8253], "Right": [-0.0953, 1.205, 3.9292]}, "hip": [0.003, 3.405]},
+  {"frame": 175, "targets": {"Left": [0.0745, 1.4654, 3.8337], "Right": [-0.0873, 1.2074, 3.9336]}, "hip": [0.012, 3.41]}
+ ]}

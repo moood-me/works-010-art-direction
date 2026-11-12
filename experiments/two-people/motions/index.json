@@ -255,6 +255,62 @@
     "en": "the child hugs, legs wrapped round him"
    },
    "after": "c-wait"
+  },
+  {
+   "id": "hug-p1",
+   "label": {
+    "ru": "П: объятие, проба 1",
+    "en": "P: hug, seed 1"
+   }
+  },
+  {
+   "id": "hug-p2",
+   "label": {
+    "ru": "П: объятие, проба 2",
+    "en": "P: hug, seed 2"
+   }
+  },
+  {
+   "id": "sit-probe",
+   "label": {
+    "ru": "сидит на полу",
+    "en": "sits on the floor"
+   }
+  },
+  {
+   "id": "lift-probe",
+   "label": {
+    "ru": "проба: поднимает с пола",
+    "en": "probe: lifts from the floor"
+   }
+  },
+  {
+   "id": "hug-q",
+   "label": {
+    "ru": "объятие: она, руки на его спине",
+    "en": "hug: she, hands on his back"
+   }
+  },
+  {
+   "id": "hug-p3",
+   "label": {
+    "ru": "объятие: он, руки на её спине",
+    "en": "hug: he, hands on her back"
+   }
+  },
+  {
+   "id": "lift-probe2",
+   "label": {
+    "ru": "проба: поднимает тяжёлое с пола",
+    "en": "probe: lifts a heavy thing from the floor"
+   }
+  },
+  {
+   "id": "hug-q2",
+   "label": {
+    "ru": "объятие: она, на него второго",
+    "en": "hug: she, onto him made second"
+   }
   }
  ]
 }

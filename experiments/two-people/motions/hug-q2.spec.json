@@ -1,0 +1,7 @@
+{"source": "hug-q", "frame": 150, "sides": ["Left", "Right"],
+ "note": "the hug's woman again, onto him as made second (hug-p3, placed at x 0, z -3.9, k 1.015; she at x -0.05, z 3.0 facing -z, k 0.896): the same points of his back as for hug-q (Chest -0.077,1.2462,-0.1016; Spine1 0.0811,0.9955,-0.1148), at frames 125, 150, 175; her pelvis 10 cm further back than in hug-q (hug-p3's trunk leans into her: the chests went through). PLACE=0,-3.9,0 node tools/targets.mjs man hug-p3 <joint> <point> 125,150,175 -0.05,3.0,3.14159265,0.896. The pose: her own hug (hug-q) at its frame 150",
+ "items": [
+  {"frame": 125, "targets": {"Left": [0.1159, 1.4556, 3.8462], "Right": [-0.0594, 1.2304, 3.988]}, "hip": [-0.027, 3.335]},
+  {"frame": 150, "targets": {"Left": [0.0768, 1.4578, 3.8458], "Right": [-0.0952, 1.2284, 3.9886]}, "hip": [-0.026, 3.314]},
+  {"frame": 175, "targets": {"Left": [0.0812, 1.4577, 3.8892], "Right": [-0.0926, 1.2174, 4.0164]}, "hip": [-0.023, 3.301]}
+ ]}

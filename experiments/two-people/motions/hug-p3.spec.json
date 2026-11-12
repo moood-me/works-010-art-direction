@@ -1,0 +1,7 @@
+{"source": "hug-q", "frame": 150, "sides": ["Left", "Right"],
+ "note": "the hug's man again, now made second, onto her (hug-q, placed at x -0.05, z 3.0 facing -z, k 0.896; he at x 0, z -3.9, k 1.015): his left hand high on her back (tools/trunkpoint.mjs moood-woman Chest 0.12 0.3,0,-1 0.015 → 0.0399,1.1975,-0.0687), his right low (moood-woman Spine1 0 -0.3,0,-1 0.015 → -0.041,0.9346,-0.0698), at frames 125, 150, 175; his pelvis 8 cm further back than in hug-p2 (her chest went 6 cm into his). PLACE=-0.05,3.0,3.14159265 node tools/targets.mjs woman hug-q <joint> <point> 125,150,175 0,-3.9,0,1.015. The pose: her own hug (hug-q) at its frame 150 — left arm high, right low, as his are to be",
+ "items": [
+  {"frame": 125, "targets": {"Left": [-0.0712, 1.2221, 3.7755], "Right": [0.0153, 0.9553, 3.8496]}, "hip": [-0.053, 3.39]},
+  {"frame": 150, "targets": {"Left": [-0.0753, 1.2173, 3.7934], "Right": [0.0144, 0.9507, 3.8686]}, "hip": [-0.052, 3.395]},
+  {"frame": 175, "targets": {"Left": [-0.0745, 1.2184, 3.8119], "Right": [0.0117, 0.9474, 3.8824]}, "hip": [-0.06, 3.391]}
+ ]}

@@ -955,5 +955,167 @@
    "z": -0.018
   },
   "note": "second try at the legs: wrapped round his waist (c-hug4's went forward into his thighs)"
+ },
+ {
+  "id": "hug-p1",
+  "label": {
+   "ru": "П: объятие, проба 1",
+   "en": "P: hug, seed 1"
+  },
+  "key": "2a72da115730790fee752b56cead7a5c023610ebc34c6233063496b15f4d5472",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing hugs someone in front of them with both arms, holds the hug, then lets go."
+   ],
+   "seconds": [
+    3,
+    4
+   ],
+   "seed": 1
+  }
+ },
+ {
+  "id": "hug-p2",
+  "label": {
+   "ru": "П: объятие, проба 2",
+   "en": "P: hug, seed 2"
+  },
+  "key": "a783d0ebc67c8f9100044d20d57b7b57a57c1c443f9e832a39d2d68f644165f2",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing hugs someone in front of them with both arms, holds the hug, then lets go."
+   ],
+   "seconds": [
+    3,
+    4
+   ],
+   "seed": 2
+  }
+ },
+ {
+  "id": "sit-probe",
+  "label": {
+   "ru": "сидит на полу",
+   "en": "sits on the floor"
+  },
+  "key": "a8c5a271bbfe5df4182be661c73d97592a241e4cfaa86897df5acc45b4be1c10",
+  "ask": {
+   "prompts": [
+    "A person sits on the floor with knees bent, leaning back slightly, resting."
+   ],
+   "seconds": [
+    6
+   ],
+   "seed": 1
+  }
+ },
+ {
+  "id": "lift-probe",
+  "label": {
+   "ru": "проба: поднимает с пола",
+   "en": "probe: lifts from the floor"
+  },
+  "key": "b31627191306e18453a0de73a397d450e0f5363e1456e2ea12ca173923238c3f",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person bends down, picks up a large heavy object from the floor with both arms and lifts it up to chest level."
+   ],
+   "seconds": [
+    3,
+    4
+   ],
+   "seed": 1
+  }
+ },
+ {
+  "id": "hug-q",
+  "label": {
+   "ru": "объятие: она, руки на его спине",
+   "en": "hug: she, hands on his back"
+  },
+  "key": "297bcb8e2079f5d58b9f09cfe19b773423d6e4e64fec34eba1967fa0fd5a5561",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing hugs someone in front of them with both arms, holds the hug, then lets go."
+   ],
+   "seconds": [
+    3,
+    4
+   ],
+   "seed": 1,
+   "constraints": [
+    "left-hand and right-hand: frames 125, 150, 175 — motions/hug-q.constraint.json (as sent: the fingers zero), from motions/hug-q.spec.json"
+   ]
+  },
+  "note": "her pelvis 32 cm in front of his; her left hand high on his back, her right low"
+ },
+ {
+  "id": "hug-p3",
+  "label": {
+   "ru": "объятие: он, руки на её спине",
+   "en": "hug: he, hands on her back"
+  },
+  "key": "588b27e5c487cd810409fc8b93c7ef91b5437ea45b3e28d560b9bdfdbb5b7000",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing hugs someone in front of them with both arms, holds the hug, then lets go."
+   ],
+   "seconds": [
+    3,
+    4
+   ],
+   "seed": 1,
+   "constraints": [
+    "left-hand and right-hand: frames 125, 150, 175 — motions/hug-p3.constraint.json (as sent), from motions/hug-p3.spec.json"
+   ]
+  },
+  "note": "made second, onto her (hug-q): his left hand high on her back, his right low; his pelvis 8 cm further back than in hug-p2"
+ },
+ {
+  "id": "lift-probe2",
+  "label": {
+   "ru": "проба: поднимает тяжёлое с пола",
+   "en": "probe: lifts a heavy thing from the floor"
+  },
+  "key": "303bd3f35d110c73e5b55b6525202180dd0531a2e019c700ddc73c317f9d4cf1",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person squats down low, picks up a large heavy object from the floor with both arms under it, and stands up holding it at chest level."
+   ],
+   "seconds": [
+    3,
+    5
+   ],
+   "seed": 1
+  }
+ },
+ {
+  "id": "hug-q2",
+  "label": {
+   "ru": "объятие: она, на него второго",
+   "en": "hug: she, onto him made second"
+  },
+  "key": "d7ab74caf42392c5e244325f3e22e199bbd0960f9704998dad49a51ccefe29bc",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing hugs someone in front of them with both arms, holds the hug, then lets go."
+   ],
+   "seconds": [
+    3,
+    4
+   ],
+   "seed": 1,
+   "constraints": [
+    "left-hand and right-hand: frames 125, 150, 175 — motions/hug-q2.constraint.json (as sent), from motions/hug-q2.spec.json"
+   ]
+  },
+  "note": "onto hug-p3; her pelvis 10 cm further back than in hug-q"
  }
 ]

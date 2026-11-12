@@ -44,6 +44,23 @@ export const SCENES = [
     follow: true,
   },
   {
+    id: 'hug', label: 'объятие',
+    about: 'Двое идут навстречу друг другу, обнимаются, держат объятие и отпускают. Каждый сделан Kimodo с ладонями на спине другого (левая выше, правая ниже): сначала мужчина без ограничений (его руки обнимали воздух над ней), по нему женщина, по ней мужчина заново, по нему женщина заново — каждый раз таз дальше назад, чтобы груди не проходили друг в друга.',
+    frames: 210,
+    people: [
+      { id: 'P', name: 'мужчина', character: 'man', chain: ['hug-p3'], start: 0, place: { position: [0, 0, -3.9], heading: 0 } },
+      { id: 'Q', name: 'женщина', character: 'woman', chain: ['hug-q2'], start: 0, place: { position: [-0.05, 0, 3.0], heading: Math.PI } },
+    ],
+    // palms on the other's back (points of the skin at rest: tools/trunkpoint.mjs)
+    contacts: [
+      { who: 'Q', side: 'Left', on: 'P', joint: 'Chest', point: [-0.077, 1.2462, -0.1016], from: 115, to: 185, ramp: 10 },
+      { who: 'Q', side: 'Right', on: 'P', joint: 'Spine1', point: [0.0811, 0.9955, -0.1148], from: 115, to: 185, ramp: 10 },
+      { who: 'P', side: 'Left', on: 'Q', joint: 'Chest', point: [0.0399, 1.1975, -0.0687], from: 115, to: 185, ramp: 10 },
+      { who: 'P', side: 'Right', on: 'Q', joint: 'Spine1', point: [-0.041, 0.9346, -0.0698], from: 115, to: 185, ramp: 10 },
+    ],
+    camera: { yaw: -1.4, pitch: 0.1, dist: 5, target: [0, 1.0, -0.4] },
+  },
+  {
     id: 'carry3', label: 'поднимает и несёт',
     about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт, ставит и отходит на два шага. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
     frames: 440,
