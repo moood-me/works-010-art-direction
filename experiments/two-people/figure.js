@@ -16,7 +16,8 @@ export class Figure {
     this.normals = new Float32Array(body.N * 3);
     this.sample = newSample(body.skeleton.J);
     this.pose = null;
-    this.adjust = null;          // (pose, t) => void: changes the placed pose before skinning
+    this.adjust = null;          // (pose, t) => void: changes the placed pose before skinning (t: sceneT if set)
+    this.sceneT = null;          // the scene's frame less this person's start, set by the scene each frame
     this.floorShift = true;      // set the lowest point on the floor (off for one carried: the carrier holds them)
   }
   get place() { return this.retarget.place; }
@@ -41,7 +42,7 @@ export class Figure {
       const shift = pose.floor - lo;
       for (let j = 0; j < sk.J; j++) pose.P[j * 3 + 1] += shift;
     }
-    if (this.adjust) this.adjust(pose, t);
+    if (this.adjust) this.adjust(pose, this.sceneT ?? t);
     this.skinner.skin(pose, this.positions);
     normalsOf(this.positions, body.triangles, this.normals);
     this.pose = pose;

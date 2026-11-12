@@ -126,7 +126,9 @@ export async function loadScene(E, base, def, read) {
   if (def.carry) attach(S, def.carry);
   // everyone at scene frame T (in the order given: who another depends on comes first)
   S.at = T => {
-    for (const p of people) p.fig.frame(p.clip, clamp(T - p.start, 0, p.clip.frames - 1));
+    // each adjust is told the scene's frame less the person's start (not clamped: past the end of a chain the pose
+    // holds its last frame, but what it is attached to goes on)
+    for (const p of people) { p.fig.sceneT = T - p.start; p.fig.frame(p.clip, clamp(T - p.start, 0, p.clip.frames - 1)); }
     return S;
   };
   return S;

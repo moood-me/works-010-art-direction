@@ -151,6 +151,30 @@
     "en": "B keeps the hand on the shoulder, sliding out"
    },
    "after": "b-touch3"
+  },
+  {
+   "id": "c-hug2",
+   "label": {
+    "ru": "ребёнок обнимает за шею (руки на его плечах)",
+    "en": "the child hugs, hands on his shoulders"
+   },
+   "after": "c-wait"
+  },
+  {
+   "id": "c-rest2",
+   "label": {
+    "ru": "ребёнок отпускает",
+    "en": "the child lets go"
+   },
+   "after": "c-hug2"
+  },
+  {
+   "id": "m-down3",
+   "label": {
+    "ru": "М ставит ребёнка и отступает",
+    "en": "M puts the child down and steps back"
+   },
+   "after": "m-walk2"
   }
  ]
 }

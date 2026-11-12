@@ -1,7 +1,9 @@
 # Two people — through Kimodo's constraints (К2)
 
 Two scenes of two people, every motion made by Kimodo (the moood studio's `make_motion`), joined with `after`, played
-on the early engine (`engine/`) with Anny bodies of `engine/data/bodies` (moood's man, woman, child):
+on the early engine (`engine/`) with Anny bodies of `engine/data/bodies` (moood's man, woman, child). Each is here in
+its second version (`touch3`, `carry2` in `scenes.js`, the page's first two buttons — made after a look at how the
+first ones read, see "Second pass" below) and its first beside it ("первая версия"):
 
 - **touch** — a woman stands; a man walks up from behind and puts his right hand on her right shoulder; she looks
   round over that shoulder; his hand stays on the shoulder while it turns.
@@ -60,7 +62,55 @@ effect**: whoever acts first is made first; what of them the other must meet bec
    skinning (`figure.js`, a copy of the engine's with an `adjust` hook). In *touch* it also turns the hand about the
    vertical towards 1.4 × her shoulder's turn. Its size is measured below; the page switches it off ("поправка рук").
 
-## Numbers (`tools/measure.mjs`, every 2nd frame; `pics/*-measure.json`)
+## Second pass: what a person sees
+
+The first versions held the contact, but read badly: in the touch he stood at arm's length, arm straight, head tilted
+back, and after she turned his hand was a claw beside her jaw with a bent wrist (from the side, a hand at her throat);
+in the carry the child was held out from him, barely off the floor, its hands stuck in his chest. What changed:
+
+**touch3** (`b-touch3`, `b-hold4`):
+- He stands nearer and behind her left (pelvis 51 cm behind the touch, 28 cm to her left of it), so his right arm
+  reaches across to her right shoulder: the elbow bent and hanging (a new `elbowPole` in `tools/order_hand.py` turns
+  the arm about shoulder → wrist so the elbow points down; the probe's tap had it stuck out sideways), the fingers flat
+  (`fingersFrom`: the probe's own flat tapping hand), the hand pointing forward over her shoulder.
+- The touch is on the outer top of her shoulder, and as she looks round his hand is made by Kimodo to slide out to the
+  shoulder's edge (`b-hold4`'s keyframes on a point further out). Her chin comes round over the top of her shoulder:
+  a hand left on the top (v1, and `b-hold3`) ends at her chin, whatever way it is turned; one at the edge stays clear.
+  The hand is not turned on its own any more (turned to follow her shoulder it bent the wrist 75–85°).
+- His head: asked to "look down at them", Kimodo still tilted it back 6–10°. A correction on top (`looks` in
+  `scenes.js`, `scene.js`) turns his neck and head towards her head, 0.6 of the way, at most 25°, spread over the two
+  neck joints and the head, faded in and out — the one correction here that is not a contact; off with the others.
+- Tries on the way, kept in `motions/` and `orders.json`: `b-touch2`/`b-hold2` (nearer but from her right: the
+  forearm came inward and the fingers lay towards her chin), `b-hold3` (from her left, the hand on the top: her chin
+  came onto the fingers again).
+
+**carry2** (`m-lift2`, `m-walk2`, `m-down3`; `c-wait`, `c-hug2`, `c-rest2`):
+- His second keyframe lifts the child 42 cm (v1: 30) and draws it in so its front comes to his chest (v1: 9 cm off).
+- The child's hands are constrained onto the top of his shoulders: the same principle the other way round. The points
+  on his shoulders, at four frames of the carry, are carried back through the attachment (the rigid move of his hands
+  since the lift), the child's placement and size, into the child's own Kimodo space (`tools/carried_targets.mjs`);
+  the pose is the child's own v1 hug, its arms turned to reach (`motions/c-hug2.spec.json`). Kimodo then makes the hug
+  around them; a correction on top brings the palms the rest of the way.
+- He takes a step back after putting it down (`m-down3`).
+- A try to keep the child's feet off his shins ("with knees bent and feet lifted behind them", `c-hug3`): Kimodo kept
+  them under it; not used.
+
+Numbers of the second versions:
+- touch3: his palm against its place — Kimodo alone mean 4.1 cm, max 6.4 cm while she stands (frames 160–192), mean
+  2.2 cm, max 3.5 cm while she turns (200–249); with the correction 0.0 cm. One in the other: 6 frames of 125, at
+  most 0.7 cm (his thumb on her shoulder). The look correction: 25° (it is at its limit; Kimodo's head was 50–60° off
+  her head).
+- carry2: his palms on the child's sides — Kimodo alone mean 5.2 / 6.0 cm, max 15 cm; with the correction 0.0 cm.
+  The child's palms on his shoulders, frames 205–362 — Kimodo alone mean 5.4 / 6.9 cm (2–10 cm most of the time; up to
+  25 cm at the ends of the window, where it lets go); with the correction mean 1.9 cm, max 4 cm (its arm can't
+  always reach). The child's lowest point 36–42 cm above the floor while carried; 0.1 cm once put down.
+  One in the other: his thumbs 1–3.5 cm into the child's sides; the child's dangling foot into his shin up to 6 cm as
+  he walks (its legs hang straight in front of his); the child's forearm into his shoulder up to 6 cm around frames
+  320–340 (as he stops and his shoulders rise); at the set-down (frames 366–396, 1 s) the child's letting-go hands and
+  his fingers go into each other's belly and hips up to 6 cm (they stand pressed together; his step back is 12 cm).
+  The measure's search reaches 6 cm, so "6" means "6 or more".
+
+## Numbers of the first versions (`tools/measure.mjs`, every 2nd frame; `pics/*-measure.json`)
 
 **touch** — B's palm against its point on A's shoulder, frames 160–249 (3 s of contact):
 - Kimodo alone: mean 5.0 cm, max 8.7 cm. At the constrained frames 2–3.5 cm (proportions); between them up to
@@ -94,12 +144,26 @@ effect**: whoever acts first is made first; what of them the other must meet bec
   right and looks back, diagonally to the right side" (the data's own words) turned it, a second late (seed 2 of 2).
 - **Keyframes are sparse**: between two constrained frames the hand drifts up to 9 cm (touch) — more keyframes
   would cut it, at more of the ask's size (a pose is ~1.5 KB a frame).
-- **Hug** is made for an imagined person of Kimodo's size: the child's arms go into the man.
+- **Hug** is made for an imagined person of Kimodo's size: the child's arms go into the man (v1). Constrained to his
+  shoulders (v2), it hugs him.
+- **Head**: "looks at them", "looks down at them" — the man's head stayed tilted back (6–10°, two orders).
+- **Feet**: "with knees bent and feet lifted behind them" did nothing to a child's legs held in the air.
+- **A pose sent must have 77 joints exactly**: one typed out by hand had 76 and was refused ("Constraint joint count
+  (76) does not match…"). Print the constraint from the tool and copy it.
+- Joints a hand constraint does not use may be sent as zero (a shorter ask) — but both arms' chains go into every
+  hand constraint of a frame (above).
 - **The child moves as an adult** (Kimodo has no age); the lift itself is Kimodo's "picks up a large object at waist
   level" — it reads as lifting a child, not as a box, once the second keyframe draws the hands to the chest (without
   it the child was held out at arm's length).
 
-## What is weak, honestly
+## What is weak, honestly (the first versions; the second's below)
+
+Second versions: his head's look at her is a correction on top, not Kimodo's; the child's legs hang straight and its
+foot meets his shin as he walks; at the set-down their hands go into each other for a second; the child's hug is still
+more hands-on-shoulders than arms-round-the-neck; his thumbs press into the child's sides. In the touch, seen from
+behind-right her turned head is near his hand (they don't touch: 0.7 cm at most, at the shoulder).
+
+First versions:
 
 - The man's head is tilted back a little in *touch* (Kimodo's, 5–13°): he looks over her rather than at her.
 - He stands at arm's length behind her (the pelvis was put 0.6 m behind the shoulder): it reads as reaching, not as
@@ -124,6 +188,8 @@ effect**: whoever acts first is made first; what of them the other must meet bec
 - `motions/<id>.json` — Kimodo's data as the engine keeps them; `motions/orders.json` — what was asked for each (prompts,
   seconds, seed, constraints, `after`, `startsAt`) and the takes thrown away; `motions/*.spec.json` → `tools/order_hand.py`
   → `motions/*.constraint.json` — the hand constraints exactly as sent.
+- `tools/carried_targets.mjs` (a point on the carrier in the carried one's Kimodo space, through the attachment),
+  `tools/startsat.py` (an `after` motion's startsAt, as the studio computes it),
 - `tools/keep.py` (a made motion's body data and order in), `tools/convert.py` (into the engine's format; copied from
   `engine/tools/motions.py`), `tools/targets.mjs`, `tools/shoulder.mjs`, `tools/sides.mjs`, `tools/bodies.mjs`,
   `tools/measure.mjs`, `tools/feet.mjs`, `tools/pictures.mjs` (+ `jobs-*.json`).

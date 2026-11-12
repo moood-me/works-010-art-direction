@@ -4,33 +4,33 @@
 constraints).
 
 **What it is:** two scenes of two people where every motion is Kimodo's, made in the order of cause and effect — a
-place on the first person's body (our body, our proportions) becomes the second one's hand constraint in Kimodo's own
-space; reactions go on with `after`. A man puts his hand on a woman's shoulder and keeps it there as she looks round;
-a man lifts a child under the arms, carries it and puts it down (the child attached to his hands, posed by its own
-Kimodo motion). Page: `experiments/two-people/index.html`.
+place on one person's body (our body, our proportions) becomes the other one's hand constraint in Kimodo's own
+space; reactions go on with `after`. A man walks up behind a woman and lays his hand on her shoulder; she looks round,
+his hand stays and slides to the shoulder's edge. A man lifts a child under the arms to his chest, the child hugs him
+(its hands constrained onto his shoulders through the attachment), he carries it and puts it down on its feet. Page:
+`experiments/two-people/index.html` (the second versions first, the first beside them).
 
-**Verdict:** works, both scenes, by the principle Pavel described. Kimodo puts the hands within 2–3.5 cm of their
-places at the constrained frames and drifts up to 9–14 cm between them; a small correction on top (the arm turned
-by the least, faded in and out) holds the palm on the place every frame — 3 s on the shoulder, 7.5 s on the child.
-Passing through: at most 1.4 cm in the touch (palm pressing the shoulder); up to 6 cm in the carry (the child's
-hugging forearms into the man's chest — its hug is Kimodo's, made for someone of Kimodo's size; not fixed). Looks:
-the touch reads as two people who notice each other (he touches, she turns to him, his hand rides her shoulder),
-though he stands at arm's length with his head tilted back; the lift reads as lifting a child (bend, take, lift to the
-chest, carry, set down on its feet), the child's hug is weak. Handshake, adult hug, leading by the hand: not made (not
-needed — the two asked for worked).
+**Verdict:** works, both scenes, by the principle Pavel described, and the second pass reads better as people:
+he stands near with a bent, hanging elbow and a flat hand on her shoulder; the child is held up against the man's
+chest with its arms on his shoulders. Contacts hold every frame (Kimodo within 2–7 cm on average, a small correction on
+top brings the palms the rest of the way; the child's own arms come within 2 cm, at most 4). Weak: his look at her is
+a correction on top (Kimodo kept his head tilted back though asked to look down at her); the child's legs hang
+straight and its foot meets his shin as he walks (up to 6 cm in); for a second at the set-down their hands go into each
+other's belly; from his right side his hand overlaps her turned chin in the picture (it is on her shoulder's edge).
 
-**Pictures, the best first:**
-- `pics/touch-sheet.png` — К2-а: the touch from the side and from behind: he walks up, puts his hand on her
+**Pictures, the best first** (second versions; the first versions' pictures are beside them without the "3"/"2"):
+- `pics/touch3-sheet.png` — К2-а: the touch from the side and from behind-right: he comes, lays his hand on her
   shoulder, she looks round, the hand stays.
-- `pics/carry-sheet.png` — К2-б: the carry from the side and from the front: he bends, takes the child under the
-  arms, lifts, carries, puts it down.
-- `pics/touch-contact.png` — К2-в: the hand on the shoulder close up as she turns (front-right and behind).
-- `pics/carry-contact.png` — К2-г: the man's hands on the child's sides close up.
-- `pics/touch-raw.png` — К2-д: the same moments with Kimodo alone (no correction): the hand within centimetres at
-  the constrained frames, floating off between them.
-- `pics/touch-side.mp4`, `pics/touch-back.mp4` — К2-е, К2-ж: the touch as films, from the side and from behind.
-- `pics/carry-side.mp4`, `pics/carry-front.mp4` — К2-з, К2-и: the carry as films.
+- `pics/carry2-sheet.png` — К2-б: the carry from the side and from the front: bends, lifts the child to his chest, the
+  child hugs him, carries, puts it down.
+- `pics/touch3-contact.png` — К2-в: his hand on her shoulder close up, before and as she turns (front-right, behind).
+- `pics/carry2-hug.png` — К2-г: the child held at his chest, its hands on his shoulders, close up from two sides.
+- `pics/carry2-contact.png` — К2-д: his hands on the child's sides close up.
+- `pics/touch3-raw.png` — К2-е: the touch with Kimodo alone (no corrections): how near Kimodo comes by itself.
+- `pics/touch3-side.mp4`, `pics/touch3-back.mp4` — К2-ж, К2-з: the touch as films.
+- `pics/carry2-side.mp4`, `pics/carry2-front.mp4` — К2-и, К2-к: the carry as films.
+- `pics/touch-sheet.png`, `pics/carry-sheet.png` — К2-л, К2-м: the first versions, for comparison (arm's length,
+  the child held out).
 
-**History:** the commits in branch `two-people` say what was done and why; `notes.md` has the how. A note for
-`docs/history/` was not written (outside this folder, as asked) — its text can be taken from `notes.md`, "The
-principle" and "What Kimodo does badly".
+**History:** the commits in branch `two-people` say what was done and why; `notes.md` has the how ("The principle",
+"Second pass", "What Kimodo does badly"). A note for `docs/history/` was not written (outside this folder, as asked).

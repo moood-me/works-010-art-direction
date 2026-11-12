@@ -564,5 +564,151 @@
    "z": 3.415
   },
   "note": "v4; startsAt by tools/startsat.py"
+ },
+ {
+  "id": "c-hug2",
+  "label": {
+   "ru": "ребёнок обнимает за шею (руки на его плечах)",
+   "en": "the child hugs, hands on his shoulders"
+  },
+  "key": "38818a252345b99e291cd2539740bb63ac86e83434d2e141cd799e3d1dcdbbed",
+  "ask": {
+   "prompts": [
+    "A childlike person hugs someone in front of them, arms around their neck."
+   ],
+   "seconds": [
+    6.8
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand and left-hand: frames 35, 85, 135, 185 — motions/c-hug2.constraint.json (as sent: only the trunk's and the arms' turns, the fingers zero), from motions/c-hug2.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "c-wait",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.013,
+   "z": -0.018
+  },
+  "note": "the child's hands constrained onto the man's shoulders through the attachment (tools/carried_targets.mjs). A first send (71c4c71d…) was refused: 76 joints in a pose typed by hand — sends are now printed by the tool and copied"
+ },
+ {
+  "id": "c-rest2",
+  "label": {
+   "ru": "ребёнок отпускает",
+   "en": "the child lets go"
+  },
+  "key": "b73d99d85f16b9f2db2c13a9c17403387645765d88cd04b6fd8a19f04e399d18",
+  "ask": {
+   "prompts": [
+    "A childlike person lets go of someone in front of them and stands still with arms down."
+   ],
+   "seconds": [
+    2.5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "c-hug2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.004,
+   "z": 0.01
+  },
+  "note": "startsAt by tools/startsat.py"
+ },
+ {
+  "id": "m-down3",
+  "label": {
+   "ru": "М ставит ребёнка и отступает",
+   "en": "M puts the child down and steps back"
+  },
+  "key": "77422e7e63c83d9414d41feb548e2132c2da9ff863f06c72f2b5fe1c044f8544",
+  "ask": {
+   "prompts": [
+    "A person standing bends down and puts a large object down in front of them at waist level with both hands, then stands up and takes a step back."
+   ],
+   "seconds": [
+    3
+   ],
+   "seed": 1,
+   "constraints": [
+    {
+     "type": "right-hand",
+     "frame_indices": [
+      45
+     ],
+     "from": {
+      "key": "91c7e3099b615b47f56719fcc202ab5c47df308386069615652ab1b1f0ab01f9",
+      "frames": [
+       126
+      ]
+     },
+     "turn": 0,
+     "move": [
+      -0.004,
+      -3.329
+     ]
+    },
+    {
+     "type": "left-hand",
+     "frame_indices": [
+      45
+     ],
+     "from": {
+      "key": "91c7e3099b615b47f56719fcc202ab5c47df308386069615652ab1b1f0ab01f9",
+      "frames": [
+       126
+      ]
+     },
+     "turn": 0,
+     "move": [
+      -0.004,
+      -3.329
+     ]
+    }
+   ]
+  },
+  "after": {
+   "motion": "m-walk2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.17,
+   "z": 2.153
+  },
+  "note": "as m-down2, and a step back after (m-down2 stood up where he was and the child's letting-go hands went into his belly)"
+ },
+ {
+  "id": "c-hug3 (not kept)",
+  "label": {
+   "ru": "ребёнок обнимает, колени согнуты",
+   "en": "the child hugs, knees bent"
+  },
+  "key": "ef50ab18f6a134d53324aefc1484d3f3726e8b261f25aac5e94441ed5ae7ed1e",
+  "ask": {
+   "prompts": [
+    "A childlike person hugs someone in front of them, arms around their neck, with knees bent and feet lifted behind them."
+   ],
+   "seconds": [
+    6.8
+   ],
+   "seed": 1,
+   "constraints": [
+    "as c-hug2: motions/c-hug2.constraint.json"
+   ]
+  },
+  "after": {
+   "motion": "c-wait",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.013,
+   "z": -0.018
+  },
+  "note": "to keep its feet off his shins as he walks: Kimodo kept its feet on the ground under it all the same — not used, its data not kept"
  }
 ]
