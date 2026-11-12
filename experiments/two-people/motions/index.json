@@ -175,6 +175,20 @@
     "en": "M puts the child down and steps back"
    },
    "after": "m-walk2"
+  },
+  {
+   "id": "h-p",
+   "label": {
+    "ru": "П подходит и протягивает руку",
+    "en": "P comes up and holds out a hand"
+   }
+  },
+  {
+   "id": "h-q",
+   "label": {
+    "ru": "К идёт навстречу и пожимает его руку",
+    "en": "Q comes to meet him and shakes his hand"
+   }
   }
  ]
 }

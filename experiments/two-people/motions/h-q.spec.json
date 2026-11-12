@@ -1,0 +1,7 @@
+{"source": "h-p", "frame": 125, "side": "Right", "kind": "right-hand",
+ "note": "the follower of the handshake: her palm on his. His palm point (scene.js palmRest of moood-man: -0.5041,1.0649,0.2235 on his RightHand) at scene frames 105, 125, 145, in her Kimodo space — PLACE=0,-3.9,0 node tools/targets.mjs man h-p RightHand -0.5041,1.0649,0.2235 105,125,145 -0.47,3.4,3.14159265,0.896 (she starts at x -0.47, z 3.4 facing -z; k 0.896). The pose: his own handshake at his frame 125 (Kimodo's), so her palm faces his; her pelvis 34 cm behind the hand and 9 cm to its left, as his is",
+ "items": [
+  {"frame": 105, "target": [-0.1112, 1.1619, 3.8042], "hip": [-0.03, 3.45]},
+  {"frame": 125, "target": [-0.1275, 1.1591, 3.7836], "hip": [-0.03, 3.45]},
+  {"frame": 145, "target": [-0.1187, 1.1638, 3.7899], "hip": [-0.03, 3.45]}
+ ]}

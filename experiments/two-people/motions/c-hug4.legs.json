@@ -1,0 +1,4 @@
+{"note": "the child's legs round the man's sides: thighs forward, out and down, shins hanging down and back",
+ "Left": {"thigh": [0.45, -0.55, 0.7], "shin": [0.15, -1, -0.3]},
+ "Right": {"thigh": [-0.45, -0.55, 0.7], "shin": [-0.15, -1, -0.3]},
+ "frames": [0, 2, 3]}

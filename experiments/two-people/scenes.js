@@ -31,6 +31,18 @@ export const SCENES = [
     camera: { yaw: -1.05, pitch: 0.12, dist: 5.2, target: [0, 0.95, -1.0] },
   },
   {
+    id: 'shake', label: 'рукопожатие',
+    about: 'Двое идут навстречу друг другу, останавливаются и пожимают руки, потом отпускают. Мужчина сделан первым (Kimodo, без ограничений); женщина — вторым: её ладонь на его ладони в каждом кадре, где он держит руку.',
+    frames: 195,
+    people: [
+      { id: 'P', name: 'мужчина', character: 'man', chain: ['h-p'], start: 0, place: { position: [0, 0, -3.9], heading: 0 } },
+      { id: 'Q', name: 'женщина', character: 'woman', chain: ['h-q'], start: 0, place: { position: [-0.47, 0, 3.4], heading: Math.PI } },
+    ],
+    // her palm on his (his palm's point: scene.js palmRest of his body, on his right hand)
+    contacts: [{ who: 'Q', side: 'Right', on: 'P', joint: 'RightHand', point: [-0.5041, 1.0649, 0.2235], from: 100, to: 160, ramp: 8 }],
+    camera: { yaw: -1.4, pitch: 0.1, dist: 5.5, target: [-0.3, 0.95, 0] },
+  },
+  {
     id: 'carry2', label: 'поднимает и несёт',
     about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт и ставит. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
     frames: 420,
