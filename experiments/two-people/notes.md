@@ -1,6 +1,6 @@
 # Two people — through Kimodo's constraints (К2)
 
-Two scenes of two people, every motion made by Kimodo (the moood studio's `make_motion`), joined with `after`, played
+Four scenes of two people — a touch, a handshake, leading by the hand, a carry — every motion made by Kimodo (the moood studio's `make_motion`), joined with `after`, played
 on the early engine (`engine/`) with Anny bodies of `engine/data/bodies` (moood's man, woman, child). Each is here in
 its second version (`touch3`, `carry2` in `scenes.js`, the page's first two buttons — made after a look at how the
 first ones read, see "Second pass" below) and its first beside it ("первая версия"):
@@ -110,6 +110,45 @@ Numbers of the second versions:
   his fingers go into each other's belly and hips up to 6 cm (they stand pressed together; his step back is 12 cm).
   The measure's search reaches 6 cm, so "6" means "6 or more".
 
+## Third pass: both moving — a handshake and leading by the hand
+
+The touch and the carry have one who leads and one who is placed. Here both walk and the meeting point belongs to
+neither. Pavel's words: Kimodo makes one person at a time, so make one first, then the other with constraints to the
+first's hands; where roles change, make it in turns. That is what was done; nothing new was needed in the tools.
+
+**shake** (`h-p`, `h-q`): he and she walk towards each other, stop, shake right hands, let go.
+- He is made first, alone (`h-p`): "walks forward … comes to a stop" + "raises the right arm forward for a handshake,
+  shakes someone's hand with the right arm, then lowers it" — the data's own words (its records `…_handshake_…`).
+  Seed 1 holds the hand out 2 s (seed 2: 1.3 s).
+- She is made second (`h-q`): the same prompts, her right palm constrained onto his palm at three frames of his
+  held-out hand (105, 125, 145). The pose sent is his own handshake at his frame 125 — in her own space it faces him,
+  so her palm faces his palm; her pelvis where his is against his hand. Her walk is her own; where she stops is set by
+  the constraint's pelvis.
+- Numbers: her palm against his — Kimodo alone mean 3.5 cm (2.5–3 cm most of the hold, 5–10 cm at its ends), with the
+  correction 0.0 cm over frames 100–160 (2 s). One in the other: their fingers 2–3 cm into each other's hand (flat
+  hands, no grip: they overlap where real fingers would wrap). Nothing else.
+- Looks: two people who walk up and shake hands; the clasp reads, close up the hands overlap rather than grip.
+
+**lead** (`l-lead2`, `g-led2`): he walks and leads her by the hand; she walks beside him.
+- He is made first (`l-lead2`): "walks forward at a relaxed pace, holding a child's hand with their left hand down at
+  their side" (a first take, "leading someone by the hand with their left hand held a little out to the side", walked
+  1 m in 5 s and raised the hand forward). His arm swings as in any walk.
+- She is made second (`g-led2`): her right palm on his left palm every 10 frames (14 keyframes), her pelvis 62 cm to
+  his left of his at the same frames; the poses from a probe of her own walk holding a hand (`g-probe`). A first take
+  (`g-led`: 45 cm apart, a keyframe every 15 frames) put his arm into her shoulder and her hand lagged his swing by up
+  to 40 cm between keyframes.
+- Numbers: Kimodo alone mean 4.7 cm, max 9.3 cm; with the correction 0.0 cm over 4.5 s. One in the other: their
+  joined forearms and hands 2–3 cm (every frame: joined hands are touching).
+- Looks: two people walking side by side hand in hand; her gait leans forward a little, as if pulled along.
+
+**The carry, again** (`carry3`): he puts the child down and takes two steps back (`m-down4`, a root2d keyframe 45 cm
+behind): 63 cm back. Their hands still go into each other for about a second while he is bent over it at the set-down
+(frames 366–390; clear from 396, before: 402). The child's legs: given through the constraint's pose (a fullbody
+constraint, `tools/order_full.py`: c-hug2's poses with the legs turned), twice — legs forward-down (`c-hug4`: into his
+thighs) and wrapped round his waist (`c-hug5`: they wrap, but one leg sticks out wide, the child's hands went further
+into his chest, and it crouches oddly once put down; `pics/carry4-legs-try.png`). Neither is better than the straight
+legs, so left, as agreed.
+
 ## Numbers of the first versions (`tools/measure.mjs`, every 2nd frame; `pics/*-measure.json`)
 
 **touch** — B's palm against its point on A's shoulder, frames 160–249 (3 s of contact):
@@ -148,6 +187,10 @@ Numbers of the second versions:
   shoulders (v2), it hugs him.
 - **Head**: "looks at them", "looks down at them" — the man's head stayed tilted back (6–10°, two orders).
 - **Feet**: "with knees bent and feet lifted behind them" did nothing to a child's legs held in the air.
+- **Leading by the hand**: "leading someone by the hand … held a little out to the side" made a slow walk with the
+  hand raised forward; "holding a child's hand … down at their side" made a normal walk with the hand swinging.
+- **Busy**: orders sent while the GPU wakes, or while another session's run is on it, can fail with `busy` — send
+  the same ask again (the same key, a new making).
 - **A pose sent must have 77 joints exactly**: one typed out by hand had 76 and was refused ("Constraint joint count
   (76) does not match…"). Print the constraint from the tool and copy it.
 - Joints a hand constraint does not use may be sent as zero (a shorter ask) — but both arms' chains go into every
@@ -157,6 +200,11 @@ Numbers of the second versions:
   it the child was held out at arm's length).
 
 ## What is weak, honestly (the first versions; the second's below)
+
+Third pass: the handshake's and the held hands' fingers overlap instead of gripping (2–3 cm); in leading, her
+gait leans forward and her hand follows his arm's swing — between keyframes Kimodo lags it up to 9 cm, the
+correction brings the rest; nobody turns a head to the other (Kimodo's heads look ahead). The carry: the child's legs
+still hang straight (two tries through the pose made it worse), and the set-down's second of hands in bellies stays.
 
 Second versions: his head's look at her is a correction on top, not Kimodo's; the child's legs hang straight and its
 foot meets his shin as he walks; at the set-down their hands go into each other for a second; the child's hug is still
@@ -177,8 +225,7 @@ First versions:
 - Fingers: no grips, as agreed; hands are flat, so thumbs and fingertips press 1–3 cm into skin at the contacts.
 - The child is held under the arms the whole carry (no forearm under the seat): the simple means.
 - Films are 10–15 frames a second (software rendering).
-- Not tried: a handshake, a hug of two adults, leading by the hand — the two scenes asked for worked, so the nearer
-  ones were not needed; the same steps make them (a probe, a pose to the other's hand, `after`).
+- Not tried: a hug of two adults. (The handshake and leading by the hand: the third pass.)
 
 ## Files
 
@@ -188,6 +235,7 @@ First versions:
 - `motions/<id>.json` — Kimodo's data as the engine keeps them; `motions/orders.json` — what was asked for each (prompts,
   seconds, seed, constraints, `after`, `startsAt`) and the takes thrown away; `motions/*.spec.json` → `tools/order_hand.py`
   → `motions/*.constraint.json` — the hand constraints exactly as sent.
+- `tools/order_full.py` (a fullbody constraint from a hand constraint's poses, with the legs set),
 - `tools/carried_targets.mjs` (a point on the carrier in the carried one's Kimodo space, through the attachment),
   `tools/startsat.py` (an `after` motion's startsAt, as the studio computes it),
 - `tools/keep.py` (a made motion's body data and order in), `tools/convert.py` (into the engine's format; copied from

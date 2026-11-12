@@ -19,18 +19,6 @@ export const SCENES = [
     camera: { yaw: -1.05, pitch: 0.12, dist: 5.2, target: [0, 0.95, -1.0] },
   },
   {
-    id: 'touch', label: 'рука на плече (первая версия)',
-    about: 'Женщина стоит. Мужчина подходит сзади и кладёт правую руку ей на плечо; она оглядывается через правое плечо, рука остаётся на плече.',
-    frames: 250,
-    people: [
-      { id: 'A', name: 'женщина', character: 'woman', chain: ['a-stand', 'a-look'], start: 0, place: { position: [0, 0, 0], heading: 0 } },
-      { id: 'B', name: 'мужчина', character: 'man', chain: ['b-touch', 'b-hold'], start: 42, place: { position: [0, 0, -4.0], heading: 0 } },
-    ],
-    // B's palm on the top of A's right shoulder, at the back (a point of A's skin at rest, 1.5 cm out from it along the skin's normal, carried by her collarbone)
-    contacts: [{ who: 'B', side: 'Right', on: 'A', joint: 'RightShoulder', point: [-0.1394, 1.3335, -0.020], turnWith: 1.4, from: 160, to: 249, ramp: 8 }],
-    camera: { yaw: -1.05, pitch: 0.12, dist: 5.2, target: [0, 0.95, -1.0] },
-  },
-  {
     id: 'shake', label: 'рукопожатие',
     about: 'Двое идут навстречу друг другу, останавливаются и пожимают руки, потом отпускают. Мужчина сделан первым (Kimodo, без ограничений); женщина — вторым: её ладонь на его ладони в каждом кадре, где он держит руку.',
     frames: 195,
@@ -57,7 +45,7 @@ export const SCENES = [
   },
   {
     id: 'carry3', label: 'поднимает и несёт',
-    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт и ставит. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
+    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт, ставит и отходит на два шага. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
     frames: 440,
     people: [
       { id: 'C', name: 'ребёнок', character: 'child', chain: ['c-wait', 'c-hug2', 'c-rest2'], start: 0, place: { position: [0, 0, 0], heading: Math.PI } },
@@ -77,7 +65,7 @@ export const SCENES = [
   },
   {
     id: 'carry2', label: 'поднимает и несёт (вторая версия)',
-    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт и ставит. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
+    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт, ставит и отходит на два шага. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
     frames: 420,
     people: [
       { id: 'C', name: 'ребёнок', character: 'child', chain: ['c-wait', 'c-hug2', 'c-rest2'], start: 0, place: { position: [0, 0, 0], heading: Math.PI } },
@@ -94,6 +82,18 @@ export const SCENES = [
     ],
     carry: { who: 'C', by: 'M', from: 152, to: 376 },
     camera: { yaw: -1.2, pitch: 0.12, dist: 5, target: [0, 0.9, -0.8] },
+  },
+  {
+    id: 'touch', label: 'рука на плече (первая версия)',
+    about: 'Женщина стоит. Мужчина подходит сзади и кладёт правую руку ей на плечо; она оглядывается через правое плечо, рука остаётся на плече.',
+    frames: 250,
+    people: [
+      { id: 'A', name: 'женщина', character: 'woman', chain: ['a-stand', 'a-look'], start: 0, place: { position: [0, 0, 0], heading: 0 } },
+      { id: 'B', name: 'мужчина', character: 'man', chain: ['b-touch', 'b-hold'], start: 42, place: { position: [0, 0, -4.0], heading: 0 } },
+    ],
+    // B's palm on the top of A's right shoulder, at the back (a point of A's skin at rest, 1.5 cm out from it along the skin's normal, carried by her collarbone)
+    contacts: [{ who: 'B', side: 'Right', on: 'A', joint: 'RightShoulder', point: [-0.1394, 1.3335, -0.020], turnWith: 1.4, from: 160, to: 249, ramp: 8 }],
+    camera: { yaw: -1.05, pitch: 0.12, dist: 5.2, target: [0, 0.95, -1.0] },
   },
   {
     id: 'carry', label: 'поднимает и несёт (первая версия)',

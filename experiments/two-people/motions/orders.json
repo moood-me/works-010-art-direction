@@ -897,5 +897,63 @@
    ]
   },
   "note": "v2: 62 cm to his left, a keyframe every 10 frames"
+ },
+ {
+  "id": "c-hug4",
+  "label": {
+   "ru": "ребёнок обнимает, ноги вокруг него",
+   "en": "the child hugs, legs round him"
+  },
+  "key": "a38ff2e408812167bef0134ecafc0715685ebb3b620ec37fa81f502391c0f4c7",
+  "ask": {
+   "prompts": [
+    "A childlike person hugs someone in front of them, arms around their neck."
+   ],
+   "seconds": [
+    6.8
+   ],
+   "seed": 1,
+   "constraints": [
+    "fullbody: frames 35, 135, 185 — motions/c-hug4.constraint.json, made by tools/order_full.py from c-hug2's poses and motions/c-hug4.legs.json (the legs round his sides)"
+   ]
+  },
+  "after": {
+   "motion": "c-wait",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.013,
+   "z": -0.018
+  },
+  "note": "the legs given through the pose (a fullbody constraint), not the prompt; two sends before were refused 'busy'"
+ },
+ {
+  "id": "c-hug5",
+  "label": {
+   "ru": "ребёнок обнимает, ноги обхватывают его",
+   "en": "the child hugs, legs wrapped round him"
+  },
+  "key": "1f140523ef2a33306dec3ab6788264fc7da0b08ba222aa061abd463c93a40c9a",
+  "ask": {
+   "prompts": [
+    "A childlike person hugs someone in front of them, arms around their neck."
+   ],
+   "seconds": [
+    6.8
+   ],
+   "seed": 1,
+   "constraints": [
+    "fullbody: frames 35, 135, 185 — motions/c-hug5.constraint.json, by tools/order_full.py from c-hug2's poses and motions/c-hug5.legs.json"
+   ]
+  },
+  "after": {
+   "motion": "c-wait",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.014,
+   "z": -0.018
+  },
+  "note": "second try at the legs: wrapped round his waist (c-hug4's went forward into his thighs)"
  }
 ]

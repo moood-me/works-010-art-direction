@@ -1,0 +1,8 @@
+[{"out": "pics/lead-sheet.png", "scene": "lead", "kind": "sheet", "frames": [10, 40, 70, 100, 130], "size": [300, 380],
+  "views": [{"yaw": -0.6, "pitch": 0.12, "dist": 4.0, "target": "mid", "y": 0.9, "label": "спереди-сбоку"},
+            {"yaw": 3.14, "pitch": 0.15, "dist": 3.6, "target": "mid", "y": 0.9, "label": "сзади"}]},
+ {"out": "pics/lead-hands.png", "scene": "lead", "kind": "sheet", "frames": [20, 50, 80, 110, 140], "size": [300, 300],
+  "views": [{"yaw": 0.0, "pitch": 0.25, "dist": 1.0, "target": "contact", "label": "руки спереди"},
+            {"yaw": 3.14, "pitch": 0.35, "dist": 1.0, "target": "contact", "label": "руки сзади"}]},
+ {"out": "pics/lead-front.mp4", "scene": "lead", "kind": "film", "frames": {"from": 0, "to": 149, "step": 2}, "size": [640, 400],
+  "views": [{"yaw": -0.5, "pitch": 0.12, "dist": 5.0, "target": "mid", "y": 0.9}]}]

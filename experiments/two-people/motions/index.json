@@ -239,6 +239,22 @@
     "ru": "её ведут за руку",
     "en": "she is led by the hand"
    }
+  },
+  {
+   "id": "c-hug4",
+   "label": {
+    "ru": "ребёнок обнимает, ноги вокруг него",
+    "en": "the child hugs, legs round him"
+   },
+   "after": "c-wait"
+  },
+  {
+   "id": "c-hug5",
+   "label": {
+    "ru": "ребёнок обнимает, ноги обхватывают его",
+    "en": "the child hugs, legs wrapped round him"
+   },
+   "after": "c-wait"
   }
  ]
 }
