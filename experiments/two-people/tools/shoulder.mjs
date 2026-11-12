@@ -15,7 +15,14 @@ export async function shoulderTop(id, side = 'Right', share = 0.6) {
   }
   return { body: b, joint: side + 'Shoulder', point: [b.positions[best * 3], by, b.positions[best * 3 + 2]], m };
 }
-if (process.argv[2]) { const r = await shoulderTop(process.argv[2], process.argv[3] || 'Right'); console.log(r.point.map(v => +v.toFixed(4)), 'joint line', r.m.map(v => +v.toFixed(4))); }
+// node tools/shoulder.mjs top <body> [side]  |  node tools/shoulder.mjs surface <body> <side> <share> <angle> <out metres>
+// (surface: the skin's point, and that point pushed `out` along the RAY — not along the skin's normal)
+if (process.argv[2] === 'top') { const r = await shoulderTop(process.argv[3], process.argv[4] || 'Right'); console.log(r.point.map(v => +v.toFixed(4)), 'joint line', r.m.map(v => +v.toFixed(4))); }
+if (process.argv[2] === 'surface') {
+  const [, , , id, side, share, angle, out] = process.argv;
+  const r = await shoulderSurface(id, side, +share, +angle);
+  console.log(JSON.stringify({ skin: r.point.map(v => +v.toFixed(4)), out: r.point.map((v, i) => +(v + r.dir[i] * +out).toFixed(4)) }));
+}
 // the skin's point where a ray from inside the shoulder (on the collarbone's line, at a share of the way out) leaves
 // the body, going up and back at an angle (0: straight up; π/2: straight back)
 export async function shoulderSurface(id, side = 'Right', share = 0.85, angle = Math.PI / 4) {

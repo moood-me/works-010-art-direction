@@ -27,8 +27,10 @@ effect**: whoever acts first is made first; what of them the other must meet bec
    body's hip height against SOMA's (`k`: man 1.015, woman 0.896, child 0.707), so the scene is in *our bodies'*
    metres, not Kimodo's.
 3. **A place on the first person, on our body.** A point of the first one's *skin at rest* (`tools/shoulder.mjs`:
-   where a ray from inside the shoulder leaves the skin; `tools/sides.mjs`: the trunk's sides under the arms), pushed
-   1.5–2.5 cm out along the skin's normal, and carried by one of its joints (the collarbone; the chest). Played
+   where a ray from inside the shoulder leaves the skin; `tools/sides.mjs`: the trunk's sides under the arms;
+   `tools/trunkpoint.mjs`: the trunk anywhere), pushed 1.5–2.5 cm out *along that ray* (not along the skin's normal),
+   and carried by one of its joints (the collarbone; the chest). The settings of every point in `scenes.js` are in
+   "Repeating it on other bodies" below. Played
    through the scene it gives that point's place in the world at every frame — on *our* body, of *its* proportions
    (`tools/targets.mjs`).
 4. **Into the second person's Kimodo space.** The world point minus the second person's placement, turned back by
@@ -196,9 +198,9 @@ his) → he (turns and walks, hand held out) → she (her palm on his, her pelvi
 - Twice Kimodo would not do it from words alone: after his hand lay on her shoulder, "lowers the right hand … steps
   back" + "a handshake" (`b-shake`, `b-shake2`, two seeds) kept his hand up at her shoulder's height and hardly stepped
   back. With his own handshake pose (`h-p`) as a hand constraint, 30 cm behind (`b-shake3`), he did.
-- Where an `after` motion's space lands: its frame 0 pelvis comes out within 1 cm of where the earlier one left it, so
-  the next person's targets can be computed before the motion they follow from is made (checked: a-shake 7 mm, a-led
-  5 mm).
+- Where an `after` motion's space lands (needed to put the other person's targets into it before it is made): I took
+  the earlier motion's pelvis at its frame n−k; it came under 1 cm off here — because both earlier motions end
+  standing still: over all 23 `after` motions here that guess is 0.5–5.9 cm off (see "Repeating it on other bodies", 3).
 - Numbers: his palm on her shoulder 2–4 cm (Kimodo), her palm on his in the handshake 4.9 cm mean (14 at the ends),
   her palm on his while led 3.2 cm mean (max 4.7); 0 with the correction. One in the other: up to 4.4 cm as she turns
   inside his reach (frame 290), 2–2.5 cm in the handshake (fingers).
@@ -321,4 +323,69 @@ write a `*.spec.json` (source, frame, hip, targets) and run `tools/order_hand.py
 follower's prompts (a chain: approach, then act); keep it; add the contact to the scene; measure; look. For a reaction
 order `after` the leader's motion; for a follower that must keep up, order it again `after` itself with the
 leader's new places. `startsAt` of an `after` motion is the earlier one's pelvis at its frame n−k less the new one's
-at frame 0 (checked against the studio's own within 0.5 mm).
+at frame 0 (checked against the studio's own within 0.5 mm) — known only once it is made; before, see below.
+
+## Repeating it on other bodies: what is the method's, what is this pair's
+
+A fresh agent repeated the touch on other bodies (a man and a short woman; a child and a woman) from this folder
+alone (`experiments/other-bodies/notes.md`); where these notes were not enough is written down here.
+
+1. **The touched points.** All in the woman's rest space, carried by `RightShoulder`; made with
+   `node tools/shoulder.mjs surface <body> <side> <share> <angle> <out>` — a ray from the collarbone's line (at `share`
+   of the way from the `Shoulder` joint (the collarbone's root) to the `Arm` joint (the shoulder ball); above 1 is
+   beyond the ball), going up and back at
+   `angle` (0 straight up, π/2 straight back), to where it leaves the skin, then `out` metres further along the ray:
+   - the touch `[-0.1625, 1.3196, -0.0155]`: `moood-woman Right 1.1 0.45 0.018` (gives it to 0.1 mm; 1.1 and 1.2 hit
+     the same skin point);
+   - the slide `[-0.1903, 1.2948, 0.0063]`: `moood-woman Right 1.4 0.2 0.02`.
+   The hug's points: `node tools/trunkpoint.mjs <body> <joint> <dy> <dx,dy,dz> <out>` (in `hug-*.spec.json`); the
+   cradle's under-thigh point is a hand-set point on `RightLeg` (in `m-cradle.spec.json`). On another body: the same
+   settings give the same place on its own shoulder; check it on a picture (`pics/*-contact.png` jobs).
+2. **Whose metres.** World places (`scenes.js` positions, `targets.mjs` "world", contact points) are in our bodies'
+   metres. Everything in a `*.spec.json` (`target`, `targets`, `hip`) and in a constraint is in the *ordered person's
+   Kimodo* metres: world ÷ that person's k. So "his pelvis 51 cm behind the touch, 28 cm to her left" (touch3) is
+   Kimodo's: ×1.015 on the man, but ×0.707 on a child (36 × 20 cm). k: `node tools/bodies.mjs <body id> …` (hip height ÷ SOMA's; also arm ÷ k against SOMA's 0.559 — far from it, k alone won't carry the hands).
+3. **Where an `after` motion starts, before ordering it.** Its `startsAt` depends only on the earlier motion and the
+   `after` frames, not on the new one's prompt or constraints (here: `b-hold3` and `b-hold4` after `b-touch3` have the
+   same one; `m-down2`/`m-down3` within 1 mm). So:
+   - if any motion was already made `after` the same motion with the same frames, use its `startsAt`;
+   - else, where centimetres matter (a hand constraint), order a 0.5 s probe `after` it first ("A person stands
+     still.") and read `startsAt` from `motion(key)`; one cheap order instead of a take 6 cm off (`b-hold3`);
+   - the guess "the earlier pelvis at frame n−k" is 0.5–5.9 cm off over the 23 here: under 1 cm where the earlier
+     motion ends standing still (`a-look`, `b-shake*`, `a-shake`, `a-led`), 2–6 cm where it ends walking, bending or
+     reaching (`m-walk*`, `b-hold3/4` after the touch). `tools/startsat.py` gives the exact one once made.
+   Then: the new motion's space = the earlier one's space moved by `startsAt` (no turn); the target in it = the
+   target in the earlier one's space − `startsAt`.
+4. **Bodies without a character file**: `tools/targets.mjs body:<body id> …` (added after that test).
+5. **The as-sent constraints are the truth**, not the tool's output today: `b-touch3.constraint.json` has the ring and
+   little fingers zero (that payload was copied into the order by hand), while `order_hand.py` on its spec now gives
+   them from `fingersFrom`. Only fingers; they don't move the palm's point (it hangs on the hand joint and the middle
+   finger's root, whose places don't depend on finger turns).
+6. **This pair's, not the method's** — on another pair these are the main work, chosen by looking:
+   - the prompts: "looks down at them" fits a man over a woman's shoulder. For the child (the other agent's test)
+     "reaches up … looks up at them" threw its head back; the plain "puts their right hand on the arm of someone in
+     front of them" read well;
+   - the stance: his pelvis 51 cm behind and 28 cm to her left of the touch (Kimodo's metres), chosen so his right arm
+     crosses to her right shoulder with the elbow bent: the shoulder ball is 0.42 m from the target, against an arm of
+     0.58 m (upper arm + forearm + half the hand) — about 0.7 of the reach. That ratio, from behind on the side away
+     from the hand, is a start for another pair, not a rule (the child's first stance pressed it into her back);
+   - the hand: `handYaw −0.25` (fingers forward over her shoulder; the touch only), `elbowPole [-0.4,-1,0]` (the elbow
+     down and a little out to his right; touch and hold), `fingersFrom b-probe 120` (a flat tapping hand) — all for a
+     palm laid on top of a shoulder from behind. On an arm they put the child's hand fingers-up; there they must be
+     chosen again;
+   - the look: B's head turned 0.6 of the way to her head, 25° at most (a correction). A's look round is her own motion,
+     over her shoulder at a man's height; nothing here makes her look down to a child (a new `a-look` would).
+   Look at a sheet from the side and the front, then a close-up of the contact, before keeping a setting.
+7. **The palm's middle** (here, in `scene.js palmRest` and `order_hand.py palm_rest` alike): halfway between the hand
+   joint and the middle finger's root, pushed 1.5 cm out on the palm's side (the normal of index-root → ring-root ×
+   wrist → middle-root; flipped for the right hand). К1 uses another (the mean of the wrist and the index and little
+   finger roots): numbers of the two are not comparable to the centimetre.
+8. **One take is luck.** The other agent's three seeds of the same touch: one let the hand leave the shoulder by 21 cm
+   between the keyframes (the correction then moves the arm 20 cm — no longer small). Before accepting a take, run
+   `tools/measure.mjs <scene>` and look at "Kimodo alone": the max, not only the mean, and the frames between the
+   keyframes; more than ~10 cm between them → another seed, or a keyframe more (every 10–15 frames, as `g-led2`).
+   Then look at the sheet.
+9. **The studio**: an order that failed (often "busy" when several are sent at once) answers `motion(key, data:
+   "body")` with "not made (yet)", exactly as one still running; only `motion(key)` without data shows the making's
+   `outcome: failed`. Poll with `motion(key)`; a failed one is asked again as it was (a new making of the same key).
+   Send big constraints one at a time.

@@ -1,12 +1,17 @@
 // where a point on one person is, frame by frame, in the scene — and the same point in another person's Kimodo space
 // (what their motion is ordered with); PLACE=x,z,heading places the first.  node tools/targets.mjs <character> <chain ids,comma> <joint> <x,y,z at rest> <frames,comma> [B: x0,z0,heading,k]
+// <character>: a character id (engine/characters), or body:<body id> for a body that has no character file.
+// frames: the first person's chain frames (scene frame less its `start`).  Out: world (our bodies' metres) and, with B,
+// kimodo: B's Kimodo space — x, z: (world − B's place) turned back by B's heading, / k; y: world y / k + SOMA's floor
+// (E.skeleton.floor, −0.26 cm), as the engine's retarget undoes it.
 import { createEngine } from '../../../engine/src/engine.js';
 import { read } from '../../../engine/check/node-read.mjs';
 import { loadScene, jointAt } from '../scene.js';
 const [character, chain, joint, pt, frames, other] = process.argv.slice(2);
 const E = await createEngine({ read });
 const base = new URL('../', import.meta.url);
-const S = await loadScene(E, base, { frames: 1000, people: [{ id: 'A', character, chain: chain.split(','), start: 0, place: (([x, z, h]) => ({ position: [x, 0, z], heading: h }))((process.env.PLACE || '0,0,0').split(',').map(Number)) }] }, read);
+const who = character.startsWith('body:') ? { format: 'engine/character', version: 1, id: 'x', body: character.slice(5) } : character;
+const S = await loadScene(E, base, { frames: 1000, people: [{ id: 'A', character: who, chain: chain.split(','), start: 0, place: (([x, z, h]) => ({ position: [x, 0, z], heading: h }))((process.env.PLACE || '0,0,0').split(',').map(Number)) }] }, read);
 const A = S.by.A, p = pt.split(',').map(Number), j = A.body.skeleton.index[joint];
 const sF = E.skeleton.floor;
 const out = []; let q0 = null;
