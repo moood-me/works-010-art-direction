@@ -44,21 +44,21 @@ float h1(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
 // how much of the light is cut off at a point of the world (0…1), softly: taps on a disc turned by a noise of the place
 float shadowAt(vec3 w, vec3 n){
   vec4 sc = shadowMatrix * vec4(w + n * 0.004, 1.0); vec3 c = sc.xyz * 0.5 + 0.5;
-  if (c.x < 0.0 || c.x > 1.0 || c.y < 0.0 || c.y > 1.0) return 0.0;
+  if (c.x < 0.0 || c.x > 1.0 || c.y < 0.0 || c.y > 1.0 || c.z > 1.0) return 0.0;
   float a0 = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715)))) * 6.2832, s = 0.0;
   for (int i = 0; i < 16; i++) { float fi = float(i); float r = sqrt((fi + 0.5) / 16.0) * shadowSoft; float a = a0 + fi * 2.39996;
     float d = unpackD(texture2D(shadowMap, c.xy + vec2(cos(a), sin(a)) * r)); s += (c.z - 0.0010 > d) ? 1.0 : 0.0; }
   return s / 16.0;
 }`;
 const VS = `
-attribute float mat; attribute vec3 pat; attribute vec3 fuv; attribute float edge;
+attribute float mat; attribute vec3 pat; attribute vec3 fuv; attribute float edge; attribute float rim; varying float vRim;
 varying float vMat; varying vec3 vPat; varying vec3 vFuv; varying vec3 vN; varying vec3 vW; varying float vEdge;
-void main(){ vMat = mat; vPat = pat; vFuv = fuv; vN = normalize(normal); vW = position; vEdge = edge;
+void main(){ vMat = mat; vPat = pat; vFuv = fuv; vN = normalize(normal); vW = position; vEdge = edge; vRim = rim;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 const FS = `
 precision highp float;
 uniform vec3 base[24]; uniform float streak[24]; uniform float facet[24]; uniform float facets; uniform sampler2D face; uniform float hasFace; uniform float clay; uniform float dbg; uniform vec3 shadowCol;
-varying float vMat; varying vec3 vPat; varying vec3 vFuv; varying vec3 vN; varying vec3 vW; varying float vEdge;
+varying float vMat; varying vec3 vPat; varying vec3 vFuv; varying vec3 vN; varying vec3 vW; varying float vEdge; varying float vRim; uniform float rimW;
 ${SHADOW_GLSL}
 float h(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
 float noise(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
@@ -80,11 +80,13 @@ void main(){
   // the face's pieces
   if (hasFace > 0.5 && vFuv.z > 0.01) { vec4 f = texture2D(face, vFuv.xy); float v = smoothstep(0.05, 0.3, vFuv.z); b = b * (1.0 - f.a * v) + f.rgb * v; }
   // the cut edge: the sheet's lighter core
-  b = mix(b, mix(b, vec3(1.0, 0.965, 0.9), 0.5), vEdge * (1.0 - inside));
+  float rimK = max(vEdge, (1.0 - smoothstep(rimW * 0.6, rimW, vRim)) * 0.8);
+  b = mix(b, mix(b, vec3(1.0, 0.965, 0.9), 0.5), rimK * (1.0 - inside));
   // light: paper is matt — a soft turn from the light and the shadows other pieces throw
   float lit = smoothstep(-0.25, 0.45, d) * (1.0 - shadowAt(vW, n));
   lit = mix(lit, lit * 0.35, inside);
-  vec3 col = mix(mix(b, shadowCol, 0.36) * 0.95, b, lit);
+  float sk = (m <= 3) ? 0.20 : 0.36;      // on the skin's light card the shadow is lighter, so the face stays readable
+  vec3 col = mix(mix(b, shadowCol, sk) * (m <= 3 ? 0.98 : 0.95), b, lit);
   // the paper's grain: fine tooth and fibres, fixed to the piece
   float g = noise(vPat * 1400.0) * 0.6 + noise(vPat * vec3(2600.0, 300.0, 2600.0)) * 0.4;
   col *= 0.97 + 0.06 * g;
@@ -94,7 +96,7 @@ void main(){
 
 const uniforms = {
   base: { value: Array.from({ length: 24 }, () => new THREE.Color()) }, streak: { value: new Array(24).fill(0) }, facet: { value: new Array(24).fill(0) }, facets: { value: +(q.get('facets') ?? 1) },
-  face: { value: null }, hasFace: { value: 0 }, L: { value: new THREE.Vector3(-0.5, 0.75, 0.55).normalize() }, clay: { value: 0 }, dbg: { value: +(q.get('dbg') || 0) },
+  face: { value: null }, hasFace: { value: 0 }, L: { value: new THREE.Vector3(-0.5, 0.75, 0.55).normalize() }, clay: { value: 0 }, rimW: { value: +(q.get('rim') || 0.0024) }, dbg: { value: +(q.get('dbg') || 0) },
   shadowMap: { value: null }, shadowMatrix: { value: new THREE.Matrix4() }, shadowSoft: { value: 0.0034 }, shadowCol: { value: hex('#2b1b2c') },
 };
 const material = new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: FS, uniforms, side: THREE.DoubleSide });
@@ -119,6 +121,8 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderM
     void main(){ float s = shadowAt(vW, vec3(0.0, 1.0, 0.0));
       if (mode > 1.5) { gl_FragColor = vec4(shadowCol, 0.34 * s); return; }
       vec3 c = col * (0.96 + 0.08 * (n2(vW.xz * 700.0) * 0.6 + n2(vW.xz * vec2(1300.0, 150.0)) * 0.4));
+      // scraps of other paper glued on the floor, so that the way she goes shows
+      float k = n2(vW.xz * 2.6 + 3.0); c = mix(c, c * 0.955, smoothstep(0.60, 0.61, k)); c = mix(c, c * 1.035, smoothstep(0.30, 0.29, k));
       gl_FragColor = vec4(mix(c, shadowCol, 0.36 * s), 1.0); }`,
 }));
 ground.rotation.x = -Math.PI / 2; ground.visible = false; scene.add(ground);
@@ -166,6 +170,7 @@ async function loadModel(url) {
   geom.setAttribute('pat', new THREE.BufferAttribute(a.pat, 3));
   geom.setAttribute('fuv', new THREE.BufferAttribute(a.fuv, 3));
   geom.setAttribute('edge', new THREE.BufferAttribute(Float32Array.from(a.edge, v => v / 255), 1));
+  geom.setAttribute('rim', new THREE.BufferAttribute(a.rim, 1));
   geom.setIndex(new THREE.BufferAttribute(a.triangles, 1));
   mesh = new THREE.Mesh(geom, material); mesh.frustumCulled = false; scene.add(mesh);
   model = { h, body };
@@ -215,7 +220,7 @@ const A = window.A = {
     camera.position.set(t[0] + Math.sin(yaw) * Math.cos(pitch) * dist, t[1] + Math.sin(pitch) * dist, t[2] + Math.cos(yaw) * Math.cos(pitch) * dist);
     camera.lookAt(t[0], t[1], t[2]); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
     // the light comes from the picture's top left, wherever the picture is taken from (the drawing's rule)
-    const ly = yaw + (c.lightYaw ?? -0.45), le = c.lightUp ?? 0.5;
+    const ly = yaw + (c.lightYaw ?? -0.4), le = c.lightUp ?? 0.45;
     uniforms.L.value.set(Math.sin(ly) * Math.cos(le), Math.sin(le), Math.cos(ly) * Math.cos(le));
   },
   render() {

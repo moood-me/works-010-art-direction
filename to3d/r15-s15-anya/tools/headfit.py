@@ -213,7 +213,7 @@ def surf(xu, yu):
     ax = np.abs(xu)
     t = np.clip((ax - xs) / (a - xs), 0, 1)
     z_out = np.interp(yh, [-100, 0, 60, 98], [10, 0, 14, 40]) * D.HS            # the side plane's far end, at the outline
-    z_edge = zface - 13 * (ax.clip(max=xs) / xs) ** 2                              # the front plane: nearly flat
+    z_edge = zface - (13 + 15 * np.exp(-((yh - 14) / 24) ** 2)) * (ax.clip(max=xs) / xs) ** 2     # rounder across the eyes: they turn with the cheeks                              # the front plane: nearly flat
     z = np.where(ax <= xs, z_edge, z_edge - (z_edge - z_out) * t ** 0.85)
     nw = np.interp(yh, [-6, 10, 30, 40, 46], [5, 6, 9, 10.5, 9]) * D.HS            # the nose: a narrow wedge
     z = z + nose * np.clip(1 - ax / nw, 0, 1) ** 1.1

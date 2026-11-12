@@ -86,7 +86,7 @@ const BLACK = new THREE.Color('#07070b'), RIM = new THREE.Color('#3b4566');
 const U = {
   L: { value: new THREE.Vector3(-0.6, 0.5, 0.6).normalize() },       // to the light, world
   Lh: { value: new THREE.Vector3(-0.6, 0.5, 0.6).normalize() },      // to the light, in the head's own frame
-  thr: { value: Number(q.get('thr') ?? 0.06) },
+  thr: { value: Number(q.get('thr') ?? 0.1) },
   face: { value: faceTex }, smap: { value: shadowRT.depthTexture }, SMx: { value: new THREE.Matrix4() }, casts: { value: 1 },
   width: { value: Number(q.get('line') ?? 0.0042) },
   paint: { value: 1 }, clay: { value: 0 }, black: { value: BLACK }, rim: { value: RIM }, shoe: { value: new THREE.Color('#7d3528') },
@@ -94,28 +94,31 @@ const U = {
 };
 U.black.value.convertLinearToSRGB(); U.rim.value.convertLinearToSRGB(); U.shoe.value.convertLinearToSRGB();     // colours go out as written
 // the drawn edges, head units: x of the edge at heights y (head.py head_f's side shadow for ANYA; the hair's shadow
-// zigzag of cast.py anya_hair, front and back forms, one line from the crown to the ends)
+// zigzag of cast.py anya_hair, front and back forms, one line from the crown to the ends; below the jaw the hair
+// behind the neck is black from the middle on — the drawing's second shape there)
 const poly = (name, pts) => `float ${name}(float y) { ${pts.slice(0, -1).map(([y0, x0], i) => { const [y1, x1] = pts[i + 1];
   return `if (y < ${y1.toFixed(1)}) return ${x0.toFixed(1)} + (clamp(y, ${y0.toFixed(1)}, ${y1.toFixed(1)}) - ${y0.toFixed(1)}) * ${((x1 - x0) / (y1 - y0)).toFixed(4)};`; }).join(' ')} return ${pts[pts.length - 1][1].toFixed(1)}; }`;
 const EDGES = poly('faceEdge', [[-80, 47.6], [-14, 43.6], [34, 37.6], [56, 23.6], [84, 21], [98, 12.5]]) + '\n' +
-  poly('hairEdge', [[-112, 40], [-82, 50], [-66, 42], [-58, 62], [-30, 56], [8, 80], [40, 40], [120, 30], [130, 50], [180, 60]]);
+  poly('hairEdge', [[-112, 40], [-82, 50], [-66, 42], [-58, 62], [-30, 56], [8, 80], [40, 40], [56, 34], [62, 2], [180, 2]]);
 const LIGHT = `
     uniform vec3 L; uniform vec3 Lh; uniform float thr;
     ${EDGES}
     // the form the light is tested on, in the head's frame: flat towards the front inside the drawn edge, the side
     // plane beyond it (the picture's right when the light is on the left, and the other way round)
-    vec3 designed(vec3 hp, vec3 pn, float xs) {
+    vec3 designed(vec3 hp, vec3 pn, float xs, float front) {
       float sg = Lh.x < 0.0 ? 1.0 : -1.0, u = sg * hp.x / xs;
-      float nx = 0.2 * u + 1.6 * smoothstep(0.93, 1.07, u) - 0.5 * smoothstep(0.93, 1.07, -u);
+      float nx = 0.1 * u + 1.7 * smoothstep(0.93, 1.07, u) - 0.5 * smoothstep(0.93, 1.07, -u);
       vec3 n = normalize(vec3(sg * nx, pn.y, pn.z));
-      return normalize(mix(pn, n, smoothstep(-22.0, 6.0, hp.z)));
+      return normalize(mix(pn, n, front));
     }
     float seg(vec2 p, vec2 a, vec2 b, out float t) { vec2 ab = b - a; t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0); return length(p - a - ab * t); }
     // 1 in the light, 0 in the black
     float lightAt(float kind, vec3 hp, vec3 pn, vec3 vn) {
       float d;
       if (kind > 1.5) {
-        d = dot(designed(hp, pn, hairEdge(hp.y)), Lh);
+        d = dot(designed(hp, pn, hairEdge(hp.y), 1.0), Lh) + 0.1;
+        // away from the drawn edge the hair's terminator is cut in straight teeth, as the drawing cuts it
+        d += 0.2 * (abs(fract(hp.y / 26.0 + hp.z / 55.0) - 0.5) * 2.0 - 0.5);
         // the hair's own black shapes of the drawing: the wedge at the parting, the fringe's underside along its edge
         if (hp.z > 0.0) {
           float t; float dp = seg(hp.xy, vec2(15.0, -108.0), vec2(25.0, -75.0), t);
@@ -125,12 +128,13 @@ const LIGHT = `
         }
       }
       else if (kind > 0.5) {
-        float ax = abs(hp.x), jaw = 98.0 - max(ax - 12.5, 0.0) * 0.98;
-        if (hp.y > jaw + 3.0 && hp.z > -30.0) {           // the neck: the jaw's cast shadow, as drawn
+        // under the jaw's line (the profile's: chin — jaw's angle — nape)
+        float jaw = hp.z > 55.0 ? 100.0 : hp.z > -5.0 ? 70.0 + (hp.z + 5.0) * 0.5 : 70.0 + (hp.z + 5.0) * 0.69;
+        if (hp.y > jaw + 2.0) {           // the neck: the jaw's cast shadow, as drawn
           float sg = Lh.x < 0.0 ? 1.0 : -1.0, x = sg * hp.x;
           float yl = x < -8.7 ? 107.0 + (x + 33.8) * 0.6 : 122.0 + (x + 8.7) * 0.73;
           d = (x < 5.5 && hp.y > yl && Lh.z > -0.1) ? dot(vn, L) : -1.0;
-        } else d = dot(designed(hp, pn, faceEdge(hp.y)), Lh);
+        } else d = dot(designed(hp, pn, faceEdge(hp.y), smoothstep(-22.0, 6.0, hp.z)), Lh) + 0.3;     // the face is the light's island: it goes black last
       } else d = dot(vn, L);
       float w = fwidth(d) * 0.7 + 1e-4;
       return smoothstep(thr - w, thr + w, d);
@@ -233,7 +237,7 @@ function standPose(o = {}) {
 
 const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', morph: {}, push: true,
   cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.83, h: 1.8, dist: 6, target: null, follow: false },
-  light: [-0.62, 0.5, 0.6], back: { kind: 'window', w: 0.78, h: 1.96, y: 1.05, x: 0.04, col: '#3b3350' } };
+  light: [-0.74, 0.47, 0.48], back: { kind: 'window', w: 0.78, h: 1.96, y: 1.05, x: 0.04, col: '#3b3350' } };
 let clip = null;
 function applyMorphs() {
   const P = body.positions; P.set(rest);

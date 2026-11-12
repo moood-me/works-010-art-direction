@@ -346,7 +346,7 @@ const CLIPS = {
 };
 const FPS = 12;                                    // a sprite's animation is drawn in few frames: 12 a second
 function atPoint() {
-  if (V.at === 'head') return new THREE.Vector3(...P(...HC));
+  if (V.at === 'head') return new THREE.Vector3(st.lock[0], HC[1] * S, st.lock[1] + HC[2] * S);   // goes along with him as the figure's view does
   if (Array.isArray(V.at)) return new THREE.Vector3(...P(...V.at));
   return new THREE.Vector3(st.lock[0], 0, st.lock[1]);
 }

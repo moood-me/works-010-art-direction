@@ -46,13 +46,16 @@ def thick(p, th, N=None):
     The band has its own vertices, so the edge stays crisp."""
     V, T = p['V'], p['T']
     if N is None: N = vertex_normals(V, T)
-    add = {k: [] for k in ('V', 'sj', 'sw', 'mat', 'fuv', 'pat', 'edge')}; Tn = []; n = len(V)
-    for L in loops(T):
-        if len(L) < 3: continue
-        L = np.array(L); m = len(L)
+    add = {k: [] for k in ('V', 'sj', 'sw', 'mat', 'fuv', 'pat', 'edge', 'rim')}; Tn = []; n = len(V)
+    LL = [np.array(L) for L in loops(T) if len(L) >= 3]
+    if LL:      # how far each point of the piece is from its cut edge (the shader draws the light rim there)
+        B_ = np.concatenate([np.concatenate([V[L] * (1 - u) + V[np.roll(L, -1)] * u for u in (0, 0.25, 0.5, 0.75)]) for L in LL])
+        p = dict(p); p['rim'] = np.minimum(p['rim'], cKDTree(B_).query(V)[0])
+    for L in LL:
+        m = len(L)
         for k, x in (('V', V[L]), ('V', V[L] - N[L] * th), ('pat', p['pat'][L]), ('pat', p['pat'][L] - N[L] * th)): add[k].append(x)
         for k in ('sj', 'sw', 'mat', 'fuv'): add[k] += [p[k][L], p[k][L]]
-        add['edge'] += [np.ones(m), np.ones(m)]
+        add['edge'] += [np.ones(m), np.ones(m)]; add['rim'] += [np.zeros(m), np.zeros(m)]
         a = np.arange(n, n + m); b = np.roll(a, -1); c = a + m; d = b + m
         Tn += [np.stack([b, a, c], 1), np.stack([b, c, d], 1)]; n += 2 * m
     if not Tn: return p
@@ -64,14 +67,14 @@ def thick(p, th, N=None):
 
 def split(p, g, mat2):
     """a part cut in two along g = 0: where g < 0 it keeps its paper, elsewhere it takes mat2 — a clean line"""
-    A = np.c_[dense(p['sj'], p['sw']), p['fuv'], p['pat'], p['mat'], p['edge']]
+    A = np.c_[dense(p['sj'], p['sw']), p['fuv'], p['pat'], p['mat'], p['edge'], p['rim']]
     out = []
     for sgn, m in ((1, None), (-1, mat2)):
         v, t, a, _ = cut(p['V'], p['T'], sgn * g, A)
         if len(t) == 0: continue
         sj, sw = top4(a[:, :NJ])
         mm = np.rint(a[:, NJ + 6]).astype(int) if m is None else np.full(len(v), MATS.index(m))
-        out.append(dict(V=v, T=t, sj=sj, sw=sw, mat=mm, fuv=a[:, NJ:NJ + 3], pat=a[:, NJ + 3:NJ + 6], edge=a[:, NJ + 7]))
+        out.append(dict(V=v, T=t, sj=sj, sw=sw, mat=mm, fuv=a[:, NJ:NJ + 3], pat=a[:, NJ + 3:NJ + 6], edge=a[:, NJ + 7], rim=a[:, NJ + 8]))
     return out
 
 
@@ -152,7 +155,8 @@ g_ = neck_g(HV); tn = np.clip(g_ / 16, 0, 1) * 0.9
 ang_ = np.arctan2(HV[:, 0], HV[:, 2] + 10 * K)
 HV[:, 0] = HV[:, 0] * (1 - tn) + tn * 15 * K * np.sin(ang_)
 HV[:, 2] = HV[:, 2] * (1 - tn) + tn * (-10 * K + 15 * K * np.cos(ang_))
-HV = smooth(HV, HT, it=8, lam=0.5, mask=(g_ > 3).astype(float))
+HV = smooth(HV, HT, it=10, lam=0.5, mask=(g_ > 3).astype(float))
+HV = smooth(HV, HT, it=30, lam=0.5, mask=((g_ > -14) & (g_ <= 3) & (-HV[:, 1] / K > 70)).astype(float))
 HN = vertex_normals(HV, HT)
 
 
@@ -197,7 +201,7 @@ step['head'] = list(hp)
 def face_z(x, yv):
     t = rays(HV, HT, np.array([[x * K, -yv * K, 0.5]]), np.array([[0, 0, -1.0]]))[0]
     return (0.5 - t) / K
-ap, tip = np.array([0.6, 12, face_z(0.6, 12) + 0.6]), np.array([1.2, 42.5, 78.0])
+ap, tip = np.array([0.6, 17, face_z(0.6, 17) + 0.6]), np.array([1.2, 42.5, 77.0])
 bl, br = np.array([-7.6, 45.5, face_z(-7.6, 45.5) + 0.8]), np.array([8.4, 44.0, face_z(8.4, 44) + 0.8])
 bm = np.array([0.6, 49.5, face_z(0.6, 49.5) + 0.3])
 hu = lambda p: np.array([p[0] * K, -p[1] * K, p[2] * K])
@@ -217,11 +221,11 @@ def hair_fields(X):
     th = np.degrees(np.arctan2(np.abs(x), z))
     f_fr = sdf(FR, np.c_[x, yv]); f_sd = sdf(SDp, np.c_[x, yv])
     f_front = np.minimum(f_fr, f_sd)
-    f_side = sdf(HS, np.c_[z - ZOFF, yv])
-    # at the nape the profile's teeth go on round the head
-    f_back = yv - (50 + 13 * np.abs(((np.degrees(np.arctan2(x, -z)) / 24) % 2) - 1))
-    wf = np.clip((72 - th) / 26, 0, 1); wb = np.clip((th - 118) / 24, 0, 1)
-    f_all = wf * f_front + (1 - wf) * ((1 - wb) * f_side + wb * f_back)
+    # round the sides and the back the sheet is cut in the profile's sharp teeth, going on round the head
+    a_ = np.degrees(np.arctan2(x, -z)) + 7
+    f_side = np.maximum(yv - (42 + 22 * np.abs(((a_ / 17) % 2) - 1)), sdf(HS, np.c_[z - ZOFF, np.minimum(yv, -30)]))
+    wf = np.clip((72 - th) / 26, 0, 1)
+    f_all = wf * f_front + (1 - wf) * f_side
     return f_all, f_fr, f_sd, th, z
 
 def bell(v, v0):
@@ -397,7 +401,7 @@ def patch(corners, nu, nv, off, mat, th=0.003):
     sj, sw = hood_weights(X)
     return thick(part(X, F, sj, sw, mat), th)
 
-pocket = patch([(-0.100, 0.878), (0.100, 0.878), (0.134, 0.712), (-0.134, 0.712)], 15, 11, 0.004, 'pocket')
+pocket = patch([(-0.100, 0.878), (0.100, 0.878), (0.134, 0.712), (-0.134, 0.712)], 15, 11, 0.007, 'pocket', 0.005)
 strings = [patch([(-0.031, 1.168), (-0.021, 1.168), (-0.026, 1.000), (-0.036, 1.000)], 2, 12, 0.003, 'string', 0.0015),
            patch([(0.021, 1.168), (0.031, 1.168), (0.037, 1.040), (0.027, 1.040)], 2, 10, 0.003, 'string', 0.0015)]
 

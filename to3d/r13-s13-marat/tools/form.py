@@ -179,7 +179,7 @@ V0s, hPs = M.catmull_clark(V0, hP, 1); V0s = np.asarray(V0s)
 nrmS = M.vertex_normals(V0s, M.triangulate(hPs))
 xs_, ys_, zs_ = V0s[:, 0] / K, ydr(V0s[:, 1]), -(V0s[:, 2] + 0.01) / K
 ears_ = earm[cKDTree(V0).query(V0s)[1]] & (zs_ > 2)          # the ear itself (the mask also takes the cheek before it)
-top = np.interp(zs_, [-90, -60, -36, -16, -6, 2], [46, 42, 42, 24, -10, -40])      # its upper edge, by the side view
+top = np.interp(zs_, [-90, -60, -36, -18, -8, 2], [46, 42, 42, 26, 0, -16])      # its upper edge, by the side view
 wb_ = smooth((-14 - zs_) / 24); top = top * (1 - wb_) + np.minimum(top, np.interp(np.abs(xs_), [0, 30, 56, 70, 80], [46, 43, 36, 14, -8])) * wb_
 top = top + 6 * (1 - smooth((np.abs(xs_) - 8) / 12)) * (zs_ < -40)              # parted under the nose: the nose's tip stays on skin
 back = np.interp(ys_, [-40, -12, 30, 68, 100, 130], [2, 2, 2, 3, -16, -30])              # its back edge: before the ear, under the jaw
@@ -233,7 +233,7 @@ for i in range(nlat):
         x_, y_, z_ = p0[0] / K, float(ydr(p0[1])), -(p0[2] + 0.01) / K
         # the hairline (front: marat.HAIRS f inner; side and nape: s inner and outer ends), with small scallops
         hl_f = np.interp(abs(x_), [0, 44, 70, 84], [-70, -62, -40, -14])
-        hl_s = np.interp(z_, [-20, 6, 22, 40, 70, 100], [-48, -28, -8, 14, 34, 40])
+        hl_s = np.interp(z_, [-24, -12, -5, 3, 10, 22, 40, 70, 100], [-50, -30, -8, -8, -20, -8, 14, 34, 40])     # a sideburn down to the beard
         tb = smooth((z_ + 44) / 40)
         hl = hl_f * (1 - tb) + hl_s * tb + 3.5 * np.sin(lo * 15)
         inside = hl - y_                                # > 0: under hair

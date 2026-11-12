@@ -82,6 +82,7 @@ const PIECE = `
     // the round neckline (vera.py: from (−34, 120) through (0, 152) to (34, 120)), cut on the body at rest
     if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.y < 150.0 - 26.0 * (vDr.x / 36.0) * (vDr.x / 36.0)) m = ${PF('skin')};
     if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.y < 131.0) discard;                 // the collar's rim, cut level
+    if (m == ${PF('shawl')} && vDr.y < 134.0) discard;
     if ((m == ${PF('hair')} || m == ${PF('shawl')}) && vEm < 0.0) discard;                     // the hairline, the shawl's edge
     return m;
   }`;

@@ -38,11 +38,11 @@ def build(ctx):
     ear_y = (0 - D.EYE) * D.HS
     # below the temples the edges go behind the ears, lying on the head, then down and in to the neck's sides: the
     # hair hangs behind the neck as a mass with a front of its own (the front drawing shows it either side of the neck)
-    back_r, back_l = smooth((ys + 52) / 44), smooth((ys + 22) / 30)      # the right from the temple; the left after the fringe's tip
+    back_r, back_l = smooth((ys + 76) / 44), smooth((ys + 22) / 30)      # the right from the temple; the left after the fringe's tip
     w_low = np.interp(ys, [ear_y, 50, 92, 128, END], [84, 82, 62, 44, 50])
     w_r = np.minimum(w_r, 85) * (1 - back_r) + w_low * back_r      # on the head, not past its side
     w_l = np.maximum(w_l, -85) * (1 - back_l) - w_low * back_l
-    behind = np.interp(ys, [-38, 0, 50, 92, 128, END], [-10, -46, -52, -42, -30, -36])
+    behind = np.interp(ys, [-50, 0, 50, 92, 128, END], [-12, -62, -76, -52, -32, -36])
 
     def on_face(w):
         ze = np.full(len(ys), np.nan)
