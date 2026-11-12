@@ -48,6 +48,11 @@ for s in ('Left', 'Right'):
     v = P[sl('sleeve' + s)]; c = v.mean(0)
     bok[sl('sleeve' + s)] = 0.0
 
+# the cheeks' blush (parts.head: a round bokashi at (±46, 36), r 28 hu, on the face's front): how far from its centre
+blu = np.full(N, 9.0)
+hv_ = P[sl('head')]; bx, by = hv_[:, 0] / K, (D.EYE - hv_[:, 1]) / K
+blu[sl('head')] = np.where(hv_[:, 2] > 0.0, np.minimum(np.hypot(bx - 46, by - 36), np.hypot(bx + 46, by - 36)) / 28, 9.0)
+
 # ---------------------------------------------------------------- edges
 e = np.vstack([T[:, [0, 1]], T[:, [1, 2]], T[:, [2, 0]]])
 f = np.tile(np.arange(len(T)), 3)
@@ -134,7 +139,7 @@ pack.save(os.path.join(OUT, 'marat.json'), header, dict(
     positions=P.astype(np.float32).ravel(), triangles=T.astype(np.uint32).ravel(),
     skinJoints=a['skinJoints'].reshape(N, 4).astype(np.uint8), skinWeights=a['skinWeights'].reshape(N, 4).astype(np.float32),
     joints=a['joints'].astype(np.float32), frames=a['frames'].astype(np.float32),
-    grp=grp, pid=pid, puv=puv.ravel(), bok=(np.clip(bok, 0, 1) * 255).astype(np.uint8),
+    grp=grp, pid=pid, puv=puv.ravel(), blu=np.clip(blu, 0, 2).astype(np.float32), bok=(np.clip(bok, 0, 1) * 255).astype(np.uint8),
     edges=E.astype(np.uint32).ravel(), edgeTris=np.where(np.c_[F0, F1] < 0, 0xFFFFFFFF, np.c_[F0, F1]).astype(np.uint32).ravel(),
     edgeDrop=drop.astype(np.uint8), inner=inner,
     faceTri=np.where(faceTri < 0, 0xFFFFFFFF, faceTri).astype(np.uint32), faceBar=faceBar.astype(np.float32).ravel()))

@@ -68,37 +68,40 @@ def build(ctx):
         if y < RING_Y:      # the crown: a dome over the ring
             k = np.sqrt(max(1 - ((RING_Y - y) / (RING_Y - TOP + 0.4)) ** 2, 0.0004)); y = RING_Y
         g = lambda arr: np.interp(y, ys, arr)
-        zc = g(zc_t)
-        return k * g(a_t), zc, zc - k * (zc - g(zb_t)), g(w_r), g(w_l), g(ze_r), g(ze_l), zc + k * (g(zf_top) - zc), y < apex
+        zc = g(zc_t); closed = y < apex
+        zft = zc + k * (g(zf_top) - zc)
+        return (k * g(a_t), zc, zc - k * (zc - g(zb_t)), k * g(w_r), k * g(w_l), zft if closed else g(ze_r), zft if closed else g(ze_l))
 
-    def ang(x, a):
-        return np.sign(x) * np.arcsin(min(abs(x) / a, 0.985) ** (P / 2))
+    # a ring: on each side a front piece from the window's edge (w, ze) round the corner to the side (±a, zs), then
+    # the back piece from the side to the back's middle (0, zb). zs is the ring's middle, or the edge's depth when the
+    # edge lies behind it (the hair hanging behind the neck has a flat front of its own)
+    rows, NF, NB = 150, 26, 34
+    cols = 2 * (NF + NB)
+    S_ = lambda t: np.sin(t * np.pi / 2) ** (2 / P)
+    C_ = lambda t: np.cos(t * np.pi / 2) ** (2 / P)
 
-    rows, cols = 150, 120
+    def point(y, c):
+        a, zc, zb, wr, wl, zr, zl = shape(y)
+        a = max(a, 1.0)
+        right = c < cols // 2
+        k = c if right else cols - 1 - c           # 0 at the edge … NF+NB−1 at the back's middle
+        sg, w, z_e = (1, wr, zr) if right else (-1, wl, zl)
+        zs = min(zc, z_e)
+        if k < NF:
+            t = k / NF
+            return w + (sg * a - w) * S_(t), zs + (z_e - zs) * C_(t)
+        t = (k - NF) / (NB - 0.5)
+        return sg * a * C_(t), zs - (zs - zb) * S_(t)
+
     V = np.zeros((rows, cols, 3))
     for r in range(rows):
         v = r / (rows - 1)
         y0 = TOP - 0.4 + (END - TOP + 0.4) * v
-        a, zc, zb, wr, wl, zr, zl, zft, closed = shape(y0)
-        a = max(a, 1.0)
-        t0, t1 = ang(wr, a), 2 * np.pi + ang(wl, a)
-        th = np.linspace(t0, t1, cols)
         # pointed ends: the lowest rows rise between the locks (big angular points, as drawn)
-        lock = np.abs(np.sin(3.0 * (th - t0) * np.pi / (t1 - t0)))
-        y = y0 - 44 * (1 - lock) ** 1.1 * smooth((v - 0.72) / 0.28)
+        lock = np.abs(np.sin(5.0 * np.pi * (np.arange(cols) + 6) / (cols + 11)))
+        y = y0 - 56 * (1 - lock) ** 0.9 * smooth((v - 0.7) / 0.3)
         for c in range(cols):
-            a, zc, zb, wr, wl, zr, zl, zft, closed = shape(y[c])
-            a = max(a, 1.0)
-            right = c < cols / 2
-            w, z_e = (wr, zr) if right else (wl, zl)
-            if closed:
-                df = zft - zc
-            else:
-                df = (z_e - zc) / max(np.cos(ang(w, a)), 0.05) ** (2 / P)
-            db = zc - zb
-            s_, c_ = np.sin(th[c]), np.cos(th[c])
-            x = a * np.sign(s_) * abs(s_) ** (2 / P)
-            z = zc + (df if c_ > 0 else db) * np.sign(c_) * abs(c_) ** (2 / P)
+            x, z = point(y[c], c)
             V[r, c] = [x * K, (D.FLOOR - y[c]) * K, z * K]
     V = V.reshape(-1, 3)
     T = []
@@ -132,7 +135,7 @@ def build(ctx):
     Vg = V.reshape(rows, cols, 3)          # above the parting's end the two edges are one line
     for r in range(rows):
         if TOP - 0.4 + (END - TOP + 0.4) * r / (rows - 1) < apex + 2: Vg[r, 0] = Vg[r, -1] = (Vg[r, 0] + Vg[r, -1]) / 2
-    V = M.smooth(V, A, yd > 60, iters=3, lam=0.5)
+    V = M.smooth(V, A, (yd > -80) & (yd < 20), iters=8, lam=0.5)      # where the edge leaves the face for behind the ear
     n = len(V)
     W = np.zeros((n, NJ))
     wh = 1 - 0.8 * smooth((yd - 110) / 110)

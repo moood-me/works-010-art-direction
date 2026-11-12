@@ -314,6 +314,8 @@ for i, y in enumerate(sys_):
     if y < hip_y:                                   # below the hips: a narrow bell down to the hem (as drawn: 150–170 units)
         k = sm((hip_y - y) / (hip_y - HEM)) ** 0.8
         axw = hx + (0.176 - hx) * k; zf2 = hzf + (0.150 - hzf) * k; zb2 = hzb + (-0.125 - hzb) * k
+    tuck = -0.014 * (1 - min(1.0, i / 4.0))             # the top rows go into the body: no step at the waist
+    axw += tuck; zf2 += tuck; zb2 -= tuck
     zc = (zf2 + zb2) / 2
     th_ = np.linspace(-np.pi, np.pi, scols)
     sn, cs = np.sin(th_), np.cos(th_)
@@ -355,7 +357,7 @@ torso_c = np.array([0.0, 0.0, float(J1[I['Chest'], 2])])
 phi = np.arctan2(bv[:, 0], bv[:, 2] - torso_c[2])     # round the trunk: 0 the front, ±pi the back
 aphi = np.abs(phi)
 # the lower edge: high in front (the ends crossed on the chest), down the sides, a point down the back
-yb = np.interp(aphi, [0, 0.9, 1.6, 2.5, np.pi], [350, 385, 440, 520, 600])
+yb = np.interp(aphi, [0, 0.9, 1.6, 2.5, np.pi], [350, 385, 420, 445, 456])
 m_bot = yb - bd[:, 1]
 # the V at the neck: from the neck's sides (±56 at y 128) to its point (0, 262)
 vx = np.interp(bd[:, 1], [110, 128, 150, 262], [40, 40, 40, 0])

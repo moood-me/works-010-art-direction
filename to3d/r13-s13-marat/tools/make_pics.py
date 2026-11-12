@@ -1,7 +1,7 @@
 """The page's pictures and films (to3d/r13-s13-marat/pics), printed by web/marat.js through shots.mjs.
   python3 make_pics.py [stills|films|<name>...]      (after form.py and build.py)
 Films are 12 prints a second (each held for two frames of 24)."""
-import os, sys, json, subprocess, shutil
+import os, sys, json, subprocess, shutil, time
 from PIL import Image
 import drawing as D
 
@@ -11,7 +11,6 @@ PICS = os.path.join(HERE, '..', 'pics'); os.makedirs(PICS, exist_ok=True)
 STY = os.path.join(HERE, '..', '..', '..', 'styles', 's13-ukiyo-e', 'pics')
 ENV = dict(os.environ, NODE_PATH='/opt/node-tools/node_modules')
 PACK = '/works-010-art-direction/to3d/r13-s13-marat/data/marat.json'
-LOCK = '/home/user/cache/heavy.%d.lock' % (os.getpid() % 3)
 want = sys.argv[1:] or ['stills', 'films']
 on = lambda name, kind: kind in want or name in want
 
@@ -19,7 +18,12 @@ on = lambda name, kind: kind in want or name in want
 def shots(w, h, sh, name):
     j = os.path.join(WORK, name + '.json')
     json.dump(dict(pack=PACK, w=w, h=h, shots=sh), open(j, 'w'))
-    subprocess.run(['flock', LOCK, 'node', os.path.join(HERE, 'shots.mjs'), j, WORK], check=True, env=ENV, stdout=subprocess.DEVNULL)
+    while True:          # heavy runs take turns: whichever of the three shared locks is free
+        for k in range(3):
+            r = subprocess.run(['flock', '-n', '-E', '99', '/home/user/cache/heavy.%d.lock' % k, 'node', os.path.join(HERE, 'shots.mjs'), j, WORK],
+                               env=ENV, stdout=subprocess.DEVNULL)
+            if r.returncode != 99: r.check_returncode(); return
+        time.sleep(3)
 
 
 im = lambda n: Image.open(os.path.join(WORK, n + '.png')).convert('RGB')

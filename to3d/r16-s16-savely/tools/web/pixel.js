@@ -102,7 +102,7 @@ export function keysOf(R, opts = {}) {
     // line of its shade along the edge, so the nearer reads — the style's "forms are parted by colour"
     const dz = opts.dz ?? 12, sameKey = (m, k) => MATS[k].keys[1] === MATS[m].keys[1];
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-      const q = y * W + x, m = id[q]; if (!m) continue;
+      const q = y * W + x, m = id[q]; if (!m || m === MID.hair) continue;      // (the tufts have their own shade)
       for (const [dx, dy] of N4) { const k = at(x + dx, y + dy); if (k && sameKey(m, k) && z[q] - z[q + dx + dy * W] >= dz) { g[y][x] = MATS[m].keys[0]; break; } }
     }
   }

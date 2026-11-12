@@ -207,7 +207,11 @@ nose = part(toW(NXh), NT, sj, sw, 'nose')
 parts.append(nose); step['head'].append(nose)
 
 # ---------------- the hair: three sheets of painted paper ----------------
-FR, SDp, HS = curve(FRINGE_F), curve(SIDE_F), curve(HAIR_S)
+# the profile's piece, its lower teeth taken lower over the temple and the ear than the profile draws them: the
+# front view's fringe hangs to the cheek at the head's side, and the two views can't both be true — the front wins
+HAIR_S3 = HAIR_S[:7] + [(-86, 68, 1), (-76, 44, 1), (-64, 64, 1), (-52, 40, 1), (-38, 58, 1), (-26, 30, 1), (-10, 44, 1), (2, 14, 1), (16, 30, 1),
+                        (28, -4, 1), (42, 6, 1), (54, -22, 1)]
+FR, SDp, HS = curve(FRINGE_F), curve(SIDE_F), curve(HAIR_S3)
 def hair_fields(X):
     x = X[:, 0] / K; yv = -X[:, 1] / K; z = X[:, 2] / K
     th = np.degrees(np.arctan2(np.abs(x), z))
@@ -220,12 +224,30 @@ def hair_fields(X):
     f_all = wf * f_front + (1 - wf) * ((1 - wb) * f_side + wb * f_back)
     return f_all, f_fr, f_sd, th, z
 
+def bell(v, v0):
+    """below the head's widest the hair doesn't follow the skull in to the neck: at the sides and the back it hangs
+    straight down, as a cut sheet does (v0: the same points on the head, for their height)"""
+    zc = -8 * K
+    ang = np.arctan2(v[:, 0], v[:, 2] - zc); r = np.hypot(v[:, 0], v[:, 2] - zc); yv = -v0[:, 1] / K
+    band = (yv > -18) & (yv < 4); bins = np.linspace(-np.pi, np.pi, 49); R0 = np.zeros(48)
+    for i in range(48):
+        m = band & (ang >= bins[i]) & (ang < bins[i + 1]); R0[i] = r[m].max() if m.any() else 0
+    R0 = np.where(R0 > 0, R0, R0[R0 > 0].mean()); R0 = (np.roll(R0, 1) + 2 * R0 + np.roll(R0, -1)) / 4
+    rk = np.interp(ang, np.r_[bins[0] - np.pi / 48, (bins[:-1] + bins[1:]) / 2, bins[-1] + np.pi / 48], np.r_[R0[-1], R0, R0[0]])
+    wa = np.clip((np.abs(np.degrees(ang)) - 52) / 24, 0, 1); wy = np.clip(yv / 24, 0, 1)
+    rn = np.maximum(r, rk * (1 - 0.05 * wy)) * wa * (yv > 0) + r * (1 - wa * (yv > 0))
+    k = rn / np.maximum(r, 1e-9)
+    return np.c_[v[:, 0] * k, v[:, 1], zc + (v[:, 2] - zc) * k]
+
+
 def sheet(f, off, mat, th=1.3 * K, it=3):
     """the head's surface where f < 0, lifted off it by off (per vertex, metres), as a sheet with a cut edge"""
     A = np.c_[HN, off]
     v, t, a, on = cut(HV, HT, f, A)
     n = a[:, :3] / np.linalg.norm(a[:, :3], axis=1, keepdims=True)
+    v0 = v
     v = v + n * a[:, 3:4]
+    v = bell(v, v0)
     v = smooth(v, t, it=it, lam=0.4)
     sj, sw = one(len(v), 'Head')
     return thick(part(toW(v), t, sj, sw, mat), th)
@@ -234,11 +256,11 @@ f_all, f_fr, f_sd, th_, z_ = hair_fields(HV)
 ear_out = (EW - 0.05) * 40
 yv_ = -HV[:, 1] / K
 # the back piece: all the hair, low on the head
-back = sheet(np.maximum(f_all, ear_out), np.full(len(HV), 3.0 * K), 'hair_d')
+back = sheet(f_all, (4.0 + 5.0 * np.clip((yv_ + 105) / 60, 0, 1)) * K, 'hair_d')
 # the side lock on her left temple: lies on the skin
-side = sheet(np.maximum.reduce([f_sd, -(z_ + 6), ear_out, -HV[:, 0] / K]), (5.5 + 1.5 * np.clip((yv_ + 60) / 80, 0, 1)) * K, 'hair')
+side = sheet(np.maximum.reduce([f_sd, -(z_ + 6), -HV[:, 0] / K]), (6.0 + 5.5 * np.clip((yv_ + 105) / 60, 0, 1)) * K, 'hair')
 # the fringe: glued at the crown, standing off the forehead more and more toward its points
-lift = (6.5 + 6.5 * np.clip((yv_ + 70) / 90, 0, 1)) * K
+lift = (6.0 + 7.5 * np.clip((yv_ + 105) / 70, 0, 1)) * K
 wf_ = np.clip((72 - th_) / 26, 0, 1)
 f_fringe = np.where(HV[:, 0] < 0, wf_ * f_fr + (1 - wf_) * f_all, f_fr + (1 - wf_) * 30)
 fringe = sheet(np.maximum.reduce([f_fringe, -(z_ + 48)]), lift, 'hair')
@@ -267,8 +289,8 @@ f_hood = np.maximum.reduce([CUT - y, y - COLL, np.where(armw > 0.5, tf - WR, -1.
 
 # the shape it takes: round the trunk an oval tube widening to the hem, round the arms wide sleeves
 YS = [CUT, 0.95, 1.08, 1.150, 1.185, COLL]
-AW = [0.150, 0.150, 0.146, 0.128, 0.092, 0.064]
-CD = [0.116, 0.120, 0.116, 0.100, 0.080, 0.066]
+AW = [0.178, 0.180, 0.172, 0.146, 0.100, 0.066]
+CD = [0.132, 0.138, 0.130, 0.108, 0.084, 0.068]
 def trunk_target(X):
     a = np.interp(X[:, 1], YS, AW); c = np.interp(X[:, 1], YS, CD)
     ang = np.arctan2(X[:, 0], X[:, 2] - ZC)
@@ -281,7 +303,7 @@ def arm_target(X):
         Fu, du, tu = bone_r(X[m], sd + 'Arm', sd + 'ForeArm'); Ff, df, tfo = bone_r(X[m], sd + 'ForeArm', sd + 'Hand')
         lower = (tu >= 1)
         F = np.where(lower[:, None], Ff, Fu); d = np.where(lower[:, None], df, du)
-        r = np.where(lower, np.interp(tfo, [0, 1], [0.040, 0.034]), np.interp(tu, [0, 1], [0.046, 0.040]))
+        r = np.where(lower, np.interp(tfo, [0, 1], [0.046, 0.040]), np.interp(tu, [0, 1], [0.054, 0.046]))
         out[m] = F + d * r[:, None]
     return out
 aw_s = np.clip((armw - 0.25) / 0.5, 0, 1)
@@ -360,7 +382,7 @@ def patch(corners, nu, nv, off, mat, th=0.003):
     sj, sw = hood_weights(X)
     return thick(part(X, F, sj, sw, mat), th)
 
-pocket = patch([(-0.094, 0.878), (0.094, 0.878), (0.122, 0.712), (-0.122, 0.712)], 15, 11, 0.004, 'pocket')
+pocket = patch([(-0.100, 0.878), (0.100, 0.878), (0.134, 0.712), (-0.134, 0.712)], 15, 11, 0.004, 'pocket')
 strings = [patch([(-0.031, 1.168), (-0.021, 1.168), (-0.026, 1.000), (-0.036, 1.000)], 2, 12, 0.003, 'string', 0.0015),
            patch([(0.021, 1.168), (0.031, 1.168), (0.037, 1.040), (0.027, 1.040)], 2, 10, 0.003, 'string', 0.0015)]
 
@@ -426,7 +448,7 @@ trousers = [shell(f_tr, np.full(len(V), 0.004), 'trou', smooth_it=6)]
 def boot(side):
     F_, T_ = J[IX[side + 'Foot']], J[IX[side + 'ToeEnd']]
     ax = np.array([T_[0] - F_[0], 0, T_[2] - F_[2]]); L = np.linalg.norm(ax); ax /= L
-    heel = np.array([F_[0], 0, F_[2]]) - ax * 0.050; Ltot = 0.205
+    heel = np.array([F_[0], 0, F_[2]]) - ax * 0.050; Ltot = 0.185
     side_v = np.cross([0, 1, 0], ax)
     nu, nv = 34, 28; secs = []
     for i in range(nu):
@@ -440,7 +462,7 @@ def boot(side):
             a = 2 * np.pi * j / nv; sx, sy = np.cos(a), np.sin(a)
             r = (abs(sx) ** 3.4 + abs(sy) ** 3.4) ** (-1 / 3.4)
             py = (sy * r * 0.5 + 0.5) * hgt * (0.45 + 0.55 * cap)
-            tread = 1.09 if py < 0.02 else 1.0                       # the thick sole stands out
+            tread = 1.10 if py < 0.024 else 1.0                       # the thick sole stands out
             ring.append(c + side_v * (sx * r * w * cap * tread) + ax * ((cap - 1) * 0.0) + np.array([0, max(py, 0) - 0.001, 0]))
         secs.append(np.array(ring))
     X, F = loft(secs)
@@ -448,7 +470,7 @@ def boot(side):
     Dd = np.zeros((len(X), NJ)); wt = np.clip((tt - 0.6) / 0.2, 0, 1)
     Dd[:, IX[side + 'Foot']] = 1 - wt; Dd[:, IX[side + 'ToeBase']] = wt
     sj, sw = top4(Dd)
-    out = split(part(X, F, sj, sw, 'boot'), 0.020 - X[:, 1], 'sole')
+    out = split(part(X, F, sj, sw, 'boot'), 0.024 - X[:, 1], 'sole')
     # the laces: three lime strips across the instep
     for k in range(3):
         tk = 0.44 + 0.055 * k
@@ -480,10 +502,10 @@ parts += legs + hands; step['legs'] = legs + hands
 
 
 # ---------------- the slouch, put into the rest ----------------
-def slouch(pieces, Jn):
+def slouch(pieces, Jn, on=True):
     """turn the spine's joints about the body's side axis (degrees, + is forward) and roll the shoulders; every joint
     below goes with its parent, every vertex with its weights (the rest is re-posed; the frames stay)"""
-    ANG = {} if os.environ.get('NOSLOUCH') else {'Spine1': (-6, 0, 0), 'Spine2': (9, 0, 0), 'Chest': (10, 0, 0), 'Neck1': (5, 0, 0), 'Head': (-4, 0, 0),
+    ANG = {} if not on else {'Spine1': (-6, 0, 0), 'Spine2': (9, 0, 0), 'Chest': (10, 0, 0), 'Neck1': (5, 0, 0), 'Head': (-4, 0, 0),
            'LeftShoulder': (0, -9, 7), 'RightShoulder': (0, 9, -7)}
     def rot(ax, ay, az):
         ax, ay, az = np.radians([ax, ay, az])
@@ -515,7 +537,13 @@ for p in final: p['V'][:, 1] -= lo
 JF[:, 1] -= lo
 write('kira', final, JF, B['frames'], folder=DATA)
 print('height', max(p['V'][:, 1].max() for p in final), 'head centre', (O[1]))
-np.savez(f'{CACHE}/build.npz', O=O, JF=JF, J2=J2)
+# the same figure standing straight (for comparing with the turnaround and expression sheets, drawn upright)
+up, JU = slouch(parts, J2, False)
+lo_u = min(p['V'][:, 1].min() for p in up)
+for p in up: p['V'][:, 1] -= lo_u
+JU[:, 1] -= lo_u
+write('kira-up', up, JU, B['frames'])
+np.savez(f'{CACHE}/build.npz', O=O - [0, lo_u, 0], JF=JF, J2=J2)
 
 if STEPS:
     sjb, swb = top4(D)

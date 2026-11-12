@@ -80,7 +80,8 @@ const PIECE = `
     if (only >= 0.0 && abs(m - only) > 0.5 && !(only == ${PF('hair')} && m == ${PF('knot')})) discard;
     if (m == ${PF('dress')} && vEm < 0.0) m = ${PF('skin')};                                   // the sleeve's end
     // the round neckline (vera.py: from (−34, 120) through (0, 152) to (34, 120)), cut on the body at rest
-    if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.z > ${H.neckZ.toFixed(1)} && vDr.y < 150.0 - 26.0 * (vDr.x / 36.0) * (vDr.x / 36.0)) m = ${PF('skin')};
+    if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.y < 150.0 - 26.0 * (vDr.x / 36.0) * (vDr.x / 36.0)) m = ${PF('skin')};
+    if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.y < 131.0) discard;                 // the collar's rim, cut level
     if ((m == ${PF('hair')} || m == ${PF('shawl')}) && vEm < 0.0) discard;                     // the hairline, the shawl's edge
     return m;
   }`;
@@ -380,8 +381,9 @@ function pushSkirt() {
     const a0 = getV(P, I[s + 'Leg']), k = getV(P, I[s + 'Shin']), f = getV(P, I[s + 'Foot']), t = getV(P, I[s + 'ToeBase']), e = getV(P, I[s + 'ToeEnd'] ?? I[s + 'ToeBase']);
     for (const [A, B, r0, r1, n, from] of [[a0, k, 0.074, 0.06, 9, 2], [k, f, 0.058, 0.046, 9, 0], [f, t, 0.05, 0.045, 4, 0], [t, e, 0.045, 0.04, 2, 1]])
       for (let i = from; i <= n; i++) { const u = i / n; balls.push([A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u, A[2] + (B[2] - A[2]) * u, r0 + (r1 - r0) * u]); }
+    const bk = normalize(sub(f, t)), dn = normalize(sub(f, k));                       // the heel
+    balls.push([f[0] + bk[0] * 0.035 + dn[0] * 0.03, f[1] + bk[1] * 0.035 + dn[1] * 0.03, f[2] + bk[2] * 0.035 + dn[2] * 0.03, 0.05]);
   }
-  for (let i = H.ranges.shoes[0]; i < H.ranges.shoes[1]; i += 3) balls.push([X[i * 3], X[i * 3 + 1], X[i * 3 + 2], 0.022]);     // the shoes themselves
   for (let i = SK[0]; i < SK[1]; i++) {
     const px = X[i * 3], py = X[i * 3 + 1], pz = X[i * 3 + 2];
     let dx = px - hc[0], dz = pz - hc[2]; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;

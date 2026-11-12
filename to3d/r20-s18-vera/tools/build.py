@@ -32,9 +32,11 @@ os.makedirs(OUT, exist_ok=True)
 sm = lambda t: (lambda c: c * c * (3 - 2 * c))(np.clip(t, 0, 1))
 
 TALL = 1.72
-KH = TALL / 7.3                              # one head unit in metres (the drawn figure is 7.3 heads with its head on)
-NECK_Y = 1.425                               # the neck's base on the body (the collar sits here)
+KB = TALL / 7.39                             # the body's unit (body3d: a figure of HEIGHT 7.5 is 7.39 with its head on)
+KH = 1.08 * KB                               # the head's unit: figure.py draws the head 1.08 of the body's
+NECK_Y = 1.423                               # the neck's base on the body (the collar sits here)
 EYE = NECK_Y + 0.012 + 0.60 * KH             # body3d.head3d: the eye line is 0.6 of a head over the pit of the neck
+FOLD_OFF = float(os.environ.get('FOLD_OFF', '0.02'))
 G = dict(skin=1, hair=2, coat=3, leg=4, shoe=5, blouse=6, folder=7)
 
 # ---------------------------------------------------------------- skeleton and Anny's body
@@ -63,13 +65,13 @@ lift = J0[I['Hips'], 1] * S * (LEG - 1)
 for s, sg in (('Left', 1), ('Right', -1)):
     for j in under(I[s + 'Leg']):
         J1[j, 1] = J0[I[s + 'Leg'], 1] * S + lift + (J0[j, 1] - J0[I[s + 'Leg'], 1]) * S * LEG
-        J1[j] += [-sg * 0.022, 0, 0]
+        J1[j] += [-sg * 0.034, 0, 0]
 for j in range(NJ):
     if j not in under(I['LeftLeg']) and j not in under(I['RightLeg']):
         J1[j, 1] += lift * (1 - sm((J0[j, 1] * S - 1.0) / 0.45))
 for s, sg in (('Left', 1), ('Right', -1)):   # narrow shoulders
     for j in under(I[s + 'Shoulder']): J1[j] += [-sg * 0.004, -0.004, 0]
-    for j in under(I[s + 'Arm']): J1[j] += [-sg * 0.026, -0.008, 0]
+    for j in under(I[s + 'Arm']): J1[j] += [-sg * 0.040, -0.008, 0]
 
 
 def joint_affine(j):
@@ -77,8 +79,8 @@ def joint_affine(j):
     if n in ('Hips',): return np.diag([0.74, 1, 0.84])
     if n in ('Spine1', 'Spine2'): return np.diag([0.78, 1, 0.84])
     if n in ('Chest',): return np.diag([0.80, 1, 0.84])
-    if n.endswith('Shoulder'): return np.diag([0.84, 0.9, 0.88])
-    r = {'LeftArm': 0.82, 'RightArm': 0.82, 'LeftForeArm': 0.82, 'RightForeArm': 0.82,
+    if n.endswith('Shoulder'): return np.diag([0.78, 0.9, 0.86])
+    r = {'LeftArm': 0.76, 'RightArm': 0.76, 'LeftForeArm': 0.78, 'RightForeArm': 0.78,
          'LeftLeg': 0.78, 'RightLeg': 0.78, 'LeftShin': 0.8, 'RightShin': 0.8}.get(n)
     if r:
         c = [k for k in range(NJ) if PARENT[k] == j][0]
@@ -95,7 +97,7 @@ for s in ('Left', 'Right'):                   # smaller hands: the fingers' join
     hd = I[s + 'Hand']
     for j in under(hd):
         if j != hd: J1[j] = J1[hd] + (J1[j] - J1[hd]) * 0.9
-LEG_IN = np.radians(4.0)                      # she stands with her feet near (a narrow figure)
+LEG_IN = np.radians(6.0)                      # she stands with her feet near (a narrow figure)
 for s, sg in (('Left', 1), ('Right', -1)):
     c, sn_ = np.cos(-sg * LEG_IN), np.sin(-sg * LEG_IN)
     Rz = np.array([[c, -sn_, 0], [sn_, c, 0], [0, 0, 1]])
@@ -191,7 +193,7 @@ def catmull_closed(P, n=5):
 ear_v, ear_t, ear_rim = [], [], []
 yc, hh, ww = EAR.get('y', 0.08), EAR.get('h', 0.24), EAR.get('w', 0.12); zc_e = EAR.get('z', -0.10)
 for side in (1, -1):
-    x0 = side * HD.sec(yc)[0] * 0.97
+    x0 = side * (HD.sec(yc)[0] * 0.97 + 0.02)
     Pe = lambda dy, dz: (x0 + side * 0.03 * max(0, -dz / ww) * 0.8, yc + dy * hh, zc_e + dz * ww)
     rim = [Pe(0.45, 0.25), Pe(0.1, 0.42), Pe(-0.3, 0.38), Pe(-0.5, 0.05), Pe(-0.42, -0.35), Pe(-0.1, -0.5), Pe(0.25, -0.38), Pe(0.5, -0.18), Pe(0.55, 0.05)]
     R_ = catmull_closed(rim, 5)
@@ -255,6 +257,7 @@ for i in range(NAZ):
         d = d0 * (1 - t_) + d1 * t_
         q, _ = HAIR.shell_ray(HD, tuple(d / np.linalg.norm(d)))
         hair_v[i, j + 1] = q
+hair_v[..., 1] = np.maximum(hair_v[..., 1], HD.top - 0.022)                 # the crown without a knob
 hair_v[:, 1] = hair_v[:, 1] * 0.65 + hair_v[:, 0] * 0.35          # a soft rise from the skin at the hairline
 NTR = NTT + 1
 hair_g = hair_v.reshape(-1, 3)
@@ -284,7 +287,7 @@ def orient(V, T, c):
 
 
 # ---------------------------------------------------------------- Anny's body: what is kept; the coat over it
-gone = (part('head', 'neck') > 0.5) & (PB[:, 1] > NECK_Y - 0.01)
+gone = (part('head', 'neck') > 0.5) & (PB[:, 1] > NECK_Y - 0.012)
 tk = ~gone[TRI0].any(1)
 bi = np.where(~gone)[0]; remap = -np.ones(len(P0), int); remap[bi] = np.arange(len(bi))
 bv = PB[bi].copy(); bT = remap[TRI0[tk]]; bSJ = SJ0[bi]; bSW = SW0[bi]
@@ -294,12 +297,12 @@ hands = bpart('Lhand', 'Rhand') > 0.5
 legs = bpart('Lthigh', 'Rthigh', 'Lshin', 'Rshin', 'Lfoot', 'Rfoot') > 0.5
 feet = bpart('Lfoot', 'Rfoot') > 0.5
 WAIST = 0.60 * TALL                            # where the coat's lower shell begins (the hips)
-HEM = 1.85 * KH
+HEM = 1.85 * KB
 TOPS = 1.125                                  # the lower shell's top: the waist
 grp = np.full(len(bv), G['coat'])
 grp[hands] = G['skin']
 grp[legs & (by < WAIST - 0.10)] = G['leg']
-grp[feet | ((by < 0.08) & legs)] = G['shoe']
+grp[feet] = G['leg']
 nb = M.vertex_normals(bv, bT)
 wrist = np.zeros(len(bv))
 for s in ('Left', 'Right'):
@@ -312,7 +315,7 @@ coat = grp == G['coat']
 grp[(wrist > 0.5) & coat] = G['skin']
 coat = grp == G['coat']
 arms_ = bpart('LupperArm', 'RupperArm', 'LforeArm', 'RforeArm') > 0.4
-off = np.where(coat, 0.009, 0) + np.where(coat & arms_, 0.005, 0) + np.where(grp == G['shoe'], 0.004, 0)
+off = np.where(coat, 0.009, 0) + np.where(coat & arms_, 0.002, 0) + 0
 off = off + np.where(coat & (wrist > 0.0), 0.006 * (1 - wrist), 0)
 bv = bv + nb * off[:, None]
 Ab = M.adjacency(len(bv), bT)
@@ -322,9 +325,6 @@ bv = M.smooth(bv, Ab, trunk * 1.0, iters=300, lam=0.5)
 nb = M.vertex_normals(bv, bT)
 bv[trunk] += nb[trunk] * 0.016
 # the top edge of the coat round the neck: level
-for lp in M.boundary_loops(bT):
-    lp = np.array(lp)
-    if np.mean(bv[lp, 1]) > NECK_Y - 0.05: bv[lp, 1] = NECK_Y + 0.004
 # shoes (Р7's loft): Anny's feet below the ankle go
 footcut = feet & (bv[:, 1] < 0.085)
 bT = bT[~footcut[bT].all(1)]
@@ -431,11 +431,11 @@ neck_at = lambda yw: (lambda k: (rx * (1 + flare * k ** 2.5) * KH, rz * (1 + fla
 CV = []
 for i in range(crow):
     t_ = i / (crow - 1)
-    y = NECK_Y - 0.012 + t_ * 0.047
+    y = NECK_Y - 0.02 + t_ * 0.05
     ax_, az_, zz = neck_at(y)
-    g_ = 1.08 + 0.5 * (1 - t_) ** 2
+    g_ = 1.1 + 0.75 * (1 - t_) ** 1.6
     angs = np.linspace(0, 2 * np.pi, ccol, endpoint=False)
-    dip = 0.012 * np.exp(-((np.minimum(angs, 2 * np.pi - angs)) / 0.35) ** 2) * t_      # a small V in front
+    dip = 0.010 * np.exp(-((np.minimum(angs, 2 * np.pi - angs)) / 0.35) ** 2) * t_      # a small V in front
     CV.append(np.c_[(ax_ * g_ + 0.003) * np.sin(angs), y - dip, zz + (az_ * g_ + 0.003) * np.cos(angs)])
 CV = np.array(CV).reshape(-1, 3)
 CT = []
@@ -444,13 +444,18 @@ for r in range(crow - 1):
         a0, a1 = r * ccol + c_, r * ccol + (c_ + 1) % ccol; b0, b1 = a0 + ccol, a1 + ccol
         CT += [[a0, a1, b0], [a1, b1, b0]]
 CT = np.array(CT)
-colW = np.zeros((len(CV), NJ)); tc = sm((CV[:, 1] - NECK_Y) / 0.05)
+colW = np.zeros((len(CV), NJ)); tc = sm((CV[:, 1] - NECK_Y + 0.02) / 0.06)
 colW[:, I['Chest']] = 1 - 0.5 * tc; colW[:, I['Neck1']] = 0.5 * tc
 
 # the folder (the drawn pose only): a thin board in the right hand
 hr = J1[I['RightHand']]
-fo = np.array([[-0.5, -0.6, 0], [0.5, -0.6, 0], [0.5, 0.6, 0], [-0.5, 0.6, 0]]) * [0.21, 0.26, 1]
-FV = np.r_[fo + [0, 0, 0.004], fo - [0, 0, 0.004]] + hr
+fd = hr - J1[I['RightForeArm']]; fd /= np.linalg.norm(fd)                       # along the forearm
+fpn = np.cross(J1[I['RightHandPinky1']] - J1[I['RightHandIndex1']], J1[I['RightHandMiddle1']] - hr); fpn /= np.linalg.norm(fpn)
+fs = np.cross(fd, fpn); fs /= np.linalg.norm(fs)                                # across the palm
+fc = hr - fd * 0.085 + fpn * FOLD_OFF + fs * 0.03
+fo = np.array([[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]]) * [0.20, 0.29]
+fq = np.array([fc + fs * x + fd * y for x, y in fo])
+FV = np.r_[fq + fpn * 0.004, fq - fpn * 0.004]
 FT = np.array([[0, 1, 2], [0, 2, 3], [4, 6, 5], [4, 7, 6], [0, 4, 5], [0, 5, 1], [1, 5, 6], [1, 6, 2], [2, 6, 7], [2, 7, 3], [3, 7, 4], [3, 4, 0]])
 foW = np.zeros((8, NJ)); foW[:, I['RightHand']] = 1
 
@@ -566,8 +571,8 @@ def on_front(q, tris):
 
 
 # the coat's front in rest coordinates (the shader paints the same shapes per pixel, web/vera.js `paint`)
-YTOP = NECK_Y + 0.002; YV = WAIST - 0.02; YL0 = YTOP - 0.05; YL1 = YTOP - 0.25
-COATP = dict(ytop=YTOP, yv=YV, yl0=YL0, yl1=YL1, hem=HEM, wtop=0.034, wmid=0.02, lap=0.088, gap=0.007)
+YTOP = NECK_Y + 0.004; YV = WAIST - 0.02; YL0 = YTOP - 0.05; YL1 = YTOP - 0.25
+COATP = dict(cy0=YTOP - 0.05, cw0=0.062, cw1=0.036, ytop=YTOP, yv=YV, yl0=YL0, yl1=YL1, hem=HEM, wtop=0.034, wmid=0.02, lap=0.088, gap=0.007)
 
 
 def wb(y):          # the blouse's half-width
@@ -597,6 +602,9 @@ for sg in (1, -1):
     curve('edge', 1.0, np.c_[sg * (COATP['gap'] + (YV - ysq) * 0.012) * np.clip((YV - ysq) / 0.05, 0, 1), ysq], (0.25, 0.03))
     lp = np.array([[wb(YTOP) + 0.012, YTOP - 0.004], [COATP['lap'], YL0], [float(wb(YL1)), YL1]])
     curve('lapel', 0.8, np.c_[sg * np.interp(np.linspace(0, 2, 40), [0, 1, 2], lp[:, 0]), np.interp(np.linspace(0, 2, 40), [0, 1, 2], lp[:, 1])], (0.05, 0.1))
+    # the blouse's collar lying on the chest: its outer edge and its lower edge
+    curve('collar', 0.8, np.c_[sg * np.linspace(COATP['cw1'], COATP['cw0'], 14), np.linspace(YTOP + 0.012, COATP['cy0'], 14)], (0.1, 0.05))
+    curve('collar', 0.8, np.c_[sg * np.linspace(COATP['cw0'], 0.004, 14), np.linspace(COATP['cy0'], COATP['cy0'] + 0.012, 14)], (0.05, 0.2))
 curve('seam', 0.6, np.c_[np.linspace(-0.05, 0.05, 12) * 0 + np.linspace(-wb(YL1 - 0.06), wb(YL1 - 0.06), 12), np.full(12, YL1 - 0.06)], (0.2, 0.2))
 
 # the hair's streaks of light: parts of the strands (columns of the hair's grid), as vertex chains
@@ -613,7 +621,7 @@ hairline = [int(h0 + i * NTR) for i in range(NAZ)]
 # the lower shell's rings (for keeping it off the legs)
 header = dict(format='r20/character', version=1, id='vera-s18', label={'ru': 'Вера, манга'}, skinning='dqs',
               source='Anny moood-woman + the head, hair and neck of styles/s18-manga (head.py, hair.py, chars/vera.py) + shells',
-              pieces=pieces, trianglePieces=tpieces, pieceNames=PNAMES, groups=G, KH=KH, EYE=EYE, ZOFF=ZOFF,
+              pieces=pieces, trianglePieces=tpieces, pieceNames=PNAMES, groups=G, KH=KH, KB=KB, EYE=EYE, ZOFF=ZOFF,
               coat=COATP, waist=WAIST, skirt=dict(rows=srows, cols=scols), curves=curves, streaks=streaks, hairline=hairline,
               hair=dict(naz=NAZ, ntr=NTR), head=dict(sections=[list(map(float, r)) for r in CH.HEAD['sections']],
                                                      **{k: CH.HEAD[k] for k in ('nose', 'eye', 'brow', 'mouth', 'ear', 'rest')}),

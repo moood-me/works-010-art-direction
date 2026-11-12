@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>Кира: лицо из бумаги</title>
+<body style="margin:0;background:#ecd3bf;display:flex;flex-wrap:wrap">
+<script type="module">
+// the face's pieces alone, as they are drawn into the head's picture: the five expressions (face.js)
+import { LiveFace, EXPRS } from './face.js';
+for (const name of Object.keys(EXPRS)) {
+  const c = Object.assign(document.createElement('canvas'), { width: 512, height: 512 }); document.body.append(c);
+  const f = new LiveFace({}); f.still = true; f.setExpressions([{ t: 0, name }]); f.draw(c.getContext('2d'), 0);
+}
+window.done = 1;
+</script>

@@ -178,11 +178,11 @@ AH = M.adjacency(nh, hP)
 V0s, hPs = M.catmull_clark(V0, hP, 1); V0s = np.asarray(V0s)
 nrmS = M.vertex_normals(V0s, M.triangulate(hPs))
 xs_, ys_, zs_ = V0s[:, 0] / K, ydr(V0s[:, 1]), -(V0s[:, 2] + 0.01) / K
-ears_ = earm[cKDTree(V0).query(V0s)[1]]
-top = np.interp(zs_, [-90, -60, -36, -12, 4, 16], [46, 42, 42, 28, 8, -12])      # its upper edge, by the side view
+ears_ = earm[cKDTree(V0).query(V0s)[1]] & (zs_ > 2)          # the ear itself (the mask also takes the cheek before it)
+top = np.interp(zs_, [-90, -60, -36, -16, -6, 2], [46, 42, 42, 24, -10, -40])      # its upper edge, by the side view
 wb_ = smooth((-14 - zs_) / 24); top = top * (1 - wb_) + np.minimum(top, np.interp(np.abs(xs_), [0, 30, 56, 70, 80], [46, 43, 36, 14, -8])) * wb_
 top = top + 6 * (1 - smooth((np.abs(xs_) - 8) / 12)) * (zs_ < -40)              # parted under the nose: the nose's tip stays on skin
-back = np.interp(ys_, [-12, 30, 68, 100, 130], [16, 26, 14, -18, -30])           # its back edge
+back = np.interp(ys_, [-40, -12, 30, 68, 100, 130], [2, 2, 2, 3, -16, -30])              # its back edge: before the ear, under the jaw
 inb = (ys_ > top) & (zs_ < back) & (ys_ < 122) & ~ears_
 fb = np.array([inb[p].all() for p in hPs])
 bP = [p for p, k in zip(hPs, fb) if k]
@@ -197,7 +197,7 @@ for r_ in range(1, 24):
     nb_ = (AB @ cur.astype(float)) > 0; new = nb_ & ~cur & (depth == 1) if r_ == 1 else nb_ & ~cur
     depth[nb_ & ~cur] = r_; cur |= nb_
 depth[~cur] = 24; depth = depth / 2
-thick = (2 + 11 * smooth(depth / 4)) * K * (0.6 + 0.4 * smooth((byd - 20) / 50))
+thick = (2 + 13 * smooth(depth / 4)) * K * (0.6 + 0.4 * smooth((byd - 20) / 50))
 BV += bn * thick[:, None]
 low = smooth((byd - 62) / 40) * smooth((-bzs + 10) / 50)            # the chin's mass hangs lower, forward
 BV[:, 1] -= low * 22 * K * (~edge); BV[:, 2] += low * 6 * K * (~edge)
@@ -300,8 +300,9 @@ def jsurf(x, y, front=True):
 CV = []; cc, cr = 48, 14
 for i in range(cc):
     th_ = 2 * np.pi * i / cc
-    cx, cz = 0.112 * np.sin(th_), -0.016 + 0.116 * np.cos(th_)
-    cy = 1.640 - 0.022 * np.cos(th_) - 0.012 * max(0.0, np.cos(th_)) ** 3
+    cf = max(0.0, np.cos(th_))
+    cx, cz = 0.118 * np.sin(th_), -0.022 + (0.112 + 0.062 * cf ** 2) * np.cos(th_)
+    cy = 1.622 - 0.012 * np.cos(th_) - 0.046 * cf ** 1.5
     ro = 0.033 + 0.007 * np.cos(th_)
     for k in range(cr):
         ph = 2 * np.pi * k / cr

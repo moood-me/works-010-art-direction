@@ -7,7 +7,7 @@ import pack, mesh as M, headfit as Hd, drawing as D
 out = sys.argv[1]; os.makedirs(out, exist_ok=True)
 sk = pack.skeleton(); I = {j['name']: i for i, j in enumerate(sk['joints'])}
 h, a, th, t = pack.body('moood-woman')
-skin, shade, line = [244, 205, 176], [227, 169, 140], [168, 96, 74]
+skin, shade, line = [230, 198, 164], [7, 7, 11], [59, 69, 102]
 
 
 def save(name, V, T, SJ, SW, joints):
@@ -22,7 +22,7 @@ def save(name, V, T, SJ, SW, joints):
 
 save('anny', a['positions'].reshape(-1, 3), t['triangles'].reshape(-1, 3), t['skinJoints'].reshape(-1, 4), t['skinWeights'].reshape(-1, 4), a['joints'].reshape(-1, 3))
 v, P, eyes, r, vis = Hd.load('/home/user/cache/to3d-r15-s15-anya/hbm_head.npz')
-s = (D.FLOOR - 112 - (D.FLOOR + 126)) * 0 + (238 * D.K) / (0.888 - 0.575)
+s = ((D.CHIN - D.SKULL) * D.K) / (0.888 - 0.575)
 V = (v - [0, 0.7287, 0.03]) * s + [0, (D.FLOOR) * D.K, 0]
 V[:, 1] = (v[:, 1] - 0.7287) * s + D.FLOOR * D.K       # eye line at drawing y=0
 T = M.triangulate(P)

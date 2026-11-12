@@ -60,6 +60,7 @@ g.setAttribute('normal', new THREE.BufferAttribute(fig.normals, 3));
 g.setAttribute('grp', new THREE.BufferAttribute(Float32Array.from(a.grp), 1));
 g.setAttribute('pid', new THREE.BufferAttribute(Float32Array.from(a.pid), 1));
 g.setAttribute('puv', new THREE.BufferAttribute(a.puv, 2));
+g.setAttribute('blu', new THREE.BufferAttribute(a.blu, 1));
 g.setAttribute('bok', new THREE.BufferAttribute(Float32Array.from(a.bok, v => v / 255), 1));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 const U = { dn: { value: 0 }, df: { value: 10 } };
@@ -72,13 +73,13 @@ const idMat = new THREE.ShaderMaterial({
       gl_FragColor = vec4(floor(vG + 0.5) / 255.0, hi / 255.0, lo / 255.0, (floor(vP + 0.5) + 1.0) / 255.0); }`,
 });
 const cols = [], boks = []; for (let i = 0; i < 8; i++) { cols.push(hex(COL[i] || '#000000')); boks.push(hex(BOK[i] || '#000000')); }
-const UC = { col: { value: cols }, bokc: { value: boks }, wave: { value: hex('#e08e5c') }, check: { value: hex('#3f4a5a') }, stripe: { value: hex(K.TERRA) }, plain: { value: 0 } };
+const UC = { col: { value: cols }, bokc: { value: boks }, wave: { value: hex('#e08e5c') }, check: { value: hex('#3f4a5a') }, stripe: { value: hex(K.TERRA) }, plain: { value: 0 }, blush: { value: hex(K.P.blush[0]) }, blushOp: { value: 0 } };
 const colMat = new THREE.ShaderMaterial({
   uniforms: UC, side: THREE.DoubleSide,
-  vertexShader: `attribute float grp; attribute vec2 puv; attribute float bok; varying float vG; varying vec2 vU; varying float vB;
-    void main() { vG = grp; vU = puv; vB = bok; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-  fragmentShader: `uniform vec3 col[8]; uniform vec3 bokc[8]; uniform vec3 wave; uniform vec3 check; uniform vec3 stripe; uniform float plain;
-    varying float vG; varying vec2 vU; varying float vB;
+  vertexShader: `attribute float grp; attribute vec2 puv; attribute float bok; attribute float blu; varying float vG; varying vec2 vU; varying float vB; varying float vL;
+    void main() { vG = grp; vU = puv; vB = bok; vL = blu; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `uniform vec3 col[8]; uniform vec3 bokc[8]; uniform vec3 wave; uniform vec3 check; uniform vec3 stripe; uniform float plain; uniform vec3 blush; uniform float blushOp;
+    varying float vG; varying vec2 vU; varying float vB; varying float vL;
     // seigaiha: rows of overlapping arcs, three to a wave (kit.py seigaiha)
     float waves(vec2 p, float r, float lw) {
       vec2 c0 = floor(p / (2.0 * r)); float d = 1e3;
@@ -99,6 +100,7 @@ const colMat = new THREE.ShaderMaterial({
         if (gi == ${G.towel}) { float k = vU.x / 0.035 + 0.5; float fw = fwidth(k); float t = abs(fract(k) - 0.5);
           c = mix(c, stripe, 1.0 - smoothstep(0.145 - fw, 0.145 + fw, t)); }
         c = mix(c, bokc[gi], vB * 0.62);
+        if (gi == ${G.skin} && vL < 1.0) c = mix(c, blush, blushOp * (vL < 0.55 ? mix(1.0, 0.55, vL / 0.55) : mix(0.55, 0.0, (vL - 0.55) / 0.45)));    // the cheeks' bokashi
       }
       gl_FragColor = vec4(c, 1.0);
     }`,
@@ -380,8 +382,6 @@ function headTurn() {
 }
 function drawFace(d) {
   const ex = fp, { side, front } = headTurn();
-  const [bc, bo] = K.P.blush, bop = bo + ex.blush * 0.5;
-  for (const sx of [-46, 46]) { const f0 = frameAt(sx, 36, 0.5, true); if (f0 && seenNear(sx, 30, 3)) inFrame(d, f0, sx, 36, () => d.blush(sx, 36, 28, bc, bop)); }
   for (const [sx, inner] of [[33, -1], [-33, 1]]) {
     const f0 = frameAt(sx, 0, 0.6); if (!f0 || (f0.r < 0.3 && Math.sign(sx) === side)) continue;
     const shift = side * 8 * (1 - Math.min(1, f0.r)) * (Math.sign(sx) === side ? 1 : 0.4), f = frameAt(sx - shift, 0, 0.6) || f0;
@@ -395,9 +395,9 @@ function drawFace(d) {
   if (fnz && kf > 0) inFrame(d, fnz, 0, 30, () => K.noseFront(d, side < 0 ? 1 : -1, kf));
   const fq = frameAt(0, 2, 1, true, 4);
   if (fq && kq > 0) inFrame(d, { ...fq, ax: [-fq.ay[1] * side, fq.ay[0] * side] }, 9 * Math.min(1, (1 - front) / 0.4), 0, () => K.noseQ(d, kq));
-  const my = K.P.mouth.y * K.P.long, fm0 = frameAt(0, my, 0.62, true, 4);
+  const my = K.P.mouth.y * K.P.long, fm0 = frameAt(0, my, 0.42, true, 4);
   if (fm0) {
-    const mx = -side * 10 * (1 - Math.min(1, fm0.r)), fm = frameAt(mx, my, 0.62, false, 4);
+    const mx = -side * 15 * (1 - Math.min(1, fm0.r)), fm = frameAt(mx, my, 0.42, false, 4);
     if (fm) inFrame(d, fm, mx, my, () => K.mouth(d, mx, my, ex, { onDark: true }));
   }
 }
@@ -446,7 +446,7 @@ function draw() {
   normals();
   mesh.material = idMat;
   renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 1); renderer.clear(); renderer.render(scene, camera); renderer.readRenderTargetPixels(rt, 0, 0, W, Hh, buf); renderer.setRenderTarget(null);
-  mesh.material = colMat; UC.plain.value = S.plain ? 1 : 0;
+  mesh.material = colMat; UC.plain.value = S.plain ? 1 : 0; UC.blushOp.value = S.noFace ? 0 : K.P.blush[1] + fp.blush * 0.5;
   renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, camera);
   prof.gl = performance.now() - T0;
   projectAll(); faceGrid();

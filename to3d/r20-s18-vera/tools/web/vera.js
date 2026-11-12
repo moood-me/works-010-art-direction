@@ -75,7 +75,8 @@ const idMat = new THREE.ShaderMaterial({
       // the coat's front, found from where the point is on the resting figure: the blouse, the skirt below it, lapels
       if (gg == ${G.coat}.0 && vR.z > 0.03 && abs(vR.x) < 0.16) {
         float ax = abs(vR.x), y = vR.y;
-        if (y > ${f4(C.yv)} && ax < wb(y)) gg = y > ${f4(C.yl1 - 0.06)} ? ${G.blouse}.0 : ${SKIRT}.0;
+        if (y > ${f4(C.cy0)} + 0.012 * (1.0 - ax / ${f4(C.cw0)}) && ax < mix(${f4(C.cw0)}, ${f4(C.cw1)}, (y - ${f4(C.cy0)}) / ${f4(C.ytop - C.cy0)})) gg = ${G.blouse}.0;
+        else if (y > ${f4(C.yv)} && ax < wb(y)) gg = y > ${f4(C.yl1 - 0.06)} ? ${G.blouse}.0 : ${SKIRT}.0;
         else if (y <= ${f4(C.yv)} && ax < (${f4(C.gap)} + (${f4(C.yv)} - y) * 0.012) * clamp((${f4(C.yv)} - y) / 0.05, 0.0, 1.0)) gg = ${SKIRT}.0;
         else if (y < ${f4(C.ytop)} && y > ${f4(C.yl1)}) {
           float xo = y > ${f4(C.yl0)} ? mix(${f4(C.lap)}, wb(${f4(C.ytop)}) + 0.012, (y - ${f4(C.yl0)}) / ${f4(C.ytop - C.yl0)}) : mix(wb(${f4(C.yl1)}), ${f4(C.lap)}, (y - ${f4(C.yl1)}) / ${f4(C.yl0 - C.yl1)});
@@ -105,23 +106,46 @@ function aim(pose, j, child, dir) {
   turnUnder(pose, sk, j, qBetween(normalize(sub(getV(pose.P, child), getV(pose.P, j))), normalize(dir)));
   build(pose, body, getV(pose.P, I.Hips));
 }
+// fingers a little curled, as a hand at rest (a pose layer over the rest pose or Kimodo's): each finger joint turned
+// about the axis across the finger in the palm's plane
+const FING = ['Index', 'Middle', 'Ring', 'Pinky'];
+function relaxHands(pose, k = 1) {
+  const cr = (u, w) => [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]];
+  for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
+    const P = n => getV(pose.P, I[s + 'Hand' + n]), Hd = getV(pose.P, I[s + 'Hand']);
+    const pn = normalize(cr(sub(P('Pinky1'), P('Index1')), sub(P('Middle1'), Hd)));
+    const turns = [];
+    FING.forEach((f, fi) => { for (let j = 3; j >= 1; j--) {
+      const d = normalize(sub(P(f + (j + 1)), P(f + j)));
+      turns.push([I[s + 'Hand' + f + j], qAxisAngle(normalize(cr(d, pn)), -sg * k * [0.22, 0.5, 0.42][j - 1] * (1 + fi * 0.18))]);
+    } });
+    for (const [j, r] of turns) turnUnder(pose, sk, j, r);
+  }
+  build(pose, body, getV(pose.P, I.Hips));
+}
+// the forearm turned about its own axis (the palm to the thigh)
+function twist(pose, s, ang) {
+  turnUnder(pose, sk, I[s + 'ForeArm'], qAxisAngle(normalize(sub(getV(pose.P, I[s + 'Hand']), getV(pose.P, I[s + 'ForeArm']))), ang));
+  build(pose, body, getV(pose.P, I.Hips));
+}
 function standPose(o = {}) {
   const pose = fig.restPose();
-  const outw = o.out ?? 0.1, fwd = o.fwd ?? 0.04;
+  const outw = o.out ?? 0.15, fwd = o.fwd ?? 0.04;
   for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
-    aim(pose, I[s + 'Arm'], I[s + 'ForeArm'], [sg * outw, -1, -0.04]);
-    aim(pose, I[s + 'ForeArm'], I[s + 'Hand'], [sg * outw * 0.5, -1, fwd + 0.1]);
+    aim(pose, I[s + 'Arm'], I[s + 'ForeArm'], [sg * outw, -1, -0.02]);
+    aim(pose, I[s + 'ForeArm'], I[s + 'Hand'], [sg * outw * 0.4, -1, fwd + 0.12]);
+    twist(pose, s, sg * (o.twist ?? 1.0));
   }
   if (o.figure) {
     // the drawing's figure: the right hand holds a folder against the hip, the left hand is at the glasses
     aim(pose, I.RightArm, I.RightForeArm, [-0.12, -1, -0.12]);
     aim(pose, I.RightForeArm, I.RightHand, [-0.02, -1, 0.3]);
-    const hd = headFrame(pose), T = hd.at([0.36, 0.06, 0.20]);
-    const Sh = getV(pose.P, I.LeftArm), L1 = Math.hypot(...sub(getV(pose.P, I.LeftForeArm), Sh)), L2 = Math.hypot(...sub(getV(pose.P, I.LeftHand), getV(pose.P, I.LeftForeArm))) + 0.07;
+    const hd = headFrame(pose), T = hd.at([0.26, 0.05, 0.36]);
+    const Sh = getV(pose.P, I.LeftArm), L1 = Math.hypot(...sub(getV(pose.P, I.LeftForeArm), Sh)), L2 = Math.hypot(...sub(getV(pose.P, I.LeftHand), getV(pose.P, I.LeftForeArm))) + 0.11;
     let best = null;
     for (let a1 = -0.2; a1 <= 1.3; a1 += 0.05) for (let a2 = 0.0; a2 <= 1.5; a2 += 0.05) {
       const d = [Math.sin(a1) * Math.cos(a2), -Math.cos(a1) * Math.cos(a2), Math.sin(a2)], El = [Sh[0] + d[0] * L1, Sh[1] + d[1] * L1, Sh[2] + d[2] * L1];
-      const err = Math.abs(Math.hypot(...sub(T, El)) - L2) + 0.05 * Math.abs(a1 - 0.35);
+      const err = Math.abs(Math.hypot(...sub(T, El)) - L2) + 0.05 * Math.abs(a1 - 0.3) + 0.03 * Math.abs(a2 - 0.8);
       if (!best || err < best[0]) best = [err, d, El];
     }
     aim(pose, I.LeftArm, I.LeftForeArm, best[1]);
@@ -191,6 +215,7 @@ function frame() {
   let pose;
   if (S.clip) { pose = fig.retarget.pose(clip.sample(S.t, fig.sample)); fig.retarget.placed(pose); }
   else pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts || {});
+  relaxHands(pose, S.curl ?? 1);
   fig.skinner.skin(pose, fig.positions);
   const P = fig.positions;
   if (S.clip) {
@@ -202,6 +227,12 @@ function frame() {
   if (jaw) {
     const d = [0, 1, 2].map(c => (P[(MK + 2) * 3 + c] - P[MK * 3 + c]) * jaw);
     for (let i = hd0; i < hd1; i++) { const k = JAWK[i]; if (k > 0) { P[i * 3] += d[0] * k; P[i * 3 + 1] += d[1] * k; P[i * 3 + 2] += d[2] * k; } }
+  }
+  if (S.poseOpts?.figure && !S.clip) {
+    // the folder of the drawn pose: a board facing forward at the right wrist, the hand over its lower inner corner
+    const hp = getV(pose.P, I.RightHand), F0 = H.pieces.folder[0], w = 0.215, hh = 0.3, c = [hp[0] - 0.035, hp[1] + 0.045, hp[2] - 0.028];
+    [[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1], [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1]].forEach(([x, y, z], k) => {
+      P[(F0 + k) * 3] = c[0] + x * w / 2 + y * 0.012; P[(F0 + k) * 3 + 1] = c[1] + y * hh / 2; P[(F0 + k) * 3 + 2] = c[2] + z * 0.004 - x * 0.02; });
   }
   if (S.push && S.pose !== 'rest') pushSkirt(P, pose);
   fig.pose = pose;
@@ -323,7 +354,7 @@ function tones(s) {
     const k = ((Hh - 1 - y) * W + x) * 4, i = y * W + x, v = buf[k];
     grpA[i] = v; depA[i] = v ? U.dn.value + (buf[k + 1] * 256 + buf[k + 2]) / 65535 * (U.df.value - U.dn.value) : Infinity;
   }
-  const b1 = Math.max(1, Math.round(0.007 * s)), b2 = Math.max(2, Math.round(0.026 * s)), cx = Math.round(0.05 * s), cy = Math.round(0.09 * s);
+  const b1 = Math.max(1, Math.round(0.007 * s)), b2 = Math.max(2, Math.round(0.034 * s)), cx = Math.round(0.05 * s), cy = Math.round(0.09 * s);
   const D = img.data, [pr, pg, pb] = K.PAPER_RGB, [ir, ig, ib] = K.INK_RGB;
   const src = (x, y) => (x < 0 || y < 0) ? -1 : y * W + x;
   for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) {
@@ -403,6 +434,16 @@ function draw() {
   projectAll();
   const v = headView(), s = v.s, lw = S.lw ?? Math.min(3.2, 1.0 + s / 240);
   ctx.fillStyle = K.PAPER; ctx.fillRect(0, 0, W, Hh);
+  if (S.sky) {      // the drawing's backdrop (build.py `sky`): a graded tone, light at the top left
+    const bg = ctx.getImageData(0, 0, W, Hh), D = bg.data, [pr, pg, pb] = K.PAPER_RGB, [ir, ig, ib] = K.INK_RGB;
+    for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) {
+      const c = S.sky[0] + (S.sky[1] - S.sky[0]) * Math.max(0, Math.min(1, y / Hh * 0.7 + x / W * 0.3)) ** 1.4;
+      if (c <= 0.015) continue;
+      const ink = K.toneAt(x, y, c, v.pitch), o = (y * W + x) * 4;
+      D[o] = pr + (ir - pr) * ink; D[o + 1] = pg + (ig - pg) * ink; D[o + 2] = pb + (ib - pb) * ink;
+    }
+    ctx.putImageData(bg, 0, 0);
+  }
   // the shadow on the ground (build.py ground_shadow of the style): an ellipse of tone under her
   if (S.ground) {
     const PJ = fig.pose.P, c = project(PJ[I.Hips * 3], fig.pose.floor ?? 0, PJ[I.Hips * 3 + 2], [0, 0, 0]), e0 = project(PJ[I.Hips * 3] + camR[0] * 0.2, fig.pose.floor ?? 0, PJ[I.Hips * 3 + 2] + camR[2] * 0.2, [0, 0, 0]);
@@ -456,12 +497,11 @@ function hairLines(lw, s) {
     for (const r of runs) K.stroke(ctx, r, lw * st.w * 0.9, { taper: [0.45, 0.45], fill: K.PAPER });
   }
   H.hairline.forEach((i, k) => {
-    if (k % 2) return;
     const j = i + 2, x = scr[i * 3], y = scr[i * 3 + 1];
     const f = -(vn[j * 3] * viewDir[0] + vn[j * 3 + 1] * viewDir[1] + vn[j * 3 + 2] * viewDir[2]);
     if (f < 0.1 || !seen(x, y, scr[i * 3 + 2], 0.012, 1)) return;
-    const dx = x - scr[j * 3], dy = y - scr[j * 3 + 1], l = Math.hypot(dx, dy) || 1, L = 0.03 * s * teeth[k];
-    K.stroke(ctx, [[x - dx / l * 2, y - dy / l * 2], [x + dx / l * L, y + dy / l * L]], [lw * 2.2, lw * 0.3], { taper: [0, 0.6], smooth: false });
+    const dx = x - scr[j * 3], dy = y - scr[j * 3 + 1], l = Math.hypot(dx, dy) || 1, L = 0.034 * s * teeth[k];
+    K.stroke(ctx, [[x - dx / l * 2, y - dy / l * 2], [x + dx / l * L, y + dy / l * L]], [lw * 1.9, lw * 0.3], { taper: [0, 0.6], smooth: false });
   });
 }
 
@@ -474,7 +514,7 @@ const A = window.A = {
       if (JSON.stringify(ids) !== JSON.stringify(S.clipIds)) { clip = ids ? await E.clip(ids) : null; S.clipIds = ids; face.setHead(clip ? headTrack(clip) : null); }
       S.clip = !!ids;
     }
-    for (const k of ['t', 'pose', 'poseOpts', 'push', 'lw', 'pitch', 'noTone', 'noLine', 'clay', 'ground']) if (o[k] !== undefined) S[k] = o[k];
+    for (const k of ['t', 'pose', 'poseOpts', 'push', 'lw', 'pitch', 'noTone', 'noLine', 'clay', 'ground', 'curl', 'sky']) if (o[k] !== undefined) S[k] = o[k];
     if (o.time !== undefined) S.time = o.time; else if (o.t !== undefined && clip && !S.liveClock) S.time = o.t / clip.fps;
     if (o.liveClock !== undefined) S.liveClock = o.liveClock;
     if (o.still !== undefined) face.still = o.still;

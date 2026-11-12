@@ -32,7 +32,7 @@
   "positions": {
    "dtype": "float32",
    "shape": [
-    29590,
+    31359,
     3
    ],
    "offset": 0
@@ -40,26 +40,26 @@
   "triangles": {
    "dtype": "uint32",
    "shape": [
-    51651,
+    54911,
     3
    ],
-   "offset": 355080
+   "offset": 376308
   },
   "skinJoints": {
    "dtype": "uint8",
    "shape": [
-    29590,
+    31359,
     4
    ],
-   "offset": 974892
+   "offset": 1035240
   },
   "skinWeights": {
    "dtype": "float32",
    "shape": [
-    29590,
+    31359,
     4
    ],
-   "offset": 1093252
+   "offset": 1160676
   },
   "joints": {
    "dtype": "float32",
@@ -67,7 +67,7 @@
     77,
     3
    ],
-   "offset": 1566692
+   "offset": 1662420
   },
   "frames": {
    "dtype": "float32",
@@ -75,45 +75,45 @@
     77,
     4
    ],
-   "offset": 1567616
+   "offset": 1663344
   },
   "mat": {
    "dtype": "uint8",
    "shape": [
-    29590
+    31359
    ],
-   "offset": 1568848
+   "offset": 1664576
   },
   "pat": {
    "dtype": "float32",
    "shape": [
-    29590,
+    31359,
     3
    ],
-   "offset": 1598440
+   "offset": 1695936
   },
   "fuv": {
    "dtype": "float32",
    "shape": [
-    29590,
+    31359,
     3
    ],
-   "offset": 1953520
+   "offset": 2072244
   },
   "edge": {
    "dtype": "uint8",
    "shape": [
-    29590
+    31359
    ],
-   "offset": 2308600
+   "offset": 2448552
   },
   "parts": {
    "dtype": "uint8",
    "shape": [
-    29590,
+    31359,
     1
    ],
-   "offset": 2338192
+   "offset": 2479912
   }
  }
 }

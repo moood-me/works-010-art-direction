@@ -227,8 +227,6 @@ def films(which):
         film('wave', {**STAGE, 'clip': 'wave', 'yaw': 8}, fr(6))
     if 'stomp' in which:
         film('stomp', {**STAGE, 'clip': 'stomp', 'yaw': -28}, fr(6))
-    if 'bow' in which:
-        film('bow', {**STAGE, 'clip': 'bow', 'yaw': -50}, fr(6))
     if 'face' in which:
         # the portrait alive: blinks, looks, the sheet's expressions one after another, then speech
         seq = [('rest', 2.5), ('joy', 1.8), ('rest', 1.0), ('surprise', 1.6), ('sadness', 1.8), ('anger', 1.8), ('rest', 1.5)]
@@ -239,7 +237,7 @@ def films(which):
         for e, d in [('rest', 4.0), ('joy', 2.5)]:
             for _ in range(int(d * 12)):
                 frames.append(dict(t=t, expr=e, talk=True)); t += 1 / 12
-        film('face', {**POR, 'clip': 'idle', 'live': True}, frames)
+        film('face', {**POR, 'clip': 'stand', 'live': True}, frames)
         film('talk-sprite', {**STAGE, 'W': 40, 'H': 46, 'ax': 20.5, 'ay': 42, 'floor': 38, 'clip': 'idle', 'yaw': -10}, [dict(t=i / 12, expr='rest' if i < 60 else 'anger', talk=True) for i in range(96)], scale=10)
 
 
@@ -252,6 +250,6 @@ if __name__ == '__main__':
     os.makedirs(PICS, exist_ok=True)
     if 'stills' in a:
         stills()
-    which = [x for x in a if x not in ('stills', 'films')] or (['turn', 'walk', 'idle', 'wave', 'stomp', 'bow', 'face'] if 'films' in a else [])
+    which = [x for x in a if x not in ('stills', 'films')] or (['turn', 'walk', 'idle', 'wave', 'stomp', 'face'] if 'films' in a else [])
     if which:
         films(which)

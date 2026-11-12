@@ -342,7 +342,6 @@ const CLIPS = {
   walk: { ru: 'идёт', motion: 'walk', travel: true },
   idle: { ru: 'ждёт', motion: 'idle', upright: true, watch: true },
   wave: { ru: 'машет', motion: 'wave', calm: 0.45 },
-  bow: { ru: 'кланяется', motion: 'bow' },
   stomp: { ru: 'топает', motion: 'stomp' },
 };
 const FPS = 12;                                    // a sprite's animation is drawn in few frames: 12 a second

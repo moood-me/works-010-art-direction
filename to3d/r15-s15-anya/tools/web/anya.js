@@ -188,11 +188,16 @@ mesh.frustumCulled = line.frustumCulled = false;
 scene.add(mesh, line);
 // the floor: night, a pool of light on it, the figure's black shadow in the pool (the same shadow map)
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderMaterial({
-  uniforms: { smap: U.smap, SMx: U.SMx, dark: { value: new THREE.Color('#1a1c28').convertLinearToSRGB() }, pool: { value: new THREE.Color('#2a2738').convertLinearToSRGB() }, black: U.black, c0: { value: new THREE.Vector2(0, 0) }, r: { value: 2.4 } },
+  uniforms: { smap: U.smap, SMx: U.SMx, dark: { value: new THREE.Color('#1a1c28').convertLinearToSRGB() }, pool: { value: new THREE.Color('#2a2738').convertLinearToSRGB() }, black: U.black, c0: { value: new THREE.Vector2(0, 0) }, fp: { value: new THREE.Vector2(0, 0) }, fwd: { value: new THREE.Vector2(0, -1) }, rgt: { value: new THREE.Vector2(1, 0) }, wall: { value: 1.0 } },
   vertexShader: `uniform mat4 SMx; varying vec4 vS; varying vec3 vW; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vS = SMx * w; gl_Position = projectionMatrix * viewMatrix * w; }`,
-  fragmentShader: `uniform sampler2D smap; uniform vec3 dark; uniform vec3 pool; uniform vec3 black; uniform vec2 c0; uniform float r; varying vec4 vS; varying vec3 vW;
-    void main() { vec3 s = vS.xyz / vS.w; float sh = (s.x > 0.0 && s.x < 1.0 && s.y > 0.0 && s.y < 1.0 && texture2D(smap, s.xy).r < s.z - 0.002) ? 1.0 : 0.0;
-      float d = length((vW.xz - c0) * vec2(1.0, 1.0)); float w = fwidth(d); float in_ = 1.0 - smoothstep(r - w, r + w, d);
+  fragmentShader: `uniform sampler2D smap; uniform vec3 dark; uniform vec3 pool; uniform vec3 black; uniform vec2 c0; uniform vec2 fp; uniform vec2 fwd; uniform vec2 rgt; uniform float wall; varying vec4 vS; varying vec3 vW;
+    void main() {
+      if (dot(vW.xz - fp, fwd) > wall) discard;            // the floor ends at the wall behind the figure
+      vec3 s = vS.xyz / vS.w; float sh = (s.x > 0.0 && s.x < 1.0 && s.y > 0.0 && s.y < 1.0 && texture2D(smap, s.xy).r < s.z - 0.002) ? 1.0 : 0.0;
+      // the window's light on the floor: from the wall towards the viewer, slanting to the picture's right
+      vec2 q = vW.xz - c0; float dz = wall - dot(q, fwd), lx = dot(q, rgt);
+      float a = lx - (-0.29 + 0.35 * dz), b = (0.345 + 0.9 * dz) - lx, w = fwidth(lx) + 1e-4;
+      float in_ = smoothstep(-w, w, a) * smoothstep(-w, w, b);
       gl_FragColor = vec4(mix(dark, mix(pool, black, sh * 0.85), in_), 1.0); }`,
 }));
 floor.rotation.x = -Math.PI / 2; scene.add(floor);
@@ -337,7 +342,7 @@ window.A = {
     if (o.floor !== undefined) floor.visible = !!o.floor;
     if (o.back !== undefined) S.back = o.back && { ...S.back, ...o.back };
     if (o.cast !== undefined) U.casts.value = o.cast ? 1 : 0;
-    if (o.pool) { floor.material.uniforms.c0.value.set(o.pool[0], o.pool[1]); if (o.pool[2]) floor.material.uniforms.r.value = o.pool[2]; }
+    if (o.pool) floor.material.uniforms.c0.value.set(o.pool[0], o.pool[1]);
     if (o.show !== undefined) {           // only these pieces (names from the pack's header), or all
       const all = a.triangles; let idx = all;
       if (o.show) { const parts = []; for (const n of o.show) { const [s0, s1] = H.trianglePieces[n]; parts.push(all.subarray(s0 * 3, s1 * 3)); }
@@ -379,6 +384,8 @@ window.A = {
     scene.overrideMaterial = null; renderer.setRenderTarget(null); line.visible = true; floor.visible = fv;
     // the backdrop behind the figure, facing the camera
     backdrop.visible = !!S.back;
+    { const fu = floor.material.uniforms, n = Math.hypot(dir[0], dir[2]) || 1;
+      fu.fwd.value.set(-dir[0] / n, -dir[2] / n); fu.rgt.value.set(e[0], e[2]); fu.fp.value.set(c.follow || c.focus ? tg[0] : 0, c.follow || c.focus ? tg[2] : 0); }
     if (S.back) {
       const b = S.back, bx = c.follow || c.focus ? tg[0] : 0, bz = c.follow || c.focus ? tg[2] : 0, by = c.focus ? tg[1] : b.y;
       const right = [e[0], e[1], e[2]];

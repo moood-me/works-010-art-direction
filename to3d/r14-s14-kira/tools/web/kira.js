@@ -46,9 +46,9 @@ float shadowAt(vec3 w, vec3 n){
   vec4 sc = shadowMatrix * vec4(w + n * 0.004, 1.0); vec3 c = sc.xyz * 0.5 + 0.5;
   if (c.x < 0.0 || c.x > 1.0 || c.y < 0.0 || c.y > 1.0) return 0.0;
   float a0 = h1(floor(w.xy * 900.0) + w.z) * 6.2832, s = 0.0;
-  for (int i = 0; i < 12; i++) { float fi = float(i); float r = sqrt((fi + 0.5) / 12.0) * shadowSoft; float a = a0 + fi * 2.39996;
+  for (int i = 0; i < 16; i++) { float fi = float(i); float r = sqrt((fi + 0.5) / 16.0) * shadowSoft; float a = a0 + fi * 2.39996;
     float d = unpackD(texture2D(shadowMap, c.xy + vec2(cos(a), sin(a)) * r)); s += (c.z - 0.0010 > d) ? 1.0 : 0.0; }
-  return s / 12.0;
+  return s / 16.0;
 }`;
 const VS = `
 attribute float mat; attribute vec3 pat; attribute vec3 fuv; attribute float edge;
@@ -82,7 +82,7 @@ void main(){
   // light: paper is matt — a soft turn from the light and the shadows other pieces throw
   float lit = smoothstep(-0.25, 0.45, d) * (1.0 - shadowAt(vW, n));
   lit = mix(lit, lit * 0.35, inside);
-  vec3 col = mix(mix(b, shadowCol, 0.42) * 0.94, b, lit);
+  vec3 col = mix(mix(b, shadowCol, 0.36) * 0.95, b, lit);
   // the paper's grain: fine tooth and fibres, fixed to the piece
   float g = noise(vPat * 1400.0) * 0.6 + noise(vPat * vec3(2600.0, 300.0, 2600.0)) * 0.4;
   col *= 0.955 + 0.09 * g;
@@ -93,7 +93,7 @@ void main(){
 const uniforms = {
   base: { value: Array.from({ length: 24 }, () => new THREE.Color()) }, streak: { value: new Array(24).fill(0) },
   face: { value: null }, hasFace: { value: 0 }, L: { value: new THREE.Vector3(-0.5, 0.75, 0.55).normalize() }, clay: { value: 0 }, dbg: { value: +(q.get('dbg') || 0) },
-  shadowMap: { value: null }, shadowMatrix: { value: new THREE.Matrix4() }, shadowSoft: { value: 0.0022 }, shadowCol: { value: hex('#2b1b2c') },
+  shadowMap: { value: null }, shadowMatrix: { value: new THREE.Matrix4() }, shadowSoft: { value: 0.0034 }, shadowCol: { value: hex('#2b1b2c') },
 };
 const material = new THREE.ShaderMaterial({ vertexShader: VS, fragmentShader: FS, uniforms, side: THREE.DoubleSide });
 
@@ -213,7 +213,7 @@ const A = window.A = {
     camera.position.set(t[0] + Math.sin(yaw) * Math.cos(pitch) * dist, t[1] + Math.sin(pitch) * dist, t[2] + Math.cos(yaw) * Math.cos(pitch) * dist);
     camera.lookAt(t[0], t[1], t[2]); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
     // the light comes from the picture's top left, wherever the picture is taken from (the drawing's rule)
-    const ly = yaw + (c.lightYaw ?? -0.5), le = c.lightUp ?? 0.6;
+    const ly = yaw + (c.lightYaw ?? -0.42), le = c.lightUp ?? 0.8;
     uniforms.L.value.set(Math.sin(ly) * Math.cos(le), Math.sin(le), Math.cos(ly) * Math.cos(le));
   },
   render() {

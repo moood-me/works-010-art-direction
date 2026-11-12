@@ -201,7 +201,7 @@ export class Head {
   // the ear's inner fold (its rim is the 3D plate's contour)
   ear(ctx, v, side, lw) {
     if (v.facing([side, 0, 0]) <= 0.2) return;
-    const E = this.p.ear || {}, yc = E.y ?? 0.08, hh = E.h ?? 0.24, ww = E.w ?? 0.12, zc = E.z ?? -0.10, x0 = side * interpTable(this.tab0, yc)[0] * 0.97;
+    const E = this.p.ear || {}, yc = E.y ?? 0.08, hh = E.h ?? 0.24, ww = E.w ?? 0.12, zc = E.z ?? -0.10, x0 = side * (interpTable(this.tab0, yc)[0] * 0.97 + 0.02);
     const P = (dy, dz) => [x0 + side * (0.03 * Math.max(0, -dz / ww) * 0.8 + 0.004), yc + dy * hh, zc + dz * ww];
     this.line(ctx, v, [P(-0.25, 0.1), P(-0.32, -0.12), P(-0.1, -0.28), P(0.18, -0.2), P(0.25, 0.0)], lw * 0.6, { taper: [0.3, 0.3] });
     this.line(ctx, v, [P(0.05, 0.2), P(0.18, 0.1)], lw * 0.8, { taper: [0.3, 0.3] });
