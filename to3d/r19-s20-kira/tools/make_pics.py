@@ -82,9 +82,11 @@ if on('walk', 'films'):
     film('walk', 540, 800, dict(STAND, still=False, clip='walk', cam=dict(FOLLOW, yaw=-0.9)), 0, 117.5, 2.5)
 if on('sneak', 'films'):
     film('sneak', 540, 800, dict(STAND, still=False, clip='sneak', exprTrack=[[0, 'calm'], [1.2, 'anger']], cam=dict(FOLLOW, yaw=-1.1)), 0, 117.5, 2.5)
-if on('stomp', 'films'):
-    film('stomp', 540, 800, dict(STAND, still=False, clip='stomp', exprTrack=[[0, 'calm'], [0.5, 'anger']], cam=dict(FOLLOW, yaw=-0.5)), 0, 87.5, 2.5)
-if on('talk', 'films'):
-    film('talk', 520, 560, dict(STAND, still=False, clip='idle', talk=True, talkFrom=0.4, exprTrack=[[0, 'calm'], [2.2, 'surprise'], [3.0, 'joy'], [4.2, 'calm']],
-                                cam=dict(mode='persp', fov=22, dist=2.1, follow=False, focus='Head', up=0.07, yaw=-0.45, pitch=0.0)), 0, 147.5, 2.5)
+if on('talk', 'films'):       # standing (Kimodo's idle bows the head into the hood): the face alone is alive
+    d = os.path.join(WORK, 'talk'); shutil.rmtree(d, ignore_errors=True)
+    set_ = dict(pose='stand', still=False, clip=None, talk=True, talkFrom=0.4, exprTrack=[[0, 'calm'], [1.8, 'surprise'], [2.8, 'joy'], [3.6, 'anger'], [4.6, 'calm']],
+                cam=dict(mode='ortho', h=0.62, cy=1.31, yaw=-0.42, pitch=0, follow=False, focus=None))
+    shots(520, 560, [dict(name='talk', set=set_, film={'from': 0, 'to': 177.5, 'step': 2.5, 'clock': 30})], 'talk')
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', '12', '-i', os.path.join(d, 'f%04d.png'), '-r', '24',
+                    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '25', '-movflags', '+faststart', os.path.join(PICS, 'talk.mp4')], check=True)
 print('ok')

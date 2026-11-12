@@ -24,6 +24,7 @@ for (const s of jobs.shots) {
     let k = 0;
     for (let t = s.film.from; t <= s.film.to + 1e-9; t += s.film.step) {
       const set = { ...s.set, t };
+      if (s.film.clock) set.time = t / s.film.clock;          // no clip: the face's clock runs by the film's frames
       if (s.film.yaw) set.cam = { ...(s.set.cam || {}), yaw: s.film.yaw[0] + (s.film.yaw[1] - s.film.yaw[0]) * (t - s.film.from) / (s.film.to - s.film.from) };
       await page.evaluate(async o => { await window.A.set(o); window.A.render(); }, set); await page.evaluate(() => new Promise(r => requestAnimationFrame(() => r())));
       await page.screenshot({ path: `${out}/${s.name}/f${String(k++).padStart(4, '0')}.png`, timeout: 300000 });

@@ -32,7 +32,7 @@ export function ui(A, stage) {
   const t0 = performance.now(), clock = () => (performance.now() - t0) / 1000;
   const far = { mode: 'persp', dist: 5.2, fov: 22, cy: 0.8, follow: true, focus: null, yaw: -0.5, pitch: 0.05 };
   const near = { mode: 'persp', dist: 2.0, fov: 22, follow: false, focus: 'Head', up: 0.07, pitch: 0.03 };
-  A.set({ liveClock: true, cam: far, pose: 'stand', mask: 0.5 });
+  A.set({ liveClock: true, cam: far, pose: 'stand' });
   async function motion(id) {
     await A.set({ clip: id || null, t: 0, time: clock() });
     const c = A.clipInfo(); frames = c ? c.frames : 0; fps = c ? c.fps : 30; t = 0;
