@@ -1,0 +1,32 @@
+— с поправкой
+{
+ "Left": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 21.8, max 29.8",
+  "corrected_palm_cm": "mean 9.6, max 16.9",
+  "skin_gap_cm": "min 7.6, mean 9.4, max 16.4"
+ },
+ "Right": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 22.3, max 30.2",
+  "corrected_palm_cm": "mean 6.7, max 15.1",
+  "skin_gap_cm": "min 3.9, mean 6.5, max 14.6"
+ },
+ "into_things": "nothing"
+}
+— без поправки (Kimodo как есть)
+{
+ "Left": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 21.8, max 29.8",
+  "corrected_palm_cm": "mean 21.8, max 29.8",
+  "skin_gap_cm": "min 14.7, mean 16.8, max 22.4"
+ },
+ "Right": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 22.3, max 30.2",
+  "corrected_palm_cm": "mean 22.3, max 30.2",
+  "skin_gap_cm": "min 15.0, mean 17.5, max 22.4"
+ },
+ "into_things": "nothing"
+}

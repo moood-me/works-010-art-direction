@@ -1,0 +1,634 @@
+[
+ {
+  "id": "table-free",
+  "label": {
+   "ru": "table-free",
+   "en": "table-free"
+  },
+  "key": "f68cdde5b81ee49787830cff791b992e0da8510cfbb216196a06ab6ab457e315",
+  "ask": {
+   "prompts": [
+    "A person walks forward to a table, stops and leans on the table with both hands."
+   ],
+   "seconds": [
+    6
+   ],
+   "seed": 0,
+   "constraints": null
+  },
+  "copied": "К1 (experiments/contacts/motions/asks.json): not ordered here, used as it is"
+ },
+ {
+  "id": "table-free2",
+  "label": {
+   "ru": "table-free2",
+   "en": "table-free2"
+  },
+  "key": "98d983b030d5d24f0560c091c15419a4be58f8b56a2ed71888c9d3ca824d786c",
+  "ask": {
+   "prompts": [
+    "A person walks forward, stops in front of a table and, standing, leans forward to rest both hands flat on the table top."
+   ],
+   "seconds": [
+    6
+   ],
+   "seed": 0,
+   "constraints": null
+  },
+  "copied": "К1 (experiments/contacts/motions/asks.json): not ordered here, used as it is"
+ },
+ {
+  "id": "table-walk",
+  "label": {
+   "ru": "table-walk",
+   "en": "table-walk"
+  },
+  "key": "88c3163bc586aaf5d81e3c6439cd30b3650fc826fbac77d3fa01ff5c37607b01",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 0,
+   "constraints": [
+    {
+     "type": "root2d",
+     "frame_indices": [
+      100,
+      119
+     ],
+     "smooth_root_2d": [
+      [
+       0.0,
+       2.04
+      ],
+      [
+       0.0,
+       2.05
+      ]
+     ]
+    }
+   ]
+  },
+  "copied": "К1 (experiments/contacts/motions/asks.json): not ordered here, used as it is"
+ },
+ {
+  "id": "a-stand",
+  "label": {
+   "ru": "А стоит",
+   "en": "A stands"
+  },
+  "key": "f043df21efb45de928e8e50163adec25b6bdf1918d60f0304c38a3126d9c9de6",
+  "ask": {
+   "prompts": [
+    "A person stands still in a relaxed upright posture, shifting their weight slightly."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1
+  },
+  "copied": "К2 (experiments/two-people/motions/orders.json): not ordered here, used as it is"
+ },
+ {
+  "id": "a-look",
+  "label": {
+   "ru": "А оглядывается",
+   "en": "A looks back"
+  },
+  "key": "984146345371ea6568a3ea3af6938328488b1b40fbc5bc1ff3795b1e54968c11",
+  "ask": {
+   "prompts": [
+    "A person standing turns to their right and looks back, diagonally to the right side."
+   ],
+   "seconds": [
+    3.5
+   ],
+   "seed": 2
+  },
+  "after": {
+   "motion": "a-stand",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.0275,
+   "z": -0.0156
+  },
+  "note": "seed 1 of this prompt turned later (at 1.8 s); \"A person standing looks back over their right shoulder.\" (seeds 1, 2) barely turned the head",
+  "copied": "К2 (experiments/two-people/motions/orders.json): not ordered here, used as it is"
+ },
+ {
+  "id": "b-probe",
+  "label": {
+   "ru": "Б: проба похлопывания",
+   "en": "B: tap probe"
+  },
+  "key": "9b3d65d9a2c5033f21999f2839c0fa9f18b0c1c9ba56d9794f7f72cf2de0b3ef",
+  "ask": {
+   "prompts": [
+    "A person walks forward and stops, then lifts their right hand in the forward direction and calmly taps the other person's shoulder."
+   ],
+   "seconds": [
+    6
+   ],
+   "seed": 1
+  },
+  "note": "no constraints: to see where Kimodo puts the hand and how far it stops; its touch frame is the pose the real B motion is constrained with",
+  "copied": "К2 (experiments/two-people/motions/orders.json): not ordered here, used as it is"
+ },
+ {
+  "id": "b-touch3",
+  "label": {
+   "ru": "Б подходит ближе, слева, и кладёт руку на плечо",
+   "en": "B comes nearer, from her left, and puts a hand on the shoulder"
+  },
+  "key": "ad5ae154da513d8b98b342e863568fd23b6009bc00a8b874f28e1cba797a3674",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing puts their right hand on the shoulder of someone in front of them and looks down at them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/b-touch3.constraint.json (as sent), from motions/b-touch3.spec.json"
+   ]
+  },
+  "note": "v3",
+  "copied": "К2 (experiments/two-people/motions/orders.json): not ordered here, used as it is"
+ },
+ {
+  "id": "b-hold4",
+  "label": {
+   "ru": "Б держит руку на плече, она съезжает наружу",
+   "en": "B keeps the hand on the shoulder, sliding out"
+  },
+  "key": "7a31bdcf68a13044d131d86f0b7b6d9fcbee54fc6a87c07885eff3cb557d43bb",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the shoulder of someone in front of them, looking down at them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/b-hold4.constraint.json (as sent), from motions/b-hold4.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "b-touch3",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.138,
+   "z": 3.415
+  },
+  "note": "v4; startsAt by tools/startsat.py",
+  "copied": "К2 (experiments/two-people/motions/orders.json): not ordered here, used as it is"
+ },
+ {
+  "id": "lean-child",
+  "label": {
+   "ru": "ребёнок опирается на стол 0,74",
+   "en": "lean-child"
+  },
+  "key": "c1d1756607446b1516532dc7b60b8482eac3bd411856a5b7754ced10f1532d69",
+  "ask": {
+   "prompts": [
+    "A standing person leans forward and rests both hands on the table in front of them."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 0,
+   "constraints": "end-effector, frames 89, 119 — plans/lean-child.json (as sent), made by tools/table/plan.py"
+  },
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0237,
+   "z": 2.0937
+  }
+ },
+ {
+  "id": "lean-oldman",
+  "label": {
+   "ru": "грузный мужчина опирается на стол 0,74",
+   "en": "lean-oldman"
+  },
+  "key": "d066f06b1b2260c59f846d9073decd6878474f694d7e22d90c7219435318e944",
+  "ask": {
+   "prompts": [
+    "A standing person leans forward and rests both hands on the table in front of them."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 0,
+   "constraints": "end-effector, frames 89, 119 — plans/lean-oldman.json (as sent), made by tools/table/plan.py"
+  },
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0237,
+   "z": 2.0937
+  },
+  "note": "the first ask failed with \"busy\" (the studio full); the same ask again made it"
+ },
+ {
+  "id": "lean-elf",
+  "label": {
+   "ru": "высокий (2,31 м) опирается на стол 0,74",
+   "en": "lean-elf"
+  },
+  "key": "1d20b9647f273a555cba7b7076690348ed105cfac30250bd4d5722a32115c8d7",
+  "ask": {
+   "prompts": [
+    "A standing person leans forward and rests both hands on the table in front of them."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 0,
+   "constraints": "end-effector, frames 89, 119 — plans/lean-elf.json (as sent), made by tools/table/plan.py"
+  },
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0237,
+   "z": 2.0937
+  },
+  "note": "the first ask failed with \"busy\" (the studio full); the same ask again made it"
+ },
+ {
+  "id": "bar-oldman",
+  "label": {
+   "ru": "грузный мужчина опирается на стойку 1,1",
+   "en": "bar-oldman"
+  },
+  "key": "3e9bdb4329b9446bce19947ee3542524c96b01d57cbe980bb0c84ef21311d78e",
+  "ask": {
+   "prompts": [
+    "A standing person leans forward and rests both hands on the table in front of them."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 0,
+   "constraints": "end-effector, frames 89, 119 — plans/bar-oldman.json (as sent), made by tools/table/plan.py"
+  },
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0237,
+   "z": 2.0937
+  },
+  "note": "the first ask failed with \"busy\" (the studio full); the same ask again made it"
+ },
+ {
+  "id": "m-touch",
+  "label": {
+   "ru": "мужчина подходит и кладёт руку на плечо невысокой женщине",
+   "en": "the man comes up and puts a hand on a short woman's shoulder"
+  },
+  "key": "5ee9fcbc9eef9d676be82a2fd7560e652acb248f470294d317b76736db9aa0d6",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing puts their right hand on the shoulder of someone in front of them and looks down at them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/m-touch.constraint.json (as sent), from motions/m-touch.spec.json by tools/touch/order_hand.py"
+   ]
+  },
+  "note": "К2's b-touch3 as written, for anny-C-pear (1.49 m) instead of the woman (1.59 m)"
+ },
+ {
+  "id": "c-touch",
+  "label": {
+   "ru": "ребёнок подходит и кладёт руку ей на плечо сзади (на руку выше локтя)",
+   "en": "the child comes up and puts a hand on her upper arm"
+  },
+  "key": "fb798a07d3c27f1662cdcf32b65e8d772948e93125e03d56b9e6b81e8ea56210",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing reaches up and puts their right hand on the upper arm of someone in front of them and looks up at them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/c-touch.constraint.json (as sent), from motions/c-touch.spec.json by tools/touch/order_hand.py"
+   ]
+  },
+  "note": "К2's b-touch3 for the child (moood-child) touching the woman's upper arm; the prompt's second part changed (reaches up, upper arm, looks up). Not used in the end: the child stood too close (its face came 3 cm into her back as it looked up; its left hand went to its mouth) — see c-touch2"
+ },
+ {
+  "id": "m-touch-after-probe",
+  "label": {
+   "ru": "проба: где начнётся движение после m-touch",
+   "en": "probe: where a motion after m-touch starts"
+  },
+  "key": "4d275f522f412344e93c98a768221b5dee080668c820a6e13ce493acf941375e",
+  "ask": {
+   "prompts": [
+    "A person stands still."
+   ],
+   "seconds": [
+    0.5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "m-touch",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.1482,
+   "z": 3.4184
+  },
+  "note": "made only to read startsAt before ordering m-hold (К2 guessed it from the pelvis at n−5 and came 6 cm off); data not kept"
+ },
+ {
+  "id": "c-touch-after-probe",
+  "label": {
+   "ru": "проба: где начнётся движение после c-touch",
+   "en": "probe: where a motion after c-touch starts"
+  },
+  "key": "1efb0ac658347fc9cca9b904ba88545c2a167ed696a3d629134635f449c4065d",
+  "ask": {
+   "prompts": [
+    "A person stands still."
+   ],
+   "seconds": [
+    0.5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "c-touch",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.01,
+   "z": 3.5088
+  },
+  "note": "made only to read startsAt before ordering c-hold; data not kept"
+ },
+ {
+  "id": "m-hold",
+  "label": {
+   "ru": "мужчина держит руку на её плече, она оглядывается",
+   "en": "the man keeps the hand on her shoulder"
+  },
+  "key": "4cfec590ee46ded28e0a7de6f01ea643002b89a81cc869a51585f49a66a8fca6",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the shoulder of someone in front of them, looking down at them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/m-hold.constraint.json (as sent), from motions/m-hold.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "m-touch",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.1482,
+   "z": 3.4184
+  }
+ },
+ {
+  "id": "c-hold",
+  "label": {
+   "ru": "ребёнок держит руку на её руке, она оглядывается",
+   "en": "the child keeps the hand on her arm"
+  },
+  "key": "b85933e262cd78e400ddcf3e973c72b0b3f3cbebf98415049d1460e9fcb5c05e",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the upper arm of someone in front of them, looking up at them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/c-hold.constraint.json (as sent), from motions/c-hold.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "c-touch",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.01,
+   "z": 3.5088
+  },
+  "note": "goes on from c-touch (v1); not used in the end"
+ },
+ {
+  "id": "lean-child-s1",
+  "label": {
+   "ru": "ребёнок опирается на стол 0,74 (seed 1)",
+   "en": "lean-child seed 1"
+  },
+  "key": "57c759158e50054efe3b445959593165bd9d11e310aed1dc51a7335bb0b70ef1",
+  "ask": {
+   "prompts": [
+    "A standing person leans forward and rests both hands on the table in front of them."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 1,
+   "constraints": "end-effector, frames 89, 119 — plans/lean-child.json (as sent, the same as lean-child)"
+  },
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0237,
+   "z": 2.0937
+  },
+  "note": "the same ask as lean-child, another seed: how much the result depends on luck"
+ },
+ {
+  "id": "lean-child-s2",
+  "label": {
+   "ru": "ребёнок опирается на стол 0,74 (seed 2)",
+   "en": "lean-child seed 2"
+  },
+  "key": "a834c165d1d6dac4e82153d82c7541293c4191ffe39034027c84a7eb2d606026",
+  "ask": {
+   "prompts": [
+    "A standing person leans forward and rests both hands on the table in front of them."
+   ],
+   "seconds": [
+    4
+   ],
+   "seed": 2,
+   "constraints": "end-effector, frames 89, 119 — plans/lean-child.json (as sent, the same as lean-child)"
+  },
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0237,
+   "z": 2.0937
+  },
+  "note": "the same ask as lean-child, another seed: how much the result depends on luck"
+ },
+ {
+  "id": "m-touch-s2",
+  "label": {
+   "ru": "мужчина подходит и кладёт руку на плечо невысокой женщине (seed 2)",
+   "en": "m-touch seed 2"
+  },
+  "key": "c8aeb5ed28e45fbc3c8683b18e26b6cd95ff0f2da459b9a476eebd50b8296a04",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing puts their right hand on the shoulder of someone in front of them and looks down at them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 2,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/m-touch.constraint.json (as sent), from motions/m-touch.spec.json by tools/touch/order_hand.py"
+   ]
+  },
+  "note": "the same ask as m-touch (seed 1), another seed: how much the result depends on luck"
+ },
+ {
+  "id": "m-touch-s3",
+  "label": {
+   "ru": "мужчина подходит и кладёт руку на плечо невысокой женщине (seed 3)",
+   "en": "m-touch seed 3"
+  },
+  "key": "1341f545d2f6702b289841d86f9d8cf110c43526a875dc154e03cffb3eb7a9b3",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing puts their right hand on the shoulder of someone in front of them and looks down at them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 3,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/m-touch.constraint.json (as sent), from motions/m-touch.spec.json by tools/touch/order_hand.py"
+   ]
+  },
+  "note": "the same ask as m-touch (seed 1), another seed: how much the result depends on luck"
+ },
+ {
+  "id": "c-touch2",
+  "label": {
+   "ru": "ребёнок подходит и кладёт руку ей на руку (дальше от неё)",
+   "en": "the child comes up and puts a hand on her arm (further off)"
+  },
+  "key": "1885014d384b78f1766add3e72f840953647ee7f88771df65434701dc515296e",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing puts their right hand on the arm of someone in front of them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/c-touch2.constraint.json (as sent), from motions/c-touch2.spec.json"
+   ]
+  },
+  "note": "v2 after a look at c-touch: the pelvis 62 cm behind the touch (Kimodo's metres; v1: 42), the prompt without 'reaches up' and 'looks up'"
+ },
+ {
+  "id": "c-touch2-after-probe",
+  "label": {
+   "ru": "проба: где начнётся движение после c-touch2",
+   "en": "probe: where a motion after c-touch2 starts"
+  },
+  "key": "85a0fecc167df9cd0c66da2272ec8796b7fd92e6ba15c906a2ba1d4bcabd3487",
+  "ask": {
+   "prompts": [
+    "A person stands still."
+   ],
+   "seconds": [
+    0.5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "c-touch2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.003,
+   "z": 3.2549
+  },
+  "note": "made only to read startsAt before ordering c-hold2; data not kept"
+ },
+ {
+  "id": "c-hold2",
+  "label": {
+   "ru": "ребёнок держит руку на её руке, она оглядывается",
+   "en": "the child keeps the hand on her arm"
+  },
+  "key": "2c54bda51f9725881da51f7872385276d96a5bff0d2df994fae7e965b890bab6",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the arm of someone in front of them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/c-hold2.constraint.json (as sent), from motions/c-hold2.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "c-touch2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.003,
+   "z": 3.2549
+  }
+ }
+]

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Другие тела</title>
+<style>
+  :root { --panel: rgba(250,247,242,.97); --ink: #26231f; --muted: #75706a; --line: #d5cec4; --accent: #b4532a; --bg: #cfc8bd; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { display: flex; flex-direction: column; }
+  header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+  header h1 { font-size: 15px; margin: 0 8px 0 0; }
+  header .group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  header .lab { color: var(--muted); font-size: 12px; }
+  header button { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 3px 8px; color: var(--ink); cursor: pointer; }
+  header button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  iframe { flex: 1; width: 100%; border: 0; display: block; }
+  @media (max-width: 520px) { header { padding: 6px 8px; } header h1 { width: 100%; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Другие тела: те же сцены на другом росте</h1>
+  <div class="group"><span class="lab">Опора на стол (по К1)</span>
+    <button data-page="table" data-s="lean-child">ребёнок, стол 0,74</button>
+    <button data-page="table" data-s="lean-oldman">грузный мужчина, стол 0,74</button>
+    <button data-page="table" data-s="bar-oldman">грузный мужчина, стойка 1,1</button>
+    <button data-page="table" data-s="lean-elf">очень высокая, стол 0,74</button>
+    <button data-page="table" data-s="lean-child-s1">ребёнок, seed 1</button>
+    <button data-page="table" data-s="lean-child-s2">ребёнок, seed 2</button>
+  </div>
+  <div class="group"><span class="lab">Рука на плече (по К2)</span>
+    <button data-page="touch" data-s="man-short">высокий мужчина и невысокая женщина</button>
+    <button data-page="touch" data-s="child-woman2">ребёнок и женщина</button>
+    <button data-page="touch" data-s="child-woman">ребёнок, первая попытка</button>
+    <button data-page="touch" data-s="man-short-s2">мужчина, seed 2</button>
+    <button data-page="touch" data-s="man-short-s3">мужчина, seed 3</button>
+  </div>
+</header>
+<iframe id="view" title="Сцена"></iframe>
+<script>
+  // Each scene plays on its page: table.html (К1's way, copied) or touch.html (К2's way, copied); this page only
+  // chooses. ?p=table|touch&s=<scene> opens one.
+  const q = new URLSearchParams(location.search), frame = document.getElementById('view');
+  const buttons = [...document.querySelectorAll('[data-page]')];
+  function open(page, s) {
+    frame.src = `${page}.html?s=${encodeURIComponent(s)}&embed`;
+    buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.page === page && b.dataset.s === s)));
+    history.replaceState(null, '', `?p=${page}&s=${encodeURIComponent(s)}`);
+  }
+  buttons.forEach(b => b.onclick = () => open(b.dataset.page, b.dataset.s));
+  const first = buttons.find(b => b.dataset.page === q.get('p') && b.dataset.s === q.get('s')) || buttons[0];
+  open(first.dataset.page, first.dataset.s);
+</script>
+</body>
+</html>

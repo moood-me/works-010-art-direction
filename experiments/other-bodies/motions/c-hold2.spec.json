@@ -1,0 +1,67 @@
+{
+ "source": "c-touch2",
+ "frame": 149,
+ "side": "Right",
+ "kind": "right-hand",
+ "fingersFrom": {
+  "source": "b-probe",
+  "frame": 120
+ },
+ "note": "\u041a2's b-hold4 repeated for the child: after c-touch2 (5 frames), its frame f is scene frame 187 + f; targets: the same point of the woman's upper arm at scene frames 200, 215, 247 (node tools/touch/targets.mjs woman a-stand,a-look RightArm -0.1959,1.1842,-0.0273 200,215,247 0,-2.8,0,0.7068) less the startsAt of an `after` c-touch 5 (-0.003, 3.2549: read off a 0.5 s probe made after c-touch2, c-touch2-after-probe); the pelvis where c-touch2 left it (its frame 149) in that space; no slide (the arm is not near her chin)",
+ "items": [
+  {
+   "frame": 13,
+   "target": [
+    -0.1357,
+    1.6553,
+    0.4817
+   ],
+   "hip": [
+    -0.048,
+    0.021
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 28,
+   "target": [
+    -0.0738,
+    1.6587,
+    0.4577
+   ],
+   "hip": [
+    -0.048,
+    0.021
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 60,
+   "target": [
+    -0.0702,
+    1.6655,
+    0.4629
+   ],
+   "hip": [
+    -0.048,
+    0.021
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  }
+ ]
+}

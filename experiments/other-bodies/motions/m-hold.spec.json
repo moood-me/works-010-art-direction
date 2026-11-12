@@ -1,0 +1,67 @@
+{
+ "source": "m-touch",
+ "frame": 149,
+ "side": "Right",
+ "kind": "right-hand",
+ "fingersFrom": {
+  "source": "b-probe",
+  "frame": 120
+ },
+ "note": "\u041a2's b-hold4 as written for anny-C-pear: her shoulder's outer edge (shoulderSurface share 1.4, angle 0.2, 2 cm out) at scene frames 200, 215, 247 (node tools/touch/targets.mjs body:anny-C-pear a-stand,a-look RightShoulder -0.172,1.2001,-0.0036 200,215,247 0,-4.0,0,1.015) less the startsAt of an `after` m-touch 5 (0.1482, 3.4184: read off a 0.5 s probe, m-touch-after-probe); the pelvis where m-touch left it",
+ "items": [
+  {
+   "frame": 13,
+   "target": [
+    -0.2536,
+    1.1624,
+    0.4151
+   ],
+   "hip": [
+    -0.057,
+    -0.018
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 28,
+   "target": [
+    -0.2217,
+    1.167,
+    0.3947
+   ],
+   "hip": [
+    -0.057,
+    -0.018
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 60,
+   "target": [
+    -0.2177,
+    1.1715,
+    0.4004
+   ],
+   "hip": [
+    -0.057,
+    -0.018
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  }
+ ]
+}

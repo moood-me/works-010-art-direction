@@ -1,0 +1,42 @@
+— с поправкой
+{
+ "Left": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 7.6, max 8.2",
+  "corrected_palm_cm": "mean 0.0, max 0.0",
+  "skin_gap_cm": "min -0.0, mean 0.0, max 0.0"
+ },
+ "Right": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 8.0, max 9.3",
+  "corrected_palm_cm": "mean 0.0, max 0.0",
+  "skin_gap_cm": "min -0.0, mean -0.0, max 0.0"
+ },
+ "into_things": {
+  "table/top": {
+   "frames": 11,
+   "deepest_cm": 0.0,
+   "at": 232,
+   "by": {
+    "Rhand": 0,
+    "Lhand": 0
+   }
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "Left": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 7.6, max 8.2",
+  "corrected_palm_cm": "mean 7.6, max 8.2",
+  "skin_gap_cm": "min 6.0, mean 6.8, max 7.9"
+ },
+ "Right": {
+  "frames": "192–234",
+  "kimodo_palm_cm": "mean 8.0, max 9.3",
+  "corrected_palm_cm": "mean 8.0, max 9.3",
+  "skin_gap_cm": "min 4.7, mean 6.2, max 8.4"
+ },
+ "into_things": "nothing"
+}
