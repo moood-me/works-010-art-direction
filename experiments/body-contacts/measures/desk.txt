@@ -1,0 +1,112 @@
+— с поправкой
+{
+ "предплечья до столешницы": {
+  "frames": "120–240",
+  "gap_cm": "min -0.0, mean 0.7, max 1.4"
+ },
+ "ягодицы до сиденья": {
+  "frames": "120–240",
+  "gap_cm": "min -2.5, mean -2.5, max -2.4"
+ },
+ "into_things": {
+  "chair/back": {
+   "frames": 13,
+   "deepest_cm": 2.0,
+   "at": 33,
+   "by": {
+    "RforeArm": 0.3,
+    "Rthigh": 2.0,
+    "pelvis": 1.9
+   }
+  },
+  "chair/leg": {
+   "frames": 428,
+   "deepest_cm": 1.7,
+   "at": 49,
+   "by": {
+    "Lfoot": 0.9,
+    "Lshin": 0.2,
+    "Rshin": 1.6,
+    "Rfoot": 1.7
+   }
+  },
+  "chair/seat": {
+   "frames": 238,
+   "deepest_cm": 2.5,
+   "at": 38,
+   "by": {
+    "Rthigh": 2.5,
+    "Rshin": 2.5,
+    "Lthigh": 2.5,
+    "pelvis": 2.5
+   }
+  },
+  "table/top": {
+   "frames": 22,
+   "deepest_cm": 1.7,
+   "at": 57,
+   "by": {
+    "Lthigh": 0.9,
+    "Lhand": 1.7,
+    "RforeArm": 0,
+    "LforeArm": 0.1
+   }
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "предплечья до столешницы": {
+  "frames": "120–240",
+  "gap_cm": "min -0.0, mean 0.7, max 1.4"
+ },
+ "ягодицы до сиденья": {
+  "frames": "120–240",
+  "gap_cm": "min -2.5, mean -2.5, max -2.4"
+ },
+ "into_things": {
+  "chair/back": {
+   "frames": 13,
+   "deepest_cm": 2.0,
+   "at": 33,
+   "by": {
+    "RforeArm": 0.3,
+    "Rthigh": 2.0,
+    "pelvis": 1.9
+   }
+  },
+  "chair/leg": {
+   "frames": 428,
+   "deepest_cm": 1.7,
+   "at": 49,
+   "by": {
+    "Lfoot": 0.9,
+    "Lshin": 0.2,
+    "Rshin": 1.6,
+    "Rfoot": 1.7
+   }
+  },
+  "chair/seat": {
+   "frames": 238,
+   "deepest_cm": 2.5,
+   "at": 38,
+   "by": {
+    "Rthigh": 2.5,
+    "Rshin": 2.5,
+    "Lthigh": 2.5,
+    "pelvis": 2.5
+   }
+  },
+  "table/top": {
+   "frames": 22,
+   "deepest_cm": 1.7,
+   "at": 57,
+   "by": {
+    "Lthigh": 0.9,
+    "Lhand": 1.7,
+    "RforeArm": 0,
+    "LforeArm": 0.1
+   }
+  }
+ }
+}

@@ -1,0 +1,92 @@
+— с поправкой
+{
+ "правая ладонь на перилах": {
+  "frames": "25–160",
+  "kimodo_palm_cm": "mean 4.6, max 8.7",
+  "corrected_palm_cm": "mean 0.0, max 0.0",
+  "skin_to_rail_cm": "min -2.5, mean -2.2, max -0.1"
+ },
+ "левая ступня на ступени": {
+  "frames_standing": 114,
+  "kimodo_cm": "min -7.4, mean 0.4, max 4.8",
+  "corrected_cm": "min 0.0, mean 0.8, max 4.8"
+ },
+ "правая ступня на ступени": {
+  "frames_standing": 79,
+  "kimodo_cm": "min -7.1, mean 0.3, max 4.8",
+  "corrected_cm": "min 0.0, mean 1.0, max 4.8"
+ },
+ "into_things": {
+  "stairs/rail": {
+   "frames": 158,
+   "deepest_cm": 2.5,
+   "at": 1,
+   "by": {
+    "Rhand": 2.5
+   }
+  },
+  "stairs/post": {
+   "frames": 23,
+   "deepest_cm": 1.5,
+   "at": 7,
+   "by": {
+    "Rhand": 1.5
+   }
+  },
+  "stairs/step": {
+   "frames": 139,
+   "deepest_cm": 7.0,
+   "at": 19,
+   "by": {
+    "Rfoot": 7.0,
+    "Lfoot": 4.3
+   }
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "правая ладонь на перилах": {
+  "frames": "25–160",
+  "kimodo_palm_cm": "mean 4.6, max 8.7",
+  "corrected_palm_cm": "mean 4.6, max 8.7",
+  "skin_to_rail_cm": "min -2.5, mean -0.9, max 8.0"
+ },
+ "левая ступня на ступени": {
+  "frames_standing": 114,
+  "kimodo_cm": "min -7.4, mean 0.4, max 4.8",
+  "corrected_cm": "min -7.4, mean 0.4, max 4.8"
+ },
+ "правая ступня на ступени": {
+  "frames_standing": 79,
+  "kimodo_cm": "min -7.1, mean 0.3, max 4.8",
+  "corrected_cm": "min -7.1, mean 0.3, max 4.8"
+ },
+ "into_things": {
+  "stairs/rail": {
+   "frames": 130,
+   "deepest_cm": 2.5,
+   "at": 1,
+   "by": {
+    "Rhand": 2.5
+   }
+  },
+  "stairs/post": {
+   "frames": 8,
+   "deepest_cm": 1.5,
+   "at": 7,
+   "by": {
+    "Rhand": 1.5
+   }
+  },
+  "stairs/step": {
+   "frames": 179,
+   "deepest_cm": 7.0,
+   "at": 52,
+   "by": {
+    "Rfoot": 7.0,
+    "Lfoot": 6.5
+   }
+  }
+ }
+}

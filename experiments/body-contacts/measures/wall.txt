@@ -1,0 +1,34 @@
+— с поправкой
+{
+ "спина до стены": {
+  "frames": "95–209",
+  "gap_cm": "min -0.1, mean 0.2, max 0.6"
+ },
+ "into_things": {
+  "wall/wall": {
+   "frames": 12,
+   "deepest_cm": 0.1,
+   "at": 158,
+   "by": {
+    "spine": 0.1
+   }
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "спина до стены": {
+  "frames": "95–209",
+  "gap_cm": "min -0.1, mean 0.2, max 0.6"
+ },
+ "into_things": {
+  "wall/wall": {
+   "frames": 12,
+   "deepest_cm": 0.1,
+   "at": 158,
+   "by": {
+    "spine": 0.1
+   }
+  }
+ }
+}
