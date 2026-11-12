@@ -139,7 +139,7 @@ def ring(c, R, rx, rz, n=6, phase=0.0, front=0.0, back=0.0):
 def segment(a, b, ra, rb, color, mat='cloth', n=6, up=(0, 0, 1), ext=0.0, flat=1.0, name='', phase=0.0):
     """A limb: a prism between joints a and b, radius ra at a and rb at b, `flat` squashes it front to back."""
     a = np.asarray(a, float); b = np.asarray(b, float)
-    d = b - a; L = np.linalg.norm(d); R = frame_along(d, up); y = R[:, 1]
+    R = frame_along(b - a, up); y = R[:, 1]
     ea, eb = ext if isinstance(ext, tuple) else (ext, ext)
     a2 = a - y * ea * ra; b2 = b + y * eb * rb
     caps = [a2 - y * ra * 0.45 * (ea > 0), b2 + y * rb * 0.45 * (eb > 0)]   # pointed ends: no flat cap shows at a joint
@@ -275,19 +275,6 @@ class Camera:
 def _area(xy):
     x, y = xy[:, 0], xy[:, 1]
     return 0.5 * (np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1)))
-
-
-def _front_z(planes, x, y):
-    """The nearest (largest z) surface point of a convex piece on the line through (x, y), or None."""
-    hi, lo = 1e9, -1e9
-    for n, o in planes:
-        if n[2] > 1e-9:
-            hi = min(hi, (-o - n[0] * x - n[1] * y) / n[2])
-        elif n[2] < -1e-9:
-            lo = max(lo, (-o - n[0] * x - n[1] * y) / n[2])
-        elif n[0] * x + n[1] * y + o > 1e-6:
-            return None
-    return hi if hi >= lo - 1e-6 else None
 
 
 def render(pieces, cam, light=None, stroke=0.7, edges=None, decals=True, flat=None):
@@ -460,13 +447,6 @@ def _path(geom, cam, color, stroke, opacity=1.0):
     op = '' if opacity >= 1 else ' fill-opacity="%.2f"' % opacity
     st = ' stroke="%s" stroke-width="%.2f" stroke-linejoin="round"' % (color, stroke) if stroke > 0 else ''
     return '<path d="%s" fill="%s" fill-rule="evenodd"%s%s/>' % (''.join(d), color, op, st)
-
-
-def _poly(xy, color, stroke, opacity=1.0):
-    pts = ' '.join('%.1f,%.1f' % (x, y) for x, y in xy)
-    op = '' if opacity >= 1 else ' fill-opacity="%.2f"' % opacity
-    st = ' stroke="%s" stroke-width="%.2f" stroke-linejoin="round"' % (color, stroke) if stroke > 0 else ''
-    return '<polygon points="%s" fill="%s"%s%s/>' % (pts, color, op, st)
 
 
 # ------------------------------------------------------------------------------------------------------------ svg

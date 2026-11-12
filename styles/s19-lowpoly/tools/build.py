@@ -7,7 +7,7 @@ import sys
 import math
 import importlib
 import numpy as np
-from poly import Doc, Camera, Light, render, press, hull, Rx, Ry
+from poly import Doc, Camera, Light, render, press, Ry
 import scenery as SC
 
 HERE = os.path.dirname(os.path.abspath(__file__))

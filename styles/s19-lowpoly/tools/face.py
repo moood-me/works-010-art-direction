@@ -8,7 +8,6 @@ A face is: the head (one convex piece: skull, brow, cheekbone, cheek, jaw, chin)
 and decals: eyes (a dark almond, a lid line), brows (a slim quad), the mouth (a lip line, a lower lip plane), cheeks.
 """
 import math
-import numpy as np
 from shapely.geometry import Polygon
 from poly import hull, press, mirror_x, hexcol, mix, tohex
 
@@ -123,7 +122,7 @@ def _eye2d(s, e):
         cres = [(-w, -0.05), (-0.35 * w, 0.5 * h + 0.15), (0.45 * w, 0.55 * h + 0.15), (1.08 * w, 0.05),
                 (0.45 * w, 0.3 * h), (-0.4 * w, 0.22 * h)]
         return [(cres, 'eye')]
-    top, bot, lid_drop, outer_lift = 1.0, 0.75, 0.0, 0.0
+    top, bot, lid_drop = 1.0, 0.75, 0.0
     if kind == 'wide':
         top, bot = 1.35, 1.0
     elif kind == 'low':        # sad: the upper lid falls toward the outer corner
@@ -208,7 +207,6 @@ def mouth(H, s, e):
     kind = e.get('mouth', s.get('mouth_rest', 'line'))
     w, my, sm = s['lip_w'], s['mouth_y'], e.get('smile', s.get('smile', 0.0))
     lip, dark = s['lip'], mix(hexcol(s['lip']), hexcol('#2a1820'), 0.55)
-    C = (0, my, 0)
     z = 20
     if kind in ('line', 'smile', 'down', 'tight', 'smirk'):
         th = s['mouth_line'] * (0.7 if kind == 'tight' else 1.0)

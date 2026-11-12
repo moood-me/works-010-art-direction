@@ -1,6 +1,5 @@
 """Тим, about 8 — mischievous, curious. A round head with a small face low on it, straw hair in spiky tufts,
 freckles; a red-and-white striped T-shirt, blue shorts, a plaster on the knee; about to launch a paper plane."""
-import math
 import numpy as np
 from poly import hull, mirror_x, press
 import face as F

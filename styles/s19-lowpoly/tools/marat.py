@@ -3,7 +3,7 @@ thick forearms, big hands, a short neck; short black curls, a thick black beard,
 with the sleeves rolled up, a long terracotta apron, a towel over the shoulder, a ladle. He laughs with the whole body."""
 import math
 import numpy as np
-from poly import hull, mirror_x, press, Rx, Ry, Rz
+from poly import hull, mirror_x, press
 import face as F
 import body as B
 

@@ -6,7 +6,7 @@ frames; the helpers below build convex pieces between joints: `limb`, `hand`, `s
 """
 import math
 import numpy as np
-from poly import Rx, Ry, Rz, euler, hull, segment, chain, ring, unit, frame_along, Piece, mix, hexcol
+from poly import Rx, Ry, Rz, euler, hull, segment, chain, ring, frame_along, hexcol
 
 PROP = dict(   # an adult woman, about 168 cm
     pelvis_y=92.0, hip_w=8.6, hip_drop=4.0, thigh=43.0, shin=42.0, ankle_h=7.0, foot=24.0,
@@ -212,17 +212,12 @@ def shoe(sk, k, color, kind='shoe', size=None, sole=None, h=None):
     return out
 
 
-def ground_shadow(cx, z, w, color='#000000', op=0.16):
-    """A flat soft-edged oval of facets under the feet, drawn before the figure (an SVG polygon in world xz)."""
-    return dict(cx=cx, z=z, w=w, color=color, op=op)
-
-
 def band(piece, sk, frame, origin, y0, y1, color, n=24, a0=0.0, a1=360.0, op=1.0, lift=0.12):
     """A stripe round a body piece between heights y0 and y1 of a frame: each corner is carried along a level ray
     from the frame's axis at its own height out onto the piece's facets, so the stripe wraps them and keeps its
     width. Angles from the front (+z), toward +x."""
     import math
-    from poly import face_planes, unit
+    from poly import face_planes
     R = {'p': sk.Rp, 'c': sk.Rc}[frame] if isinstance(frame, str) else frame
     o = {'p': sk.P, 'w': sk.waist, 'c': sk.neckb}[origin] if isinstance(origin, str) else np.asarray(origin, float)
     planes = face_planes(piece.pts, piece.faces)

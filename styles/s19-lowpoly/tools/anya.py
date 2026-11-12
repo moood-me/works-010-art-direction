@@ -1,6 +1,6 @@
 """Аня, about 20 — warm, trusting, dreamy. Long copper hair, a mustard cardigan over a blue dress."""
 import numpy as np
-from poly import hull, mirror_x, press
+from poly import hull, mirror_x
 import face as F
 import body as B
 
@@ -60,7 +60,6 @@ def book(sk, k):
     J = sk.j[k]; R = J['Rh']; o = J['wr']; s = J['s']
     W = lambda pts: [o + R @ np.array([s * x, y, z]) for x, y, z in pts]
     pts = [(x, y, z) for x in (-2.6, -0.6) for y in (-1.0, -21.0) for z in (-3.0, 12.0)]
-    pages = [(x, y, z) for x in (-2.4, -0.8) for y in (-1.6, -20.4) for z in (-2.4, 11.6)]
     return [hull(W(pts), COL['book'], 'cloth', 'book', bias=0.5)]
 
 

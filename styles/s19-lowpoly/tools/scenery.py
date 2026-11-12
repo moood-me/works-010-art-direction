@@ -2,8 +2,7 @@
 figure (the board-game figures of the GO games stand on one), and a small low-poly diorama for the cast."""
 import math
 import random
-import numpy as np
-from poly import hull, Piece, hexcol, tohex, mix, ring, Rx
+from poly import hull, hexcol, tohex, mix
 
 BG = {   # backdrop: top colour, bottom colour (each character has its own mood)
     'anya': ('#e9d7c1', '#c9b8b2'), 'savely': ('#d9d2c4', '#a9a49c'), 'tim': ('#d6e3dc', '#a9c0bb'),
@@ -41,13 +40,6 @@ def plinth(r=30.0, h=4.0, color='#5d5a66', n=10, y=0.0, x=0.0, z=0.0):
     return [hull(top + mid + bot, color, 'cloth', 'plinth')]
 
 
-def shadow_disc(rx, rz, y=0.05, x=0.0, z=0.0, color='#000000'):
-    """A flat dark oval on the plinth: the figure's contact shadow (eight facets, drawn as one flat piece)."""
-    pts = [(x + rx * math.sin(2 * math.pi * i / 8), y, z + rz * math.cos(2 * math.pi * i / 8)) for i in range(8)]
-    pts += [(px, y - 0.02, pz) for px, y_, pz in pts]
-    return pts
-
-
 def diorama(w=520.0, d=200.0, h=26.0, seed=5, top='#8fa07a', side='#6b5b4b', path='#d8cdb6'):
     """A raised tile of faceted ground: a jittered grid of triangles on top, earth on the sides, a pale path."""
     rnd = random.Random(seed)
@@ -66,7 +58,6 @@ def diorama(w=520.0, d=200.0, h=26.0, seed=5, top='#8fa07a', side='#6b5b4b', pat
             for tri in ((a, c, b), (a, dd, c)):
                 col = path if onpath else top
                 col = tohex(mix(hexcol(col), hexcol('#ffffff' if rnd.random() > 0.5 else '#203020'), rnd.uniform(0, 0.08)))
-                base = [(x, -h, z) for x, y, z in tri]
                 pieces.append(hull(list(tri) + [(x, y - 0.6, z) for x, y, z in tri], col, 'cloth', 'ground'))
     body = [(x, y, z) for x in (-w / 2, w / 2) for y in (-0.7, -h) for z in (-d / 2, d / 2)]
     pieces.append(hull(body, side, 'cloth', 'earth'))

@@ -2,7 +2,7 @@
 Bald crown with white tufts over the ears, bushy white brows and moustache, a loupe pushed up on the forehead;
 a green knitted waistcoat over a white shirt, brown trousers; stooped, looking at a pocket watch."""
 import numpy as np
-from poly import hull, mirror_x, press, hexcol, mix, tohex
+from poly import hull, mirror_x, press
 import face as F
 import body as B
 

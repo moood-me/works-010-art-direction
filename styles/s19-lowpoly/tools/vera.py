@@ -1,6 +1,5 @@
 """Вера, about 40 — strict, clever, tired. A long narrow face, high cheekbones, a straight nose, thin lips;
 dark hair pulled into a bun with a grey strand; thin rectangular glasses; a long teal coat, a folder under the arm."""
-import math
 import numpy as np
 from poly import hull, mirror_x, press
 import face as F
@@ -109,7 +108,6 @@ def figure(pose='stand', expr='rest', over=None):
     c = COL
     out = []
     for k in ('L', 'R'):
-        J = sk.j[k]
         out += B.leg(sk, k, (6.0, 4.4, 4.6, 3.6), c['trousers'], 'cloth')
         out += B.shoe(sk, k, c['shoe'], sole=c['sole'])
     # the coat: a long straight piece from the shoulders to the calves, belted; a wide collar
