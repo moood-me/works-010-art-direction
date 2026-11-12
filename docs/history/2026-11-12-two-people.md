@@ -26,9 +26,18 @@ beside him; at 45 cm and every 15 frames his arm went into her shoulder and her 
 now steps back 63 cm after the set-down; two tries to give the child's legs through the pose made it worse and were
 left (`pics/carry4-legs-try.png`).
 
+**A fourth pass** (since the handshake came out, the harder ones were tried). A chain where the lead changes — he
+touches her shoulder, she turns, they shake hands, he leads her away, 19 s, every motion `after` the same person's
+last — reads from start to end. A hug of two adults, made in turns (he alone, she onto him, he again, she again): the
+arms go round, but the chests pass through each other for the whole hold — a hand constraint places the hands and
+the pelvis, not the trunk; a whole-pose constraint with upright trunks was not tried. An adult carried in the arms:
+Kimodo has no such motion; she is a sitting pose attached to his hands and reads as a stiff doll — it did not come
+out. Her look at him in the handshake was got by a whole-pose constraint with only the head turned
+(`tools/order_head.py`), not by the prompt; in the leading it is a weak glance.
+
 **What is weak.** His look at her is a neck correction on top (Kimodo kept the head back though asked); the child's
 legs hang straight into his shins (up to 6 cm); at the set-down their hands go into each other for a second; Kimodo
-has nothing for carrying an adult, so a child is carried. An adult hug was not made. In the handshake the flat hands overlap rather than grip; led by the hand, she walks
+has nothing for carrying an adult, so a child is carried. In the handshake the flat hands overlap rather than grip; led by the hand, she walks
 leaning forward as if pulled; nobody looks at the other in these two. The orchestrator looked at stills, not at the films.
 
 **In the catalogue.** К2 in section К of `gallery/paths.js`, its page in `PAGE`. The branch contains `contacts` (К1),
