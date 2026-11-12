@@ -33,3 +33,8 @@ into `two-people`, which now holds the whole section.
 **What the orchestrator looked at.** Sheets and close-ups of every scene; not the films.
 
 **How to repeat.** Each folder's `notes.md`; every motion ordered is in its `motions/asks.json` (`orders.json`).
+
+**Into main.** Pavel, 2026-11-12, after asking whether a new section of the lab's site was needed (it is not: the
+catalogue at lab.moood.me/works-010-art-direction/ is served from `main` and reads the lists): "заливай". `main`
+(32 commits ahead: the third round of drawings to 3D, Р45–Р50) was merged into `two-people` without conflicts, and
+`main` moved to the result.

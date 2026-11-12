@@ -40,6 +40,12 @@ legs hang straight into his shins (up to 6 cm); at the set-down their hands go i
 has nothing for carrying an adult, so a child is carried. In the handshake the flat hands overlap rather than grip; led by the hand, she walks
 leaning forward as if pulled; nobody looks at the other in these two. The orchestrator looked at stills, not at the films.
 
+**The notes, after the test on other bodies (К5).** The agent that repeated the touch on other bodies listed where
+К2's notes were not enough; the author checked each point against the code and fixed them: a section on what is the
+method's and what is this pair's (prompts, stance, hand turn, look), whose metres each number is in, the exact
+settings of the touched points, a rule for where an `after` motion starts (a 0.5 s probe first; the earlier "within
+1 cm" was luck — 0.5–5.9 cm over 23 motions), and that one take is luck.
+
 **In the catalogue.** К2 in section К of `gallery/paths.js`, its page in `PAGE`. The branch contains `contacts` (К1),
 merged in so that both stand in one section.
 
