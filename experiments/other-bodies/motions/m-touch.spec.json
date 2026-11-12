@@ -1,0 +1,45 @@
+{
+ "source": "b-probe",
+ "frame": 120,
+ "side": "Right",
+ "kind": "right-hand",
+ "note": "\u041a2's b-touch3 repeated as written for a shorter woman (anny-C-pear, 1.49 m): the same two points (tools/touch/points.mjs: the touch at shoulderSurface share 1.1, angle 0.45, 2 cm out), her shoulder at scene frames 160, 191 in the man's Kimodo space (x 0, z \u22124.0, k 1.015); the pelvis 50.8 cm behind and 28.3 cm to her left of the touch, as b-touch3. Targets: node tools/touch/targets.mjs body:anny-C-pear a-stand,a-look RightShoulder -0.1487,1.2281,-0.0264 160,191 0,-4.0,0,1.015",
+ "items": [
+  {
+   "frame": 118,
+   "target": [
+    -0.1516,
+    1.1904,
+    3.9067
+   ],
+   "hip": [
+    0.131,
+    3.399
+   ],
+   "handYaw": -0.25,
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 149,
+   "target": [
+    -0.1189,
+    1.1908,
+    3.8536
+   ],
+   "hip": [
+    0.131,
+    3.399
+   ],
+   "handYaw": -0.25,
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  }
+ ]
+}

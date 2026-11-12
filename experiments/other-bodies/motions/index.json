@@ -1,0 +1,170 @@
+{
+ "format": "two-people/motions",
+ "motions": [
+  {
+   "id": "table-free",
+   "label": {
+    "ru": "table-free",
+    "en": "table-free"
+   }
+  },
+  {
+   "id": "table-free2",
+   "label": {
+    "ru": "table-free2",
+    "en": "table-free2"
+   }
+  },
+  {
+   "id": "table-walk",
+   "label": {
+    "ru": "table-walk",
+    "en": "table-walk"
+   }
+  },
+  {
+   "id": "a-stand",
+   "label": {
+    "ru": "А стоит",
+    "en": "A stands"
+   }
+  },
+  {
+   "id": "a-look",
+   "label": {
+    "ru": "А оглядывается",
+    "en": "A looks back"
+   },
+   "after": "a-stand"
+  },
+  {
+   "id": "b-probe",
+   "label": {
+    "ru": "Б: проба похлопывания",
+    "en": "B: tap probe"
+   }
+  },
+  {
+   "id": "b-touch3",
+   "label": {
+    "ru": "Б подходит ближе, слева, и кладёт руку на плечо",
+    "en": "B comes nearer, from her left, and puts a hand on the shoulder"
+   }
+  },
+  {
+   "id": "b-hold4",
+   "label": {
+    "ru": "Б держит руку на плече, она съезжает наружу",
+    "en": "B keeps the hand on the shoulder, sliding out"
+   },
+   "after": "b-touch3"
+  },
+  {
+   "id": "lean-child",
+   "label": {
+    "ru": "ребёнок опирается на стол 0,74",
+    "en": "lean-child"
+   },
+   "after": "table-walk"
+  },
+  {
+   "id": "lean-oldman",
+   "label": {
+    "ru": "грузный мужчина опирается на стол 0,74",
+    "en": "lean-oldman"
+   },
+   "after": "table-walk"
+  },
+  {
+   "id": "lean-elf",
+   "label": {
+    "ru": "высокий (2,31 м) опирается на стол 0,74",
+    "en": "lean-elf"
+   },
+   "after": "table-walk"
+  },
+  {
+   "id": "bar-oldman",
+   "label": {
+    "ru": "грузный мужчина опирается на стойку 1,1",
+    "en": "bar-oldman"
+   },
+   "after": "table-walk"
+  },
+  {
+   "id": "m-touch",
+   "label": {
+    "ru": "мужчина подходит и кладёт руку на плечо невысокой женщине",
+    "en": "the man comes up and puts a hand on a short woman's shoulder"
+   }
+  },
+  {
+   "id": "c-touch",
+   "label": {
+    "ru": "ребёнок подходит и кладёт руку ей на плечо сзади (на руку выше локтя)",
+    "en": "the child comes up and puts a hand on her upper arm"
+   }
+  },
+  {
+   "id": "m-hold",
+   "label": {
+    "ru": "мужчина держит руку на её плече, она оглядывается",
+    "en": "the man keeps the hand on her shoulder"
+   },
+   "after": "m-touch"
+  },
+  {
+   "id": "c-hold",
+   "label": {
+    "ru": "ребёнок держит руку на её руке, она оглядывается",
+    "en": "the child keeps the hand on her arm"
+   },
+   "after": "c-touch"
+  },
+  {
+   "id": "lean-child-s1",
+   "label": {
+    "ru": "ребёнок опирается на стол 0,74 (seed 1)",
+    "en": "lean-child seed 1"
+   },
+   "after": "table-walk"
+  },
+  {
+   "id": "lean-child-s2",
+   "label": {
+    "ru": "ребёнок опирается на стол 0,74 (seed 2)",
+    "en": "lean-child seed 2"
+   },
+   "after": "table-walk"
+  },
+  {
+   "id": "m-touch-s2",
+   "label": {
+    "ru": "мужчина подходит и кладёт руку на плечо невысокой женщине (seed 2)",
+    "en": "m-touch seed 2"
+   }
+  },
+  {
+   "id": "m-touch-s3",
+   "label": {
+    "ru": "мужчина подходит и кладёт руку на плечо невысокой женщине (seed 3)",
+    "en": "m-touch seed 3"
+   }
+  },
+  {
+   "id": "c-touch2",
+   "label": {
+    "ru": "ребёнок подходит и кладёт руку ей на руку (дальше от неё)",
+    "en": "the child comes up and puts a hand on her arm (further off)"
+   }
+  },
+  {
+   "id": "c-hold2",
+   "label": {
+    "ru": "ребёнок держит руку на её руке, она оглядывается",
+    "en": "the child keeps the hand on her arm"
+   },
+   "after": "c-touch2"
+  }
+ ]
+}

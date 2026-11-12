@@ -1,0 +1,67 @@
+{
+ "source": "b-touch3",
+ "frame": 149,
+ "side": "Right",
+ "kind": "right-hand",
+ "fingersFrom": {
+  "source": "b-probe",
+  "frame": 120
+ },
+ "note": "v4: as b-hold3, but as she turns the hand slides out to the outer edge of her shoulder (a point of her skin at rest, 2 cm out: tools/shoulder.mjs share 1.4, 0.2 rad back), away from her chin: with b-hold3 the hand stayed on the top and her chin came onto his fingers as she looked round; targets: node tools/targets.mjs woman a-stand,a-look RightShoulder -0.1903,1.2948,0.0063 200,215,247 0,-4.0,0,1.015, less b-hold3's startsAt (the same after); the pelvis where b-touch3 left it, in the space b-hold3 actually had (its startsAt came 6 cm off the estimate)",
+ "items": [
+  {
+   "frame": 13,
+   "target": [
+    -0.2571,
+    1.2504,
+    0.4105
+   ],
+   "hip": [
+    -0.058,
+    -0.015
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 28,
+   "target": [
+    -0.2231,
+    1.2543,
+    0.3873
+   ],
+   "hip": [
+    -0.058,
+    -0.015
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 60,
+   "target": [
+    -0.2189,
+    1.259,
+    0.3936
+   ],
+   "hip": [
+    -0.058,
+    -0.015
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  }
+ ]
+}

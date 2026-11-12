@@ -1,0 +1,45 @@
+{
+ "source": "b-probe",
+ "frame": 120,
+ "side": "Right",
+ "kind": "right-hand",
+ "note": "v2 of c-touch: the child stood too close in v1 (its face came into her back as it looked up, 3 cm in) \u2014 the pelvis now 62 cm behind and 25 cm to her left of the touch in Kimodo's metres (44 and 18 cm on the child); the rest as c-touch. \u041a2's b-touch3 repeated for a child (moood-child, k 0.7068) touching the back of the woman's right upper arm (a point of her skin at rest on RightArm, 35% down from the shoulder joint, 1.2 rad back from straight out, 2 cm out: tools/touch/points.mjs), at scene frames 160, 191; the child placed at z \u22122.8 (so its Kimodo walk is as long as \u041a2's man's: the target at Kimodo z \u2248 3.9); the pelvis 42 cm behind and 25 cm to her left of the touch in Kimodo's metres (\u041a2: 51 and 28 \u2014 the child stands nearer, its target is 37 cm higher in Kimodo's space than \u041a2's); the hand and the elbow as b-touch3. Targets: node tools/touch/targets.mjs woman a-stand,a-look RightArm -0.1959,1.1842,-0.0273 160,191 0,-2.8,0,0.7068",
+ "items": [
+  {
+   "frame": 118,
+   "target": [
+    -0.2661,
+    1.6483,
+    3.876
+   ],
+   "hip": [
+    -0.016,
+    3.256
+   ],
+   "handYaw": -0.25,
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 149,
+   "target": [
+    -0.2018,
+    1.6447,
+    3.783
+   ],
+   "hip": [
+    -0.016,
+    3.256
+   ],
+   "handYaw": -0.25,
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,101 @@
+[
+ {
+  "out": "pics/child-woman-sheet.png",
+  "scene": "child-woman",
+  "kind": "sheet",
+  "frames": [
+   90,
+   140,
+   160,
+   185,
+   205,
+   230,
+   249
+  ],
+  "size": [
+   300,
+   400
+  ],
+  "views": [
+   {
+    "yaw": -1.5,
+    "pitch": 0.08,
+    "dist": 3.8,
+    "target": [
+     0,
+     0.75,
+     -0.45
+    ],
+    "label": "сбоку"
+   },
+   {
+    "yaw": -2.5,
+    "pitch": 0.12,
+    "dist": 3.8,
+    "target": [
+     0,
+     0.75,
+     -0.45
+    ],
+    "label": "сзади-справа"
+   }
+  ]
+ },
+ {
+  "out": "pics/child-woman-contact.png",
+  "scene": "child-woman",
+  "kind": "sheet",
+  "frames": [
+   160,
+   185,
+   205,
+   230,
+   249
+  ],
+  "size": [
+   320,
+   320
+  ],
+  "views": [
+   {
+    "yaw": -0.9,
+    "pitch": 0.3,
+    "dist": 1.0,
+    "target": "contact",
+    "label": "спереди-справа"
+   },
+   {
+    "yaw": -2.6,
+    "pitch": 0.35,
+    "dist": 1.0,
+    "target": "contact",
+    "label": "сзади"
+   }
+  ]
+ },
+ {
+  "out": "pics/child-woman-raw.png",
+  "scene": "child-woman",
+  "corr": false,
+  "kind": "sheet",
+  "frames": [
+   160,
+   175,
+   205,
+   230
+  ],
+  "size": [
+   320,
+   320
+  ],
+  "views": [
+   {
+    "yaw": -0.9,
+    "pitch": 0.3,
+    "dist": 1.0,
+    "target": "contact",
+    "label": "только Kimodo"
+   }
+  ]
+ }
+]

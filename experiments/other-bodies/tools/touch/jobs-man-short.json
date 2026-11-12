@@ -1,0 +1,153 @@
+[
+ {
+  "out": "pics/man-short-sheet.png",
+  "scene": "man-short",
+  "kind": "sheet",
+  "frames": [
+   90,
+   140,
+   160,
+   185,
+   205,
+   230,
+   249
+  ],
+  "size": [
+   300,
+   400
+  ],
+  "views": [
+   {
+    "yaw": -1.5,
+    "pitch": 0.08,
+    "dist": 4.3,
+    "target": [
+     0,
+     0.85,
+     -0.55
+    ],
+    "label": "сбоку"
+   },
+   {
+    "yaw": -2.5,
+    "pitch": 0.12,
+    "dist": 4.3,
+    "target": [
+     0,
+     0.85,
+     -0.55
+    ],
+    "label": "сзади-справа"
+   }
+  ]
+ },
+ {
+  "out": "pics/man-short-contact.png",
+  "scene": "man-short",
+  "kind": "sheet",
+  "frames": [
+   160,
+   185,
+   205,
+   230,
+   249
+  ],
+  "size": [
+   320,
+   320
+  ],
+  "views": [
+   {
+    "yaw": -0.9,
+    "pitch": 0.3,
+    "dist": 1.0,
+    "target": "contact",
+    "label": "спереди-справа"
+   },
+   {
+    "yaw": -2.6,
+    "pitch": 0.35,
+    "dist": 1.0,
+    "target": "contact",
+    "label": "сзади"
+   }
+  ]
+ },
+ {
+  "out": "pics/man-short-raw.png",
+  "scene": "man-short",
+  "corr": false,
+  "kind": "sheet",
+  "frames": [
+   160,
+   175,
+   205,
+   230
+  ],
+  "size": [
+   320,
+   320
+  ],
+  "views": [
+   {
+    "yaw": -0.9,
+    "pitch": 0.3,
+    "dist": 1.0,
+    "target": "contact",
+    "label": "только Kimodo"
+   }
+  ]
+ },
+ {
+  "out": "pics/man-short-side.mp4",
+  "scene": "man-short",
+  "kind": "film",
+  "frames": {
+   "from": 40,
+   "to": 249,
+   "step": 2
+  },
+  "size": [
+   640,
+   400
+  ],
+  "views": [
+   {
+    "yaw": -1.45,
+    "pitch": 0.1,
+    "dist": 4.6,
+    "target": [
+     0,
+     0.85,
+     -0.55
+    ]
+   }
+  ]
+ },
+ {
+  "out": "pics/man-short-back.mp4",
+  "scene": "man-short",
+  "kind": "film",
+  "frames": {
+   "from": 40,
+   "to": 249,
+   "step": 2
+  },
+  "size": [
+   640,
+   400
+  ],
+  "views": [
+   {
+    "yaw": -2.6,
+    "pitch": 0.15,
+    "dist": 3.5999999999999996,
+    "target": [
+     0,
+     0.9,
+     -0.4
+    ]
+   }
+  ]
+ }
+]
