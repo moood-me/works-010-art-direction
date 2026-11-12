@@ -19,7 +19,7 @@ which, and where the cloth's surface is — and the picture is made from them by
    when the figure is drawn large. The head's own surface gives no inner lines (the features are drawn).
 3. **Ornament on the cloth.** The shawl's roses are not a screen pattern and not a UV tile: each rose has a place on
    the shawl's surface at rest and its own frame there (centre, two tangent directions, radius; `build.py` scatters
-   29 big and 18 small ones as `vera.shawl_pattern`'s tile has them — a red disc, three broken darker rings, two
+   34 big and 16 small ones as `vera.shawl_pattern`'s tile has them — a red disc, three broken darker rings, two
    leaves); the shader paints a pixel by its rest position against the roses near it. So the print bends and
    travels with the cloth. The border of teeth runs along the shawl's cut edge (its distance from the edge and the
    length along it are stored on the shell), the hem's band of teeth round the skirt; the hair's strands (by the
