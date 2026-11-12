@@ -173,14 +173,14 @@ def group(polys, lw, base=0.0, dark=0.35, black=False, off=0.05, s=100.0, extra=
         return ''
     o = lw * 0.45 * line
     gid = uid('g')
-    shp = f'<defs><g id="{gid}">' + ''.join(f'<path d="{poly(p)}"/>' for p in polys) + '</g></defs>'
+    shp = f'<defs><g id="{gid}">' + ''.join(f'<path d="{poly(p, prec=0)}"/>' for p in polys) + '</g></defs>'
     use = lambda attrs: f'<use href="#{gid}" {attrs}/>'
     blk = f'fill="{INK}" stroke="{INK}" stroke-width="{lw * 1.1 * line:.2f}" stroke-linejoin="round"'
     out = shp + use(f'{blk} transform="translate({o:.1f},{o * 0.8:.1f})"') + use(blk)
     fill_base = PAPER if base <= 0 else (INK if base >= 0.97 else f'url(#{tone_id(base)})')
     out += use(f'fill="{PAPER}"')
     cid = uid('gp')
-    out += f'<clipPath id="{cid}">' + ''.join(f'<path d="{poly(p)}"/>' for p in polys) + '</clipPath>'
+    out += f'<clipPath id="{cid}">' + ''.join(f'<path d="{poly(p, prec=0)}"/>' for p in polys) + '</clipPath>'
     inner = ''
     if shadow and (dark > 0 or black):
         dx, dy = off * s * -light[0], off * s * -light[1]

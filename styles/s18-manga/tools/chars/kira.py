@@ -82,6 +82,8 @@ def _headphones(v, B, lw):
     P = [v(p) for p in band]
     out = stroke(P, lw * 4.2) + stroke(P, lw * 2.4, fill=PAPER)
     for a, k in ((-55, 0), (55, 1)):
+        if v.facing((math.sin(math.radians(a)), 0, math.cos(math.radians(a)))) < -0.2:
+            continue
         c = v(surf(B, 1.06, a, 0.2))
         r = 0.11 * v.s
         cup = [(c[0] + r * 0.8 * math.cos(t), c[1] + r * math.sin(t)) for t in [i * math.pi / 10 for i in range(20)]]
@@ -121,5 +123,9 @@ def FIGURE(v, e=None, lw=2.0, neutral=False, bust=False):
              legs=dict(r=(0.24, 0.17, 0.11, 0.12, 0.06), garment=dict(kind='trousers', grow=0.03, tone=0.55, dark=0.85),
                        shoe=dict(w=0.17, h=0.42, toe_h=0.13, kind='boot', tone=1.0, black=True, extra=_laces)),
              torso=[dict(bottom=-3.3, grow=0.15, tone=HOOD, dark=0.95, black=True, with_arms=True, extra=_hoodie)],
-             items=dict(neck=[lambda v, B, lw, near: _hood(v, B, lw)], front=[lambda v, B, lw, near: _headphones(v, B, lw)]))
+             items=dict(mid=[lambda v, B, lw, near: _hood(v, B, lw)], front=[lambda v, B, lw, near: _headphones(v, B, lw)]))
     return figure(v, d, e, lw, neutral, bust)
+
+
+# she never smiles openly: her joy is a crooked half-smirk with the eyes still from under the brows
+EXPR_FIX = dict(joy=dict(smile=0.0, mopen=0.0, mwide=0.0, smirk=1.0, jaw=0.0, squint=0.3, open=0.8, brow_in=-0.1, brow_out=0.2))

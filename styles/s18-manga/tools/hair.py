@@ -142,7 +142,7 @@ class Hair:
                 y_start = self.hl(part) * (1 - f) + (-0.47) * f
                 y_start = min(y_start, yh - 0.05)
             pts = []
-            m = 14
+            m = 9
             sweep = k['sweep']
             for j in range(m + 1):
                 t = j / m
@@ -150,7 +150,7 @@ class Hair:
                 y = y_start + (yh - y_start) * t
                 pts.append((a, y))
             if ye > yh + 0.02:
-                mm = max(3, int((ye - yh) / 0.06))
+                mm = max(2, int((ye - yh) / 0.1))
                 for j in range(1, mm + 1):
                     t = j / mm
                     pts.append((a_end + rnd.uniform(-2, 2) * t, yh + (ye - yh) * t))
@@ -268,7 +268,7 @@ class Hair:
         mid = uid('hd')
         cid = uid('hm')
         U = lambda attrs: f'<use href="#{mid}" {attrs}/>'
-        out = [f'<defs><g id="{mid}">{md}</g></defs><clipPath id="{cid}">{md}</clipPath>']
+        out = [f'<defs><g id="{mid}">{md}</g></defs><mask id="{cid}" maskUnits="userSpaceOnUse" x="-9999" y="-9999" width="29999" height="29999"><use href="#{mid}" fill="#fff" stroke="#fff" stroke-width="1.2"/></mask>']
         INKS = f'fill="{INK}" stroke="{INK}" stroke-width="1.2"'
         PAPS = f'fill="{PAPER}" stroke="{PAPER}" stroke-width="1.2"'
         rnd = random.Random(self.k['seed'] + (1 if front else 2))
@@ -326,7 +326,7 @@ class Hair:
                     a0 = rnd.uniform(0, 6.28)
                     arc = [(X + r * math.cos(a0 + t), Y + r * math.sin(a0 + t) * 0.8) for t in [k * 0.5 for k in range(5)]]
                     inner.append(stroke(arc, lw * rnd.uniform(0.4, 0.65), taper=(0.4, 0.4), fill=PAPER))
-            out.append(f'<g clip-path="url(#{cid})">{"".join(inner)}</g>')
+            out.append(f'<g mask="url(#{cid})">{"".join(inner)}</g>')
         else:
             # white (or toned) mass with an outline heavier to the lower right: a black copy moved there under it
             o = lw * 0.55
@@ -361,7 +361,7 @@ class Hair:
                         continue
                     seg = [(x + off, y) for x, y in seg]
                     inner.append(stroke(seg, lw * rnd.uniform(0.3, 0.55), taper=(0.35, 0.4)))
-            out.append(f'<g clip-path="url(#{cid})">{"".join(inner)}</g>')
+            out.append(f'<g mask="url(#{cid})">{"".join(inner)}</g>')
         return ''.join(out)
 
     def hairline_mask(self, h, v):

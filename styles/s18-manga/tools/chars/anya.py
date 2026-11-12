@@ -22,7 +22,7 @@ HAIR = Hair(mode='tone', part=-28, n=190, width=0.08, thick=0.075, top_thick=0.1
             end=[(0, -0.31), (62, -0.17), (80, 0.2), (105, 0.62), (135, 0.95), (180, 1.0)],
             end_neg=[(0, -0.31), (62, -0.17), (100, -0.02), (118, 0.6), (140, 0.95), (180, 1.0)],
             hl_neg=[(0, -0.31), (35, -0.28), (70, -0.17), (95, -0.08), (115, 0.0), (180, 0.08)],
-            hang_out=0.12, wave=0.02, waves=1.5, tone_level=0.3, flow=2.0, streaks=1.4, edge=0.05, sweep=6, seed=21)
+            hang_out=0.12, wave=0.02, waves=1.5, tone_level=0.22, flow=2.0, streaks=1.4, edge=0.05, sweep=6, seed=21)
 # a soft side-swept fringe from the parting across the forehead
 _fr = []
 for i, (x1, y1, w) in enumerate([(0.10, -0.17, 0.065), (0.17, -0.14, 0.065), (0.24, -0.10, 0.06), (0.29, -0.04, 0.055), (0.03, -0.21, 0.06), (0.33, 0.04, 0.05), (0.20, -0.12, 0.05)]):
@@ -63,7 +63,7 @@ def _cardigan(v, B, lw, P, polys):
     xs = [p[0] for p in allp]; ys = [p[1] for p in allp]
     cid = uid('kn')
     out += f'<clipPath id="{cid}">' + ''.join(f'<path d="{poly(q)}"/>' for q in polys) + '</clipPath>'
-    out += f'<g clip-path="url(#{cid})">' + hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=90, gap=lw * 2.3, w=lw * 0.28, length=(0.03, 0.06), seed=6) + '</g>'
+    out += f'<g clip-path="url(#{cid})">' + hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=90, gap=lw * 3.0, w=lw * 0.3, length=(0.03, 0.06), seed=6) + '</g>'
     edge_r = [surf(B, f, -2 - max(0, f - 0.62) * 38, 0.05) for f in [0.995, 0.9, 0.8, 0.7, 0.62]]
     edge_l = [surf(B, f, 2 + max(0, f - 0.62) * 38, 0.05) for f in [0.995, 0.9, 0.8, 0.7, 0.62]]
     opening = [v(p) for p in edge_r] + [v(p) for p in edge_l[::-1]]
@@ -88,7 +88,7 @@ def fold_like(v, B, lw):
 
 def _knit_sleeve(v, P, lw):
     xs = [p[0] for p in P]; ys = [p[1] for p in P]
-    return clip(P, hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=90, gap=lw * 2.3, w=lw * 0.28, length=(0.03, 0.06), seed=7), smooth=False)
+    return clip(P, hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=90, gap=lw * 3.0, w=lw * 0.3, length=(0.03, 0.06), seed=7), smooth=False)
 
 
 def _book(v, pts, lw):

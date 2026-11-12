@@ -1,11 +1,13 @@
 """Every picture -> ../svg, then render.js -> ../pics.      python3 build.py [part of a name ...]"""
-import os, sys, subprocess, math, random
+import os, sys, subprocess, math, random, gzip
 from pen import *
 from head import View, EXPR
 from chars import CAST, NAMES, ORDER4, ORDER6
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SVG = os.path.join(HERE, '..', 'svg')
+SVG = os.path.join(HERE, '..', 'svg')            # kept gzipped (.svgz): the drawings are text and big
+PICS_DIR = os.path.join(HERE, '..', 'pics')
+TMP = os.environ.get('TMPDIR_S18', '/home/user/cache/styles-s18-manga/svg')   # plain .svg copies for rendering
 PICS = {}
 JPG = set()           # pictures saved as jpg (the big ones)
 # the head heights of the cast against each other (Тим is a child; Марат the biggest)
@@ -119,7 +121,7 @@ def street(W, H, gy, seed=3):
     """A quiet street in thin line, as Taniguchi draws the town behind his walkers: a fence, houses, a pole with
     wires; tone for the sky and the shadows."""
     rnd = random.Random(seed)
-    out = sky(W, gy, 0.0, 0.16)
+    out = ''
     lw = 1.1
     hz = gy - 330
     # houses
@@ -130,10 +132,10 @@ def street(W, H, gy, seed=3):
         body = [(x, top), (x + w, top), (x + w, hz + 140), (x, hz + 140)]
         out += fillpath(body, PAPER, smooth=False) + outline(body, lw * 1.2, 0.3, smooth=False)
         roof = [(x - 14, top + 4), (x + w * 0.5, top - rnd.uniform(40, 70)), (x + w + 14, top + 4)]
-        out += fillpath(roof + [(x + w + 14, top + 12), (x - 14, top + 12)], f'url(#{tone_id(0.45)})', smooth=False) + outline(roof + [(x + w + 14, top + 12), (x - 14, top + 12)], lw, 0.3, smooth=False)
+        out += fillpath(roof + [(x + w + 14, top + 12), (x - 14, top + 12)], f'url(#{tone_id(0.22)})', smooth=False) + outline(roof + [(x + w + 14, top + 12), (x - 14, top + 12)], lw, 0.3, smooth=False)
         for wx in range(int(x + 30), int(x + w - 60), 90):
             win = [(wx, top + 40), (wx + 50, top + 40), (wx + 50, top + 90), (wx, top + 90)]
-            out += fillpath(win, f'url(#{tone_id(0.3)})', smooth=False) + outline(win, lw * 0.7, 0.2, smooth=False)
+            out += fillpath(win, f'url(#{tone_id(0.14)})', smooth=False) + outline(win, lw * 0.7, 0.2, smooth=False)
             out += stroke([(wx + 25, top + 40), (wx + 25, top + 90)], lw * 0.5, smooth=False)
         out += hatch([(x + w - 40, top + 12), (x + w, top + 12), (x + w, hz + 140), (x + w - 40, hz + 140)], (x + w - 40, top, x + w, hz + 140), angle=-60, gap=4, w=0.5, seed=int(x))
         x += w + rnd.uniform(30, 90)
@@ -146,9 +148,9 @@ def street(W, H, gy, seed=3):
     # the road
     road = [(0, fy + 10), (W, fy + 10), (W, H), (0, H)]
     out += fillpath(road, PAPER, smooth=False) + stroke([(0, fy + 10), (W, fy + 10)], lw * 1.2, smooth=False)
-    out += gtone((0, fy + 10, W, H), lambda x, y: 0.05 + 0.12 * (y - fy) / (H - fy))
+    out += gtone((0, fy + 10, W, H), lambda x, y: 0.02 + 0.08 * (y - fy) / (H - fy))
     # a utility pole and wires
-    px = W * 0.86
+    px = W * 0.035
     out += fillpath([(px - 9, 0), (px + 9, 0), (px + 11, fy + 30), (px - 11, fy + 30)], PAPER, smooth=False) + outline([(px - 9, 0), (px + 9, 0), (px + 11, fy + 30), (px - 11, fy + 30)], lw * 1.2, 0.5, smooth=False)
     out += tone([(px + 2, 0), (px + 9, 0), (px + 11, fy + 30), (px + 3, fy + 30)], 0.5, smooth=False)
     for k in range(3):
@@ -179,28 +181,36 @@ def cast4():
 
 @pic('cast6', jpg=True)
 def cast6():
-    return together(['tim', 'sav', 'marat', 'anya', 'vera', 'kira'], 2400, 1050, [250, 600, 1010, 1440, 1830, 2190], [34, 26, 18, -18, -26, -34], 104)
+    return together(['tim', 'sav', 'marat', 'anya', 'vera', 'kira'], 2400, 1050, [260, 610, 1010, 1440, 1830, 2180], [34, 26, 18, -18, -26, -34], 90)
 
 
 # ---------------------------------------------------------------- run
 
 def main(args):
-    os.makedirs(SVG, exist_ok=True)
+    os.makedirs(SVG, exist_ok=True); os.makedirs(TMP, exist_ok=True)
     names = [n for n in PICS if not args or any(a in n for a in args)]
     files = {True: [], False: []}
     for n in names:
         TONES.clear()
         s = PICS[n]()
-        p = os.path.join(SVG, n + '.svg')
+        with gzip.open(os.path.join(SVG, n + '.svgz'), 'wt', compresslevel=9) as f:
+            f.write(s)
+        p = os.path.join(TMP, n + '.svg')
         open(p, 'w').write(s)
         files[n in JPG].append(p)
         print(n, len(s) // 1024, 'KB')
     for jpg, fs in files.items():
         if fs:
-            env = dict(os.environ)
+            env = dict(os.environ, OUT=PICS_DIR)
             if jpg:
                 env['JPG'] = '1'
             subprocess.run(['node', os.path.join(HERE, 'render.js')] + fs, check=True, env=env)
+    # black ink on paper: keep the PNGs grey (a third of the size)
+    from PIL import Image
+    for n in names:
+        p = os.path.join(PICS_DIR, n + '.png')
+        if os.path.exists(p) and n not in JPG:
+            Image.open(p).convert('L').save(p, optimize=True)
 
 
 if __name__ == '__main__':

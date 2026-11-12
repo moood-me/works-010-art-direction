@@ -53,13 +53,13 @@ def catmull(pts, closed=False, n=8):
     return out
 
 
-def poly(pts, closed=True):
+def poly(pts, closed=True, prec=1):
     if not pts:
         return ''
     out = []
     last = None
     for x, y in pts:
-        q = (round(x, 1), round(y, 1))
+        q = (round(x, prec), round(y, prec)) if prec else (int(round(x)), int(round(y)))
         if q == last:
             continue
         last = q
@@ -277,7 +277,7 @@ def hatch(clip_pts, box, angle=-35, gap=5.0, w=0.9, length=(0.6, 1.0), density=N
                     a0 = (px + dx * s_ + nx * off, py + dy * s_ + ny * off)
                     a1 = (px + dx * (s_ + sl) + nx * off, py + dy * (s_ + sl) + ny * off)
                     q = round(w * rnd.uniform(0.75, 1.15), 1)
-                    buckets.setdefault(q, []).append(f'M{a0[0]:.1f} {a0[1]:.1f}L{a1[0]:.1f} {a1[1]:.1f}')
+                    buckets.setdefault(q, []).append(f'M{a0[0]:.0f} {a0[1]:.0f}L{a1[0]:.0f} {a1[1]:.0f}')
             s_ += seg * rnd.uniform(1.0, 1.3)
         k += gap
     body = ''.join(f'<path d="{"".join(v)}" stroke="{INK}" stroke-width="{q}" stroke-linecap="round" fill="none"/>' for q, v in buckets.items())

@@ -457,6 +457,11 @@ def draw_mouth(h, v, lw):
             out.append(stroke(LO, [lw * 0.5, lw * 1.0, lw * 1.2, lw * 1.0, lw * 0.5], taper=(0.15, 0.15)))
     else:
         M = vis(mid)
+        if m.get('halo') and len(M) > 2:
+            # lips seen in a beard: a pale shape round the line
+            U = [v((p[0], p[1] - 0.016 * (1 - (p[0] / (m['w'] * 1.3)) ** 2), p[2])) for p, k in zip(mid, keep) if k]
+            D = [v((p[0], p[1] + 0.03 * (1 - (p[0] / (m['w'] * 1.3)) ** 2), p[2])) for p, k in zip(mid, keep) if k]
+            out.append(fillpath(U + D[::-1], PAPER, smooth=False) + stroke(D, lw * 0.5, taper=(0.3, 0.3)))
         if len(M) > 2:
             out.append(stroke(M, [lw * 0.4, lw * 1.2, lw * 1.5, lw * 1.2, lw * 0.4], taper=(0.12, 0.15)))
     # the lower lip: a short line (or a little tone) under the mouth
