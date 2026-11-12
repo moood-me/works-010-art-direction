@@ -89,7 +89,7 @@ const idMat = new THREE.ShaderMaterial({
       float hi = floor(z / 256.0), lo = z - hi * 256.0;
       gl_FragColor = vec4((gg + shade) / 255.0, hi / 255.0, lo / 255.0, 1.0);
       if (show > 0.5) {      // to look at the form: plain grey clay, lit
-        float d = 0.35 + 0.65 * max(0.0, dot(n, normalize(vec3(-0.45, 0.55, 0.7))));
+        float d = 0.22 + 0.78 * max(0.0, dot(n, normalize(vec3(-0.45, 0.55, 0.7))));
         gl_FragColor = vec4(vec3(0.86, 0.85, 0.83) * d, 1.0);
       }
     }`,
@@ -135,6 +135,8 @@ function standPose(o = {}) {
     aim(pose, I[s + 'Arm'], I[s + 'ForeArm'], [sg * outw, -1, -0.02]);
     aim(pose, I[s + 'ForeArm'], I[s + 'Hand'], [sg * outw * 0.4, -1, fwd + 0.12]);
     twist(pose, s, sg * (o.twist ?? 1.0));
+    aim(pose, I[s + 'Hand'], I[s + 'HandMiddle1'], [-sg * 0.08, -1, 0.12]);      // the hand hangs
+    turnUnder(pose, sk, I[s + 'Hand'], qAxisAngle(normalize(sub(getV(pose.P, I[s + 'HandMiddle1']), getV(pose.P, I[s + 'Hand']))), sg * (o.htwist ?? 1.3))); build(pose, body, getV(pose.P, I.Hips));
   }
   if (o.figure) {
     // the drawing's figure: the right hand holds a folder against the hip, the left hand is at the glasses

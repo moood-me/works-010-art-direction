@@ -62,10 +62,10 @@ def col(ims, out, scale=1.0):
     o.save(os.path.join(PICS, out), quality=90, method=6)
 
 
-def film(name, w, h, set_, frm, to, step, yaw=None, crf=24):
+def film(name, w, h, set_, frm, to, step, yaw=None, crf=24, clock=None):
     d = os.path.join(WORK, name); shutil.rmtree(d, ignore_errors=True)
     if not set_.get('still'): set_ = {k: v for k, v in set_.items() if k != 'time'}
-    shots(w, h, [dict(name=name, set=set_, film={'from': frm, 'to': to, 'step': step, **({'yaw': yaw} if yaw else {})})], name)
+    shots(w, h, [dict(name=name, set=set_, film={'from': frm, 'to': to, 'step': step, **({'yaw': yaw} if yaw else {}), **({'clock': clock} if clock else {})})], name)
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', '12', '-i', os.path.join(d, 'f%04d.png'), '-r', '24',
                     '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', str(crf), '-movflags', '+faststart',
                     os.path.join(PICS, name + '.mp4')], check=True)
@@ -135,10 +135,8 @@ if on('walk', 'films'):
     film('walk', 520, 800, dict(STAND, still=False, clip='walk', cam=dict(FAR, yaw=-0.85)), 0, 117.5, 2.5)
 if on('wave', 'films'):
     film('wave', 520, 800, dict(STAND, still=False, clip='wave', exprTrack=[[0, 'rest'], [0.7, 'joy'], [2.4, 'rest']], cam=dict(FAR, yaw=-0.45)), 0, 87.5, 2.5)
-if on('bow', 'films'):
-    film('bow', 520, 800, dict(STAND, still=False, clip='bow', cam=dict(FAR, yaw=-0.7)), 0, 87.5, 2.5)
 if on('talk', 'films'):
-    film('talk', 520, 600, dict(STAND, still=False, ground=False, clip='idle', talk=True, talkFrom=0.4,
+    film('talk', 520, 600, dict(STAND, still=False, ground=False, clip=None, talk=True, talkFrom=0.4,
                                 exprTrack=[[0, 'rest'], [1.6, 'anger'], [2.8, 'rest'], [3.6, 'joy'], [4.5, 'rest']],
-                                cam=dict(mode='persp', fov=22, dist=1.75, follow=False, focus='Head', up=0.06, target=None, yaw=-0.5, pitch=0.03)), 0, 147.5, 2.5)
+                                cam=dict(mode='persp', fov=22, dist=1.75, follow=False, focus='Head', up=0.06, target=None, yaw=-0.5, pitch=0.03)), 0, 147.5, 2.5, clock=30)
 print('ok')
