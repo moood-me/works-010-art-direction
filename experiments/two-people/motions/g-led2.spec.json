@@ -1,0 +1,205 @@
+{
+ "source": "g-probe",
+ "frame": 75,
+ "side": "Right",
+ "kind": "right-hand",
+ "note": "v2 of the led one: she starts 62 cm to his left (x 0.62; v1: 45 cm, his arm went into her shoulder), her pelvis 62 cm to his left of his (69 in her units); her palm on his left palm every 10 frames, 10\u2026140 (v1: every 15 \u2014 his hand swings and hers lagged up to 40 cm between). node tools/targets.mjs man l-lead2 LeftHand 0.5041,1.0649,0.2235 <frames> 0.62,0,0,0.896 (and Hips); the poses: g-probe's own at the same frames, the arm turned to reach",
+ "items": [
+  {
+   "frame": 10,
+   "sourceFrame": 10,
+   "target": [
+    -0.3109,
+    0.9549,
+    0.4234
+   ],
+   "hip": [
+    0.069,
+    0.3162
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 20,
+   "sourceFrame": 20,
+   "target": [
+    -0.4585,
+    0.9279,
+    0.9048
+   ],
+   "hip": [
+    -0.016,
+    0.7502
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 30,
+   "sourceFrame": 30,
+   "target": [
+    -0.4068,
+    0.9432,
+    1.1117
+   ],
+   "hip": [
+    -0.026,
+    1.1661
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 40,
+   "sourceFrame": 40,
+   "target": [
+    -0.3165,
+    0.9416,
+    1.7572
+   ],
+   "hip": [
+    0.09,
+    1.6897
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 50,
+   "sourceFrame": 50,
+   "target": [
+    -0.2779,
+    1.022,
+    2.4861
+   ],
+   "hip": [
+    0.112,
+    2.1827
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 60,
+   "sourceFrame": 60,
+   "target": [
+    -0.2864,
+    0.9984,
+    2.5633
+   ],
+   "hip": [
+    0.109,
+    2.6734
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 70,
+   "sourceFrame": 70,
+   "target": [
+    -0.2156,
+    0.9285,
+    3.1077
+   ],
+   "hip": [
+    0.176,
+    3.1901
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 80,
+   "sourceFrame": 80,
+   "target": [
+    -0.2045,
+    1.1352,
+    4.1098
+   ],
+   "hip": [
+    0.197,
+    3.6559
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 90,
+   "sourceFrame": 90,
+   "target": [
+    -0.2112,
+    0.9877,
+    4.2302
+   ],
+   "hip": [
+    0.163,
+    4.1658
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 100,
+   "sourceFrame": 100,
+   "target": [
+    -0.2098,
+    0.9705,
+    4.3889
+   ],
+   "hip": [
+    0.209,
+    4.6033
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 110,
+   "sourceFrame": 110,
+   "target": [
+    -0.082,
+    1.0134,
+    5.2505
+   ],
+   "hip": [
+    0.289,
+    5.0815
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 120,
+   "sourceFrame": 120,
+   "target": [
+    -0.0472,
+    1.0423,
+    5.8675
+   ],
+   "hip": [
+    0.344,
+    5.5484
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 130,
+   "sourceFrame": 130,
+   "target": [
+    -0.0194,
+    0.9883,
+    5.9996
+   ],
+   "hip": [
+    0.384,
+    6.0085
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 140,
+   "sourceFrame": 140,
+   "target": [
+    0.0939,
+    0.9221,
+    6.3797
+   ],
+   "hip": [
+    0.515,
+    6.4833
+   ],
+   "heading": "own"
+  }
+ ]
+}

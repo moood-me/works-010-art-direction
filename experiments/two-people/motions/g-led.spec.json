@@ -1,0 +1,135 @@
+{
+ "source": "g-probe",
+ "frame": 75,
+ "side": "Right",
+ "kind": "right-hand",
+ "note": "the led one (the woman, starting 45 cm to his left: x 0.45, heading 0, k 0.896): her palm on his left palm at frames 15\u2026135 every 15 (node tools/targets.mjs man l-lead2 LeftHand 0.5041,1.0649,0.2235 <frames> 0.45,0,0,0.896); her pelvis 47 cm to his left of his (the same with Hips); the poses: the probe's own (g-probe) at the same frames, its arm turned to reach",
+ "items": [
+  {
+   "frame": 15,
+   "sourceFrame": 15,
+   "target": [
+    -0.2147,
+    0.9377,
+    0.7025
+   ],
+   "hip": [
+    0.019,
+    0.5123
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 30,
+   "sourceFrame": 30,
+   "target": [
+    -0.2171,
+    0.9432,
+    1.1117
+   ],
+   "hip": [
+    -0.056,
+    1.1661
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 45,
+   "sourceFrame": 45,
+   "target": [
+    -0.107,
+    1.029,
+    2.2011
+   ],
+   "hip": [
+    0.082,
+    1.9073
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 60,
+   "sourceFrame": 60,
+   "target": [
+    -0.0967,
+    0.9984,
+    2.5633
+   ],
+   "hip": [
+    0.079,
+    2.6734
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 75,
+   "sourceFrame": 75,
+   "target": [
+    -0.001,
+    1.026,
+    3.6779
+   ],
+   "hip": [
+    0.167,
+    3.4236
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 90,
+   "sourceFrame": 90,
+   "target": [
+    -0.0215,
+    0.9877,
+    4.2302
+   ],
+   "hip": [
+    0.133,
+    4.1658
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 105,
+   "sourceFrame": 105,
+   "target": [
+    0.0244,
+    0.9194,
+    4.7598
+   ],
+   "hip": [
+    0.226,
+    4.8685
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 120,
+   "sourceFrame": 120,
+   "target": [
+    0.1426,
+    1.0423,
+    5.8675
+   ],
+   "hip": [
+    0.314,
+    5.5484
+   ],
+   "heading": "own"
+  },
+  {
+   "frame": 135,
+   "sourceFrame": 135,
+   "target": [
+    0.215,
+    0.9448,
+    6.1157
+   ],
+   "hip": [
+    0.405,
+    6.2306
+   ],
+   "heading": "own"
+  }
+ ]
+}

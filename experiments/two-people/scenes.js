@@ -43,7 +43,40 @@ export const SCENES = [
     camera: { yaw: -1.4, pitch: 0.1, dist: 5.5, target: [-0.3, 0.95, 0] },
   },
   {
-    id: 'carry2', label: 'поднимает и несёт',
+    id: 'lead', label: 'ведёт за руку',
+    about: 'Мужчина идёт и ведёт женщину за руку. Он сделан первым (Kimodo, без ограничений); она — вторым: её правая ладонь на его левой в четырнадцати кадрах пути, её таз рядом с его.',
+    frames: 150,
+    people: [
+      { id: 'L', name: 'мужчина', character: 'man', chain: ['l-lead2'], start: 0, place: { position: [0, 0, 0], heading: 0 } },
+      { id: 'G', name: 'женщина', character: 'woman', chain: ['g-led2'], start: 0, place: { position: [0.62, 0, 0], heading: 0 } },
+    ],
+    // her right palm on his left palm (his palm's point: scene.js palmRest of his body, on his left hand)
+    contacts: [{ who: 'G', side: 'Right', on: 'L', joint: 'LeftHand', point: [0.5041, 1.0649, 0.2235], from: 8, to: 142, ramp: 8 }],
+    camera: { yaw: -0.9, pitch: 0.12, dist: 6, target: [0.2, 0.9, 2.5] },
+    follow: true,
+  },
+  {
+    id: 'carry3', label: 'поднимает и несёт',
+    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт и ставит. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
+    frames: 440,
+    people: [
+      { id: 'C', name: 'ребёнок', character: 'child', chain: ['c-wait', 'c-hug2', 'c-rest2'], start: 0, place: { position: [0, 0, 0], heading: Math.PI } },
+      { id: 'M', name: 'мужчина', character: 'man', chain: ['m-lift2', 'm-walk2', 'm-down4'], start: 26, place: { position: [0, 0, -4.0], heading: 0 } },
+    ],
+    // M's palms on the child's sides under the arms (points of the child's trunk at rest, 2.5 cm out)
+    contacts: [
+      { who: 'M', side: 'Right', on: 'C', joint: 'Chest', point: [0.1429, 0.8795, 0.025], from: 152, to: 376, ramp: 10 },
+      { who: 'M', side: 'Left', on: 'C', joint: 'Chest', point: [-0.1428, 0.8795, 0.025], from: 152, to: 376, ramp: 10 },
+      // the child's hands on the top of his shoulders: c-hug2 was made with them there (through the attachment); this
+      // brings the last centimetres
+      { who: 'C', side: 'Right', on: 'M', joint: 'LeftShoulder', point: [0.103, 1.5019, -0.0537], from: 205, to: 362, ramp: 15 },
+      { who: 'C', side: 'Left', on: 'M', joint: 'RightShoulder', point: [-0.1111, 1.4899, -0.0597], from: 205, to: 362, ramp: 15 },
+    ],
+    carry: { who: 'C', by: 'M', from: 152, to: 376 },
+    camera: { yaw: -1.2, pitch: 0.12, dist: 5, target: [0, 0.9, -0.8] },
+  },
+  {
+    id: 'carry2', label: 'поднимает и несёт (вторая версия)',
     about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт и ставит. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
     frames: 420,
     people: [

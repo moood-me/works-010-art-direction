@@ -1,0 +1,8 @@
+[{"out": "pics/shake-sheet.png", "scene": "shake", "kind": "sheet", "frames": [40, 80, 100, 120, 145, 165, 194], "size": [280, 360],
+  "views": [{"yaw": -1.5, "pitch": 0.08, "dist": 4.4, "target": "mid", "y": 0.9, "label": "сбоку"},
+            {"yaw": -0.7, "pitch": 0.15, "dist": 4.4, "target": "mid", "y": 0.9, "label": "наискось"}]},
+ {"out": "pics/shake-hands.png", "scene": "shake", "kind": "sheet", "frames": [100, 120, 140, 158], "size": [320, 300],
+  "views": [{"yaw": -1.57, "pitch": 0.35, "dist": 0.8, "target": "contact", "label": "руки сбоку"},
+            {"yaw": -2.6, "pitch": 0.6, "dist": 0.8, "target": "contact", "label": "руки сверху"}]},
+ {"out": "pics/shake-side.mp4", "scene": "shake", "kind": "film", "frames": {"from": 0, "to": 194, "step": 2}, "size": [640, 400],
+  "views": [{"yaw": -1.5, "pitch": 0.1, "dist": 6.5, "target": [-0.2, 0.9, 0]}]}]

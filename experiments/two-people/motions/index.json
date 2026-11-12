@@ -189,6 +189,56 @@
     "ru": "К идёт навстречу и пожимает его руку",
     "en": "Q comes to meet him and shakes his hand"
    }
+  },
+  {
+   "id": "m-down4",
+   "label": {
+    "ru": "М ставит ребёнка и отходит на два шага",
+    "en": "M puts the child down and steps back twice"
+   },
+   "after": "m-walk2"
+  },
+  {
+   "id": "l-lead",
+   "label": {
+    "ru": "Л ведёт за руку",
+    "en": "L leads by the hand"
+   }
+  },
+  {
+   "id": "l-lead2",
+   "label": {
+    "ru": "Л ведёт ребёнка за руку",
+    "en": "L leads a child by the hand"
+   }
+  },
+  {
+   "id": "f-probe",
+   "label": {
+    "ru": "ребёнок: проба, за руку",
+    "en": "child: hand-holding probe"
+   }
+  },
+  {
+   "id": "g-probe",
+   "label": {
+    "ru": "ведомый: проба",
+    "en": "the led one: probe"
+   }
+  },
+  {
+   "id": "g-led",
+   "label": {
+    "ru": "её ведут за руку",
+    "en": "she is led by the hand"
+   }
+  },
+  {
+   "id": "g-led2",
+   "label": {
+    "ru": "её ведут за руку",
+    "en": "she is led by the hand"
+   }
   }
  ]
 }

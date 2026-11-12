@@ -753,5 +753,149 @@
    ]
   },
   "note": "the follower, made second"
+ },
+ {
+  "id": "m-down4",
+  "label": {
+   "ru": "М ставит ребёнка и отходит на два шага",
+   "en": "M puts the child down and steps back twice"
+  },
+  "key": "264f89886c40417caa2510a462f257e64605b3fa1602a94de9dff6968facb4e7",
+  "ask": {
+   "prompts": [
+    "A person standing bends down and puts a large object down in front of them at waist level with both hands, then stands up and takes two steps back."
+   ],
+   "seconds": [
+    3.5
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand, left-hand: frame 45 from m-lift2 frame 126, moved -0.004, -3.329 (as m-down2)",
+    "root2d: frame 100 at (0, -0.45)"
+   ]
+  },
+  "after": {
+   "motion": "m-walk2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.17,
+   "z": 2.153
+  },
+  "note": "two steps back, the pelvis asked 45 cm behind where it began (m-down3 stepped back 12 cm only)"
+ },
+ {
+  "id": "l-lead",
+  "label": {
+   "ru": "Л ведёт за руку",
+   "en": "L leads by the hand"
+  },
+  "key": "264c20a786388f9e43157fe211e72c95ceeffab5652b02b6171343d26f60f2cc",
+  "ask": {
+   "prompts": [
+    "A person walks forward slowly, leading someone by the hand with their left hand held a little out to the side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1
+  },
+  "note": "the leader, made first, without constraints"
+ },
+ {
+  "id": "l-lead2",
+  "label": {
+   "ru": "Л ведёт ребёнка за руку",
+   "en": "L leads a child by the hand"
+  },
+  "key": "e33215d23e8c79c14a54ff064d05afc03dd7f264664ed27590465bc5ae0ad8b4",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace, holding a child's hand with their left hand down at their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1
+  },
+  "note": "the leader, made first, without constraints. A first try, \"… leading someone by the hand with their left hand held a little out to the side\" (l-lead), walked one metre in 5 s and raised the hand forward as if pointing"
+ },
+ {
+  "id": "f-probe",
+  "label": {
+   "ru": "ребёнок: проба, за руку",
+   "en": "child: hand-holding probe"
+  },
+  "key": "5777008169d077f81c55e0d9141dafa6983c77311e2e9e3d85885077d4c084a9",
+  "ask": {
+   "prompts": [
+    "A childlike person walks forward at a relaxed pace, holding an adult's hand with their right hand raised to their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1
+  },
+  "note": "no constraints: its poses are what the follower is constrained with"
+ },
+ {
+  "id": "g-probe",
+  "label": {
+   "ru": "ведомый: проба",
+   "en": "the led one: probe"
+  },
+  "key": "70f5fce5227dd61c93b67d0b15b8418dd0860369cd3615ed4512a7cb3793add3",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace, holding someone's hand with their right hand down at their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1
+  },
+  "note": "no constraints: its frames are the poses the led one is constrained with (f-probe, a child raising the hand, was not used: an adult is led)"
+ },
+ {
+  "id": "g-led",
+  "label": {
+   "ru": "её ведут за руку",
+   "en": "she is led by the hand"
+  },
+  "key": "d990c8e0d4a37f082662ede8cbbccc5dca8ec958efe4379a59626977fcf434e1",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace, holding someone's hand with their right hand down at their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 15…135 every 15 — motions/g-led.constraint.json (as sent: the fingers zero), from motions/g-led.spec.json: her palm on his left palm, her pelvis beside his"
+   ]
+  },
+  "note": "the follower, made second"
+ },
+ {
+  "id": "g-led2",
+  "label": {
+   "ru": "её ведут за руку",
+   "en": "she is led by the hand"
+  },
+  "key": "a4e5137283899995ace1b18d5c8762d3d598ab9cf8dfb518c442327eb186d2db",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace, holding someone's hand with their right hand down at their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 10…140 every 10 — motions/g-led2.constraint.json (as sent: the fingers zero), from motions/g-led2.spec.json"
+   ]
+  },
+  "note": "v2: 62 cm to his left, a keyframe every 10 frames"
  }
 ]
