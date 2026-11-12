@@ -134,6 +134,96 @@ def shoulder(stand=0.45):
                       'targets': [r4(t) for t in targets]},
             'kimodo': {'targets': [r4(t / k) for t in targets], 'pelvis': [r4(p['p'][0]) for p in poses]}}
 
+def armchair_knees(mode='feet'):
+    """the armchair again, the knees together (Pavel: she sat with the knees wide apart). The pose sent is the same
+    as `armchair` with its thighs turned in at the hips (about the forward axis) until the knees are 20 cm apart, the
+    hip joints' own width; then either its feet are held too (mode 'feet': an end-effector constraint on both hands
+    and both feet), or the whole pose (mode 'fullbody': every joint's place, so the knees as well)."""
+    out = armchair()
+    c0 = out['constraints'][0]
+    # the pose again (as armchair() made it)
+    k = K_WOMAN; w = out['world']; heading = np.pi
+    sit = RAW('chair-free'); src = RAW('table-free')
+    turns = {s: hand_turn_from(src, 115, s, heading) for s in 'LR'}
+    P0 = placed(sit, 175, np.array(w['pelvis']) / k, heading)
+    P = placed(sit, 175, np.array(w['pelvis']) / k, heading, dy=(w['armchair']['seat'] + 0.175) / k - P0.p[0, 1])
+    fwd = Rot.from_rotvec([0, heading, 0]).apply([0, 0, 1])
+    I = K.IDX; mid = P.p[0]
+    floor_y = {s: sit['p'][175, I[s + 'Foot'], 1] for s in ('Left', 'Right')}   # Kimodo's own seated ankles
+    foot_turn = {s: P.G[I[s + 'Foot']] for s in ('Left', 'Right')}                  # the feet keep Kimodo's turn
+    for s, sgn in (('Left', 1), ('Right', -1)):
+        hip, knee = I[s + 'Leg'], I[s + 'Shin']
+        side = np.cross([0, 1, 0], fwd)                  # the person's left
+        want = 0.10                                      # the knee 10 cm from the middle
+        best = None
+        for a in np.radians(np.arange(-40, 40.5, 0.5)):
+            Q = Pose(P.as_ps()); Q.turn(hip, Rot.from_rotvec([0, a, 0]))
+            off = np.dot(Q.p[knee] - mid, side) * (1 if s == 'Left' else -1)
+            if best is None or abs(off - want) < best[0]: best = (abs(off - want), a)
+        P.turn(hip, Rot.from_rotvec([0, best[1], 0]))
+        print(s, 'thigh turned', round(float(np.degrees(best[1])), 1), 'deg')
+    # the pelvis is higher than in Kimodo's own sitting (our seat): each thigh pitched down and its shin turned at the
+    # knee so that the ankle is as high over the floor as in Kimodo's own sitting, 4 cm in front of the knee
+    side = np.cross([0, 1, 0], fwd)
+    for s in ('Left', 'Right'):
+        hip, kn, foot = I[s + 'Leg'], I[s + 'Shin'], I[s + 'Foot']
+        best = None
+        for a in np.radians(np.arange(-30, 30.5, 1)):
+            for b in np.radians(np.arange(-40, 40.5, 1)):
+                Q = Pose(P.as_ps()); Q.turn(hip, Rot.from_rotvec(side * a)); Q.turn(kn, Rot.from_rotvec(side * b))
+                ahead = np.dot(Q.p[foot] - Q.p[kn], fwd)
+                d = abs(Q.p[foot, 1] - floor_y[s]) + abs(ahead - 0.04)
+                if best is None or d < best[0]: best = (d, a, b)
+        P.turn(hip, Rot.from_rotvec(side * best[1])); P.turn(kn, Rot.from_rotvec(side * best[2]))
+        print(s, 'thigh pitched', round(float(np.degrees(best[1]))), 'shin', round(float(np.degrees(best[2]))), 'deg; off', round(best[0], 3))
+    for s in ('Left', 'Right'): P.turn(I[s + 'Foot'], foot_turn[s] * P.G[I[s + 'Foot']].inv())
+    for s in 'LR': P.reach(s, np.array(w['palms'][s]) / k, turns[s])
+    I2 = lambda n: np.round(P.p[I[n]], 3)
+    print('knees', I2('LeftShin'), I2('RightShin'), 'feet', I2('LeftFoot'), I2('RightFoot'))
+    frames = out['frames']
+    if mode == 'feet':
+        c = K.constraint('end-effector', frames, [P.as_ps()] * len(frames), ['LeftHand', 'RightHand', 'LeftFoot', 'RightFoot'])
+    else:
+        c = K.constraint('fullbody', frames, [P.as_ps()] * len(frames))
+    out['constraints'] = [c]; out['mode'] = mode
+    out['kimodo']['knees'] = [r4(P.p[I['LeftShin']]), r4(P.p[I['RightShin']])]
+    return out
+
+
+def armchair_knees_full():
+    return armchair_knees('fullbody')
+
+def shoulder2(heading_deg=60.0, ahead=0.36, aside=0.12, hand_deg=25.0):
+    """the shoulder again, as the agent of the two-people task got it natural (the coordinator's note, 2026-11-12):
+    he stands near her but to the side — off her left shoulder, not in front of her face, about half a metre from
+    her — facing her (heading 60°), the point on the top of her shoulder over the arm's joint (away from the neck),
+    his palm on it 36 cm ahead of his pelvis and 12 cm to his right, so the elbow bends and hangs; the hand's
+    fingers point over her shoulder towards her back (25° from +z, not along his own forward, which points at her
+    neck). His look at her is asked in the prompt."""
+    k = K_MAN
+    other = json.load(open(os.path.join(ITEM, 'plans', 'shoulder2-other.json')))
+    palm_lift = 0.025
+    frames = [119, 179]
+    h = np.radians(heading_deg)
+    f = np.array([np.sin(h), 0, np.cos(h)]); r = np.array([-np.cos(h), 0, np.sin(h)])     # his forward, his right
+    src = RAW('shoulder-free')
+    turn = hand_turn_from(src, 30, 'R', np.radians(hand_deg))
+    poses = []
+    for fr in frames:
+        tw = np.array(other['at'][fr]) + [0, palm_lift, 0]
+        pel = tw - ahead * f - aside * r
+        tk = tw / k
+        P = placed(src, 30, [pel[0] / k, pel[2] / k], h)
+        miss = P.reach('R', tk, turn)
+        poses.append(P.as_ps())
+        print('shoulder2: palm off by', round(miss, 4), 'pelvis (world)', np.round(pel[[0, 2]], 3),
+              'from her pelvis', round(float(np.hypot(pel[0], pel[2] - 1.9)), 3), 'target', np.round(tw, 3))
+    c = K.constraint('end-effector', frames, poses, ['RightHand'])
+    return {'constraints': [c], 'seconds': [6], 'frames': frames,
+            'world': {'other': {k2: other[k2] for k2 in ('who', 'motion', 'place', 'vertex')}, 'palm_lift': palm_lift,
+                      'heading_deg': heading_deg},
+            'kimodo': {'pelvis': [r4(p['p'][0]) for p in poses]}}
+
 if __name__ == '__main__':
     name = sys.argv[1].replace("-", "_")
     out = globals()[name]()

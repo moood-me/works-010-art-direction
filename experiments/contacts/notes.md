@@ -143,6 +143,47 @@ Kimodo did and never pulls a hand still on its way. The keep-out steps (a surfac
   `motions/raw/` — the studio's data of the free takes the poses were taken from.
 - `measures/` — the numbers every frame, with and without the correction, and their summaries.
 
+## Second tries (2026-11-12, after Pavel looked)
+
+The coordinator passed on what Pavel saw: the shoulder is the weak one (he stands almost chest to chest, the arm a
+straight level bar, the palm by her neck); the armchair has the knees wide apart; the table stays. The first versions
+stay on the page and in `pics/` beside the new ones (`shoulder` / `shoulder2`, `armchair` / `armchair2`).
+
+**Плечо, сбоку (`shoulder2`) — better; it replaces the first as the one to show.** As the agent of the two-people
+task got it natural: he stands near her but to the side, off her left shoulder, not in front of her face — his
+pelvis 48 cm from hers, facing her at 60° — the point on the top of her shoulder over the arm's joint (13 cm from her
+middle, away from the neck), his palm 36 cm ahead of his pelvis and 12 cm to his right, so that the elbow bends and
+hangs; the hand's fingers point over her shoulder towards her back (`tools/plan.py: shoulder2`, the point by
+`tools/other.mjs … 0.0 shoulder2-other`). Kimodo walked up, stopped beside her and laid the hand with the elbow down.
+Numbers while held (frames 125–179): Kimodo's palm 6.4 cm from the point on average (max 7.9); corrected, the palm's
+middle 1.9 cm from it (max 2.1), lying on the skin around it, the hand's skin 0.1–0.3 cm over hers, the fingertips
+at most 0.9 cm into it. On the way his hand brushes her upper arm by 1.6 cm for a few frames (Kimodo's own: 3.7 cm;
+the keep-out now covers her whole arm, 60 cm round the point, and pushes up to four times). His body does not touch
+hers.
+- **He does not look at her.** Asked "…and looks at them": his head stays 26° off her head and tilted 10° up — he
+  looks over her. Asked "…and looks down at their face" (one more take): 18° off and level, but he walked the whole
+  way with the arm stretched ahead and laid the hand by her neck from frame 50 — worse, not used. As the coordinator
+  said, I did not fight it further: Kimodo keeps the head up here.
+- Early in the walk (frame 30) his right arm swings out ahead for a moment; Kimodo's.
+
+**Кресло, колени вместе (`armchair2`) — the knees are better, the hands worse.** The pose sent was the first one
+with the thighs turned in at the hips (about the vertical: seated, the thigh lies forward) until the knees are 20 cm
+apart, the thighs and shins then fitted so the ankles are as low over the floor as in Kimodo's own sitting and 4 cm
+in front of the knees, the feet keeping their turn (`tools/plan.py: armchair_knees`). Two asks:
+- holding the hands **and the feet** (end-effector with four joints): the feet came together but the knees stayed
+  32–33 cm apart (first take 48 cm) — frog-legged, not better, not used;
+- holding **the whole pose** (`fullbody`) at the same two frames (134 and 209): the knees 20 cm apart there, 29 cm
+  between them (it relaxes and closes again), the legs nearly parallel — clearly better than 48 cm. But between the
+  two frames Kimodo's hands drift up off the armrests: its palm 7–8 cm from the place on average (max 11), so the
+  correction is bigger here (11 cm at most, against 5 in the first take). Corrected: 0.0 cm, the skin on the
+  armrests. The thighs still sink up to 4 cm into the front of the seat; the left thigh brushes the armrest by 0.9 cm
+  while sitting down; on the way down the left leg swings out wide for a moment.
+  A third ask holding the whole pose at more frames would likely keep the hands and knees still, at the price of
+  a frozen sitter; not tried (the coordinator said once or twice).
+
+Asked in this pass: 5 motions (the shoulder twice, the armchair twice; three asks failed with "busy" and were asked
+again), all in `motions/asks.json`.
+
 ## History
 
 2026-11-12, made at the orchestrator's request from Pavel's task (requirements: "After the engine is finished").
@@ -151,4 +192,5 @@ T-pose found (first constrained take absurd, then the convention fixed); the tab
 as a walk + a lean (`after`), the lean's origin corrected from the studio's `startsAt`; the armchair (a second take
 with the pelvis placed from measures of the first); the shoulder (three takes: 60 cm away — a straight arm; 45 cm —
 the hand by the neck; 45 cm with the point on the top of the shoulder). 17 motions asked in all (one failed with
-"busy" and was asked again), every one in `motions/asks.json`.
+"busy" and was asked again), every one in `motions/asks.json`. The same day, after Pavel looked: the second tries
+above (`shoulder2`, `armchair2`).

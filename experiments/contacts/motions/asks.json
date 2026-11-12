@@ -204,5 +204,53 @@
   "seed": 0,
   "constraints": "the pose written against the SOMA skin A-pose instead of Kimodo T-pose (wrong)",
   "note": "absurd: arms out, a crouch; Kimodo put the hands exactly where that wrong pose had them (1.2 m high). Led to finding the convention; not used"
+ },
+ "shoulder2": {
+  "key": "9233abaa36997d2abfd59cddfa96007d4b114211111c8aea6bb3f8fd1d6cbea0",
+  "prompts": [
+   "A person walks up beside someone, rests their right hand on that person's shoulder and looks at them."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder2.json",
+  "note": "second try (coordinator, 2026-11-12): standing at her side, the elbow bent; the first ask failed with \"busy\", the same ask again made it. He does not look at her: his head 26\u00b0 off her head, tilted 10\u00b0 up"
+ },
+ "armchair2": {
+  "key": "0e9528c2dadaed16746ee47ce9fac982786c2e1749f66b1db917fc9c7d7e11e5",
+  "prompts": [
+   "A person walks forward to an armchair, turns around and sits down in it, resting both hands on the armrests."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/armchair_knees_full.json",
+  "note": "second try (coordinator, 2026-11-12): the whole knees-together pose held (fullbody) at frames 134 and 209; knees 20 cm apart there, 29 cm between them; asked three times (twice failed with \"busy\")"
+ },
+ "shoulder2-look-down": {
+  "key": "a743ec0ca3dd26d35099ee4b6a50f58cfebefc7e2c8f85eeeb5970aa13093f21",
+  "prompts": [
+   "A person walks up to someone, gently rests their right hand on that person's shoulder and looks down at their face."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder2.json",
+  "note": "second try, prompt \"...looks down at their face\": the head a little better (18\u00b0 off her head, level) but he walked the whole way with the arm stretched out ahead and laid the hand by her neck from frame 50; not used"
+ },
+ "armchair2-feet": {
+  "key": "e2bf9399d4693037dae130076c16740605810abfc0b97efd40fb7be8e4ea3586",
+  "prompts": [
+   "A person walks forward to an armchair, turns around and sits down in it, resting both hands on the armrests."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/armchair_knees.json",
+  "note": "second try, hands and feet held in the knees-together pose: the feet came together but the knees stayed 32-33 cm apart (first take 48): frog-legged, not better; not used"
  }
 }

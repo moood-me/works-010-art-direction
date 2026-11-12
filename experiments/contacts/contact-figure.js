@@ -85,9 +85,9 @@ export class ContactFigure {
       if (goal[0] > x0 - m && goal[0] < x1 + m && goal[2] > z0 - m && goal[2] < z1 + m && goal[1] < c.surface + c.under) { goal[1] = c.surface + c.under; lifted = true; }
     }
     // and never into another body (c.outside: how far, and which way, the hand's skin has to go to be out of it)
-    // — tested where the hand will be: the hand keeps its turn, so its skin moves as its palm does (twice: the first
+    // — tested where the hand will be: the hand keeps its turn, so its skin moves as its palm does (up to four times: each
     // move can bring another part of the hand into the skin)
-    if (c.outside) for (let k = 0; k < 2; k++) {
+    if (c.outside) for (let k = 0; k < 4; k++) {
       const d = c.outside(this.positions, this.shift, sub(goal, palm0));
       if (!d) break;
       goal = add(goal, d); lifted = true;
