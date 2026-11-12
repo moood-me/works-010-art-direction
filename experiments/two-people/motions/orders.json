@@ -318,5 +318,251 @@
    "z": -0.029
   },
   "note": "startsAt computed as the studio does"
+ },
+ {
+  "id": "b-touch2",
+  "label": {
+   "ru": "Б подходит ближе и кладёт руку на плечо",
+   "en": "B comes nearer and puts a hand on the shoulder"
+  },
+  "key": "a5f111308568e3afc61c2eb25f8f94e87ea16608055e5930e0010bf6d3df4d17",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing looks at someone in front of them and puts their right hand on that person's shoulder."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/b-touch2.constraint.json, from motions/b-touch2.spec.json: the outer top of her shoulder, his pelvis 51 cm behind it"
+   ]
+  },
+  "note": "v2 after the coordinator's look: nearer, elbow bent, looking at her"
+ },
+ {
+  "id": "m-lift2",
+  "label": {
+   "ru": "М поднимает ребёнка к груди",
+   "en": "M lifts the child to his chest"
+  },
+  "key": "91c7e3099b615b47f56719fcc202ab5c47df308386069615652ab1b1f0ab01f9",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing picks up a large object in front of them at waist level with both hands and lifts it up to chest level."
+   ],
+   "seconds": [
+    3,
+    3
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand and left-hand: frames 126 and 168 — motions/m-lift2.constraint.json, from motions/m-lift2.spec.json: the palms on the child's sides, then 42 cm higher and drawn in to his chest"
+   ]
+  },
+  "note": "v2 after the coordinator's look: the child higher and nearer (v1: 30 cm higher, 8 cm further out)"
+ },
+ {
+  "id": "b-hold2",
+  "label": {
+   "ru": "Б держит руку на плече",
+   "en": "B keeps the hand on the shoulder"
+  },
+  "key": "379c42bbffa86029b61070b2b07abbf8121671e7b1c52ecd0f022b9dc1f1a177",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the shoulder of someone in front of them, looking at them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/b-hold2.constraint.json, from motions/b-hold2.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "b-touch2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.087,
+   "z": 3.428
+  },
+  "note": "v2; startsAt by tools/startsat.py"
+ },
+ {
+  "id": "m-walk2",
+  "label": {
+   "ru": "М несёт",
+   "en": "M carries"
+  },
+  "key": "de011dcc6df377b32ce8f4430d9a9d094e93e4c9858d4e0ff62add86db0517e3",
+  "ask": {
+   "prompts": [
+    "A person walks forward carrying a large object at chest level in both arms.",
+    "A person walking with a large object in both arms comes to a stop."
+   ],
+   "seconds": [
+    3,
+    1.5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "m-lift2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.036,
+   "z": 3.411
+  },
+  "note": "v2; startsAt by tools/startsat.py"
+ },
+ {
+  "id": "b-touch3",
+  "label": {
+   "ru": "Б подходит ближе, слева, и кладёт руку на плечо",
+   "en": "B comes nearer, from her left, and puts a hand on the shoulder"
+  },
+  "key": "ad5ae154da513d8b98b342e863568fd23b6009bc00a8b874f28e1cba797a3674",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing puts their right hand on the shoulder of someone in front of them and looks down at them."
+   ],
+   "seconds": [
+    3,
+    2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 118, 149 — motions/b-touch3.constraint.json (as sent), from motions/b-touch3.spec.json"
+   ]
+  },
+  "note": "v3"
+ },
+ {
+  "id": "m-down2",
+  "label": {
+   "ru": "М ставит ребёнка",
+   "en": "M puts the child down"
+  },
+  "key": "e0f243b7fa867ab910d9a8c0f6ae254b3193b8ed811422771e611c793aff277d",
+  "ask": {
+   "prompts": [
+    "A person standing bends down and puts a large object down in front of them at waist level with both hands, then stands up."
+   ],
+   "seconds": [
+    3
+   ],
+   "seed": 1,
+   "constraints": [
+    {
+     "type": "right-hand",
+     "frame_indices": [
+      45
+     ],
+     "from": {
+      "key": "91c7e3099b615b47f56719fcc202ab5c47df308386069615652ab1b1f0ab01f9",
+      "frames": [
+       126
+      ]
+     },
+     "turn": 0,
+     "move": [
+      -0.004,
+      -3.329
+     ]
+    },
+    {
+     "type": "left-hand",
+     "frame_indices": [
+      45
+     ],
+     "from": {
+      "key": "91c7e3099b615b47f56719fcc202ab5c47df308386069615652ab1b1f0ab01f9",
+      "frames": [
+       126
+      ]
+     },
+     "turn": 0,
+     "move": [
+      -0.004,
+      -3.329
+     ]
+    }
+   ]
+  },
+  "after": {
+   "motion": "m-walk2",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.171,
+   "z": 2.153
+  },
+  "note": "v2: the hands as they took the child (m-lift2 frame 126), 15 cm ahead of where the walk stopped"
+ },
+ {
+  "id": "b-hold3",
+  "label": {
+   "ru": "Б держит руку на плече",
+   "en": "B keeps the hand on the shoulder"
+  },
+  "key": "b2423878cced274167e0726c6c84ce2804ea3b1f06de2f6607ae3854006fe818",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the shoulder of someone in front of them, looking down at them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/b-hold3.constraint.json (as sent), from motions/b-hold3.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "b-touch3",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.138,
+   "z": 3.415
+  },
+  "note": "v3; startsAt by tools/startsat.py"
+ },
+ {
+  "id": "b-hold4",
+  "label": {
+   "ru": "Б держит руку на плече, она съезжает наружу",
+   "en": "B keeps the hand on the shoulder, sliding out"
+  },
+  "key": "7a31bdcf68a13044d131d86f0b7b6d9fcbee54fc6a87c07885eff3cb557d43bb",
+  "ask": {
+   "prompts": [
+    "A person stands with their right hand resting on the shoulder of someone in front of them, looking down at them."
+   ],
+   "seconds": [
+    2.2
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 13, 28, 60 — motions/b-hold4.constraint.json (as sent), from motions/b-hold4.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "b-touch3",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": 0.138,
+   "z": 3.415
+  },
+  "note": "v4; startsAt by tools/startsat.py"
  }
 ]

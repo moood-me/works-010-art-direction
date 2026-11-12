@@ -2,7 +2,24 @@
 // of them became the other's constraint. Places are in metres; A stands at the origin facing +z.
 export const SCENES = [
   {
-    id: 'touch', label: 'рука на плече',
+    id: 'touch3', label: 'рука на плече',
+    about: 'Женщина стоит. Мужчина подходит сзади-слева, близко, и кладёт правую руку ей на правое плечо; она оглядывается через правое плечо, его ладонь остаётся лежать на плече и сползает к его краю.',
+    frames: 250,
+    people: [
+      { id: 'A', name: 'женщина', character: 'woman', chain: ['a-stand', 'a-look'], start: 0, place: { position: [0, 0, 0], heading: 0 } },
+      { id: 'B', name: 'мужчина', character: 'man', chain: ['b-touch3', 'b-hold4'], start: 42, place: { position: [0, 0, -4.0], heading: 0 } },
+    ],
+    // B's palm on the outer top of A's right shoulder (a point of her skin at rest, 2 cm out along its normal, carried
+    // by her collarbone); as she looks round it slides out to the shoulder's edge (b-hold4 was made so), away from her
+    // chin. The two contacts are the same palm, one after the other.
+    contacts: [{ who: 'B', side: 'Right', on: 'A', joint: 'RightShoulder', point: [-0.1625, 1.3196, -0.0155], from: 160, to: 192, ramp: 8 },
+      { who: 'B', side: 'Right', on: 'A', joint: 'RightShoulder', point: [-0.1903, 1.2948, 0.0063], from: 200, to: 249, ramp: 8 }],
+    // he looks at her: Kimodo, asked to, kept his head tilted back; turned towards her head by 0.6 of the way, 25° at most
+    looks: [{ who: 'B', at: 'A', share: 0.6, max: 0.44, from: 130, to: 249, ramp: 15 }],
+    camera: { yaw: -1.05, pitch: 0.12, dist: 5.2, target: [0, 0.95, -1.0] },
+  },
+  {
+    id: 'touch', label: 'рука на плече (первая версия)',
     about: 'Женщина стоит. Мужчина подходит сзади и кладёт правую руку ей на плечо; она оглядывается через правое плечо, рука остаётся на плече.',
     frames: 250,
     people: [
@@ -14,7 +31,23 @@ export const SCENES = [
     camera: { yaw: -1.05, pitch: 0.12, dist: 5.2, target: [0, 0.95, -1.0] },
   },
   {
-    id: 'carry', label: 'поднимает и несёт',
+    id: 'carry2', label: 'поднимает и несёт',
+    about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт и ставит. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
+    frames: 420,
+    people: [
+      { id: 'C', name: 'ребёнок', character: 'child', chain: ['c-wait'], start: 0, place: { position: [0, 0, 0], heading: Math.PI } },
+      { id: 'M', name: 'мужчина', character: 'man', chain: ['m-lift2', 'm-walk2'], start: 26, place: { position: [0, 0, -4.0], heading: 0 } },
+    ],
+    // M's palms on the child's sides under the arms (points of the child's trunk at rest, 2.5 cm out)
+    contacts: [
+      { who: 'M', side: 'Right', on: 'C', joint: 'Chest', point: [0.1429, 0.8795, 0.025], from: 152, to: 376, ramp: 10 },
+      { who: 'M', side: 'Left', on: 'C', joint: 'Chest', point: [-0.1428, 0.8795, 0.025], from: 152, to: 376, ramp: 10 },
+    ],
+    carry: { who: 'C', by: 'M', from: 152, to: 376 },
+    camera: { yaw: -1.2, pitch: 0.12, dist: 5, target: [0, 0.9, -0.8] },
+  },
+  {
+    id: 'carry', label: 'поднимает и несёт (первая версия)',
     about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает, несёт и ставит. Пока его несут, ребёнок прикреплён к рукам мужчины; его поза — своё движение Kimodo (обнимает за шею, потом отпускает).',
     frames: 420,
     people: [

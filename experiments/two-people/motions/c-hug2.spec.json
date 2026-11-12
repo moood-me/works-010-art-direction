@@ -1,0 +1,8 @@
+{"source": "c-held", "frame": 60, "sides": ["Right", "Left"],
+ "note": "the child's hands on the top of the man's shoulders (points of his skin at rest, 1.5 cm out: tools/shoulder.mjs moood-man, share 0.6, 0.9 rad back), at scene frames 210, 260, 310, 360 (c-hug2 frames 35, 85, 135, 185: it goes on after c-wait, its frame f is scene 175 + f), in the child's own Kimodo space through the attachment — node tools/carried_targets.mjs carry2 LeftShoulder 0.103,1.5019,-0.0537 210,260,310,360 0.013,-0.018 (and RightShoulder -0.1111,1.4899,-0.0597); startsAt expected as c-held's (same after). The child's right hand to his left shoulder. The pose: c-held's own hug at its frame 60, its arms turned to reach",
+ "items": [
+  {"frame": 35, "targets": {"Right": [-0.217, 1.5227, 0.5091], "Left": [0.183, 1.4959, 0.5477]}, "hip": [0.0, 0.0], "heading": "own"},
+  {"frame": 85, "targets": {"Right": [-0.2089, 1.5158, 0.4819], "Left": [0.2102, 1.4676, 0.5486]}, "hip": [0.0, 0.0], "heading": "own"},
+  {"frame": 135, "targets": {"Right": [-0.2037, 1.5426, 0.5543], "Left": [0.1931, 1.5021, 0.6062]}, "hip": [0.0, 0.0], "heading": "own"},
+  {"frame": 185, "targets": {"Right": [-0.208, 1.5909, 0.5625], "Left": [0.188, 1.527, 0.622]}, "hip": [0.0, 0.0], "heading": "own"}
+ ]}

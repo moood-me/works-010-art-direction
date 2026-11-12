@@ -1,0 +1,45 @@
+{
+ "source": "b-probe",
+ "frame": 120,
+ "side": "Right",
+ "kind": "right-hand",
+ "note": "v3. Targets as v2 (the outer top of her right shoulder at scene frames 160, 191, in B's Kimodo space). His pelvis 51 cm behind and 28 cm to her left of the touch, so his right arm reaches across to her right shoulder and the hand points forward and out over it (yaw -0.25 rad: wrist \u2192 middle finger), away from her neck and chin (v2: from her right, the forearm came inward and the fingers lay towards her chin); the elbow turned to hang down and a little out (elbowPole), not stuck out sideways as the probe's tap had it",
+ "items": [
+  {
+   "frame": 118,
+   "target": [
+    -0.1629,
+    1.2748,
+    3.9083
+   ],
+   "hip": [
+    0.12,
+    3.4
+   ],
+   "handYaw": -0.25,
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 149,
+   "target": [
+    -0.13,
+    1.2761,
+    3.8504
+   ],
+   "hip": [
+    0.12,
+    3.4
+   ],
+   "handYaw": -0.25,
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  }
+ ]
+}

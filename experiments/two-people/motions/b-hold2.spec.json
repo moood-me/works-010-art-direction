@@ -1,0 +1,7 @@
+{"source": "b-touch2", "frame": 149, "side": "Right", "kind": "right-hand", "fingersFrom": {"source": "b-probe", "frame": 120},
+ "note": "v2: after b-touch2 (5 frames): its frame f is scene frame 187 + f. Targets: the outer top of A's shoulder at scene frames 200, 215, 247 (node tools/targets.mjs woman a-stand,a-look RightShoulder -0.1625,1.3196,-0.0155 200,215,247 0,-4.0,0,1.015), less the expected startsAt (b-touch2's pelvis at its frame 145: -0.07, 3.415); the pelvis where b-touch2 left it; the hand not turned (on the outer shoulder her jaw does not come to it); the fingers as in the probe's flat tapping hand (v1's came out curled into a claw)",
+ "items": [
+  {"frame": 13, "target": [-0.0237, 1.2842, 0.4069], "hip": [0.0, -0.015], "heading": "own"},
+  {"frame": 28, "target": [0.0113, 1.2876, 0.3901], "hip": [0.0, -0.015], "heading": "own"},
+  {"frame": 60, "target": [0.0163, 1.2916, 0.3956], "hip": [0.0, -0.015], "heading": "own"}
+ ]}

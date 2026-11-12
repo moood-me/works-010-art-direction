@@ -90,6 +90,67 @@
     "en": "the child holds on, then lets go"
    },
    "after": "c-held"
+  },
+  {
+   "id": "b-touch2",
+   "label": {
+    "ru": "Б подходит ближе и кладёт руку на плечо",
+    "en": "B comes nearer and puts a hand on the shoulder"
+   }
+  },
+  {
+   "id": "m-lift2",
+   "label": {
+    "ru": "М поднимает ребёнка к груди",
+    "en": "M lifts the child to his chest"
+   }
+  },
+  {
+   "id": "b-hold2",
+   "label": {
+    "ru": "Б держит руку на плече",
+    "en": "B keeps the hand on the shoulder"
+   },
+   "after": "b-touch2"
+  },
+  {
+   "id": "m-walk2",
+   "label": {
+    "ru": "М несёт",
+    "en": "M carries"
+   },
+   "after": "m-lift2"
+  },
+  {
+   "id": "b-touch3",
+   "label": {
+    "ru": "Б подходит ближе, слева, и кладёт руку на плечо",
+    "en": "B comes nearer, from her left, and puts a hand on the shoulder"
+   }
+  },
+  {
+   "id": "m-down2",
+   "label": {
+    "ru": "М ставит ребёнка",
+    "en": "M puts the child down"
+   },
+   "after": "m-walk2"
+  },
+  {
+   "id": "b-hold3",
+   "label": {
+    "ru": "Б держит руку на плече",
+    "en": "B keeps the hand on the shoulder"
+   },
+   "after": "b-touch3"
+  },
+  {
+   "id": "b-hold4",
+   "label": {
+    "ru": "Б держит руку на плече, она съезжает наружу",
+    "en": "B keeps the hand on the shoulder, sliding out"
+   },
+   "after": "b-touch3"
   }
  ]
 }

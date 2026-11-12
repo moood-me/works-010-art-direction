@@ -1,0 +1,6 @@
+{"source": "b-probe", "frame": 120, "side": "Right", "kind": "right-hand",
+ "note": "v2 (nearer). Targets: A's shoulder point (scenes.js: the outer top of her right shoulder, 2 cm out) at scene frames 160 and 191 (B starts at scene frame 42), in B's Kimodo space (B at x 0, z -4.0, heading 0; k 1.015) — node tools/targets.mjs woman a-stand,a-look RightShoulder -0.1625,1.3196,-0.0155 160,191 0,-4.0,0,1.015. The pelvis 51 cm behind the touch and 12 cm to its left (v1: 60 cm, the arm straight)",
+ "items": [
+  {"frame": 118, "target": [-0.1629, 1.2748, 3.9083], "hip": [-0.043, 3.40]},
+  {"frame": 149, "target": [-0.13, 1.2761, 3.8504], "hip": [-0.043, 3.40]}
+ ]}

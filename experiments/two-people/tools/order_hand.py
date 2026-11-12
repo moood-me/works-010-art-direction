@@ -37,6 +37,13 @@ def heading_of(L, root):
     return np.arctan2(-v[2], v[0])
 
 
+def NAMES_UNDER(k, c):
+    while k >= 0:
+        if k == c: return True
+        k = P.PARENT[k]
+    return False
+
+
 h0 = heading_of(L0, root0)
 poses, frames, report = [], [], []
 for it in spec['items']:
@@ -47,6 +54,12 @@ for it in spec['items']:
     L, root = P.turn_move(Ls, rs, 0.0 if want_h == 'own' else want_h - hs, [0, 0])
     root = np.array([it['hip'][0], root[1], it['hip'][1]])
     targets = it.get('targets') or {sides[0]: it['target']}
+    if 'fingersFrom' in spec:   # the fingers' own turns from another pose (a flat hand), the rest as it is
+        Lf, _, _ = P.pose_at(spec['fingersFrom']['source'], spec['fingersFrom']['frame'])
+        for sd in sides:
+            h = ix[sd + 'Hand']
+            for k in range(77):
+                if k != h and NAMES_UNDER(k, h): L[k] = Lf[k]
     miss = {}
     for side in sides:
         c = ix[side + 'Hand']
@@ -63,18 +76,19 @@ for it in spec['items']:
             G, Pp = P.fk(L, root)
             L, _ = P.reach(L, root, side, Pp[c] + (target - pm))
             if it.get('straightWrists'): L[c] = np.eye(3)
+            if 'elbowPole' in it:      # the arm turned about shoulder → wrist so the elbow points that way (down: hanging)
+                G, Pp = P.fk(L, root); a_, b_ = ix[side + 'Arm'], ix[side + 'ForeArm']
+                ax = Pp[c] - Pp[a_]; ax /= np.linalg.norm(ax)
+                e = Pp[b_] - Pp[a_]; e -= ax * (e @ ax); d = np.array(it['elbowPole'], float); d -= ax * (d @ ax)
+                ang = np.arctan2(np.cross(e, d) @ ax, e @ d)
+                L[a_] = G[P.PARENT[a_]].T @ Rot.from_rotvec(ax * ang).as_matrix() @ G[a_]
+                if 'handYaw' in it:   # the hand pointed again (the turn above carried it)
+                    G, Pp = P.fk(L, root); dd = Pp[ix[side + 'HandMiddle1']] - Pp[c]
+                    L[c] = G[P.PARENT[c]].T @ Rot.from_rotvec([0, it['handYaw'] - np.arctan2(dd[0], dd[2]), 0]).as_matrix() @ G[c]
         miss[side] = round(float(np.linalg.norm(palm(L, root, side) - target) * 1000), 1)
     report.append({'frame': it['frame'], 'palm miss mm': miss})
     poses.append((L, root)); frames.append(it['frame'])
 import re
-
-
-def NAMES_UNDER(k, c):
-    while k >= 0:
-        if k == c: return True
-        k = P.PARENT[k]
-    return False
-
 
 out = []
 for side in sides:

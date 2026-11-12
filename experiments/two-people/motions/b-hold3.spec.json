@@ -1,0 +1,67 @@
+{
+ "source": "b-touch3",
+ "frame": 149,
+ "side": "Right",
+ "kind": "right-hand",
+ "fingersFrom": {
+  "source": "b-probe",
+  "frame": 120
+ },
+ "note": "v3: after b-touch3 (5 frames): its frame f is scene 187 + f. Targets: the outer top of her shoulder at scene frames 200, 215, 247 (as v2) less the expected startsAt (b-touch3's pelvis at its frame 145: 0.079, 3.408); the pelvis where b-touch3 left it; the hand not turned on its own (turned with her shoulder it bent the wrist 75\u201385\u00b0); the elbow hanging; the fingers flat as the probe's",
+ "items": [
+  {
+   "frame": 13,
+   "target": [
+    -0.1727,
+    1.2842,
+    0.4139
+   ],
+   "hip": [
+    0.001,
+    -0.008
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 28,
+   "target": [
+    -0.1377,
+    1.2876,
+    0.3971
+   ],
+   "hip": [
+    0.001,
+    -0.008
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  },
+  {
+   "frame": 60,
+   "target": [
+    -0.1327,
+    1.2916,
+    0.4026
+   ],
+   "hip": [
+    0.001,
+    -0.008
+   ],
+   "heading": "own",
+   "elbowPole": [
+    -0.4,
+    -1,
+    0
+   ]
+  }
+ ]
+}

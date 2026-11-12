@@ -100,6 +100,29 @@ export async function loadScene(E, base, def, read) {
       reachTo(pose, P.body, c.side, palm.point, add(now2, scale(sub(target, now2), w)));
     };
   }
+  // looks: who's head turned towards another's head, a share of the way, spread over the neck and the head, at most
+  // `max` radians, faded in and out — where Kimodo, asked to look, tilts the head back (a correction on top, off with
+  // the others)
+  for (const l of def.looks || []) {
+    const P = by[l.who], O = by[l.at], sk = P.body.skeleton, prev = P.fig.adjust;
+    P.fig.adjust = (pose, t) => {
+      prev?.(pose, t);
+      const T = t + P.start, w = Math.min(clamp((T - l.from + l.ramp) / l.ramp, 0, 1), clamp((l.to + l.ramp - T) / l.ramp, 0, 1));
+      if (!S.corrections || w <= 0 || !O.fig.pose) return;
+      const eyes = scale(add(getV(pose.P, sk.index.LeftEye), getV(pose.P, sk.index.RightEye)), 0.5);
+      const face = normalize(qRot(getQ(pose.Q, sk.index.Head), [0, 0, 1]));
+      const want = normalize(sub(getV(O.fig.pose.P, O.body.skeleton.index.Head), eyes));
+      let r = qBetween(face, want); const a = 2 * Math.acos(clamp(r[3], -1, 1));
+      const k = w * Math.min(l.share, l.max / Math.max(a, 1e-6));
+      const hip = getV(pose.P, sk.index.Hips);
+      for (const [n, part] of [['Neck1', 0.3], ['Neck2', 0.3], ['Head', 0.4]]) {
+        const ax = normalize([r[0], r[1], r[2]]);
+        turnUnder(pose, sk, sk.index[n], qAxisAngle(ax, a * k * part));
+      }
+      build(pose, P.body, hip);
+      S.looked = { who: l.who, degrees: a * 180 / Math.PI, turned: a * k * 180 / Math.PI };
+    };
+  }
   if (def.carry) attach(S, def.carry);
   // everyone at scene frame T (in the order given: who another depends on comes first)
   S.at = T => {
