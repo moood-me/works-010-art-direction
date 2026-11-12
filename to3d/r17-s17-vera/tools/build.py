@@ -154,7 +154,7 @@ hT = orient(hd, hT, HC)
 nrows = np.linspace(40, 168, 40); ncols = 48
 nk = []
 for y in nrows:
-    rx = np.interp(y, [40, 112, 140, 168], [P.neck * 1.1, P.neck * 1.12, P.neck * 1.22, P.neck * 1.3])
+    rx = np.interp(y, [40, 112, 140, 168], [P.neck * 1.1, P.neck * 1.12, P.neck * 1.25, P.neck * 1.6])
     rz = rx * 0.92
     an = np.linspace(0, 2 * np.pi, ncols, endpoint=False)
     nk.append(np.c_[rx * np.sin(an), np.full(ncols, y), NECK_Z + rz * np.cos(an)])

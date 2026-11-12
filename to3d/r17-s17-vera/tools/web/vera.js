@@ -80,9 +80,9 @@ const PIECE = `
     if (only >= 0.0 && abs(m - only) > 0.5 && !(only == ${PF('hair')} && m == ${PF('knot')})) discard;
     if (m == ${PF('dress')} && vEm < 0.0) m = ${PF('skin')};                                   // the sleeve's end
     // the round neckline (vera.py: from (−34, 120) through (0, 152) to (34, 120)), cut on the body at rest
-    if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.y < 150.0 - 26.0 * (vDr.x / 36.0) * (vDr.x / 36.0)) m = ${PF('skin')};
-    if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.y < 131.0) discard;                 // the collar's rim, cut level
-    if (m == ${PF('shawl')} && vDr.y < 134.0) discard;
+    if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.z > ${(H.neckZ - 20).toFixed(1)} && vDr.y < 150.0 - 26.0 * (vDr.x / 36.0) * (vDr.x / 36.0)) m = ${PF('skin')};
+    if (m == ${PF('dress')} && vHs < 5.0 && vEm > 50.0 && vDr.y < 128.0 && length(vec2(vDr.x, vDr.z - ${H.neckZ.toFixed(1)})) < 62.0) discard;                 // the collar's rim, cut level
+    if (m == ${PF('shawl')} && vDr.y < 129.0 && length(vec2(vDr.x, vDr.z - ${H.neckZ.toFixed(1)})) < 62.0) discard;
     if ((m == ${PF('hair')} || m == ${PF('shawl')}) && vEm < 0.0) discard;                     // the hairline, the shawl's edge
     return m;
   }`;

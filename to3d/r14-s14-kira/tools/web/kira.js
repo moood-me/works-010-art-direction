@@ -119,6 +119,8 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShaderM
   fragmentShader: `precision highp float; varying vec3 vW; uniform float mode; uniform vec3 col; uniform vec3 shadowCol; ${SHADOW_GLSL}
     float n2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f); return mix(mix(h1(i), h1(i+vec2(1,0)), f.x), mix(h1(i+vec2(0,1)), h1(i+vec2(1,1)), f.x), f.y); }
     void main(){ float s = shadowAt(vW, vec3(0.0, 1.0, 0.0));
+      // the floor's shadow fades where the shadow map ends (a long shadow is not followed to its end)
+      vec2 e = (shadowMatrix * vec4(vW, 1.0)).xy * 0.5 + 0.5; e = min(e, 1.0 - e); s *= smoothstep(0.0, 0.12, min(e.x, e.y));
       if (mode > 1.5) { gl_FragColor = vec4(shadowCol, 0.34 * s); return; }
       vec3 c = col * (0.96 + 0.08 * (n2(vW.xz * 700.0) * 0.6 + n2(vW.xz * vec2(1300.0, 150.0)) * 0.4));
       // scraps of other paper glued on the floor, so that the way she goes shows

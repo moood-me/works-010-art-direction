@@ -60,7 +60,7 @@ def expr():
     dr = Image.open(f'{STYLE}/pics/expr-kira.webp').convert('RGBA')
     bd = Image.open(f'{CACHE}/bd-expr.png').convert('RGBA')
     for i, n in enumerate(names): bd.alpha_composite(Image.open(f'{CACHE}/cmp/expr-{n}.png').convert('RGBA'), (i * W, 0))
-    for i, t in enumerate(('усмешка (её «радость»)', 'удивление', 'грусть', 'злость')): label(bd, 200 + i * W, 520, t)
+    for i, t in enumerate(('усмешка (её «радость»)', 'удивление', 'грусть', 'злость')): label(bd, 200 + i * W, 40, t)
     out = Image.new('RGBA', (1600, 1120), 'white'); out.alpha_composite(dr, (0, 0)); out.alpha_composite(bd, (0, 560))
     label(out, 60, 10, 'рисунок'); label(out, 40, 570, '3D')
     save(out, 'compare-expr', 1400); save(bd, 'expr3d', 1400)

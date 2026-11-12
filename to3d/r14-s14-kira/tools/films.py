@@ -9,7 +9,7 @@ from common import CACHE, HERE, heavy
 PICS = os.path.join(os.path.dirname(HERE), 'pics')
 
 
-def follow(yaw, pitch=0.10, dist=5.6, y=0.74, fov=20):
+def follow(yaw, pitch=0.10, dist=4.5, y=0.76, fov=20):
     return {'yaw': yaw, 'pitch': pitch, 'dist': dist, 'follow': [0, y, 0], 'fov': fov}
 
 
@@ -20,10 +20,10 @@ def motion_film(motion, frames, cam, expr, talk=lambda s: False, W=640, H=720, b
 
 FILMS = {
     'walk': lambda: motion_film('walk', 120, follow(-0.55), [{'t': 0, 'name': 'calm'}, {'t': 2.6, 'name': 'joy'}]),
-    'sneak': lambda: motion_film('sneak', 120, follow(-0.7, 0.12, 5.4, 0.66), [{'t': 0, 'name': 'calm'}, {'t': 1.2, 'name': 'surprise'}, {'t': 2.4, 'name': 'calm'}]),
-    'idle': lambda: motion_film('idle', 150, follow(-0.3, 0.08, 4.6, 0.86), [{'t': 0, 'name': 'calm'}, {'t': 3.2, 'name': 'angry'}], lambda s: 1.0 < s < 2.8),
+    'sneak': lambda: motion_film('sneak', 120, follow(-0.7, 0.12, 4.4, 0.68), [{'t': 0, 'name': 'calm'}, {'t': 1.2, 'name': 'surprise'}, {'t': 2.4, 'name': 'calm'}]),
+    'idle': lambda: motion_film('idle', 150, follow(-0.3, 0.08, 3.6, 0.9), [{'t': 0, 'name': 'calm'}, {'t': 3.2, 'name': 'angry'}], lambda s: 1.0 < s < 2.8),
     'wave': lambda: motion_film('wave', 90, follow(-0.25), [{'t': 0, 'name': 'calm'}, {'t': 0.8, 'name': 'joy'}]),
-    'sit': lambda: motion_film('sit', 120, follow(-0.9, 0.16, 5.4, 0.6), [{'t': 0, 'name': 'calm'}, {'t': 2.2, 'name': 'sad'}]),
+    'sit': lambda: motion_film('sit', 120, follow(-0.9, 0.16, 4.6, 0.6), [{'t': 0, 'name': 'calm'}, {'t': 2.2, 'name': 'sad'}]),
 }
 
 
@@ -40,7 +40,7 @@ def face_film():
 def turn_film():
     n = 72
     return 520, 720, 'film', 24, [{'name': f'f{i:04d}', 'set': {'ground': True, 'motion': ['bow'], 't': 0, 'faceTime': i / 24,
-                                   'cam': {'yaw': -6.2832 * i / n, 'pitch': 0.10, 'dist': 5.6, 'follow': [0, 0.74, 0], 'fov': 20}}} for i in range(n)]
+                                   'cam': {'yaw': -6.2832 * i / n, 'pitch': 0.10, 'dist': 4.9, 'follow': [0, 0.76, 0], 'fov': 20}}} for i in range(n)]
 
 
 if __name__ == '__main__':
