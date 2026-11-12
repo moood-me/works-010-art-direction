@@ -1,0 +1,233 @@
+{
+ "door-free": {
+  "key": "6820e37230a153b6251de69c57aa559755018fef77a9721d29d54ae47af4442f",
+  "prompts": [
+   "A person walks forward to a door, grabs the door handle with their right hand, pushes the door open and walks through it."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: did not walk up; reached a handle 0.7 m ahead at once (frame 30), pulled the door towards itself, then walked through turning right. Its frame 30 (the body and the hand's turn on the handle) is the pose of the door constraints"
+ },
+ "cup-free": {
+  "key": "838d45e3601d21dd9d1f2a66e8deead72ba8dcc93fc1b61440470f8855f8d330",
+  "prompts": [
+   "A person walks forward and stops in front of a table.",
+   "A standing person picks up a cup from the table with their right hand and drinks from it.",
+   "A standing person puts the cup back down on the table in front of them."
+  ],
+  "seconds": [
+   3.5,
+   4,
+   3
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: walked 1.4 m and SAT DOWN (no chair), then lifted the right hand to the face and lowered it, seated"
+ },
+ "box-free": {
+  "key": "08ca7dab2e6d766ece532900cd9239dd867c34b4cda40a16eef35898b991b838",
+  "prompts": [
+   "A person bends down and picks up a medium box from the floor with both hands.",
+   "A person carrying a box with both hands walks forward.",
+   "A person places the box on a table in front of them with both hands."
+  ],
+  "seconds": [
+   3,
+   4,
+   3
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: squats, takes the box from the floor between the palms (66 cm apart), lifts it to the chest, carries it 3 m, puts it down at 1.1 m, leaning. Its frames 45 (taking) and 255 (putting) are the poses of the box constraints",
+  "failed_first": "the first ask failed with busy; the same ask again made it"
+ },
+ "door-1": {
+  "key": "77968212b805995bdb549cc815b7eb329fc7815acd89b027565c1657c5b503d6",
+  "prompts": [
+   "A person walks forward to a door, pushes it open with their right hand on the handle and walks through the doorway."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/door-1.json",
+  "note": "one motion: walked the 2 m with the right arm stretched out for the handle the whole way; the handle let go at 50\u00b0, the door stood in her way and she walked into the leaf (frames 116-144). Not used"
+ },
+ "table-walk": {
+  "key": "88c3163bc586aaf5d81e3c6439cd30b3650fc826fbac77d3fa01ff5c37607b01",
+  "prompts": [
+   "A person walks forward at a relaxed pace and comes to a stop."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": [
+   {
+    "type": "root2d",
+    "frame_indices": [
+     100,
+     119
+    ],
+    "smooth_root_2d": [
+     [
+      0.0,
+      2.04
+     ],
+     [
+      0.0,
+      2.05
+     ]
+    ]
+   }
+  ],
+  "note": "\u041a1's walk (experiments/contacts/motions/table-walk.json), not ordered again: copied"
+ },
+ "door-2": {
+  "key": "661eeaf397496ee0b439b3c7c37423de178d49757fda177ec7f9ed595510bfb8",
+  "prompts": [
+   "A standing person pushes a door open with their right hand on the handle and walks through the doorway."
+  ],
+  "seconds": [
+   4.5
+  ],
+  "seed": 0,
+  "constraints": "plans/door-2.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "the walk (table-walk) + this: natural walk and stop, then the hand to the handle; Kimodo's palm 4-9 cm off its places. The hand as Kimodo turned it, the palm in front of the lever: the fingers, held straight, went through the leaf the whole time it was held; and let go at 65\u00b0 the door was in the way of her hand. Not used"
+ },
+ "door-3": {
+  "key": "cdba4ed222105eab464cddf815417e2ee07e0cea12fd9a58b544e0a6c31a4dbc",
+  "prompts": [
+   "A standing person pushes a door open with their right hand on the handle and walks through the doorway."
+  ],
+  "seconds": [
+   4.5
+  ],
+  "seed": 0,
+  "constraints": "plans/door-3.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "as door-2, the hand turned to hook over the lever from above (fingers down between the lever and the leaf)"
+ },
+ "cup-1": {
+  "key": "a1291bdb3a1e6f2f91f5b4acaa1f1f62df34ce8691a8b7a6c95d8d6ddc3f4ef4",
+  "prompts": [
+   "A standing person picks up a cup from the table with their right hand, drinks from it, and puts it back on the table."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/cup-1.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "took the cup, drank (the cup at the mouth) and put it back \u2014 but half sitting on nothing the whole drink (pelvis 0.76, Kimodo drinks from cups seated); its frame 100 (the hand at the mouth) is the drink pose of cup-2. Not used"
+ },
+ "cup-2": {
+  "key": "c7062bb7fee4555a63fa60072f681e39e00910086eecc0bdcc17eb48925c587e",
+  "prompts": [
+   "A person standing upright picks up a cup from the table with their right hand, drinks from it, and puts it back on the table."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/cup-2.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "stood the whole time, took the cup and put it back well; the hand at the drink came up beside the head (the hand-to-head relation of the seated cup-1 put on a bent standing pose): the cup at eye level, right of the face. Not used"
+ },
+ "box-1": {
+  "key": "83419c9713361d8015e3138a732c043f29123287840a44c9c92d28fe9cef8b64",
+  "prompts": [
+   "A person bends down and picks up a medium box from the floor with both hands.",
+   "A person carrying a box with both hands walks forward.",
+   "A person places the box on a table in front of them with both hands."
+  ],
+  "seconds": [
+   3,
+   4,
+   3
+  ],
+  "seed": 0,
+  "constraints": "plans/box-1.json",
+  "note": "squats, takes the box, carries it at the chest 3 m, puts it on the table \u2014 but stands as close as the free take did: his thighs go under the table's edge (1.7 cm into its top) and his belly touches the box 1 cm. Not used"
+ },
+ "cup-3": {
+  "key": "6e03283b6f242cbc9e73b103311eea3747b7a59c1ef25742aff90b1ba1ac41f6",
+  "prompts": [
+   "A person standing upright picks up a cup from the table with their right hand, drinks from it, and puts it back on the table."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/cup-3.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "the drink written as the cup's place: tilted 40 degrees, its rim at the lips, on an upright standing pose"
+ },
+ "box-2": {
+  "key": "cc3ada7d3dede5402e4d5b7abdb125f5d22a8983357b84e60a1cc2b031e205d7",
+  "prompts": [
+   "A person bends down and picks up a medium box from the floor with both hands.",
+   "A person carrying a box with both hands walks forward.",
+   "A person places the box on a table in front of them with both hands."
+  ],
+  "seconds": [
+   3,
+   4,
+   3
+  ],
+  "seed": 0,
+  "constraints": "plans/box-2.json",
+  "note": "as box-1, 12 cm farther from the table: no longer into the table, but putting the box down he bends the knees deeply (the free take's own put-down pose, pelvis 0.86): from the side it reads as sitting down on air beside the table"
+ },
+ "box-3": {
+  "key": "2c7730539d9be4158be737904068919681f9a40b3e1d28fb1463f7c7c9bb6929",
+  "prompts": [
+   "A person bends down and picks up a medium box from the floor with both hands.",
+   "A person carrying a box with both hands walks forward.",
+   "A standing person bends forward and places the box on a table in front of them with both hands."
+  ],
+  "seconds": [
+   3,
+   4,
+   3
+  ],
+  "seed": 0,
+  "constraints": "plans/box-3.json",
+  "note": "the put-down pose from the free take's carrying frame 150 (legs nearly straight, pelvis 0.98), bent forward 12 degrees at the waist to reach; the third prompt says 'standing \u2026 bends forward'. Stands and bends forward to put the box down (pelvis 0.98-0.99) - used. Having let go, it crouches down under the table's edge (frames 270-299): the scene ends at 268. The first ask failed busy, asked again"
+ },
+ "chair-1": {
+  "key": "6f57cc1c83c5482e3df0599f098130862e343de861fa5cd03c39380411fabc5a",
+  "prompts": [
+   "A standing person grabs the backrest of a chair in front of them with both hands and pulls the chair out from the table, stepping back."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": "plans/chair-1.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "walks up, takes the chair's back, steps back 0.45 m pulling it, lets go (Kimodo within ~3-5 cm of the bar both times). The first ask failed busy, asked again"
+ }
+}

@@ -1,0 +1,78 @@
+— с поправкой
+{
+ "левая ладонь на спинке": {
+  "frames": "135–195",
+  "kimodo_palm_cm": "mean 6.0, max 9.8",
+  "corrected_palm_cm": "mean 0.1, max 2.3"
+ },
+ "правая ладонь на спинке": {
+  "frames": "135–195",
+  "kimodo_palm_cm": "mean 5.3, max 7.8",
+  "corrected_palm_cm": "mean 0.0, max 0.0"
+ },
+ "into_things": {
+  "chair/bar": {
+   "frames": 132,
+   "deepest_cm": 1.7,
+   "at": 204,
+   "by": {
+    "Lhand": 1.7,
+    "Rhand": 1.7,
+    "LforeArm": 0.5,
+    "null": 1.7,
+    "RforeArm": 0.7
+   }
+  },
+  "chair/chair": {
+   "frames": 212,
+   "deepest_cm": 1.7,
+   "at": 203,
+   "by": {
+    "Rhand": 1.7,
+    "Lhand": 1.7,
+    "null": 1.1,
+    "LforeArm": 0.5,
+    "RforeArm": 0.7
+   }
+  }
+ },
+ "things": {}
+}
+— без поправки (Kimodo как есть)
+{
+ "левая ладонь на спинке": {
+  "frames": "135–195",
+  "kimodo_palm_cm": "mean 6.0, max 9.8",
+  "corrected_palm_cm": "mean 6.0, max 9.8"
+ },
+ "правая ладонь на спинке": {
+  "frames": "135–195",
+  "kimodo_palm_cm": "mean 5.3, max 7.8",
+  "corrected_palm_cm": "mean 5.3, max 7.8"
+ },
+ "into_things": {
+  "chair/bar": {
+   "frames": 38,
+   "deepest_cm": 1.7,
+   "at": 203,
+   "by": {
+    "Lhand": 1.7,
+    "Rhand": 1.7,
+    "RforeArm": 1.7,
+    "null": 1.7
+   }
+  },
+  "chair/chair": {
+   "frames": 44,
+   "deepest_cm": 1.7,
+   "at": 204,
+   "by": {
+    "Rhand": 1.7,
+    "Lhand": 1.4,
+    "RforeArm": 1.5,
+    "null": 1.6
+   }
+  }
+ },
+ "things": {}
+}

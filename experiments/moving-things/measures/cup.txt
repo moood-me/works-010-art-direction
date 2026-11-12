@@ -1,0 +1,66 @@
+— с поправкой
+{
+ "правая ладонь у чашки": {
+  "frames": "145–153",
+  "kimodo_palm_cm": "mean 5.6, max 5.8",
+  "corrected_palm_cm": "mean 0.0, max 0.0"
+ },
+ "правая ладонь: край чашки у губ": {
+  "frames": "205–225",
+  "kimodo_palm_cm": "mean 10.6, max 11.2",
+  "corrected_palm_cm": "mean 0.0, max 0.0"
+ },
+ "правая ладонь ставит чашку": {
+  "frames": "285–295",
+  "kimodo_palm_cm": "mean 4.3, max 5.6",
+  "corrected_palm_cm": "mean 0.0, max 0.0"
+ },
+ "into_things": {
+  "cup/cup": {
+   "frames": 161,
+   "deepest_cm": 1.3,
+   "at": 280,
+   "by": {
+    "Rhand": 1.2,
+    "null": 1.3
+   }
+  }
+ },
+ "things": {
+  "cup": {
+   "end_over_cm": -0.1,
+   "end_tilt_deg": 0
+  },
+  "cup-lips": {
+   "lips_cm_min": 1.0
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "правая ладонь у чашки": {
+  "frames": "145–153",
+  "kimodo_palm_cm": "mean 5.6, max 5.8",
+  "corrected_palm_cm": "mean 5.6, max 5.8"
+ },
+ "правая ладонь: край чашки у губ": {
+  "frames": "205–225",
+  "kimodo_palm_cm": "mean 15.8, max 16.4",
+  "corrected_palm_cm": "mean 15.8, max 16.4"
+ },
+ "правая ладонь ставит чашку": {
+  "frames": "285–295",
+  "kimodo_palm_cm": "mean 4.3, max 5.6",
+  "corrected_palm_cm": "mean 4.3, max 5.6"
+ },
+ "into_things": "nothing",
+ "things": {
+  "cup": {
+   "end_over_cm": -2.2,
+   "end_tilt_deg": 0
+  },
+  "cup-lips": {
+   "lips_cm_min": 16.2
+  }
+ }
+}
