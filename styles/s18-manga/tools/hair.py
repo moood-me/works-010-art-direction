@@ -110,6 +110,8 @@ class Hair:
                 continue
             ye = self.end(a_end)
             yh = self.hl(a_end)
+            if ye > yh + 0.1:
+                ye += rnd.uniform(-0.1, 0.03) * min(1.0, (ye - yh))
             if k.get('to_bun'):
                 B = k['bun']
                 C = (0.0, -0.12, -0.07)
@@ -217,6 +219,10 @@ class Hair:
                         q = [self.shell(h, a0, y0), self.shell(h, a1, y0), self.shell(h, a1, y1), self.shell(h, a0, y1)]
                         f = v.facing(self.normal(h, (a0 + a1) / 2, (y0 + y1) / 2)) > -0.05
                         (scalp_f if f else scalp_b).append(v.many(q))
+        if self.k.get('cap', True) and self.k['bald'] is None:
+            # the crown: the shell's top ring as one piece
+            top = [self.shell(h, a, h.top + 0.004) for a in range(-180, 180, 15)]
+            scalp_f.append(v.many(top))
         for q in (self.k.get('quads3') or []):
             c = [sum(p[i] for p in q) / 4 for i in range(3)]
             f = v.facing((c[0] * 2, 0.2, 0.8)) > -0.1
@@ -243,7 +249,7 @@ class Hair:
             wf0 = wf
             wf = lambda u: wf0(1 - u)
             tp = ((0.25 if ts[0] < 0.05 else 0.0), 0.0)
-        return stroke(pts, wf, taper=tp, n=4)
+        return stroke(pts, wf, taper=tp, n=2)
 
     def _mass(self, v, pieces, scale=1.0, cap=False):
         m = ''.join(self._ribbon(v, p, s, scale) for p, s in pieces)
@@ -258,20 +264,23 @@ class Hair:
         mode = self.k['mode']
         cap = front
         mass = self._mass(v, pieces, cap=cap)
+        md = mass.replace(f' fill="{INK}" stroke="{INK}" stroke-width="1.2"', '').replace(f' fill="{INK}"', '')
+        mid = uid('hd')
         cid = uid('hm')
-        clipdef = f'<clipPath id="{cid}">{mass.replace(f"fill=\"{INK}\"", "")}</clipPath>'
-        out = [clipdef]
+        U = lambda attrs: f'<use href="#{mid}" {attrs}/>'
+        out = [f'<defs><g id="{mid}">{md}</g></defs><clipPath id="{cid}">{md}</clipPath>']
+        INKS = f'fill="{INK}" stroke="{INK}" stroke-width="1.2"'
+        PAPS = f'fill="{PAPER}" stroke="{PAPER}" stroke-width="1.2"'
         rnd = random.Random(self.k['seed'] + (1 if front else 2))
         if mode in ('black', 'tone'):
             if mode == 'black':
-                out.append(f'<g>{self._mass(v, pieces, 1.0, cap)}</g>')
+                out.append(U(INKS))
             else:
                 o = lw * 0.5
-                m = self._mass(v, pieces, 1.0, cap)
-                out.append(f'<g transform="translate({o:.1f},{o:.1f})">{m}</g><g transform="translate({-o*0.5:.1f},{-o*0.5:.1f})">{m}</g>')
+                out.append(U(INKS + f' transform="translate({o:.1f},{o:.1f})"') + U(INKS + f' transform="translate({-o*0.5:.1f},{-o*0.5:.1f})"'))
                 tid = tone_id(self.k['tone_level'] or 0.3)
-                out.append(f'<g>{m.replace(f"fill=\"{INK}\"", f"fill=\"{PAPER}\"").replace(f"stroke=\"{INK}\"", f"stroke=\"{PAPER}\"")}</g>')
-                out.append(f'<g>{m.replace(f"fill=\"{INK}\"", f"fill=\"url(#{tid})\"").replace(f"stroke=\"{INK}\"", "stroke=\"none\"")}</g>')
+                out.append(U(PAPS))
+                out.append(U(f'fill="url(#{tid})"'))
             inner = []
             # streaks of light: white tapered lines along the locks where the shell faces the light
             Lx, Ly, Lz = LIGHT3
@@ -321,9 +330,9 @@ class Hair:
         else:
             # white (or toned) mass with an outline heavier to the lower right: a black copy moved there under it
             o = lw * 0.55
-            out.append(f'<g transform="translate({o:.1f},{o:.1f})">{self._mass(v, pieces, 1.0, cap)}</g>')
-            out.append(f'<g transform="translate({-o*0.6:.1f},{-o*0.6:.1f})">{self._mass(v, pieces, 1.0, cap)}</g>')
-            out.append(f'<g>{self._mass(v, pieces, 1.0, cap).replace(f"fill=\"{INK}\"", f"fill=\"{PAPER}\"").replace(f"stroke=\"{INK}\"", f"stroke=\"{PAPER}\"")}</g>')
+            out.append(U(INKS + f' transform="translate({o:.1f},{o:.1f})"'))
+            out.append(U(INKS + f' transform="translate({-o*0.6:.1f},{-o*0.6:.1f})"'))
+            out.append(U(PAPS))
             inner = []
             if self.k['tone_level'] > 0:
                 inner.append(f'<rect x="-5000" y="-5000" width="10000" height="10000" fill="url(#{tone_id(self.k["tone_level"])})"/>')

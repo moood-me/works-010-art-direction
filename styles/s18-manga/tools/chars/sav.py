@@ -24,64 +24,76 @@ EXTRAS = [wrinkles(forehead=3, crows=3, naso=1, under=1),
           glasses('round', r=0.055, dz=0.085, low=0.035, thick=0.75)]
 
 
+
 # ---------------------------------------------------------------- the figure
-from body import *
+from body3d import *
+from figure import figure
 
 HEIGHT = 6.85
 
 
-def FIGURE(F, e=None, head=True):
-    """Stooped, the head forward and down over a pocket watch held in the near hand; the far hand behind his back.
+def skeleton():
+    H = HEIGHT
+    j = stand(H, sw=0.6, hw=0.3)
+    # stooped: the chest and the neck forward, the shoulders round
+    j['chest'] = (0.0, j['chest'][1] + 0.05, 0.10); j['neck'] = (0.0, j['neck'][1] + 0.12, 0.26)
+    j['sh_r'] = (-0.6, j['sh_r'][1] + 0.12, 0.08); j['sh_l'] = (0.6, j['sh_l'][1] + 0.12, 0.08)
+    # the right hand holds the watch before his chest; the left is behind his back
+    j['el_r'] = (-0.74, -4.3, 0.05); j['wr_r'] = (-0.28, -4.5, 0.72)
+    j['el_l'] = (0.76, -4.35, -0.32); j['wr_l'] = (0.3, -3.85, -0.6)
+    j['kn_r'] = (-0.28, j['kn_r'][1], 0.12); j['kn_l'] = (0.26, j['kn_l'][1], 0.14)
+    j['toe_r'] = (-0.42, 0, 0.85); j['toe_l'] = (0.46, 0, 0.9)
+    return Body(j, scale_sections(MALE, 0.9, belly=0.06), spine_of(j, H), twist=[(0, -4), (1, 4)])
+
+
+def _vest(v, B, lw, P, polys):
+    out = ''
+    xs = [p[0] for p in P]; ys = [p[1] for p in P]
+    out += clip(P, hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=80, gap=lw * 2.6, w=lw * 0.3, length=(0.04, 0.08), seed=12), smooth=False)
+    # the V of the neck: the shirt and the bow tie in it
+    vee = [surf(B, 0.99, -26, 0.06), surf(B, 0.62, -2, 0.07), surf(B, 0.99, 26, 0.06)]
+    V = [v(p) for p in vee] + [v(surf(B, 1.0, 0, 0.0))]
+    out += fillpath(V, PAPER, smooth=False) + stroke([v(p) for p in vee], lw * 0.9)
+    out += seams(v, [surf(B, 0.62, -2, 0.07), surf(B, 0.05, -4, 0.07)], lw, 0.7)
+    for f in (0.5, 0.36, 0.22):
+        out += button(v, surf(B, f, -3, 0.08), lw)
+    # the bow tie
+    c = v(surf(B, 0.96, 0, 0.08)); r = 0.08 * v.s
+    out += fillpath([(c[0] - r * 1.4, c[1] - r * 0.6), (c[0], c[1]), (c[0] - r * 1.4, c[1] + r * 0.6)], INK, smooth=False)
+    out += fillpath([(c[0] + r * 1.2, c[1] - r * 0.6), (c[0], c[1]), (c[0] + r * 1.2, c[1] + r * 0.6)], INK, smooth=False)
+    out += f'<circle cx="{f1(c[0])}" cy="{f1(c[1])}" r="{f1(r * 0.35)}" fill="{INK}"/>'
+    # shirt collar points
+    out += stroke([v(surf(B, 1.0, -20, 0.08)), v(surf(B, 0.95, -10, 0.1))], lw * 0.7) + stroke([v(surf(B, 1.0, 20, 0.08)), v(surf(B, 0.95, 10, 0.1))], lw * 0.7)
+    # the watch chain from the pocket
+    out += stroke([v(surf(B, 0.35, 40, 0.09)), v(surf(B, 0.28, 15, 0.1)), v(surf(B, 0.4, -10, 0.12))], lw * 0.5)
+    return out
+
+
+def _watch(v, pts, lw):
+    w = pts[-1]
+    c = v(add3(w, (0.12, -0.18, 0.15))); R = 0.16 * v.s
+    ring = [(c[0] + R * math.cos(t), c[1] + R * 0.92 * math.sin(t)) for t in [k * math.pi / 12 for k in range(24)]]
+    out = fillpath(ring, PAPER, smooth=False) + outline(ring, lw * 1.1, 0.5, smooth=False)
+    out += f'<circle cx="{f1(c[0])}" cy="{f1(c[1])}" r="{f1(R * 0.78)}" fill="none" stroke="{INK}" stroke-width="{lw * 0.35:.2f}"/>'
+    for k in range(12):
+        a = k * math.pi / 6
+        out += stroke([(c[0] + R * 0.68 * math.cos(a), c[1] + R * 0.68 * math.sin(a)), (c[0] + R * 0.76 * math.cos(a), c[1] + R * 0.76 * math.sin(a))], lw * 0.35, smooth=False)
+    out += stroke([c, (c[0] + R * 0.05, c[1] - R * 0.55)], lw * 0.6, smooth=False) + stroke([c, (c[0] + R * 0.4, c[1] + R * 0.12)], lw * 0.5, smooth=False)
+    out += fillpath([(c[0] - R * 0.15, c[1] - R * 1.0), (c[0] + R * 0.15, c[1] - R * 1.0), (c[0] + R * 0.15, c[1] - R * 1.2), (c[0] - R * 0.15, c[1] - R * 1.2)], PAPER, smooth=False)
+    out += outline([(c[0] - R * 0.15, c[1] - R * 1.0), (c[0] + R * 0.15, c[1] - R * 1.0), (c[0] + R * 0.15, c[1] - R * 1.2), (c[0] - R * 0.15, c[1] - R * 1.2)], lw * 0.6, 0.3, smooth=False)
+    return out
+
+
+def FIGURE(v, e=None, lw=2.0, neutral=False, bust=False):
+    """Stooped, the head forward and down over a pocket watch held before his chest; the other hand behind his back.
     A white shirt, a knitted vest, a bow tie, baggy trousers, old shoes."""
-    me = __import__('chars.sav', fromlist=['x'])
-    o = []
-    pit = (0.30, -5.78)
-    hv = dict(yaw=30, pitch=10, roll=3, e=e)
-    if head:
-        o.append(head_on(F, me, pit, hair='back', **hv))
-    # far arm going behind the back
-    sl, _ = limb(F, [(0.72, -5.55), (0.86, -4.9), (0.8, -4.45)], [0.17, 0.16, 0.15])
-    o.append(sl)
-    # far leg, near leg: baggy trousers in a light tone
-    tr = 0.22
-    lg, _ = limb(F, [(0.36, -3.55), (0.48, -1.95), (0.56, -0.32)], [0.22, 0.19, (0.16, 0.18)], fill=f'url(#{tone_id(tr)})', ends=(False, True))
-    o.append(lg)
-    o.append(shoe(F, (0.40, -0.06), (0.98, -0.02), h=0.17))
-    lg, _ = limb(F, [(-0.28, -3.55), (-0.33, -1.95), (-0.30, -0.3)], [0.23, 0.2, (0.17, 0.19)], fill=f'url(#{tone_id(tr)})', ends=(False, True))
-    o.append(lg)
-    o.append(folds(F, [[(-0.4, -2.1), (-0.25, -1.85)], [(-0.42, -1.0), (-0.22, -0.8)], [(-0.4, -0.6), (-0.2, -0.5)], [(0.42, -2.0), (0.6, -1.8)], [(0.5, -0.9), (0.68, -0.75)]], 0.7))
-    o.append(shoe(F, (-0.5, 0.0), (0.16, 0.05), h=0.18))
-    # shirt back and the vest
-    shirt = [(-0.25, -5.85), (0.42, -5.85), (0.5, -4.7), (-0.2, -4.6)]
-    o.append(shape(F, shirt, line=0.6))
-    vest = [(-0.18, -5.82), (-0.55, -5.62), (-0.70, -5.0), (-0.70, -4.2), (-0.62, -3.55), (0.02, -3.42), (0.72, -3.52),
-            (0.86, -4.2), (0.84, -4.9), (0.74, -5.55), (0.42, -5.8), (0.26, -5.0), (0.12, -4.62)]
-    o.append(shaded(F, vest, base=0.45, dark=0.75, off=(0.07, 0.03),
-                    extra=hatchf(F, vest, angle=80, gap=0.06, w=0.3, seed=12)))
-    o.append(line(F, [(0.12, -4.62), (0.08, -3.45)], 0.6))
-    for y in (-4.4, -4.05, -3.7):
-        X, Y = F.p(0.1 + (y + 4.4) * 0.0, y)
-        o.append(f'<circle cx="{f1(X)}" cy="{f1(Y)}" r="{f1(F.lw * 1.4)}" fill="{PAPER}" stroke="{INK}" stroke-width="{F.lw * 0.5:.1f}"/>')
-    o.append(folds(F, [[(-0.6, -4.0), (-0.35, -3.9)], [(0.6, -3.95), (0.8, -4.05)], [(0.2, -4.2), (0.55, -4.3)]], 0.6))
-    # collar and bow tie
-    o.append(shape(F, [(-0.12, -5.86), (0.08, -5.62), (0.14, -5.75), (0.36, -5.88), (0.34, -5.95), (0.1, -5.82), (-0.1, -5.95)], line=0.7, smooth=False))
-    o.append(shape(F, [(0.0, -5.66), (0.12, -5.6), (0.24, -5.68), (0.24, -5.52), (0.12, -5.58), (0.0, -5.5)], fill=INK, line=0.5, smooth=False))
-    # watch chain into the vest pocket
-    o.append(line(F, [(0.62, -4.4), (0.4, -4.25), (0.2, -4.45), (0.12, -4.8)], 0.45))
-    # near arm: shirt sleeve, the forearm raised, the watch in the hand
-    sl, _ = limb(F, [(-0.56, -5.55), (-0.76, -4.85), (-0.72, -4.3)], [0.2, 0.18, 0.17])
-    o.append(sl)
-    o.append(folds(F, [[(-0.86, -4.6), (-0.66, -4.45)], [(-0.84, -4.95), (-0.68, -4.85)]], 0.7))
-    fa, _ = limb(F, [(-0.72, -4.32), (-0.42, -4.42), (-0.1, -4.62)], [0.17, 0.15, 0.13], ends=(False, True))
-    o.append(fa)
-    o.append(folds(F, [[(-0.55, -4.52), (-0.48, -4.3)]], 0.6))
-    # the watch
-    X, Y = F.p(0.1, -4.86); R = 0.15 * F.s
-    o.append(f'<circle cx="{f1(X)}" cy="{f1(Y)}" r="{f1(R)}" fill="{PAPER}"/>' + outline([(X + R * math.cos(t), Y + R * math.sin(t)) for t in [k * math.pi / 12 for k in range(24)]], F.lw * 1.0, 0.5, smooth=False))
-    o.append(f'<circle cx="{f1(X)}" cy="{f1(Y)}" r="{f1(R * 0.78)}" fill="none" stroke="{INK}" stroke-width="{F.lw * 0.35:.1f}"/>')
-    o.append(stroke([(X, Y), (X + R * 0.05, Y - R * 0.55)], F.lw * 0.6) + stroke([(X, Y), (X + R * 0.42, Y + R * 0.1)], F.lw * 0.5))
-    o.append(shape(F, [(0.06, -5.04), (0.14, -5.04), (0.14, -5.1), (0.06, -5.1)], line=0.5, smooth=False))
-    o.append(hand(F, (-0.1, -4.62), 330, 0.6, 'hold', side=1, twist=200, tilt=10))
-    if head:
-        o.append(head_on(F, me, pit, hair='front', **hv))
-    return ''.join(o)
+    d = dict(B=skeleton(), mod=__import__('chars.sav', fromlist=['x']), H=HEIGHT,
+             head=dict(yaw_rel=4, pitch=14, roll=3, pit=(0, 0.04, 0.05)),
+             arms=dict(r=(0.14, 0.12, 0.095, 0.105, 0.065), sleeve=dict(grow=0.06, until=0.95, tone=0.0, dark=0.25),
+                       hands=dict(r=dict(pose='hold', twist=190, size=0.6, turn=-20, over=_watch), l=None),
+                       front_from=dict(r=0.5), behind=['l']),
+             legs=dict(r=(0.27, 0.21, 0.13, 0.14, 0.07), garment=dict(kind='trousers', grow=0.07, tone=0.22, dark=0.45, flare=0.02),
+                       shoe=dict(w=0.18, h=0.26, toe_h=0.1, tone=0.55, dark=0.85)),
+             torso=[dict(bottom=-3.35, grow=0.05, tone=0.0, dark=0.25, with_arms=True),
+                    dict(bottom=-3.45, top=0.99, grow=0.08, tone=0.45, dark=0.78, extra=_vest)])
+    return figure(v, d, e, lw, neutral, bust)

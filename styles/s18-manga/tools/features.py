@@ -5,21 +5,25 @@ from head import ADULT, on, View, silhouette, interp_table, Head
 
 
 def sections(cranium=1.0, cheek=1.0, jaw=1.0, chin=1.0, depth=1.0, face=1.0, top=None, bottom=None, hollow=0.0,
-             jaw_angle=0.0, chin_fwd=0.0, brow=0.0):
+             jaw_angle=0.0, chin_fwd=0.0, brow=0.0, ramus=1.0):
     """The base head changed by zones: widths of the cranium, cheekbones, jaw and chin; depth; a longer or shorter
     face (face > 1 stretches the part below the eyes); hollow cheeks; a squarer jaw angle; a chin forward."""
     out = []
     for y, w, zf, zb, z0, nf in ADULT:
         k_cr = max(0, min(1, (-y - 0.02) / 0.15))
-        k_ch = max(0, 1 - abs(y - 0.10) / 0.14)
-        k_jw = max(0, 1 - abs(y - 0.38) / 0.10)
-        k_cn = max(0, min(1, (y - 0.43) / 0.05))
-        m = 1 + (cranium - 1) * k_cr + (cheek - 1) * k_ch + (jaw - 1) * k_jw + (chin - 1) * k_cn
+        k_ch = max(0, 1 - abs(y - 0.10) / 0.16) if y < 0.10 else max(0, 1 - (y - 0.10) / 0.2)
+        k_jw = max(0, min(1, (y - 0.18) / 0.2))
+        k_cn = max(0, min(1, (y - 0.42) / 0.07))
+        m = (1 + (cranium - 1) * k_cr + (cheek - 1) * k_ch) * (1 + (jaw - 1) * k_jw) * (1 + (chin / max(jaw, 0.01) - 1) * k_cn)
         m -= hollow * max(0, 1 - abs(y - 0.27) / 0.08)
         yy = y * face if y > 0 else y
         zf2 = zf * depth + chin_fwd * k_cn + brow * max(0, 1 - abs(y + 0.08) / 0.06)
         nf2 = nf + jaw_angle * k_jw
-        out.append((yy, w * m, zf2, zb * depth, z0, nf2))
+        zb2 = zb * depth
+        if y > 0.24 and ramus != 1.0:
+            # a shorter jaw from the ear to its angle: the angle hidden under the cheek (young faces)
+            zb2 = z0 + (zb2 - z0) * ramus
+        out.append((yy, w * m, zf2, zb2, z0, nf2))
     return out
 
 

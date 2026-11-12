@@ -56,7 +56,15 @@ def catmull(pts, closed=False, n=8):
 def poly(pts, closed=True):
     if not pts:
         return ''
-    s = 'M' + ' L'.join(f'{f1(x)} {f1(y)}' for x, y in pts)
+    out = []
+    last = None
+    for x, y in pts:
+        q = (round(x, 1), round(y, 1))
+        if q == last:
+            continue
+        last = q
+        out.append(f'{q[0]:g} {q[1]:g}')
+    s = 'M' + 'L'.join(out)
     return s + ('Z' if closed else '')
 
 
@@ -108,7 +116,7 @@ def stroke(pts, w=1.6, taper=(0.18, 0.22), smooth=True, fill=INK, extra='', n=7)
     """A pen line with pressure along points. taper: the parts of the length (start, end) where the pen lifts."""
     c = catmull(pts, False, n) if smooth and len(pts) > 2 else [tuple(p[:2]) for p in pts]
     if len(c) == 2:
-        c = [lerp(c[0], c[1], i / 6) for i in range(7)]
+        c = [lerp(c[0], c[1], i / 4) for i in range(5)]
     L = arclen(c)
     tot = L[-1] or 1
     wf = _wfun(w, len(pts))
@@ -234,7 +242,7 @@ def gtone(box, cov, clip_pts=None, pitch=PITCH, smooth=True, angle=45, seed=0):
             q = round(r * 5) / 5
             if q <= 0:
                 continue
-            groups.setdefault(q, []).append(f'M{x:.1f} {y:.1f}h0')
+            groups.setdefault(q, []).append(f'M{x:.0f} {y:.0f}h0')
     body = ''.join(f'<path d="{"".join(v)}" stroke="{INK}" stroke-width="{2*q:.1f}" stroke-linecap="round"/>' for q, v in sorted(groups.items()))
     if clip_pts is not None:
         return clip(clip_pts, body, smooth)
@@ -244,8 +252,8 @@ def gtone(box, cov, clip_pts=None, pitch=PITCH, smooth=True, angle=45, seed=0):
 # ---------------------------------------------------------------- hatching
 
 def hatch(clip_pts, box, angle=-35, gap=5.0, w=0.9, length=(0.6, 1.0), density=None, seed=1, smooth=True, jitter=0.25):
-    """Parallel tapered strokes over box, clipped to clip_pts. density(x, y) in 0..1 keeps or drops strokes and
-    shortens them: hatching that fades into the light."""
+    """Parallel pen strokes over box, clipped to clip_pts. density(x, y) in 0..1 keeps or drops strokes and shortens
+    them: hatching that fades into the light. Drawn as round-capped lines, one path per width."""
     rnd = random.Random(seed)
     x0, y0, x1, y1 = box
     a = math.radians(angle)
@@ -253,28 +261,26 @@ def hatch(clip_pts, box, angle=-35, gap=5.0, w=0.9, length=(0.6, 1.0), density=N
     nx, ny = -dy, dx
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     R = math.hypot(x1 - x0, y1 - y0) / 2
-    out = []
+    buckets = {}
     k = -R
     while k < R:
         px, py = cx + nx * k, cy + ny * k
-        L = 2 * R
-        # walk along the line in pieces so the density can vary
-        s = -R
-        while s < R:
+        s_ = -R
+        while s_ < R:
             seg = R * 0.5 * rnd.uniform(*length)
-            mx, my = px + dx * (s + seg / 2), py + dy * (s + seg / 2)
-            dens = density(mx, my) if density else 1.0
-            if dens > 0.02 and rnd.random() < min(1.0, dens * 1.6):
-                sl = seg * min(1.0, 0.35 + dens)
-                a0 = (px + dx * s, py + dy * s)
-                a1 = (px + dx * (s + sl), py + dy * (s + sl))
-                off = rnd.uniform(-jitter, jitter) * gap
-                a0 = (a0[0] + nx * off, a0[1] + ny * off)
-                a1 = (a1[0] + nx * off, a1[1] + ny * off)
-                out.append(stroke([a0, a1], w * rnd.uniform(0.75, 1.15), taper=(0.3, 0.45), smooth=False))
-            s += seg * rnd.uniform(1.0, 1.3)
+            mx, my = px + dx * (s_ + seg / 2), py + dy * (s_ + seg / 2)
+            if x0 - 2 <= mx <= x1 + 2 and y0 - 2 <= my <= y1 + 2:
+                dens = density(mx, my) if density else 1.0
+                if dens > 0.02 and rnd.random() < min(1.0, dens * 1.6):
+                    sl = seg * min(1.0, 0.35 + dens)
+                    off = rnd.uniform(-jitter, jitter) * gap
+                    a0 = (px + dx * s_ + nx * off, py + dy * s_ + ny * off)
+                    a1 = (px + dx * (s_ + sl) + nx * off, py + dy * (s_ + sl) + ny * off)
+                    q = round(w * rnd.uniform(0.75, 1.15), 1)
+                    buckets.setdefault(q, []).append(f'M{a0[0]:.1f} {a0[1]:.1f}L{a1[0]:.1f} {a1[1]:.1f}')
+            s_ += seg * rnd.uniform(1.0, 1.3)
         k += gap
-    body = ''.join(out)
+    body = ''.join(f'<path d="{"".join(v)}" stroke="{INK}" stroke-width="{q}" stroke-linecap="round" fill="none"/>' for q, v in buckets.items())
     return clip(clip_pts, body, smooth) if clip_pts is not None else body
 
 

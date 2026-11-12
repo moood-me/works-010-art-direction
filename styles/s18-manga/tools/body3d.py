@@ -167,28 +167,30 @@ def ring_around(v, a, b, t, r, front=True, n=16):
 
 def group(polys, lw, base=0.0, dark=0.35, black=False, off=0.05, s=100.0, extra='', light=(-1, -0.6), line=1.0, shadow=True):
     """polys: screen polygons of one group (their union is one shape). The outline: a black copy grown and moved to
-    the lower right under the fill. base: tone of the fill; the cast shadow: `dark` (or black) on the far side."""
+    the lower right under the fill. base: tone of the fill; the cast shadow: `dark` (or black) on the far side.
+    The shape is written once and used by reference."""
     if not polys:
         return ''
     o = lw * 0.45 * line
-    paths = [poly(p) for p in polys]
-    blk = ''.join(f'<path d="{d}" fill="{INK}" stroke="{INK}" stroke-width="{lw * 1.1 * line:.2f}" stroke-linejoin="round"/>' for d in paths)
-    out = f'<g transform="translate({o:.1f},{o * 0.8:.1f})">{blk}</g>' + blk
-    fill_base = PAPER if base <= 0 else f'url(#{tone_id(base)})'
-    whites = ''.join(f'<path d="{d}" fill="{PAPER}"/>' for d in paths)
-    out += whites
+    gid = uid('g')
+    shp = f'<defs><g id="{gid}">' + ''.join(f'<path d="{poly(p)}"/>' for p in polys) + '</g></defs>'
+    use = lambda attrs: f'<use href="#{gid}" {attrs}/>'
+    blk = f'fill="{INK}" stroke="{INK}" stroke-width="{lw * 1.1 * line:.2f}" stroke-linejoin="round"'
+    out = shp + use(f'{blk} transform="translate({o:.1f},{o * 0.8:.1f})"') + use(blk)
+    fill_base = PAPER if base <= 0 else (INK if base >= 0.97 else f'url(#{tone_id(base)})')
+    out += use(f'fill="{PAPER}"')
     cid = uid('gp')
-    out += f'<clipPath id="{cid}">' + ''.join(f'<path d="{d}"/>' for d in paths) + '</clipPath>'
+    out += f'<clipPath id="{cid}">' + ''.join(f'<path d="{poly(p)}"/>' for p in polys) + '</clipPath>'
     inner = ''
     if shadow and (dark > 0 or black):
         dx, dy = off * s * -light[0], off * s * -light[1]
         fill_dark = INK if black else f'url(#{tone_id(dark)})'
-        inner += ''.join(f'<path d="{d}" fill="{fill_dark}"/>' for d in paths)
-        inner += ''.join(f'<path d="{d}" transform="translate({-dx:.1f},{-dy:.1f})" fill="{PAPER}"/>' for d in paths)
+        inner += use(f'fill="{fill_dark}"')
+        inner += use(f'fill="{PAPER}" transform="translate({-dx:.1f},{-dy:.1f})"')
         if base > 0:
-            inner += ''.join(f'<path d="{d}" transform="translate({-dx:.1f},{-dy:.1f})" fill="{fill_base}"/>' for d in paths)
+            inner += use(f'fill="{fill_base}" transform="translate({-dx:.1f},{-dy:.1f})"')
     elif base > 0:
-        inner += ''.join(f'<path d="{d}" fill="{fill_base}"/>' for d in paths)
+        inner += use(f'fill="{fill_base}"')
     inner += extra
     out += f'<g clip-path="url(#{cid})">{inner}</g>'
     return out
@@ -248,7 +250,7 @@ def head3d(v, mod, pit3, yaw_rel=0.0, pitch=0.0, roll=0.0, hs=1.0, e=None, part=
     """The character's head with its neck standing on pit3 (the pit of the neck, 3D body point)."""
     x, y = v(pit3)
     s = v.s * hs
-    vh = View(yaw=math.degrees(v.yaw) + yaw_rel, pitch=pitch, roll=roll, s=s, x=x, y=y - 0.74 * s)
+    vh = View(yaw=math.degrees(v.yaw) + yaw_rel, pitch=pitch, roll=roll, s=s, x=x, y=y - 0.60 * s)
     h = Head(mod.HEAD, EXPR.get(e) if isinstance(e, str) else e)
     if part == 'back':
         return mod.HAIR.back(h, vh, lw)

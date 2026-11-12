@@ -5,14 +5,14 @@ from features import *
 from hair import Hair
 
 HEAD = dict(
-    sections=sections(cranium=0.96, cheek=0.97, jaw=0.88, chin=0.86, depth=1.0, face=1.08, hollow=0.06, jaw_angle=0.2),
+    sections=sections(cranium=0.96, cheek=0.97, jaw=0.88, chin=0.86, depth=1.0, face=1.08, hollow=0.06, jaw_angle=0.1, ramus=0.75),
     nose=dict(profile=[(-0.01, 0.012, 0.025), (0.08, 0.06, 0.03), (0.18, 0.115, 0.038), (0.2, 0.105, 0.042), (0.235, 0.015, 0.045)],
               tip=0.195, wing=0.048, bridge_from=0.25),
     eye=dict(x=0.135, y=0.0, w=0.066, h=0.029, crease=0.8, lash=1, bag=0.6, iris=0.5, tilt=0.06, peak=-0.3),
     brow=dict(x0=0.05, x1=0.24, y=-0.075, arch=0.012, th=0.85, slope=0.015),
     mouth=dict(y=0.325, w=0.08, lower=0.025, upper_line=1),
     ear=dict(y=0.08, h=0.23, w=0.11),
-    neck=dict(rx=0.125, rz=0.15),
+    neck=dict(rx=0.14, rz=0.16),
     rest=dict(frown=0.25, open=0.82, brow_in=-0.15, knit=0.25),
     shade=dict(level=0.16),
 )
@@ -24,61 +24,77 @@ HAIR = Hair(mode='black', part=0, n=150, width=0.06, thick=0.025, top_thick=0.03
 EXTRAS = [wrinkles(naso=1, under=1, forehead=1), glasses('rect', r=0.07, rh=0.042, dz=0.05, thick=1.0)]
 
 
+
 # ---------------------------------------------------------------- the figure
-from body import *
+from body3d import *
+from figure import figure
 
 HEIGHT = 7.5
+COAT = 0.6
 
 
-def FIGURE(F, e=None, head=True):
-    """Upright, a folder held against her hip by the near arm, the far hand at her glasses; a long dark coat open
-    over a high-collared blouse and a straight skirt."""
-    me = __import__('chars.vera', fromlist=['x'])
-    o = []
-    pit = (0.08, -6.42)
-    hv = dict(yaw=26, pitch=4, roll=0, e=e)
-    if head:
-        o.append(head_on(F, me, pit, hair='back', **hv))
-    coat = 0.62
-    # far sleeve (behind the body, up to the face)
-    sl, _ = limb(F, [(0.56, -6.15), (0.82, -5.3), (0.55, -6.0)], [0.17, 0.16, 0.14], fill=f'url(#{tone_id(coat)})')
-    o.append(sl)
-    # legs
-    lg, _ = limb(F, [(0.22, -2.2), (0.26, -1.3), (0.30, -0.3)], [0.11, (0.11, 0.1), 0.055])
-    o.append(lg)
-    o.append(shoe(F, (0.2, -0.08), (0.66, -0.06), h=0.14))
-    lg, _ = limb(F, [(-0.2, -2.2), (-0.2, -1.3), (-0.17, -0.28)], [0.115, (0.12, 0.1), 0.057])
-    o.append(lg)
-    o.append(shoe(F, (-0.34, 0.0), (0.1, 0.04), h=0.14))
-    # skirt between the coat's edges
-    o.append(shaded(F, [(-0.4, -4.6), (0.42, -4.62), (0.44, -2.1), (-0.4, -2.08)], base=0.5, dark=0.75, off=(0.05, 0.0)))
-    # blouse
-    o.append(shape(F, [(-0.2, -6.45), (0.3, -6.45), (0.32, -4.55), (-0.25, -4.55)], line=0.5))
-    o.append(shape(F, [(-0.12, -6.48), (0.2, -6.5), (0.24, -6.22), (0.05, -6.15), (-0.14, -6.24)], line=0.7))
-    o.append(line(F, [(0.05, -6.15), (0.06, -4.6)], 0.4))
-    # the coat: near panel and far panel, lapels
-    near = [(-0.12, -6.5), (-0.46, -6.38), (-0.62, -6.2), (-0.62, -5.2), (-0.54, -4.5), (-0.66, -3.2), (-0.70, -1.95),
-            (-0.18, -1.85), (-0.12, -3.5), (-0.14, -4.6), (-0.05, -5.6), (-0.15, -6.1)]
-    far = [(0.26, -6.5), (0.46, -6.4), (0.58, -6.2), (0.56, -5.2), (0.48, -4.55), (0.56, -3.2), (0.62, -1.98), (0.3, -1.9),
-           (0.26, -3.5), (0.22, -4.6), (0.18, -5.6), (0.26, -6.1)]
-    o.append(shaded(F, far, base=coat, dark=0.85, off=(0.07, 0.02), black=True))
-    o.append(shaded(F, near, base=coat, dark=0.85, off=(0.07, 0.02), black=True))
-    o.append(shape(F, [(-0.12, -6.5), (-0.28, -6.3), (-0.05, -5.6), (-0.15, -6.1)], fill=f'url(#{tone_id(0.75)})', line=0.7))
-    o.append(folds(F, [[(-0.5, -4.4), (-0.35, -3.2), (-0.4, -2.0)], [(-0.3, -3.8), (-0.25, -2.6)], [(0.45, -4.2), (0.4, -2.0)]], 0.7))
-    o.append(line(F, [(-0.56, -4.55), (-0.3, -4.6), (-0.12, -4.62)], 0.6))
-    # near arm hanging, the folder against the hip under the hand
-    sl, _ = limb(F, [(-0.56, -6.2), (-0.72, -5.4), (-0.74, -4.7), (-0.62, -4.05)], [0.18, 0.16, 0.15, 0.14],
-                 fill=f'url(#{tone_id(coat)})', ends=(False, True))
-    o.append(sl)
-    o.append(folds(F, [[(-0.84, -4.8), (-0.66, -4.62)], [(-0.8, -5.1), (-0.66, -4.95)]], 0.6))
-    folder = [(-0.95, -4.6), (-0.42, -4.75), (-0.32, -3.4), (-0.85, -3.25)]
-    o.append(shaded(F, folder, base=0.15, dark=0.4, off=(0.03, 0.02), smooth=False))
-    o.append(line(F, [(-0.92, -4.5), (-0.4, -4.65)], 0.4, smooth=False))
-    o.append(hand(F, (-0.6, -4.02), 75, 0.56, 'hold', side=1, twist=110))
-    if head:
-        o.append(head_on(F, me, pit, hair='front', **hv))
-    # the far hand at the glasses, over the face
-    fa, _ = limb(F, [(0.62, -6.0), (0.42, -6.5), (0.3, -6.82)], [0.14, 0.13, 0.11], fill=f'url(#{tone_id(coat)})', ends=(False, True))
-    o.append(fa)
-    o.append(hand(F, (0.3, -6.82), 235, 0.52, 'point', side=-1, twist=70))
-    return ''.join(o)
+def skeleton():
+    H = HEIGHT
+    j = stand(H, sw=0.5, hw=0.28, female=True)
+    j['el_r'] = (-0.62, -4.62, -0.08); j['wr_r'] = (-0.58, -3.62, 0.22)
+    j['el_l'] = (0.62, -5.15, 0.42); j['wr_l'] = (0.42, -6.42, 0.42)
+    j['kn_l'] = (0.2, j['kn_l'][1], 0.12); j['an_l'] = (0.22, j['an_l'][1], 0.06); j['toe_l'] = (0.42, 0, 0.92)
+    j['toe_r'] = (-0.36, 0, 0.88)
+    return Body(j, scale_sections(FEMALE, 0.9), spine_of(j, H), twist=[(0, 0), (1, 4)])
+
+
+def _coat(v, B, lw, P, polys):
+    H = HEIGHT; j = B.j
+    out = ''
+    # the open front: the blouse inside, lapels
+    f_w = frac(H, -0.6 * H, j); f_h = frac(H, -1.88, j)
+    fs = (0.995, 0.86, 0.72, 0.55, 0.3, 0.0, -0.4, f_h)
+    gr = lambda f: 0.1 + max(0.0, f_w - f) * 0.14 + 0.005
+    er = [surf(B, f, -4 - max(0, f - 0.55) * 45, gr(f)) for f in fs]
+    el = [surf(B, f, 4 + max(0, f - 0.55) * 45, gr(f)) for f in fs]
+    opening = [v(p) for p in er] + [v(p) for p in el[::-1]]
+    out += fillpath(opening, PAPER) + clip(opening, tone([v(surf(B, 0.42, -60, 0.1)), v(surf(B, 0.42, 60, 0.1)), (v(surf(B, 0.42, 60, 0.1))[0], 5000), (v(surf(B, 0.42, -60, 0.1))[0], 5000)], 0.5, smooth=False), smooth=False)
+    out += seams(v, [surf(B, 0.42, -40, 0.06), surf(B, 0.42, 40, 0.06)], lw, 0.6)
+    out += stroke([v(p) for p in er], lw * 1.0) + stroke([v(p) for p in el], lw * 1.0)
+    # lapels
+    lap = [surf(B, 0.995, -14, 0.11), surf(B, 0.9, -32, 0.13), surf(B, 0.7, -16, 0.12), surf(B, 0.72, -10, 0.11)]
+    out += group([[v(p) for p in lap]], lw * 0.8, base=0.75, dark=0.0, s=v.s, shadow=False)
+    lap = [surf(B, 0.995, 14, 0.11), surf(B, 0.9, 32, 0.13), surf(B, 0.7, 16, 0.12), surf(B, 0.72, 10, 0.11)]
+    out += group([[v(p) for p in lap]], lw * 0.8, base=0.75, dark=0.0, s=v.s, shadow=False)
+    # the blouse's high collar
+    col = [surf(B, 1.04, -32, 0.02), surf(B, 1.06, 0, 0.03), surf(B, 1.04, 32, 0.02), surf(B, 0.95, 18, 0.04), surf(B, 0.94, -18, 0.04)]
+    out += group([[v(p) for p in col]], lw * 0.8, base=0.0, dark=0.0, s=v.s, shadow=False)
+    # belt line at the back, pockets
+    out += seams(v, [surf(B, 0.3, -80, 0.1), surf(B, 0.25, -45, 0.1)], lw, 0.6, ink=PAPER)
+    return out
+
+
+def _tails(v, B, lw, P):
+    H = HEIGHT; j = B.j
+    out = ''
+    f_top = frac(H, -0.6 * H, j)
+    er = [surf(B, f, -4, 0.1 + max(0, f_top - f) * 0.15) for f in (0.0, -0.3, frac(H, -1.85, j))]
+    el = [surf(B, f, 4, 0.1 + max(0, f_top - f) * 0.15) for f in (0.0, -0.3, frac(H, -1.85, j))]
+    gap = [v(p) for p in er] + [v(p) for p in el[::-1]]
+    out += fillpath(gap, f'url(#{tone_id(0.5)})', smooth=False) + stroke([v(p) for p in er], lw) + stroke([v(p) for p in el], lw)
+    return out
+
+
+def _folder(v, pts, lw):
+    w = pts[-1]
+    q = [add3(w, (-0.35, -0.55, 0.05)), add3(w, (0.12, -0.6, 0.12)), add3(w, (0.18, 0.55, 0.1)), add3(w, (-0.3, 0.6, 0.02))]
+    P = [v(p) for p in q]
+    return group([P], lw, base=0.1, dark=0.35, s=v.s, off=0.03) + stroke([lerp(P[0], P[1], 0.04), lerp(P[3], P[2], 0.04)], lw * 0.4)
+
+
+def FIGURE(v, e=None, lw=2.0, neutral=False, bust=False):
+    """Upright, a folder against her hip under one hand, the other hand at her glasses; a long dark coat open over a
+    high-collared blouse and a dark skirt, low-heeled shoes."""
+    d = dict(B=skeleton(), mod=__import__('chars.vera', fromlist=['x']), H=HEIGHT,
+             head=dict(yaw_rel=2, pitch=4, roll=0, pit=(0, 0.02, 0.05)),
+             arms=dict(r=(0.12, 0.105, 0.085, 0.095, 0.058), sleeve=dict(grow=0.06, until=0.94, tone=COAT, dark=0.9, black=True, fold_ink=PAPER),
+                       hands=dict(r=dict(pose='hold', twist=110, size=0.56, hold_item=_folder), l=dict(pose='relaxed', twist=150, size=0.52, side=1, turn=-25)),
+                       front_from=dict(l=0.45)),
+             legs=dict(r=(0.26, 0.19, 0.11, 0.13, 0.058), skin_tone=0.1, skin_dark=0.3, shoe=dict(w=0.14, h=0.24, toe_h=0.08, tone=0.7, dark=0.9)),
+             torso=[dict(bottom=-1.85, grow=0.1, tone=COAT, dark=0.9, black=True, with_arms=True, extra=_coat, flare=(-0.6 * HEIGHT, 0.14))])
+    return figure(v, d, e, lw, neutral, bust)

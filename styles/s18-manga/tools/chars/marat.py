@@ -23,65 +23,98 @@ HEAD['under'] = [beard(thick=0.035, length=0.05)]
 EXTRAS = [wrinkles(crows=2)]
 
 
+
 # ---------------------------------------------------------------- the figure
-from body import *
+from body3d import *
+from figure import figure
 
 HEIGHT = 7.4
 
 
-def FIGURE(F, e=None, head=True):
-    """Laughing with the whole body: leaning back, the ladle up in the far hand, the near fist on his hip; a white
+def skeleton():
+    H = HEIGHT
+    j = stand(H, sw=0.86, hw=0.4)
+    # leaning back with the laugh, the belly forward; a wide stance
+    j['chest'] = (0.0, j['chest'][1], -0.1); j['neck'] = (0.0, j['neck'][1], -0.24); j['waist'] = (0, j['waist'][1], 0.04)
+    j['sh_r'] = (-0.86, j['sh_r'][1] + 0.02, -0.16); j['sh_l'] = (0.86, j['sh_l'][1] - 0.04, -0.16)
+    j['el_l'] = (1.12, -6.55, 0.15); j['wr_l'] = (0.98, -7.55, 0.3)
+    j['el_r'] = (-1.4, -4.85, -0.3); j['wr_r'] = (-0.92, -4.3, 0.12)
+    j['hip_r'] = (-0.42, j['hip_r'][1], 0); j['hip_l'] = (0.42, j['hip_l'][1], 0)
+    j['kn_r'] = (-0.58, j['kn_r'][1], 0.08); j['kn_l'] = (0.56, j['kn_l'][1], 0.12)
+    j['an_r'] = (-0.62, j['an_r'][1], -0.02); j['an_l'] = (0.62, j['an_l'][1], 0.0)
+    j['heel_r'] = (-0.62, 0, -0.16); j['toe_r'] = (-0.95, 0, 0.85); j['heel_l'] = (0.62, 0, -0.14); j['toe_l'] = (0.92, 0, 0.88)
+    return Body(j, scale_sections(MALE, 1.22, d=1.15, belly=0.28, chest=1.05), spine_of(j, H), twist=[(0, -4), (1, 6)])
+
+
+def _jacket(v, B, lw, P, polys):
+    out = ''
+    # double-breasted: the overlap edge and two rows of buttons
+    out += seams(v, [surf(B, 0.97, 18, 0.06), surf(B, 0.7, 22, 0.07), surf(B, 0.4, 24, 0.08), surf(B, 0.12, 22, 0.08)], lw, 0.8)
+    for f in (0.85, 0.7, 0.55):
+        out += button(v, surf(B, f, -12, 0.07), lw, 1.6) + button(v, surf(B, f, 14, 0.07), lw, 1.6)
+    # a stand collar
+    col = [surf(B, 1.05, -40, 0.03), surf(B, 1.07, 0, 0.04), surf(B, 1.05, 40, 0.03), surf(B, 0.97, 30, 0.07), surf(B, 0.97, -30, 0.07)]
+    out += group([[v(p) for p in col]], lw * 0.8, base=0.0, dark=0.0, s=v.s, shadow=False)
+    # strain folds at the belly
+    out += seams(v, [surf(B, 0.5, -55, 0.06), surf(B, 0.47, -25, 0.07)], lw, 0.5) + seams(v, [surf(B, 0.42, 40, 0.07), surf(B, 0.45, 60, 0.06)], lw, 0.5)
+    return out
+
+
+def _apron(v, B, lw):
+    H = HEIGHT; j = B.j
+    fb = frac(H, -1.55, j); ft = 0.66
+    def edge(a0, a1):
+        return [surf(B, f, a0 + (a1 - a0) * 0, 0.12 + max(0, 0.2 - f) * 0.12) for f in (ft, 0.4, 0.2, 0.0, -0.3, fb)]
+    left = [surf(B, f, -55 if f > 0.3 else -58, 0.12 + max(0, 0.2 - f) * 0.18) for f in (ft, 0.45, 0.2, 0.0, -0.3, fb)]
+    right = [surf(B, f, 55 if f > 0.3 else 58, 0.12 + max(0, 0.2 - f) * 0.18) for f in (ft, 0.45, 0.2, 0.0, -0.3, fb)]
+    bottom = [surf(B, fb, a, 0.12 + (0.2 - fb) * 0.18) for a in range(-58, 59, 8)]
+    P = [v(p) for p in left] + [v(p) for p in bottom] + [v(p) for p in right[::-1]]
+    out = group([P], lw, base=0.32, dark=0.62, s=v.s, off=0.08)
+    for a in (-35, -5, 25, 45):
+        out += seams(v, [surf(B, 0.0, a, 0.13), surf(B, -0.4, a * 1.05, 0.13 + 0.1), surf(B, fb + 0.02, a * 1.1, 0.12 + (0.2 - fb) * 0.18)], lw, 0.55)
+    # waist tie and the neck strap
+    out += seams(v, [surf(B, 0.3, -70, 0.12), surf(B, 0.3, 70, 0.12)], lw, 0.9)
+    out += seams(v, [surf(B, ft, -50, 0.12), surf(B, 0.97, -30, 0.08)], lw, 0.8) + seams(v, [surf(B, ft, 50, 0.12), surf(B, 0.97, 30, 0.08)], lw, 0.8)
+    return out
+
+
+def _towel(v, B, lw):
+    pts = [surf(B, 1.0, -30, 0.1), surf(B, 0.98, -70, 0.14), surf(B, 0.75, -95, 0.17), surf(B, 0.55, -92, 0.18), surf(B, 0.55, -62, 0.16), surf(B, 0.82, -45, 0.13), surf(B, 0.99, -10, 0.1)]
+    P = [v(p) for p in pts]
+    stripes = ''.join(tone([v(surf(B, f, -130, 0.2)), v(surf(B, f, -30, 0.2)), v(surf(B, f - 0.035, -30, 0.2)), v(surf(B, f - 0.035, -130, 0.2))], 0.55, smooth=False) for f in (0.68, 0.62))
+    return group([P], lw, base=0.08, dark=0.32, s=v.s, off=0.03, extra=stripes)
+
+
+def _ladle(v, pts, lw):
+    w = pts[-1]
+    a = v(add3(w, (0.02, 0.25, 0.05))); b = v(add3(w, (-0.05, -1.25, 0.0)))
+    out = stroke([a, b], lw * 2.6, taper=(0.05, 0.05), smooth=False) + stroke([a, b], lw * 1.0, taper=(0.1, 0.1), smooth=False, fill=PAPER)
+    c = v(add3(w, (-0.08, -1.45, 0.02))); R = 0.27 * v.s
+    bowl = [(c[0] + R * math.cos(t), c[1] + R * 0.55 * math.sin(t)) for t in [k * math.pi / 12 for k in range(24)]]
+    cup = [(c[0] + R * math.cos(t), c[1] + R * 0.95 * math.sin(t)) for t in [k * math.pi / 12 for k in range(13)]]
+    out += group([cup], lw, base=0.0, dark=0.4, s=v.s, off=0.04) + fillpath(bowl, f'url(#{tone_id(0.45)})', smooth=False) + outline(bowl, lw * 0.9, 0.4, smooth=False)
+    # a splash of soup flying out with the laugh
+    for k, (dx, dy, r) in enumerate([(0.1, -0.35, 0.045), (0.28, -0.5, 0.03), (-0.15, -0.42, 0.035)]):
+        out += f'<circle cx="{f1(c[0] + dx * v.s)}" cy="{f1(c[1] + dy * v.s)}" r="{f1(r * v.s)}" fill="{PAPER}" stroke="{INK}" stroke-width="{lw * 0.6:.2f}"/>'
+    return out
+
+
+def _forearm_hair(v, P, lw):
+    xs = [p[0] for p in P]; ys = [p[1] for p in P]
+    return clip(P, hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=65, gap=lw * 2.4, w=lw * 0.28, length=(0.02, 0.05), seed=8, density=lambda x, y: 0.5), smooth=False)
+
+
+def FIGURE(v, e=None, lw=2.0, neutral=False, bust=False):
+    """Laughing with the whole body: leaning back, the ladle up in one hand, the other fist on his hip; a white
     double-breasted cook's jacket with the sleeves rolled up, a long apron, a towel over the shoulder."""
-    me = __import__('chars.marat', fromlist=['x'])
-    o = []
-    pit = (-0.05, -6.28)
-    hv = dict(yaw=24, pitch=-12, roll=6, e=e)
-    if head:
-        o.append(head_on(F, me, pit, hair='back', **hv))
-    # far arm raised with the ladle
-    sl, _ = limb(F, [(0.85, -5.95), (1.32, -6.45)], [0.27, 0.25], ends=(False, True))
-    arm, _ = limb(F, [(1.30, -6.42), (1.42, -7.0), (1.36, -7.55)], [0.2, 0.19, 0.15], shade=hatch(None, (0, 0, 1, 1)))
-    o.append(arm + sl)
-    o.append(line(F, [(1.32, -7.1), (1.3, -9.0)], 1.4, smooth=False) + line(F, [(1.38, -7.1), (1.36, -9.0)], 1.2, smooth=False))
-    bowl = [(1.05, -9.0), (1.6, -9.0), (1.55, -9.25), (1.33, -9.38), (1.1, -9.25)]
-    o.append(shaded(F, bowl, base=0.0, dark=0.4, off=(0.04, 0.03)))
-    o.append(hand(F, (1.36, -7.55), 270, 0.66, 'hold', side=-1, twist=80))
-    # legs, wide stance
-    tr = 0.62
-    lg, _ = limb(F, [(0.48, -3.6), (0.66, -1.95), (0.74, -0.32)], [0.28, 0.24, 0.21], fill=f'url(#{tone_id(tr)})', ends=(False, True))
-    o.append(lg)
-    o.append(shoe(F, (0.52, -0.06), (1.22, -0.02), h=0.2))
-    lg, _ = limb(F, [(-0.48, -3.6), (-0.62, -1.95), (-0.66, -0.3)], [0.29, 0.25, 0.22], fill=f'url(#{tone_id(tr)})', ends=(False, True))
-    o.append(lg)
-    o.append(shoe(F, (-0.9, 0.0), (-0.1, 0.05), h=0.2))
-    # jacket: the barrel of the body, leaning back, the belly forward
-    jacket = [(-0.25, -6.32), (-0.75, -6.2), (-1.05, -5.95), (-1.12, -5.2), (-1.0, -4.3), (-0.98, -3.6), (-0.1, -3.42),
-              (0.85, -3.55), (1.08, -4.3), (1.18, -5.0), (1.08, -5.7), (0.85, -6.05), (0.4, -6.3)]
-    o.append(shaded(F, jacket, base=0.0, dark=0.22, off=(0.1, 0.04)))
-    # double row of buttons, the overlap
-    o.append(line(F, [(0.42, -6.1), (0.55, -5.2), (0.62, -4.3)], 0.6))
-    for y, x0 in ((-5.8, 0.18), (-5.25, 0.26), (-4.7, 0.32)):
-        for dx in (0.0, 0.5):
-            X, Y = F.p(x0 + dx * (1 - 0.2), y)
-            o.append(f'<circle cx="{f1(X)}" cy="{f1(Y)}" r="{f1(F.lw * 1.6)}" fill="{PAPER}" stroke="{INK}" stroke-width="{F.lw * 0.55:.1f}"/>')
-    # collar
-    o.append(shape(F, [(-0.25, -6.32), (0.4, -6.3), (0.38, -6.12), (-0.22, -6.14)], line=0.8))
-    # apron: from the chest down below the knee, terracotta as a mid tone
-    apron = [(-0.62, -5.0), (0.85, -5.05), (0.96, -4.2), (1.0, -3.0), (1.05, -1.6), (0.2, -1.45), (-0.75, -1.55), (-0.82, -3.0), (-0.78, -4.2)]
-    o.append(shaded(F, apron, base=0.32, dark=0.6, off=(0.08, 0.02)))
-    o.append(folds(F, [[(-0.4, -3.4), (-0.45, -2.4), (-0.4, -1.6)], [(0.4, -3.6), (0.5, -2.5), (0.55, -1.55)], [(0.05, -3.2), (0.0, -1.5)]], 0.8))
-    o.append(line(F, [(-0.62, -5.0), (-0.85, -5.6), (-0.6, -6.1)], 0.8) + line(F, [(0.85, -5.05), (0.9, -5.7), (0.6, -6.08)], 0.8))
-    o.append(line(F, [(-0.8, -4.25), (0.97, -4.2)], 0.9))
-    # towel over the near shoulder, striped
-    towel = [(-0.75, -6.25), (-0.4, -6.3), (-0.5, -5.4), (-0.65, -4.7), (-0.95, -4.75), (-0.95, -5.5), (-1.05, -6.0)]
-    o.append(shaded(F, towel, base=0.1, dark=0.35, off=(0.04, 0.02), extra=''.join(tonef(F, [(-1.2, y), (-0.2, y - 0.08), (-0.2, y + 0.05), (-1.2, y + 0.13)], 0.5, smooth=False) for y in (-5.15, -4.95))))
-    # near arm: rolled sleeve, the thick forearm, the fist on the hip
-    sl, _ = limb(F, [(-1.0, -5.9), (-1.4, -5.2)], [0.28, 0.27], ends=(False, True))
-    arm, _ = limb(F, [(-1.38, -5.25), (-1.5, -4.85), (-1.1, -4.3)], [0.21, 0.2, 0.15],
-                  shade=hatchf(F, [(-1.7, -5.3), (-0.9, -5.3), (-0.9, -4.2), (-1.7, -4.2)], angle=60, gap=0.05, w=0.3, seed=8))
-    o.append(arm + sl)
-    o.append(shape(F, [(-1.2, -5.55), (-1.62, -5.25), (-1.52, -5.05), (-1.12, -5.35)], line=0.8))
-    o.append(hand(F, (-1.1, -4.3), 20, 0.68, 'fist', side=1, twist=40))
-    if head:
-        o.append(head_on(F, me, pit, hair='front', hs=1.0, **hv))
-    return ''.join(o)
+    B = skeleton()
+    d = dict(B=B, mod=__import__('chars.marat', fromlist=['x']), H=HEIGHT,
+             head=dict(yaw_rel=-2, pitch=-12, roll=6, hs=1.14, pit=(0, 0.0, 0.08)),
+             arms=dict(r=(0.2, 0.18, 0.14, 0.16, 0.1), sleeve=dict(grow=0.07, until=0.55, tone=0.0, dark=0.25), skin_extra=_forearm_hair,
+                       hands=dict(r=dict(pose='fist', twist=30, size=0.7, turn=0), l=dict(pose='hold', twist=80, size=0.7, side=1, hold_item=_ladle)),
+                       front=['r']),
+             legs=dict(r=(0.34, 0.27, 0.17, 0.19, 0.1), garment=dict(kind='trousers', grow=0.08, tone=0.62, dark=0.85, flare=0.03),
+                       shoe=dict(w=0.2, h=0.28, toe_h=0.11, tone=0.7, dark=0.9)),
+             torso=[dict(bottom=-3.45, grow=0.07, tone=0.0, dark=0.22, with_arms=True, extra=_jacket)],
+             items=dict(torso=[lambda v, B, lw, near: _apron(v, B, lw) + _towel(v, B, lw)]))
+    return figure(v, d, e, lw, neutral, bust)

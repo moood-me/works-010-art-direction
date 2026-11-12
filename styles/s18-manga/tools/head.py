@@ -573,7 +573,7 @@ def jaw_line(h, v, lw):
 LIGHT3 = (-0.45, -0.55, 0.70)     # in view space: from the upper left and in front
 
 
-def shade_tone(h, v, outline_pts, thresh=-0.02, level=0.16, extra_dark=None):
+def shade_tone(h, v, outline_pts, thresh=-0.12, level=0.16, extra_dark=None):
     """Form shadow as flat tone with a crisp edge, where the face turns from the light."""
     L = LIGHT3
     n = math.sqrt(sum(c * c for c in L)); L = tuple(c / n for c in L)
@@ -640,7 +640,7 @@ def draw_head(h, v, lw=2.0, hair=None, shade=True, neck=True, extras=None):
         # the jaw's cast shadow on the neck
         J = v.many(jaw_curve(h))
         cx = sum(p[0] for p in J) / len(J)
-        lower = [(cx + (x - cx) * 0.8, y + 0.13 * v.s) for x, y in J[::-1]]
+        lower = [(cx + (x - cx) * 0.55, y + 0.09 * v.s) for x, y in J[::-1]]
         under = clip(npoly, tone(J + lower, 0.3), smooth=False)
         out.append(clip(jr, under, smooth=False))
         out.append(jaw_line(h, v, lw))
