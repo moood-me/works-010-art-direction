@@ -5,11 +5,13 @@
 
 ## Done, in `main`
 
-- **The drawn styles (`styles/`):** six characters in sixteen styles, С1–С16. History:
+- **The drawn styles (`styles/`):** six characters in twenty styles, С1–С20 (С17–С20: Bilibin and Art Nouveau,
+  black-and-white manga, low-poly, Soviet animation — [history/2026-11-12-styles-17-20-and-3d-45-50.md](history/2026-11-12-styles-17-20-and-3d-45-50.md)). History:
   [history/2026-11-09-styles-six-and-sixteen.md](history/2026-11-09-styles-six-and-sixteen.md); findings: "Drawing
   styles, round three" in [findings.md](findings.md); brief: [briefs/styles-more.md](briefs/styles-more.md).
-- **Drawings to 3D (`to3d/`):** Р1–Р44 — the twelve of the first rounds and the thirty-two of the third round, two
-  more characters in each of the sixteen styles. History:
+- **Drawings to 3D (`to3d/`):** Р1–Р50 — the twelve of the first rounds, the thirty-two of the third round (two
+  more characters in each of the sixteen styles) and Р45–Р50, one character of each of С15–С20
+  ([history/2026-11-12-styles-17-20-and-3d-45-50.md](history/2026-11-12-styles-17-20-and-3d-45-50.md)). History:
   [history/2026-11-10-to3d-round-three.md](history/2026-11-10-to3d-round-three.md) (the table of who is where, and
   how the round came into `main`); findings: "Drawings to 3D, round three"; brief: "Third round" in
   [briefs/to3d.md](briefs/to3d.md).
@@ -22,19 +24,15 @@
 - 3D: Р19 and Р20 (Arcane) and Р14 (Pixar's Кира) are middling — a hard adult face from the realistic base; Р40
   (paper Кира) loses her face in profile under the fringe; Р16 and Р30 (Марат in Klaus and mid-century) have rough
   bodies and aprons. Everywhere: clothes and hair are shells, the drawings' poses and props are mostly not made.
+- С17–С20: С18 manga is the weakest style (wooden bodies, simple faces); stiff standing poses and plain hands in all
+  four. 3D Р45–Р50: profiles where the drawings' front and side disagree (Р45, Р50), the skirt as a shell in a wide
+  step (Р47), the body wider than the drawing (Р47, Р48), Kimodo's wave bringing a short arm to a big head (Р49).
 - Р4's viewer (С5, an earlier round) probably stretches the figure when its control panel is open; fixed in Р21 and
   Р22 only.
 
-## Not in `main` yet
-
-The branch `ccr-a7af59de-aubv8d` holds another session's work: four more styles (`styles/s17-bilibin`, `s18-manga`,
-`s19-lowpoly`, `s20-soviet`) and their characters in 3D. Its 3D folders are numbered `r13…r20`, the codes Р13–Р20
-that the third round holds here: they take the next free codes, from Р45, when they come
-(`to3d/items.json`; the folders' names carry the number too).
-
 ## Room
 
-The files of `main` are about 735 MB; GitHub Pages publishes a site of up to 1 GB. What comes next has about 265 MB.
+The files of `main` are about 810 MB; GitHub Pages publishes a site of up to 1 GB. What comes next has about 190 MB.
 
 ## To go on in a new container
 

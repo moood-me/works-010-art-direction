@@ -141,6 +141,25 @@ drawing's own forms and drawn by its own code; weakest where a realistic base ca
 - A slip to know: the earlier viewers of С5 (Р4) stretch the figure when the control panel is open — fixed in Р21
   and Р22, Р4 itself not touched.
 
+## Drawing styles С17–С20 and drawings to 3D Р45–Р50
+
+Four more styles unlike the sixteen (Bilibin and Art Nouveau, black-and-white seinen manga, low-poly facets, Soviet
+animation of the 1960s–70s), all six characters each, by part B of `briefs/styles-more.md`; then one character of
+each of С15–С20 into 3D by `briefs/to3d.md` (Р45 Аня noir, Р46 Савелий pixel art, Р47 Вера Bilibin, Р48 Вера manga,
+Р49 Марат low-poly, Р50 Кира Soviet).
+- **Styles.** Soviet animation (С20) and low-poly (С19) came out best: a bold caricature with the face as bare
+  paper; a line of faceted figurines whose turns are honest because the drawing code builds real 3D. Bilibin (С17)
+  works as a fairy-tale page by moving the ornament onto today's clothes (shawl, knit, embroidery). Manga (С18) is the
+  weakest: wooden bodies, simple faces — an exact adult face is what that style lives by, and it is the hardest.
+- **3D.** The strongest ways: rig the style's own 3D model on SOMA when its drawing code already builds one (Р49
+  matches its drawing point for point); for pixel art, render small and let the style's pixel rules decide every
+  pixel, the 3D only answering material, light and depth (Р46); draw each frame with the style's own pen, tone or
+  print from the 3D (Р48, Р50 — the Р12 way); in noir, keep the black as designed shapes whose edges stay on the
+  drawn lines while the light moves (Р45).
+- **Duplicates.** Two more were made in this round — Марат in С13 and Кира in С14 — the same characters as Р38 and
+  Р40 of round three. Side by side, Марат came out about equal (a livelier figure, a weaker profile) and Кира worse
+  (softer, papier-mâché rather than paper); Pavel decided to keep main's and not bring these two in.
+
 ## Other people's tools (`tools-demo/`)
 
 - **Better than ours:** Blender Studio's character heads (Rain, Snow…, CC-BY) — eyeballs under thick lids, lips with
