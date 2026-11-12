@@ -1,0 +1,71 @@
+— с поправкой
+{
+ "Left": {
+  "frames": "124–209",
+  "kimodo_palm_cm": "mean 4.1, max 4.8",
+  "corrected_palm_cm": "mean 0.0, max 0.0",
+  "skin_gap_cm": "min -0.0, mean 0.0, max 0.0"
+ },
+ "Right": {
+  "frames": "124–209",
+  "kimodo_palm_cm": "mean 4.2, max 5.1",
+  "corrected_palm_cm": "mean 0.0, max 0.0",
+  "skin_gap_cm": "min -0.0, mean 0.0, max 0.0"
+ },
+ "into_things": {
+  "armchair/arm": {
+   "frames": 21,
+   "deepest_cm": 1.6,
+   "at": 97,
+   "by": {
+    "Lthigh": 1.6,
+    "Rhand": 0,
+    "Lhand": 0
+   }
+  },
+  "armchair/seat": {
+   "frames": 115,
+   "deepest_cm": 4.0,
+   "at": 115,
+   "by": {
+    "Lthigh": 4.0,
+    "Rthigh": 4.0
+   }
+  }
+ }
+}
+— без поправки (Kimodo как есть)
+{
+ "Left": {
+  "frames": "124–209",
+  "kimodo_palm_cm": "mean 4.1, max 4.8",
+  "corrected_palm_cm": "mean 4.1, max 4.8",
+  "skin_gap_cm": "min 0.2, mean 2.5, max 3.8"
+ },
+ "Right": {
+  "frames": "124–209",
+  "kimodo_palm_cm": "mean 4.2, max 5.1",
+  "corrected_palm_cm": "mean 4.2, max 5.1",
+  "skin_gap_cm": "min 0.1, mean 1.6, max 2.4"
+ },
+ "into_things": {
+  "armchair/arm": {
+   "frames": 32,
+   "deepest_cm": 3.4,
+   "at": 113,
+   "by": {
+    "Lthigh": 1.6,
+    "Rhand": 3.4
+   }
+  },
+  "armchair/seat": {
+   "frames": 115,
+   "deepest_cm": 4.0,
+   "at": 115,
+   "by": {
+    "Lthigh": 4.0,
+    "Rthigh": 4.0
+   }
+  }
+ }
+}

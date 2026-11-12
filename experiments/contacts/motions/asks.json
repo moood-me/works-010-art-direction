@@ -1,0 +1,208 @@
+{
+ "table-free": {
+  "key": "f68cdde5b81ee49787830cff791b992e0da8510cfbb216196a06ab6ab457e315",
+  "prompts": [
+   "A person walks forward to a table, stops and leans on the table with both hands."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: Kimodo sat down at the table instead (kept: its hands lying on the table give the hand turn for the constraints)"
+ },
+ "table-free2": {
+  "key": "98d983b030d5d24f0560c091c15419a4be58f8b56a2ed71888c9d3ca824d786c",
+  "prompts": [
+   "A person walks forward, stops in front of a table and, standing, leans forward to rest both hands flat on the table top."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: walked a little and stood, hands in front, no real lean (its standing frame 150 is the body of the table constraint pose)"
+ },
+ "chair-free": {
+  "key": "eb9378f593cf25fa15d15f34ee91987d613cd654fef25005ee1fd2a6cfa6311e",
+  "prompts": [
+   "A person walks forward to an armchair, turns around and sits down in it, placing both hands on the armrests."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: walks, turns, sits; hands beside on the seat, then on the lap (its seated frame 175 is the body of the armchair constraint pose)"
+ },
+ "shoulder-free": {
+  "key": "371ffa558b5236ab48e40c791d0ec47fa2085387f4e1a9c4eda5e529459249fc",
+  "prompts": [
+   "A person walks forward and places their right hand on the shoulder of someone standing in front of them."
+  ],
+  "seconds": [
+   5
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "no constraints: did not walk; stretched the right arm forward, palm down at shoulder height, for a second"
+ },
+ "table-s0": {
+  "key": "409a92a2dcc77736f4db1535e099f45c08b542551167649ec443896031682edd",
+  "prompts": [
+   "A person walks forward to a table and leans on it with both hands."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/table.json",
+  "note": "one motion with the hands constraint: the hands came within 2-5 cm, but the whole walk is stooped (not used)"
+ },
+ "table-walk": {
+  "key": "88c3163bc586aaf5d81e3c6439cd30b3650fc826fbac77d3fa01ff5c37607b01",
+  "prompts": [
+   "A person walks forward at a relaxed pace and comes to a stop."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": [
+   {
+    "type": "root2d",
+    "frame_indices": [
+     100,
+     119
+    ],
+    "smooth_root_2d": [
+     [
+      0.0,
+      2.04
+     ],
+     [
+      0.0,
+      2.05
+     ]
+    ]
+   }
+  ]
+ },
+ "table-lean": {
+  "key": "1b3890c49979d8810bc7529c4c16709e878c4a34536e5a8d795caacd6afc12e2",
+  "prompts": [
+   "A standing person leans forward and rests both hands on the table in front of them."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": "plans/table_lean.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0237,
+   "z": 2.0937
+  }
+ },
+ "armchair": {
+  "key": "32c9ac349ced0de229b9a571f89e47d848f6dbf979c8106a5dd86fda0d8fc750",
+  "prompts": [
+   "A person walks forward to an armchair, turns around and sits down in it, resting both hands on the armrests."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/armchair.json"
+ },
+ "stand": {
+  "key": "53c69eed105b9bbb7f03681316ade3e85cac06f6c3fe626099b00c59286a43bd",
+  "prompts": [
+   "A person stands still in a relaxed upright posture, arms hanging at the sides, looking straight ahead."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": null,
+  "note": "B in the shoulder scene (the first ask failed with \"busy\"; the same ask again made it)"
+ },
+ "table-lean-try1": {
+  "key": "3f3ab1d99b80d81139c0c3798feddc90eb2780a264ffb8bf039913ce339614d0",
+  "prompts": [
+   "A standing person leans forward and rests both hands on the table in front of them."
+  ],
+  "seconds": [
+   4
+  ],
+  "seed": 0,
+  "constraints": "plans/table_lean.json",
+  "after": {
+   "motion": "table-walk",
+   "frames": 5
+  },
+  "note": "the same, its constraint written with the walk's pelvis at frame 115 as the origin: 5 cm off (the studio's startsAt differs); not used"
+ },
+ "armchair-try1": {
+  "key": "18cde19dbe37a9a43ef9c53b4790a38798515b6af4d815acce4e215931763ffb",
+  "prompts": [
+   "A person walks forward to an armchair, turns around and sits down in it, resting both hands on the armrests."
+  ],
+  "seconds": [
+   7
+  ],
+  "seed": 0,
+  "constraints": "plans/armchair.json",
+  "note": "pelvis 11 cm over the seat, 2 cm behind the centre: sat 8 cm into the seat and 6-8 cm into the backrest; not used"
+ },
+ "shoulder": {
+  "key": "d2d94179aa1692a2998dc5a374849afc50eaac8fa5e530ec92bb0bc1fade4859",
+  "prompts": [
+   "A person walks forward, stops in front of someone and places their right hand on that person's shoulder."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder.json"
+ },
+ "shoulder-try1": {
+  "key": "5e393094e438629e1437ea63c5a08e66323012cc78722281f5b26171468fc4ff",
+  "prompts": [
+   "A person walks forward, stops in front of someone and places their right hand on that person's shoulder."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder.json",
+  "note": "standing 60 cm short of the point: the arm came out straight and level like a bar, and our man could not reach the last 2-4 cm; not used"
+ },
+ "shoulder-try2": {
+  "key": "a5e2755ef945939d615523f5e667d4c178a17079366d8fe6801c591d2ee378c1",
+  "prompts": [
+   "A person walks forward, stops in front of someone and places their right hand on that person's shoulder."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "plans/shoulder.json",
+  "note": "standing 45 cm short; the point a third of the way from the shoulder joint to the collarbone root: the hand lay by the neck; not used"
+ },
+ "table-1": {
+  "key": "47c932be9448eb4af51a60b20628c5c9bbe4a0b0fd799b04231e4b3da8d437dc",
+  "prompts": [
+   "A person walks forward to a table and leans on it with both hands."
+  ],
+  "seconds": [
+   6
+  ],
+  "seed": 0,
+  "constraints": "the pose written against the SOMA skin A-pose instead of Kimodo T-pose (wrong)",
+  "note": "absurd: arms out, a crouch; Kimodo put the hands exactly where that wrong pose had them (1.2 m high). Led to finding the convention; not used"
+ }
+}
