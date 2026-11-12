@@ -68,7 +68,8 @@ table, tilted 1.1°. The hand goes 0.3 cm into the cup while holding it.
 carries it 3 m at the chest and puts it on a table 0.80 m high. Kimodo's palms on our body 2.7–3.0 cm from the
 box's sides on average (max 6.4); with the correction 0.0. The box comes down on its place: 0.1 cm into the table,
 tilted 0.7°. The fingers curl into the box's sides 2–3.5 cm (Kimodo's relaxed fingers; no grip). Putting the box
-down his left thigh touches the table's edge, 0.9 cm at most (frames 225–260).
+down his left thigh touches the table's edge, 0.9 cm at most (frames 225–260). Seen from the side, putting it down he bends the knees deeply
+(the pelvis at 0.86 m, Kimodo's own way from the free take): it reads a little as half-sitting at the table.
 
 ## What Kimodo does with these, and what cost tries (11 motions ordered, 12 asks — one failed "busy" and was asked again; every one in `motions/asks.json`)
 
