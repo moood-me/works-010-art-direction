@@ -67,14 +67,17 @@ def FIGURE(v, e=None, lw=2.0):
     near = 'r' if v.yaw >= 0 else 'l'
     far = 'l' if near == 'r' else 'r'
     knit = 0.12
-    def arm_svg(side):
-        pts, rad = arm_chain(j, side, (0.15, 0.13, 0.105, 0.115, 0.07))
-        sp, sr = arm_chain(j, side, (0.15, 0.13, 0.105, 0.115, 0.07), grow=0.04, until=0.93)
-        P, C, N, rr = chain_outline(v, sp, sr)
-        g = group([P], lw, base=knit, dark=0.4, s=v.s)
+    def sleeve(side):
+        pts, rad = arm_chain(j, side, (0.13, 0.115, 0.09, 0.1, 0.062))
+        sp, sr = arm_chain(j, side, (0.13, 0.115, 0.09, 0.1, 0.062), grow=0.03, until=0.93)
+        P, C, N, rr = chain_outline(v, sp, sr, caps=(False, True))
+        return pts, P, C, N, rr, sp, sr
+    def arm_lines(side, arm):
+        pts, P, C, N, rr, sp, sr = arm
+        g = limb_lines(C, N, rr, lw, start=0.3)
         g += fold_lines(C, N, rr, len(C) // 2, lw * 0.7, side=1, seed=3)
         g += stroke(ring_around(v, sp[-2], sp[-1], 0.85, sr[-1] * 0.95), lw * 0.6)
-        g += hand_at(v, pts[-1], pts[-2], 0.56, 'relaxed' if side == 'r' else 'loose', twist=95 if side == 'r' else 20, lw=lw)
+        g += hand_at(v, pts[-1], pts[-2], 0.62, 'relaxed' if side == 'r' else 'loose', twist=95 if side == 'r' else 20, lw=lw)
         return g
     def leg_svg(side):
         pts, rad = leg_chain(j, side, (0.27, 0.2, 0.12, 0.14, 0.065))
@@ -100,23 +103,25 @@ def FIGURE(v, e=None, lw=2.0):
     # blouse and cardigan: one torso shell; the cardigan's open front shows the blouse
     f_c = frac(H, -3.85, j)
     P, hem, _ = torso_outline(B, v, f_c, 1.0, grow=0.05)
-    card = group([P], lw, base=knit, dark=0.42, s=v.s, extra=hatch(None, (0, 0, 1, 1)) if False else '')
+    arm_r = sleeve('r'); arm_l = sleeve('l')
+    card = group([P, arm_r[1]], lw, base=knit, dark=0.42, s=v.s)
     # the opening: between two front edges, the blouse
-    edge_r = [surf(B, f, -6 - max(0, f - 0.6) * 60, 0.05) for f in [0.99, 0.85, 0.7, 0.55, f_c + 0.02]]
-    edge_l = [surf(B, f, 6 + max(0, f - 0.6) * 60, 0.05) for f in [0.99, 0.85, 0.7, 0.55, f_c + 0.02]]
+    edge_r = [surf(B, f, -2 - max(0, f - 0.6) * 75, 0.05) for f in [0.995, 0.88, 0.76, 0.6]]
+    edge_l = [surf(B, f, 2 + max(0, f - 0.6) * 75, 0.05) for f in [0.995, 0.88, 0.76, 0.6]]
     opening = [v(p) for p in edge_r] + [v(p) for p in edge_l[::-1]]
     card += fillpath(opening, PAPER) + stroke([v(p) for p in edge_r], lw * 0.9) + stroke([v(p) for p in edge_l], lw * 0.9)
     card += seams(v, [surf(B, 0.97, -30, 0.06), surf(B, 0.99, 0, 0.0), surf(B, 0.97, 30, 0.06)], lw, 0.7)
-    for f in (0.78, 0.6, 0.45):
-        card += button(v, surf(B, f, -10, 0.06), lw)
+    card += seams(v, [surf(B, f, -2, 0.06) for f in (0.6, 0.4, f_c + 0.01)], lw, 0.7)
+    for f in (0.52, 0.38, 0.24):
+        card += button(v, surf(B, f, -6, 0.06), lw)
     # knit texture: rows of short verticals
     xs = [p[0] for p in P]; ys = [p[1] for p in P]
     card = card.replace('</g>', '', 0)
     o.append(card + clip(P, hatch(None, (min(xs), min(ys), max(xs), max(ys)), angle=90, gap=lw * 2.3, w=lw * 0.3, length=(0.03, 0.06), seed=6), smooth=False))
+    o.append(head3d(v, me, pit, part='front', **hv))
     # the book on the chest, then the far arm over it
     bk = [surf(B, 0.8, -25, 0.12), surf(B, 0.82, 35, 0.12), surf(B, 0.5, 38, 0.14), surf(B, 0.48, -22, 0.14)]
     o.append(group([[v(p) for p in bk]], lw, base=0.45, dark=0.75, s=v.s, off=0.03))
-    o.append(arm_svg('r'))
-    o.append(arm_svg('l'))
-    o.append(head3d(v, me, pit, part='front', **hv))
+    o.append(arm_lines('r', arm_r))
+    o.append(group([arm_l[1]], lw, base=knit, dark=0.42, s=v.s) + arm_lines('l', arm_l))
     return ''.join(o)

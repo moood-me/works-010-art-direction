@@ -248,7 +248,7 @@ def head3d(v, mod, pit3, yaw_rel=0.0, pitch=0.0, roll=0.0, hs=1.0, e=None, part=
     """The character's head with its neck standing on pit3 (the pit of the neck, 3D body point)."""
     x, y = v(pit3)
     s = v.s * hs
-    vh = View(yaw=math.degrees(v.yaw) + yaw_rel, pitch=pitch, roll=roll, s=s, x=x, y=y - 0.80 * s)
+    vh = View(yaw=math.degrees(v.yaw) + yaw_rel, pitch=pitch, roll=roll, s=s, x=x, y=y - 0.74 * s)
     h = Head(mod.HEAD, EXPR.get(e) if isinstance(e, str) else e)
     if part == 'back':
         return mod.HAIR.back(h, vh, lw)
@@ -281,11 +281,11 @@ def hand_at(v, wrist3, elbow3, size, pose, twist=90, side=1, lw=2.0, turn=0.0, *
 # ---------------------------------------------------------------- a standing skeleton and its parts
 
 MALE = [(0.0, 0.52, 0.30, 0.40, 2.2), (0.09, 0.66, 0.36, 0.48, 2.2), (0.25, 0.62, 0.38, 0.42, 2.2), (0.41, 0.58, 0.40, 0.38, 2.2),
-        (0.58, 0.64, 0.45, 0.42, 2.3), (0.72, 0.70, 0.48, 0.45, 2.3), (0.84, 0.74, 0.42, 0.44, 2.4), (0.93, 0.60, 0.30, 0.36, 2.2),
-        (1.0, 0.24, 0.19, 0.21, 2.0)]
-FEMALE = [(0.0, 0.52, 0.30, 0.42, 2.2), (0.09, 0.68, 0.38, 0.52, 2.2), (0.25, 0.60, 0.36, 0.44, 2.2), (0.41, 0.47, 0.34, 0.34, 2.2),
-          (0.56, 0.52, 0.40, 0.36, 2.2), (0.68, 0.56, 0.50, 0.40, 2.2), (0.80, 0.58, 0.40, 0.40, 2.3), (0.90, 0.52, 0.28, 0.32, 2.2),
-          (1.0, 0.21, 0.17, 0.19, 2.0)]
+        (0.58, 0.64, 0.45, 0.42, 2.3), (0.72, 0.72, 0.48, 0.45, 2.4), (0.84, 0.80, 0.42, 0.44, 2.7), (0.92, 0.78, 0.30, 0.36, 2.9),
+        (0.96, 0.58, 0.24, 0.28, 2.4), (1.0, 0.24, 0.19, 0.21, 2.0)]
+FEMALE = [(0.0, 0.50, 0.30, 0.40, 2.2), (0.09, 0.61, 0.36, 0.48, 2.2), (0.25, 0.57, 0.35, 0.42, 2.2), (0.41, 0.46, 0.33, 0.33, 2.2),
+          (0.56, 0.50, 0.38, 0.35, 2.2), (0.68, 0.55, 0.47, 0.38, 2.3), (0.80, 0.62, 0.38, 0.38, 2.6), (0.88, 0.63, 0.28, 0.32, 2.8),
+          (0.94, 0.50, 0.22, 0.26, 2.4), (1.0, 0.20, 0.16, 0.18, 2.0)]
 
 
 def scale_sections(tab, w=1.0, d=1.0, belly=0.0, chest=1.0, hips=1.0):
@@ -382,3 +382,17 @@ def surf(B, f, a_deg, grow=0.0, dy=0.0):
     z = (zf if ca > 0 else zb) * math.copysign(abs(ca) ** (2 / sq), ca)
     ct, st = math.cos(tw), math.sin(tw)
     return (c[0] + x * ct + z * st, c[1] + dy, c[2] - x * st + z * ct)
+
+
+def limb_lines(C, N, rr, lw, start=0.25, end=1.0, which='both'):
+    """The two contour lines of a limb from `start` to `end` of its length (the part not merged into the body)."""
+    m = len(C)
+    i0, i1 = int(start * (m - 1)), max(int(start * (m - 1)) + 2, int(end * (m - 1)))
+    Lf = [(C[i][0] + N[i][0] * rr[i], C[i][1] + N[i][1] * rr[i]) for i in range(i0, min(m, i1 + 1))]
+    Rg = [(C[i][0] - N[i][0] * rr[i], C[i][1] - N[i][1] * rr[i]) for i in range(i0, min(m, i1 + 1))]
+    out = ''
+    if which in ('both', 'left'):
+        out += stroke(Lf, [lw * 0.3, lw * 0.9, lw * 1.0], taper=(0.3, 0.05))
+    if which in ('both', 'right'):
+        out += stroke(Rg, [lw * 0.3, lw * 1.2, lw * 1.4], taper=(0.3, 0.05))
+    return out
