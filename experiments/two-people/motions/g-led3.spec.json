@@ -1,0 +1,2 @@
+{"source": "g-led2", "max": 60, "note": "g-led2 again, now looking towards him (turned 60° at most: the full turn would be 108°): its own poses at its frames 30, 70, 110 as a fullbody constraint, the neck and head turned to his eyes (node tools/targets.mjs man l-lead2 Head 0,1.656,0.125 30,70,110 0.62,0,0,0.896); tools/order_head.py",
+ "items": [{"frame": 30, "at": [-0.6002, 1.8304, 1.2995]}, {"frame": 70, "at": [-0.4746, 1.8364, 3.2672]}, {"frame": 110, "at": [-0.3171, 1.7824, 5.2833]}]}

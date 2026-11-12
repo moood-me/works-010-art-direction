@@ -44,6 +44,48 @@ export const SCENES = [
     follow: true,
   },
   {
+    id: 'shake-look', label: 'рукопожатие, она смотрит на него',
+    about: 'То же рукопожатие, но женщина смотрит ему в лицо: её движение сделано заново с полной позой (fullbody) из её же кадров 105, 125, 145, где шея и голова повёрнуты к его глазам. Двое идут навстречу друг другу, останавливаются и пожимают руки, потом отпускают. Мужчина сделан первым (Kimodo, без ограничений); женщина — вторым: её ладонь на его ладони в каждом кадре, где он держит руку.',
+    frames: 195,
+    people: [
+      { id: 'P', name: 'мужчина', character: 'man', chain: ['h-p'], start: 0, place: { position: [0, 0, -3.9], heading: 0 } },
+      { id: 'Q', name: 'женщина', character: 'woman', chain: ['h-q3'], start: 0, place: { position: [-0.47, 0, 3.4], heading: Math.PI } },
+    ],
+    // her palm on his (his palm's point: scene.js palmRest of his body, on his right hand)
+    contacts: [{ who: 'Q', side: 'Right', on: 'P', joint: 'RightHand', point: [-0.5041, 1.0649, 0.2235], from: 100, to: 160, ramp: 8 }],
+    camera: { yaw: -1.4, pitch: 0.1, dist: 5.5, target: [-0.3, 0.95, 0] },
+  },
+  {
+    id: 'lead-look', label: 'ведёт за руку, она поглядывает',
+    about: 'То же, но женщина поглядывает на него: её движение сделано заново с полной позой из её же кадров 30, 70, 110, голова повёрнута к нему на 60° (полный поворот был бы 108°). Мужчина идёт и ведёт женщину за руку. Он сделан первым (Kimodo, без ограничений); она — вторым: её правая ладонь на его левой в четырнадцати кадрах пути, её таз рядом с его.',
+    frames: 150,
+    people: [
+      { id: 'L', name: 'мужчина', character: 'man', chain: ['l-lead2'], start: 0, place: { position: [0, 0, 0], heading: 0 } },
+      { id: 'G', name: 'женщина', character: 'woman', chain: ['g-led3'], start: 0, place: { position: [0.62, 0, 0], heading: 0 } },
+    ],
+    // her right palm on his left palm (his palm's point: scene.js palmRest of his body, on his left hand)
+    contacts: [{ who: 'G', side: 'Right', on: 'L', joint: 'LeftHand', point: [0.5041, 1.0649, 0.2235], from: 8, to: 142, ramp: 8 }],
+    camera: { yaw: -0.9, pitch: 0.12, dist: 6, target: [0.2, 0.9, 2.5] },
+    follow: true,
+  },
+  {
+    id: 'exchange', label: 'цепочка: плечо, рукопожатие, уводит',
+    about: 'Одна цепочка, где ведущий меняется: он подходит и кладёт ей руку на плечо (ведёт он) — она оглядывается и оборачивается (ведёт она: его рука следует за её плечом) — он отступает и подаёт руку, она её пожимает (ведёт он) — он уводит её за руку. Каждое следующее движение сделано после предыдущего того же человека (after); ограничения — по движению другого, сделанному раньше.',
+    frames: 568,
+    people: [
+      { id: 'A', name: 'женщина', character: 'woman', chain: ['a-stand', 'a-look', 'a-shake', 'a-led'], start: 0, place: { position: [0, 0, 0], heading: 0 } },
+      { id: 'B', name: 'мужчина', character: 'man', chain: ['b-touch3', 'b-hold4', 'b-shake3', 'b-lead'], start: 42, place: { position: [0, 0, -4.0], heading: 0 } },
+    ],
+    contacts: [{ who: 'B', side: 'Right', on: 'A', joint: 'RightShoulder', point: [-0.1625, 1.3196, -0.0155], from: 160, to: 192, ramp: 8 },
+      { who: 'B', side: 'Right', on: 'A', joint: 'RightShoulder', point: [-0.1903, 1.2948, 0.0063], from: 200, to: 250, ramp: 8 },
+      // her palm on his in the handshake (his palm's point, as in the shake scene)
+      { who: 'A', side: 'Right', on: 'B', joint: 'RightHand', point: [-0.5041, 1.0649, 0.2235], from: 330, to: 372, ramp: 8 },
+      // then her right palm on his left as he leads her away (his palm's point, as in the lead scene)
+      { who: 'A', side: 'Right', on: 'B', joint: 'LeftHand', point: [0.5041, 1.0649, 0.2235], from: 480, to: 560, ramp: 8 }],
+    looks: [{ who: 'B', at: 'A', share: 0.6, max: 0.44, from: 130, to: 300, ramp: 15 }],
+    camera: { yaw: -1.05, pitch: 0.12, dist: 5.2, target: [0, 0.95, -1.0] },
+  },
+  {
     id: 'hug', label: 'объятие',
     about: 'Двое идут навстречу друг другу, обнимаются, держат объятие и отпускают. Каждый сделан Kimodo с ладонями на спине другого (левая выше, правая ниже): сначала мужчина без ограничений (его руки обнимали воздух над ней), по нему женщина, по ней мужчина заново, по нему женщина заново — каждый раз таз дальше назад, чтобы груди не проходили друг в друга.',
     frames: 210,

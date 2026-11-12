@@ -1236,5 +1236,160 @@
     "left-hand and right-hand: frames 128, 138, 215, 245 — motions/m-cradle2.constraint.json (as sent), from motions/m-cradle2.spec.json"
    ]
   }
+ },
+ {
+  "id": "b-shake3",
+  "label": {
+   "ru": "он отступает и подаёт руку (рука поставлена)",
+   "en": "he steps back and offers his hand (the hand placed)"
+  },
+  "key": "fcbbb8e64e67604670379db49c5c97e6e9b1750bb07de3288765678005db277f",
+  "ask": {
+   "prompts": [
+    "A person drops their right arm down to their side and steps backward one step.",
+    "A person standing upright raises the right arm forward for a handshake, shakes someone's hand with the right arm, then lowers it."
+   ],
+   "seconds": [
+    2,
+    3.5
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 75, 95, 115 — motions/b-shake3.constraint.json (as sent), from motions/b-shake3.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "b-hold4",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.056,
+   "z": -0.03
+  }
+ },
+ {
+  "id": "a-shake",
+  "label": {
+   "ru": "она оборачивается и пожимает ему руку",
+   "en": "she turns round and shakes his hand"
+  },
+  "key": "6f5d81bd45499d56d1d912ee86444b9fc6e89be0fdefd40f588a31b48c888d6e",
+  "ask": {
+   "prompts": [
+    "A person turns around to face the person standing behind them.",
+    "A person standing upright raises the right arm forward for a handshake, shakes someone's hand with the right arm, then lowers it."
+   ],
+   "seconds": [
+    2.5,
+    3.5
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 85, 105, 125 — motions/a-shake.constraint.json (as sent), from motions/a-shake.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "a-look",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.003,
+   "z": 0.006
+  }
+ },
+ {
+  "id": "b-lead",
+  "label": {
+   "ru": "он поворачивается и уводит её за руку",
+   "en": "he turns and leads her away by the hand"
+  },
+  "key": "bcfa6c4be1d9879464b4e00b6f85e6fdd593bdf750e249c169ac34814a032560",
+  "ask": {
+   "prompts": [
+    "A person turns to their right and walks forward at a relaxed pace, holding someone's hand with their left hand down at their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "b-shake3",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.004,
+   "z": -0.227
+  }
+ },
+ {
+  "id": "h-q3",
+  "label": {
+   "ru": "она пожимает руку и смотрит на него",
+   "en": "she shakes his hand, looking at him"
+  },
+  "key": "3f647898774865f017487317c94402a75e3f08c924876b915a94ce8b58a1bd09",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person standing upright raises the right arm forward for a handshake, shakes someone's hand with the right arm, then lowers it."
+   ],
+   "seconds": [
+    3,
+    3.5
+   ],
+   "seed": 1,
+   "constraints": [
+    "fullbody: frames 105, 125, 145 — motions/h-q3.constraint.json: h-q's own poses there, the neck and head turned to his eyes (tools/order_head.py, motions/h-q3.spec.json)"
+   ]
+  }
+ },
+ {
+  "id": "g-led3",
+  "label": {
+   "ru": "её ведут за руку, она поглядывает на него",
+   "en": "she is led by the hand, glancing at him"
+  },
+  "key": "c3d3085aa1866155657c220d177e0867dc296cc03663ad115a848231e39c448d",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace, holding someone's hand with their right hand down at their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1,
+   "constraints": [
+    "fullbody: frames 30, 70, 110 — motions/g-led3.constraint.json: g-led2's own poses there, the neck and head turned towards him, 60° at most (tools/order_head.py, motions/g-led3.spec.json)"
+   ]
+  }
+ },
+ {
+  "id": "a-led",
+  "label": {
+   "ru": "она поворачивается и идёт с ним за руку",
+   "en": "she turns and walks with him, hand in hand"
+  },
+  "key": "f8da2ac2e4e61397ba8d842eb459ac1ed1fab3f2670a8b82b9683851f39fa49c",
+  "ask": {
+   "prompts": [
+    "A person turns to their left and walks forward at a relaxed pace, holding someone's hand with their right hand down at their side."
+   ],
+   "seconds": [
+    5
+   ],
+   "seed": 1,
+   "constraints": [
+    "right-hand: frames 60…140 every 10 — motions/a-led.constraint.json (as sent), from motions/a-led.spec.json"
+   ]
+  },
+  "after": {
+   "motion": "a-shake",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.212,
+   "z": -0.189
+  }
  }
 ]

@@ -1,0 +1,6 @@
+[{"out": "pics/shake-look-sheet.png", "scene": "shake-look", "kind": "sheet", "frames": [95, 110, 125, 140, 155], "size": [300, 340],
+  "views": [{"yaw": -1.5, "pitch": 0.05, "dist": 2.2, "target": "mid", "y": 1.4, "label": "сбоку, лица"},
+            {"yaw": -0.5, "pitch": 0.1, "dist": 2.6, "target": "mid", "y": 1.2, "label": "наискось"}]},
+ {"out": "pics/lead-look-sheet.png", "scene": "lead-look", "kind": "sheet", "frames": [20, 30, 50, 70, 90, 110, 130], "size": [260, 340],
+  "views": [{"yaw": 0.0, "pitch": 0.1, "dist": 3.2, "target": "mid", "y": 1.2, "label": "спереди"},
+            {"yaw": -0.6, "pitch": 0.12, "dist": 3.6, "target": "mid", "y": 1.0, "label": "спереди-сбоку"}]}]

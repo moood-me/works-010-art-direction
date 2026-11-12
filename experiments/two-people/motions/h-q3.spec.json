@@ -1,0 +1,2 @@
+{"source": "h-q", "note": "h-q again, now looking at him: its own poses at its frames 105, 125, 145 (her palm on his there) as a fullbody constraint, the neck and head turned to his eyes (a point 6 cm above and 8 cm in front of his Head joint at rest: PLACE=0,-3.9,0 node tools/targets.mjs man h-p Head 0,1.656,0.125 105,125,145 -0.47,3.4,3.14159265,0.896); tools/order_head.py",
+ "items": [{"frame": 105, "at": [-0.2299, 1.8833, 4.1288]}, {"frame": 125, "at": [-0.2331, 1.8792, 4.0503]}, {"frame": 145, "at": [-0.2255, 1.8801, 4.0465]}]}

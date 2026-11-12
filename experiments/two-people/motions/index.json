@@ -348,6 +348,52 @@
     "ru": "поднимает сидящую на руки (2: руки у пояса)",
     "en": "lifts a seated person in his arms (2: hands at the waist)"
    }
+  },
+  {
+   "id": "b-shake3",
+   "label": {
+    "ru": "он отступает и подаёт руку (рука поставлена)",
+    "en": "he steps back and offers his hand (the hand placed)"
+   },
+   "after": "b-hold4"
+  },
+  {
+   "id": "a-shake",
+   "label": {
+    "ru": "она оборачивается и пожимает ему руку",
+    "en": "she turns round and shakes his hand"
+   },
+   "after": "a-look"
+  },
+  {
+   "id": "b-lead",
+   "label": {
+    "ru": "он поворачивается и уводит её за руку",
+    "en": "he turns and leads her away by the hand"
+   },
+   "after": "b-shake3"
+  },
+  {
+   "id": "h-q3",
+   "label": {
+    "ru": "она пожимает руку и смотрит на него",
+    "en": "she shakes his hand, looking at him"
+   }
+  },
+  {
+   "id": "g-led3",
+   "label": {
+    "ru": "её ведут за руку, она поглядывает на него",
+    "en": "she is led by the hand, glancing at him"
+   }
+  },
+  {
+   "id": "a-led",
+   "label": {
+    "ru": "она поворачивается и идёт с ним за руку",
+    "en": "she turns and walks with him, hand in hand"
+   },
+   "after": "a-shake"
   }
  ]
 }

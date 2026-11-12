@@ -149,6 +149,74 @@ thighs) and wrapped round his waist (`c-hug5`: they wrap, but one leg sticks out
 into his chest, and it crouches oddly once put down; `pics/carry4-legs-try.png`). Neither is better than the straight
 legs, so left, as agreed.
 
+## Fourth pass: a hug, an adult in the arms, a chain where roles change, heads turned
+
+Pavel's four asks, in his order, each to its end before the next; where Kimodo did one badly after a few tries, the
+best try is kept and said plainly. 19 orders in this pass (3 of them probes: `sit-probe`, `lift-probe`, `lift-probe2`).
+
+**hug** (`hug-p1`, `hug-p2` → `hug-q` → `hug-p3` → `hug-q2`): they walk up, embrace, hold, let go.
+- Made in turns, each with palms on the other's back, the left high and the right low (so the arms cross as in a real
+  hug): he alone first (`hug-p2`, of two seeds) — his arms embraced the air above her (`pics/hug-try1.png`); she on
+  him (`hug-q`: her palms on points of his back skin, `tools/trunkpoint.mjs`); he again on her (`hug-p3`), his pelvis
+  8 cm further back — now both arms go round her (`pics/hug-try2.png`); she again on him (`hug-q2`), her pelvis 10 cm
+  further back. Each order's pose: the other person's hug at the hold (her pose for him: her arms already left high,
+  right low).
+- How far the constraints carry it: the palms land on the backs (Kimodo alone mean 7–18 cm over the whole hold, a few
+  cm at the keyframes; with the correction 0–5 cm, the right hands up to 15–21 cm at the ends of the hold, where the
+  arms are still coming round). The pelvis goes where it is put. **The chests do not**: whatever the pelvis distance,
+  Kimodo leans both trunks into the hug, so the chests and her head pass into him — more than 6 cm (the test's
+  limit), 2 000–2 700 skin points, the whole hold. Moving the pelvises apart by 18 cm in all only made both lean more.
+  A hand constraint carries the arm's chain only; the trunk's lean is the prompt's. The next thing to try would be a
+  fullbody constraint at the hold (the trunks upright, set by us) — not tried.
+- Looks: two people embracing — arms round each other, her head beside his — but from the side their bodies merge
+  into one (`pics/hug-close.png`).
+
+**cradle** (`w-sit`, `m-cradle` → `m-cradle2`): an adult lifted in the arms, under the back and the knees.
+- She: her own Kimodo motion, "sits on the floor with knees bent and hands resting on the knees", 10 s, attached to
+  his hands (as the child is) from the moment he lifts. He: Kimodo's "squats down low, picks up a large heavy object
+  from the floor with both arms under it, and stands up holding it at chest level" (the data has no person carried in
+  the arms; `lift-probe2` is the probe), his left palm constrained under her back (Spine2), his right under her right
+  thigh by the knee, at his squat frames 128 and 138.
+- First take (`m-cradle`): he stood up raising his hands to his chest, 80 cm apart — she, fixed to them, went up to his
+  head. Second (`m-cradle2`): also his palms at frames 215 and 245, where her same two points would be if lifted
+  0.80 m (0.70 was 8 cm out of his left arm's reach) — her seat at his waist, his forearms under her.
+- Numbers: his palms on her — Kimodo alone mean 6–7 cm (max 12–13), with the correction 0–1 cm (max 6). One in the
+  other: up to 5.6 cm, ~200 skin points through the lift and the carry (his arms in her thighs and back, her side in his
+  chest).
+- Looks: he squats, slips his arms under her, stands with her in his arms and steps on. But she is a sitting doll: her
+  pose is sitting on the floor, rigid — knees apart, hands on her knees, legs sticking out to the side — not someone
+  held (who would curl into him and put an arm round his neck). The next step would be her arm round his neck through
+  a constraint, as the child's; not done. The nearer one (helping someone walk, an arm over the shoulders) was not tried.
+
+**exchange** (one chain: `a-stand, a-look, a-shake, a-led` and `b-touch3, b-hold4, b-shake3, b-lead`): he lays his
+hand on her shoulder, she looks round and turns, he steps back and offers his hand, they shake, he turns and leads her
+away by the hand. 19 s. Every motion goes on from the same person's last one (`after`, 5 frames); whose motion is
+made first changes: he (touch) → she (looks round; his hold made on her) → he (offers his hand) → she (her palm on
+his) → he (turns and walks, hand held out) → she (her palm on his, her pelvis at his left, every 10 frames).
+- Twice Kimodo would not do it from words alone: after his hand lay on her shoulder, "lowers the right hand … steps
+  back" + "a handshake" (`b-shake`, `b-shake2`, two seeds) kept his hand up at her shoulder's height and hardly stepped
+  back. With his own handshake pose (`h-p`) as a hand constraint, 30 cm behind (`b-shake3`), he did.
+- Where an `after` motion's space lands: its frame 0 pelvis comes out within 1 cm of where the earlier one left it, so
+  the next person's targets can be computed before the motion they follow from is made (checked: a-shake 7 mm, a-led
+  5 mm).
+- Numbers: his palm on her shoulder 2–4 cm (Kimodo), her palm on his in the handshake 4.9 cm mean (14 at the ends),
+  her palm on his while led 3.2 cm mean (max 4.7); 0 with the correction. One in the other: up to 4.4 cm as she turns
+  inside his reach (frame 290), 2–2.5 cm in the handshake (fingers).
+- Looks: a scene that reads from start to end; the joints between motions don't show. Weak: while leading, his left arm
+  is bent with the hand at his hip (Kimodo walked "holding someone's hand" with it raised to 1 m), so her hand is
+  pulled up; as she turns round his hand is still near her shoulder for a moment.
+
+**Heads turned** (`h-q3`, `g-led3`; one ask each): instead of the prompt, a fullbody constraint built from the
+motion's own poses at three frames, with only the neck and head turned to the other's eyes (`tools/order_head.py`:
+the turn shared by Neck1, Neck2, Head). The rest of the pose is the motion's own, so the hand stays where it was.
+- Handshake (`shake-look`): her head now points within 2–6° of his eyes through the whole clasp (it was 22–28° off,
+  over his shoulder). Reads: she looks up at his face. He still looks ahead over her head (he is made first; not
+  re-made).
+- Leading (`lead-look`): the full turn to him would be 108°, so it was capped at 60°; at the keyframes her head turns
+  that far, between them it goes back to the walk's own (100–114° off): glances that read weakly, more a tilt than a
+  look. A keyframe every 10 frames would hold it; not done.
+- The old versions stay beside them (`shake`, `lead`).
+
 ## Numbers of the first versions (`tools/measure.mjs`, every 2nd frame; `pics/*-measure.json`)
 
 **touch** — B's palm against its point on A's shoulder, frames 160–249 (3 s of contact):
@@ -236,6 +304,8 @@ First versions:
   seconds, seed, constraints, `after`, `startsAt`) and the takes thrown away; `motions/*.spec.json` → `tools/order_hand.py`
   → `motions/*.constraint.json` — the hand constraints exactly as sent.
 - `tools/order_full.py` (a fullbody constraint from a hand constraint's poses, with the legs set),
+  `tools/order_head.py` (a fullbody constraint from a motion's own frames, the neck and head turned to a point),
+  `tools/trunkpoint.mjs` (a point on a body's trunk skin at rest: where the hug's and the cradle's palms go),
 - `tools/carried_targets.mjs` (a point on the carrier in the carried one's Kimodo space, through the attachment),
   `tools/startsat.py` (an `after` motion's startsAt, as the studio computes it),
 - `tools/keep.py` (a made motion's body data and order in), `tools/convert.py` (into the engine's format; copied from

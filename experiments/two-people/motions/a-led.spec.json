@@ -1,0 +1,130 @@
+{
+ "source": "g-led2",
+ "frame": 70,
+ "side": "Right",
+ "kind": "right-hand",
+ "fingersFrom": {
+  "source": "g-led2",
+  "frame": 70
+ },
+ "note": "she, after a-shake, is led away by the hand: her right palm on his left palm (his palm's point as in the lead scene) every 10 frames once he has turned and walks (scene 480\u2026560 = her frames 60\u2026140; before that she stands in front of him, not at his side; her a-shake ends at scene 425, so this one starts at 420); her pelvis 62 cm to his left and 10 cm behind him, facing as he faces. Targets: PLACE=0,-4.0,0 node tools/targets.mjs man b-touch3,b-hold4,b-shake3,b-lead LeftHand 0.5041,1.0649,0.2235 398,\u2026,518 0,0,0,0.896 (and Hips for his place and turn), less where this one's frame 0 is expected (a-shake's space in her chain + its pelvis at frame 175). The pose: her own walk led by the hand (g-led2) at its frame 70",
+ "items": [
+  {
+   "frame": 60,
+   "target": [
+    -0.187,
+    1.0763,
+    -0.4231
+   ],
+   "hip": [
+    0.0816,
+    -0.0685
+   ],
+   "heading": -1.391
+  },
+  {
+   "frame": 70,
+   "target": [
+    -0.677,
+    1.1517,
+    -0.4061
+   ],
+   "hip": [
+    -0.4585,
+    0.0356
+   ],
+   "heading": -1.739
+  },
+  {
+   "frame": 80,
+   "target": [
+    -1.0324,
+    1.1963,
+    -0.4937
+   ],
+   "hip": [
+    -0.7646,
+    0.0684
+   ],
+   "heading": -1.759
+  },
+  {
+   "frame": 90,
+   "target": [
+    -1.3088,
+    1.1682,
+    -0.4959
+   ],
+   "hip": [
+    -0.9481,
+    0.0073
+   ],
+   "heading": -1.612
+  },
+  {
+   "frame": 100,
+   "target": [
+    -1.5352,
+    1.1784,
+    -0.5018
+   ],
+   "hip": [
+    -1.254,
+    -0.0671
+   ],
+   "heading": -1.614
+  },
+  {
+   "frame": 110,
+   "target": [
+    -1.853,
+    1.1319,
+    -0.5264
+   ],
+   "hip": [
+    -1.6585,
+    -0.0336
+   ],
+   "heading": -1.785
+  },
+  {
+   "frame": 120,
+   "target": [
+    -2.1964,
+    1.1611,
+    -0.5266
+   ],
+   "hip": [
+    -1.9612,
+    -0.01
+   ],
+   "heading": -1.779
+  },
+  {
+   "frame": 130,
+   "target": [
+    -2.4736,
+    1.1544,
+    -0.5781
+   ],
+   "hip": [
+    -2.1368,
+    -0.083
+   ],
+   "heading": -1.633
+  },
+  {
+   "frame": 140,
+   "target": [
+    -2.6202,
+    1.1585,
+    -0.5885
+   ],
+   "hip": [
+    -2.2997,
+    -0.1863
+   ],
+   "heading": -1.548
+  }
+ ]
+}

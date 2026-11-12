@@ -1,0 +1,4 @@
+[{"out": "pics/exchange-side.mp4", "scene": "exchange", "kind": "film", "frames": {"from": 100, "to": 567, "step": 3}, "size": [640, 400],
+  "views": [{"yaw": -0.9, "pitch": 0.12, "dist": 5.0, "target": "mid", "y": 0.95}]},
+ {"out": "pics/cradle-side.mp4", "scene": "cradle", "kind": "film", "frames": {"from": 60, "to": 329, "step": 2}, "size": [640, 400],
+  "views": [{"yaw": -0.6, "pitch": 0.15, "dist": 4.0, "target": "mid", "y": 0.8}]}]
