@@ -1,0 +1,8 @@
+{"source": "m-cradle", "frame": 135,  "sides": ["Left", "Right"],
+ "note": "as m-cradle (the same palms under her back and her right thigh at its squat frames 128, 138), and now also while he stands holding her (frames 215, 245): with m-cradle alone he raised his hands 1 m, to his chest, 80 cm apart, and she — fixed to his hands — went up to his head. Here the same two points of her lifted 0.80 m (0.70 was out of his left arm's reach by 8 cm) and brought 2 cm nearer him, his pelvis at (-0.22, 3.50): her seat at his waist, his forearms under her. The pose for those frames: m-cradle's own at its frame 240 (standing, holding)",
+ "items": [
+  {"frame": 128, "targets": {"Left": [0.0222, 0.2578, 3.9269], "Right": [-0.4126, 0.2813, 3.745]}, "hip": [-0.2, 3.40]},
+  {"frame": 138, "targets": {"Left": [0.0222, 0.2578, 3.9269], "Right": [-0.4126, 0.2813, 3.745]}, "hip": [-0.2, 3.40]},
+  {"frame": 215, "sourceFrame": 240, "targets": {"Left": [0.002, 1.058, 3.907], "Right": [-0.433, 1.081, 3.725]}, "hip": [-0.22, 3.50]},
+  {"frame": 245, "sourceFrame": 240, "targets": {"Left": [0.002, 1.058, 3.907], "Right": [-0.433, 1.081, 3.725]}, "hip": [-0.22, 3.50]}
+ ]}

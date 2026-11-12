@@ -311,6 +311,43 @@
     "ru": "объятие: она, на него второго",
     "en": "hug: she, onto him made second"
    }
+  },
+  {
+   "id": "w-sit",
+   "label": {
+    "ru": "сидит на полу, руки на коленях",
+    "en": "sits on the floor, hands on the knees"
+   }
+  },
+  {
+   "id": "b-shake",
+   "label": {
+    "ru": "он опускает руку, отступает и подаёт руку",
+    "en": "he lowers the hand, steps back and offers a handshake"
+   },
+   "after": "b-hold4"
+  },
+  {
+   "id": "m-cradle",
+   "label": {
+    "ru": "поднимает сидящую на руки и несёт",
+    "en": "lifts a seated person in his arms and carries"
+   }
+  },
+  {
+   "id": "b-shake2",
+   "label": {
+    "ru": "он опускает руку, отступает и подаёт руку (2)",
+    "en": "he lowers the hand, steps back and offers a handshake (2)"
+   },
+   "after": "b-hold4"
+  },
+  {
+   "id": "m-cradle2",
+   "label": {
+    "ru": "поднимает сидящую на руки (2: руки у пояса)",
+    "en": "lifts a seated person in his arms (2: hands at the waist)"
+   }
   }
  ]
 }

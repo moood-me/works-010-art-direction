@@ -1,0 +1,7 @@
+{"source": "h-p", "frame": 130, "side": "Right", "kind": "right-hand",
+ "note": "he, after b-hold4 (his hand on her shoulder), steps back and offers his hand: asked by the prompt alone (b-shake, b-shake2) Kimodo kept his hand up at her shoulder's height and hardly stepped back. Here his own handshake pose from h-p (its frame 130, the palm 34 cm in front of the pelvis) at frames 75, 95, 115, his pelvis 30 cm behind where b-hold4 left it (b-shake2's frame 0 pelvis at 0.003, -0.004 in its space)",
+ "items": [
+  {"frame": 75, "target": [-0.096, 1.018, 0.034], "hip": [0.003, -0.304]},
+  {"frame": 95, "target": [-0.096, 1.018, 0.034], "hip": [0.003, -0.304]},
+  {"frame": 115, "target": [-0.096, 1.018, 0.034], "hip": [0.003, -0.304]}
+ ]}

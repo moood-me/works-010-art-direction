@@ -61,6 +61,22 @@ export const SCENES = [
     camera: { yaw: -1.4, pitch: 0.1, dist: 5, target: [0, 1.0, -0.4] },
   },
   {
+    id: 'cradle', label: 'взрослую на руки',
+    about: 'Женщина сидит на полу. Мужчина подходит, приседает, подводит левую руку ей под спину, правую под колени, встаёт с ней на руках и делает пару шагов. Его движение — Kimodo «поднимает с пола большой тяжёлый предмет» с ладонями, поставленными ей под спину и под колени; она — своё движение Kimodo «сидит на полу», с той минуты, как поднята, прикреплена к его рукам.',
+    frames: 330,
+    people: [
+      { id: 'W', name: 'женщина', character: 'woman', chain: ['w-sit'], start: 0, place: { position: [0, 0, 0], heading: -Math.PI / 2 } },
+      { id: 'M', name: 'мужчина', character: 'man', chain: ['m-cradle2'], start: 0, place: { position: [0.1, 0, -4.0], heading: 0 } },
+    ],
+    // his left palm under her back, his right under her right thigh by the knee (points of her skin at rest)
+    contacts: [
+      { who: 'M', side: 'Left', on: 'W', joint: 'Spine2', point: [-0.0114, 1.0127, -0.0435], from: 128, to: 329, ramp: 10 },
+      { who: 'M', side: 'Right', on: 'W', joint: 'RightLeg', point: [-0.09, 0.52, -0.03], from: 128, to: 329, ramp: 10 },
+    ],
+    carry: { who: 'W', by: 'M', from: 138 },
+    camera: { yaw: -1.2, pitch: 0.12, dist: 5, target: [0, 0.8, -0.3] },
+  },
+  {
     id: 'carry3', label: 'поднимает и несёт',
     about: 'Ребёнок стоит и поднимает руки. Мужчина подходит, наклоняется, берёт его под мышки, поднимает к груди, несёт, ставит и отходит на два шага. Ребёнок обнимает его за шею; пока его несут, он прикреплён к рукам мужчины, а его поза — своё движение Kimodo.',
     frames: 440,

@@ -1,0 +1,4 @@
+[{"out": "pics/cradle-sheet.png", "scene": "cradle", "kind": "sheet", "frames": [100, 130, 160, 190, 220, 260, 300, 329], "size": [260, 340],
+  "views": [{"yaw": -1.5, "pitch": 0.1, "dist": 3.6, "target": "mid", "y": 0.8, "label": "сбоку"},
+            {"yaw": -0.5, "pitch": 0.2, "dist": 3.6, "target": "mid", "y": 0.8, "label": "наискось"},
+            {"yaw": 0.0, "pitch": 0.15, "dist": 3.6, "target": "mid", "y": 0.8, "label": "спереди"}]}]

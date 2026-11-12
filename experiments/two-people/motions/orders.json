@@ -1117,5 +1117,124 @@
    ]
   },
   "note": "onto hug-p3; her pelvis 10 cm further back than in hug-q"
+ },
+ {
+  "id": "w-sit",
+  "label": {
+   "ru": "сидит на полу, руки на коленях",
+   "en": "sits on the floor, hands on the knees"
+  },
+  "key": "6f997d5c5927f0aba68263a0f2ed115de2c08543f1dc3c450326b7223e5139c2",
+  "ask": {
+   "prompts": [
+    "A person sits on the floor with knees bent and hands resting on the knees, sitting still."
+   ],
+   "seconds": [
+    10
+   ],
+   "seed": 1
+  }
+ },
+ {
+  "id": "b-shake",
+  "label": {
+   "ru": "он опускает руку, отступает и подаёт руку",
+   "en": "he lowers the hand, steps back and offers a handshake"
+  },
+  "key": "677f99a7f268b1f44be67743d466dd668f75b5af22452375e34c3cc11e6c0d91",
+  "ask": {
+   "prompts": [
+    "A person lowers their right hand to their side and takes a small step back.",
+    "A person standing upright raises the right arm forward for a handshake, shakes someone's hand with the right arm, then lowers it."
+   ],
+   "seconds": [
+    2,
+    3.5
+   ],
+   "seed": 1
+  },
+  "after": {
+   "motion": "b-hold4",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0563,
+   "z": -0.0294
+  }
+ },
+ {
+  "id": "m-cradle",
+  "label": {
+   "ru": "поднимает сидящую на руки и несёт",
+   "en": "lifts a seated person in his arms and carries"
+  },
+  "key": "31aeb8b54540218514487aded9f35f76332ec61cf5b73abda93c03a8ed162579",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person squats down low, picks up a large heavy object from the floor with both arms under it, and stands up holding it at chest level.",
+    "A person walks forward slowly, carrying a large heavy object in both arms at chest level."
+   ],
+   "seconds": [
+    3,
+    5,
+    3
+   ],
+   "seed": 1,
+   "constraints": [
+    "left-hand and right-hand: frames 128, 138 — motions/m-cradle.constraint.json (as sent), from motions/m-cradle.spec.json"
+   ]
+  }
+ },
+ {
+  "id": "b-shake2",
+  "label": {
+   "ru": "он опускает руку, отступает и подаёт руку (2)",
+   "en": "he lowers the hand, steps back and offers a handshake (2)"
+  },
+  "key": "c3a2be6c93fcbdb98044f987fec587e65d12926a72d07ed0ac3cb37c589b2593",
+  "ask": {
+   "prompts": [
+    "A person drops their right arm down to their side and steps backward one step.",
+    "A person standing upright raises the right arm forward for a handshake, shakes someone's hand with the right arm, then lowers it."
+   ],
+   "seconds": [
+    2,
+    3.5
+   ],
+   "seed": 2
+  },
+  "after": {
+   "motion": "b-hold4",
+   "frames": 5
+  },
+  "startsAt": {
+   "x": -0.0563,
+   "z": -0.0294
+  }
+ },
+ {
+  "id": "m-cradle2",
+  "label": {
+   "ru": "поднимает сидящую на руки (2: руки у пояса)",
+   "en": "lifts a seated person in his arms (2: hands at the waist)"
+  },
+  "key": "4459fde7a7be17ed808793b81095d09e7c173a322cd5d29f78df21c7ab296e90",
+  "ask": {
+   "prompts": [
+    "A person walks forward at a relaxed pace and comes to a stop.",
+    "A person squats down low, picks up a large heavy object from the floor with both arms under it, and stands up holding it at chest level.",
+    "A person walks forward slowly, carrying a large heavy object in both arms at chest level."
+   ],
+   "seconds": [
+    3,
+    5,
+    3
+   ],
+   "seed": 1,
+   "constraints": [
+    "left-hand and right-hand: frames 128, 138, 215, 245 — motions/m-cradle2.constraint.json (as sent), from motions/m-cradle2.spec.json"
+   ]
+  }
  }
 ]

@@ -1,0 +1,6 @@
+{"source": "lift-probe2", "frame": 135, "sides": ["Left", "Right"],
+ "note": "the man lifting a seated woman in his arms: she sits on the floor (w-sit) at the origin facing -x (heading -pi/2), he comes from z -4 (placed at x 0.1, z -4.0, k 1.015). His left palm under her back (moood-woman Spine2, a skin point 2 cm out: tools/trunkpoint.mjs moood-woman Spine2 0 0,0,-1 0.02), his right palm under her right thigh by the knee (on RightLeg at rest -0.09,0.52,-0.03), at his squat frames 128 and 138. PLACE=0,0,-1.5707963 node tools/targets.mjs woman w-sit <joint> <point> 135 0.1,-4.0,0,1.015. The pose: his own lift (lift-probe2: squats and picks up a large heavy object with both arms under it) at its frame 135",
+ "items": [
+  {"frame": 128, "targets": {"Left": [0.0222, 0.2578, 3.9269], "Right": [-0.4126, 0.2813, 3.745]}, "hip": [-0.2, 3.40]},
+  {"frame": 138, "targets": {"Left": [0.0222, 0.2578, 3.9269], "Right": [-0.4126, 0.2813, 3.745]}, "hip": [-0.2, 3.40]}
+ ]}
