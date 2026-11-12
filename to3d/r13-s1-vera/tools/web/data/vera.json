@@ -1,0 +1,282 @@
+{
+ "format": "tim-pixar/model",
+ "version": 1,
+ "id": "vera",
+ "skeleton": "soma77",
+ "mats": [
+  "skin",
+  "lip",
+  "mouth",
+  "eye",
+  "hair",
+  "coat",
+  "turtle",
+  "pants",
+  "frame",
+  "shoe",
+  "sole",
+  "teeth",
+  "streak",
+  "belt",
+  "tongue"
+ ],
+ "parts": [
+  "head"
+ ],
+ "ranges": {
+  "head": [
+   0,
+   4118
+  ],
+  "eyeL": [
+   4118,
+   5558
+  ],
+  "eyeR": [
+   5558,
+   6998
+  ],
+  "teethUp": [
+   6998,
+   8118
+  ],
+  "teethLo": [
+   8118,
+   9238
+  ],
+  "tongue": [
+   9238,
+   9518
+  ],
+  "hair": [
+   9518,
+   15541
+  ],
+  "glasses": [
+   15541,
+   16269
+  ],
+  "coat": [
+   16269,
+   18447
+  ],
+  "skirt": [
+   18447,
+   22767
+  ],
+  "turtle": [
+   22767,
+   23167
+  ],
+  "pants": [
+   23167,
+   24971
+  ],
+  "shoes": [
+   24971,
+   26655
+  ],
+  "limbs": [
+   26655,
+   30207
+  ]
+ },
+ "K": 0.0028,
+ "hs": 1.12,
+ "headY": 581.0,
+ "headZ": 8.445867880114488,
+ "balls": [
+  [
+   17.5,
+   0.9152706248874556,
+   20.926058787784093,
+   11.5
+  ],
+  [
+   -17.5,
+   0.9152706248874556,
+   20.926058787784093,
+   11.5
+  ]
+ ],
+ "mouthY": -35.5,
+ "lipZ": 37.078886262899445,
+ "floor": 590.0,
+ "paint": {
+  "skin": "#daa38b",
+  "lip": "#a63e4c",
+  "mouth": "#5a1f22",
+  "eye": "#f2ede8",
+  "hair": "#392926",
+  "coat": "#5a6674",
+  "turtle": "#882e44",
+  "pants": "#2e2c33",
+  "frame": "#2a1f1c",
+  "shoe": "#1e1c20",
+  "sole": "#0c0b0d",
+  "teeth": "#f4eee2",
+  "streak": "#8f8882",
+  "belt": "#6c7985",
+  "tongue": "#c4545a"
+ },
+ "iris": {
+  "col": "#706459",
+  "r": 0.6086956521739131
+ },
+ "legs": {
+  "r": [
+   0.056,
+   0.044,
+   0.036
+  ],
+  "soft": 0.012,
+  "seat": 0.078
+ },
+ "hair": {
+  "light": "#b08a76",
+  "dark": "#22171a"
+ },
+ "skinShade": "#c88672",
+ "lash": "#1e1412",
+ "stance": {
+  "sh": [
+   33,
+   112,
+   -4
+  ],
+  "el": [
+   55,
+   196,
+   2
+  ],
+  "wr": [
+   57,
+   280,
+   12
+  ],
+  "hip": [
+   14,
+   322,
+   0
+  ],
+  "kn": [
+   12,
+   450,
+   3
+  ],
+  "an": [
+   10,
+   574,
+   -2
+  ]
+ },
+ "eye": {
+  "x": 17.5,
+  "y": 1.0,
+  "browH": 13.5
+ },
+ "bin": "vera.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    30207,
+    3
+   ],
+   "offset": 0
+  },
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    58376,
+    3
+   ],
+   "offset": 362484
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    30207,
+    4
+   ],
+   "offset": 1062996
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    30207,
+    4
+   ],
+   "offset": 1183824
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 1667136
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 1668060
+  },
+  "mat": {
+   "dtype": "uint8",
+   "shape": [
+    30207
+   ],
+   "offset": 1669292
+  },
+  "pat": {
+   "dtype": "float32",
+   "shape": [
+    30207,
+    3
+   ],
+   "offset": 1699500
+  },
+  "aux": {
+   "dtype": "float32",
+   "shape": [
+    30207,
+    4
+   ],
+   "offset": 2061984
+  },
+  "ao": {
+   "dtype": "float32",
+   "shape": [
+    30207
+   ],
+   "offset": 2545296
+  },
+  "face": {
+   "dtype": "float32",
+   "shape": [
+    30207,
+    4
+   ],
+   "offset": 2666124
+  },
+  "jaw": {
+   "dtype": "float32",
+   "shape": [
+    30207
+   ],
+   "offset": 3149436
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    30207,
+    1
+   ],
+   "offset": 3270264
+  }
+ }
+}

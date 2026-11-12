@@ -1,0 +1,39 @@
+{
+ "format": "engine/body",
+ "version": 1,
+ "id": "savely8",
+ "label": {
+  "ru": "Савелий Петрович",
+  "en": "Savely Petrovich"
+ },
+ "source": "to3d/r27-s8-savely: Anny (moood-oldman) fitted to the С8 drawing, HBM stylised head",
+ "topology": "savely8",
+ "skeleton": "soma77",
+ "bin": "savely8.bin",
+ "arrays": {
+  "positions": {
+   "dtype": "float32",
+   "shape": [
+    69247,
+    3
+   ],
+   "offset": 0
+  },
+  "joints": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    3
+   ],
+   "offset": 830964
+  },
+  "frames": {
+   "dtype": "float32",
+   "shape": [
+    77,
+    4
+   ],
+   "offset": 831888
+  }
+ }
+}

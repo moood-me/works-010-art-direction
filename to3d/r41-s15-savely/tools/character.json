@@ -1,0 +1,118 @@
+{
+ "key": "sav",
+ "rest": "stern",
+ "back": [
+  "#2c3a36",
+  "#b99a4e"
+ ],
+ "head": {
+  "c": [
+   0,
+   570,
+   10
+  ],
+  "s": 0.72
+ },
+ "restRu": "строгий",
+ "figYaw": -42,
+ "films": {
+  "turn": {
+   "clip": "stand",
+   "sec": 5,
+   "turn": true,
+   "yaw0": 0,
+   "cam": {
+    "yaw": 0,
+    "pitch": 5,
+    "dist": 4.6,
+    "ty": 0.84,
+    "fov": 20,
+    "follow": false
+   }
+  },
+  "walk": {
+   "clip": "walk",
+   "sec": 5,
+   "cam": {
+    "yaw": 6,
+    "pitch": 6,
+    "dist": 4.4,
+    "ty": 0.84,
+    "fov": 22,
+    "follow": true
+   }
+  },
+  "stroll": {
+   "clip": "stroll",
+   "sec": 5,
+   "cam": {
+    "yaw": -62,
+    "pitch": 6,
+    "dist": 4.4,
+    "ty": 0.84,
+    "fov": 22,
+    "follow": true
+   }
+  },
+  "bow": {
+   "clip": "bow",
+   "sec": 3,
+   "cam": {
+    "yaw": -22,
+    "pitch": 5,
+    "dist": 4.6,
+    "ty": 0.84,
+    "fov": 22,
+    "follow": false
+   }
+  },
+  "face": {
+   "clip": "talk",
+   "sec": 9,
+   "talk": true,
+   "size": [
+    640,
+    640
+   ],
+   "cam": {
+    "yaw": -6,
+    "pitch": 0,
+    "dist": 2.2,
+    "ty": 1.33,
+    "fov": 20,
+    "follow": true
+   },
+   "keys": [
+    [
+     2.5,
+     "expr",
+     "joy"
+    ],
+    [
+     4.5,
+     "expr",
+     "surprise"
+    ],
+    [
+     6.0,
+     "expr",
+     "anger"
+    ],
+    [
+     7.5,
+     "expr",
+     "neutral"
+    ],
+    [
+     6.0,
+     "talk",
+     false
+    ]
+   ]
+  }
+ },
+ "neck": [
+  2,
+  504
+ ]
+}

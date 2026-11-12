@@ -16,7 +16,7 @@ The catalogue itself — what is where, how to take and how to add — is in [..
 9. [briefs/](briefs/) — the briefs those agents worked from (`tools-demo/`, `styles/`, `to3d/`; `styles-more.md`: two
    more characters and four more styles), to reuse.
 
-10. [status.md](status.md) — where the work stands now: what is done, what was paused half-way, what is planned.
+10. [status.md](status.md) — where the work stands now: what is in `main`, what is weak, what is still to come.
 11. [reviews/](reviews/) — independent reviews of the late engine, stage by stage, and what went wrong with it as an
     engine ([reviews/2026-11-09-engine-what-went-wrong.md](reviews/2026-11-09-engine-what-went-wrong.md)).
 

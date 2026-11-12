@@ -1,0 +1,65 @@
+{
+ "format": "engine/topology",
+ "version": 1,
+ "id": "savely8",
+ "about": "Савелий Петрович (С8): every piece in one mesh",
+ "source": "to3d/r27-s8-savely",
+ "skeleton": "soma77",
+ "vertices": 69247,
+ "triangles": 133333,
+ "parts": [
+  "pelvis",
+  "spine",
+  "neck",
+  "head",
+  "Lclavicle",
+  "Rclavicle",
+  "LupperArm",
+  "RupperArm",
+  "LforeArm",
+  "RforeArm",
+  "Lhand",
+  "Rhand",
+  "Lthigh",
+  "Rthigh",
+  "Lshin",
+  "Rshin",
+  "Lfoot",
+  "Rfoot"
+ ],
+ "bin": "savely8.bin",
+ "arrays": {
+  "triangles": {
+   "dtype": "uint32",
+   "shape": [
+    133333,
+    3
+   ],
+   "offset": 0
+  },
+  "skinJoints": {
+   "dtype": "uint8",
+   "shape": [
+    69247,
+    4
+   ],
+   "offset": 1599996
+  },
+  "skinWeights": {
+   "dtype": "float32",
+   "shape": [
+    69247,
+    4
+   ],
+   "offset": 1876984
+  },
+  "parts": {
+   "dtype": "uint8",
+   "shape": [
+    69247,
+    18
+   ],
+   "offset": 2984936
+  }
+ }
+}
