@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Несколько персонажей в одной сцене — скорость</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #cfc8bd; font: 14px/1.4 system-ui, sans-serif; }
+  #cv { width: 100vw; height: 100vh; display: block; }
+  #bar { position: fixed; left: 10px; top: 10px; background: rgba(255,255,255,.88); border-radius: 8px; padding: 8px 12px; display: grid; gap: 6px; max-width: calc(100vw - 20px); }
+  #bar a { color: #1d1b1a; margin-right: 8px; } #bar a.on { font-weight: 700; text-decoration: none; }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="bar">
+  <div id="info">загрузка…</div>
+  <div id="ways"></div>
+  <div id="counts"></div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search), n = q.get('n') || '6', way = q.get('way') || 'gpu';
+  const link = (o, text, on) => { const p = new URLSearchParams(q); for (const k in o) p.set(k, o[k]); return `<a class="${on ? 'on' : ''}" href="?${p}">${text}</a>`; };
+  document.getElementById('ways').innerHTML = 'скиннинг: ' + link({ way: 'gpu' }, 'на видеокарте', way === 'gpu') + link({ way: 'cpu' }, 'на процессоре, как было', way === 'cpu');
+  document.getElementById('counts').innerHTML = 'персонажей: ' + [1, 2, 4, 6, 9, 12, 16, 25].map(k => link({ n: k }, k, String(k) === n)).join('');
+</script>
+<script type="module" src="bench.js"></script>
+</body>
+</html>
