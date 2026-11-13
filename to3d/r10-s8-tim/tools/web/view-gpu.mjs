@@ -4,9 +4,9 @@
 // stripes and ribs and the hair's strands are drawn in the shader from the paint coordinates, as in the renders).
 // Drag to turn, wheel to come closer. ?shots=1 hides the controls (window.A for scripted pictures).
 // This is the page's fast variant (fast.html; view.html and view.mjs beside it are the page as it was): the skin is
-// skinned in the vertex shader (engine-gpu/src/gpuskin.js), in the puppet's materials and in the shadow's; the
-// processor works out the joints, the floor from a probe of the skin, and the face — its vertices and their normals
-// at rest (the head is rigid on its joint), and only when the face's numbers changed.
+// skinned and its normals found on the video card (engine-gpu/src/gpuskin.js); the puppet's materials and the
+// shadow's read them. The processor works out the joints, the floor from a probe of the skin, and the face — its
+// shapes when its numbers changed, and each frame the offsets of the vertices it moves, turned with the head.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -105,11 +105,11 @@ floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 // ------------------------------------------------------------------ the puppet's materials
 const tl = new THREE.TextureLoader();
 const tex = (n, srgb = true) => { const t = tl.load(new URL(n, TEX).href); if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
-// the skinning in a material's vertex shader: the skinned place and normal where the rest's were taken
+// the posed skin in a material's vertex shader: its place and normal where the rest's were taken
 function skinInto(sh) {
-  sh.uniforms.skinTex = gs.uniforms.skinTex;
+  Object.assign(sh.uniforms, gs.uniforms);
   sh.vertexShader = gs.glsl + '\n' + sh.vertexShader
-    .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n vec3 skinP; skinVertex(position, normal, skinP, objectNormal);')
+    .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n vec3 skinP; skinVertex(skinP, objectNormal);')
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n transformed = skinP;');
 }
 // a shader addition: the paint coordinates (tuv, pat) in, a bump from a height function h(tuv, pat), a colour change
@@ -148,10 +148,7 @@ const MATS = {
 };
 const matList = Object.values(MATS), matIndex = Object.fromEntries(Object.keys(MATS).map((k, i) => [k, i]));
 
-const geo = gs.attributes(new THREE.BufferGeometry());      // the rest's normals, each vertex's joints and weights
-const pos = new Float32Array(N * 3); pos.set(rest);          // the rest with the face's shapes on it
-geo.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
-const nor = geo.attributes.normal.array; geo.attributes.normal.setUsage(THREE.DynamicDrawUsage);
+const geo = gs.attributes(new THREE.BufferGeometry());      // the rest; the shaders take the posed skin from gs
 geo.setAttribute('uv', new THREE.BufferAttribute(look.arrays.uv, 2));
 geo.setAttribute('pat', new THREE.BufferAttribute(look.arrays.pat, 3));
 const col = new Float32Array(N * 3), tintC = new THREE.Color('#f2b8a6');
@@ -160,11 +157,11 @@ geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
 geo.setIndex(new THREE.BufferAttribute(body.triangles, 1));
 { let t0 = 0; look.header.pieces.forEach((p, k) => { const n = look.header.tris[k] * 3; geo.addGroup(t0, n, matIndex[p.mat]); t0 += n; }); }
 const mesh = new THREE.Mesh(geo, matList); mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
-mesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });      // the shadow's, skinned too
+mesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });      // the shadow's: the posed skin too
 mesh.customDepthMaterial.onBeforeCompile = sh => {
-  sh.uniforms.skinTex = gs.uniforms.skinTex;
+  Object.assign(sh.uniforms, gs.uniforms);
   sh.vertexShader = gs.glsl + '\n' + sh.vertexShader
-    .replace('#include <begin_vertex>', '#include <begin_vertex>\n { vec3 skinN; skinVertex(position, normal, transformed, skinN); }');
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\n { vec3 skinN; skinVertex(transformed, skinN); }');
 };
 scene.add(mesh);
 
@@ -213,29 +210,8 @@ function placeCamera() {
   else { controls.target.set(hx, 0.62, hz); camera.position.set(hx - 0.9, 0.95, hz + 2.6); }
   controls.update();
 }
-// The face moves its vertices at rest: the head is rigid on its joint, so the shader's skinning carries the moved
-// rest as the old page's turn of (displaced − rest) after skinning did. The normals of the moved vertices and of
-// those in a triangle with one are found again from the rest's triangles (the rest of the skin keeps the rest's).
-const moved = Int32Array.from(face.moved), tris = body.triangles, touch = new Uint8Array(N);
-for (const i of moved) touch[i] = 1;
-for (let k = 0; k < tris.length; k += 3) if ((touch[tris[k]] | touch[tris[k + 1]] | touch[tris[k + 2]]) & 1) { touch[tris[k]] |= 2; touch[tris[k + 1]] |= 2; touch[tris[k + 2]] |= 2; }
-const nearV = Int32Array.from(touch.keys()).filter(i => touch[i]);
-const nearT = Int32Array.from(tris).filter((_, k) => { const o = k - k % 3; return touch[tris[o]] || touch[tris[o + 1]] || touch[tris[o + 2]]; });
-const span = v => { let a = Infinity, b = -Infinity; for (const i of v) { if (i < a) a = i; if (i > b) b = i; } return [a * 3, (b - a + 1) * 3]; };
-const movedSpan = span(moved), nearSpan = span(nearV);
-function faceNormals() {
-  for (const i of nearV) nor[i * 3] = nor[i * 3 + 1] = nor[i * 3 + 2] = 0;
-  for (let k = 0; k < nearT.length; k += 3) {
-    const a = nearT[k] * 3, b = nearT[k + 1] * 3, c = nearT[k + 2] * 3;
-    const ux = pos[b] - pos[a], uy = pos[b + 1] - pos[a + 1], uz = pos[b + 2] - pos[a + 2];
-    const vx = pos[c] - pos[a], vy = pos[c + 1] - pos[a + 1], vz = pos[c + 2] - pos[a + 2];
-    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
-    if (touch[nearT[k]]) { nor[a] += nx; nor[a + 1] += ny; nor[a + 2] += nz; }
-    if (touch[nearT[k + 1]]) { nor[b] += nx; nor[b + 1] += ny; nor[b + 2] += nz; }
-    if (touch[nearT[k + 2]]) { nor[c] += nx; nor[c + 1] += ny; nor[c + 2] += nz; }
-  }
-  for (const i of nearV) { const o = i * 3, l = Math.hypot(nor[o], nor[o + 1], nor[o + 2]) || 1; nor[o] /= l; nor[o + 1] /= l; nor[o + 2] /= l; }
-}
+// the vertices the face moves (face.mjs), and the run of the skin they lie in
+const moved = Int32Array.from(face.moved), movedFirst = moved.reduce((a, b) => Math.min(a, b)), movedCount = moved.reduce((a, b) => Math.max(a, b)) - movedFirst + 1;
 const J = body.skeleton.J;
 let faceWas = '';
 let last = performance.now();
@@ -249,15 +225,16 @@ function step(dt) {
   gs.setPose(pose); fig.pose = pose;
   const st = life.at(t); st.e = { ...ew };
   const fk = JSON.stringify(st);
-  if (fk !== faceWas) {                                      // the face is worked out and sent only when its numbers changed
-    face.apply(st, rest, disp);
-    for (const i of moved) { pos[i * 3] = disp[i * 3]; pos[i * 3 + 1] = disp[i * 3 + 1]; pos[i * 3 + 2] = disp[i * 3 + 2]; }
-    faceNormals();
-    const pa = geo.attributes.position, na = geo.attributes.normal;
-    pa.clearUpdateRanges(); pa.addUpdateRange(...movedSpan); pa.needsUpdate = true;
-    na.clearUpdateRanges(); na.addUpdateRange(...nearSpan); na.needsUpdate = true;
-    faceWas = fk;
+  if (fk !== faceWas) { face.apply(st, rest, disp); faceWas = fk; }      // the face's shapes only when its numbers changed
+  // the face onto the posed skin, as face.onto: each vertex it moves by the head's turn of (displaced − rest) — an
+  // offset the video card adds after its skinning, so the normals there are the moved skin's
+  const M = fig.skinner.matrix(pose, HI), D = gs.skinD;
+  for (const i of moved) {
+    const o = i * 3, dx = disp[o] - rest[o], dy = disp[o + 1] - rest[o + 1], dz = disp[o + 2] - rest[o + 2];
+    D[o] = M[0] * dx + M[1] * dy + M[2] * dz; D[o + 1] = M[4] * dx + M[5] * dy + M[6] * dz; D[o + 2] = M[8] * dx + M[9] * dy + M[10] * dz;
   }
+  gs.displace(movedFirst, movedCount);
+  gs.update(renderer);
   // the camera and the lamps go along with him
   follow.set(fig.pose.P[HIPS * 3], 0, fig.pose.P[HIPS * 3 + 2]);
   const d = new THREE.Vector3(follow.x - floorC.value.x, 0, follow.z - floorC.value.y);

@@ -3,9 +3,10 @@
 // flat colour, and one even dark line where a form stands in front of another or one piece meets another.
 // The line is found on the screen from each pixel's piece and depth (as the С10 drawing's own renderer does),
 // so it is even in width; Freestyle in the renders works on the mesh's edges instead (see notes.md).
-// This is the page's fast variant (fast.html; view.html and view.mjs beside it are the page as it was): the face
-// (face-gpu.mjs) and the skinning (engine-gpu/src/gpuskin.js) are worked out in the vertex shader of both looks; the
-// processor works out the joints, the floor from a probe of the skin, and the face's numbers.
+// This is the page's fast variant (fast.html; view.html and view.mjs beside it are the page as it was): the skin is
+// skinned on the video card (engine-gpu/src/gpuskin.js) and the face (face-gpu.mjs) is worked out in the vertex
+// shader of both looks, on top of the skinned place and turned with the head; the processor works out the joints,
+// the floor from a probe of the skin, and the face's numbers.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Face, EXPRESSIONS, PARAMS, mix } from './face-gpu.mjs';
@@ -53,7 +54,7 @@ camera.position.set(-2.6, 1.6, 6.2);       // a big man: a little farther off
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 1.05, 0); controls.enableDamping = true; controls.update();
 
-const geo = face.attributes(THREE, gs.attributes(new THREE.BufferGeometry()));      // the rest; each vertex's joints and weights, and its piece of the face
+const geo = face.attributes(THREE, gs.attributes(new THREE.BufferGeometry()));      // the rest (the face is worked out from it), and each vertex's piece of the face
 const col = new Float32Array(N * 3), ids = new Float32Array(N);
 const pal = look.palette.map(c => new THREE.Color(c));
 for (let i = 0; i < N; i++) {
@@ -73,15 +74,15 @@ const idMat = new THREE.ShaderMaterial({ side: THREE.DoubleSide,
   vertexShader: `attribute float pid; varying float vI; varying float vD;
     void main(){ vI = pid; vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
   fragmentShader: `varying float vI; varying float vD; void main(){ gl_FragColor = vec4(vI, vD, 0.0, 1.0); }` });
-// the same two looks for the skin: the face laid on the rest, then skinned, in the shader
+// the same two looks for the skin: its skinned place from gs, and the face on top, turned with the head
 const flatSkin = new THREE.ShaderMaterial({ uniforms: { ...gs.uniforms, ...face.uniforms }, vertexColors: true, side: THREE.DoubleSide,
   vertexShader: `${gs.glsl}${face.glsl}
-    varying vec3 vC; void main(){ vec3 P, N; skinVertex(faceAt(position), normal, P, N); vC = color; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
+    varying vec3 vC; void main(){ vec3 P, N; skinVertex(P, N); P += faceTurn * faceMove(position); vC = color; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
   fragmentShader: flatMat.fragmentShader });
 const idSkin = new THREE.ShaderMaterial({ uniforms: { ...gs.uniforms, ...face.uniforms }, side: THREE.DoubleSide,
   vertexShader: `${gs.glsl}${face.glsl}
     attribute float pid; varying float vI; varying float vD;
-    void main(){ vec3 P, N; skinVertex(faceAt(position), normal, P, N); vI = pid; vec4 mv = viewMatrix * vec4(P, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
+    void main(){ vec3 P, N; skinVertex(P, N); P += faceTurn * faceMove(position); vI = pid; vec4 mv = viewMatrix * vec4(P, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
   fragmentShader: idMat.fragmentShader });
 const mesh = new THREE.Mesh(geo, flatSkin);
 mesh.frustumCulled = false;
@@ -182,10 +183,11 @@ function frame(now) {
   const shift = pose.floor - gs.lowest(pose);                // on the floor, as motion.floor 'lowest'
   for (let j = 0; j < J; j++) pose.P[j * 3 + 1] += shift;
   gs.setPose(pose); fig.pose = pose;
+  gs.update(renderer);
   const q = life.at(t), p = {};
   for (const k of PARAMS) p[k] = k === 'iris' ? q.iris * ex.iris : q[k] + ex[k];
   p.up = Math.min(42, p.up);
-  face.set(p);
+  face.set(p, fig.skinner.matrix(pose, HI));
   // the camera's target goes with him
   follow.set(fig.pose.P[HIPS * 3], controls.target.y, fig.pose.P[HIPS * 3 + 2]);
   const d = follow.clone().sub(controls.target); controls.target.add(d); camera.position.add(d);

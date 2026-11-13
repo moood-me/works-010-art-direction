@@ -11,26 +11,25 @@ expression; copying and sending every place. The line, found on the screen from 
 is the video card's work and is as it was.
 
 What differs from `view.mjs` and `face.mjs`:
-- the skinning is in the vertex shader of both looks (the flat colour; the piece and depth for the line); the
-  processor works out the joints;
-- the face is in the same shader, before the skinning: `face-gpu.mjs` is `face.mjs`'s fields written in GLSL — from
-  each vertex's rest place, its piece (an attribute; for the drawn mouth, how far it opens — another) and the face's numbers (a uniform) — so the processor
-  only sets the numbers. The face is laid on the rest and skinned with it; the old page skinned first and turned the
-  face's displacement with the head. For the head's own vertices that is the same; for the neck's under the jaw (their
-  weights are shared with the neck's joints) it differs by a hair when the jaw is open;
-- the floor (`motion.floor: 'lowest'`) is found from a probe of the skin (engine-gpu's README): within 0.8 mm (0.12 mm on average) of
+- the skin's places are worked out on the video card each frame (engine-gpu); both looks (the flat colour; the piece
+  and depth for the line) read them; the processor works out the joints;
+- the face is in the vertex shader of both looks: `face-gpu.mjs` is `face.mjs`'s fields written in GLSL — from each
+  vertex's rest place, its piece (an attribute; for the drawn mouth, how far it opens — another) and the face's numbers (a uniform) — and the shader adds the
+  displacement, turned with the head, to the skinned place, as `face.mjs`'s `apply()` did. The processor only sets
+  the numbers and the head's turn. (engine-gpu's normals do not know of the face; this page does not use normals.)
+- the floor (`motion.floor: 'lowest'`) is found from a probe of the skin (engine-gpu's README): within 0.2 mm of
   the old over walk, sit, bow, dance, jump and run;
-- nothing is sent to the video card each frame but the joints and the face's numbers.
+- nothing is sent to the video card each frame but the joints, the head's turn and the face's numbers.
 
 What is seen: the same drawing — colours, line, face. Compared picture by picture (standing; walking from the front
-and the back; a bow from the side; sitting; the face close — calm, joy while speaking, sad, surprise), 0.001–0.5 % of a
+and the back; a bow from the side; sitting; the face close — calm, joy while speaking, sad, surprise), 0.01–0.17 % of a
 picture differs: points along the line.
 
 Speed on a laptop with an Intel Arc 140T at 1920×1080, walking, measured roughly (other pages used the machine at the
-same time): the main thread 20 → 2.4 ms a frame; speaking with an expression 22 → 2.6 ms a frame. Frames a second did not rise with it (46–53 before and 50–52 after): the processor is
+same time): the main thread 20 → about 3 ms a frame; speaking with an expression 22 → about 3 ms a frame. Frames a second did not rise with it (46–53 before and 50–52 after): the processor is
 nearly free now, so what holds this page is the video card — the line's two large pictures and the filter over them,
 or the other pages measured beside it; that was not looked into. What is left on the processor: the floor's probe
-(8.4 thousand vertices, about 1 ms).
+(12 thousand vertices, 1.5–2 ms).
 
 To check again: open both pages, pause both, choose the same motion and set the same time and expression, compare
 the canvases. (`engine-gpu/check/compare.mjs` wants `window.A`, which these pages do not have.)

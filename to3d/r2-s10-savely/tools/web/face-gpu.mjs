@@ -3,8 +3,8 @@
 // eye centres, the ball's radius, the mouth line, the jaw's pivot, in the drawing's units (y down, z toward the
 // viewer), and which of the body's vertices are the head, the irises, the moustache and the face's ink marks.
 // This is the fast page's face (face.mjs beside it is the face as it was, for the renders and view.html): the same
-// fields, worked out in the vertex shader from each vertex's rest place, before the skinning — the head carries the
-// face as it carries the rest of its skin. The processor only sets the numbers.
+// fields, worked out in the vertex shader from each vertex's rest place; the page's shader turns the displacement
+// with the head and adds it to the skinned place, as face.mjs's apply() did. The processor only sets the numbers.
 //
 // params (all 0 at rest):
 //   up, low  — the upper / lower lid turned over the ball (degrees; up > 0 closes down, low > 0 closes up)
@@ -15,13 +15,15 @@
 //   lookX, lookY — the irises turned (degrees: right on screen in the front view +, down +)
 //   iris     — the iris scale (1: as is; < 1 smaller: surprise)
 // Each piece is moved by fields over space, so neighbouring pieces (the lip, the moustache over it, a brow mark on
-// the brow) move alike. The result is the vertex's rest place with the face on it.
+// the brow) move alike. The result is a displacement in the head's rest frame; the page's shader turns it with the head.
 
-// the face's fields in the shader: faceAt(the vertex's rest place) → its place with the face on it (metres)
+// the face's fields in the shader: faceMove(the vertex's rest place) → its displacement (metres, the head's rest
+// frame); faceTurn — the head's turn now
 const GLSL = d => {
   const f = x => Number(x).toPrecision(9), v = a => `vec3(${a.map(f).join(', ')})`;
   return `
 uniform float faceQ[${PARAMS.length}];       // the params, in PARAMS' order
+uniform mat3 faceTurn;
 attribute vec3 faceKind;
 const vec3 EYE_L = ${v(d.eyes[0])}, EYE_R = ${v(d.eyes[1])}, JAW = ${v(d.jaw)};
 const float K = ${f(d.K)}, FLOOR = ${f(d.floor)}, RB = ${f(d.rb)}, MY = ${f(d.mouthY)};
@@ -39,7 +41,7 @@ void faceLids(inout vec3 p, vec3 c, float up, float low) {
   float w = (1.0 - smoothstep(RB + 2.0, RB + 6.5, distance(p, c))) * smoothstep(-2.0, 3.0, p.z - c.z);
   if (w > 0.0) { if (p.y < c.y) faceRotX(p, c, up, w); else faceRotX(p, c, -low, w); }
 }
-vec3 faceAt(vec3 at) {
+vec3 faceMove(vec3 at) {
   float ${PARAMS.map((k, n) => `${k} = faceQ[${n}]`).join(', ')};
   // the piece: the head's skin and its marks, the moustache, an iris (left 1, right 2)
   bool head = faceKind.x > 0.5, stache = faceKind.y > 0.5; float eye = faceKind.z;
@@ -70,7 +72,7 @@ vec3 faceAt(vec3 at) {
     faceRotX(p, c, -lookY, 1.0); faceRotY(p, c, lookX);
     p.xy = c.xy + (p.xy - c.xy) * iris;
   }
-  return at + vec3(p.x - p0.x, p0.y - p.y, p.z - p0.z) * K;
+  return vec3(p.x - p0.x, p0.y - p.y, p.z - p0.z) * K;
 }`;
 };
 
@@ -88,8 +90,8 @@ export class Face {
     };
     for (const [name, r] of Object.entries(data.pieces)) put(name, r);
     for (const r of data.marks) put('mark', r);
-    this.q = new Float32Array(PARAMS.length);
-    this.uniforms = { faceQ: { value: this.q } };
+    this.q = new Float32Array(PARAMS.length); this.turn = new Float32Array(9);
+    this.uniforms = { faceQ: { value: this.q }, faceTurn: { value: this.turn } };
     this.glsl = GLSL(data);
   }
 
@@ -99,9 +101,11 @@ export class Face {
     return geometry;
   }
 
-  // the face for these params
-  set(q) {
+  // the face for these params, on a head turned as
+  // M says (3×4 rows, skinner.matrix(pose, Head))
+  set(q, M) {
     PARAMS.forEach((k, n) => { this.q[n] = (q[k] ?? (k === 'iris' ? 1 : 0)); });
+    this.turn.set([M[0], M[4], M[8], M[1], M[5], M[9], M[2], M[6], M[10]]);      // by columns
   }
 }
 
