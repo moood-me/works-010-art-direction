@@ -1,0 +1,603 @@
+// Аня in 3D, drawn every frame in pen and watercolour (С12). The form (tools/build.py's pack) moves on the engine's
+// skeleton, skinning and Kimodo retargeting as in Р1; it is not shaded. Each frame:
+//   1. the figure is rendered once, unseen, into a picture of which wash each pixel belongs to and how far it is;
+//   2. lines are found on the 3D: silhouettes (where the surface turns away) and open edges (a hem, the cardigan's
+//      front, the hair round the face), kept where that picture says they are seen, chained, smoothed, broken into
+//      strokes as a hand would — and drawn with the drawing's own pen (pen.js = kit.py);
+//   3. the washes are the seen parts (skin, hair, cardigan, dress, shoes) as masks, each painted with the drawing's
+//      watercolour filter and moved a little off the line;
+//   4. the face — eyes, brows, mouth, freckles, cheeks — is drawn with the drawing's parts (parts.py) in its front
+//      units, laid on the 3D head (a grid on the head, build.py), so it turns and foreshortens with the head;
+//   5. lines that belong to the form — locks of hair, the skirt's folds, buttons — where they are seen.
+// This is the page's fast variant (fast.html; view.html and its script beside it are the page as it was): the unseen
+// picture is read back, and the washes' masks are made, only in the figure's rectangle of the picture, not over the
+// whole page, and the page does not wait for the video card to give it: the drawing goes on when it has come (so
+// A.render() gives a promise, and A.set() waits for a drawing begun before it); the pen's noise (pen-fast.js) is
+// worked out only where a stroke asks for it.
+//   fast.html — by hand (ui.js); fast.html?pack=<url> — driven by tools/shots.mjs
+//   window.A.set({clip, t, time, pose, expr, talk, cam, …}) then await A.render()
+import * as THREE from 'three';
+import { createEngine } from '../../../../engine/src/engine.js';
+import { makeBody } from '../../../../engine/src/body.js';
+import { Figure } from '../../../../engine/src/figure.js';
+import { loadPack } from '../../../../engine/src/pack.js';
+import { build, turnUnder } from '../../../../engine/src/retarget.js';
+import { qAxisAngle, qBetween, qRot, getQ, getV, normalize, sub } from '../../../../engine/src/math.js';
+import * as K from './pen-fast.js';
+import { LiveFace } from './face.js';
+
+const q = new URLSearchParams(location.search);
+const packUrl = new URL(q.get('pack') || '../../data/anya.json', location.href);
+const E = await createEngine({ root: new URL('../../../../engine/', import.meta.url) });
+const { header: H, arrays: a } = await loadPack(packUrl.href);
+const sk = E.skeleton, J = sk.J, I = sk.index;
+
+const body = makeBody({
+  id: H.id, label: H.label, source: H.source, topology: H.id, skeleton: sk,
+  positions: Float32Array.from(a.positions), triangles: a.triangles, skin: { joints: a.skinJoints, weights: a.skinWeights },
+  parts: { names: [], weights: new Uint8Array(0) }, joints: Float64Array.from(a.joints), frames: Float64Array.from(a.frames),
+});
+const rest = Float32Array.from(a.positions);
+const spec = { skinning: { method: H.skinning || 'cor', clavicleShare: 0, seam: null }, motion: { floor: 'lowest', corrections: {} } };
+const fig = new Figure(body, spec, { position: [0, 0, 0], heading: 0 });
+const NV = rest.length / 3, TRI = a.triangles, NT = TRI.length / 3;
+const NONE = 0xFFFFFFFF;
+
+// ---------------------------------------------------------------- colours (styles/s12-ink-watercolour/tools/anya.py)
+const G = H.groups;
+const WASH = {
+  [G.skin]: { color: K.SKIN, op: 0.46, dx: 4, dy: 3, rough: 'L' },
+  [G.hair]: { color: '#c96f36', op: 0.56, dx: -3, dy: 2, rough: 'L' },
+  [G.card]: { color: '#eeb43e', op: 0.62, dx: 3, dy: 3, rough: 'L' },
+  [G.dress]: { color: '#6fb3a0', op: 0.6, dx: 4, dy: 4, rough: 'L' },
+  [G.shoe]: { color: '#b24a3a', op: 0.7, dx: 1, dy: 1, rough: 'S' },
+};
+const HAIR_DARK = '#9c4a22';
+
+// ---------------------------------------------------------------- the unseen picture: wash group and depth
+const canvas = document.getElementById('cv');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+const g = new THREE.BufferGeometry();
+g.setAttribute('position', new THREE.BufferAttribute(fig.positions, 3));
+g.setAttribute('normal', new THREE.BufferAttribute(fig.normals, 3));
+g.setAttribute('grp', new THREE.BufferAttribute(Float32Array.from(a.grp), 1));
+g.setAttribute('band', new THREE.BufferAttribute(a.band, 1));
+g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
+const U = { dn: { value: 0 }, df: { value: 10 }, L: { value: new THREE.Vector3(0, 0, 1) }, show: { value: 0 } };
+const idMat = new THREE.ShaderMaterial({
+  uniforms: U, side: THREE.DoubleSide,
+  vertexShader: `attribute float grp; attribute float band; varying float vG; varying float vB; varying float vD; varying vec3 vN;
+    void main() { vG = grp; vB = band; vN = normalize(normalMatrix * normal); vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float dn; uniform float df; uniform vec3 L; varying float vG; varying float vB; varying float vD; varying vec3 vN;
+    uniform float show;
+    void main() {
+      float gg = vG; if (vB > -0.5 && vB < 0.06) gg = ${G.shoe}.0;
+      vec3 n = normalize(vN); if (n.z < 0.0) n = -n;       // the side we see (shells are two-sided)
+      float lit = dot(n, L) > -0.05 ? 0.0 : 8.0;
+      float z = clamp((vD - dn) / (df - dn), 0.0, 1.0) * 65535.0;
+      float hi = floor(z / 256.0), lo = z - hi * 256.0;
+      gl_FragColor = vec4((gg + lit) / 255.0, hi / 255.0, lo / 255.0, 1.0);
+      if (show > 0.5) {       // to look at: each wash group its colour, the shade (hair's darker wash) darker
+        vec3 c = gg < 1.5 ? vec3(0.94, 0.75, 0.6) : gg < 2.5 ? vec3(0.79, 0.44, 0.21) : gg < 3.5 ? vec3(0.93, 0.71, 0.24) : gg < 4.5 ? vec3(0.44, 0.7, 0.63) : vec3(0.7, 0.29, 0.23);
+        gl_FragColor = vec4(c * (lit > 0.0 ? 0.72 : 1.0), 1.0);
+      }
+    }`,
+});
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0, 1, 1);           // background: group 0, the farthest depth
+const mesh = new THREE.Mesh(g, idMat); mesh.frustumCulled = false; scene.add(mesh);
+const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 100);
+const persp = new THREE.PerspectiveCamera(24, 1, 0.05, 200);
+let camera = ortho, rt = null, buf = null, W = 0, Hh = 0;
+// a rectangle of the picture just rendered, taken from the video card without the page waiting for it: copied into a
+// buffer on the card, and read when the card says it is done
+const gl = renderer.getContext(), pack = gl.createBuffer();
+let packSize = 0;
+async function readBack(x, y, w, h, out) {
+  const n = w * h * 4; if (!n) return;
+  gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pack);
+  if (n > packSize) { gl.bufferData(gl.PIXEL_PACK_BUFFER, n, gl.STREAM_READ); packSize = n; }
+  gl.readPixels(x, y, w, h, gl.RGBA, gl.UNSIGNED_BYTE, 0);
+  gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+  const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0); gl.flush();
+  while (gl.clientWaitSync(sync, 0, 0) === gl.TIMEOUT_EXPIRED) await new Promise(r => setTimeout(r, 2));
+  gl.deleteSync(sync);
+  gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pack); gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, out, 0, n); gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+}
+
+// ---------------------------------------------------------------- poses (Р1's)
+function standPose(o = {}) {
+  const pose = fig.restPose();
+  const out = o.out ?? 0.13, fwd = o.fwd ?? 0.03;
+  for (const [s, sg] of [['Left', 1], ['Right', -1]]) {
+    const A = I[s + 'Arm'], Hd = I[s + 'Hand'];
+    const cur = normalize(sub(getV(pose.P, Hd), getV(pose.P, A)));
+    turnUnder(pose, sk, A, qBetween(cur, normalize([sg * out, -1, fwd])));
+    build(pose, body, getV(pose.P, I.Hips));
+  }
+  // the drawing's figure: her left hand holds a few flowers to her chest (upper arm down and forward, forearm up)
+  if (o.hold) {
+    const A = I.LeftArm, F = I.LeftForeArm, Hd = I.LeftHand;
+    turnUnder(pose, sk, A, qBetween(normalize(sub(getV(pose.P, F), getV(pose.P, A))), normalize([0.32, -1, 0.42])));
+    build(pose, body, getV(pose.P, I.Hips));
+    turnUnder(pose, sk, F, qBetween(normalize(sub(getV(pose.P, Hd), getV(pose.P, F))), normalize([-0.75, 0.55, 0.45])));
+    build(pose, body, getV(pose.P, I.Hips));
+  }
+  // the head as the drawing holds it (a pose layer): tilted toward the shoulder, a little down
+  if (o.headTilt || o.headTurn || o.headNod) {
+    if (o.headTurn) { turnUnder(pose, sk, I.Neck2, qAxisAngle([0, 1, 0], o.headTurn)); build(pose, body, getV(pose.P, I.Hips)); }
+    if (o.headTilt) { turnUnder(pose, sk, I.Neck2, qAxisAngle([0, 0, 1], o.headTilt)); build(pose, body, getV(pose.P, I.Hips)); }
+    if (o.headNod) { turnUnder(pose, sk, I.Neck2, qAxisAngle([1, 0, 0], o.headNod)); build(pose, body, getV(pose.P, I.Hips)); }
+  }
+  return pose;
+}
+// the skirt kept off the legs (Р1's): each skirt point inside a leg's capsule is put on its surface, spread
+const dressR = H.pieces.dress, skirt = [];
+for (let i = dressR[0]; i < dressR[1]; i++) if (rest[i * 3 + 1] < 0.62) skirt.push(i);
+const CAPS = [['LeftLeg', 'LeftShin', 0.06], ['LeftShin', 'LeftFoot', 0.048], ['RightLeg', 'RightShin', 0.06], ['RightShin', 'RightFoot', 0.048]].map(([p, b, r]) => [I[p], I[b], r]);
+const RING = 72, skirtSet = new Int32Array(NV).fill(-1); skirt.forEach((i, k) => { skirtSet[i] = k; });
+const skirtNb = skirt.map(i => { const k = i - dressR[0], r = Math.floor(k / RING), c = k % RING;
+  return [r * RING + (c + 1) % RING, r * RING + (c + RING - 1) % RING, (r - 1) * RING + c, (r + 1) * RING + c].map(m => m + dressR[0]).filter(m => m >= 0 && skirtSet[m] >= 0).map(m => skirtSet[m]); });
+const fadeK = Float64Array.from(skirt, i => { const u = Math.max(0, Math.min(1, (0.62 - rest[i * 3 + 1]) / 0.14)); return u * u * (3 - 2 * u); });
+const dsp = new Float64Array(skirt.length * 3), dsp2 = new Float64Array(skirt.length * 3);
+function pushSkirt(P, pose) {
+  const caps = CAPS.map(([p, b, r], k) => { const A = getV(pose.P, p), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => (v + B[c]) / 2), B, r + 0.008]; });
+  skirt.forEach((i, k) => {
+    let x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
+    for (const [A, B, r] of caps) {
+      const ab = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], l2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
+      let u = ((x - A[0]) * ab[0] + (y - A[1]) * ab[1] + (z - A[2]) * ab[2]) / l2; u = Math.max(0, Math.min(1, u));
+      const cx = A[0] + ab[0] * u, cy = A[1] + ab[1] * u, cz = A[2] + ab[2] * u, dx = x - cx, dy = y - cy, dz = z - cz, d = Math.hypot(dx, dy, dz);
+      if (d < r && d > 1e-6) { const s = r / d; x = cx + dx * s; y = cy + dy * s; z = cz + dz * s; }
+    }
+    dsp[k * 3] = x - P[i * 3]; dsp[k * 3 + 1] = y - P[i * 3 + 1]; dsp[k * 3 + 2] = z - P[i * 3 + 2];
+  });
+  for (let it = 0; it < 6; it++) {
+    skirtNb.forEach((nb, k) => { for (let c = 0; c < 3; c++) { let s = dsp[k * 3 + c]; for (const m of nb) s += dsp[m * 3 + c]; dsp2[k * 3 + c] = s / (nb.length + 1); } });
+    for (let k = 0; k < skirt.length; k++) for (let c = 0; c < 3; c++) { const x = dsp[k * 3 + c], y = dsp2[k * 3 + c]; dsp[k * 3 + c] = Math.abs(y) > Math.abs(x) ? y : (x + y) / 2 + (x - y) / 4; }
+  }
+  skirt.forEach((i, k) => { const w = fadeK[k]; P[i * 3] += w * dsp[k * 3]; P[i * 3 + 1] += w * dsp[k * 3 + 1]; P[i * 3 + 2] += w * dsp[k * 3 + 2]; });
+}
+// where the head looks over a clip (yaw, pitch at 100 Hz) — for the eyes to lead its turns (Р1's)
+function headTrack(c) {
+  const dt = 0.01, n = Math.floor((c.frames - 1) / c.fps / dt) + 1, yaw = new Float32Array(n), pitch = new Float32Array(n);
+  const smp = { q: new Float64Array(J * 4), p: new Float64Array(J * 3), lowest: 0 };
+  let prev = 0;
+  for (let i = 0; i < n; i++) {
+    const pose = fig.retarget.pose(c.sample(i * dt * c.fps, smp)), f = qRot(getQ(pose.Q, I.Head), [0, 0, 1]);
+    let y = Math.atan2(f[0], f[2]); while (y - prev > Math.PI) y -= 2 * Math.PI; while (y - prev < -Math.PI) y += 2 * Math.PI;
+    yaw[i] = prev = y; pitch[i] = Math.asin(Math.max(-1, Math.min(1, f[1])));
+  }
+  return { dt, yaw, pitch };
+}
+
+const S = { clip: null, clipIds: null, t: 0, time: 0, pose: 'stand', poseOpts: {}, push: true, lw: 1, fade: null, seed: 1, show: null,
+  cam: { mode: 'ortho', yaw: 0, pitch: 0, cx: 0, cy: 0.81, h: 1.75, dist: 6, target: null, follow: false } };
+const face = new LiveFace(Number(q.get('seed') ?? 7));
+let clip = null, fp = null;
+function frame() {
+  fp = face.at(S.time, { headT: S.clip ? S.t / clip.fps : null });
+  let pose;
+  if (S.clip) { pose = fig.retarget.pose(clip.sample(S.t, fig.sample)); fig.retarget.placed(pose); }
+  else if (S.pose === 'raw') pose = null;
+  else pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts || {});
+  if (!pose) { fig.positions.set(rest); fig.pose = fig.restPose(); }
+  else {
+    if (fp.tiltHead) turnUnder(pose, sk, I.Neck2, qAxisAngle(qRot(getQ(pose.Q, I.Neck2), [0, 0, 1]), fp.tiltHead * Math.PI / 180 * 0.6));
+    if (fp.tiltHead) build(pose, body, getV(pose.P, I.Hips));
+    fig.skinner.skin(pose, fig.positions);
+    if (S.clip) {
+      const P = fig.positions; let lo = Infinity; for (let i = 1; i < P.length; i += 3) if (P[i] < lo) lo = P[i];
+      const shift = pose.floor - lo; for (let i = 1; i < P.length; i += 3) P[i] += shift; for (let j = 0; j < J; j++) pose.P[j * 3 + 1] += shift;
+    }
+    if (S.push) pushSkirt(fig.positions, pose);
+    fig.pose = pose;
+  }
+  g.attributes.position.needsUpdate = true;
+}
+
+// ---------------------------------------------------------------- per-frame geometry
+const fn = new Float32Array(NT * 3), facing = new Uint8Array(NT), vn = new Float32Array(NV * 3);
+const scr = new Float32Array(NV * 3);          // picture x, y (from the doc's origin) and depth
+let camPos = [0, 0, 0], viewDir = [0, 0, -1], isOrtho = true, origin = [0, 0];
+const mvp = new THREE.Matrix4(), vm = new THREE.Matrix4();
+function normals() {
+  const P = fig.positions; vn.fill(0);
+  for (let t = 0; t < NT; t++) {
+    const i = TRI[t * 3] * 3, j = TRI[t * 3 + 1] * 3, k = TRI[t * 3 + 2] * 3;
+    const ux = P[j] - P[i], uy = P[j + 1] - P[i + 1], uz = P[j + 2] - P[i + 2], wx = P[k] - P[i], wy = P[k + 1] - P[i + 1], wz = P[k + 2] - P[i + 2];
+    const nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx;
+    fn[t * 3] = nx; fn[t * 3 + 1] = ny; fn[t * 3 + 2] = nz;
+    for (const m of [i, j, k]) { vn[m] += nx; vn[m + 1] += ny; vn[m + 2] += nz; }
+    let d;
+    if (isOrtho) d = -(nx * viewDir[0] + ny * viewDir[1] + nz * viewDir[2]);
+    else d = nx * (camPos[0] - P[i]) + ny * (camPos[1] - P[i + 1]) + nz * (camPos[2] - P[i + 2]);
+    facing[t] = d > 0 ? 1 : 0;
+  }
+  for (let i = 0; i < NV; i++) { const l = Math.hypot(vn[i * 3], vn[i * 3 + 1], vn[i * 3 + 2]) || 1; vn[i * 3] /= l; vn[i * 3 + 1] /= l; vn[i * 3 + 2] /= l; }
+  fig.normals.set(vn); g.attributes.normal.needsUpdate = true;
+}
+const e = mvp.elements, ve = vm.elements;
+function project(x, y, z, out, o = 0) {
+  const w = e[3] * x + e[7] * y + e[11] * z + e[15];
+  out[o] = ((e[0] * x + e[4] * y + e[8] * z + e[12]) / w * 0.5 + 0.5) * W - origin[0];
+  out[o + 1] = (1 - ((e[1] * x + e[5] * y + e[9] * z + e[13]) / w * 0.5 + 0.5)) * Hh - origin[1];
+  out[o + 2] = -(ve[2] * x + ve[6] * y + ve[10] * z + ve[14]);
+}
+function projectAll() { const P = fig.positions; for (let i = 0; i < NV; i++) project(P[i * 3], P[i * 3 + 1], P[i * 3 + 2], scr, i * 3); }
+// the unseen picture: group (low 3 bits + 8 when in shade) and depth. It is read back only in the figure's rectangle
+// (box: left, top, width, height in the page's pixels); beyond it is the background
+let box = [0, 0, 0, 0];
+function figureBox() {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (let i = 0; i < NV; i++) { const x = scr[i * 3], y = scr[i * 3 + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  const pad = 8;       // what looks beside a point (seen, outer, a wash's edge) stays inside
+  x0 = Math.max(0, Math.floor(x0 + origin[0]) - pad); y0 = Math.max(0, Math.floor(y0 + origin[1]) - pad);
+  x1 = Math.min(W, Math.ceil(x1 + origin[0]) + pad + 1); y1 = Math.min(Hh, Math.ceil(y1 + origin[1]) + pad + 1);
+  return [x0, y0, Math.max(0, x1 - x0), Math.max(0, y1 - y0)];
+}
+// where a page's pixel is in the read picture, −1 beyond the rectangle
+const bufAt = (x, y) => { x -= box[0]; y -= box[1]; return x < 0 || y < 0 || x >= box[2] || y >= box[3] ? -1 : ((box[3] - 1 - y) * box[2] + x) * 4; };
+const depthAt = (x, y) => { const k = bufAt(Math.round(x + origin[0]), Math.round(y + origin[1]));
+  if (k < 0 || buf[k] === 0) return Infinity; return U.dn.value + (buf[k + 1] * 256 + buf[k + 2]) / 65535 * (U.df.value - U.dn.value); };
+const grpAt = (x, y) => { const k = bufAt(Math.round(x + origin[0]), Math.round(y + origin[1])); return k < 0 ? 0 : buf[k] & 7; };
+// seen: some pixel round the point is not in front of it
+function seen(x, y, z, eps = 0.006, r = 1) {
+  for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (depthAt(x + dx, y + dy) >= z - eps) return true;
+  return false;
+}
+
+// ---------------------------------------------------------------- lines on the form
+const INNER = a.inner, EV = a.edges, ET = a.edgeTris, EDROP = a.edgeDrop, NE = EV.length / 2;
+const vpid = a.pid, PN = H.pieceNames;
+const hairP = PN.indexOf('hair'), headP = PN.indexOf('head');
+function contours() {
+  // candidate edges: silhouettes and open edges, kept where seen
+  const keep = new Uint8Array(NE), adj = new Map();
+  const addAdj = (v, k) => { let l = adj.get(v); if (!l) adj.set(v, l = []); l.push(k); };
+  for (let k = 0; k < NE; k++) {
+    if (EDROP[k]) continue;
+    const f0 = ET[k * 2], f1 = ET[k * 2 + 1];
+    const open = f1 === NONE;
+    if (!open && facing[f0] === facing[f1]) continue;
+    const i = EV[k * 2], j = EV[k * 2 + 1];
+    const mx = (scr[i * 3] + scr[j * 3]) / 2, my = (scr[i * 3 + 1] + scr[j * 3 + 1]) / 2, mz = (scr[i * 3 + 2] + scr[j * 3 + 2]) / 2;
+    if (!seen(mx, my, mz, open ? 0.004 : 0.006)) continue;
+    if (!open && !(INNER[i] && INNER[j])) {        // on the face: only where skin meets something else (hair, paper)
+      const tx = scr[j * 3] - scr[i * 3], ty = scr[j * 3 + 1] - scr[i * 3 + 1], l = Math.hypot(tx, ty) || 1, nx = -ty / l * 3, ny = tx / l * 3;
+      if (grpAt(mx + nx, my + ny) === G.skin && grpAt(mx - nx, my - ny) === G.skin) continue;
+    }
+    keep[k] = 1; addAdj(i, k); addAdj(j, k);
+  }
+  // chains through vertices where exactly two kept edges meet
+  const used = new Uint8Array(NE), chains = [];
+  const walk = (k0, v0) => {
+    const vs = [v0]; let k = k0, v = v0;
+    while (true) {
+      used[k] = 1; const w = EV[k * 2] === v ? EV[k * 2 + 1] : EV[k * 2]; vs.push(w);
+      const l = adj.get(w); if (!l || l.length !== 2) break;
+      const nk = l[0] === k ? l[1] : l[0]; if (used[nk]) break; k = nk; v = w;
+    }
+    return vs;
+  };
+  for (const [v, l] of adj) if (l.length !== 2) for (const k of l) if (!used[k]) chains.push(walk(k, v));
+  for (let k = 0; k < NE; k++) if (keep[k] && !used[k]) chains.push(walk(k, EV[k * 2]));
+  return chains;
+}
+// a chain of vertices → smoothed picture points; broken where it turns sharply
+function chainPts(vs) {
+  let P = vs.map(v => [scr[v * 3], scr[v * 3 + 1]]);
+  // drop doubles
+  P = P.filter((p, i) => i === 0 || Math.hypot(p[0] - P[i - 1][0], p[1] - P[i - 1][1]) > 0.3);
+  if (P.length < 2) return [];
+  P = resample(P, 2.5);
+  for (let it = 0; it < 4; it++) P = P.map((p, i) => i === 0 || i === P.length - 1 ? p : [(P[i - 1][0] + 2 * p[0] + P[i + 1][0]) / 4, (P[i - 1][1] + 2 * p[1] + P[i + 1][1]) / 4]);
+  // break where it turns sharply (a corner in the picture: the pen lifts)
+  const out = []; let cur = [P[0]];
+  for (let i = 1; i < P.length - 1; i++) {
+    cur.push(P[i]);
+    const a0 = Math.atan2(P[i][1] - P[i - 1][1], P[i][0] - P[i - 1][0]), a1 = Math.atan2(P[i + 1][1] - P[i][1], P[i + 1][0] - P[i][0]);
+    let da = Math.abs(a1 - a0); if (da > Math.PI) da = 2 * Math.PI - da;
+    if (da > 1.0) { out.push(cur); cur = [P[i]]; }
+  }
+  cur.push(P[P.length - 1]); out.push(cur);
+  return out;
+}
+function resample(P, step) {
+  const out = [P[0]]; let acc = 0;
+  for (let i = 1; i < P.length; i++) {
+    let [x0, y0] = P[i - 1]; const [x1, y1] = P[i]; let d = Math.hypot(x1 - x0, y1 - y0);
+    while (acc + d >= step) { const t = (step - acc) / d; x0 += (x1 - x0) * t; y0 += (y1 - y0) * t; out.push([x0, y0]); d = Math.hypot(x1 - x0, y1 - y0); acc = 0; }
+    acc += d;
+  }
+  if (Math.hypot(out[out.length - 1][0] - P[P.length - 1][0], out[out.length - 1][1] - P[P.length - 1][1]) > step * 0.3) out.push(P[P.length - 1]);
+  return out;
+}
+const len = P => { let s = 0; for (let i = 1; i < P.length; i++) s += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); return s; };
+// is the line on the figure's outside (paper beyond it on one side)?
+function outer(P) {
+  let n = 0, o = 0;
+  for (let i = 1; i < P.length; i += 3) {
+    const tx = P[i][0] - P[i - 1][0], ty = P[i][1] - P[i - 1][1], l = Math.hypot(tx, ty) || 1, nx = -ty / l * 4, ny = tx / l * 4;
+    n++; if (depthAt(P[i][0] + nx, P[i][1] + ny) === Infinity || depthAt(P[i][0] - nx, P[i][1] - ny) === Infinity) o++;
+  }
+  return n ? o / n : 0;
+}
+// a long line in a few strokes, as a hand draws it: the pen lifts every so often, the next stroke starts a hair off
+function strokes(d, P, w, seed, o = {}) {
+  const r = K.rng(seed), L = len(P);
+  if (L < (o.min ?? 7)) return;
+  let s0 = 0; const cum = [0]; for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+  while (s0 < L - 4) {
+    const seg = r.uniform(110, 260) * d.lw;
+    let s1 = Math.min(L, s0 + seg); if (L - s1 < 40 * d.lw) s1 = L;
+    const pts = P.filter((_, i) => cum[i] >= s0 && cum[i] <= s1);
+    if (pts.length >= 2) {
+      const step = Math.max(1, Math.floor(pts.length / Math.max(2, Math.round(len(pts) / 9))));
+      const sp = pts.filter((_, i) => i % step === 0 || i === pts.length - 1);
+      K.ink(d, sp, { w, start: r.uniform(0.3, 0.7), end: r.uniform(0.05, 0.35), seed: r.int(), jit: o.jit ?? 0.9, retrace: o.retrace ?? 0.3, raw: true });
+    }
+    s0 = s1 + r.uniform(-3, 5) * d.lw;
+  }
+}
+
+// ---------------------------------------------------------------- the face, drawn on the head
+const FG = H.face, FTRI = a.faceTri, FBAR = a.faceBar, NF = FTRI.length;
+const fsc = new Float32Array(NF * 3), fok = new Uint8Array(NF);
+function faceGrid() {
+  const P = fig.positions;
+  for (let k = 0; k < NF; k++) {
+    fok[k] = 0; const t = FTRI[k]; if (t === NONE) continue;
+    let x = 0, y = 0, z = 0, nx = 0, ny = 0, nz = 0;
+    for (let c = 0; c < 3; c++) { const v = TRI[t * 3 + c], b = FBAR[k * 3 + c]; x += b * P[v * 3]; y += b * P[v * 3 + 1]; z += b * P[v * 3 + 2]; nx += b * vn[v * 3]; ny += b * vn[v * 3 + 1]; nz += b * vn[v * 3 + 2]; }
+    project(x, y, z, fsc, k * 3);
+    const toCam = isOrtho ? [-viewDir[0], -viewDir[1], -viewDir[2]] : normalize([camPos[0] - x, camPos[1] - y, camPos[2] - z]);
+    const fc = (nx * toCam[0] + ny * toCam[1] + nz * toCam[2]) / (Math.hypot(nx, ny, nz) || 1);
+    if (fc < 0.04) continue;
+    if (!seen(fsc[k * 3], fsc[k * 3 + 1], fsc[k * 3 + 2], 0.004, 0)) continue;
+    fok[k] = 1;
+  }
+}
+function faceMap(x, y, raw = false) {
+  const gx = (x - FG.gx[0]) / FG.gx[1], gy = (y - FG.gy[0]) / FG.gy[1];
+  const i = Math.floor(gx), j = Math.floor(gy), nx = FG.gx[2];
+  if (i < 0 || j < 0 || i >= nx - 1 || j >= FG.gy[2] - 1) return null;
+  const u = gx - i, v = gy - j, k00 = j * nx + i, k10 = k00 + 1, k01 = k00 + nx, k11 = k01 + 1;
+  if (raw) { if ([k00, k10, k01, k11].some(k => FTRI[k] === NONE)) return null; }
+  else if (!(fok[k00] && fok[k10] && fok[k01] && fok[k11])) return null;
+  return [0, 1].map(c => (1 - v) * ((1 - u) * fsc[k00 * 3 + c] + u * fsc[k10 * 3 + c]) + v * ((1 - u) * fsc[k01 * 3 + c] + u * fsc[k11 * 3 + c]));
+}
+// a feature's own frame at (cx, cy): where it is on the turned head, and its axes — the vertical as the head carries
+// it, the horizontal foreshortened as the head turns but never below `min` of the vertical (a drawn eye in profile is
+// still an eye, as in the drawing's head_side, not a sliver); null when that point of the face is not seen
+function seenNear(x, y) {
+  const i = Math.round((x - FG.gx[0]) / FG.gx[1]), j = Math.round((y - FG.gy[0]) / FG.gy[1]), nx = FG.gx[2];
+  for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const k = (j + dj) * nx + i + di; if (k >= 0 && k < NF && fok[k]) return true; }
+  return false;
+}
+function frameAt(d, cx, cy, min = 0.62, raw = false) {
+  const c = faceMap(cx, cy, true); if (!c || (!raw && !seenNear(cx, cy))) return null;
+  const xl = faceMap(cx - 2, cy, true), xr = faceMap(cx + 2, cy, true), yu = faceMap(cx, cy - 2, true), yd = faceMap(cx, cy + 2, true);
+  if (!xl || !xr || !yu || !yd) return null;
+  const ay = [(yd[0] - yu[0]) / 4, (yd[1] - yu[1]) / 4], ly = Math.hypot(...ay);
+  let ax = [(xr[0] - xl[0]) / 4, (xr[1] - xl[1]) / 4]; const lx = Math.hypot(...ax);
+  const r = lx / ly, k = Math.max(r, min) / (r || 1);
+  if (lx < 1e-6) ax = [-ay[1], ay[0]]; else ax = [ax[0] * k, ax[1] * k];
+  return { c, ax, ay, r };
+}
+function useFrame(d, f, cx, cy) {
+  d.map = null;
+  d.T = [[f.ax[0], f.ax[1], f.ay[0], f.ay[1], f.c[0] - f.ax[0] * cx - f.ay[0] * cy, f.c[1] - f.ax[1] * cx - f.ay[1] * cy]];
+}
+// the face in head_front's units (styles/s12-ink-watercolour/tools/anya.py), its parameters from the live face
+function drawFace(d) {
+  const e = fp, sq = e.squint;
+  d.map = faceMap;
+  // which way the face looks in the picture (for the mouth's near corner and the lash)
+  const c = faceMap(0, 20), l = faceMap(-30, 20), r = faceMap(30, 20);
+  let side = -1;
+  if (c && l && r) side = Math.hypot(l[0] - c[0], l[1] - c[1]) < Math.hypot(r[0] - c[0], r[1] - c[1]) ? -1 : 1;
+  else if (!l && r) side = -1; else if (l && !r) side = 1;
+  const pxu = (() => { const p = faceMap(0, -4), q2 = faceMap(0, 6); return p && q2 ? Math.hypot(q2[0] - p[0], q2[1] - p[1]) / 10 : null; })();
+  for (const [bx, sd] of [[-34, 31], [34, 32]]) {
+    const f0 = frameAt(d, bx, 34, 0.5); if (!f0) continue;
+    const f = frameAt(d, bx - side * 14 * (1 - Math.min(1, f0.r)), 34, 0.5) || f0;
+    useFrame(d, f, bx, 34); K.blot(d, bx, 34, 14, K.BLUSH, 0.4, sd);
+  }
+  d.T = [[1, 0, 0, 1, 0, 0]]; d.map = faceMap;
+  if (e.flush > 0) K.extra(d, { extra: 'flush' }, 0, 0, side < 0 ? -34 : 34, 34, -40, e.flush);
+  for (const [x, y] of [[-20, 18], [-14, 24], [-26, 24], [14, 18], [20, 24], [26, 20]]) K.dotAt(d, x, y, 0.95 * d.lw, x * 7 + y);
+  // eyes and brows: each in its own frame (foreshortened, but kept an eye); the pupil looks where the face turns
+  for (const [sx, sd] of [[-28, 21], [28, 22]]) {
+    const f0 = frameAt(d, sx, -4, 0.7); if (!f0) continue;
+    const ex = sx - side * 9 * (1 - Math.min(1, f0.r)), f = frameAt(d, ex, -4, 0.7) || f0;
+    useFrame(d, f, sx, -4);       // drawn in its own units, placed where the turned face shows it
+    const turn = side * (1 - Math.min(1, f.r)) * 1.1;
+    K.eye(d, sx, -4, 1.1 * e.eye, [e.look[0] + turn, e.look[1]], e.lid, { lash: true, side: sx < 0 ? -1 : 1, squint: sq, seed: sd });
+    K.brow(d, sx, -28, 24, e.lift, e.tilt, { side: sx < 0 ? -1 : 1, w: 1.2, seed: sd + 2 });
+    if (e.extra === 'tear' && e.extraK > 0.5 && (sx < 0) === (side < 0)) K.extra(d, { extra: 'tear' }, sx, -4, 0, 0, -40, 1);
+  }
+  // the nose's line, as in the front drawing, while the face looks at us; turned, the 3D's contour draws it
+  d.T = [[1, 0, 0, 1, 0, 0]]; d.map = faceMap;
+  const front = c && l && r ? Math.min(Math.hypot(l[0] - c[0], l[1] - c[1]), Math.hypot(r[0] - c[0], r[1] - c[1])) / Math.max(Math.hypot(l[0] - c[0], l[1] - c[1]), Math.hypot(r[0] - c[0], r[1] - c[1])) : 0;
+  if (front > 0.72) K.ink(d, [[-4, -4], [-7, 18], [-10, 28], [-3, 33], [6, 30]].map(([x, y]) => [x * side * -1, y]), { w: 1.6, start: 0.3, end: 0.2, seed: 41, alpha: 0.93 * Math.min(1, (front - 0.72) / 0.1) });
+  // the mouth: in its frame, moved toward the seen cheek as the face turns (the near corner stays inside the contour)
+  const fm0 = frameAt(d, 2, 54, 0.62, true);
+  if (fm0) {
+    const mx = 2 - side * 12 * (1 - Math.min(1, fm0.r)), fm = frameAt(d, mx, 54);
+    if (fm) useFrame(d, fm, mx, 54);
+    if (!fm) {} else if (e.talk) K.mouth(d, mx, 54, 'talk', 1, { side, open: e.open, dw: e.dw, round: e.round, seed: 43 });
+    else K.mouth(d, mx, 54, e.mouth, e.ms, { side, seed: 43 });
+  }
+  const fs = frameAt(d, 0, -4);
+  if (fs && e.extra === 'start' && e.extraK > 0.5) { useFrame(d, fs, 0, -4); K.extra(d, { extra: 'start' }, 0, -4, 0, 0, -40, 1); }
+  d.T = [[1, 0, 0, 1, 0, 0]];
+  d.map = null;
+}
+
+// the few wild flowers of the drawing's figure (anya.py figure()), held in her left hand: drawn there, as the drawing
+// draws them (not modelled) — for the still picture that compares with the drawing
+function flowers(d) {
+  const PJ = fig.pose.P, hp = new Float32Array(3), up = new Float32Array(3);
+  project(PJ[I.LeftHand * 3], PJ[I.LeftHand * 3 + 1], PJ[I.LeftHand * 3 + 2], hp);
+  project(PJ[I.LeftHand * 3], PJ[I.LeftHand * 3 + 1] + 0.1, PJ[I.LeftHand * 3 + 2], up);
+  const s = Math.hypot(up[0] - hp[0], up[1] - hp[1]) / 0.1 / 446;      // the figure's pixels (446 a metre) → here
+  d.T = [[s, 0, 0, s, hp[0] - 310 * s, hp[1] - 410 * s]]; d.map = null;
+  for (const [x1, y1] of [[286, 330], [300, 318], [276, 346], [312, 334]]) K.ink(d, [[310, 410], [(310 + x1) / 2 + 4, (410 + y1) / 2], [x1, y1]], { w: 0.9, start: 0.5, end: 0.3, retrace: 0, color: '#3f6d3a', seed: x1 });
+  for (const [x, y, c] of [[286, 326, '#e05a8a'], [300, 314, '#f2c230'], [274, 342, '#7a6bd0'], [314, 330, '#e05a8a']]) {
+    K.wash(d, [[x - 8, y - 6], [x + 8, y - 8], [x + 9, y + 6], [x - 7, y + 8]], c, 0.75, { rough: 'S', seed: x + y });
+    K.ink(d, [[x - 5, y - 2], [x, y - 6], [x + 5, y - 1], [x + 1, y + 4], [x - 4, y + 2]], { w: 1.0, retrace: 0, seed: x * 3 + y });
+  }
+  d.T = [[1, 0, 0, 1, 0, 0]];
+}
+
+// ---------------------------------------------------------------- washes from the unseen picture
+const mcv = document.createElement('canvas'), mctx = mcv.getContext('2d', { willReadFrequently: true });      // kept in memory: its picture is taken (toDataURL) for every wash
+function washes(d) {
+  // at half the size, over the figure's rectangle only: gx0, gy0 — where that rectangle begins in the half-size page
+  const sc = 0.5, gx0 = Math.floor(box[0] * sc), gy0 = Math.floor(box[1] * sc);
+  const w = Math.min(Math.ceil(W * sc), Math.ceil((box[0] + box[2]) * sc) + 1) - gx0, h = Math.min(Math.ceil(Hh * sc), Math.ceil((box[1] + box[3]) * sc) + 1) - gy0;
+  if (w <= 0 || h <= 0) return;
+  const boxes = {};
+  const masks = {};
+  for (const gid of [...Object.keys(WASH).map(Number), 100]) masks[gid] = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const k = bufAt(Math.min(W - 1, Math.round((x + gx0) / sc)), Math.min(Hh - 1, Math.round((y + gy0) / sc))), v = k < 0 ? 0 : buf[k];
+    const gid = v & 7; if (!gid) continue;
+    masks[gid][y * w + x] = 1;
+    if (gid === G.hair && (v & 8)) masks[100][y * w + x] = 1;
+  }
+  for (const [gs, m] of Object.entries(masks)) {
+    const gid = Number(gs), spec = gid === 100 ? { color: HAIR_DARK, op: 0.22, dx: -2, dy: 1, rough: 'L' } : WASH[gid];
+    if (S.show && !S.show.includes(gid)) continue;
+    let x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (m[y * w + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) continue;
+    const pad = 3; x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(w - 1, x1 + pad); y1 = Math.min(h - 1, y1 + pad);
+    const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+    mcv.width = bw; mcv.height = bh;
+    const im = mctx.createImageData(bw, bh), hx = parseInt(spec.color.slice(1), 16);     // sRGB as written, no conversion
+    const R = hx >> 16, Gc = (hx >> 8) & 255, B = hx & 255;
+    for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) if (m[(y + y0) * w + x + x0]) { const k = (y * bw + x) * 4; im.data[k] = R; im.data[k + 1] = Gc; im.data[k + 2] = B; im.data[k + 3] = 255; }
+    mctx.putImageData(im, 0, 0);
+    const at = [(x0 + gx0) / sc - origin[0], (y0 + gy0) / sc - origin[1], bw / sc, bh / sc];
+    K.washImage(d, mcv.toDataURL(), at, spec.color, spec.op, { seed: gid * 3 + S.seed, angle: ((gid * 37) % 90) - 45, rough: spec.rough, dx: spec.dx * d.lw, dy: spec.dy * d.lw });
+  }
+}
+
+// ---------------------------------------------------------------- the picture
+const stage = document.getElementById('stage');
+function setCamera(w, h) {
+  const c = S.cam, cp = Math.cos(c.pitch);
+  let tg = c.target || [c.cx, c.cy, 0];
+  if (c.follow && fig.pose) { const P = fig.pose.P; tg = [P[I.Hips * 3], c.cy, P[I.Hips * 3 + 2]]; }
+  if (c.focus && fig.pose) { const P = fig.pose.P, k = I[c.focus]; tg = [P[k * 3] + (c.dx || 0), P[k * 3 + 1] + (c.up || 0), P[k * 3 + 2]]; }
+  const dir = [Math.sin(c.yaw) * cp, Math.sin(c.pitch), Math.cos(c.yaw) * cp];
+  let dist;
+  if (c.mode === 'ortho') {
+    camera = ortho; const hh = c.h / 2, ww = hh * w / h; dist = 20;
+    Object.assign(ortho, { left: -ww, right: ww, top: hh, bottom: -hh }); ortho.updateProjectionMatrix();
+    ortho.position.set(tg[0] + dir[0] * dist, tg[1] + dir[1] * dist, tg[2] + dir[2] * dist);
+  } else {
+    camera = persp; persp.aspect = w / h; persp.fov = c.fov || 24; persp.updateProjectionMatrix(); dist = c.dist;
+    persp.position.set(tg[0] + dir[0] * dist, tg[1] + dir[1] * dist, tg[2] + dir[2] * dist);
+  }
+  camera.lookAt(tg[0], tg[1], tg[2]); camera.updateMatrixWorld();
+  isOrtho = c.mode === 'ortho'; camPos = [camera.position.x, camera.position.y, camera.position.z];
+  viewDir = normalize([-dir[0], -dir[1], -dir[2]]);
+  vm.copy(camera.matrixWorldInverse); mvp.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  U.dn.value = dist - 3; U.df.value = dist + 3;
+  // the light, as the hair's darker wash takes it: from above, in front, from the picture's right
+  U.L.value.set(0.55, 0.62, 0.56).normalize();          // in the camera's frame, as the shader's normals are
+}
+let lastSvg = '', drawing = Promise.resolve();
+async function draw() {
+  const w = Math.round(stage.clientWidth || innerWidth), h = Math.round(stage.clientHeight || innerHeight);
+  if (w !== W || h !== Hh) { W = w; Hh = h; rt?.dispose(); rt = new THREE.WebGLRenderTarget(W, Hh, { depthBuffer: true }); buf = new Uint8Array(W * Hh * 4); renderer.setSize(W, Hh, false); }
+  const T0 = performance.now(), prof = {};
+  setCamera(W, Hh);
+  normals(); prof.normals = performance.now() - T0;
+  // the doc's origin: where the hips are in the picture, so the paper's and pigment's grain travel with her
+  origin = [0, 0];
+  const hp = new Float32Array(3); const PJ = fig.pose.P; project(PJ[I.Hips * 3], PJ[I.Hips * 3 + 1], PJ[I.Hips * 3 + 2], hp);
+  origin = S.cam.follow || S.cam.focus ? [0, 0] : [0, 0];
+  if (S.anchorGrain) origin = [Math.round(hp[0]), Math.round(hp[1])];
+  projectAll(); box = figureBox();
+  renderer.setRenderTarget(rt); renderer.render(scene, camera); const back = readBack(box[0], Hh - box[1] - box[3], box[2], box[3], buf); renderer.setRenderTarget(null);
+  if (S.flat) { const bg = scene.background; scene.background = new THREE.Color().setStyle('#fdfaf3', THREE.LinearSRGBColorSpace); U.show.value = 1; renderer.render(scene, camera); U.show.value = 0; scene.background = bg; }
+  await back;
+  faceGrid();
+  const d = new K.Doc(W, Hh, S.seed); d.lw = S.lw; d.origin = origin; if (S.fade) d.fade = S.fade;
+  prof.proj = performance.now() - T0;
+  if (!S.noWash) washes(d);
+  prof.wash = performance.now() - T0;
+  // contours
+  if (!S.noLine) {
+    const chains = contours();
+    for (const vs of chains) {
+      const pid = vpid[vs[0]];
+      for (const P of chainPts(vs)) {
+        const o = outer(P);
+        const w = (pid === hairP ? 1.9 : 1.8) * (o > 0.5 ? 1.1 : 0.85);
+        let mn = vs[0]; for (const v of vs) if (v < mn) mn = v;
+        strokes(d, P, w, (mn >> 4) * 7 + S.seed, { min: 7 * d.lw });
+      }
+    }
+    // lines that belong to the form
+    for (const st of H.strokes) {
+      const runs = []; let cur = [];
+      for (const v of st.v) {
+        const x = scr[v * 3], y = scr[v * 3 + 1], z = scr[v * 3 + 2];
+        const nx = vn[v * 3], ny = vn[v * 3 + 1], nz = vn[v * 3 + 2];
+        const fc = isOrtho ? -(nx * viewDir[0] + ny * viewDir[1] + nz * viewDir[2]) : 1;
+        if (fc > 0.15 && seen(x, y, z, 0.004, 0)) cur.push([x, y]); else { if (cur.length > 1) runs.push(cur); cur = []; }
+      }
+      if (cur.length > 1) runs.push(cur);
+      for (const r of runs) if (len(r) > 12 * d.lw) K.ink(d, r, { w: st.w, start: 0.3, end: 0.05, jit: st.kind === 'hair' ? 1.5 : 0.9, seed: st.v[0], retrace: 0, raw: true });
+    }
+    for (const v of H.buttons) {
+      const x = scr[v * 3], y = scr[v * 3 + 1], z = scr[v * 3 + 2];
+      if (seen(x, y, z, 0.004, 0) && vn[v * 3 + 2] * -viewDir[2] + vn[v * 3] * -viewDir[0] > 0.3) {
+        const s = 2.6 * d.lw; K.ink(d, [[x - s, y], [x, y - s * 0.8], [x + s, y], [x, y + s * 0.9], [x - s, y]], { w: 1.0, retrace: 0, seed: v, raw: true });
+      }
+    }
+    prof.lines = performance.now() - T0;
+    drawFace(d);
+    if (S.flowers) flowers(d);
+    if (S.debugFace) for (let k = 0; k < NF; k++) if (FTRI[k] !== NONE) d.inks.push(`<circle cx="${fsc[k * 3].toFixed(1)}" cy="${fsc[k * 3 + 1].toFixed(1)}" r="0.8" fill="${fok[k] ? '#0a0' : '#c00'}"/>`);
+  }
+  prof.face = performance.now() - T0;
+  lastSvg = K.svg(d);
+  stage.innerHTML = lastSvg;
+  document.body.classList.toggle('flat', !!S.flat);
+  prof.dom = performance.now() - T0; A.prof = prof;
+}
+
+function facingYaw() { const qh = getQ(fig.pose.Q, I.Hips); const x = 2 * (qh[0] * qh[2] + qh[1] * qh[3]), z = 1 - 2 * (qh[0] * qh[0] + qh[1] * qh[1]); return Math.atan2(x, z); }
+window.A = {
+  H, body, fig, sk, face, S, facing: facingYaw, clipInfo: () => clip && { frames: clip.frames, fps: clip.fps }, svg: () => lastSvg,
+  async set(o) {
+    await drawing;          // a drawing begun is finished on the figure as it was
+    if (o.clip !== undefined) {
+      const ids = o.clip ? (Array.isArray(o.clip) ? o.clip : [o.clip]) : null;
+      if (JSON.stringify(ids) !== JSON.stringify(S.clipIds)) { clip = ids ? await E.clip(ids) : null; S.clipIds = ids; face.setHead(clip ? headTrack(clip) : null); }
+      S.clip = !!ids;
+    }
+    for (const k of ['t', 'pose', 'poseOpts', 'push', 'lw', 'fade', 'seed', 'show', 'noWash', 'noLine', 'anchorGrain', 'debugFace', 'flowers', 'flat']) if (o[k] !== undefined) S[k] = o[k];
+    if (o.time !== undefined) S.time = o.time; else if (o.t !== undefined && clip && !S.liveClock) S.time = o.t / clip.fps;
+    if (o.liveClock !== undefined) S.liveClock = o.liveClock;
+    if (o.still !== undefined) face.still = o.still;
+    if (o.exprTrack) { face.exprKeys = [{ t: -10, w: { dream: 1 } }]; for (const [t, w] of o.exprTrack) face.setExpr(t, typeof w === 'string' ? { [w]: 1 } : w); }
+    if (o.expr) face.setExpr(S.time, typeof o.expr === 'string' ? { [o.expr]: 1 } : o.expr);
+    if (o.talk !== undefined) { face.talk(o.talk ? (o.talkFrom ?? S.time) : null); face.talkTo = o.talkTo ?? null; }
+    if (o.cam) Object.assign(S.cam, o.cam);
+    frame();
+  },
+  render() { return drawing = drawing.then(draw); },
+};
+await window.A.set({});
+await window.A.render();
+window.__ready = true;
+
+if (!q.has('pack')) (await import('./ui.js')).ui(window.A, stage);

@@ -143,8 +143,8 @@ export class GpuSkin {
     return lo;
   }
 
-  // skinD's vertices first … first + count were refilled: send them
+  // skinD's vertices first … first + count were refilled: send them (several parts a frame may be sent)
   displace(first, count) {
-    const a = this.dAttr; a.clearUpdateRanges(); a.addUpdateRange(first * 3, count * 3); a.needsUpdate = true;
+    const a = this.dAttr; a.addUpdateRange(first * 3, count * 3); a.needsUpdate = true;
   }
 }
