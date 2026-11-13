@@ -3,7 +3,7 @@
 // picture's upper left, as in the drawing), one even dark-brown outline (inverted hull), and the face drawn live on a
 // canvas from the drawing's own face parts (face.js), projected from the front.
 // This is the page's fast variant (fast.html; view.html and char.js beside it are the page as it was): the skin is
-// skinned in the vertex shader (engine-gpu/src/gpuskin.js), the processor works out only the joints and the floor from a
+// skinned on the video card (engine-gpu/src/gpuskin.js), the processor works out only the joints and the floor from a
 // probe of the skin; the face's canvas is redrawn and sent to the video card only when it changed.
 //   fast.html — by hand (ui.js); fast.html?pack=<url> — driven by tools/shots.mjs
 //   window.A.set({clip, t, time, pose, expr, exprTrack, talk, talkFrom, cam, …}) then A.render()
@@ -81,7 +81,7 @@ const toon = new THREE.ShaderMaterial({
     uniform mat3 R[${sk.J}];
     ${gs.glsl}
     varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw;
-    void main() { vec3 P, N; skinVertex(position, normal, P, N);
+    void main() { vec3 P, N; skinVertex(P, N);
       vPw = pw; vN = normalize(mix(N, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
       gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
   fragmentShader: `
@@ -106,7 +106,7 @@ const hull = new THREE.ShaderMaterial({
   vertexShader: `
     attribute vec3 lin; attribute float ow; attribute float ob; uniform float width; varying vec3 vC; varying float vOw;
     ${gs.glsl}
-    void main() { vec3 P, N; skinVertex(position, normal, P, N);
+    void main() { vec3 P, N; skinVertex(P, N);
       vC = lin; vOw = ow; vec4 mv = viewMatrix * vec4(P + N * width * ow, 1.0); mv.z -= ob + 0.002;
       gl_Position = projectionMatrix * mv; }`,
   fragmentShader: `varying vec3 vC; varying float vOw; void main() { if (vOw < 0.35) discard; gl_FragColor = vec4(vC, 1.0);
@@ -240,6 +240,7 @@ function frame() {
   const noseSide = turn >= -2 ? 1 : -1, profile = Math.abs(turn) > 70, fk = JSON.stringify([E_, lw, noseSide, profile]);
   if (fk !== faceWas) { drawFace(faceCtx, E_, FB, PX, { lw, shadow: FB.shadow, noseSide, profile }); faceTex.needsUpdate = true; faceWas = fk; }      // the face is redrawn only when its numbers changed
   const Pp = fig.pose.P; shadow.position.x = Pp[I.Hips * 3]; shadow.position.z = Pp[I.Hips * 3 + 2];
+  gs.update(renderer);      // the skin into its textures, before it is drawn
 }
 function facing() {
   const qh = getQ(fig.pose.Q, I.Hips);

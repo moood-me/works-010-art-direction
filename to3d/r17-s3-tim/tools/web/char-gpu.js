@@ -3,7 +3,7 @@
 // a coloured outline (inverted hull) and the face drawn live on a canvas from the drawing's own parts (face.js),
 // projected from the front. Stripes, the sock's line and the sole are cut per pixel by the pack's `bands`.
 // This is the page's fast variant (fast.html; view.html and char.js beside it are the page as it was): the skin is
-// skinned in the vertex shader (engine-gpu/src/gpuskin.js), the processor works out only the joints, the floor from a
+// skinned on the video card (engine-gpu/src/gpuskin.js), the processor works out only the joints, the floor from a
 // probe of the skin, and a skirt's points where the pack has a dress; the face's canvas is sent to the video card only when it changed.
 //   fast.html — by hand (ui.js); fast.html?pack=<url> — driven by tools/shots.mjs
 //   window.A.set({clip, t, time, pose, expr, exprMix, exprAt, talk, talkFrom, cam, …}) then A.render()
@@ -80,7 +80,7 @@ const toon = new THREE.ShaderMaterial({
     uniform mat3 R[${sk.J}];
     ${gs.glsl}
     varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec2 vUv; varying float vTex; varying float vTwo; varying float vPw;
-    void main() { vec3 P, N; skinVertex(position, normal, P, N);
+    void main() { vec3 P, N; skinVertex(P, N);
       vBand = band; vPw = pw; vN = normalize(mix(N, R[int(pj + 0.5)] * pn, pw)); vCol = col; vShd = shd; vUv = uv; vTex = tex; vTwo = two;
       gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
   fragmentShader: `
@@ -105,7 +105,7 @@ const hull = new THREE.ShaderMaterial({
   vertexShader: `
     attribute vec3 lin; attribute float ow; uniform float width; varying vec3 vC; varying float vOw;
     ${gs.glsl}
-    void main() { vec3 P, N; skinVertex(position, normal, P, N);
+    void main() { vec3 P, N; skinVertex(P, N);
       vC = lin; vOw = ow; gl_Position = projectionMatrix * viewMatrix * vec4(P + N * width * ow, 1.0);
       gl_Position.z += 0.0004 * gl_Position.w; }`,
   fragmentShader: `varying vec3 vC; varying float vOw; void main() { if (vOw < 0.35) discard; gl_FragColor = vec4(vC, 1.0); }`,
@@ -236,6 +236,7 @@ function frame() {
   for (let j = 0; j < J; j++) { const [x, y, z, w] = [Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]];
     U.R.value[j].set(1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)); }
   const P = fig.pose.P; shadow.position.x = P[I.Hips * 3]; shadow.position.z = P[I.Hips * 3 + 2];
+  gs.update(renderer);      // the skin into its textures, before it is drawn
 }
 function facing() { // where the pelvis faces now (yaw about y; 0 — +z)
   const qh = getQ(fig.pose.Q, I.Hips);
