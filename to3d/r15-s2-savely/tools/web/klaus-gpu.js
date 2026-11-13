@@ -6,8 +6,8 @@
 // finish over the frame: the backdrop with its glow, grain, mottling, a vignette.
 // The face lives by its own clock (life()): blinks at uneven intervals, the eyes hold and jump, speech as syllables.
 // This is the page's fast variant (fast.html; view.html and klaus.js beside it are the page as they were): the skin is
-// skinned in the vertex shader (engine-gpu/src/gpuskin.js), the processor works out only the joints, the floor from a
-// probe of the skin, and the offsets of the forms that move on the face.
+// skinned and its normals found on the video card (engine-gpu/src/gpuskin.js), the processor works out only the
+// joints, the floor from a probe of the skin, and the offsets of the forms that move on the face.
 //   fast.html?pack=<pack .json>   window.A.set({clip, t, time, expr, talk, cam, light, …}); A.render()
 import * as THREE from 'three';
 THREE.ColorManagement.enabled = false;   // the drawing's colours are used as their numbers
@@ -43,8 +43,12 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setClearColor(0x000000, 0);
 const scene = new THREE.Scene();
 const g = gs.attributes(new THREE.BufferGeometry());
+// the offsets of the forms that move on the face: added in the shaders after the skin, as the page was (it moves them
+// after its normals are found, so they keep the unmoved skin's normals)
+const mvD = new THREE.BufferAttribute(new Float32Array(body.N * 3), 3); mvD.setUsage(THREE.DynamicDrawUsage); g.setAttribute('mvD', mvD);
 for (const [k, n, norm] of [['col', 3, true], ['shd', 3, true], ['rim', 3, true], ['gloss', 1, true], ['uv', 2, false], ['tw', 1, true], ['pn', 3, false], ['pw', 1, true], ['two', 1, false], ['mat', 1, false]])
   g.setAttribute(k, new THREE.BufferAttribute(a[k], n, norm));
+g.setAttribute('rp', new THREE.BufferAttribute(rest, 3));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 
 const loader = new THREE.TextureLoader();
@@ -63,8 +67,8 @@ const smTarget = new THREE.WebGLRenderTarget(SM, SM);
 smTarget.depthTexture = new THREE.DepthTexture(SM, SM); smTarget.depthTexture.type = THREE.UnsignedIntType;
 const lightCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 10);
 const depthMat = new THREE.ShaderMaterial({ uniforms: gs.uniforms, side: THREE.DoubleSide, colorWrite: false,
-  vertexShader: `${gs.glsl}
-    void main() { vec3 P, N; skinVertex(position, normal, P, N); gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
+  vertexShader: `attribute vec3 mvD; ${gs.glsl}
+    void main() { vec3 P, N; skinVertex(P, N); P += mvD; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
   fragmentShader: `void main() { gl_FragColor = vec4(1.0); }` });
 
 const U = {
@@ -80,16 +84,16 @@ const toon = new THREE.ShaderMaterial({
   uniforms: U, side: THREE.DoubleSide,
   vertexShader: `
     attribute vec3 col; attribute vec3 shd; attribute vec3 rim; attribute float gloss; attribute float tw; attribute vec3 pn; attribute float pw;
-    attribute float two; attribute float mat;
+    attribute float two; attribute float mat; attribute vec3 rp; attribute vec3 mvD;
     uniform mat3 Rh; uniform mat4 smMat;
     varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec3 vRim; varying vec2 vUv; varying float vTw;
     varying float vTwo; varying float vGloss; varying vec4 vSm; varying float vMat; varying vec3 vRp;
     ${gs.glsl}
     void main() {
-      vec3 P, N; skinVertex(position, normal, P, N);
+      vec3 P, N; skinVertex(P, N); P += mvD;
       vec3 n = normalize(N);
       if (pw > 0.0) n = normalize(mix(n, Rh * pn, pw));
-      vN = n; vCol = col; vShd = shd; vRim = rim; vUv = uv; vTw = tw; vTwo = two; vGloss = gloss; vMat = mat; vRp = position;      // position is the rest's place
+      vN = n; vCol = col; vShd = shd; vRim = rim; vUv = uv; vTw = tw; vTwo = two; vGloss = gloss; vMat = mat; vRp = rp;
       vSm = smMat * vec4(P, 1.0);
       gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0);
     }`,
@@ -272,7 +276,7 @@ let clip = null;
 const mv = {};       // the movers' present values (followed with a spring in time)
 for (const k in H.movers || {}) mv[k] = { dy: 0, rot: 0, bend: 0, t: 0 };
 let prevExpr = 'calm';
-const mvOn = {};     // the movers whose offset is in the shader now
+const mvOn = {};     // the movers whose offset is on the video card now
 
 function faceNow() {
   const e = H.expr[S.expr] || {}, time = S.time;
@@ -286,9 +290,9 @@ function faceNow() {
   if (S.talk) { const m = LIFE.mouth(time); open = m.open; if (m.shape && m.open > 0.35) mouth = m.shape; }
   return { eyeName, skinName: `skin-${mouth}`, open, e };
 }
-// a mover's points are moved in the shader: their offset on top of the skinning (gs.skinD), sent for its points only
+// a mover's points are moved on the video card: their offset on top of the skin (mvD), sent for its points only
 function movers(dt) {
-  const f = faceNow(), e = f.e, D = gs.skinD, Q = fig.pose.Q, h = I.Head;
+  const f = faceNow(), e = f.e, D = mvD.array, Q = fig.pose.Q, h = I.Head;
   const [x, y, z, w] = [Q[h * 4], Q[h * 4 + 1], Q[h * 4 + 2], Q[h * 4 + 3]];
   const R = [1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)];
   U.Rh.value.set(...R);
@@ -307,7 +311,7 @@ function movers(dt) {
         const dx = cs * px - sn * py - px, dyy = sn * px + cs * py - py + (-m.dy - m.bend * Math.min(1, (rx / (80 * K)) ** 2)) * K;
         D[i * 3] = R[0] * dx + R[1] * dyy; D[i * 3 + 1] = R[3] * dx + R[4] * dyy; D[i * 3 + 2] = R[6] * dx + R[7] * dyy;
       } else D.fill(0, b0 * 3, (b0 + n) * 3);
-      gs.displace(b0, n);
+      mvD.addUpdateRange(b0 * 3, n * 3); mvD.needsUpdate = true;
     }
     mvOn[k] = on;
   }
@@ -332,6 +336,7 @@ function frame() {
     const shift = pose.floor - gs.lowest(pose); for (let j = 0; j < J; j++) pose.P[j * 3 + 1] += shift;
   } else pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts);
   gs.setPose(pose); fig.pose = pose;
+  gs.update(renderer);
   const dt = (lastTime === null || !S.live) ? null : S.time - lastTime; lastTime = S.time;
   movers(dt !== null && dt >= 0 && dt < 0.2 ? dt : null);
   const P = fig.pose.P; ground.position.x = P[I.Hips * 3]; ground.position.z = P[I.Hips * 3 + 2];

@@ -5,23 +5,19 @@
 same `window.A.set({...})`. `ui-gpu.js` is `ui.js` loading `vera-gpu.js`; `face.js` and `life.js` serve both.
 
 What differs from `vera.js`:
-- the skinning and the normals are in the vertex shader of the two materials (the body, the shadow map's depth); the
-  processor works out the joints;
-- the floor (`motion.floor: 'lowest'`) is found from a probe of the skin, within about a millimetre of the old;
-- the face's displacement (`face.js`) is an attribute, turned with the head in the shader; it is worked out and sent
-  only when the face's numbers changed (a still face costs nothing; a living one costs `face.update` for the head's
-  13 thousand points each frame, as before);
+- the skinning and the normals (from the posed triangles, as before) are worked out on the video card
+  (`engine-gpu/`); the processor works out the joints;
+- the floor (`motion.floor: 'lowest'`) is found from a probe of the skin;
+- the face's displacement (`face.js`) is worked out only when the face's numbers changed; turned with the head, it
+  goes into the skin's offsets (`gs.skinD`) for the head's and the irises' points when it or the head's turn changed,
+  and the normals follow it, as before (a living face still costs `face.update` for the head's points each frame);
 - the skirt's push off the legs is computed for the skirt's points only, with numbers instead of small arrays, and
-  added in the shader; it is sent only while a point is in a leg;
-- the per-vertex scalars go in two attributes and the `rest` attribute is gone (the rest's place is `position` now):
-  with the skinning's four and the face's one the shader has its 16;
-- the folder has a depth material of its own for the shadow map (the body's now skins);
+  goes into the skin's offsets too; it is sent only while a point is in a leg;
+- the folder has a depth material of its own for the shadow map (the body's reads the skin's textures);
 - the canvas's size is set only when it changed.
 
-What is seen: the same pictures — the face, the lids, the open mouth, the skirt's shape are the same — but the
-shadow's edge lies a little differently where the form bends (the normals are the rest's, turned with the joints, not
-recomputed from the posed triangles; the moved face and the pushed skirt keep theirs): sitting, the light's patch on
-the coat's back; running, the shade on the skirt over the knee.
+What is seen: the same pictures. Old against fast over twelve moments (standing, the face close in four expressions,
+walking, sitting, a bow, a wave, running): at most one pixel differs.
 
-To check again: `node engine-gpu/check/compare.mjs <jobs.json> <outdir>` with `old` the `view.html?shots=1` and `new`
-the `fast.html?shots=1` (docs/history/2026-11-13-characters-speed.md).
+To check again: `node engine-gpu/check/compare.mjs <jobs.json> <outdir>` with `old` the `view.html?shots=1` and `new` the
+`fast.html?shots=1` (docs/history/2026-11-13-characters-speed.md).

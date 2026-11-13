@@ -4,8 +4,8 @@
 // away from the light, a light band on the hair, the face's painted layer from the drawing; then the drawing's own
 // finish over the whole frame: the backdrop with its glow, fine grain, broad mottling and a vignette.
 // This is the page's fast variant (fast.html; view.html and anya.js beside it are the page as it was): the skin is
-// skinned in the vertex shader (engine-gpu/src/gpuskin.js), the processor works out only the joints and the floor
-// from a probe of the skin.
+// skinned and its normals found on the video card (engine-gpu/src/gpuskin.js), the processor works out only the
+// joints and the floor from a probe of the skin.
 //   fast.html?pack=<url of the pack .json>;   window.A.set({clip, t, pose, expr, cam, light}) then A.render()
 import * as THREE from 'three';
 THREE.ColorManagement.enabled = false;   // the drawing's colours are used as their numbers
@@ -40,12 +40,8 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace;   // colours are the dra
 renderer.setClearColor(0x000000, 0);
 const scene = new THREE.Scene();
 const g = gs.attributes(new THREE.BufferGeometry());
-for (const [k, n, norm] of [['col', 3, true], ['shd', 3, true], ['rim', 3, true], ['uv', 2, false], ['pn', 3, false], ['cardi', 1, false], ['rp', 3, false]])
+for (const [k, n, norm] of [['col', 3, true], ['shd', 3, true], ['rim', 3, true], ['uv', 2, false], ['tw', 1, true], ['pn', 3, false], ['pw', 1, true], ['two', 1, false], ['hair', 1, false], ['cardi', 1, false], ['rp', 3, false]])
   g.setAttribute(k, new THREE.BufferAttribute(a[k], n, norm));
-// four scalars go in one attribute (a vertex shader takes 16 attributes at most, and the skinning takes four)
-const sA = new Float32Array(body.N * 4);
-for (let i = 0; i < body.N; i++) { sA[i * 4] = a.tw[i] / 255; sA[i * 4 + 1] = a.pw[i] / 255; sA[i * 4 + 2] = a.two[i]; sA[i * 4 + 3] = a.hair[i]; }
-g.setAttribute('sA', new THREE.BufferAttribute(sA, 4));
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 
 const loader = new THREE.TextureLoader();
@@ -62,7 +58,7 @@ smTarget.depthTexture = new THREE.DepthTexture(SM, SM); smTarget.depthTexture.ty
 const lightCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 10);
 const depthMat = new THREE.ShaderMaterial({ uniforms: gs.uniforms, side: THREE.DoubleSide, colorWrite: false,
   vertexShader: `${gs.glsl}
-    void main() { vec3 P, N; skinVertex(position, normal, P, N); gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
+    void main() { vec3 P, N; skinVertex(P, N); gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
   fragmentShader: `void main() { gl_FragColor = vec4(1.0); }` });
 
 const U = {
@@ -78,16 +74,15 @@ const U = {
 const toon = new THREE.ShaderMaterial({
   uniforms: U, side: THREE.DoubleSide,
   vertexShader: `
-    attribute vec3 col; attribute vec3 shd; attribute vec3 rim; attribute vec3 pn; attribute vec4 sA;
-    attribute float cardi; attribute vec3 rp;
+    attribute vec3 col; attribute vec3 shd; attribute vec3 rim; attribute float tw; attribute vec3 pn; attribute float pw;
+    attribute float two; attribute float hair; attribute float cardi; attribute vec3 rp;
     varying float vCardi; varying vec3 vRp;
     uniform mat3 R[${sk.J}]; uniform int headJ; uniform mat4 smMat;
     varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec3 vRim; varying vec2 vUv; varying float vTw;
     varying float vTwo; varying float vHair; varying vec4 vSm; varying vec3 vW;
     ${gs.glsl}
     void main() {
-      float tw = sA.x, pw = sA.y, two = sA.z, hair = sA.w;
-      vec3 P, N; skinVertex(position, normal, P, N);
+      vec3 P, N; skinVertex(P, N);
       vec3 n = normalize(N);
       if (pw > 0.0) n = normalize(mix(n, R[headJ] * pn, pw));
       vN = n; vCol = col; vShd = shd; vRim = rim; vUv = uv; vTw = tw; vTwo = two; vHair = hair; vW = P; vCardi = cardi; vRp = rp;
@@ -239,6 +234,7 @@ function frame() {
     const shift = pose.floor - gs.lowest(pose); for (let j = 0; j < J; j++) pose.P[j * 3 + 1] += shift;
   } else pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts);
   gs.setPose(pose); fig.pose = pose;
+  gs.update(renderer);
   const Q = fig.pose.Q;
   for (let j = 0; j < J; j++) { const [x, y, z, w] = [Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]];
     U.R.value[j].set(1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)); }

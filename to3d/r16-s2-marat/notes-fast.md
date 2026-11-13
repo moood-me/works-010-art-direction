@@ -5,19 +5,19 @@
 `window.A.set({...})`, both use the same `ui.js`.
 
 What differs from `klaus.js`:
-- the skinning (dual quaternions, with the collarbone's share) and the normals are in the vertex shader of the two
-  materials (the body, the shadow map's depth); the processor works out the joints;
-- the floor (`motion.floor: 'lowest'`) is found from a probe of the skin, within about a millimetre of the old;
-- the forms that move on the face (the moustache, the beard) are moved in the shader: the processor works out their
-  offset for their own points only and sends it while a form is off its place;
-- the `rp` attribute is gone (the rest's place is `position` now): with the skinning's four the shader has its 16;
+- the skinning (dual quaternions, with the collarbone's share) and the normals (from the posed triangles, as before) are worked out on the video card
+  (`engine-gpu/`); the processor works out the joints;
+- the floor (`motion.floor: 'lowest'`) is found from a probe of the skin;
+- the forms that move on the face (the moustache, the beard) are moved in the page's shaders, after the skin: the processor
+  works out their offset for their own points only and sends it while a form is off its place. They are not put into
+  the skin's own offsets (`gs.skinD`): the page as it was moves them after its normals are found, so they keep the
+  unmoved skin's normals, and so they do here;
 - the canvas's size is set only when it changed.
 
-What is seen: the same pictures — the face, its expressions, the moving moustache and beard are the same — but the
-shadow's edge lies a little differently where the form bends or stretches (the normals are the rest's, turned with
-the joints, not recomputed from the posed triangles): walking, the dark fold on the apron between the legs is lighter
-and narrower; sitting and bowing, the light's patches on the apron and on the shirt's back are a little other.
+What is seen: the same pictures, the face and its moving forms too. Old against fast over standing, the face close in
+three expressions, walking from the front and from behind, sitting, a bow, a wave: at most 0.004 % of the picture differs (sitting: the floor's probe is
+off by 0.6 mm there; 1.6 mm at worst in the dance); nothing the eye finds.
 
-To check again: `node engine-gpu/check/compare.mjs <jobs.json> <outdir>` with `old` the `view.html?shots=1` and `new`
-the `fast.html?shots=1` (docs/history/2026-11-13-characters-speed.md); set `live: false` and `wait: true` so both
-faces are at the same moment with their pictures loaded.
+To check again: `node engine-gpu/check/compare.mjs <jobs.json> <outdir>` with `old` the `view.html?shots=1` and `new` the
+`fast.html?shots=1` (docs/history/2026-11-13-characters-speed.md);
+set `live: false` and `wait: true` so both faces are at the same moment with their pictures loaded.

@@ -5,9 +5,8 @@
 // face's painted layer (faces.py), real eyeballs with a painted iris and a glint; then the drawing's own backdrop
 // (a light glow falling into dark), canvas and grain over the whole frame.
 // This is the page's fast variant (fast.html, ui-gpu.js; view.html, ui.js and vera.js beside it are the page as it
-// was): the skin is skinned in the vertex shader (engine-gpu/src/gpuskin.js), which also turns the face's displacement
-// with the head; the processor works out only the joints, the floor from a probe of the skin, the skirt's points, and
-// the face's displacement when the face's numbers change.
+// was): the skin is skinned and its normals found on the video card (engine-gpu/src/gpuskin.js); the processor works
+// out only the joints, the floor from a probe of the skin, the skirt's points, and the face's displacement.
 //   fast.html?pack=<url of vera.json>;   window.A.set({clip, t, pose, expr, face, cam, draw, light}) then A.render()
 import * as THREE from 'three';
 THREE.ColorManagement.enabled = false;
@@ -49,17 +48,10 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setClearColor(0x000000, 0);
 const scene = new THREE.Scene();
 const g = gs.attributes(new THREE.BufferGeometry());
-for (const [k, n, norm] of [['col', 3, true], ['shd', 3, true], ['glw', 3, true], ['rim', 3, true], ['uv', 2, false], ['pn', 3, false], ['dr', 3, false]])
+g.setAttribute('rest', new THREE.BufferAttribute(Float32Array.from(a.positions), 3));
+for (const [k, n, norm] of [['col', 3, true], ['shd', 3, true], ['glw', 3, true], ['rim', 3, true], ['mat', 1, false], ['uv', 2, false], ['tw', 1, true],
+  ['pn', 3, false], ['pw', 1, true], ['two', 1, false], ['hs', 1, false], ['hg', 1, true], ['dr', 3, false]])
   g.setAttribute(k, new THREE.BufferAttribute(a[k], n, norm));
-// the scalars go together in two attributes (a vertex shader takes 16 attributes at most, and the skinning takes four)
-const sA = new Float32Array(body.N * 4), sB = new Float32Array(body.N * 2);
-for (let i = 0; i < body.N; i++) {
-  sA[i * 4] = a.mat[i]; sA[i * 4 + 1] = a.tw[i] / 255; sA[i * 4 + 2] = a.pw[i] / 255; sA[i * 4 + 3] = a.two[i];
-  sB[i * 2] = a.hs[i]; sB[i * 2 + 1] = a.hg[i] / 255;
-}
-g.setAttribute('sA', new THREE.BufferAttribute(sA, 4)); g.setAttribute('sB', new THREE.BufferAttribute(sB, 2));
-// the face's displacement (face.js), in the head's rest frame: the shader turns it with the head
-const faceD = new THREE.BufferAttribute(face.delta, 3); faceD.setUsage(THREE.DynamicDrawUsage); g.setAttribute('faceD', faceD);
 g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
 const MATS = H.materials, MI = n => MATS.indexOf(n);
 
@@ -70,6 +62,13 @@ const SM = 4096;
 const smTarget = new THREE.WebGLRenderTarget(SM, SM);
 smTarget.depthTexture = new THREE.DepthTexture(SM, SM); smTarget.depthTexture.type = THREE.UnsignedIntType;
 const lightCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 10);
+const depthMat = new THREE.ShaderMaterial({
+  uniforms: gs.uniforms, side: THREE.DoubleSide, colorWrite: false,
+  vertexShader: `attribute float mat; varying float vM; ${gs.glsl}
+    void main(){ vM = mat; vec3 P, N; skinVertex(P, N); gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
+  fragmentShader: `varying float vM; void main(){ if (abs(vM - ${MI('frame').toFixed(1)}) < 0.5) discard; }`,   // the glasses csh no shadow
+});
+// the folder in the shadow map (it is not of the skin)
 const folderDepth = new THREE.ShaderMaterial({
   side: THREE.DoubleSide, colorWrite: false,
   vertexShader: 'void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
@@ -90,30 +89,22 @@ const U = {
   look: { value: new THREE.Vector4(0, 0, 0, 0) },
 };
 const M = n => MI(n).toFixed(1);
-const depthMat = new THREE.ShaderMaterial({
-  uniforms: U, side: THREE.DoubleSide, colorWrite: false,
-  vertexShader: `attribute vec4 sA; attribute vec3 faceD; uniform mat3 R[${sk.J}]; uniform int headJ; varying float vM;
-    ${gs.glsl}
-    void main(){ vM = sA.x; vec3 P, N; skinVertex(position, normal, P, N); P += R[headJ] * faceD; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
-  fragmentShader: `varying float vM; void main(){ if (abs(vM - ${M('frame')}) < 0.5) discard; gl_FragColor = vec4(1.0); }`,   // the glasses cast no shadow
-});
 const toon = new THREE.ShaderMaterial({
   uniforms: U, side: THREE.DoubleSide,
   vertexShader: `
-    attribute vec3 col; attribute vec3 shd; attribute vec3 glw; attribute vec3 rim; attribute vec4 sA; attribute vec2 sB;
-    attribute vec3 pn; attribute vec3 dr; attribute vec3 faceD;
+    attribute vec3 col; attribute vec3 shd; attribute vec3 glw; attribute vec3 rim; attribute float mat; attribute float tw;
+    attribute vec3 pn; attribute float pw; attribute float two; attribute float hs; attribute float hg; attribute vec3 dr; attribute vec3 rest;
     uniform mat3 R[${sk.J}]; uniform int headJ; uniform mat4 smMat;
     varying vec3 vN; varying vec3 vCol; varying vec3 vShd; varying vec3 vGlw; varying vec3 vRim; varying vec2 vUv; varying float vTw;
     varying float vTwo; varying float vMat; varying float vHs; varying float vHg; varying vec3 vDr; varying vec3 vRest; varying vec4 vSm;
     varying vec3 vWp;
     ${gs.glsl}
     void main() {
-      float mat = sA.x, tw = sA.y, pw = sA.z, two = sA.w, hs = sB.x, hg = sB.y;
-      vec3 P, N; skinVertex(position, normal, P, N); P += R[headJ] * faceD;
+      vec3 P, N; skinVertex(P, N);
       vec3 n = normalize(N);
       if (pw > 0.0) n = normalize(mix(n, R[headJ] * pn, pw));
       vN = n; vCol = col; vShd = shd; vGlw = glw; vRim = rim; vUv = uv; vTw = tw; vTwo = two; vMat = mat; vHs = hs; vHg = hg;
-      vDr = dr; vRest = position; vWp = P;      // position is the rest's place
+      vDr = dr; vRest = rest; vWp = P;
       vSm = smMat * vec4(P, 1.0);
       gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0);
     }`,
@@ -382,8 +373,9 @@ let clip = null;
 let folderLocal = null;
 // the skirt is not cloth: after skinning, every skirt point that is inside a leg (a capsule round the thigh and the
 // shin) is put on the capsule's surface, so a stepping leg carries the skirt instead of going through it
-// The skirt's points are skinned here too (only they); the push goes to the shader as an offset on top of its own
-// skinning. The legs' capsules as numbers (A, B, the radius at A and at B, whether a thigh): the same sums, without objects.
+// The skirt's points are skinned here too (only they); the push goes to the video card as an offset on top of its
+// own skinning. The legs' capsules as numbers (A, B, the radius at A and at B, whether a thigh): the same sums,
+// without objects.
 const SK = H.ranges.skirt, skirtN = SK[1] - SK[0];
 const skirtSkin = gs.subset(Array.from({ length: skirtN }, (_, k) => SK[0] + k)), skirtAt = new Float32Array(skirtN * 3);
 const cap = new Float64Array(4 * 9);
@@ -418,7 +410,8 @@ function pushSkirt(pose) {
   if (any || pushed) gs.displace(SK[0], skirtN);       // no point in a leg now nor before: the offsets are zeros already
   pushed = any;
 }
-let faceWas = null;
+function headM(pose) { return fig.skinner.matrix(pose, I.Head); }
+let faceWas = null, headWas = null;
 function frame() {
   let pose;
   if (S.clip) {          // as the engine's Figure.frame: the collarbone's share, the place, on the floor ('lowest')
@@ -429,15 +422,24 @@ function frame() {
   } else pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts);
   gs.setPose(pose); fig.pose = pose;
   pushSkirt(pose);
-  // the face: its form moved by a few numbers, turned with the head (in the shader); alive: from the life track at
-  // this moment. The displacement is worked out and sent only when the numbers changed.
+  // the face: its form moved by a few numbers, turned with the head; alive: from the life track at this moment.
+  // The displacement is worked out when the face's numbers change; turned with the head, it goes into the skin's
+  // offsets (the video card adds them after skinning, and the normals follow) when it or the head's turn changed.
   if (S.life) S.face = S.life.at(S.clip ? S.t / 30 : S.t);
-  const fk = JSON.stringify(S.face);
-  if (fk !== faceWas) {
-    face.update(S.face);
-    for (const pc of face.pieces) faceD.addUpdateRange(pc.r[0] * 3, (pc.r[1] - pc.r[0]) * 3);
-    faceD.needsUpdate = true; faceWas = fk;
+  const fk = JSON.stringify(S.face), hq = I.Head * 4, hk = pose.Q[hq] + ' ' + pose.Q[hq + 1] + ' ' + pose.Q[hq + 2] + ' ' + pose.Q[hq + 3];
+  if (fk !== faceWas) { face.update(S.face); faceWas = fk; headWas = null; }
+  if (hk !== headWas) {
+    const M = headM(pose), F = face.delta, D = gs.skinD;
+    for (const pc of face.pieces) {
+      for (let i = pc.r[0] * 3; i < pc.r[1] * 3; i += 3) {
+        const x = F[i], y = F[i + 1], z = F[i + 2];
+        D[i] = M[0] * x + M[1] * y + M[2] * z; D[i + 1] = M[4] * x + M[5] * y + M[6] * z; D[i + 2] = M[8] * x + M[9] * y + M[10] * z;
+      }
+      gs.displace(pc.r[0], pc.r[1] - pc.r[0]);
+    }
+    headWas = hk;
   }
+  gs.update(renderer);
   const Q = fig.pose.Q;
   for (let j = 0; j < J; j++) { const [x, y, z, w] = [Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]];
     U.R.value[j].set(1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)); }
