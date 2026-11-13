@@ -39,30 +39,6 @@ const body = makeBody({
 const spec = { skinning: { method: 'dqs', clavicleShare: 0.33, seam: null }, motion: { floor: 'lowest', corrections: {} } };
 const fig = new Figure(body, spec, { position: [0, 0, 0], heading: 0 });
 const gs = new GpuSkin(THREE, fig.skinner);
-// The floor: the skin's lowest point from a probe of the skin, as engine-gpu's lowest() finds it — for each joint, the
-// vertices it leads that lie furthest out in 200 directions, and where joints share the skin, one vertex of every
-// 1.5 cm of space. But this pack's shells lie one inside another with different joints (the foot inside the shoe), and
-// one vertex for a place may move otherwise than the lowest there (12 mm off in the walk); and a shoe's flat sole has
-// many vertices nearly as low (2 mm off). So here: one vertex of every such place for every different sharing of the
-// joints, and 1000 directions. Against all vertices over walk, idle and wave: the same to 0.01 mm.
-const floorProbe = (() => {
-  const P = gs.rest, sj = gs.skinJ, sw = gs.skinW, n = 1000, cell = 0.015, dirs = [], pick = new Set(), cells = new Set();
-  for (let k = 0; k < n; k++) { const y = 1 - 2 * (k + 0.5) / n, r = Math.sqrt(1 - y * y), an = k * Math.PI * (3 - Math.sqrt(5)); dirs.push([Math.cos(an) * r, y, Math.sin(an) * r]); }
-  const best = new Float64Array(sk.J * n).fill(-Infinity), at = new Int32Array(sk.J * n).fill(-1);
-  for (let i = 0; i < gs.N; i++) {
-    let b = 0; for (let k = 1; k < 4; k++) if (sw[i * 4 + k] > sw[i * 4 + b]) b = k;
-    const o = sj[i * 4 + b] * n, x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
-    for (let k = 0; k < n; k++) { const d = dirs[k], v = x * d[0] + y * d[1] + z * d[2]; if (v > best[o + k]) { best[o + k] = v; at[o + k] = i; } }
-    if (sw[i * 4 + b] < 0.95) {
-      const share = []; for (let k = 0; k < 4; k++) if (sw[i * 4 + k] > 0.02) share.push(sj[i * 4 + k] + ':' + Math.round(sw[i * 4 + k] * 5));
-      const key = Math.floor(x / cell) + ',' + Math.floor(y / cell) + ',' + Math.floor(z / cell) + ' ' + share.sort().join(' ');
-      if (!cells.has(key)) { cells.add(key); pick.add(i); }
-    }
-  }
-  for (const i of at) if (i >= 0) pick.add(i);
-  return gs.subset([...pick]);
-})(), floorAt = new Float32Array(floorProbe.indices.length * 3);
-function lowest(pose) { const out = floorProbe.skin(pose, floorAt); let lo = Infinity; for (let i = 1; i < out.length; i += 3) if (out[i] < lo) lo = out[i]; return lo; }
 const K = H.K, FEET = H.FEET, ZOFF = H.ZOFF;
 const Wd = (x, y, z) => [x * K, (FEET - y) * K, z * K + ZOFF];       // drawing units → world (rest)
 const head = new Head(H.head);
@@ -105,7 +81,7 @@ const VERT = `${VERT_IO}
 const VERT_SKIN = `${VERT_IO}
   ${gs.glsl}
   void main() {
-    vec3 P, N; skinVertex(position, normal, P, N);
+    vec3 P, N; skinVertex(P, N);
     vMat = mat; vEm = em; vEa = ea; vHs = hs; vDr = dr; vN = N;
     vec4 mv = viewMatrix * vec4(P, 1.0);
     vZ = -mv.z;
@@ -478,10 +454,11 @@ function frame() {
     pose = fig.retarget.pose(clip.sample(S.t, fig.sample));
     clavicleShare(pose, body, spec.skinning.clavicleShare); build(pose, body, getV(pose.P, I.Hips));
     fig.retarget.placed(pose);
-    const shift = pose.floor - lowest(pose); for (let j = 0; j < sk.J; j++) pose.P[j * 3 + 1] += shift;
+    const shift = pose.floor - gs.lowest(pose); for (let j = 0; j < sk.J; j++) pose.P[j * 3 + 1] += shift;
   } else pose = S.pose === 'rest' ? fig.restPose() : standPose(S.poseOpts);
   fig.pose = pose; gs.setPose(pose);
   pushSkirt();
+  gs.update(renderer);
   if (S.life) S.face = S.life.at(S.clip ? S.t / 30 : S.t);
   headMat = M4(fig.skinner.matrix(fig.pose, I.Head));
   // the folder: its place in the left hand's frame is set once from the standing pose (held against the chest)

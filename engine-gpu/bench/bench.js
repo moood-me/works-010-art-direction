@@ -45,7 +45,7 @@ for (let k = 0; k < n; k++) {
   if (a.col) g.setAttribute('col', new THREE.BufferAttribute(a.col, 3, true));
   g.setIndex(new THREE.BufferAttribute(a.triangles, 1));
   const U = { ...shared, ...(gs ? gs.uniforms : {}) };
-  const posed = gs ? `${gs.glsl}\n void posed(out vec3 P, out vec3 N) { skinVertex(position, normal, P, N); }` : `void posed(out vec3 P, out vec3 N) { P = position; N = normal; }`;
+  const posed = gs ? `${gs.glsl}\n void posed(out vec3 P, out vec3 N) { skinVertex(P, N); }` : `void posed(out vec3 P, out vec3 N) { P = position; N = normal; }`;
   const toon = new THREE.ShaderMaterial({ uniforms: U, side: THREE.DoubleSide,
     vertexShader: `${a.col ? 'attribute vec3 col;' : 'const vec3 col = vec3(0.8, 0.74, 0.68);'} uniform mat4 SMx; varying vec3 vN; varying vec3 vCol; varying vec4 vS; ${posed}
       void main() { vec3 P, N; posed(P, N); vN = N; vCol = col; vS = SMx * vec4(P + N * 0.012, 1.0); gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
@@ -76,7 +76,7 @@ function pose(t) {
     if (c.gs) {
       const p = f.retarget.pose(clip.sample(tt, f.sample)); f.retarget.placed(p);
       const shift = p.floor - c.gs.lowest(p); for (let j = 0; j < J; j++) p.P[j * 3 + 1] += shift;
-      c.gs.setPose(p); f.pose = p;
+      c.gs.setPose(p); c.gs.update(renderer); f.pose = p;
     } else { f.frame(clip, tt); c.g.attributes.position.needsUpdate = true; c.g.attributes.normal.needsUpdate = true; }
   }
 }

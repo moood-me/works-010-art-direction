@@ -80,7 +80,7 @@ shadowRT.depthTexture.minFilter = shadowRT.depthTexture.magFilter = THREE.Neares
 const shadowCam = new THREE.OrthographicCamera(-1.5, 1.5, 1.5, -1.5, 0.5, 14);
 const depthMat = new THREE.ShaderMaterial({ uniforms: gs.uniforms, side: THREE.DoubleSide,
   vertexShader: `${gs.glsl}
-    void main() { vec3 P, N; skinVertex(position, normal, P, N); gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
+    void main() { vec3 P, N; skinVertex(P, N); gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
   fragmentShader: `void main() { gl_FragColor = vec4(1.0); }` });
 
 const BLACK = new THREE.Color('#07070b'), RIM = new THREE.Color('#3b4566');
@@ -149,7 +149,7 @@ const toon = new THREE.ShaderMaterial({
     uniform mat3 R[${sk.J}]; uniform mat4 SMx;
     ${gs.glsl}
     varying vec3 vN; varying vec3 vCol; varying vec2 vUv; varying float vTex; varying float vTwo; varying vec3 vHp; varying vec3 vPn; varying float vKind; varying vec4 vS;
-    void main() { vec3 P, N; skinVertex(position, normal, P, N);
+    void main() { vec3 P, N; skinVertex(P, N);
       vN = normalize(mix(N, R[int(pj + 0.5)] * pn, pw)); vCol = col; vUv = uv; vTex = tex; vTwo = two; vHp = hp; vPn = pn; vKind = kind;
       vS = SMx * vec4(P + N * 0.012, 1.0);
       gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`,
@@ -184,7 +184,7 @@ const hull = new THREE.ShaderMaterial({
     attribute float ow; attribute vec3 pn; attribute float pw; attribute float pj; attribute vec3 hp; attribute float kind;
     uniform float width; uniform mat3 R[${sk.J}]; varying float vOw; varying vec3 vN; varying vec3 vHp; varying vec3 vPn; varying float vKind;
     ${gs.glsl}
-    void main() { vec3 P, N; skinVertex(position, normal, P, N);
+    void main() { vec3 P, N; skinVertex(P, N);
       vOw = ow; vN = normalize(mix(N, R[int(pj + 0.5)] * pn, pw)); vHp = hp; vPn = pn; vKind = kind;
       gl_Position = projectionMatrix * viewMatrix * vec4(P + N * width * ow, 1.0);
       gl_Position.z += 0.0004 * gl_Position.w; }`,
@@ -333,6 +333,7 @@ function frame() {
     if (S.push && skirt.length) pushSkirt(pose); else noPush();
     fig.pose = pose;
   }
+  gs.update(renderer);
   const Q = fig.pose.Q;
   for (let j = 0; j < J; j++) { const [x, y, z, w] = [Q[j * 4], Q[j * 4 + 1], Q[j * 4 + 2], Q[j * 4 + 3]];
     U.R.value[j].set(1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)); }

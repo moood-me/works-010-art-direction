@@ -2,10 +2,10 @@
 
 Beside `engine/`, not in its place: `engine/` is as it was, and the pages that stand on it are as they were. This
 folder takes the engine's own body, skeleton, motions and `Skinner` and moves the per-vertex work — skinning and
-normals — into the vertex shader, so each frame the processor works out only the 77 joints.
+normals — onto the video card, so each frame the processor works out only the 77 joints.
 
 ```
-src/gpuskin.js    GpuSkin: the attributes, the joint texture, the shader's skinVertex(), a few vertices on the processor
+src/gpuskin.js    GpuSkin: the skin into two textures (places, normals), what a material reads, a few vertices on the processor
 bench/            several characters in one scene, the old way and the new: frames a second, the longest gap
 check/compare.mjs a page as it was against its fast variant: pictures, their difference, milliseconds a frame
 ```
@@ -18,44 +18,53 @@ video card. For a character of 38 thousand vertices that is about 5 ms of the pr
 draw (measured on a laptop with an Intel Arc 140T, 1920×1080 — the numbers are in `docs/history/`). One character fits
 into a frame; two do not.
 
+## How it works
+
+Each frame the skin is drawn twice into two small float textures, a texel a vertex: first every vertex skinned (its
+place in the pose), then every vertex's normal from the posed places of the triangles around it — the same sum as
+the engine's `normalsOf`. The materials that draw the skin (the body, an outline's hull, a shadow map's depth) only
+read their vertex's two texels. So the skin is skinned once a frame however many times it is drawn, the normals are
+the posed skin's own (folds of cloth, bends), and the drawn geometry carries no skinning attributes.
+
 ## How to use it
 
 ```js
 import { GpuSkin } from '<root>/engine-gpu/src/gpuskin.js';
 const fig = new Figure(body, spec, place);              // the engine's, as before: retargeting and the Skinner
 const gs = new GpuSkin(THREE, fig.skinner);
-const g = gs.attributes(new THREE.BufferGeometry());    // position and normal are the rest's now; + skinJ skinW skinC skinD
-// every material that draws the skin (the body, the outline's hull, the shadow map's depth):
+const g = gs.attributes(new THREE.BufferGeometry());    // position and normal: the rest's (three.js wants them)
+// every material that draws the skin:
 //   uniforms: { ...gs.uniforms, … }
-//   vertexShader: `${gs.glsl} … void main() { vec3 P, N; skinVertex(position, normal, P, N); … use P and N … }`
+//   vertexShader: `${gs.glsl} … void main() { vec3 P, N; skinVertex(P, N); … use P and N … }`
 // each frame:
 const pose = fig.retarget.pose(clip.sample(t, fig.sample)); fig.retarget.placed(pose);
 const shift = pose.floor - gs.lowest(pose);             // on the floor, as motion.floor 'lowest'
 for (let j = 0; j < J; j++) pose.P[j * 3 + 1] += shift;
 gs.setPose(pose);
+gs.update(renderer);                                    // before the skin is drawn
 ```
 
 `to3d/r45-s15-anya/tools/web/anya-gpu.js` (page `fast.html`) is a whole page made so, beside its `anya.js`.
 
 ## What is the same and what is not
 
-- **Positions: the same.** The shader does what `Skinner.skin` does, for `cor`, `dqs` and `lbs`: the same blend of
-  the joints' turns, the same centres of rotation (the Skinner's own, sent as an attribute).
-- **Normals: nearly.** They are the rest's normals turned with the vertex's blended joint turn, not recomputed from
-  the posed triangles. Inside a deep bend (an elbow, a knee, a sitting hip) the light's edge can lie a little
-  differently. Look at it; where a page draws designed normals of its own (a head's), nothing changes.
-- **The floor: nearly.** `lowest(pose)` skins a probe and takes its lowest point: for each joint, the vertices it
-  leads that lie furthest out in 200 directions; and where joints share the skin (bends, a skirt between the legs),
-  one vertex of every 1.5 cm of space. On Р45 that is 5.5 of 38 thousand vertices, and against all vertices it is
-  within 1.5 mm at worst over walk, sit, dance, lie, roll, jump and bow (0.05 mm on average; lying 0.35).
-- **What a page does to the posed skin on the processor** (a skirt pushed off the legs, a seam smoothed) stays on
-  the processor, for those vertices only: `gs.subset(indices).skin(pose, out)` gives their places (the same numbers
-  as the engine's), the page works out an offset, writes it into `gs.skinD` and calls `gs.displace(first, count)`;
-  the shader adds it after skinning. Such vertices keep the normals of the unpushed skin.
+- **Positions: the same.** The first pass does what `Skinner.skin` does, for `cor`, `dqs` and `lbs`: the same blend
+  of the joints' turns, the same centres of rotation (the Skinner's own, sent as an attribute).
+- **Normals: the same.** The second pass sums the posed triangles around each vertex as `normalsOf` does.
+- **The floor: nearly.** `lowest(pose)` skins a probe on the processor and takes its lowest point: for each joint, the
+  vertices it leads that lie furthest out in 1000 directions; and where joints share the skin (bends, a skirt between
+  the legs), one vertex of every 1.5 cm of space for each set of joints. On Р45 that is 7.4 of 38 thousand vertices,
+  and against all vertices it is within 0.4 mm at worst over walk, sit, dance, lie, roll, jump and bow.
+- **What a page does to the posed skin on the processor** (a skirt pushed off the legs, a brow moved) stays on the
+  processor, for those vertices only: `gs.subset(indices).skin(pose, out)` gives their places (the same numbers as
+  the engine's), the page works out an offset, writes it into `gs.skinD` and calls `gs.displace(first, count)`; the
+  first pass adds it after skinning, and the normals follow.
 - **`Skinner`'s `seam` option** (Т7's smoothing where trunk meets arm) is not carried: no Р page asks for it. A page
   that does takes it as the skirt above.
 - **Pages that read every vertex's place on the processor** (section К measures skin against a table or another
-  body) stay on `engine/`; for a few vertices `subset` is enough.
+  body; the pen pages find their lines there) stay on `engine/`; for a few vertices `subset` is enough.
+- **It needs a video card that can draw into float textures** (`EXT_color_buffer_float`; desktop cards and current
+  phones have it). Without it `update` stops with an error.
 
 ## The check
 
