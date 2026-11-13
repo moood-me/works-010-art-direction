@@ -273,26 +273,41 @@ const dsp = new Float64Array(skirt.length * 3), dsp2 = new Float64Array(skirt.le
 const skirtSkin = gs.subset(skirt), skirtAt = new Float32Array(skirt.length * 3);
 const skirtFirst = skirt.length ? skirt[0] : 0, skirtCount = skirt.length ? skirt[skirt.length - 1] - skirt[0] + 1 : 0;
 let pushed = false;
+// the neighbours as flat lists (the same as skirtNb), and the legs' capsules as numbers: the same sums, without objects
+const nbStart = new Int32Array(skirt.length + 1), nbList = Int32Array.from(skirtNb.flat());
+skirtNb.forEach((nb, k) => { nbStart[k + 1] = nbStart[k] + nb.length; });
+const cap = new Float64Array(CAPS.length * 7);
 function pushSkirt(pose) {
-  const P = skirtSkin.skin(pose, skirtAt), D = gs.skinD;
-  const caps = CAPS.map(([a, b, r], k) => { const A = getV(pose.P, a), B = getV(pose.P, b); return [k % 2 ? A : A.map((v, c) => v + (B[c] - v) * 0.2), B, r + 0.012]; });
+  const P = skirtSkin.skin(pose, skirtAt), D = gs.skinD, n = skirt.length, pp = pose.P;
+  CAPS.forEach(([a, b, r], k) => {
+    const f = k % 2 ? 0 : 0.2, o = k * 7;
+    for (let c = 0; c < 3; c++) { const A = pp[a * 3 + c], B = pp[b * 3 + c]; cap[o + c] = A + (B - A) * f; cap[o + 3 + c] = B; }
+    cap[o + 6] = r + 0.012;
+  });
   // how far each point must go out of the legs …
-  skirt.forEach((i, k) => {
+  let any = false;
+  for (let k = 0; k < n; k++) {
     let x = P[k * 3], y = P[k * 3 + 1], z = P[k * 3 + 2];
-    for (const [A, B, r] of caps) {
-      const ab = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], l2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
-      let u = ((x - A[0]) * ab[0] + (y - A[1]) * ab[1] + (z - A[2]) * ab[2]) / l2; u = Math.max(0, Math.min(1, u));
-      const cx = A[0] + ab[0] * u, cy = A[1] + ab[1] * u, cz = A[2] + ab[2] * u, dx = x - cx, dy = y - cy, dz = z - cz, d = Math.hypot(dx, dy, dz);
-      if (d < r && d > 1e-6) { const s = r / d; x = cx + dx * s; y = cy + dy * s; z = cz + dz * s; }
+    for (let o = 0; o < cap.length; o += 7) {
+      const ax = cap[o], ay = cap[o + 1], az = cap[o + 2], bx = cap[o + 3] - ax, by = cap[o + 4] - ay, bz = cap[o + 5] - az, r = cap[o + 6], l2 = bx * bx + by * by + bz * bz;
+      let u = ((x - ax) * bx + (y - ay) * by + (z - az) * bz) / l2; u = Math.max(0, Math.min(1, u));
+      const cx = ax + bx * u, cy = ay + by * u, cz = az + bz * u, dx = x - cx, dy = y - cy, dz = z - cz, d = Math.hypot(dx, dy, dz);
+      if (d < r && d > 1e-6) { const sc = r / d; x = cx + dx * sc; y = cy + dy * sc; z = cz + dz * sc; any = true; }
     }
     dsp[k * 3] = x - P[k * 3]; dsp[k * 3 + 1] = y - P[k * 3 + 1]; dsp[k * 3 + 2] = z - P[k * 3 + 2];
-  });
+  }
+  if (!any) { noPush(); return; }       // no point is in a leg: nothing to spread
   // … spread over the cloth around them (no steps where single points were pushed), keeping the largest push
   for (let it = 0; it < 14; it++) {
-    skirtNb.forEach((nb, k) => { for (let c = 0; c < 3; c++) { let s = dsp[k * 3 + c]; for (const m of nb) s += dsp[m * 3 + c]; dsp2[k * 3 + c] = s / (nb.length + 1); } });
-    for (let k = 0; k < skirt.length; k++) for (let c = 0; c < 3; c++) { const a = dsp[k * 3 + c], b = dsp2[k * 3 + c]; dsp[k * 3 + c] = Math.abs(b) > Math.abs(a) ? b : (a + b) / 2 + (a - b) / 2 * 0.5; }
+    for (let k = 0; k < n; k++) {
+      const q0 = nbStart[k], q1 = nbStart[k + 1], m = q1 - q0 + 1;
+      let sx = dsp[k * 3], sy = dsp[k * 3 + 1], sz = dsp[k * 3 + 2];
+      for (let q = q0; q < q1; q++) { const j = nbList[q] * 3; sx += dsp[j]; sy += dsp[j + 1]; sz += dsp[j + 2]; }
+      dsp2[k * 3] = sx / m; dsp2[k * 3 + 1] = sy / m; dsp2[k * 3 + 2] = sz / m;
+    }
+    for (let i = 0; i < n * 3; i++) { const a = dsp[i], b = dsp2[i]; dsp[i] = Math.abs(b) > Math.abs(a) ? b : (a + b) / 2 + (a - b) / 2 * 0.5; }
   }
-  skirt.forEach((i, k) => { const w = fade[k]; D[i * 3] = w * dsp[k * 3]; D[i * 3 + 1] = w * dsp[k * 3 + 1]; D[i * 3 + 2] = w * dsp[k * 3 + 2]; });
+  for (let k = 0; k < n; k++) { const i = skirt[k] * 3, w = fade[k]; D[i] = w * dsp[k * 3]; D[i + 1] = w * dsp[k * 3 + 1]; D[i + 2] = w * dsp[k * 3 + 2]; }
   gs.displace(skirtFirst, skirtCount); pushed = true;
 }
 function noPush() { if (!pushed) return; for (const i of skirt) gs.skinD[i * 3] = gs.skinD[i * 3 + 1] = gs.skinD[i * 3 + 2] = 0; gs.displace(skirtFirst, skirtCount); pushed = false; }
@@ -368,7 +383,7 @@ window.A = {
   },
   frames: () => clip ? clip.frames : 0,
   render() {
-    const w = canvas.clientWidth, h = canvas.clientHeight; renderer.setSize(w, h, false);
+    const w = canvas.clientWidth, h = canvas.clientHeight; if (canvas.width !== w || canvas.height !== h) renderer.setSize(w, h, false);      // setting the size anew each frame makes the browser allocate the picture anew
     const c = S.cam, cp = Math.cos(c.pitch);
     let tg = c.target || [c.cx, c.cy, 0];
     if (c.follow && fig.pose) { const P = fig.pose.P; tg = [P[I.Hips * 3], c.cy, P[I.Hips * 3 + 2]]; }

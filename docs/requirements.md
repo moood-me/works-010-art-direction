@@ -163,3 +163,10 @@ scenes. (Contacts of the hands with the world — see above, after the engine.)
   `main`.
 - If something is not liked, or could be made better simply, or it is worth the agents trying more — ask them.
 - Other scenarios are worth making too: other kinds of objects, other kinds of motions.
+
+## The characters' speed (Pavel, 2026-11-13)
+
+- The question: if the drawn characters built in 3D (Р) are put into a real scene of a game, what will the speed be.
+  They should work properly for speed.
+- Ideal exactness is not needed there. What is very hard is not forced: "пускай в стену не бьётся".
+- The work is done in a branch and a worktree of its own, not poured into `main`.
